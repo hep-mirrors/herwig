@@ -214,18 +214,18 @@ void IS_QTildeShowerKinematics1to2::
 resetChildren(const tShowerParticlePtr parent, const ShowerParticleVector &) const {
   if(parent->children().size() == 2){
 
-    tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);    
-    if( ! timelikeChild->children().empty()){
+    if(parent->children()[1]->children().size() ==2){
+      tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);    
       ShowerParticleVector timelikeGrandChildren;
       for(unsigned int iy=0;iy<timelikeChild->children().size();++iy)
-       timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
-                             (timelikeChild->children()[iy]));
+	timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+					(timelikeChild->children()[iy]));
       //timelike reset children
       timelikeChild->showerKinematics()->resetChildren(timelikeChild, timelikeGrandChildren);
     }
     
-    tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
-    if(! spacelikeChild->children().empty()) {
+    if(parent->children()[0]->children().size() ==2){
+      tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
       ShowerParticleVector dummyChildren;
       spacelikeChild->showerKinematics()->resetChildren(spacelikeChild, dummyChildren);
     }
