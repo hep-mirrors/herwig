@@ -29,7 +29,7 @@ for runType in ["NonPerturbative","Perturbative"]:
             if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
             if(len(opts.plots)>0 and hpath not in opts.plots) : continue
             if(type(histo)==yoda.core.Histo1D) :
-                if( "CMD3_2019_I1770428" in path ) :
+                if( "CMD3_2019_I1770428" in hpath ) :
                     val=0.
                     for key in cmd3_weights.keys() :
                         if(abs(energyMeV-val)>abs(energyMeV-key)) :

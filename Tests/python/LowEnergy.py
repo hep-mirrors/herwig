@@ -23,7 +23,7 @@ analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      :
              "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
              "EtaPiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
              "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
-             "5Pi"          : {}, "LL"        : {} }
+             "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
 # pi+pi-
 analyses["PiPi"]["KLOE_2009_I797438"   ] = ["d02-x01-y01"]
 analyses["PiPi"]["KLOE_2005_I655225"   ] = ["d02-x01-y01"]
@@ -243,6 +243,8 @@ analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y1
                                         "d01-x01-y12","d01-x01-y13","d01-x01-y14",
                                          "d01-x01-y15","d01-x01-y16","d01-x01-y17","d01-x01-y18"]
 analyses['6m']["SND_2016_I1473343"  ] = ["d01-x01-y01"]
+# other baryon processes
+analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -276,6 +278,9 @@ analyses["DD"]["BESIII_2017_I1494065"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2017_I1596897"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1653121"     ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["DD"]["BESIII_2020_I1762922"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2018_I1633425"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2018_I1685535"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BELLE_2011_I878228"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 # BB
 analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",

@@ -15,6 +15,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2001_S4598261
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2003_I593379
 # BELLE distributions
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
 # BABAR Xi_c production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
