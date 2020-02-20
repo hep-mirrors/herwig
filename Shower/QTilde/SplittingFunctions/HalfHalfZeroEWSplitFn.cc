@@ -238,12 +238,6 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(0,1,0) = cphase*num2/dnum;
   (*kernal)(1,0,0) = -phase*num2/dnum;
   (*kernal)(1,1,0) = num1/dnum;
-  cerr << "testing kernal";
-  for(unsigned int ix=0;ix<2;++ix) {
-    for(unsigned int iy=0;iy<2;++iy)
-      cerr << (*kernal)(ix,iy,0) << " ";
-    cerr << "\n";
-  }
   // return the answer
   return kernal;
 }
