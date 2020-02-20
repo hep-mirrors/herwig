@@ -726,8 +726,10 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
     }
     // gamma -> f fbar
     else {
-      assert(colourStructure()==NeutralChargedCharged  ||
-       colourStructure()==EW);
+      if (parent->id()==22 && abs(emitter->id())==24 && emitter->id() == - emitted->id())
+        ;
+      else
+        assert(colourStructure()==NeutralChargedCharged  || colourStructure()==EW);
       // emitter
       emitter->scales().QED           = zEmitter*scale;
       emitter->scales().QED_noAO      =          scale;
