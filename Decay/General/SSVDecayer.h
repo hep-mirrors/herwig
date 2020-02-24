@@ -151,11 +151,6 @@ private:
    *  Abstract pointer to AbstractFFVVertex
    */
   vector<AbstractVSSVertexPtr> vertex_;
-  
-  /**
-   * Pointer to the perturbative vertex
-   */
-  vector<VSSVertexPtr> perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar

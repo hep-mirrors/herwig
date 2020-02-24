@@ -38,10 +38,8 @@ void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> fourV) {
   decayInfo(incoming,outgoing);
-  for(auto vert : vertex) {
+  for(auto vert : vertex)
     vertex_            .push_back(dynamic_ptr_cast<AbstractVSSVertexPtr>(vert));
-    perturbativeVertex_.push_back(dynamic_ptr_cast<VSSVertexPtr>        (vert));
-  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
@@ -64,13 +62,13 @@ void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
 }
 
 void SSVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << vertex_           << perturbativeVertex_
+  os << vertex_
      << incomingVertex_   << outgoingVertexS_
      << outgoingVertexV_  << fourPointVertex_;
 }
 
 void SSVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> vertex_           >> perturbativeVertex_
+  is >> vertex_
      >> incomingVertex_   >> outgoingVertexS_
      >> outgoingVertexV_  >> fourPointVertex_;
 }
@@ -144,34 +142,7 @@ double SSVDecayer::me2(const int , const Particle & inpart,
 Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
 				 PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_.size()==1 &&
-     perturbativeVertex_[0]) {
-    double mu1sq(sqr(outa.second/inpart.second)),
-      mu2sq(sqr(outb.second/inpart.second));
-    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    if(outa.first->iSpin() == PDT::Spin0) {
-      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outb.first, outa.first,in);
-    }
-    else {
-      swap(mu1sq,mu2sq);
-      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
-    }
-    double me2(0.);
-    if(mu2sq == 0.) 
-      me2 = -2.*mu1sq - 2.;
-    else
-      me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
-    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
-					       outb.second);
-    Energy output = pcm*me2*norm(perturbativeVertex_[0]->norm())/8./Constants::pi;
-    // colour factor
-    output *= colourFactor(inpart.first,outa.first,outb.first);
-    // return the answer
-    return output;
-  }
-  else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
-  }
+  return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
 }
 
 
