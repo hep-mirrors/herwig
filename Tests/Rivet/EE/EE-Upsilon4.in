@@ -51,3 +51,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
 # CLEO multiplicty in Upsilon(4S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
+# BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744
+# CLEO Xi_c spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I442910
