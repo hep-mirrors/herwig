@@ -120,7 +120,7 @@ yodafiles=["130","133","136","177","192",
            "189","200","44","14","14.8","21.5","22","25","10",\
            "12.8","26.8","48.0","93.0",\
            "12","13","17","27.6","27.7","29","30.2","34.5",\
-           "30.7","30","31.3","31.6","34","34.8","43.6","50","52","53.3",\
+           "30.7","30","31.3","31.6","34","34.8","42.1","43.6","50","52","53.3",\
            "55","56","57","58","59.5","60.8","60","61.4","7.7",
            "9.4","45","66","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
            "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
@@ -193,7 +193,8 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
-           "LENA_1981_I164397" in aopath or
+           "LENA_1981_I164397"  in aopath or "ARGUS_1991_I315059" in aopath or
+           "TASSO_1989_I266893" in aopath or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
@@ -214,15 +215,6 @@ for f in yodafiles:
                     outhistos[aopath] = ao
             else :
                 if(aopath.find("y03")<0) :
-                    outhistos[aopath] = ao
-        elif(aopath.find("ARGUS_1991_I315059")>=0) :
-            if(file.find("sym")>=0) :
-                if("d01" in aopath or "d02" in aopath or
-                   "d03" in aopath or "d04" in aopath) : 
-                    outhistos[aopath] = ao
-            else :
-                if("d05" in aopath or "d07" in aopath or
-                   "d07" in aopath) : 
                     outhistos[aopath] = ao
         elif(aopath.find("A2_2017_I1486671")>=0) :
             if("Eta" in file) :
@@ -1066,8 +1058,8 @@ useOne("/BELLE_2006_S6265367/d15-x01-y02","U4")
 # BABAR
 useOne("/BABAR_2007_S6895344/d01-x01-y01","10.54")
 useOne("/BABAR_2007_S6895344/d02-x01-y01","10.54")
-useOne("/BABAR_2007_S6895344/d03-x01-y01","10.58")
-useOne("/BABAR_2007_S6895344/d04-x01-y01","10.58")
+useOne("/BABAR_2007_S6895344/d03-x01-y01","U4")
+useOne("/BABAR_2007_S6895344/d04-x01-y01","U4")
 # BABAR
 useOne("/BABAR_2005_S6181155/d01-x01-y01","10.58")
 useOne("/BABAR_2005_S6181155/d02-x01-y01","10.58")
@@ -1245,6 +1237,23 @@ useOne("/LENA_1981_I164397/d04-x01-y02","10.")
 useOne("/LENA_1981_I164397/d04-x01-y03","U1")
 useOne("/LENA_1981_I164397/d04-x01-y04","U2")
 
+useOne("/ARGUS_1991_I315059/d01-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d01-x01-y02","10.47")
+useOne("/ARGUS_1991_I315059/d01-x01-y03","10.47")
+useOne("/ARGUS_1991_I315059/d02-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d03-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d04-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d05-x01-y01","U4")
+useOne("/ARGUS_1991_I315059/d06-x01-y01","U4")
+useOne("/ARGUS_1991_I315059/d07-x01-y01","U4")
+
+for i in [3,4,5,6,7,8,18,19,20,21,22,23] :
+    useOne("/TASSO_1989_I266893/d%02d-x01-y01" %i ,"34.8")
+for i in range(9,15) :
+    useOne("/TASSO_1989_I266893/d%02d-x01-y01" %i ,"42.1")
+for i in range(1,4) :
+    useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
+    useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file

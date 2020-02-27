@@ -7,7 +7,5 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
-# ARGUS charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
 # BELLE Lambda polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1687566
