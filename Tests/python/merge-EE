@@ -133,7 +133,7 @@ if(opts.gg) :
                   "21.84-gg","28.48-gg","48.0-gg"]
 # add decays if needed
 if(opts.decay) :
-    yodafiles += ["Upsilon","Upsilon2","Upsilon4","Upsilon4-asym",
+    yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0",
                   "Omegac0","Xim","JPsi","Psi2S"]

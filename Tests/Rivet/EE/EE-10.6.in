@@ -9,3 +9,18 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 
 # BELLE Lambda polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1687566
+# BELLE charmonium
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2002_I563840
+# CLEO Xi'_c production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I478217
+# CLEO D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1993_I352823
+# CLEO Lambda_c* production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I381696
+# ARGUS Lambda_c* production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1997_I440304
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I357132
+# CLEO Xi_c*0 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I397770
+# CLEO Xi_c*+ production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I416471
