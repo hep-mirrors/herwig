@@ -21,3 +21,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1747092
 # MARKII  psi(2s) -> J/Psi pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1979_I144382
+# BES psi(2s) -> J/Psi pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_1999_I507637

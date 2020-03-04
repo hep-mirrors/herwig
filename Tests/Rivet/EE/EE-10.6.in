@@ -13,8 +13,16 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1687566
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2002_I563840
 # CLEO Xi'_c production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I478217
+# CLEO Xi_c production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I404590
+# CLEO Xi_c1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I501417
 # CLEO D_s1 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1993_I352823
+# ARGUS D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I282570
+# BABAR D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I892421
 # CLEO Lambda_c* production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I381696
 # ARGUS Lambda_c* production
@@ -24,3 +32,13 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I357132
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I397770
 # CLEO Xi_c*+ production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I416471
+# CLEO D_1+, D_2+ production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I378319
+# CLEO D_10, D_20 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I372349
+# ARGUS D_s2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1995_I397794
+# CLEO Sigma_c*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I424575
+# CLEO Lambda_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I298611
