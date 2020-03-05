@@ -23,6 +23,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1993_I352823
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I282570
 # BABAR D_s1 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I892421
+# BELLE D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I762013
 # CLEO Lambda_c* production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I381696
 # ARGUS Lambda_c* production

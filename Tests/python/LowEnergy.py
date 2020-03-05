@@ -282,7 +282,8 @@ analyses["DD"]["BESIII_2018_I1633425"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1685535"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2011_I878228"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 analyses["DD"]["BABAR_2010_I864027"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
-analyses["DD"]["BABAR_2009_I815035"  ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d02-x01-y01"]
+analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d02-x01-y01"]
+analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
 # BB
 analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
@@ -311,8 +312,12 @@ if(opts.plot) :
     for process in processes:
         for analysis in analyses[process] :
             if(analysis=="CMD3_2019_I1770428") :
-                output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
-                output+= " -m/%s/%s" % (analysis,"d02-x01-y02")
+                for iy in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y0%s"%iy)
+            if(analysis=="BES_1999_I508349") :
+                for ix in range(2,4) :
+                    for iy in range(1,3) :
+                        output+= " -m/%s/%s" % (analysis,"d0%s-x01-y0%s"%(ix,iy))
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print output
