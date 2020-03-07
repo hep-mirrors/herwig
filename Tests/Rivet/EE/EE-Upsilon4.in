@@ -63,3 +63,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714448
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I442910
 # CLEO baryon spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1992_I315181
+# BABAR Omega_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
+# BABAR Xi'_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622

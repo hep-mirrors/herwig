@@ -28,7 +28,8 @@ for runType in ["NonPerturbative","Perturbative"]:
         for hpath,histo in aos.iteritems():
             if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
             if(len(opts.plots)>0 and hpath not in opts.plots) : continue
-            if(type(histo)==yoda.core.Histo1D) :
+            if(type(histo)==yoda.core.Histo1D or
+               (type(histo)==yoda.core.Scatter2D and hpath=="/BESIII_2019_I1726357/d03-x01-y01") ) :
                 if( "CMD3_2019_I1770428" in hpath ) :
                     val=0.
                     for key in cmd3_weights.keys() :

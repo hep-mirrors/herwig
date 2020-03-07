@@ -133,6 +133,8 @@ analyses["EtaPhi"]["CMD3_2019_I1740541"  ] = ["d01-x01-y06","d02-x01-y06","d03-x
 analyses["EtaPhi"]["CMD3_2017_I1606078"  ] = ["d01-x01-y01"]
 analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
 analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
+analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
+analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
 # Eta Omega
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
@@ -295,6 +297,7 @@ analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
+analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
 allProcesses=False
@@ -314,10 +317,13 @@ if(opts.plot) :
             if(analysis=="CMD3_2019_I1770428") :
                 for iy in range(1,3) :
                     output+= " -m/%s/%s" % (analysis,"d02-x01-y0%s"%iy)
-            if(analysis=="BES_1999_I508349") :
+            elif(analysis=="BES_1999_I508349") :
                 for ix in range(2,4) :
                     for iy in range(1,3) :
                         output+= " -m/%s/%s" % (analysis,"d0%s-x01-y0%s"%(ix,iy))
+            elif(analysis=="BESIII_2019_I1726357") :
+                for ix in range(2,4) :
+                    output+= " -m/%s/%s" % (analysis,"d0%s-x01-y01"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print output

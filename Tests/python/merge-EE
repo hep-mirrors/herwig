@@ -224,9 +224,9 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
         elif("ARGUS_1992_I319102" in aopath) :
-            if("d02" in aopath and sqrts==10.47) :
+            if(("d02" in aopath or "d04" in aopath) and sqrts==10.47) :
                 outhistos[aopath] = ao
-            elif("d03"in aopath and sqrts=="U4") :
+            elif(("d03"in aopath or "d05" in aopath) and sqrts=="U4") :
                 outhistos[aopath] = ao
         elif("MC_OmegaPhia1_3Pion_Decay" in aopath) :
             if("_1" in aopath and "Omega" in file) :
@@ -238,6 +238,28 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif("d01" in aopath and "Xi" in file) :
                 outhistos[aopath] = ao
+        elif(aopath=="/BABAR_2007_I746745/d01-x01-y01") :
+            htemp = aos["/RAW/BABAR_2007_I746745/d01-x01-y01"]
+            htemp.scaleW(aos["/_XSEC"].points()[0].x()/aos["/_EVTCOUNT"].val())
+            htemp.setPath("/BABAR_2007_I746745/d01-x01-y01")
+            if "/BABAR_2007_I746745/d01-x01-y01" in outhistos :
+                htemp2=htemp+outhistos["/BABAR_2007_I746745/d01-x01-y01"]
+                htemp2.setPath("/BABAR_2007_I746745/d01-x01-y01")
+                outhistos["/BABAR_2007_I746745/d01-x01-y01"]=htemp2
+            else :
+                outhistos["/BABAR_2007_I746745/d01-x01-y01"]=htemp
+        elif(aopath=="/BABAR_2007_I722622/d03-x01-y01" or
+             aopath=="/BABAR_2007_I722622/d03-x01-y02" or
+             aopath=="/BABAR_2007_I722622/d04-x01-y01") :
+            htemp = aos["/RAW"+aopath]
+            htemp.scaleW(aos["/_XSEC"].points()[0].x()/aos["/_EVTCOUNT"].val())
+            htemp.setPath(aopath)
+            if aopath in outhistos :
+                htemp2=htemp+outhistos[aopath]
+                htemp2.setPath(aopath)
+                outhistos[aopath]=htemp2
+            else :
+                outhistos[aopath]=htemp
         else:
             outhistos[aopath] = ao
 
@@ -1149,6 +1171,10 @@ useOne("/ARGUS_1988_I251097/d09-x01-y01","10.00")
 
 useOne("/ARGUS_1989_I262415/d03-x01-y01","U1")
 useOne("/ARGUS_1989_I262415/d04-x01-y01","10.00")
+useOne("/ARGUS_1989_I262415/d01-x01-y01","U1")
+useOne("/ARGUS_1989_I262415/d01-x01-y02","10.00")
+useOne("/ARGUS_1989_I262415/d01-x02-y01","U1")
+useOne("/ARGUS_1989_I262415/d01-x02-y02","10.00")
 
 merge("/PLUTO_1981_I165122/d01-x01-y01")
 merge("/PLUTO_1981_I165122/d02-x01-y01")
@@ -1254,6 +1280,12 @@ for i in range(9,15) :
 for i in range(1,4) :
     useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
     useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
+# normalize where we have sum histos
+outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
+outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
+outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
+outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
+
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file

@@ -19,8 +19,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I404590
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I501417
 # CLEO D_s1 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1993_I352823
-# ARGUS D_s1 production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I282570
 # BABAR D_s1 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I892421
 # BELLE D_s1 production
@@ -44,3 +42,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1995_I397794
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I424575
 # CLEO Lambda_c
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I298611
+# BABAR Omega_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
+# BABAR Xi'_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
+# BABAR J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2001_I558091
