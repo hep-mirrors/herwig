@@ -220,11 +220,11 @@ makeanti D_1bar0 D_10
 create ThePEG::ParticleData D_1-
 setup D_1- -10413 D_1- 2.4234 0.025 0.125 0 -3 0 3 0 
 makeanti D_1- D_1+
-create ThePEG::ParticleData D_s1+
-setup D_s1+ 20433 D_s1+ 2.4589 3.82E-5 0.000382 0 3 0 3 0 
-create ThePEG::ParticleData D_s1-
-setup D_s1- -20433 D_s1- 2.4589 3.82E-5 0.000382 0 -3 0 3 0 
-makeanti D_s1- D_s1+
+create ThePEG::ParticleData D'_s1+
+setup D'_s1+ 20433 D'_s1+ 2.4589 3.82E-5 0.000382 0 3 0 3 0 
+create ThePEG::ParticleData D'_s1-
+setup D'_s1- -20433 D'_s1- 2.4589 3.82E-5 0.000382 0 -3 0 3 0 
+makeanti D'_s1- D'_s1+
 create ThePEG::ParticleData B_10
 setup B_10 10513 B_10 5.7206 0.01 0.1 0 0 0 3 0 
 create ThePEG::ParticleData B_1+
@@ -383,11 +383,11 @@ setup D'_1- -20413 D'_1- 2.438 0.329 0.454 0 -3 0 3 0
 makeanti D'_1- D'_1+
 newdef D'_1-:WidthLoCut 0.25
 newdef D'_1-:WidthUpCut 0.658
-create ThePEG::ParticleData D'_s1+
-setup D'_s1+ 10433 D'_s1+ 2.53535 0.0013 0.013 0 3 0 3 0 
-create ThePEG::ParticleData D'_s1-
-setup D'_s1- -10433 D'_s1- 2.53535 0.0013 0.013 0 -3 0 3 0 
-makeanti D'_s1- D'_s1+
+create ThePEG::ParticleData D_s1+
+setup D_s1+ 10433 D_s1+ 2.53535 0.0013 0.013 0 3 0 3 0 
+create ThePEG::ParticleData D_s1-
+setup D_s1- -10433 D_s1- 2.53535 0.0013 0.013 0 -3 0 3 0 
+makeanti D_s1- D_s1+
 create ThePEG::ParticleData B'_10
 setup B'_10 20513 B'_10 5.762 0.13 0.26 0 0 0 3 0 
 create ThePEG::ParticleData B'_1+
