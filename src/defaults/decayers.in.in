@@ -5974,12 +5974,12 @@ newdef PVectorVP:OutgoingVector 6 22
 newdef PVectorVP:OutgoingPScalar 6 211
 newdef PVectorVP:Coupling 6 0.195
 newdef PVectorVP:MaxWeight 6 1.58726
-newdef PVectorVP:Incoming 7 20433
+newdef PVectorVP:Incoming 7 10433
 newdef PVectorVP:OutgoingVector 7 413
 newdef PVectorVP:OutgoingPScalar 7 311
 newdef PVectorVP:Coupling 7 0.161
 newdef PVectorVP:MaxWeight 7 2.09271
-newdef PVectorVP:Incoming 8 20433
+newdef PVectorVP:Incoming 8 10433
 newdef PVectorVP:OutgoingVector 8 423
 newdef PVectorVP:OutgoingPScalar 8 321
 newdef PVectorVP:Coupling 8 0.161
@@ -6174,12 +6174,12 @@ newdef PVectorVP:OutgoingVector 46 513
 newdef PVectorVP:OutgoingPScalar 46 111
 newdef PVectorVP:Coupling 46 0.314
 newdef PVectorVP:MaxWeight 46 1.59793
-newdef PVectorVP:Incoming 47 10433
+newdef PVectorVP:Incoming 47 20433
 newdef PVectorVP:OutgoingVector 47 433
 newdef PVectorVP:OutgoingPScalar 47 111
 newdef PVectorVP:Coupling 47 0.022
 newdef PVectorVP:MaxWeight 47 1.6163
-newdef PVectorVP:Incoming 48 10433
+newdef PVectorVP:Incoming 48 20433
 newdef PVectorVP:OutgoingVector 48 22
 newdef PVectorVP:OutgoingPScalar 48 431
 newdef PVectorVP:Coupling 48 0.0587
@@ -15329,7 +15329,7 @@ newdef BottomBaryonVectorCurrent:ID 14 443
 newdef BottomBaryonVectorCurrent:Decay_Constant 14 1.223
 newdef BottomBaryonVectorCurrent:ID 15 100443
 newdef BottomBaryonVectorCurrent:Decay_Constant 15 1.08
-newdef BottomBaryonVectorCurrent:ID 16 10433
+newdef BottomBaryonVectorCurrent:ID 16 20433
 newdef BottomBaryonVectorCurrent:Decay_Constant 16 0.397
 newdef BottomBaryonVectorCurrent:Quark 0  2
 newdef BottomBaryonVectorCurrent:AntiQuark 0  -1
@@ -16877,7 +16877,7 @@ newdef Tau1VectorCurrent:ID 14 443
 newdef Tau1VectorCurrent:Decay_Constant 14 1.223
 newdef Tau1VectorCurrent:ID 15 100443
 newdef Tau1VectorCurrent:Decay_Constant 15 1.08
-newdef Tau1VectorCurrent:ID 16 10433
+newdef Tau1VectorCurrent:ID 16 20433
 newdef Tau1VectorCurrent:Decay_Constant 16 0.397
 newdef Tau1VectorCurrent:Quark 0  2
 newdef Tau1VectorCurrent:AntiQuark 0  -1
@@ -17509,7 +17509,7 @@ newdef WSBHadronicVectorCurrent:ID 14 443
 newdef WSBHadronicVectorCurrent:Decay_Constant 14 1.223
 newdef WSBHadronicVectorCurrent:ID 15 100443
 newdef WSBHadronicVectorCurrent:Decay_Constant 15 1.08
-newdef WSBHadronicVectorCurrent:ID 16 10433
+newdef WSBHadronicVectorCurrent:ID 16 20433
 newdef WSBHadronicVectorCurrent:Decay_Constant 16 0.397
 newdef WSBHadronicVectorCurrent:Quark 0  2
 newdef WSBHadronicVectorCurrent:AntiQuark 0  -1
@@ -21363,7 +21363,7 @@ newdef BcHadronicVectorCurrent:ID 14 443
 newdef BcHadronicVectorCurrent:Decay_Constant 14 1.256
 newdef BcHadronicVectorCurrent:ID 15 100443
 newdef BcHadronicVectorCurrent:Decay_Constant 15 1.08
-newdef BcHadronicVectorCurrent:ID 16 10433
+newdef BcHadronicVectorCurrent:ID 16 20433
 newdef BcHadronicVectorCurrent:Decay_Constant 16 0.397
 newdef BcHadronicVectorCurrent:Quark 0  2
 newdef BcHadronicVectorCurrent:AntiQuark 0  -1
