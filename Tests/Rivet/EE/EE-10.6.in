@@ -48,3 +48,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
 # BABAR J/Psi production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2001_I558091
+# BABAR D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184

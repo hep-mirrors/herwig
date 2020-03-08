@@ -238,6 +238,11 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif("d01" in aopath and "Xi" in file) :
                 outhistos[aopath] = ao
+        elif("BABAR_2002_I582184" in aopath) :
+            if(("d02" in aopath or "d05" in aopath ) and "Upsilon" in file) :
+                outhistos[aopath] = ao
+            elif( not ("d02" in aopath or "d05" in aopath ) and sqrts==10.6) :
+                outhistos[aopath] = ao
         elif(aopath=="/BABAR_2007_I746745/d01-x01-y01") :
             htemp = aos["/RAW/BABAR_2007_I746745/d01-x01-y01"]
             htemp.scaleW(aos["/_XSEC"].points()[0].x()/aos["/_EVTCOUNT"].val())

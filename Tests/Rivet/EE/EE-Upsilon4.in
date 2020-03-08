@@ -67,3 +67,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1992_I315181
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
 # BABAR Xi'_c spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
+# CLEO J/psi and psi(2s) in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I606309
+# BABAR eta' in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I642355
+# BELLE eta in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
+# BABAR D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
