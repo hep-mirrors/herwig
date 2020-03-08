@@ -23,7 +23,7 @@ analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      :
              "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
              "EtaPiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
              "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
-             "5Pi"          : {}, "LL"        : {} }
+             "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
 # pi+pi-
 analyses["PiPi"]["KLOE_2009_I797438"   ] = ["d02-x01-y01"]
 analyses["PiPi"]["KLOE_2005_I655225"   ] = ["d02-x01-y01"]
@@ -68,6 +68,7 @@ analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2015_I1358937"] = ["d01-x01-y05"]
 analyses['PPbar']["BABAR_2013_I1217421" ] = ["d01-x01-y01"]
+analyses['PPbar']["BABAR_2013_I1247058" ] = ["d01-x01-y01"]
 analyses['PPbar']["SND_2014_I1321689"   ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['PPbar']["CMD3_2016_I1385598"  ] = ["d01-x01-y06"]
 analyses['PPbar']["CLEOC_2005_I693873"  ] = ["d01-x01-y03"]
@@ -132,6 +133,8 @@ analyses["EtaPhi"]["CMD3_2019_I1740541"  ] = ["d01-x01-y06","d02-x01-y06","d03-x
 analyses["EtaPhi"]["CMD3_2017_I1606078"  ] = ["d01-x01-y01"]
 analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
 analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
+analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
+analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
 # Eta Omega
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
@@ -242,6 +245,8 @@ analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y1
                                         "d01-x01-y12","d01-x01-y13","d01-x01-y14",
                                          "d01-x01-y15","d01-x01-y16","d01-x01-y17","d01-x01-y18"]
 analyses['6m']["SND_2016_I1473343"  ] = ["d01-x01-y01"]
+# other baryon processes
+analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -271,6 +276,16 @@ analyses["DD"]["BESIII_2019_I1723934"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1756876"     ] = ["d01-x01-y09","d01-x01-y10"]
 analyses["DD"]["BABAR_2007_I729388"       ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2015_I1329785"     ] = ["d01-x01-y08","d02-x01-y08","d03-x01-y08"]
+analyses["DD"]["BESIII_2017_I1494065"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2017_I1596897"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2018_I1653121"     ] = ["d01-x01-y01","d01-x01-y02"]
+analyses["DD"]["BESIII_2020_I1762922"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2018_I1633425"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2018_I1685535"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BELLE_2011_I878228"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["DD"]["BABAR_2010_I864027"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d02-x01-y01"]
+analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
 # BB
 analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
@@ -282,6 +297,7 @@ analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
+analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
 allProcesses=False
@@ -299,8 +315,15 @@ if(opts.plot) :
     for process in processes:
         for analysis in analyses[process] :
             if(analysis=="CMD3_2019_I1770428") :
-                output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
-                output+= " -m/%s/%s" % (analysis,"d02-x01-y02")
+                for iy in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y0%s"%iy)
+            elif(analysis=="BES_1999_I508349") :
+                for ix in range(2,4) :
+                    for iy in range(1,3) :
+                        output+= " -m/%s/%s" % (analysis,"d0%s-x01-y0%s"%(ix,iy))
+            elif(analysis=="BESIII_2019_I1726357") :
+                for ix in range(2,4) :
+                    output+= " -m/%s/%s" % (analysis,"d0%s-x01-y01"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print output
