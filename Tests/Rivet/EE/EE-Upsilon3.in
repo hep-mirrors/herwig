@@ -12,3 +12,5 @@ set /Herwig/MatrixElements/MEUpsilon:Coupling 74.96836
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 # CLEO Upsilon 3S -> Upsilon pipi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I356001
+# CLEO chi_b(2S) 0,1,2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1992_I32611

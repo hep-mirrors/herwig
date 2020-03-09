@@ -1286,10 +1286,14 @@ for i in range(1,4) :
     useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
     useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
 # normalize where we have sum histos
-outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
-outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
-outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
-outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
+if("/BABAR_2007_I746745/d01-x01-y01" in outhistos) :
+    outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
+if("/BABAR_2007_I722622/d03-x01-y01" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
+if("/BABAR_2007_I722622/d03-x01-y02" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
+if("/BABAR_2007_I722622/d04-x01-y01" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
 
 # Choose output file
 name = args[0]+".yoda"
