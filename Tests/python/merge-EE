@@ -30,6 +30,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             step = 0.001
             if("TASSO_1980_I143691" in desthisto.path()) : step=0.3
             if("JADE_1979_I142874"  in desthisto.path()) : step=0.3
+            if("CLEO_1985_I205668"  in desthisto.path()) : step=0.05
             for i in range(0,h.numPoints()) :
                 xmin = min(h.points()[i].xMin(),h.points()[i].x()-step)
                 xmax = max(h.points()[i].xMax(),h.points()[i].x()+step)
@@ -194,7 +195,7 @@ for f in yodafiles:
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
            "LENA_1981_I164397"  in aopath or "ARGUS_1991_I315059" in aopath or
-           "TASSO_1989_I266893" in aopath or
+           "TASSO_1989_I266893" in aopath or "CLEO_1985_I205668" in aopath  or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
@@ -281,6 +282,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1422780")>0 or hpath.find("132410" )>0 or
         "OPAL_2000_I513476" in hpath or
         "JADE_1979_I142874" in hpath or
+        "CLEO_1985_I205668" in hpath or
         "LENA_1981_I164397" in hpath):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
@@ -1285,6 +1287,15 @@ for i in range(9,15) :
 for i in range(1,4) :
     useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
     useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
+
+for i in range(1,12) :
+    useOne("/CLEO_1985_I205668/d%02d-x01-y01" %i ,10.47)
+    useOne("/CLEO_1985_I205668/d%02d-x01-y02" %i , "U1")
+for i in range(12,24) :
+    merge("/CLEO_1985_I205668/d%02d-x01-y01" %i)
+
+
+    
 # normalize where we have sum histos
 if("/BABAR_2007_I746745/d01-x01-y01" in outhistos) :
     outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
