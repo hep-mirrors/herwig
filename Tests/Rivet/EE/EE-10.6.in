@@ -50,3 +50,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2001_I558091
 # BABAR D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
+# BABAR D_s 2317 and 2460 spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714447

@@ -25,6 +25,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
 # BES D -> K, pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371
 # multiplicities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
 # BES multiplicty in eta_c decays
@@ -33,8 +34,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
 # charm hadrons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
-# phi spectrum
+# phi spectrum (CLEO and BaBar)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I632399
 # D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 # # MC analyses based on old internal ones
@@ -49,8 +51,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
 # BABAR D0 -> K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
-# BES-III D0 -> pi semi-leptonic
+# BES-III D0/+ -> pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
+# BES-III D+ -> eta semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
 # BABAR e- spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
 # CLEO multiplicty in Upsilon(4S) decays
@@ -61,6 +65,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714448
 # CLEO Xi_c spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I442910
+# CLEO Sigma_c spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I361356
 # CLEO baryon spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1992_I315181
 # BABAR Omega_c spectra

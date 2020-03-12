@@ -137,7 +137,7 @@ if(opts.decay) :
     yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0",
-                  "Omegac0","Xim","JPsi","Psi2S"]
+                  "Omegac0","Xim","JPsi","Psi2S","Psi3770"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -159,6 +159,8 @@ for f in yodafiles:
         sqrts="psi"
     elif(file.find("Psi2S")>0) :
         sqrts="psi2s"
+    elif(file.find("Psi3770")>0) :
+        sqrts="psi1d"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
          file.find("Xim")>0 or
