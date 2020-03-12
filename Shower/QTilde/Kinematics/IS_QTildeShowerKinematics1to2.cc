@@ -212,25 +212,30 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
 
 void IS_QTildeShowerKinematics1to2::
 resetChildren(const tShowerParticlePtr parent, const ShowerParticleVector &) const {
+
   if(parent->children().size() == 2){
 
-    if(parent->children()[1]->children().size() ==2){
-      tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);    
-      ShowerParticleVector timelikeGrandChildren;
-      for(unsigned int iy=0;iy<timelikeChild->children().size();++iy)
-	timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
-					(timelikeChild->children()[iy]));
-      //timelike reset children
-      timelikeChild->showerKinematics()->resetChildren(timelikeChild, timelikeGrandChildren);
+    if(parent->children()[1]->children().size()==2){
+       tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);
+       ShowerParticleVector timelikeGrandChildren;
+       for(unsigned int iy=0;iy<parent->children()[1]->children().size();++iy)
+	 timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+       					 (parent->children()[1]->children()[iy]));
+       //timelike reset children
+       timelikeChild->showerKinematics()->resetChildren(timelikeChild, timelikeGrandChildren);
     }
     
-    if(parent->children()[0]->children().size() ==2){
-      tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
+    if(parent->children()[0]->children().size()==2){
+      const tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
+      //Check if its timelike child is a valid shower particle istance. If not, we end here the reshuffling.
+      tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(spacelikeChild->children()[1]);
+      if(timelikeChild){
       ShowerParticleVector dummyChildren;
       spacelikeChild->showerKinematics()->resetChildren(spacelikeChild, dummyChildren);
+      }
     }
-      
-    
+          
   }
   
 }
+	
