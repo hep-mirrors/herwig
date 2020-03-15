@@ -8,5 +8,9 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.7711
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-# CELO D lepton spectra
+# CLEO D lepton spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2009_I823313
+# CLEO D q2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I715096
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I769777
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
