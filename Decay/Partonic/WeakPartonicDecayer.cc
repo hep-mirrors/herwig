@@ -427,7 +427,7 @@ void WeakPartonicDecayer::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<WeakPartonicDecayer,PartonicDecayerBase>
-describeHerwigWeakPartonicDecayer("Herwig::WeakPartonicDecayer", "HwPartonicDecay.so");
+describeHerwigWeakPartonicDecayer("Herwig::WeakPartonicDecayer", "HwShower.so HwPartonicDecay.so");
 
 void WeakPartonicDecayer::Init() {
 

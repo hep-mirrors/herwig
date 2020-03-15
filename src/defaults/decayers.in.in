@@ -11619,7 +11619,11 @@ newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter
 newdef  QDecayME0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
 newdef  QDecayME0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
-newdef  QDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
+newdef  QDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer
+newdef  QDecayME0:PartnerFinder      /Herwig/Shower/PartnerFinder
+newdef  QDecayME0:SplittingGenerator /Herwig/Shower/SplittingGenerator
+newdef  QDecayME0:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+newdef  QDecayME0:Shower Yes
 newdef  QDecayME0:Exclusive 1 
 newdef  QDecayME0:Intermediates 0 
 newdef  QDecayME0:Partonic_Tries 100 
@@ -11632,6 +11636,10 @@ newdef  QDecayME130:ClusterFinder /Herwig/Hadronization/ClusterFinder
 newdef  QDecayME130:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME130:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  QDecayME130:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
+newdef  QDecayME130:PartnerFinder      /Herwig/Shower/PartnerFinder
+newdef  QDecayME130:SplittingGenerator /Herwig/Shower/SplittingGenerator
+newdef  QDecayME130:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+newdef  QDecayME130:Shower Yes
 newdef  QDecayME130:Exclusive 1 
 newdef  QDecayME130:Intermediates 0 
 newdef  QDecayME130:Partonic_Tries 100 
