@@ -328,12 +328,23 @@ PVector PartonicDecayerBase::shower(const Particle & parent,
       p->initializeFinalState();
       timeLikeShower(p,Branching(),true,output);
     }
+    // check if in CMF frame
+    Boost beta_cm = parent.momentum().findBoostToCM();
+    bool gottaBoost(false);
+    LorentzRotation trans = LorentzRotation();
+    if(beta_cm.mag() > 1e-12) {
+      gottaBoost = true;
+      trans.boost(beta_cm);
+    }
     bool radiated(false);
     vector<JetKinStruct> jetKinematics;
     for(unsigned int ix=0;ix<particles.size();++ix) {
       JetKinStruct tempJetKin;      
       tempJetKin.parent = particles[ix];
-      tempJetKin.p = partons[ix]->momentum();
+      if(gottaBoost) {
+	_reconstructor->deepTransform(tempJetKin.parent,trans);
+      }
+      tempJetKin.p = particles[ix]->momentum();
       radiated |= _reconstructor->reconstructTimeLikeJet(particles[ix],particles[ix]);
       tempJetKin.q = particles[ix]->momentum();
       jetKinematics.push_back(tempJetKin);
@@ -346,6 +357,12 @@ PVector PartonicDecayerBase::shower(const Particle & parent,
       for(const JetKinStruct & jet : jetKinematics) {
 	LorentzRotation Trafo = _reconstructor->solveBoost(k, jet.q, jet.p);
 	_reconstructor->deepTransform(jet.parent,Trafo);
+      }
+    }
+    if(gottaBoost) {
+      LorentzRotation rinv = trans.inverse();
+      for(const JetKinStruct & jet : jetKinematics) {
+	_reconstructor->deepTransform(jet.parent,rinv);
       }
     }
     // add shower particles as children
