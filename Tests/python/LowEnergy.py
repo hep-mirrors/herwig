@@ -63,6 +63,7 @@ analyses['KK']["CMD2_2008_I782516"   ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['KK']["ND_1991_I321108"     ] = ["d12-x01-y01","d13-x01-y01"]
 analyses['KK']["OLYA_1981_I173076"   ] = ["d01-x01-y01"]
 analyses['KK']["SND_2016_I1484677"   ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['KK']["BABAR_2020_I1769654" ] = ["d01-x01-y01"]
 # proton-antiproton
 analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
