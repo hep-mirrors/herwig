@@ -213,6 +213,8 @@ analyses["2K2Pi"]["BABAR_2017_I1511276" ] = ["d03-x01-y01","d04-x01-y01"]
 analyses["2K2Pi"]["BABAR_2017_I1591716" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['2K2Pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
 analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
+analyses['2K2Pi']["BESIII_2020_I1775344"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+                                             "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
 # 4K
 analyses["4K"]["BESIII_2019_I1743841"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BABAR_2005_I676691"  ] = ["d03-x01-y01"]
@@ -245,7 +247,8 @@ analyses["6m"]["MARKI_1975_I100592" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y11",
                                         "d01-x01-y12","d01-x01-y13","d01-x01-y14",
                                          "d01-x01-y15","d01-x01-y16","d01-x01-y17","d01-x01-y18"]
-analyses['6m']["SND_2016_I1473343"  ] = ["d01-x01-y01"]
+analyses['6m']["SND_2016_I1473343"   ] = ["d01-x01-y01"]
+analyses['6m']["BESIII_2020_I1788734"] = ["d01-x01-y01"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
@@ -325,6 +328,10 @@ if(opts.plot) :
             elif(analysis=="BESIII_2019_I1726357") :
                 for ix in range(2,4) :
                     output+= " -m/%s/%s" % (analysis,"d0%s-x01-y01"% ix)
+            elif(analysis=="BESIII_2020_I1775344") :
+                for ix in range(1,6) :
+                    output+= " -m/%s/%s" % (analysis,"d07-x01-y0%s"% ix)
+                    output+= " -m/%s/%s" % (analysis,"d08-x01-y0%s"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print output

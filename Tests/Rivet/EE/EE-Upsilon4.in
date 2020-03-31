@@ -81,3 +81,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I642355
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
 # BABAR D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
+# BELLE charm hadron producion
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014

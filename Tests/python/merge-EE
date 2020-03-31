@@ -149,6 +149,8 @@ for f in yodafiles:
         sqrts="U4"
     elif(file.find("Upsilon2")>0) :
         sqrts="U2"
+    elif(file.find("Upsilon3")>0) :
+        sqrts="U3"
     elif(file.find("Upsilon")>0) :
         sqrts="U1"
     elif(file.find("Phi")>0) :
@@ -196,8 +198,9 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
-           "LENA_1981_I164397"  in aopath or "ARGUS_1991_I315059" in aopath or
-           "TASSO_1989_I266893" in aopath or "CLEO_1985_I205668" in aopath  or
+           "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
+           "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
+           "BABAR_2014_I1286317" in aopath or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
@@ -282,10 +285,11 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
         hpath.find("1422780")>0 or hpath.find("132410" )>0 or
-        "OPAL_2000_I513476" in hpath or
-        "JADE_1979_I142874" in hpath or
-        "CLEO_1985_I205668" in hpath or
-        "LENA_1981_I164397" in hpath):
+        "OPAL_2000_I513476"   in hpath or
+        "JADE_1979_I142874"   in hpath or
+        "CLEO_1985_I205668"   in hpath or
+        "BABAR_2014_I1286317" in hpath or
+        "LENA_1981_I164397"   in hpath):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
@@ -1296,10 +1300,21 @@ for i in range(1,12) :
 for i in range(12,24) :
     merge("/CLEO_1985_I205668/d%02d-x01-y01" %i)
 
+useOne("/BABAR_2014_I1286317/d01-x01-y01", "U3")
+useOne("/BABAR_2014_I1286317/d02-x01-y01", "U2")
+useOne("/BABAR_2014_I1286317/d03-x01-y01", "U1")
+useOne("/BABAR_2014_I1286317/d06-x01-y01", "U3")
+useOne("/BABAR_2014_I1286317/d06-x02-y01", "U2")
+useOne("/BABAR_2014_I1286317/d06-x03-y01", "U1")
 
+useOne("/BABAR_2014_I1286317/d04-x01-y01", "10.6")
+useOne("/BABAR_2014_I1286317/d05-x01-y01", "10.6")
+useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
+    
     
 # normalize where we have sum histos
-if("/BABAR_2007_I746745/d01-x01-y01" in outhistos) :
+if("/BABAR_2007_I746745/d01-x01-y01" in outhistos and
+   outhistos["/BABAR_2007_I746745/d01-x01-y01"].effNumEntries()!=0.) :
     outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
 if("/BABAR_2007_I722622/d03-x01-y01" in outhistos) :
     outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()

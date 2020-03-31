@@ -14,3 +14,6 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I356001
 # CLEO chi_b(2S) 0,1,2
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1992_I32611
+# BABAR anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
+

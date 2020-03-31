@@ -16,3 +16,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I769777
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
 # CLEO eta, eta' phi spectra in D decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I728043
+# CLEO D0 -> eta pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I779705

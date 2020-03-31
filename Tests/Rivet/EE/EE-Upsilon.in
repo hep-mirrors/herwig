@@ -35,3 +35,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I205668
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932
 # ARGUS anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I283027
+# BABAR anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
