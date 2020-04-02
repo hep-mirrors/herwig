@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import yoda,glob,math,optparse
+import subprocess,os
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("-m"         , dest="plots"       , default=[], action="append")
 
@@ -91,16 +92,31 @@ for runType in ["NonPerturbative","Perturbative"]:
                         outhistos[hpath].addPoint(aos[hpath].points()[i])
                     break
     if len(outhistos) == 0: continue
+    p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
+    path=p.communicate()[0].strip()
     for val in outhistos.keys() :
         if type(outhistos[val]) is yoda.core.Scatter2D :
-            if(outhistos[val].numPoints()==0) : del outhistos[val]
+            if(outhistos[val].numPoints()==0) :
+                del outhistos[val]
+                continue
+            analysis = val.split("/")[1]
+            aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
+            ref = aos["/REF"+val]
+            for point in ref.points() :
+                matched=False
+                for point2 in outhistos[val].points() :
+                    if(point2.x()==point.x()) :
+                        matched=True
+                        break
+                if(matched) : continue
+                outhistos[val].addPoint(point.x(),0,point.xErrs(),(0.,0.))
         elif (type(outhistos[val]) is yoda.core.Histo1D or
               type(outhistos[val]) is yoda.core.Profile1D) :
-            if(outhistos[val].numBins()==0) : del outhistos[val]
+            if(outhistos[val].numBins()==0) :
+                del outhistos[val]
+                continue
         else :
-            print  type(outhistos[val]) 
-
-
+            print  type(outhistos[val])
     
     yoda.writeYODA(outhistos,"LowEnergy-EE-%s-%s.yoda" % (runType,args[0]))
 

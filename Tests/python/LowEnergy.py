@@ -41,6 +41,7 @@ analyses["PiPi"]["CMD2_1999_I498859"   ] = ["d01-x01-y01"]
 analyses['PiPi']["CLEOC_2005_I693873"  ] = ["d01-x01-y01"]
 analyses['PiPi']["ND_1991_I321108"     ] = ["d11-x01-y01"]
 analyses['PiPi']["OLYA_1984_I208231"   ] = ["d01-x01-y01"]
+analyses['PiPi']["SND_2020_I1789269"   ] = ["d01-x01-y04"]
 # K+K- and K_S^0 K_L^0
 analyses['KK']["BESIII_2018_I1704558"] = ["d01-x01-y01"]
 analyses['KK']["BABAR_2013_I1238807" ] = ["d01-x01-y01"]
