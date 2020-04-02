@@ -14,6 +14,7 @@ op.add_option("--perturbative"    , dest="perturbative"    , default=False, acti
 op.add_option("--dest"            , dest="dest"            , default="Rivet")
 op.add_option("--list"            , dest="list"            , default=False, action="store_true")
 op.add_option("--max-energy"      , dest="maxEnergy"       , default=11.5, type="float", action="store")
+op.add_option("--min-energy"      , dest="minEnergy"       , default=0.7 , type="float", action="store")
 op.add_option("--plots"           , dest="plot"           , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
@@ -92,6 +93,7 @@ analyses["FENICE_1996_I426675"]=["d01-x01-y01"]
 analyses["PLUTO_1981_I165122"]=["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["KEDR_2019_I1673357"]=["d01-x01-y01","d01-x01-y02"]
 analyses["BELLE_2011_I878228"] = ["d02-x01-y01"]
+analyses["PDG_R"] = ["d01-x01-y01"]
 # list analyses if needed
 if(opts.list) :
     print " ".join(analyses.keys())
@@ -177,7 +179,7 @@ for energy in sorted(energies) :
         maxflavour=3
     elif(energy<thresholds[1]) :
         maxflavour=4
-    if(opts.perturbative) :
+    if(opts.perturbative and energy >= opts.minEnergy) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
                                                      "lepton" : lepton_me, 'maxflavour' : maxflavour})
         with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:

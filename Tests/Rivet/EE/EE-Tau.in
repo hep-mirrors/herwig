@@ -31,6 +31,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1999_I508944
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I415409
 # CLEO 3pi- 2pi+ pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I373188
+# BELLE phi K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I725750
 # MC dists
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TAU_Decay
 
