@@ -15,11 +15,15 @@ Herwig News							 -*- outline -*-
 
 ** support for generic Lorentz structures in BSM models.
 
+* Herwig 7.1.7 release: 2019-12-11
+
+** vertex position fix for taus in dipole shower events
+
 * Herwig 7.1.6 release: 2019-12-11
 
 ** fix if no W in top in external events
 
-** vertex position fix for dip[ole shower events
+** vertex position fix for dipole shower events
 
 ** update boost m4
 

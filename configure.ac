@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([Herwig],[7.2.0],[herwig@projects.hepforge.org],[Herwig])
+AC_INIT([Herwig],[7.2.1],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
