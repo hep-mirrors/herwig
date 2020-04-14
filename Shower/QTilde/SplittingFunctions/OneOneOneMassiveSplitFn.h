@@ -24,7 +24,7 @@ using namespace ThePEG;
  * splitting function for \f$1\to 11\f$ where the emitting particle is massi e
  *
  * In this case the splitting function is given by
- * \f[P(z) =2C\left( \frac{z}{1-z}-\frac{m^2}{q^2-m^2}) +2\rho_{00]\frac{(1-z)^2m^2}{q^2-m^2} + (1-\rho_{00})\left(\frac{1-z}{z}+z(1-z)-\frac{(1-z)^2m^2}{q^2-m^2}\right)\right),\f]
+ * \f[P(z) =2C\left( \frac{z}{1-z}-\frac{m^2}{q^2-m^2} +2\rho_{00}\frac{(1-z)^2m^2}{q^2-m^2} + (1-\rho_{00})\left(\frac{1-z}{z}+z(1-z)-\frac{(1-z)^2m^2}{q^2-m^2}\right)\right),\f]
  * where \f$C=\f$ is the corresponding colour factor.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = 2C\left(\frac1z+\frac1{1-z}\right),\f]

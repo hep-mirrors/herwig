@@ -1452,6 +1452,16 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     outSubPro->setVertex(LorentzPoint());
     outParton->setLifeLength(Lorentz5Distance());
     outParton->setVertex(LorentzPoint());
+    // fix for displacemet of onstable particles
+    Energy width = outParton->dataPtr()->generateWidth(outParton->mass());
+    if ( width > ZERO ) {
+      Time lifetime = outParton->dataPtr()->generateLifeTime(outParton->mass(), width);
+      Lorentz5Distance lLength;
+      lLength.setTau(lifetime);
+      lLength.setVect(outParton->momentum().vect()*(lifetime / max(outParton->mass(), Constants::epsilon*GeV)));
+      lLength.rescaleEnergy();
+      outParton->setLifeLength(lLength);
+    }
     // workaround for OS X Mavericks LLVM libc++
 #ifdef _LIBCPP_VERSION
     map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
