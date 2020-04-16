@@ -140,7 +140,7 @@ newdef K*bar0:WidthUpCut 0.503
 create ThePEG::ParticleData D*0
 setup D*0 423 D*0 2.0067 6.8E-5 0.00068 0 0 0 3 0 
 create ThePEG::ParticleData D*+
-setup D*+ 413 D*+ 2.01 9.6E-5 0.00096 0 3 0 3 0 
+setup D*+ 413 D*+ 2.01 8.34E-5 0.000834 0 3 0 3 0 
 create ThePEG::ParticleData D*bar0
 setup D*bar0 -423 D*bar0 2.0067 6.8E-5 0.00068 0 0 0 3 0 
 makeanti D*bar0 D*0

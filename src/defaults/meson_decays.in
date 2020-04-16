@@ -490,18 +490,18 @@ decaymode K*bar0->K-,pi+; 0.665127 1 /Herwig/Decays/Vector2Meson
 decaymode K*bar0->Kbar0,pi0; 0.332563 1 /Herwig/Decays/Vector2Meson
 decaymode K*bar0->Kbar0,gamma; 0.00231 1 /Herwig/Decays/VectorVP
 #
-decaymode D*0->D0,pi0; 0.619 1 /Herwig/Decays/Vector2Meson
+decaymode D*0->D0,pi0; 0.619 1 /Herwig/Decays/HQETMeson
 decaymode D*0->D0,gamma; 0.381 1 /Herwig/Decays/VectorVP
 #
-decaymode D*+->D0,pi+; 0.677 1 /Herwig/Decays/Vector2Meson
-decaymode D*+->D+,pi0; 0.307 1 /Herwig/Decays/Vector2Meson
+decaymode D*+->D0,pi+; 0.677 1 /Herwig/Decays/HQETMeson
+decaymode D*+->D+,pi0; 0.307 1 /Herwig/Decays/HQETMeson
 decaymode D*+->D+,gamma; 0.016 1 /Herwig/Decays/VectorVP
 #
-decaymode D*bar0->Dbar0,pi0; 0.619 1 /Herwig/Decays/Vector2Meson
+decaymode D*bar0->Dbar0,pi0; 0.619 1 /Herwig/Decays/HQETMeson
 decaymode D*bar0->Dbar0,gamma; 0.381 1 /Herwig/Decays/VectorVP
 #
-decaymode D*-->Dbar0,pi-; 0.677 1 /Herwig/Decays/Vector2Meson
-decaymode D*-->D-,pi0; 0.307 1 /Herwig/Decays/Vector2Meson
+decaymode D*-->Dbar0,pi-; 0.677 1 /Herwig/Decays/HQETMeson
+decaymode D*-->D-,pi0; 0.307 1 /Herwig/Decays/HQETMeson
 decaymode D*-->D-,gamma; 0.016 1 /Herwig/Decays/VectorVP
 #
 decaymode D_s*+->D_s+,pi0; 0.942 1 /Herwig/Decays/Vector2Meson

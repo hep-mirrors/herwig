@@ -12,6 +12,7 @@ library HwFormFactors.so
 library HwSMDecay.so
 library HwVMDecay.so
 library HwTMDecay.so
+library HwHMDecay.so
 library HwMamboDecay.so
 library HwPerturbativeDecay.so
 library HwBaryonDecay.so
@@ -23863,5 +23864,8 @@ newdef RadiativeHyperon:Iteration 1
 newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
+
+create Herwig::HQETStrongDecayer HQETMeson
+newdef HQETMeson:Initialize 1
 
 @LOAD_EVTGEN_DECAYER@

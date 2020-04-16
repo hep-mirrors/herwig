@@ -142,6 +142,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Baryon/Makefile
 		Decay/VectorMeson/Makefile
 		Decay/Perturbative/Makefile
+		Decay/HeavyMeson/Makefile
 		Decay/ScalarMeson/Makefile
 		Decay/TensorMeson/Makefile
 		Decay/WeakCurrents/Makefile
