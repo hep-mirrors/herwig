@@ -20,12 +20,12 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565),
-    incoming_ ({413,413,423}),
-    outgoingH_({421,411,421}),
-    outgoingL_({211,111,111}),
-    type_     ({  0,  0,  0}),
-    maxWeight_({ 1., 1., 1.})
+  : fPi_(130.2*MeV), g_(0.565), deltaEta_(1./43.7),
+    incoming_ ({413,413,423,433}),
+    outgoingH_({421,411,421,431}),
+    outgoingL_({211,111,111,111}),
+    type_     ({  1,  1,  1, -1}),
+    maxWeight_({ 1., 1., 1., 1.})
 {}
 
 void HQETStrongDecayer::doinit() {
@@ -68,11 +68,11 @@ IBPtr HQETStrongDecayer::fullclone() const {
 }
 
 void HQETStrongDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(fPi_,MeV) << g_ << maxWeight_;
+  os << ounit(fPi_,MeV) << g_ << deltaEta_ << maxWeight_;
 }
 
 void HQETStrongDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(fPi_,MeV) >> g_ >> maxWeight_;
+  is >> iunit(fPi_,MeV) >> g_ >> deltaEta_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -102,11 +102,16 @@ void HQETStrongDecayer::Init() {
      "The maximum weight for the decay mode",
      &HQETStrongDecayer::maxWeight_,
      0, 0, 0, 0., 100000., false, false, true);
-
+  
+  static Parameter<HQETStrongDecayer,double> interfaceDeltaEta
+    ("DeltaEta",
+     "The mixing parameter for eta-pi0 of isospin violating decays",
+     &HQETStrongDecayer::deltaEta_, 1./43.7, 0.0, 1.,
+     false, false, Interface::limited);
 }
 
 int HQETStrongDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const tPDVector & children) const {
+				  const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;
@@ -158,31 +163,36 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 // matrix elememt for the process
-double HQETStrongDecayer::me2(const int imode,const Particle & part,
+double HQETStrongDecayer::me2(const int, const Particle & part,
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
 			      MEOption meopt) const {
   if(!ME()) {
-    if(type_[imode]==0) {
+    if(abs(type_[imode()])==1) {
       ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));
     }
   }
   // stuff for incoming particle
   if(meopt==Initialize) {
-    if(type_[imode]==0) {
+    if(abs(type_[imode()])==1) {
       rho_ = RhoDMatrix(PDT::Spin1);
       Helicity::VectorWaveFunction::calculateWaveFunctions(vecIn_,rho_,const_ptr_cast<tPPtr>(&part),
 							   Helicity::incoming,false);
     }
-    else
+    else {
+      cerr << part << "\n";
+      cerr << "testing " << imode() << " " << type_[imode()] << "\n";
       assert(false);
+    }
   }
   double output(0.);
   // calculate the matrix element
   // 1- to 0-
-  if(type_[imode]==0) {
+  if(abs(type_[imode()])==1) {
     InvEnergy fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
-    if(abs(outgoing[1]->id())==111) fact *=sqrt(0.5);
+    if(abs(outgoing[1]->id())==111) {
+      fact *= type_[imode()]>0 ? sqrt(0.5) : 0.5*deltaEta_*sqrt(0.5) ;
+    }
     for(unsigned int ix=0;ix<3;++ix) { 
       (*ME())(ix,0,0) = fact*(vecIn_[ix]*momenta[1]);
     }
@@ -191,7 +201,9 @@ double HQETStrongDecayer::me2(const int imode,const Particle & part,
     Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
 					       momenta[1].mass());
     double test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
-    if(abs(outgoing[1]->id())==111) test *=0.5;
+    if(abs(outgoing[1]->id())==111) {
+      test *= type_[imode()]>0 ? sqrt(0.5) : 0.5*deltaEta_*sqrt(0.5) ;
+    }
     double ratio = (output-test)/(output+test);
     generator()->log() << "testing matrix element for " << part.PDGName() << " -> " 
 		       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 

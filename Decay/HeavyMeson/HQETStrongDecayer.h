@@ -158,6 +158,11 @@ private:
    *  Coupling for decays within the \f$(0^-,1^-)\f$ multiplet
    */
   double g_;
+
+  /**
+   *   \f$\eta-\pi^0$ mixing for isospin violating decays
+   */
+  double deltaEta_;
   //@}
 
   /**
@@ -182,7 +187,7 @@ private:
   /**
    *  Type of decay
    */
-  vector<unsigned int> type_;
+  vector<int> type_;
 
   /**
    * the maximum weight for the decay
