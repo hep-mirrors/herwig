@@ -202,7 +202,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
 					       momenta[1].mass());
     double test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
     if(abs(outgoing[1]->id())==111) {
-      test *= type_[imode()]>0 ? sqrt(0.5) : 0.5*deltaEta_*sqrt(0.5) ;
+      test *= type_[imode()]>0 ? 0.5 : 0.125*sqr(deltaEta_) ;
     }
     double ratio = (output-test)/(output+test);
     generator()->log() << "testing matrix element for " << part.PDGName() << " -> " 
