@@ -252,45 +252,32 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   // HeavyTensorMeson to PScalarMeson + PScalarMeson
   else if(abs(type_[imode()])==2) {
     fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass());
-    if(abs(outgoing[1]->id())==111) {
-      fact *= sqrt(0.5); // ??
-    }
     for(unsigned int ix=0;ix<5;++ix) {
       (*ME())(ix,0,0) = (fact/Lambda_)*((tensorIn_[ix]*momenta[1])*momenta[0]);
     }
     // analytic test of the answer
-    test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/10./sqr(fPi_)/sqr(Lambda_)/part.mass();
-    if(abs(outgoing[1]->id())==111) {
-      test *= sqrt(0.5);
-    }
+    test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/15./sqr(fPi_)/sqr(Lambda_)/part.mass();
   }
   // HeavyTensorMeson to VectorMeson + PScalarMeson
   else if(abs(type_[imode()])==3) {
     //get the polarization vectors
-    vecOut_.resize(3);
     vecOut_={
-        HelicityFunctions::polarizationVector(momenta[0],0,Helicity::outgoing),
-        HelicityFunctions::polarizationVector(momenta[0],1,Helicity::outgoing),
-        HelicityFunctions::polarizationVector(momenta[0],2,Helicity::outgoing)};
+        HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
+        HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
+        HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
     fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass());
-    if(abs(outgoing[1]->id())==111) {
-      fact *= sqrt(0.5); // ??
-    }
     for(unsigned int ix=0;ix<5;++ix) {
       for(unsigned int iy=0;iy<3;++iy) {
         if(iy==1) (*ME())(ix,iy,0)=0.;
         else{
           LorentzVector<complex<InvEnergy> > vtemp =
-                  (fact/sqr(Lambda_))*epsilon(momenta[0],vecOut_[iy],momenta[1]); ///!!!
+                  (fact/Lambda_/part.mass())*epsilon(momenta[0],vecOut_[iy],momenta[1]);
           (*ME())(ix,iy,0) = (momenta[1]*tensorIn_[ix]).dot(vtemp);
         }
       }
     }
     // analytic test of the answer
-    test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/5./sqr(fPi_)/sqr(Lambda_)/part.mass(); ///!!!
-    if(abs(outgoing[1]->id())==111) {
-      test *= sqrt(0.5);
-    }
+    test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/5./sqr(fPi_)/sqr(Lambda_)/part.mass();
   }
   else {
     assert(false);
@@ -299,9 +286,8 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   //testing
   ratio = (output-test)/(output+test);
   generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
-        << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
-        << output << " " << test << " " << ratio << endl;
-
+      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+      << output << " " << test << " " << ratio << endl;
   // return the answer
   return output;
 }
