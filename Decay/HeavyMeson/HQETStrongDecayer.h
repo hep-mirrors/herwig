@@ -35,12 +35,12 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+  virtual int modeNumber(bool & cc, tcPDPtr parent,
 			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param ichan The channel we are calculating the matrix element for. 
+   * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param outgoing The particles produced in the decay
    * @param momenta  The momenta of the particles produced in the decay
@@ -74,7 +74,7 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
-  
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -117,9 +117,9 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-  
+
 protected:
-  
+
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -160,9 +160,21 @@ private:
   double g_;
 
   /**
-   *   \f$\eta-\pi^0$ mixing for isospin violating decays
+   *  Coupling for decays within the \f$(1^+ ,2^+)\f$ multiplet
+   */
+  double h_;
+
+  /**
+   *   \f$\eta-\pi^0 \f$ mixing for isospin violating decays
    */
   double deltaEta_;
+  //@}
+
+  /**
+   *   A momentum scale characterising the convergence of the
+   *   derivative expansion. We expect Lambda_ ~ 1 GeV.
+   */
+  Energy Lambda_;
   //@}
 
   /**
@@ -203,13 +215,23 @@ private:
    *   Storage of the \f$\rho\f$ matrix
    */
   mutable RhoDMatrix rho_;
-  
+
   /**
    *  Storage of polarization vectors of the decaying particle
    */
   mutable vector<Helicity::LorentzPolarizationVector> vecIn_;
 
+  /**
+   *  Storage of polarization tensors of the decaying particle
+   */
+  mutable vector<Helicity::LorentzTensor<double> > tensorIn_;
+
+  /**
+   *  Storage of polarization vectors of the decay product
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> vecOut_;
   //@}
+
 };
 
 }
