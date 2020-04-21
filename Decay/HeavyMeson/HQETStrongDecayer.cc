@@ -27,26 +27,31 @@ HQETStrongDecayer::HQETStrongDecayer()
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
                 10413,10413,10423,10423,10433,10433,   //D_1  decay modes: VtoVS
-                10411,10411,10421,10421,10431}),       //D*_0 decay modes: StoSS
+                10411,10411,10421,10421,10431,         //D*_0 decay modes: StoSS
+                20413,20413,20423,20423,20433}),       //D'_1 decay modes: VtoVS
     outgoingH_({421,411,421,431,
                 411,421,411,421,411,421,
                 413,423,413,423,413,423,
                 413,423,413,423,413,423,
-                411,421,411,421,431}),
+                411,421,411,421,431,
+                413,423,413,423,433}),
     outgoingL_({211,111,111,111,
                 111,211,-211,111,311,321,
                 111,211,-211,111,311,321,
                 111,211,-211,111,311,321,
+                111,211,-211,111,111,
                 111,211,-211,111,111}),
     type_     ({1,  1,  1, -1,
                 2,  2,  2,  2,  2,  2,
                 3,  3,  3,  3,  3,  3,
                 4,  4,  4,  4,  4,  4,
-                5,  5,  5,  5,  5}),
+                5,  5,  5,  5,  5,
+                6,  6,  6,  6,  6}),
     maxWeight_({1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
+                1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1.})
 {}
 
@@ -228,7 +233,7 @@ HQETStrongDecayer::HQETStrongDecayer()
       if(abs(type_[imode()])==3) {
         ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
       }
-      if(abs(type_[imode()])==4) {
+      if(abs(type_[imode()])==4 || abs(type_[imode()])==6) {
         ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
       }
       if(abs(type_[imode()])==5) {
@@ -237,7 +242,7 @@ HQETStrongDecayer::HQETStrongDecayer()
     }
     // stuff for incoming particle
     if(meopt==Initialize) {
-      if(abs(type_[imode()])==1 || abs(type_[imode()])==4) {
+      if(abs(type_[imode()])==1 || abs(type_[imode()])==4 || abs(type_[imode()])==6) {
         rho_ = RhoDMatrix(PDT::Spin1);
         Helicity::VectorWaveFunction::calculateWaveFunctions(vecIn_,rho_,const_ptr_cast<tPPtr>(&part),
   							   Helicity::incoming,false);
@@ -299,29 +304,46 @@ HQETStrongDecayer::HQETStrongDecayer()
       test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/5./sqr(fPi_)/sqr(Lambda_)/part.mass();
     }
     // PVectorMeson to VectorMeson + PScalarMeson
-    else if(abs(type_[imode()])==4) {
+    else if(abs(type_[imode()])==4 || abs(type_[imode()])==6) {
       // get the polarization vectors
-      vecOut_={
-        HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
-        HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
-        HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-      InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_*momenta[0].mass()/part.mass();
-      for(unsigned int ix=0;ix<3;++ix) {
-	for(unsigned int iy=0;iy<3;++iy) {
-	  (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
-					 *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
-					 - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
+      vecOut_={HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
+	       HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
+	       HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
+      if(abs(type_[imode()])==4) {
+	InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_*momenta[0].mass()/part.mass();
+	for(unsigned int ix=0;ix<3;++ix) {
+	  for(unsigned int iy=0;iy<3;++iy) {
+	    (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
+					   *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
+					   - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
+	  }
 	}
+	// analytic test of the answer
+	test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
+	  (25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())+sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
       }
-      // analytic test of the answer
-      test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
-	(25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())+sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
+      else if(abs(type_[imode()])==6) {
+        InvEnergy fact = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
+        for(unsigned int ix=0;ix<3;++ix) {
+          for(unsigned int iy=0;iy<3;++iy) {
+            (*ME())(ix,iy,0)=Complex(fact*(
+              part.momentum()*(momenta[0]/part.mass() + momenta[1]/momenta[0].mass())
+              * vecIn_[ix].dot(vecOut_[iy])
+              + vecOut_[iy].dot(momenta[0])*vecIn_[ix].dot(part.momentum())/part.mass()
+              + vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
+          }
+        }
+        // analytic test of the answer
+        test = sqr(f_)/(4.*sqr(fPi_))*sqr(part.mass()-momenta[0].mass())
+             * sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
+             * sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
+             / (part.mass()*momenta[0].mass())/sqr(part.mass());
+      }
     }
     // ScalarMeson to ScalarMeson + ScalarMeson
     else if(abs(type_[imode()])==5) {
       InvEnergy fact = f_/fPi_*sqrt(momenta[0].mass()/part.mass());
-      (*ME())(0,0,0) = fact*(part.momentum()*momenta[0]/part.mass()
-			     - part.momentum()*momenta[1]/momenta[0].mass());
+      (*ME())(0,0,0) = fact*momenta[1]*(part.momentum()/part.mass() + momenta[0]/momenta[0].mass());
       // analytic test of the answer
       test = sqr(f_)/(4.*sqr(fPi_))*(momenta[0].mass()/part.mass())
 	* sqr(part.mass()-momenta[0].mass())
