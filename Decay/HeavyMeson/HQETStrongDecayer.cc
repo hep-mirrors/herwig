@@ -326,11 +326,11 @@ HQETStrongDecayer::HQETStrongDecayer()
         InvEnergy fact = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
         for(unsigned int ix=0;ix<3;++ix) {
           for(unsigned int iy=0;iy<3;++iy) {
-            (*ME())(ix,iy,0)=Complex(fact*(
-              part.momentum()*(momenta[0]/part.mass() + momenta[1]/momenta[0].mass())
-              * vecIn_[ix].dot(vecOut_[iy])
-              + vecOut_[iy].dot(momenta[0])*vecIn_[ix].dot(part.momentum())/part.mass()
-              + vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
+            (*ME())(ix,iy,0)=
+	      Complex(fact*(momenta[1]*(part.momentum()/part.mass() + momenta[0]/momenta[0].mass())
+			    * vecIn_[ix].dot(vecOut_[iy])
+			    - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
+			    - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
           }
         }
         // analytic test of the answer
@@ -349,7 +349,7 @@ HQETStrongDecayer::HQETStrongDecayer()
 	* sqr(part.mass()-momenta[0].mass())
 	* sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
 	* sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
-	/ sqr(part.mass()*momenta[0].mass());
+	/ part.mass()/momenta[0].mass()/sqr(part.mass());
     }
     else {
       assert(false);
