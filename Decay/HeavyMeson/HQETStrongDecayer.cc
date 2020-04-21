@@ -25,22 +25,22 @@ HQETStrongDecayer::HQETStrongDecayer()
   : fPi_(130.2*MeV), g_(0.565), h_(0.565), deltaEta_(1./43.7), Lambda_(1.*GeV),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
-                435,435,415,415,425,425,435,435,       //D*_2 decay modes: TtoVS
+                415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
                 10413,10413,10423,10423,10433,10433}), //D_1  decay modes: VtoVS
     outgoingH_({421,411,421,431,
                 411,421,411,421,411,421,
-                413,423,413,423,413,423,413,423,
+                413,423,413,423,413,423,
                 413,423,413,423,413,423}),
     outgoingL_({211,111,111,111,
                 111,211,-211,111,311,321,
-                311,321,111,211,-211,111,311,321,
+                111,211,-211,111,311,321,
                 111,211,-211,111,311,321}),
     type_     ({1,  1,  1, -1,
                 2,  2,  2,  2,  2,  2,
-                3,  3,  3,  3,  3,  3,  3,  3,
+                3,  3,  3,  3,  3,  3,
                 4,  4,  4,  4,  4,  4}),
     maxWeight_({1., 1., 1., 1.,
-                1., 1., 1., 1., 1., 1., 1., 1.,
+                1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.})
 {}
@@ -237,31 +237,24 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   }
   double output(0.);
   // calculate the matrix element
-  InvEnergy fact;
   Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
             momenta[1].mass()); //test subject
 
   double test(0.), ratio(0.);
   // HeavyVectorMeson to PScalarMeson + PScalarMeson
   if(abs(type_[imode()])==1) {
-    fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
-    if(abs(outgoing[1]->id())==111) {
-      fact *= type_[imode()]>0 ? 0.5 : 0.125*deltaEta_*sqrt(0.5) ;
-    }
+    InvEnergy fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
     for(unsigned int ix=0;ix<3;++ix) {
       (*ME())(ix,0,0) = fact*(vecIn_[ix]*momenta[1]);
     }
     // analytic test of the answer
     test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
-    if(abs(outgoing[1]->id())==111) {
-      test *= type_[imode()]>0 ? 0.5 : 0.5*deltaEta_*sqrt(0.5) ;
-    }
   }
   // HeavyTensorMeson to PScalarMeson + PScalarMeson
   else if(abs(type_[imode()])==2) {
-    fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass());
+    InvEnergy2 fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass())/Lambda_;
     for(unsigned int ix=0;ix<5;++ix) {
-      (*ME())(ix,0,0) = (fact/Lambda_)*(tensorIn_[ix]*momenta[1]*momenta[0]);
+      (*ME())(ix,0,0) = fact*(tensorIn_[ix]*momenta[1]*momenta[0]);
     }
     // analytic test of the answer
     test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/15./sqr(fPi_)/sqr(Lambda_)/part.mass();
@@ -273,11 +266,11 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
         HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
         HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
         HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-    fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass());
+    InvEnergy3 fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass())/Lambda_/part.mass();
     for(unsigned int ix=0;ix<5;++ix) {
       for(unsigned int iy=0;iy<3;++iy) {
         LorentzVector<complex<InvEnergy> > vtemp =
-                (fact/Lambda_/part.mass())*epsilon(momenta[0],vecOut_[iy],momenta[1]);
+                fact*epsilon(momenta[0],vecOut_[iy],momenta[1]);
         (*ME())(ix,iy,0) = (momenta[1]*tensorIn_[ix]).dot(vtemp);
       }
     }
@@ -291,10 +284,10 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
         HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
         HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
         HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-    fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass());
+    InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_;
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int iy=0;iy<3;++iy) {
-        (*ME())(ix,iy,0)=Complex((fact/Lambda_)*(vecOut_[iy].dot(vecIn_[ix])
+        (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
                 *(sqr(part.momentum())-sqr(part.momentum()*momenta[0]/momenta[0].mass()))
                 - 3.*vecIn_[ix]*part.momentum()*vecOut_[iy]*part.momentum()));
       }
@@ -311,6 +304,10 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
       << output << " " << test << " " << ratio << endl;
+  // isospin factors
+  if(abs(outgoing[1]->id())==ParticleID::pi0) {
+    output *= type_[imode()]>0 ? 0.5 : 0.125*sqr(deltaEta_);
+  }
   // return the answer
   return output;
 }
