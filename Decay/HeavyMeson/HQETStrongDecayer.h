@@ -165,6 +165,11 @@ private:
   double h_;
 
   /**
+   *  Coupling for decays within the \f$(0^+ ,1^+)\f$ multiplet
+   */
+  double f_;
+
+  /**
    *   \f$\eta-\pi^0 \f$ mixing for isospin violating decays
    */
   double deltaEta_;
