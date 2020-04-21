@@ -257,12 +257,11 @@ HQETStrongDecayer::HQETStrongDecayer()
         assert(false);
       }
     }
-    double output(0.);
     // calculate the matrix element
     Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-              momenta[1].mass()); //test subject
-
-    double test(0.), ratio(0.);
+					       momenta[1].mass()); //test subject
+    
+    double test(0.);
     // HeavyVectorMeson to PScalarMeson + PScalarMeson
     if(abs(type_[imode()])==1) {
       InvEnergy fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
@@ -285,14 +284,14 @@ HQETStrongDecayer::HQETStrongDecayer()
     else if(abs(type_[imode()])==3) {
       // get the polarization vectors
       vecOut_={
-          HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
-          HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
-          HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
+	HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
+	HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
+	HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
       InvEnergy3 fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass())/Lambda_/part.mass();
       for(unsigned int ix=0;ix<5;++ix) {
         for(unsigned int iy=0;iy<3;++iy) {
           LorentzVector<complex<InvEnergy> > vtemp =
-                  fact*epsilon(momenta[0],vecOut_[iy],momenta[1]);
+	    fact*epsilon(momenta[0],vecOut_[iy],momenta[1]);
           (*ME())(ix,iy,0) = (momenta[1]*tensorIn_[ix]).dot(vtemp);
         }
       }
@@ -303,41 +302,42 @@ HQETStrongDecayer::HQETStrongDecayer()
     else if(abs(type_[imode()])==4) {
       // get the polarization vectors
       vecOut_={
-          HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
-          HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
-          HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-      InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_;
+        HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
+        HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
+        HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
+      InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_*momenta[0].mass()/part.mass();
       for(unsigned int ix=0;ix<3;++ix) {
-        for(unsigned int iy=0;iy<3;++iy) {
-          (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
-                  *(sqr(part.momentum())-sqr(part.momentum()*momenta[0]/momenta[0].mass()))
-                  - 3.*vecIn_[ix]*part.momentum()*vecOut_[iy]*part.momentum()));
-        }
+	for(unsigned int iy=0;iy<3;++iy) {
+	  (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
+					 *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
+					 - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
+	}
       }
       // analytic test of the answer
-      test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass();
+      test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
+	(25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())+sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
     }
     // ScalarMeson to ScalarMeson + ScalarMeson
     else if(abs(type_[imode()])==5) {
       InvEnergy fact = f_/fPi_*sqrt(momenta[0].mass()/part.mass());
       (*ME())(0,0,0) = fact*(part.momentum()*momenta[0]/part.mass()
-                           - part.momentum()*momenta[1]/momenta[0].mass());
+			     - part.momentum()*momenta[1]/momenta[0].mass());
       // analytic test of the answer
       test = sqr(f_)/(4.*sqr(fPi_))*(momenta[0].mass()/part.mass())
-           * sqr(part.mass()-momenta[0].mass())
-           * sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
-           * sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
-           / sqr(part.mass()*momenta[0].mass());
+	* sqr(part.mass()-momenta[0].mass())
+	* sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
+	* sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
+	/ sqr(part.mass()*momenta[0].mass());
     }
     else {
       assert(false);
     }
-    output = ME()->contract(rho_).real();
+    double output = ME()->contract(rho_).real();
     // testing
-    ratio = (output-test)/(output+test);
+    double ratio = (output-test)/(output+test);
     generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
-        << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
-        << output << " " << test << " " << ratio << endl;
+		       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+		       << output << " " << test << " " << ratio << endl;
     // isospin factors
     if(abs(outgoing[1]->id())==ParticleID::pi0) {
       output *= type_[imode()]>0 ? 0.5 : 0.125*sqr(deltaEta_);
