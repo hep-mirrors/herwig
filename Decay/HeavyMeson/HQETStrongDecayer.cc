@@ -22,7 +22,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565), h_(0.565), f_(0.565/3.), deltaEta_(1./43.7), Lambda_(1.*GeV),
+  : fPi_(130.2*MeV), g_(0.565), h_(0.565), f_(0.565/3.), deltaEta_(1./43.7), Lambda_(1.*GeV), psi_(0.),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
@@ -152,6 +152,12 @@ HQETStrongDecayer::HQETStrongDecayer()
       "Strong decays momentum scale",
       &HQETStrongDecayer::Lambda_, GeV, 1.*GeV, .1*GeV, 2.*GeV,
       false, false, Interface::limited);
+
+    static Parameter<HQETStrongDecayer,double> interfacefpsi
+      ("psi",
+      "D_1 mixing angle",
+      &HQETStrongDecayer::psi_, 0., -M_PI/2., M_PI/2.,
+      false, false, Interface::limited);
   }
 
   int HQETStrongDecayer::modeNumber(bool & cc,tcPDPtr parent,
@@ -265,7 +271,7 @@ HQETStrongDecayer::HQETStrongDecayer()
     // calculate the matrix element
     Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
 					       momenta[1].mass()); //test subject
-    
+
     double test(0.);
     // HeavyVectorMeson to PScalarMeson + PScalarMeson
     if(abs(type_[imode()])==1) {
@@ -310,17 +316,24 @@ HQETStrongDecayer::HQETStrongDecayer()
 	       HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
 	       HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
       if(abs(type_[imode()])==4) {
-	InvEnergy2 fact = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())/Lambda_*momenta[0].mass()/part.mass();
+	InvEnergy2 factD1 = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())
+            /Lambda_*momenta[0].mass()/part.mass();
+  InvEnergy factD1prim = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
 	for(unsigned int ix=0;ix<3;++ix) {
 	  for(unsigned int iy=0;iy<3;++iy) {
-	    (*ME())(ix,iy,0)=Complex(fact*(vecOut_[iy].dot(vecIn_[ix])
+	    (*ME())(ix,iy,0)  = cos(psi_)*Complex(factD1*(vecOut_[iy].dot(vecIn_[ix])
 					   *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
 					   - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
+      (*ME())(ix,iy,0) += sin(psi_)*Complex(factD1prim*(momenta[1]*(part.momentum()/part.mass()
+              + momenta[0]/momenta[0].mass())*vecIn_[ix].dot(vecOut_[iy])
+     			    - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
+     			    - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
 	  }
 	}
 	// analytic test of the answer
 	test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
-	  (25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())+sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
+	  (25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())
+    +sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
       }
       else if(abs(type_[imode()])==6) {
         InvEnergy fact = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());

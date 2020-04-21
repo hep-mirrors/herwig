@@ -170,6 +170,11 @@ private:
   double f_;
 
   /**
+   *  D_1 mixing angle
+   */
+  double psi_;
+
+  /**
    *   \f$\eta-\pi^0 \f$ mixing for isospin violating decays
    */
   double deltaEta_;
