@@ -477,7 +477,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   else if(abs(child)<=6) {
     ids.push_back(ParticleID::g);
   }
-  else if(abs(child)<=6) {
+  else {
     ids.push_back(ParticleID::gamma);
     qed=true;
   }
