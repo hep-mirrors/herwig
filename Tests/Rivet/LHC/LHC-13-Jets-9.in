@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 # CMS Jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1459051
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_CONF_2016_092

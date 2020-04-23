@@ -12,5 +12,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
 # OPAL b/c/light multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_S5361494
+# OPAL event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_I513476
 # L3 event shapes etc for a wide range of CMS energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683
+# DELPHI event shapes  at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_I499183

@@ -42,7 +42,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
 # underlying event forward rapidities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 # ATLAS correlations
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 # ALICE pion and eta pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1116147
 # CMS charged particle rapidity

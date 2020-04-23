@@ -9,3 +9,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOPAZ_1995_I381900
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 AMY_1995_I406129
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOPAZ_1997_I454183
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 VENUS_1998_I453613

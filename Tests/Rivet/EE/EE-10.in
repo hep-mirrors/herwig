@@ -10,3 +10,26 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.
 # PDG hadron multiplicities and ratios
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+# ARGUS D2 spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I268577
+# ARGUS D1/D2 spectrum and decay angles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I280943
+# ARGUS sigma_c spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I261672
+# argus phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262415
+# BABAR D hadron decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I867611
+# LHCB D hadron decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1243156
+# LENA thrust and mult
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
+# ARGUS thrust
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1986_I227324
+# ARGUS D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I282570
+# ARGUS Delta++
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932

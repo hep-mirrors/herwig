@@ -10,3 +10,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 3.6
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1977_I118873
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DASP_1979_I132045
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1384778

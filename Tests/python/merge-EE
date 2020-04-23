@@ -16,15 +16,21 @@ def fillAbove(desthisto, sourcehistosbysqrts):
         for sqrts,h in sorted(sourcehistosbysqrts.iteritems()) :
             if(sqrts=="U1") :
                 sqrts2=9.46
+                if "LENA_1981_I164397" in desthisto.path() : sqrts2=9.4624
             elif sqrts=="U2" :
                 sqrts2=10.02
+                if "LENA_1981_I164397" in desthisto.path() : sqrts2=10.0148
             elif sqrts=="U4" :
                 sqrts2=10.58
             else :
                 sqrts2=float(sqrts)
-            if("ARGUS_1989_I276860" in desthisto.path() and sqrts2==10.) : sqrts2=9.98
+            if   ("ARGUS_1989_I276860" in desthisto.path() and sqrts2==10. ) : sqrts2=9.98
+            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts2==10. ) : sqrts2=9.9903
+            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts2==9.51) : sqrts2=9.5149
             step = 0.001
             if("TASSO_1980_I143691" in desthisto.path()) : step=0.3
+            if("JADE_1979_I142874"  in desthisto.path()) : step=0.3
+            if("CLEO_1985_I205668"  in desthisto.path()) : step=0.05
             for i in range(0,h.numPoints()) :
                 xmin = min(h.points()[i].xMin(),h.points()[i].x()-step)
                 xmax = max(h.points()[i].xMax(),h.points()[i].x()+step)
@@ -84,12 +90,22 @@ if __name__ == "__main__":
                       action='store_true' ,
                       dest="gg",
                       default=False,
-                      help="Include gg analyese")
+                      help="Include gg analyses")
     parser.add_option("--without-gg",
                       action='store_false',
                       dest="gg",
                       default=False,
                       help="Don\'t include gg analyses")
+    parser.add_option("--with-decay",
+                      action='store_true' ,
+                      dest="decay",
+                      default=False,
+                      help="Include decay analyses")
+    parser.add_option("--without-decay",
+                      action='store_false',
+                      dest="decay",
+                      default=False,
+                      help="Don\'t include decay analyses")
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
     ## Check args
@@ -104,20 +120,24 @@ yodafiles=["130","133","136","177","192",
            "161","183","197","35" ,"36.2","172",\
            "189","200","44","14","14.8","21.5","22","25","10",\
            "12.8","26.8","48.0","93.0",\
-           "12","13","17","27.6","29","30.2","34.5",\
-           "30.7","30","31.3","34","34.8","43.6","50","52","53.3",\
+           "12","13","17","27.6","27.7","29","30.2","34.5",\
+           "30.7","30","31.3","31.6","34","34.8","42.1","43.6","50","52","53.3",\
            "55","56","57","58","59.5","60.8","60","61.4","7.7",
-           "9.4","45","66","76","41","42.6","82","85"]
+           "9.4","45","66","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
+           "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
+           "4.41","5.0","5.2","4.5","8.8","9.27","9.46","9.51","10.52","10.52-sym","10.54","10.58",
+           "10.6","10.45","10.47"]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["10.5-gg","12.8-gg","16.86-gg","26.8-gg",\
                   "35.44-gg","97.0-gg","11.96-gg","13.96-gg",\
                   "21.84-gg","28.48-gg","48.0-gg"]
-    
-yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8","3.63","4.03","4.5","9.46","10.00","10.52","10.52-sym","10.54",
-              "10.58-res","10.58","Upsilon",
-              "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
-              "Lambdac","Omega-Meson","Omega-Baryon","Eta","Xi0","Xic0","Xim","JPsi","Psi2S"]
+# add decays if needed
+if(opts.decay) :
+    yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
+                  "Tau","Phi","Lambdac","Omega-Meson",
+                  "Omega-Baryon","Eta","Xi0","Xic0","Xicp",
+                  "Omegac0","Xim","JPsi","Psi2S","Psi3770"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -129,6 +149,8 @@ for f in yodafiles:
         sqrts="U4"
     elif(file.find("Upsilon2")>0) :
         sqrts="U2"
+    elif(file.find("Upsilon3")>0) :
+        sqrts="U3"
     elif(file.find("Upsilon")>0) :
         sqrts="U1"
     elif(file.find("Phi")>0) :
@@ -139,9 +161,11 @@ for f in yodafiles:
         sqrts="psi"
     elif(file.find("Psi2S")>0) :
         sqrts="psi2s"
+    elif(file.find("Psi3770")>0) :
+        sqrts="psi1d"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
-         file.find("Xim")>0 or
+         file.find("Xim")>0 or file.find("Xicp")>0 or
          file.find("Eta")>0) :
         sqrts="baryon"
     else :
@@ -157,7 +181,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
-        if("RAW" in aopath) :continue
+        if("RAW" in aopath or "/_" in aopath) :continue
         # plots which neede merging/selecting
         if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
            aopath.find("5765862")>0 or aopath.find("3612880")>0 or
@@ -173,6 +197,11 @@ for f in yodafiles:
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
+           aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
+           "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
+           "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
+           "BABAR_2014_I1286317" in aopath or
+           ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -201,15 +230,47 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
         elif("ARGUS_1992_I319102" in aopath) :
-            if("d02" in aopath and sqrts==10.47) :
+            if(("d02" in aopath or "d04" in aopath) and sqrts==10.47) :
                 outhistos[aopath] = ao
-            elif("d03"in aopath and sqrts=="U4") :
+            elif(("d03"in aopath or "d05" in aopath) and sqrts=="U4") :
                 outhistos[aopath] = ao
         elif("MC_OmegaPhia1_3Pion_Decay" in aopath) :
             if("_1" in aopath and "Omega" in file) :
                 outhistos[aopath] = ao
             elif("_2" in aopath and "Phi" in file) :
                 outhistos[aopath] = ao
+        elif("BABAR_2006_I719581" in aopath) :
+            if("d02" in aopath and "Omega" in file) :
+                outhistos[aopath] = ao
+            elif("d01" in aopath and "Xi" in file) :
+                outhistos[aopath] = ao
+        elif("BABAR_2002_I582184" in aopath) :
+            if(("d02" in aopath or "d05" in aopath ) and "Upsilon" in file) :
+                outhistos[aopath] = ao
+            elif( not ("d02" in aopath or "d05" in aopath ) and sqrts==10.6) :
+                outhistos[aopath] = ao
+        elif(aopath=="/BABAR_2007_I746745/d01-x01-y01") :
+            htemp = aos["/RAW/BABAR_2007_I746745/d01-x01-y01"]
+            htemp.scaleW(aos["/_XSEC"].points()[0].x()/aos["/_EVTCOUNT"].val())
+            htemp.setPath("/BABAR_2007_I746745/d01-x01-y01")
+            if "/BABAR_2007_I746745/d01-x01-y01" in outhistos :
+                htemp2=htemp+outhistos["/BABAR_2007_I746745/d01-x01-y01"]
+                htemp2.setPath("/BABAR_2007_I746745/d01-x01-y01")
+                outhistos["/BABAR_2007_I746745/d01-x01-y01"]=htemp2
+            else :
+                outhistos["/BABAR_2007_I746745/d01-x01-y01"]=htemp
+        elif(aopath=="/BABAR_2007_I722622/d03-x01-y01" or
+             aopath=="/BABAR_2007_I722622/d03-x01-y02" or
+             aopath=="/BABAR_2007_I722622/d04-x01-y01") :
+            htemp = aos["/RAW"+aopath]
+            htemp.scaleW(aos["/_XSEC"].points()[0].x()/aos["/_EVTCOUNT"].val())
+            htemp.setPath(aopath)
+            if aopath in outhistos :
+                htemp2=htemp+outhistos[aopath]
+                htemp2.setPath(aopath)
+                outhistos[aopath]=htemp2
+            else :
+                outhistos[aopath]=htemp
         else:
             outhistos[aopath] = ao
 
@@ -223,7 +284,12 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
-        hpath.find("1422780")>0) :
+        hpath.find("1422780")>0 or hpath.find("132410" )>0 or
+        "OPAL_2000_I513476"   in hpath or
+        "JADE_1979_I142874"   in hpath or
+        "CLEO_1985_I205668"   in hpath or
+        "BABAR_2014_I1286317" in hpath or
+        "LENA_1981_I164397"   in hpath):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
@@ -1027,8 +1093,8 @@ useOne("/BELLE_2006_S6265367/d15-x01-y02","U4")
 # BABAR
 useOne("/BABAR_2007_S6895344/d01-x01-y01","10.54")
 useOne("/BABAR_2007_S6895344/d02-x01-y01","10.54")
-useOne("/BABAR_2007_S6895344/d03-x01-y01","10.58")
-useOne("/BABAR_2007_S6895344/d04-x01-y01","10.58")
+useOne("/BABAR_2007_S6895344/d03-x01-y01","U4")
+useOne("/BABAR_2007_S6895344/d04-x01-y01","U4")
 # BABAR
 useOne("/BABAR_2005_S6181155/d01-x01-y01","10.58")
 useOne("/BABAR_2005_S6181155/d02-x01-y01","10.58")
@@ -1118,6 +1184,10 @@ useOne("/ARGUS_1988_I251097/d09-x01-y01","10.00")
 
 useOne("/ARGUS_1989_I262415/d03-x01-y01","U1")
 useOne("/ARGUS_1989_I262415/d04-x01-y01","10.00")
+useOne("/ARGUS_1989_I262415/d01-x01-y01","U1")
+useOne("/ARGUS_1989_I262415/d01-x01-y02","10.00")
+useOne("/ARGUS_1989_I262415/d01-x02-y01","U1")
+useOne("/ARGUS_1989_I262415/d01-x02-y02","10.00")
 
 merge("/PLUTO_1981_I165122/d01-x01-y01")
 merge("/PLUTO_1981_I165122/d02-x01-y01")
@@ -1144,12 +1214,14 @@ for i in range(2,4) :
 merge("/TASSO_1980_I143691/d01-x01-y01")
 useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
 useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
-if("/TASSO_1980_I143691/d03-x01-y01" in inhistos) :
+if("/TASSO_1980_I143691/d03-x01-y01" in inhistos and
+   "17." in inhistos["/TASSO_1980_I143691/d03-x01-y01"] and
+   "22." in inhistos["/TASSO_1980_I143691/d03-x01-y01"]) :
     average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
     average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
 useOne("/TASSO_1980_I143691/d04-x01-y01","30.2")
 useOne("/TASSO_1980_I143691/d07-x01-y01","30.2")
-        
+      
 useOne("/TASSO_1990_I284251/d01-x01-y01","42.6")
 useOne("/TASSO_1990_I284251/d01-x01-y02","35.")
 useOne("/TASSO_1990_I284251/d01-x01-y03","34.5")
@@ -1170,7 +1242,7 @@ useOne("/TASSO_1990_I284251/d08-x01-y03","34.5")
 merge("/TASSO_1990_I284251/d09-x01-y01")
 useOne("/TASSO_1990_I284251/d10-x01-y01","35")
 useOne("/TASSO_1990_I284251/d10-x01-y02","35")
-
+merge("/DASP_1979_I132410/d01-x01-y01")
 # BES xi analysis
 useOne("/BESIII_2016_I1422780/d02-x01-y01","psi")
 useOne("/BESIII_2016_I1422780/d02-x01-y02","psi")
@@ -1191,6 +1263,67 @@ if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
 for id in range(1,3) :
     for iy in range(1,5) :
         merge("/PLUTO_1983_I191161/d0%s-x01-y0%s" % (id,iy))
+
+merge("/OPAL_2000_I513476/d14-x01-y01")
+merge("/OPAL_2000_I513476/d20-x01-y01")
+merge("/OPAL_2000_I513476/d20-x01-y02")
+merge("/OPAL_2000_I513476/d20-x01-y03")
+merge("/OPAL_2000_I513476/d20-x01-y04")
+
+merge("/JADE_1979_I142874/d02-x01-y01")
+merge("/LENA_1981_I164397/d03-x01-y01")
+
+useOne("/LENA_1981_I164397/d04-x01-y01","9.51")
+useOne("/LENA_1981_I164397/d04-x01-y02","10.")
+useOne("/LENA_1981_I164397/d04-x01-y03","U1")
+useOne("/LENA_1981_I164397/d04-x01-y04","U2")
+
+useOne("/ARGUS_1991_I315059/d01-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d01-x01-y02","10.47")
+useOne("/ARGUS_1991_I315059/d01-x01-y03","10.47")
+useOne("/ARGUS_1991_I315059/d02-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d03-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d04-x01-y01","10.47")
+useOne("/ARGUS_1991_I315059/d05-x01-y01","U4")
+useOne("/ARGUS_1991_I315059/d06-x01-y01","U4")
+useOne("/ARGUS_1991_I315059/d07-x01-y01","U4")
+
+for i in [3,4,5,6,7,8,18,19,20,21,22,23] :
+    useOne("/TASSO_1989_I266893/d%02d-x01-y01" %i ,"34.8")
+for i in range(9,15) :
+    useOne("/TASSO_1989_I266893/d%02d-x01-y01" %i ,"42.1")
+for i in range(1,4) :
+    useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
+    useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
+
+for i in range(1,12) :
+    useOne("/CLEO_1985_I205668/d%02d-x01-y01" %i ,10.47)
+    useOne("/CLEO_1985_I205668/d%02d-x01-y02" %i , "U1")
+for i in range(12,24) :
+    merge("/CLEO_1985_I205668/d%02d-x01-y01" %i)
+
+useOne("/BABAR_2014_I1286317/d01-x01-y01", "U3")
+useOne("/BABAR_2014_I1286317/d02-x01-y01", "U2")
+useOne("/BABAR_2014_I1286317/d03-x01-y01", "U1")
+useOne("/BABAR_2014_I1286317/d06-x01-y01", "U3")
+useOne("/BABAR_2014_I1286317/d06-x02-y01", "U2")
+useOne("/BABAR_2014_I1286317/d06-x03-y01", "U1")
+
+useOne("/BABAR_2014_I1286317/d04-x01-y01", "10.6")
+useOne("/BABAR_2014_I1286317/d05-x01-y01", "10.6")
+useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
+    
+    
+# normalize where we have sum histos
+if("/BABAR_2007_I746745/d01-x01-y01" in outhistos and
+   outhistos["/BABAR_2007_I746745/d01-x01-y01"].effNumEntries()!=0.) :
+    outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
+if("/BABAR_2007_I722622/d03-x01-y01" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
+if("/BABAR_2007_I722622/d03-x01-y02" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
+if("/BABAR_2007_I722622/d04-x01-y01" in outhistos) :
+    outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
 
 # Choose output file
 name = args[0]+".yoda"

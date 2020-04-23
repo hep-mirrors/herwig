@@ -1,0 +1,20 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> psi(3770)
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEPsi3770 HwMELepton.so
+set /Herwig/MatrixElements/MEPsi3770:VectorMeson /Herwig/Particles/psi(3770)
+set /Herwig/MatrixElements/MEPsi3770:Coupling  58.12041
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEPsi3770
+set EventGenerator:EventHandler:LuminosityFunction:Energy 3.7711
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+# CLEO D lepton spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2009_I823313
+# CLEO D q2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I715096
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I769777
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
+# CLEO eta, eta' phi spectra in D decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I728043
+# CLEO D0 -> eta pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I779705

@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # select the analyses
 ##################################################
@@ -11,4 +12,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1468167
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1511284
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1653948
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1680318
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1471287
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1471287
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2018_I1518782
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2018_I1692008
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1665223
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1708620

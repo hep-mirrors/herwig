@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 # CMS Jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1459051
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_CONF_2016_092
@@ -5,4 +6,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1682495
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1711114
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1724098

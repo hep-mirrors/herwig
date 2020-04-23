@@ -39,7 +39,7 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
         elif(type(desthisto)==yoda.core.Counter) :
                     desthisto += h
         else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            logging.error("Can't merge %s, unknown type" % desthisto.path())
             sys.exit(1)
         pthigh=pt
 
@@ -250,6 +250,8 @@ for f in yodafiles:
            aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
            aopath.find("I1609253")>0 or aopath.find("1385107" )>0 or
            aopath.find("I1486238")>0 or aopath.find("1634970" )>0 or
+           aopath.find("I1604271")>0 or aopath.find("I1598460")>0 or
+           aopath.find("1724098" )>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -307,7 +309,7 @@ for f in yodafiles:
                         title=""
                         path=""
                         if hasattr(ao, 'title'):
-                            title=ao.title()
+                            title=ao.title
                         if hasattr(ao, 'path'):
                             path=ao.path()
                         temp = yoda.core.Histo1D(path,title)
@@ -444,6 +446,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1419070")>0 or
         hpath.find("I1394679")>0 or
         hpath.find("I1487277")>0 or
+        hpath.find("I1604271")>0 or
+        hpath.find("I1598460")>0 or
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
@@ -453,7 +457,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         path=""
         histo = hsets.values()[0].values()[0]
         if hasattr(histo, 'title'):
-            title=histo.title()
+            title=histo.title
         if hasattr(histo, 'path'):
             path=histo.path()
         if(type(histo)==yoda.core.Counter) :
@@ -1622,10 +1626,22 @@ for i in range(1,7) :
     mergeByPt("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000")
 for i in range(7,13) :
     mergeByMass("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000", 1.)
-        
-        
 
 
+logging.info("Processing ATLAS_2017_I1604271")
+for i in range(1,13) :
+    mergeByPt("/ATLAS_2017_I1604271/d%02d-x01-y01" % i, "8000")
+    
+logging.info("Processing CMS_2017_I1598460")
+for i in range(1,7) :
+    mergeByPt("/CMS_2017_I1598460/d%02d-x01-y01" % i, "8000")
+
+logging.info("Processing ATLAS_2019_I1724098")
+for i in range(1,45) :
+    if(i<=6 or (i>=23 and i<=28)) :
+        useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "400")
+    else :
+        useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "0")
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)

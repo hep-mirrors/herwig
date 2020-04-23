@@ -10,3 +10,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2004_I622224
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKI_1976_I109792

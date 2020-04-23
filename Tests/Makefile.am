@@ -146,11 +146,11 @@ Rivet-%.yoda : Rivet-%.run
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,42.1,42.6,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,85,10,12.8,21.5,22,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,27.7,29,30.2,30.7,30,31.3,31.6,34,34.8,41,42.1,42.6,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,85,10,12.8,21.5,22,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
                   $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-{14,14.8}.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
-                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.6,4.8,3.63,4.03,4.5,9.46,10.00,10.52,10.52-sym,10.54,10.45,10.47}.in) \
-                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon4,JPsi,Psi2S,Tau,Phi,10.58-res,10.58,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xim}.in) \
+                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.17,4.3,4.41,5.0,5.2,4.6,4.8,5.8,6.2,6.6,7.0,7.4,3.63,4.03,4.5,8.8,9.27,9.46,9.51,10.52,10.52-sym,10.54,10.58,10.45,10.47,10.6}.in) \
+                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon4-asym,JPsi,Psi2S,Psi3770,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Xim}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
@@ -170,7 +170,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{8,13}-Top-{All,L,SL}.in) \
                   $(shell echo Rivet/Star{,-Dipole}-{UE,Jets-{1..4}}.in ) \
 	          $(shell echo Rivet/SppS{,-Dipole}-{53,63,200,500,546,900}-UE.in ) \
-                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},Z-HighMass{1,2}-e,{8,13}-W-mu,8-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.in) \
+                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},Z-HighMass{1,2}-e,{8,13}-W-mu,{8,13}-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-8-ZGamma-{e,mu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
@@ -206,11 +206,11 @@ Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,19
 Rivet-EE : Rivet-EE/done
 	touch $@
 
-Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,29,30.2,30.7,30,31.3,34,34.8,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,10,12.8,21.5,22,25,26.8,34.5,35,36.2,41,42.1,42.6,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.yoda) \
+Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,27.7,29,30.2,30.7,30,31.3,31.6,34,34.8,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,10,12.8,21.5,22,25,26.8,34.5,35,36.2,41,42.1,42.6,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.yoda) \
 	   $(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-	   $(shell echo Rivet-EE-{10.52,10.52-sym,2.2,2.6,3.0,3.2,4.6,4.8,3.63,4.03,4.5,9.46,10.00,10.54,10.45,10.47,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xim,JPsi,Psi2S}.yoda)
+	   $(shell echo Rivet-EE-{10.52,10.52-sym,10.6,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,8.8,9.27,9.46,9.51,10.54,10.58,10.45,10.47,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon4-asym,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Xim,JPsi,Psi2S,Psi3770}.yoda)
 	rm -rf Rivet-EE
-	python/merge-EE --with-gg EE
+	python/merge-EE --with-gg --with-decay EE
 	python/merge-EE Powheg-EE
 	rivet-mkhtml -o Rivet-EE EE.yoda:Hw Powheg-EE.yoda:Hw-Powheg
 	python/plot-EE Rivet-EE
@@ -309,7 +309,7 @@ Rivet-LHC-EW : Rivet-LHC-EW/done
 	touch $@
 
 Rivet-LHC-EW/done: \
-		$(shell echo Rivet{,-Powheg}-LHC-{13-Z-{e,mu},{8,13}-W-mu,Z-HighMass{1,2}-e,8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
+		$(shell echo Rivet{,-Powheg}-LHC-{13-Z-{e,mu},{8,13}-W-mu,Z-HighMass{1,2}-e,{8,13}-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
 		$(shell echo Rivet-LHC-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 		$(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) \
 		$(shell echo Rivet-LHC-8-ZGamma-{e,mu}.yoda) 

@@ -35,4 +35,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1234228
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620:LMODE=ZEL
 # W/Z+ jets ratios
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_EL
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627:LMODE=EL

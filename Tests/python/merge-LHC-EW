@@ -15,11 +15,11 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
-            for i in range(0,h.numPoints) :
-                xMin = h.points[i].x-h.points[i].xErrs.minus
+            for i in range(0,h.numPoints()) :
+                xMin = h.points()[i].x()-h.points()[i].xErrs().minus
                 if( xMin*scale >= ptlow and 
                     xMin*scale <  pthigh ) :
-                    desthisto.addPoint(h.points[i])
+                    desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins()) :
                 if(h.bins()[i].xMin()*scale  >= ptlow and 
@@ -31,7 +31,7 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
                    h.bins()[i].xMin()*scale  <  pthigh ) :
                     desthisto.bins()[i] += h.bins()[i]
         else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            logging.error("Can't merge %s, unknown type" % desthisto.path())
             sys.exit(1)
         pthigh=pt
 
@@ -85,7 +85,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     yodafiles=["-13-Z-e","-13-Z-mu","-Z-HighMass1-e","-Z-HighMass2-e",
-               "-8-Z-Mass1-e","-8-Z-Mass1-mu","-8-Z-Mass2-e","-8-Z-Mass2-mu","-8-Z-Mass3-e","-8-Z-Mass3-mu","-8-Z-Mass4-e","-8-Z-Mass4-mu",
+               "-8-Z-Mass1-e" ,"-8-Z-Mass1-mu" ,"-8-Z-Mass2-e" ,"-8-Z-Mass2-mu" ,"-8-Z-Mass3-e" ,"-8-Z-Mass3-mu" ,"-8-Z-Mass4-e" ,"-8-Z-Mass4-mu" ,
+               "-13-Z-Mass1-e","-13-Z-Mass1-mu","-13-Z-Mass2-e","-13-Z-Mass2-mu","-13-Z-Mass3-e","-13-Z-Mass3-mu","-13-Z-Mass4-e","-13-Z-Mass4-mu",
                "-W-e","-W-mu","-Z-e","-Z-mu","-Z-mu-Short","-Z-LowMass-e","-Z-LowMass-mu",
                "-Z-MedMass-e",
                "-WW-emu","-WW-ll","-WZ","-ZZ-ll","-ZZ-lv","-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
@@ -174,24 +175,33 @@ if __name__ == "__main__":
                      ( aopath.find("d04")>0 or 
                        ((aopath.find("d01")>0 or aopath.find("d02")>0) and aopath.find("y02")>0))) : 
                     outhistos[aopath] = ao
-            elif (aopath.find("ATLAS_2014_I1312627_EL") >0) :
-                if(file.find("-e")>0) :
+            elif (aopath.find("ATLAS_2014_I1312627")>0) :
+                if("EL" in aopath) :
                     if(file.find("W")>0 and aopath.find("x02")>0) :
                         outhistos[aopath] = ao
                     elif(file.find("Z")>0 and aopath.find("x03")>0) :
                         outhistos[aopath] = ao
-            elif (aopath.find("ATLAS_2014_I1312627_MU") >0) :
-                if(file.find("-mu")>0) :
+                elif ("MU" in aopath) :
                     if(file.find("W")>0 and aopath.find("x02")>0) :
                         outhistos[aopath] = ao
                     elif(file.find("Z")>0 and aopath.find("x03")>0) :
                         outhistos[aopath] = ao
-            elif (aopath.find("ATLAS_2014_I1312627") >0) :
-                if(file.find("-e")>0) :
+                else :
                     if(file.find("W")>0 and aopath.find("x02")>0) :
                         outhistos[aopath] = ao
                     elif(file.find("Z")>0 and aopath.find("x03")>0) :
                         outhistos[aopath] = ao
+            elif (aopath.find("CMS_2018_I1711625")>0) :
+                if( file.find("-e")>0 and aopath.find("d06-x01-y01") > 0 ):
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                    else :
+                        outhistos[aopath]  = ao
+                elif( file.find("-mu")>0 and (aopath.find("d03-x01-y01") > 0 or aopath.find("d05-x01-y01") > 0) ):
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                    else :
+                        outhistos[aopath]  = ao
             elif (aopath.find("CMS_2013_I1224539_WJET" )>0) :
                 if(file.find("-1-e")>0 and (aopath.find("d52")>0 or aopath.find("d53")>0 or aopath.find("d56")>0 or aopath.find("d57")>0 or aopath.find("d60")>0 or aopath.find("d61")>0 or aopath.find("d64")>0 or aopath.find("d65")>0 or aopath.find("d68")>0 or aopath.find("d69")>0 or aopath.find("d72")>0)) :
                     outhistos[aopath] = ao
@@ -254,7 +264,7 @@ if __name__ == "__main__":
                     ratio = (hp-hm)/(hp+hm)
                     title=""
                     if hasattr(ao, 'title'):
-                        title=ao.title()
+                        title=ao.title
                     hnew = yoda.Scatter2D(aopath,title)
                     hnew.combineWith(ratio)
                     outhistos[aopath] = hnew
@@ -438,7 +448,7 @@ if __name__ == "__main__":
     mergeByMass("/ATLAS_2013_I1234228/d01-x01-y02", "7000")
     # ATLAS W/Z ratios
     iy=0
-    for suffix in ["","_EL","_MU"] :
+    for suffix in ["",":LMODE=EL",":LMODE=MU"] :
         iy+=1
         basePath = "/ATLAS_2014_I1312627%s/" % suffix
         for ihist in range(1,21) :

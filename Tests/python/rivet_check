@@ -13,8 +13,10 @@ opts, args = op.parse_args()
 skip = [ "ATLAS_2010_I849050", # alias
          "TOTEM_2012_002"    , # alias
          "TEST"              , # test analysis
+         "ATLAS_2015_I1351916", # same as _EL version
+         "ATLAS_2015_CONF_2015_041", # superseeded
         ]
-searches=["ALEPH_2016_I1492968"]
+searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 
 
 p=subprocess.Popen(["rivet","--list"],stdout=subprocess.PIPE)
@@ -52,9 +54,19 @@ for idir in glob.glob("Rivet/*") :
                 else :
                     hw_analyses[anal].append(fshort)
             line=file.readline()
+            
+# low energy herwig analysis
+p = subprocess.Popen(["./python/LowEnergy.py","--list","--process","All"],stdout=subprocess.PIPE)
+lowEnergy = p.communicate()[0]
+hw_low_energy_analyses=lowEnergy.strip().split()
+# R analyses
+p = subprocess.Popen(["./python/R.py","--list"],stdout=subprocess.PIPE)
+Rlist = p.communicate()[0]
+hw_R_analyses=Rlist.strip().split()
 
 anatohepmc = open("anatohepmc.txt",'w')
 hepmctoana = open("hepmctoana.txt",'w')
+
 not_in_rivet=[]
 for val in hw_analyses.keys() : not_in_rivet.append(val) 
 # check the analyses
@@ -66,6 +78,12 @@ for analysis in sorted(analyses.keys()) :
             print "WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis])
         if(analysis in not_in_rivet) :
             not_in_rivet.remove(analysis)
+    # we have it low energy or R or skipping
+    elif (analysis in hw_low_energy_analyses or analysis in skip or
+          analysis in hw_R_analyses ) :
+        if(analysis in not_in_rivet) :
+            not_in_rivet.remove(analysis)
+        continue
     # obsolete
     elif("[OBSOLETE]" in analyses[analysis]) :
         if(opts.obsolete) : print "Obsolete analysis %s not included : %s" % (analysis,analyses[analysis])
@@ -76,7 +94,7 @@ for analysis in sorted(analyses.keys()) :
     elif(analysis[0:3]=="MC_") :
         if(opts.MC) : print "MC   analysis %s not included  : %s" % (analysis,analyses[analysis])
     # examples
-    elif("[EXAMPLE]" in analyses[analysis]) :
+    elif("EXAMPLE" in analyses[analysis]) or "EXAMPLE" in analysis:
         continue
     # we don't have it
     else :

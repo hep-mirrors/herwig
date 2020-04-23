@@ -21,3 +21,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1641075
 # eta -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
+

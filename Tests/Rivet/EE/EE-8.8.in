@@ -1,0 +1,13 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 8.8
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+# LENA thrust and mult
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397

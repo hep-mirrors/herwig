@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
 # OPAL/JADE jet rates at many energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# DELPHI event shapes  at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_I499183

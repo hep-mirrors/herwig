@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # select the analyses
 ##################################################
@@ -61,7 +62,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
 # ATLAS two particle correlation
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
 # ATLAS correlations
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 # LHCB energy flow
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1208105
 # ATLAS charged particle event shapes

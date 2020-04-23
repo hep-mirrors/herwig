@@ -1,2 +1,3 @@
 # -*- ThePEG-repository -*-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 EHS_1988_I265504
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 NA22_1986_I18431

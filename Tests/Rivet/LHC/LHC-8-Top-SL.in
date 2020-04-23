@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # select the analyses
 ##################################################
@@ -11,6 +12,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397637
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1454211
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1518399
 # this cms ones has iffy lepton code which crashes
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_PAS_TOP_15_006
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_PAS_TOP_15_006
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1473674

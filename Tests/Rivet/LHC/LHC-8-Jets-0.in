@@ -1,2 +1,4 @@
 # ATLAS tracks in jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419070
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1604271
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1598460

@@ -20,3 +20,20 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262415
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1981_I165122
+# CLEO eta' spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I601701
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2006_I728679
+# LENA thrust and mult
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
+# ARGUS thrust
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1986_I227324
+# BABAR D*=/- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I836615
+# CLEO Identified particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I205668
+# ARGUS Delta++
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932
+# ARGUS anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I283027
+# BABAR anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317

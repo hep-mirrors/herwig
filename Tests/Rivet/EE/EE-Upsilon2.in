@@ -15,3 +15,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097
+# LENA thrust and mult
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
+# CUSB Upsilon 2S -> Upsilon 1S pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CUSB_1984_I199809
+# CLEO Upsilon 2S -> Upsilon 1S pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1998_I467642
+# BABAR anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317

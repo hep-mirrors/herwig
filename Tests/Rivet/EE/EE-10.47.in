@@ -7,5 +7,9 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
-# BELLE charm hadron production
+# ARGUS charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+# ARGUS charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
+# CLEO Identified particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I205668

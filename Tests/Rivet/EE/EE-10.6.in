@@ -1,0 +1,60 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.3*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.3*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.50
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+
+# BELLE Lambda polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1687566
+# BELLE charmonium
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2002_I563840
+# CLEO Xi'_c production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I478217
+# CLEO Xi_c production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I404590
+# CLEO Xi_c1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I501417
+# CLEO D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1993_I352823
+# BABAR D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I892421
+# BELLE D_s1 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I762013
+# CLEO Lambda_c* production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I381696
+# ARGUS Lambda_c* production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1997_I440304
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I357132
+# CLEO Xi_c*0 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I397770
+# CLEO Xi_c*+ production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I416471
+# CLEO D_1+, D_2+ production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I378319
+# CLEO D_10, D_20 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I372349
+# ARGUS D_s2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1995_I397794
+# CLEO Sigma_c*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I424575
+# CLEO Lambda_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I298611
+# BABAR Omega_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
+# BABAR Xi'_c spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
+# BABAR J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2001_I558091
+# BABAR D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
+# BABAR D_s 2317 and 2460 spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714447
+# BABAR anti-deuteron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
+# BABAR Omega_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I724557
+# BELLE dihadron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1607562
