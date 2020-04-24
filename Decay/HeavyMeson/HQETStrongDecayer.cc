@@ -22,7 +22,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565), h_(0.565), f_(0.565/3.), deltaEta_(1./43.7), Lambda_(1.*GeV), psi_(0.),
+  : fPi_(130.2*MeV), g_(0.565208), h_(0.000763), f_(0.465464), deltaEta_(1./43.7), Lambda_(1.*GeV), psi_(-2.792963),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
@@ -120,19 +120,19 @@ void HQETStrongDecayer::Init() {
   static Parameter<HQETStrongDecayer,double> interfaceg
     ("g",
      "The coupling for D* decays",
-     &HQETStrongDecayer::g_, 0.565, 0.0, 1.0,
+     &HQETStrongDecayer::g_, 0.565208, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<HQETStrongDecayer,double> interfaceh
     ("h",
      "The coupling for D_1, D*_2 and D*_2s decays",
-     &HQETStrongDecayer::h_, 0.565, 0.0, 1.0,
+     &HQETStrongDecayer::h_, 0.000763, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<HQETStrongDecayer,double> interfacef
     ("f",
      "The coupling for D*_0 and D'_1 decays",
-     &HQETStrongDecayer::f_, 0.565/3., 0.0, 1.0,
+     &HQETStrongDecayer::f_, 0.465464, 0.0, 1.0,
      false, false, Interface::limited);
 
   static ParVector<HQETStrongDecayer,double> interfaceMaxWeight
@@ -156,7 +156,7 @@ void HQETStrongDecayer::Init() {
   static Parameter<HQETStrongDecayer,double> interfacefpsi
     ("psi",
      "D_1 mixing angle",
-     &HQETStrongDecayer::psi_, 0., -M_PI/2., M_PI/2.,
+     &HQETStrongDecayer::psi_, -2.792963, -M_PI/2., M_PI/2.,
      false, false, Interface::limited);
 }
 
