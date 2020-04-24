@@ -1214,7 +1214,9 @@ for i in range(2,4) :
 merge("/TASSO_1980_I143691/d01-x01-y01")
 useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
 useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
-if("/TASSO_1980_I143691/d03-x01-y01" in inhistos) :
+if("/TASSO_1980_I143691/d03-x01-y01" in inhistos and
+   "17." in inhistos["/TASSO_1980_I143691/d03-x01-y01"] and
+   "22." in inhistos["/TASSO_1980_I143691/d03-x01-y01"]) :
     average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
     average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
 useOne("/TASSO_1980_I143691/d04-x01-y01","30.2")
