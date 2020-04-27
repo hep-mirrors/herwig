@@ -64,7 +64,8 @@ analyses={ "HadronDecays"     : { },
                            "2pigamma" : {},
                            "3K"       : {},
                            "4pi"      : {},
-                           "5pi"      : {},},
+                           "5pi"      : {},
+                           "6pi"      : {},},
            "Charged" : {"TotalChargedMult" : { 0 : {}, 1 : {}, 4 : {}, 5 : {}, 51 : {}, 41 : {} , "C" : {} },
                         "ChargedSpectrum" : {  0   : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}},
                                                1   : { "x" : {}, "p" : {}, "xi" : {}},
@@ -279,7 +280,7 @@ particleNames = {
     311 : "$K^0,\\bar{K}^0$", 321 : "$K^\\pm$",  313 : "$K^{*0},\\bar{K}^{*0}$", 323 : "$K^{*\\pm}$",
     315 : "$K^0_2,\\bar{K}^0_2$", 325 : "$K^\\pm_2$",
     411 : "$D^\\pm$", 421 : "$D^0,\\bar{D}^0$", 413: "$D^{*\\pm}$", 415 : "$D^\\pm_2$", 425 : "$D^0_2, \\bar{D}^0_2$", 423: "$D^{*0},\\bar{D}^{*0}$",
-    10423: "$D^0_1,\\bar{D}_1^0$",10413: "$D^\\pm_1",
+    10423: "$D^0_1,\\bar{D}_1^0$",10413: "$D^\\pm_1$",
     431 : "$D_s^\\pm$", 435 : "$D^\\pm_{s2}$", 20433 : "$D^\\pm_{s1}$", 433 : "$D_s^{*\\pm}$", 10433 : "$D_{s1}(2536)^+$", 10431 : "$D_{s0}(2319)^+$",
 
     511 : "$B^0,\\bar{B}^0$", "511B" : "$B^0,\\bar{B}^0, B^\\pm$",
@@ -306,7 +307,7 @@ particleNames = {
     4312  : "$\\Xi_c^{\\prime0}$",
     5122 : "$\\Lambda_b^0,\\bar{\\Lambda}^0_b$",
     4124 : "$\\Lambda_c(2625)^+,\\bar{\\Lambda}(2625)_c^+$", 4112 : "$\\Sigma_c^0,\\bar{\\Sigma}_c^0$", 4114 : "$\\Sigma_c^{*0},\\bar{\\Sigma}_c^{*0}$",
-    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4334 : "$\\Omega_{c*}^0,\\bar{\\Omega}_^{*c}^0$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$", 4232 : "$\\Xi_c^+,\\bar{\\Xi}_c^-$",
+    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4334 : "$\\Omega_c^{*0},\\bar{\\Omega}_{c}^{*0}$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$", 4232 : "$\\Xi_c^+,\\bar{\\Xi}_c^-$",
     "321/2212" : "$K^\\pm,p,\\bar{p}$"
     }
 # hadron species
@@ -445,7 +446,9 @@ analyses["HadronDecays"][20113]["Modes"]["$a_1^0\\to\\pi^+\\pi^-\\pi^0$"]["MC"] 
                                                                                    "/MC_OmegaPhia1_3Pion_Decay/hist2B" ,"/MC_OmegaPhia1_3Pion_Decay/hist2C"]
 # charm decays
 # D+
-analyses["HadronDecays"][411] = { "Modes" : { "$D^+\\to\\bar{K}^0e^+\\nu_e$"                : {},
+analyses["HadronDecays"][411] = { "Mult" : {},
+                                  "Spectrum" : {},
+                                  "Modes" : { "$D^+\\to\\bar{K}^0e^+\\nu_e$"                : {},
                                               "$D^+\\to\\pi^0e^+\\nu_e$"                    : {},
                                               "$D^+\\to \\bar{K}_1(1270)^0e^+\\nu_e$"       : {},
                                               "$D^+\\to\\bar{K}^0\\mu^+\\nu_\\mu$"          : {},
@@ -466,7 +469,13 @@ analyses["HadronDecays"][411] = { "Modes" : { "$D^+\\to\\bar{K}^0e^+\\nu_e$"    
                                               "$D^+\\to K^-\\pi^+\\pi^+$"                          : {},
                                               "$D^+\\to K^+\\pi^-\\pi^+$"                          : {},
                                               "$D^+\\to\\bar{K}^0\\pi^+\\pi^0$"                    : {},
-                                              }}
+                                   }}
+analyses["HadronDecays"][411]["Mult"][221] = ["/CLEOC_2006_I728043/d01-x01-y01"]
+analyses["HadronDecays"][411]["Mult"][331] = ["/CLEOC_2006_I728043/d02-x01-y01"]
+analyses["HadronDecays"][411]["Mult"][333] = ["/CLEOC_2006_I728043/d03-x01-y01"]
+analyses["HadronDecays"][411]["Spectrum"][221] = ["/CLEOC_2006_I728043/d04-x01-y01"]
+analyses["HadronDecays"][411]["Spectrum"][333] = ["/CLEOC_2006_I728043/d05-x01-y01"]
+analyses["HadronDecays"][411]["Spectrum"][11] = ["/CLEOC_2006_I715096/d01-x01-y01"]
 analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\bar{K}^0e^+\\nu_e$"               ]["data"] = ["/BESIII_2017_I1519425/d01-x01-y01","/CLEOC_2009_I823313/d01-x01-y04",
                                                                                                  "/CLEOC_2008_I769777/d01-x01-y04"]
 analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\bar{K}^0e^+\\nu_e$"               ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_411p_311m_11m_energy",
@@ -503,7 +512,7 @@ analyses["HadronDecays"][411]["Modes"]["$D^+\\to K^+\\pi^-\\pi^+$"              
                                                                                                         "/MC_D_Dalitz/h_kppip5","/MC_D_Dalitz/h_pippim5",]
 analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\bar{K}^0\\pi^+\\pi^0$"                   ]["MC"  ] = ["/MC_D_Dalitz/dalitz4","/MC_D_Dalitz/h_Kpi04",
                                                                                                         "/MC_D_Dalitz/h_Kpip4","/MC_D_Dalitz/h_pipi4"]
-analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\eta e^+\\nu_e$"                   ]["data"  ] = ["/CLEOC_2011_I875526/d01-x01-y01","/CLEOC_2011_I875526/d01-x01-y02"]
+analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\eta e^+\\nu_e$"                   ]["data"  ] = ["/CLEOC_2011_I875526/d01-x01-y01","/CLEOC_2011_I875526/d01-x01-y02","/BESIII_2018_I1662660/d01-x01-y01"]
 analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\eta e^+\\nu_e$"                   ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_411p_221p_11m_energy",
                                                                                                  "/MC_Semi_Leptonic_Decay/h_411p_221p_11m_scale",
                                                                                                  "/MC_Semi_Leptonic_Decay/h_411m_221p_11p_energy",
@@ -553,7 +562,9 @@ analyses["HadronDecays"][411]["Modes"]["$D^+\\to\\bar{K}_2^{*0}\\mu^+\\nu_\\mu$"
                                                                                                  "/MC_Semi_Leptonic_Decay/h_411m_315p_13p_energy",
                                                                                                  "/MC_Semi_Leptonic_Decay/h_411m_315p_13p_scale"]
 # D^0
-analyses["HadronDecays"][421] ={ "Modes" : { "$D^0\\to K^-e^+\\nu_e$"                : {},
+analyses["HadronDecays"][421] ={  "Mult" : {},
+                                  "Spectrum" : {},
+                                  "Modes" : { "$D^0\\to K^-e^+\\nu_e$"                : {},
                                              "$D^0\\to K^-\\mu^+\\nu_\\mu$"          : {},
                                              "$D^0\\to K^{*-}e^+\\nu_e$"             : {},
                                              "$D^0\\to K^{*-}\\mu^+\\nu_\\mu$"       : {},
@@ -567,7 +578,15 @@ analyses["HadronDecays"][421] ={ "Modes" : { "$D^0\\to K^-e^+\\nu_e$"           
                                              "$D^0\\to \\rho^-\\mu^+\\nu_\\mu$"      : {},
                                              "$D^0\\to K^-\\pi^+\\pi^0$"             : {},
                                              "$D^0\\to \\bar{K}^0\\pi^+\\pi^-$"      : {},
+                                             "$D^0\\to \\eta\\pi^+\\pi^-$"           : {},
                                              }}
+analyses["HadronDecays"][421]["Mult"][221] = ["/CLEOC_2006_I728043/d01-x01-y02"]
+analyses["HadronDecays"][421]["Mult"][331] = ["/CLEOC_2006_I728043/d02-x01-y02"]
+analyses["HadronDecays"][421]["Mult"][333] = ["/CLEOC_2006_I728043/d03-x01-y02"]
+analyses["HadronDecays"][421]["Spectrum"][221] = ["/CLEOC_2006_I728043/d04-x01-y02"]
+analyses["HadronDecays"][421]["Spectrum"][333] = ["/CLEOC_2006_I728043/d05-x01-y02"]
+analyses["HadronDecays"][421]["Spectrum"][11] = ["/CLEOC_2006_I715096/d01-x01-y02"]
+analyses["HadronDecays"][421]["Modes"]["$D^0\\to \\eta\\pi^+\\pi^-$"]["data"] = ["/CLEOC_2008_I779705/d01-x01-y01","/CLEOC_2008_I779705/d01-x01-y02"]
 analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^{*-}e^+\\nu_e$"             ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_421p_323m_11m_energy",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421p_323m_11m_scale",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421m_323p_11p_energy",
@@ -600,6 +619,7 @@ analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^-e^+\\nu_e$"                ]
                                                                                             "/MC_Semi_Leptonic_Decay/h_421p_321m_11m_scale",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421m_321p_11p_energy",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421m_321p_11p_scale"]
+analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^-\\mu^+\\nu_\\mu$"          ]["data"] = ["/BESIII_2018_I1697371/d01-x01-y01"]
 analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^-\\mu^+\\nu_\\mu$"          ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_421p_321m_13m_energy",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421p_321m_13m_scale",
                                                                                             "/MC_Semi_Leptonic_Decay/h_421m_321p_13p_energy",
@@ -629,18 +649,27 @@ analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^-\\pi^+\\pi^0$"             ]
                                                                                             "/MC_D_Dalitz/h_neutral2","/MC_D_Dalitz/h_pipi2"]
 analyses["HadronDecays"][421]["Modes"]["$D^0\\to \\bar{K}^0\\pi^+\\pi^-$"      ]["MC"  ] = ["/MC_D_Dalitz/dalitz1","/MC_D_Dalitz/h_minus1",
                                                                                             "/MC_D_Dalitz/h_pipi1","/MC_D_Dalitz/h_plus1"]
-analyses["HadronDecays"][431] = { "Modes" : { "$D_s^+\\to \\eta e^+\\nu_e$"                : {},
-                                              "$D_s^+\\to \\eta \\mu^+\\nu_\\mu$"          : {},
-                                              "$D_s^+\\to \\eta^\\prime e^+\\nu_e$"        : {},
-                                              "$D_s^+\\to \\eta^\\prime \\mu^+\\nu_\\mu$"  : {},
-                                              "$D_s^+\\to \\phi e^+\\nu_e$"                : {},
-                                              "$D_s^+\\to \\phi \\mu^+\\nu_\\mu$"          : {},
-                                              "$D_s^+\\to K^0 e^+\\nu_e$"                  : {},
-                                              "$D_s^+\\to K^0 \\mu^+\\nu_\\mu$"            : {},
-                                              "$D_s^+\\to K^{*0} e^+\\nu_e$"               : {},
-                                              "$D_s^+\\to K^{*0} \\mu^+\\nu_\\mu$"         : {},
-                                              "$D_s^+\\to K^+\\pi^-\\pi^+$"                : {},
-                                              }}
+analyses["HadronDecays"][431] = {  "Mult" : {},
+                                   "Spectrum" : {},
+                                   "Modes" : { "$D_s^+\\to \\eta e^+\\nu_e$"                : {},
+                                               "$D_s^+\\to \\eta \\mu^+\\nu_\\mu$"          : {},
+                                               "$D_s^+\\to \\eta^\\prime e^+\\nu_e$"        : {},
+                                               "$D_s^+\\to \\eta^\\prime \\mu^+\\nu_\\mu$"  : {},
+                                               "$D_s^+\\to \\phi e^+\\nu_e$"                : {},
+                                               "$D_s^+\\to \\phi \\mu^+\\nu_\\mu$"          : {},
+                                               "$D_s^+\\to K^0 e^+\\nu_e$"                  : {},
+                                               "$D_s^+\\to K^0 \\mu^+\\nu_\\mu$"            : {},
+                                               "$D_s^+\\to K^{*0} e^+\\nu_e$"               : {},
+                                               "$D_s^+\\to K^{*0} \\mu^+\\nu_\\mu$"         : {},
+                                               "$D_s^+\\to K^+\\pi^-\\pi^+$"                : {},
+                                   }}
+analyses["HadronDecays"][431]["Mult"][221] = ["/CLEOC_2006_I728043/d01-x01-y03"]
+analyses["HadronDecays"][431]["Mult"][331] = ["/CLEOC_2006_I728043/d02-x01-y03"]
+analyses["HadronDecays"][431]["Mult"][333] = ["/CLEOC_2006_I728043/d03-x01-y03"]
+analyses["HadronDecays"][431]["Spectrum"][221] = ["/CLEOC_2006_I728043/d04-x01-y03"]
+analyses["HadronDecays"][431]["Spectrum"][333] = ["/CLEOC_2006_I728043/d05-x01-y03"]
+
+
 analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to \\eta e^+\\nu_e$"               ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_431p_221p_11m_energy",
                                                                                                 "/MC_Semi_Leptonic_Decay/h_431p_221p_11m_scale",
                                                                                                 "/MC_Semi_Leptonic_Decay/h_431m_221p_11p_energy",
@@ -705,10 +734,12 @@ analyses["HadronDecays"][10423]["Modes"]["$D^0_1\\to D^{*+}\pi^-$"]["data"] = ["
 analyses["HadronDecays"][10413] = { "Modes" : { "$D^+_1\\to D^{*0}\pi^+$"      : {}}}
 analyses["HadronDecays"][10413]["Modes"]["$D^+_1\\to D^{*0}\pi^+$"]["data"] = ["/CLEOII_1994_I378319/d03-x01-y01"]
 # D_s1(2536)
-analyses["HadronDecays"][10433] = { "Modes" : { "$D^+_{s1}\\to D^{*+}K^0$"      : {}}}
+analyses["HadronDecays"][10433] = { "Modes" : { "$D^+_{s1}\\to D^{*+}K^0$"      : {},
+                                                "$D^+_{s1}\\to D^{*0}K^+$"      : {}}}
 analyses["HadronDecays"][10433]["Modes"]["$D^+_{s1}\\to D^{*+}K^0$"]["data"]= ["/BABAR_2011_I892421/d01-x01-y01","/BABAR_2011_I892421/d02-x01-y01",
                                                                                "/BELLE_2008_I762013/d01-x01-y01","/BELLE_2008_I762013/d02-x01-y01",
                                                                                "/BELLE_2008_I762013/d03-x01-y01"]
+analyses["HadronDecays"][10433]["Modes"]["$D^+_{s1}\\to D^{*0}K^+$"]["data"]= ["/CLEOII_1993_I352823/d04-x01-y01"]
 # D_s1(2460)
 analyses["HadronDecays"][20433] = { "Modes" : { "$D^{\\prime+}_{s1}\\to D^{*+}_s\pi^0$"      : {}}}
 analyses["HadronDecays"][20433]["Modes"]["$D^{\\prime+}_{s1}\\to D^{*+}_s\pi^0$"]["data"]= ["/BABAR_2006_I714447/d05-x01-y01"]
@@ -1235,6 +1266,7 @@ analyses["HadronDecays"][300553]["Mult"][   445 ] = ["/PDG_Upsilon_4S_HADRON_MUL
                                                      "/BABAR_2003_I593379/d01-x01-y05","/BABAR_2003_I593379/d01-x01-y06"]
 analyses["HadronDecays"][300553]["Mult"][   311 ] = ["/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d63-x01-y01"]
 analyses["HadronDecays"][300553]["Mult"][   221 ] = ["/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d89-x01-y01"]
+analyses["HadronDecays"][300553]["Mult"][ 4332 ] = ["/BABAR_2007_I746745/d02-x01-y01"]
 
 analyses["HadronDecays"][300553]["Spectrum"][111   ] = ["/BELLE_2001_S4598261/d01-x01-y01"]
 analyses["HadronDecays"][300553]["Spectrum"][211   ] = ["/ARGUS_1993_S2653028/d01-x01-y01","/ARGUS_1993_S2653028/d02-x01-y01"]
@@ -1335,6 +1367,8 @@ analyses["HadronDecays"][4122]["Modes"]["$\\Lambda^+_c\\to\\Lambda^0\\pi^+$"]["d
 analyses["HadronDecays"][4122]["Modes"]["$\\Lambda^+_c\\to\\Sigma^+\\pi^0$"]["data"] = ["/CLEO_1995_I392704/d02-x01-y01","/CLEO_1995_I392704/d04-x01-y01"]
 analyses["HadronDecays"][4122]["Modes"]["$\\Lambda^+_c\\to\\Lambda^0 e^+\\bar{\\nu}_e$"]["data"] = ["/CLEOII_2005_I668268/d01-x01-y01","/CLEOII_1994_I371611/d01-x01-y01",
                                                                                                     "/CLEOII_1994_I371611/d02-x01-y01","/ARGUS_1994_I371613/d01-x01-y01"]
+analyses["HadronDecays"][4222] = { "Modes" : {"$\\Sigma^*\\to\\Lambda_c\\pi$" : {} } }
+analyses["HadronDecays"][4222]["Modes"]["$\\Sigma^*\\to\\Lambda_c\\pi$"]["data"] = ["/CLEOII_1997_I424575/d02-x01-y01"]
 # charged multiplicity (total)
 analyses["Charged"]["TotalChargedMult"][0][9.5  ] = ["/LENA_1981_I164397/d03-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][0][10.47] = ["/ARGUS_1992_I319102/d04-x01-y01"]
@@ -2078,7 +2112,6 @@ analyses["IdentifiedParticle"][10431]["x"    ][10   ] = ["/BABAR_2006_I714447/d0
 # D_s1(2536)
 analyses["IdentifiedParticle"][10433]["x"    ][10   ] = ["/ARGUS_1989_I282570/d02-x01-y01"]
 analyses["IdentifiedParticle"][10433]["x"    ][10.5 ] = ["/CLEOII_1993_I352823/d03-x01-y01"]
-analyses["IdentifiedParticle"][10433]["x"    ][10.6 ] = ["/CLEOII_1993_I352823/d04-x01-y01"]
 # charmonium
 analyses["IdentifiedParticle"][443   ]["p"    ][10.6 ] = ["/BELLE_2002_I563840/d03-x01-y01","/BELLE_2002_I563840/d03-x01-y02"]
 analyses["IdentifiedParticle"][443   ]["x"    ][91.2 ] = ["/OPAL_1996_S3257789/d01-x01-y01"]
@@ -2483,7 +2516,7 @@ analyses["Multiplicity"][14122][10.6] = ["/ARGUS_1993_I357132/d01-x01-y01","/BEL
                                          "/CLEOII_1994_I381696/d04-x01-y01"]
 analyses["Multiplicity"][4124 ][10.6] = ["/ARGUS_1997_I440304/d01-x01-y01","/ARGUS_1997_I440304/d01-x02-y01",
                                          "/BELLE_2017_I1606201/d16-x01-y10","/CLEOII_1994_I381696/d04-x01-y02"]
-analyses["Multiplicity"][4332 ][10.] = ["/BELLE_2017_I1606201/d16-x01-y15"]
+analyses["Multiplicity"][4332 ][10.] = ["/BELLE_2017_I1606201/d16-x01-y15","/BABAR_2007_I746745/d03-x01-y01"]
 analyses["Multiplicity"][4334 ][10.] = ["/BABAR_2006_I724557/d01-x01-y01"]
 analyses["Multiplicity"][4212][10.52] = ["/BELLE_2017_I1606201/d16-x01-y11"]
 analyses["Multiplicity"][4214][10.52] = ["/BELLE_2017_I1606201/d16-x01-y12"]
@@ -3254,6 +3287,7 @@ analyses["TauDecays"]["KKpi" ]["MC"  ] = ["/MC_TAU_Decay/h_3B_klpimkl_1","/MC_TA
                                           "/MC_TAU_Decay/h_3B_kspimks_3"]
 analyses["TauDecays"]["3K"   ]["data"] = ["/BELLE_2010_I841618/d04-x01-y01","/BABAR_2007_S7266081/d09-x01-y01",
                                           "/BABAR_2007_S7266081/d10-x01-y01","/BABAR_2007_S7266081/d14-x01-y01"]
+analyses["TauDecays"]["Keta"]["data"] = ["/CLEOII_1996_I415409/d01-x01-y01"]
 analyses["TauDecays"]["Keta"]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2Keta","/MC_TAU_Decay/h_2B_mKeta"]
 analyses["TauDecays"]["lnu" ]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2enu","/MC_TAU_Decay/h_2B_m2munu",
                                          "/MC_TAU_Decay/h_2B_menu","/MC_TAU_Decay/h_2B_mmunu"]
@@ -3286,6 +3320,7 @@ analyses["TauDecays"]["5pi"]["MC"  ] = ["/MC_TAU_Decay/h_5B_pipi1_1","/MC_TAU_De
                                         "/MC_TAU_Decay/h_5B_pipipipi2_2","/MC_TAU_Decay/h_5B_pipipipi3_1",
                                         "/MC_TAU_Decay/h_5B_pipipipi3_2","/MC_TAU_Decay/h_5B_q1",
                                         "/MC_TAU_Decay/h_5B_q2","/MC_TAU_Decay/h_5B_q3"]
+analyses["TauDecays"]["6pi"]["data"] = ["/CLEOII_1994_I373188/d01-x01-y01"]
 analyses["EventShapes"]["2jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y01"]
 analyses["EventShapes"]["3jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y02"]
 analyses["EventShapes"]["4jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y03"]
@@ -3572,7 +3607,8 @@ def writeTauDecays(index) :
               "2pieta"   : "$\\tau\\to\\nu_\\tau\\eta\\pi\\pi$",
               "2pigamma" : "$\\tau\\to\\nu_\\tau\\gamma\\pi\\pi$",
               "4pi"      : "$\\tau\\to\\nu_\\tau4\\pi$",
-              "5pi"      : "$\\tau\\to\\nu_\\tau5\\pi$",}
+              "5pi"      : "$\\tau\\to\\nu_\\tau5\\pi$",
+              "6pi"      : "$\\tau\\to\\nu_\\tau6\\pi$",}
     index.write("<ul>\n")
 
 
@@ -3622,9 +3658,9 @@ def writeTauDecays(index) :
             else            : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Monte Carlo"))
             writePlots2(analyses["TauDecays"][obs][val],decays)
     # six body
-    decays.write("<h2 id=\"6body\">Six Body</h2>\n")
+    decays.write("<h2 id=\"6body\">Six and more Body</h2>\n")
     index.write("<li> <a href=\"taus.html#6body\">Six Body:</a>")
-    for obs in ["5pi"] :
+    for obs in ["5pi","6pi"] :
         decays.write("<h3 id=\"%s\">%s</h3>\n" % (obs,names[obs]))
         index.write("<a href=\"taus.html#%s\">%s,<a/>\n" % (obs,names[obs]))
         for val in ["data","MC"] :
