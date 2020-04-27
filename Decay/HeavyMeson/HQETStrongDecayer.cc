@@ -315,43 +315,33 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
     vecOut_={HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
 	     HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
 	     HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-    if(abs(type_[imode()])==4) {
-      InvEnergy2 factD1 = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())
-	/Lambda_*momenta[0].mass()/part.mass();
-      InvEnergy factD1prim = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
-      for(unsigned int ix=0;ix<3;++ix) {
-	for(unsigned int iy=0;iy<3;++iy) {
-	  (*ME())(ix,iy,0)  = cos(psi_)*Complex(factD1*(vecOut_[iy].dot(vecIn_[ix])
-							*(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
-							- 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
-	  (*ME())(ix,iy,0) += sin(psi_)*Complex(factD1prim*(momenta[1]*(part.momentum()/part.mass()
-									+ momenta[0]/momenta[0].mass())*vecIn_[ix].dot(vecOut_[iy])
-							    - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
-							    - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
-	}
-      }
-      // analytic test of the answer
-      test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
-	(25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())
-	 +sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.;
+    double m1(cos(psi_)),m2(sin(psi_));
+    if(abs(type_[imode()])==6) {
+      swap(m1,m2);
+      m1 *=-1.;
     }
-    else if(abs(type_[imode()])==6) {
-      InvEnergy fact = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
-      for(unsigned int ix=0;ix<3;++ix) {
-	for(unsigned int iy=0;iy<3;++iy) {
-	  (*ME())(ix,iy,0)=
-	    Complex(fact*(momenta[1]*(part.momentum()/part.mass() + momenta[0]/momenta[0].mass())
-			  * vecIn_[ix].dot(vecOut_[iy])
-			  - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
-			  - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
-	}
+    InvEnergy2 factD1 = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())
+      /Lambda_*momenta[0].mass()/part.mass();
+    InvEnergy  factD1prim = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
+    for(unsigned int ix=0;ix<3;++ix) {
+      for(unsigned int iy=0;iy<3;++iy) {
+	(*ME())(ix,iy,0)  = m1*Complex(factD1*(vecOut_[iy].dot(vecIn_[ix])
+					       *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
+					       - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
+	(*ME())(ix,iy,0) += m2*Complex(factD1prim*(momenta[1]*(part.momentum()/part.mass()
+							       + momenta[0]/momenta[0].mass())*vecIn_[ix].dot(vecOut_[iy])
+						   - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
+						   - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
       }
-      // analytic test of the answer
-      test = sqr(f_)/(4.*sqr(fPi_))*sqr(part.mass()-momenta[0].mass())
-	* sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
-	* sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
-	/ (part.mass()*momenta[0].mass())/sqr(part.mass());
     }
+    // analytic test of the answer (N.B. missing interference term)
+    test = 4.*sqr(m1*h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
+      (25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())
+       +sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.+
+      sqr(f_*m2)/(4.*sqr(fPi_))*sqr(part.mass()-momenta[0].mass())
+      * sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
+      * sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
+      / (part.mass()*momenta[0].mass())/sqr(part.mass());
   }
   // ScalarMeson to ScalarMeson + ScalarMeson
   else if(abs(type_[imode()])==5) {
