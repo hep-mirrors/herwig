@@ -37,11 +37,11 @@ DescribeClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_;
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_ << massISR_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_;
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_ >> massISR_;
 }
 
 void SudakovFormFactor::Init() {
@@ -109,6 +109,20 @@ void SudakovFormFactor::Init() {
      "Include an additional factor of sqrt(z)",
      5);
 
+    static Switch<SudakovFormFactor,bool> interfacemassISR
+    ("massISR",
+     "Switch on or off b and c mass effects in g->QQbar splittings in ISR",
+     &SudakovFormFactor::massISR_, false, false, false);
+  static SwitchOption interfacemassISRYes
+    (interfacemassISR,
+     "Yes",
+     "Use the b or c mass dependence in the g->QQ~ splitting kernel for ISR",
+     true);
+  static SwitchOption interfacemassISRNo
+    (interfacemassISR,
+     "No",
+     "Always use massless splitting kernels for ISR",
+     false);
 
 }
 
@@ -391,6 +405,9 @@ generateNextSpaceBranching(const Energy startingQ,
 			   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
+  // CONSIDER THE MASS TERM FOR GLUON SPLITTINGS INTO CHARMS OR BOTTOMS
+  //if  (ids[0]->id() == 21 && ( abs(ids[1]->id()) ==5 || abs(ids[1]->id()) ==4)  ) std::cout<< massISR_<<std::endl;
+  bool mass = (massISR_ && (ids[0]->id() == 21 && ( abs(ids[1]->id()) ==5 || abs(ids[1]->id()) ==4)  ));
   q_ = ZERO;
   z_ = 0.;
   phi_ = 0.;
@@ -411,7 +428,7 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while(pt2 < cutoff_->pT2min()||
         z() > zlimits_.second||
-	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
+	  SplittingFnVeto((1.-z())*t/z(),ids,mass,rho,detuning)||
         alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,ids[0],ids[1],beam));
   }
@@ -425,12 +442,12 @@ generateNextSpaceBranching(const Energy startingQ,
       ptRew=pt2 < cutoff_->pT2min();
       zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
-      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
+      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,mass,rho,detuning);
       alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
       PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
       double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
                     alphaSVetoRatio(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
-	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
+	SplittingFnVetoRatio((1.-z())*t/z(),ids,mass,rho,detuning);
 
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
@@ -451,7 +468,7 @@ generateNextSpaceBranching(const Energy startingQ,
             double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
                            alphaSVetoRatio(splittingFn()->pTScale() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
+	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,mass,rho,detuning);
 
             double varied;
             if( PDFRew || SplitRew || alphaRew) {

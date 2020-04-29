@@ -138,7 +138,7 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			z_( 0.0 ),phi_(0.0), pT_(){}
+			z_( 0.0 ),phi_(0.0), pT_(), massISR_(false) {}
 
   /**
    *  Members to generate the scale of the next branching
@@ -618,6 +618,12 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy2> masssquared_;
+
+
+  /**
+   * If true, bottom and charm mass effects are considered when doing g->QQbar splittings in ISR
+   */
+  bool massISR_;
 
 };
 
