@@ -208,6 +208,11 @@ private:
    *  The allowed flavours of the incoming quarks
    */
   unsigned int _maxflavour;
+  /**
+   *  The allowed flavours of the incoming quarks
+   */
+  unsigned int _minflavour;
+  
 
   /**
    *  Which intermediate \f$W^\pm\f$ bosons to include

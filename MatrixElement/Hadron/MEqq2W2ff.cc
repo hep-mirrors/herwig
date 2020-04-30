@@ -31,7 +31,7 @@
 
 using namespace Herwig;
 
-MEqq2W2ff::MEqq2W2ff() : _maxflavour(5), _plusminus(0), _process(0) {
+MEqq2W2ff::MEqq2W2ff() : _maxflavour(5), _minflavour(1), _plusminus(0), _process(0) {
   massOption(vector<unsigned int>(2,1));
 }
 
@@ -61,22 +61,29 @@ void MEqq2W2ff::getDiagrams() const {
   // don't even think of putting 'break' in here!
   switch(_maxflavour) {
   case 5:
-    parentpair.push_back(make_pair(ParticleID::b, ParticleID::cbar));
-    parentpair.push_back(make_pair(ParticleID::b, ParticleID::ubar));
+    if(_minflavour <= 4)
+      parentpair.push_back(make_pair(ParticleID::b, ParticleID::cbar));
+    if(_minflavour <= 2)
+      parentpair.push_back(make_pair(ParticleID::b, ParticleID::ubar));
     [[fallthrough]];
   case 4:
-    parentpair.push_back(make_pair(ParticleID::s, ParticleID::cbar));
-    parentpair.push_back(make_pair(ParticleID::d, ParticleID::cbar));
+    if(_minflavour <= 3)
+      parentpair.push_back(make_pair(ParticleID::s, ParticleID::cbar));
+    if(_minflavour <= 1)
+      parentpair.push_back(make_pair(ParticleID::d, ParticleID::cbar));
     [[fallthrough]];
   case 3:
-    parentpair.push_back(make_pair(ParticleID::s, ParticleID::ubar));
+    if(_minflavour <= 2)
+      parentpair.push_back(make_pair(ParticleID::s, ParticleID::ubar));
     [[fallthrough]];
   case 2:
-    parentpair.push_back(make_pair(ParticleID::d, ParticleID::ubar));
+    if(_minflavour <= 1)
+      parentpair.push_back(make_pair(ParticleID::d, ParticleID::ubar));
     [[fallthrough]];
   default:
     ;
   }
+
   // possible children
   Pairvector childpair;
   childpair.reserve(9);
@@ -178,11 +185,11 @@ MEqq2W2ff::colourGeometries(tcDiagPtr) const {
 }
 
 void MEqq2W2ff::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _plusminus << _process << _theFFWVertex << _wp << _wm;
+  os << _maxflavour << _minflavour << _plusminus << _process << _theFFWVertex << _wp << _wm;
 }
 
 void MEqq2W2ff::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _plusminus >> _process >> _theFFWVertex >> _wp >> _wm;
+  is >> _maxflavour >> _minflavour >> _plusminus >> _process >> _theFFWVertex >> _wp >> _wm;
 }
 
 // The following static variable is needed for the type
@@ -202,6 +209,12 @@ void MEqq2W2ff::Init() {
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
       &MEqq2W2ff::_maxflavour, 5, 0, 5, false, false, true);
+
+  static Parameter<MEqq2W2ff,unsigned int> interfaceMinFlavour
+    ( "MinFlavour",
+      "The lightest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEqq2W2ff::_minflavour, 1, 0, 5, false, false, true);
 
   static Switch<MEqq2W2ff,unsigned int> interfacePlusMinus
     ("Wcharge",
