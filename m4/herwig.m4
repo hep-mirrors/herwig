@@ -863,6 +863,15 @@ then
 else
    python_was_found="no, requires Python >= 2.6"
 fi
+
+FC_VERSION_STRING=`$FC -v 2>&1 | sed -n 's/^gcc version //p'`
+FC_VERSION_FULL=`echo ${FC_VERSION_STRING} | sed -e 's/\([^ ]*\) .*/\1/'`
+FC_VERSION=`echo ${FC_VERSION_FULL} | cut -d "." -f 1`
+
+if test "$FC_VERSION" = "10"; then
+FCFLAGS="$FCFLAGS -fallow-argument-mismatch"
+fi
+
 cat << _HW_EOF_ > config.herwig
 *****************************************************
 *** $PACKAGE_STRING configuration summary
@@ -896,6 +905,7 @@ cat << _HW_EOF_ > config.herwig
 *** FC:			$FCSTRING
 ***
 *** CXXFLAGS:		$CXXFLAGS
+*** FCFLAGS:            $FCFLAGS
 *****************************************************
 _HW_EOF_
 ])
