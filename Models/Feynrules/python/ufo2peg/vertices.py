@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys,pprint
 
 from .helpers import CheckUnique,getTemplate,writeFile,coupling_orders,def_from_model
@@ -62,16 +63,15 @@ def get_lorentztag(spin):
     result=[]
     for i in range(0,len(spin)) :
         result.append((spins[spin[i]],i+1))
-    def spinsort(a,b):
-        """Helper function for ThePEG's FVST spin tag ordering."""
-        (a1,a2) = a
-        (b1,b2) = b
-        if a1 == b1: return 0
-        for letter in 'URFVST':
-            if a1 == letter: return -1
-            if b1 == letter: return  1
+    def spinsort(inVal):
+        output=0
+        vals=['U','R','F','V','S','T']
+        for val in vals:
+            if inVal==val : break
+            output+=1
+        return output
 
-    result = sorted(result, cmp=spinsort)
+    result = sorted(result, key=spinsort)
     order=[]
     output=""
     for i in range(0,len(result)) :
@@ -104,13 +104,8 @@ def colors(vertex) :
     L = len(struct)
     return (L,pos)
 
-def coloursort(a,b) :
-    if a == b: return 0
-    i1=int(a[4])
-    i2=int(b[4])
-    if(i1==i2)  : return 0
-    elif(i1<i2) : return -1
-    else        : return 1
+def coloursort(a) :
+    return int(a[4])
     
 def colorfactor(vertex,L,pos,lorentztag):
     def match(patterns,color=vertex.color):
@@ -205,7 +200,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             (o2,s2) = extractAntiSymmetricIndices(f[1],"f(")
             if(o2[0]<o1[0]) : o1,o2=o2,o1
             colors.append("f(%s)*f(%s)" % (",".join(o1),",".join(o2)))
-        colors=sorted(colors,cmp=coloursort)
+        colors=sorted(colors,key=coloursort)
         label = ('f(1,2,-1)*f(3,4,-1)',
                  'f(1,3,-1)*f(2,4,-1)',
                  'f(1,4,-1)*f(2,3,-1)')
@@ -412,8 +407,8 @@ class VertexConverter:
     def convert(self) :
         'Convert the vertices'
         if(self.verbose) :
-            print 'verbose mode on: printing all vertices'
-            print '-'*60
+            print('verbose mode on: printing all vertices')
+            print('-'*60)
             labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
             pprint.pprint(labels)
         # extract the vertices
@@ -491,7 +486,7 @@ Herwig may not give correct results, though.
                                'vertexheaders' : ''.join(vertexheaders),
                                'ModelName' : self.modelname})
         
-        print '='*60
+        print('='*60)
 
     def setCouplingPtrs(self,lorentztag,qcd,append,prepend) :
         couplingptrs = [',tcPDPtr']*len(lorentztag)
@@ -524,7 +519,7 @@ Herwig may not give correct results, though.
             vertex.herwig_skip_vertex = True
             if(not skipped5Point) :
                 skipped5Point = True
-                print "Skipping 5 point vertices which aren\'t used in Herwig7"
+                print("Skipping 5 point vertices which aren\'t used in Herwig7")
                 
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
@@ -618,7 +613,7 @@ Herwig may not give correct results, though.
         maxColour=0
         couplingOrders=[]
         self.vertex_names[vertex.name] = [classname]
-        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
+        for (color_idx,lorentz_idx),coupling in vertex.couplings.items():
             maxColour=max(maxColour,color_idx)
             orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
@@ -638,7 +633,7 @@ Herwig may not give correct results, though.
                 all_couplings.append([])
             # loop over the colour structures
             for colour in range(0,maxColour+1) :
-                for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+                for (color_idx,lorentz_idx),coupling in vertex.couplings.items() :
                     # check colour structure and coupling order
                     if(color_idx!=colour) : continue
                     if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
@@ -722,7 +717,7 @@ Herwig may not give correct results, though.
             # define unkown symbols from the model
             symboldefs = [ def_from_model(self.model,s) for s in symbols ]
             couplingOrder=""
-            for coupName,coupVal in corder.iteritems() :
+            for coupName,coupVal in corder.items() :
                 couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
             ### assemble dictionary and fill template
             subs = { 'lorentztag' : lorentztag,                   # ok
@@ -745,7 +740,7 @@ Herwig may not give correct results, though.
         
             # print info if required
             if self.verbose:
-                print '-'*60
+                print('-'*60)
                 pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
             headers+=VERTEXHEADER.format(**subs)
             classes+=VERTEXCLASS.substitute(subs)
@@ -763,7 +758,7 @@ Herwig may not give correct results, though.
         couplingOrders=[]
         colours={}
         
-        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+        for (color_idx,lorentz_idx),coupling in vertex.couplings.items() :
             orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
             if(gluon4point) :
@@ -812,7 +807,7 @@ Herwig may not give correct results, though.
         iorder=0
         self.vertex_names[vertex.name]=[classname]
         for corder in couplingOrders :
-            for (cidx,(cstruct,cfactor)) in colours.iteritems() :
+            for (cidx,(cstruct,cfactor)) in colours.items() :
                 iorder +=1
                 cname=classname
                 if(iorder!=1) :
@@ -824,7 +819,7 @@ Herwig may not give correct results, though.
                 imax = len(vertex.particles)+1
                 if lorentztag in genericVertices :
                     imax=1
-                for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+                for (color_idx,lorentz_idx),coupling in vertex.couplings.items() :
                     # only the colour structre and coupling order we want
                     if(color_idx != cidx) : continue
                     if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
@@ -854,13 +849,13 @@ Herwig may not give correct results, though.
                     header+="    "+evalHeader+";\n"
                     impls+=evalCC
                 # combine the multiple defn if needed
-                for (key,val) in mult.iteritems() :
+                for (key,val) in mult.items() :
                     (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
                     if(evalHeader!="") : header += "    "+evalHeader+";\n"
                     if(evalCC!="")     : impls   += evalCC
                 impls=impls.replace("evaluate", "FRModel%s::evaluate" % cname)
                 couplingOrder=""
-                for coupName,coupVal in corder.iteritems() :
+                for coupName,coupVal in corder.items() :
                     couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
                 ### assemble dictionary and fill template
                 subs = { 'lorentztag' : lorentztag,
