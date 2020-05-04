@@ -57,9 +57,10 @@ class LorentzParser(ast.NodeVisitor):
     """
 
     def parse(self,expression):
+        from functools import reduce
         self.result = [[]]
         tree = ast.parse(expression)
-        #print '---\n',ast.dump(tree),'\n---'
+        #print ('---\n',ast.dump(tree),'\n---')
         cleaned = map(cleaner,self.visit(tree))
         return  reduce(lambda a,b: (a[0]+b[0], a[1]+b[1]), cleaned)
 
