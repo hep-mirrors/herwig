@@ -206,6 +206,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     if(all_couplings[icolor][lmax+ix] ==
                        all_couplings[icolor][2*lmax+ix]) :
                         test[0]  = all_couplings[icolor][lmax+ix]
+                        imax=1
                     else :
                         test[1] = all_couplings[icolor][lmax+ix]
                         test[2] = all_couplings[icolor][2*lmax+ix]
