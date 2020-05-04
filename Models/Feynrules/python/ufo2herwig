@@ -93,8 +93,7 @@ if(args.convert) :
 
 path,mod = os.path.split(os.path.abspath(args.ufodir))
 spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
-FR = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(FR)
+FR = spec.loader.load_module()
 
 ##################################################
 ##################################################
