@@ -31,7 +31,7 @@ class ${ModelName}${classname}: public ${lorentztag}Vertex {
   }
   //    void getParams(Energy2);
  private:
-  ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
+  ${ModelName}${classname} & operator=(const ${ModelName}${classname} &) = delete;
   //    Complex leftval, rightval, normval;
   tcHw${ModelName}Ptr model_;
 };
