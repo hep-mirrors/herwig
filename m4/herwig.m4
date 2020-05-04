@@ -165,6 +165,25 @@ if test "x$GCC" = "xyes"; then
 fi
 AC_MSG_RESULT([$enable_looptools])
 
+if test "x$GCC" = "xyes"; then
+   AC_LANG_PUSH([Fortran])
+   	oldFCFLAGS="$FCFLAGS"
+	AC_MSG_CHECKING([checking if fortran compiler supports -std=legacy])
+   	FCFLAGS="-std=legacy"
+   	AC_COMPILE_IFELSE(
+	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
+		[AC_MSG_RESULT([yes])
+		 AM_FCFLAGS="$AM_FCFLAGS -std=legacy"
+		 AM_FFLAGS="$AM_FFLAGS -std=legacy"],
+		[AC_MSG_RESULT([no])]
+	)
+	FCFLAGS="$oldFCFLAGS"
+   AC_LANG_POP([Fortran])
+fi
+
+
+
+
 AC_SUBST([F77],[$FC])
 AC_SUBST([FFLAGS],[$FCFLAGS])
 AC_SUBST([AM_FFLAGS],[$AM_FCFLAGS])
@@ -868,9 +887,6 @@ FC_VERSION_STRING=`$FC -v 2>&1 | sed -n 's/^gcc version //p'`
 FC_VERSION_FULL=`echo ${FC_VERSION_STRING} | sed -e 's/\([^ ]*\) .*/\1/'`
 FC_VERSION=`echo ${FC_VERSION_FULL} | cut -d "." -f 1`
 
-if test "$FC_VERSION" = "10"; then
-FCFLAGS="$FCFLAGS -fallow-argument-mismatch"
-fi
 
 cat << _HW_EOF_ > config.herwig
 *****************************************************
