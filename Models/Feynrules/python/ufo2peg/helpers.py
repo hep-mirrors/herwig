@@ -1,6 +1,7 @@
+from __future__ import print_function
 from string import Template
 from os import path
-import sys,cmath
+import sys,cmath,glob
 import re
 
 """
@@ -62,7 +63,7 @@ def writeFile(filename, text):
 def coupling_orders(vertex, coupling, defns):
     # if more  than one take QCD over QED and then lowest order in QED
     if type(coupling) is list:
-        print 'not sure this happens'
+        print('not sure this happens')
         quit()
         qed = 0
         qcd = 0
@@ -264,3 +265,48 @@ def isGhost(p) :
         return False
     return p.GhostNumber != 0
     
+def convertToPython3(ufodir) :
+    # find all the python files
+    fNames=glob.glob(path.abspath(ufodir)+"/*.py")
+    mNames=[]
+    for i in range(0,len(fNames)) :
+        mNames.append(path.split(fNames[i])[-1].replace(".py",""))
+    # convert them
+    for fName in fNames :
+        convertFileToPython3(fName,mNames)
+
+def convertFileToPython3(fName,names) :
+    output=""
+    inFile=open(fName)
+    line=inFile.readline()
+    isInit = "__init__.py" in fName
+    tNames=[]
+    for val in names : tNames.append(val)
+    while line :
+        # iteritems -> items
+        line=line.replace("iteritems","items")
+        # fix imports 
+        if("import" in line) :
+            for val in names :
+                if("import %s" %val in line) :
+                    line=line.replace("import %s"  %val,
+                                      "from . import %s" %val)
+                    if(val in tNames) : tNames.remove(val)
+                if("from %s" %val in line) :
+                    line=line.replace("from %s"  %val,
+                                      "from .%s" %val)
+        # add brackets to print statements
+        if("print" in line) :
+            if line.strip()[0:5] == "print" :
+                line=line.strip("\n").replace("print","print(")+")\n"
+        output += line
+        line=inFile.readline()
+    inFile.close()
+    if(isInit) :
+        if "__init__" in tNames : tNames.remove("__init__")
+        temp=""
+        for val in tNames :
+            temp+= "from . import %s\n" % val
+        output = temp+output
+    with open(fName,'w') as dest:
+        dest.write(output)

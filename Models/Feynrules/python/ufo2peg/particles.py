@@ -1,5 +1,5 @@
+from __future__ import print_function
 from string import Template
-
 # ignore these, they're in Hw++ already # TODO reset Hw++ settings instead
 SMPARTICLES = {
 
@@ -152,7 +152,7 @@ rm /Herwig/Widths/hWidth
 """
 )
         if p.name in forbidden_names:
-            print 'RENAMING PARTICLE',p.name,'as ',p.name+'_UFO'
+            print('RENAMING PARTICLE',p.name,'as ',p.name+'_UFO')
             p.name +="_UFO"
         subs = ParticleConverter(p,parameters,modelparameters).subs()
         if not (p.pdg_code == 25 and hw_higgs) :
