@@ -261,7 +261,7 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
       else {
 	LorentzVector<complex<InvEnergy> > vtemp=
 	  fact*epsilon(momenta[0],_vectors[vhel],momenta[1]);
-	(*ME())(inhel,vhel,0)= (momenta[1]*_tensors[inhel]).dot(vtemp);
+	(*ME())(inhel,vhel,0) = Complex((momenta[1]*_tensors[inhel]).dot(vtemp));
       }
     }
   }

@@ -247,11 +247,11 @@ double VectorCurrentDecayer::me2(const int ichan, const Particle & part,
       Complex amp = 0.;
       // work on coefficients for the I1 and I0 bits
       if(hI0_size != 0 )
-	amp += (cSMmed_[0]+cSMmed_[1])/sqrt(2.)/q*(vectors_[ihel[0]].wave().dot(hadronI0[hhel]));
+	amp += Complex((cSMmed_[0]+cSMmed_[1])/sqrt(2.)/q*(vectors_[ihel[0]].wave().dot(hadronI0[hhel])));
       if(hI1_size !=0)
-	amp += (cSMmed_[0]-cSMmed_[1])/sqrt(2.)/q*(vectors_[ihel[0]].wave().dot(hadronI1[hhel]));
+	amp += Complex((cSMmed_[0]-cSMmed_[1])/sqrt(2.)/q*(vectors_[ihel[0]].wave().dot(hadronI1[hhel])));
       if(hss_size !=0)
-	amp += cSMmed_[2]                      /q*(vectors_[ihel[0]].wave().dot(hadronssbar[hhel]));
+	amp += Complex(cSMmed_[2]                      /q*(vectors_[ihel[0]].wave().dot(hadronssbar[hhel])));
       (*newME)(ihel) = amp;
     }
   }

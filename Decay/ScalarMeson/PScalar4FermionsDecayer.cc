@@ -328,13 +328,13 @@ double PScalar4FermionsDecayer::me2(const int,const Particle & part,
   	  // the first diagram
   	  eps = epsilon(current[0][ispin[1]][ispin[2]],poff[1],
   			current[1][ispin[3]][ispin[4]]);
-  	  diag = prop1*(eps*poff[0]);
+  	  diag = Complex(prop1*(eps*poff[0]));
   	  // exchanged diagram if identical particles
   	  //  (sign due normal ordering) 
   	  if(identical) {
   	    eps = epsilon(current[2][ispin[1]][ispin[4]],poff[3],
   			  current[3][ispin[3]][ispin[2]]);
-  	    diag-= prop2*(eps*poff[2]);
+  	    diag-= Complex(prop2*(eps*poff[2]));
   	  }
   	  (*ME())(ispin)=pre*diag;
   	}
