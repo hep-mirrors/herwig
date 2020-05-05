@@ -505,7 +505,9 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 	  newline->addColoured    (second);
 	  newline->addAntiColoured(first );
 	}
-	else
+	else if(parent->dataPtr()->coloured()||
+		first ->dataPtr()->coloured()||
+		second->dataPtr()->coloured())
 	  assert(false);
       }
     }
@@ -520,7 +522,9 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       else if(cfirst.second) {
 	cfirst.second->addColoured(second);
       }
-      else 
+      else if(parent->dataPtr()->coloured()||
+	      first ->dataPtr()->coloured()||
+	      second->dataPtr()->coloured())
 	assert(false);
     }
   }
