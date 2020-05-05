@@ -74,26 +74,27 @@ parser.add_argument(
 )
 # get the arguments
 args = parser.parse_args()
-# import the model
-import importlib,importlib.util
+# convert model to python 3 if needed
 if(args.convert) :
     convertToPython3(args.ufodir)
-# try :
-#     path,mod = os.path.split(os.path.abspath(args.ufodir))
-#     spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
-#     FR = importlib.util.module_from_spec(spec)
-#     spec.loader.exec_module(FR)
-# except :
-#     print ("Could not load the UFO python module.\n",
-#            "This is usually because you are using python3 and the UFO model is in python2.\n",
-#            "The --convert option can be used to try and convert it, but there is no guarantee.\n",
-#            "As this modifies the model you should make sure you have a backup copy.\n")
-#     quit()
-
-
-path,mod = os.path.split(os.path.abspath(args.ufodir))
-spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
-FR = spec.loader.load_module()
+# import the model
+try :
+    import importlib,importlib.util
+    try :
+        path,mod = os.path.split(os.path.abspath(args.ufodir))
+        spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
+        FR = spec.loader.load_module()
+    except :
+        print ("Could not load the UFO python module.\n",
+               "This is usually because you are using python3 and the UFO model is in python2.\n",
+               "The --convert option can be used to try and convert it, but there is no guarantee.\n",
+               "As this modifies the model you should make sure you have a backup copy.\n")
+        quit()
+except :
+    print ("Newer python import did not work, reverting to python 2 imp module")
+    import imp
+    path,mod = os.path.split(os.path.abspath(args.ufodir))
+    FR = imp.load_module(mod,*imp.find_module(mod,[path]))
 
 ##################################################
 ##################################################
