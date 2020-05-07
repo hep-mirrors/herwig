@@ -2,4 +2,4 @@
 # select the analyses
 ##################################################
 # CMS jet mass
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_WJET
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539:JMODE=W
