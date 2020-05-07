@@ -1,7 +1,6 @@
 #! /usr/bin/env python
-import logging
-import sys
-import os, yoda
+from __future__ import print_function
+import logging, sys, os, yoda
 
 """%prog
 
@@ -12,7 +11,7 @@ Script for merging aida files
 def fillAbove(scale,desthisto, sourcehistosbyptmin):
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints) :
@@ -62,7 +61,7 @@ def useOnePt(hpath, ptmin):
         pass
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -113,9 +112,9 @@ for f in files:
         elif(file.find("PromptPhoton-4")>0) :
             ptmin=170.
         ## Get histos from this YODA file
-        for aopath, ao in aos.iteritems() :
+        for aopath, ao in aos.items() :
             if("RAW" in aopath) :continue
-            if not inhistos.has_key(aopath):
+            if aopath not in inhistos:
                 inhistos[aopath] = {}
             if (aopath.find("CMS_2013_I1258128")>0) :
                 if(aopath.find("d05")>0 or aopath.find("d06")>0 or
@@ -125,7 +124,7 @@ for f in files:
                 inhistos[aopath][ptmin] = ao
     else : 
         ## Get histos from this YODA file
-        for aopath, ao in aos.iteritems() :
+        for aopath, ao in aos.items() :
             if("RAW" in aopath) :continue
             if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
             if ( aopath in outhistos ) :
@@ -137,7 +136,7 @@ for f in files:
             else:
                 outhistos[aopath] = ao
 
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if( hpath.find("1263495")>0 or hpath.find("1093738")>0 or 
         hpath.find("921594" )>0 or hpath.find("8914702")>0 or 
         hpath.find("1244522")>0 or hpath.find("1457605")>0 or
@@ -145,7 +144,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1645627")>0) :
         title=""
         path=""
-        histo = hsets.values()[0]
+        histo = list(hsets.values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):
@@ -164,7 +163,7 @@ for hpath,hsets in inhistos.iteritems():
                                         histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print hpath,type(histo)
+            print (hpath,type(histo))
             sys.exit(1)
 
 

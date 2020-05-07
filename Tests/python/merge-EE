@@ -1,10 +1,10 @@
 #! /usr/bin/env python
-# import lighthisto
+from __future__ import print_function
 import logging
 import sys
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 import os, yoda, copy
@@ -13,7 +13,7 @@ import os, yoda, copy
 
 def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
-        for sqrts,h in sorted(sourcehistosbysqrts.iteritems()) :
+        for sqrts,h in sorted(sourcehistosbysqrts.items()) :
             if(sqrts=="U1") :
                 sqrts2=9.46
                 if "LENA_1981_I164397" in desthisto.path() : sqrts2=9.4624
@@ -38,7 +38,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                     desthisto.addPoint(h.points()[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
-        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+        for sqrts, h in sorted(sourcehistosbysqrts.items()) :
             step = 0.001
             for i in range(0,h.numBins()) :
                 xmin = min(h.bins()[i].xMin(),h.bins()[i].xMid()-step)
@@ -176,7 +176,7 @@ for f in yodafiles:
         logging.error("%s cannot be parsed as yoda" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath or "/_" in aopath) :continue
         # plots which neede merging/selecting
         if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
@@ -198,14 +198,14 @@ for f in yodafiles:
            "TASSO_1989_I266893" in aopath or "CLEO_1985_I205668" in aopath  or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
-            if not inhistos.has_key(aopath):
+            if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
             sqrttemp=sqrts
             if(aopath.find("2669951")>0 and aopath.find("d01")>0 and 
                sqrts==10.45) :
                 sqrts=9.9
-            if not tmpE.has_key(sqrts):
+            if sqrts not in tmpE:
                 tmpE[sqrts] = ao
             else:
                 raise Exception("A set with sqrts = %s already exists" % ( sqrts))
@@ -270,7 +270,7 @@ for f in yodafiles:
             outhistos[aopath] = ao
 
 # ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or 
         hpath.find("5765862")>0 or hpath.find("295160" )>0 or
         hpath.find("4328825")>0 or hpath.find("5361494")>0 or
@@ -288,7 +288,7 @@ for hpath,hsets in inhistos.iteritems():
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
         path=""
-        histo = hsets.values()[0]
+        histo = list(hsets.values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):

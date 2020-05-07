@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import yoda,os,math,subprocess,optparse
 from string import Template
 # get the path for the rivet data
@@ -94,16 +95,16 @@ analyses["KEDR_2019_I1673357"]=["d01-x01-y01","d01-x01-y02"]
 analyses["BELLE_2011_I878228"] = ["d02-x01-y01"]
 # list analyses if needed
 if(opts.list) :
-    print " ".join(analyses.keys())
+    print (" ".join(analyses.keys()))
     quit()
 if(opts.plot) :
     output=""
     for analysis in analyses.keys():
         for plot in analyses[analysis]:
             output+= " -m/%s/%s" % (analysis,plot)
-    for i in xrange(1,7) :
+    for i in range(1,7) :
         output += " -m/BESII_2004_I622224/d0%s-x01-y01" % i
-    print output
+    print (output)
     quit()
 
 energies={}
@@ -119,7 +120,7 @@ def nearestEnergy(en) :
     return (Emin,delta,anals)
 
 for analysis in analyses :
-    aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
+    aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path.decode('UTF-8')),analysis+".yoda"))
     if(len(aos)==0) : continue
     for plot in analyses[analysis] :
         histo = aos["/REF/%s/%s" %(analysis,plot)]
@@ -190,4 +191,4 @@ for energy in sorted(energies) :
         with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-EE-NonPerturbative-%8.6f.yoda " % energy
-print targets
+print (targets)

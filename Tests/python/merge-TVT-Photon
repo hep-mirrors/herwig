@@ -1,16 +1,15 @@
 #! /usr/bin/env python
-import logging
-import sys
-import os, yoda
+from __future__ import print_function
+import logging, sys, os, yoda
 
 """%prog
 
-Script for merging aida files
+Script for merging yoda files
 
 """
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -48,7 +47,7 @@ for f in files:
         logging.error("%s can not be parsed as yoda" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
         if ( aopath in outhistos ) :

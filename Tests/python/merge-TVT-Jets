@@ -1,10 +1,9 @@
 #! /usr/bin/env python
-import logging
-import sys
-import math
+from __future__ import print_function
+import logging, sys, math
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ( "rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 import os, yoda
@@ -59,7 +58,7 @@ def divide(name,numer,denom) :
 def fillAbove(desthisto, sourcehistosbyptmin):
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints) :
@@ -235,7 +234,7 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         # di-jet decorrelations
         # jet shapes
@@ -247,13 +246,13 @@ for f in yodafiles:
            aopath.find("4517016")>0 or aopath.find("3618439")>0 or
            aopath.find("8591881")>0 or aopath.find("1388868")>0 or
            aopath.find("NOTE10874")>0 or aopath.find("398175")>0) :
-           if not inhistos.has_key(aopath):
+           if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
-           if not tmpE.has_key(sqrts):
+           if sqrts not in tmpE:
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
-           if not tmpP.has_key(ptmin):
+           if ptmin not in tmpP:
                tmpP[ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
@@ -268,7 +267,7 @@ for f in yodafiles:
         else :
             if(aopath.find("/_EVTCOUNT")>=0 or 
                aopath.find("/_XSEC"    )>=0 ) : continue
-            print aopath
+            print (aopath)
             quit()
 yodafiles=["-Run-II-Jets-8.yoda","-Run-II-Jets-9.yoda","-Run-II-Jets-10.yoda","-Run-II-Jets-11.yoda",\
            "-Run-I-Jets-6.yoda","-Run-I-Jets-7.yoda","-Run-I-Jets-8.yoda"]
@@ -305,34 +304,34 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this yoda file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
-           if not inhistos.has_key(aopath):
+           if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
-           if not tmpE.has_key(sqrts):
+           if sqrts not in tmpE:
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
-           if not tmpP.has_key(ptmin):
+           if ptmin not in tmpP:
                tmpP[ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
         elif(aopath.find("8093652")>0 or aopath.find("3418421")>0 or 
              aopath.find("4266730")>0) :
-           if not inhistos.has_key(aopath):
+           if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
-           if not tmpE.has_key(sqrts):
+           if sqrts not in tmpE:
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
-           if not tmpP.has_key(1000.*ptmin):
+           if 1000.*ptmin not in tmpP:
                tmpP[1000.*ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( 1000.*ptmin))
 
 ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if( (hpath.find("6217184")>0 and hpath.find("d13-x01-y01")>0 ) or
         hpath.find("LEADINGJETS")>0 or hpath.find("7662670")>0 or
         hpath.find("7057202")>0 or hpath.find("6450792")>0 or
@@ -345,7 +344,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1388868")>0 or hpath.find("NOTE10874")>0) :
         title=""
         path=""
-        histo = hsets.values()[0].values()[0]
+        histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):
@@ -366,7 +365,7 @@ for hpath,hsets in inhistos.iteritems():
                                         histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print hpath,type(histo)
+            print (hpath,type(histo))
             sys.exit(1)
 
 ## Field analysis

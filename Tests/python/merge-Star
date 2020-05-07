@@ -1,9 +1,10 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import logging
 import sys
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 import os, yoda
@@ -13,7 +14,7 @@ import os, yoda
 def fillAbove(desthisto, sourcehistosbyptmin):
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints()) :
@@ -115,16 +116,16 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("6870392")>0 or aopath.find("HELEN")>0) :
-            if not inhistos.has_key(aopath):
+            if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
-            if not tmpE.has_key(sqrts):
+            if sqrts not in tmpE:
                 tmpE[sqrts] = {}
             tmpP = tmpE[sqrts]
-            if not tmpP.has_key(ptmin):
+            if ptmin not in tmpP:
                 tmpP[ptmin] = ao
             else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
@@ -132,12 +133,12 @@ for f in yodafiles:
             outhistos[aopath] = ao
 
 ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if( (hpath.find("6870392")>0 and hpath.find("d02-x01-y01" )>0 ) or
         hpath.find("HELEN")>0 ) :
         title=""
         path=""
-        histo = hsets.values()[0].values()[0]
+        histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):
@@ -156,7 +157,7 @@ for hpath,hsets in inhistos.iteritems():
                                         histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print hpath,type(histo)
+            print (hpath,type(histo))
             sys.exit(1)
 
 useOnePt("/STAR_2006_S6870392/d01-x01-y01","200","2")
