@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import glob,subprocess,os,optparse
 
 op = optparse.OptionParser(usage=__doc__)
@@ -21,7 +22,7 @@ searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 
 p=subprocess.Popen(["rivet","--list"],stdout=subprocess.PIPE)
 analyses={}
-for line in p.communicate()[0].split("\n") :
+for line in p.communicate()[0].decode("UTF-8").split("\n") :
     line=line.strip()
     if(line=="") : continue
     temp =  line.split(None,1)
@@ -30,7 +31,7 @@ for line in p.communicate()[0].split("\n") :
     elif(len(temp)==1) :
         analyses[temp[0].strip()] = ""
     else :
-        print line
+        print (line)
         quit()
 
 # main line hw analyses at high energy
@@ -75,7 +76,7 @@ for analysis in sorted(analyses.keys()) :
     if(analysis in hw_analyses) :
         anatohepmc.write("%s %s\n" % (analysis,' '.join(sorted(hw_analyses[analysis]))) )
         if("[OBSOLETE]" in analyses[analysis]) :
-            print "WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis])
+            print ("WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis]))
         if(analysis in not_in_rivet) :
             not_in_rivet.remove(analysis)
     # we have it low energy or R or skipping
@@ -86,33 +87,33 @@ for analysis in sorted(analyses.keys()) :
         continue
     # obsolete
     elif("[OBSOLETE]" in analyses[analysis]) :
-        if(opts.obsolete) : print "Obsolete analysis %s not included : %s" % (analysis,analyses[analysis])
+        if(opts.obsolete) : print ("Obsolete analysis %s not included : %s" % (analysis,analyses[analysis]))
     # searches
     elif("Search" in analyses[analysis] or "search" in analyses[analysis] or analysis in searches) :
-        if(opts.search) : print "Search   analysis %s not included  : %s" % (analysis,analyses[analysis])
+        if(opts.search) : print ("Search   analysis %s not included  : %s" % (analysis,analyses[analysis]))
     # mc only
     elif(analysis[0:3]=="MC_") :
-        if(opts.MC) : print "MC   analysis %s not included  : %s" % (analysis,analyses[analysis])
+        if(opts.MC) : print ("MC   analysis %s not included  : %s" % (analysis,analyses[analysis]))
     # examples
     elif("EXAMPLE" in analyses[analysis]) or "EXAMPLE" in analysis:
         continue
     # we don't have it
     else :
         p=subprocess.Popen(["rivet","--show-analysis",analysis],stdout=subprocess.PIPE)
-        desc=p.communicate()[0]
+        desc=p.communicate()[0].decode("UTF-8")
         beams=[]
         for line in desc.split("\n") :
             if("Beams:" in line) :
                 beams=line.replace("Beams:","").split()
         nHeavy = sum((part=="Pb" or part=="Au") for part in beams)
         if(nHeavy == len(beams) or nHeavy+1 == len(beams)) :
-            if(opts.heavy_ion) : print "Heavy Ion analysis %s not included  : %s" % (analysis,analyses[analysis])
+            if(opts.heavy_ion) : print ("Heavy Ion analysis %s not included  : %s" % (analysis,analyses[analysis]))
         else :
-            print "MISSING ANALYSIS",analysis,analyses[analysis]
-            if(opts.output) : print desc
+            print ("MISSING ANALYSIS",analysis,analyses[analysis])
+            if(opts.output) : print (desc)
 # outout analyses missing from rivet
 for val in not_in_rivet:
-    print "NOT IN RIVET ",val
+    print ("NOT IN RIVET ",val)
 # output second file for rivet
 anatohepmc.close()
 for fname in sorted(files) :

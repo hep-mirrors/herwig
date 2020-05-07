@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-import logging,sys
-import os, yoda, copy
+from __future__ import print_function
+import logging,sys, os, yoda, copy
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 
@@ -18,7 +18,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                     desthisto.addPoint(h.points[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
-        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+        for sqrts, h in sorted(sourcehistosbysqrts.items()) :
             for i in range(0,h.numBins) :
                 if(sqrts>=h.bins[i].xMin and \
                    sqrts<=h.bins[i].xMax) :
@@ -84,7 +84,7 @@ for f in yodafiles:
         logging.error("%s cannot be parsed as yoda" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
         # merge of different energy values
         if("L3_2004_I645127" in aopath) :
@@ -102,7 +102,7 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
 ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if("L3_2004_I645127" in hpath ) :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
@@ -131,6 +131,6 @@ merge("/L3_2004_I645127/d02-x01-y01")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
-print "Write yoda to ",name
+print ("Write yoda to ",name)
 yoda.writeYODA(outhistos,name)
 sys.exit(0)
