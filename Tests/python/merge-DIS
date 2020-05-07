@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-import logging
-import sys
+from __future__ import print_function
+import logging, sys
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 import os, yoda
@@ -80,13 +80,13 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("4129130")>0 ) :
-           if not inhistos.has_key(aopath):
+           if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
-           if not tmpE.has_key(q2):
+           if q2 not in tmpE:
                tmpE[q2] = ao
            else:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
@@ -99,11 +99,11 @@ for f in yodafiles:
             sys.exit(1)
 
 ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
+for hpath,hsets in inhistos.items():
     if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
         title=""
         path=""
-        histo = hsets.values()[0]
+        histo = list(hsets.values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):

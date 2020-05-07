@@ -122,7 +122,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEDM2Mesons & operator=(const MEDM2Mesons &);
+  MEDM2Mesons & operator=(const MEDM2Mesons &) = delete;
 
 private :
 

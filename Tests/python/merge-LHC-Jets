@@ -1,10 +1,9 @@
 #! /usr/bin/env python
-import logging
-import sys
-import math
+from __future__ import print_function
+import logging, sys, math
 
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 import os, yoda
@@ -18,7 +17,7 @@ def rescale(path,scale) :
 def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints()) :
@@ -223,7 +222,7 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("S8924791")>0 or aopath.find("S8971293")>0 or
            aopath.find("S8817804")>0 or aopath.find("I1082936")>0 or
@@ -256,12 +255,12 @@ for f in yodafiles:
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
                continue
-           if not inhistos_pt.has_key(aopath):
+           if aopath not in inhistos_pt:
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
-           if not tmpE.has_key(sqrts):
+           if sqrts not in tmpE:
                tmpE[sqrts] = {}
-           if not tmpE[sqrts].has_key(ptmin):
+           if ptmin not in tmpE[sqrts]:
                tmpE[sqrts][ptmin] = ao
            else:
                tmpE[sqrts][ptmin] += ao
@@ -309,7 +308,7 @@ for f in yodafiles:
                         title=""
                         path=""
                         if hasattr(ao, 'title'):
-                            title=ao.title
+                            title=ao.title()
                         if hasattr(ao, 'path'):
                             path=ao.path()
                         temp = yoda.core.Histo1D(path,title)
@@ -390,7 +389,7 @@ for f in yodafiles:
         logging.error("%s can not be parsed as YODA" % file)
         continue
     ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
+    for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
         if(aopath.find("8817804")>0 or aopath.find("8968497")>0 or 
            aopath.find("1082936")>0 or aopath.find("I930220")>0 or
@@ -399,23 +398,23 @@ for f in yodafiles:
            aopath.find("1663452") >0 or
            aopath.find("1634970" )>0 or
            aopath.find("CMS_2013_I1208923")>0) :
-           if not inhistos_mass.has_key(aopath):
+           if aopath not in inhistos_mass:
                inhistos_mass[aopath] = {}
            tmpE = inhistos_mass[aopath]
-           if not tmpE.has_key(sqrts):
+           if sqrts not in tmpE:
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
-           if not tmpP.has_key(mass):
+           if mass not in tmpP:
                tmpP[mass] = ao
            else:
-               print aopath
-               print sqrts,mass,file
+               print (aopath)
+               print (sqrts,mass,file)
                raise Exception("A set with mass = %s already exists" % ( mass))
 
 
         
 ## Make empty output histos if needed
-for hpath,hsets in inhistos_pt.iteritems():
+for hpath,hsets in inhistos_pt.items():
     if( hpath.find("8924791")>0  or 
         hpath.find("8971293")>0 or 
         hpath.find("8817804")>0 or 
@@ -455,9 +454,9 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1459051")>0 or hpath.find("1634970")>0) :
         title=""
         path=""
-        histo = hsets.values()[0].values()[0]
+        histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
-            title=histo.title
+            title=histo.title()
         if hasattr(histo, 'path'):
             path=histo.path()
         if(type(histo)==yoda.core.Counter) :
@@ -479,12 +478,12 @@ for hpath,hsets in inhistos_pt.iteritems():
             sys.exit(1) 
 
 ## Make empty output histos if needed
-for hpath,hsets in inhistos_mass.iteritems():
+for hpath,hsets in inhistos_mass.items():
     if(hpath.find("1268975")>0 or
        hpath.find("1634970")>0) :
         title=""
         path=""
-        histo = hsets.values()[0].values()[0]
+        histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):

@@ -189,7 +189,7 @@ double PScalarPScalarVectorDecayer::me2(const int,const Particle & part,
   // calculate the matrix element
   Lorentz5Momentum psum(part.momentum()+momenta[0]);
   for(unsigned int ix=0;ix<3;++ix) {
-    (*ME())(0,0,ix)=_coupling[imode()]/part.mass()*(_vectors[ix]*psum);
+    (*ME())(0,0,ix) = Complex(_coupling[imode()]/part.mass()*(_vectors[ix]*psum));
   }
   double me=ME()->contract(_rho).real();
   // test of the matrix element

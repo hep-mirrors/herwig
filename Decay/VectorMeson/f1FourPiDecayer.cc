@@ -291,7 +291,7 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
   // contract the current
   double pre = gRhoPiPi_*gf1a1Pi_*ga1RhoPi_;
   for(unsigned int ihel=0;ihel<3;++ihel)
-    (*ME())(ihel,0,0,0,0) = pre*current.dot(vector_[ihel])*part.mass();
+    (*ME())(ihel,0,0,0,0) = Complex(pre*current.dot(vector_[ihel])*part.mass());
   // matrix element
   return sym*ME()->contract(rho_).real();
 }

@@ -21,7 +21,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # ATLAS subjets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094564
 # CMS jet structure
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_DIJET
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539:JMODE=DIJET
 # CMS 4-jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574 
 # ATLAS leading jet UE

@@ -1,9 +1,10 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import yoda,os,math,subprocess,optparse
 from string import Template
 # get the path for the rivet data
 p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
-path=p.communicate()[0].strip()
+path=p.communicate()[0].strip().decode("UTF-8")
 #Define the arguments
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("--process"         , dest="processes"       , default=[], action="append")
@@ -313,7 +314,7 @@ else :
     processes = sorted(list(set(opts.processes)))
 if(opts.list) :
     for process in processes :
-        print " ".join(analyses[process])
+        print (" ".join(analyses[process]))
     quit()
 if(opts.plot) :
     output=""
@@ -335,7 +336,7 @@ if(opts.plot) :
                     output+= " -m/%s/%s" % (analysis,"d08-x01-y0%s"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
-    print output
+    print (output)
     quit()
 # mapping of process to me to use
 me = { "PiPi"         : "MEee2Pions",
@@ -473,4 +474,4 @@ for energy in sorted(energies) :
         with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-EE-NonPerturbative-%8.6f.yoda " % energy
-print targets
+print (targets)

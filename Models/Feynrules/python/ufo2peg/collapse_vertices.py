@@ -5,7 +5,7 @@ class CollapsedVertex(object):
         self.particles_list = [v.particles]
         self.color = tuple(v.color)
         self.lorentz = tuple(v.lorentz)
-        self.couplings = tuple(v.couplings.iteritems())
+        self.couplings = tuple(v.couplings.items())
 
     def __hash__(self):
         return hash((self.color, self.lorentz, self.couplings))

@@ -239,11 +239,11 @@ double MEDM2Mesons::me2(const int ichan) const {
 	Complex amp = 0.;
 	// work on coefficients for the I1 and I0 bits
 	if(hI0_size != 0 )
-	  amp += (cSMmed_[0]+cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI0[hhel]));
+	  amp += Complex((cSMmed_[0]+cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI0[hhel])));
   	if(hI1_size !=0)
-	  amp += (cSMmed_[0]-cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI1[hhel]));
+	  amp += Complex((cSMmed_[0]-cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI1[hhel])));
 	if(hss_size !=0)
-	  amp += cSMmed_[2]*                      (lepton[ihel[0]][ihel[1]].dot(hadronssbar[hhel]));
+	  amp += Complex(cSMmed_[2]*                      (lepton[ihel[0]][ihel[1]].dot(hadronssbar[hhel])));
 	me_(ihel)= amp;
   	output += std::norm(amp);
       }

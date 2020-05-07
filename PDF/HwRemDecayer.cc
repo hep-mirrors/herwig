@@ -134,8 +134,10 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
 	lastID == ParticleID::gamma) ) {
     newSea = forceSplit(rem, -lastID, oldQ, currentx, lastp, used,content);
     ColinePtr cl = new_ptr(ColourLine());
-    if(newSea->id() > 0) cl->    addColoured(newSea);
-    else                 cl->addAntiColoured(newSea);
+    if(newSea->dataPtr()->coloured()) {
+      if(newSea->id() > 0) cl->    addColoured(newSea);
+      else                 cl->addAntiColoured(newSea);
+    }
     // if a secondard scatter finished so return
     if(!first || content.isValenceQuark(ParticleID::g) ){
       partners.push_back(make_pair(parton, newSea));
@@ -467,12 +469,17 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   dely/=nz;
   yy=ymin+0.5*dely;
   vector<int> ids;
+  bool qed = child==22;
   if(child==21||child==22) {
     ids=content.flav;
     for(unsigned int ix=0;ix<ids.size();++ix) ids[ix] *= content.sign;
   }
-  else {
+  else if(abs(child)<=6) {
     ids.push_back(ParticleID::g);
+  }
+  else {
+    ids.push_back(ParticleID::gamma);
+    qed=true;
   }
   // probabilities of the different types of possible splitting
   map<long,pair<double,vector<double> > > partonprob;
@@ -490,12 +497,12 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
       double zr=wr/ez;
       double wz=1./wr;
       double zz=wz*ez;
-      double coup = child!=22 ? 
+      double coup = !qed ? 
 	_alphaS ->value(sqr(max(wz*q,_kinCutoff))) :
 	_alphaEM->value(sqr(max(wz*q,_kinCutoff)));
       double az=wz*zz*coup;
       // g -> q qbar
-      if(ids[iflav]==ParticleID::g) {
+      if(ids[iflav]==ParticleID::g || ids[iflav]==ParticleID::gamma) {
 	// calculate splitting function   
 	// SP as q is always less than forcedSplitScale, the pdf scale is fixed 
 	// pdfval = _pdf->xfx(theBeamData,in,sqr(q),lastx*zr); 
@@ -1738,7 +1745,8 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
      << maxtrySoft_ << colourDisrupt_ << ladderPower_<< ladderNorm_ << ladderMult_ << ladderbFactor_ << pomeronStructure_
      << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
-     << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_ << PtDistribution_;
+     << allowTop_ << allowLeptons_ 
+     << multiPeriph_ << valOfN_ << initTotRap_ << PtDistribution_;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
@@ -1746,7 +1754,8 @@ void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
      >> maxtrySoft_ >> colourDisrupt_ >> ladderPower_ >> ladderNorm_ >> ladderMult_ >> ladderbFactor_ >> pomeronStructure_
      >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
-     >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_ >> PtDistribution_;
+     >> allowTop_ >> allowLeptons_
+     >> multiPeriph_ >> valOfN_ >> initTotRap_ >> PtDistribution_;
 }
 
 // The following static variable is needed for the type
@@ -1904,7 +1913,22 @@ void HwRemDecayer::Init() {
      "Yes",
      "Allow them",
      true);
-   
+  
+  static Switch<HwRemDecayer,bool> interfaceAllowLeptons
+    ("AllowLeptons",
+     "Allow charged leptons in the hadron",
+     &HwRemDecayer::allowLeptons_, false, false, false);
+  static SwitchOption interfaceAllowLeptonsNo
+    (interfaceAllowLeptons,
+     "No",
+     "Don't allow them",
+     false);
+  static SwitchOption interfaceAllowLeptonsYes
+    (interfaceAllowLeptons,
+     "Yes",
+     "Allow them",
+     true);
+  
    static Switch<HwRemDecayer,bool> interfaceMultiPeriph
     ("MultiPeriph",
      "Use multiperipheral kinematics",
@@ -1957,17 +1981,26 @@ void HwRemDecayer::Init() {
 }
 
 bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  if(! (StandardQCDPartonMatcher::Check(*parton) || parton->id()==ParticleID::gamma) ) {
+  if(! (StandardQCDPartonMatcher::Check(*parton) || parton->id()==ParticleID::gamma)) {
     if(abs(parton->id())==ParticleID::t) {
       if(!allowTop_)
-	throw Exception() << "Top is not allow as a parton in the remant handling, please "
+	throw Exception() << "Top is not allowed as a parton in the remnant handling, please "
 			  << "use a PDF which does not contain top for the remnant"
 			  << " handling (preferred) or allow top in the remnant using\n"
 			  << " set " << fullName() << ":AllowTop Yes\n"
 			  << Exception::runerror;
     }
-    else
+    else if(ChargedLeptonMatcher::Check(*parton)) {
+      if(!allowLeptons_)
+	throw Exception() << "Charged leptons not allowed as a parton in the remnant handling, please "
+			  << "use a PDF which does not contain top for the remnant"
+			  << " handling or allow leptons in the remnant using\n"
+			  << " set " << fullName() << ":AllowLeptons Yes\n"
+			  << Exception::runerror;
+    }
+    else {
       return false;
+    }
   }
   return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
     || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;

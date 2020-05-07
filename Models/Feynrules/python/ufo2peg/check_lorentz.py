@@ -1,3 +1,4 @@
+from __future__ import print_function
 import itertools,cmath,re
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices
 from .converter import py2cpp
@@ -147,8 +148,8 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
         t_couplings=new_couplings
         new_couplings=[False]*9
         for i in range(0,9) :
-            j = i+3*(i/3)
-            k = i+3+3*(i/3)
+            j = i+3*(i//3)
+            k = i+3+3*(i//3)
             if( not t_couplings[j]) :
                 new_couplings[i] = t_couplings[k]
             else :
@@ -177,7 +178,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
     # loop over the colours
     for icolor in range(0,len(all_couplings)) :
         lmax = len(all_couplings[icolor])
-        if(fermions) : lmax /=3
+        if(fermions) : lmax //=3
         # loop over the different terms
         for ix in range(0,lmax) :
             test = [False]*3
@@ -205,6 +206,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     if(all_couplings[icolor][lmax+ix] ==
                        all_couplings[icolor][2*lmax+ix]) :
                         test[0]  = all_couplings[icolor][lmax+ix]
+                        imax=1
                     else :
                         test[1] = all_couplings[icolor][lmax+ix]
                         test[2] = all_couplings[icolor][2*lmax+ix]
@@ -799,7 +801,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         raise SkipThisVertex()
                     append = 'setType(1);\nsetOrder(0,1,2,3);'
                 else :
-                    print 'unknown colour structure for VVVV vertex'
+                    print('unknown colour structure for VVVV vertex')
                     raise SkipThisVertex()
     elif(lorentztag=="VVVS") :
         try :

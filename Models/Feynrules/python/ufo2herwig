@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 from __future__ import division
+from __future__ import print_function
 import os, sys, pprint, argparse, re,copy
-from string import strip, Template
+from string import Template
 
 # add path to the ufo conversion modules
 modulepath = os.path.join("@PKGLIBDIR@",'python')
@@ -65,12 +66,36 @@ parser.add_argument(
     help="Add particle names not allowed as names in UFO models to avoid conflicts with"+\
     "Herwig internal particles, names will have _UFO appended"
 )
+parser.add_argument(
+    '--convert',
+    action="store_true",
+    default=False,
+    help="Convert the UFO model for python2 to python3 before loading it."
+)
 # get the arguments
 args = parser.parse_args()
+# convert model to python 3 if needed
+if(args.convert) :
+    convertToPython3(args.ufodir)
 # import the model
-import imp
-path,mod = os.path.split(os.path.abspath(args.ufodir))
-FR = imp.load_module(mod,*imp.find_module(mod,[path]))
+try :
+    import importlib,importlib.util
+    try :
+        path,mod = os.path.split(os.path.abspath(args.ufodir))
+        spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
+        FR = spec.loader.load_module()
+    except :
+        print ("Could not load the UFO python module.\n",
+               "This is usually because you are using python3 and the UFO model is in python2.\n",
+               "The --convert option can be used to try and convert it, but there is no guarantee.\n",
+               "As this modifies the model you should make sure you have a backup copy.\n")
+        quit()
+except :
+    print ("Newer python import did not work, reverting to python 2 imp module")
+    import imp
+    path,mod = os.path.split(os.path.abspath(args.ufodir))
+    FR = imp.load_module(mod,*imp.find_module(mod,[path]))
+
 ##################################################
 ##################################################
 
@@ -132,8 +157,8 @@ parmmodelconstr = []
 # loop over parameters and fill in template stuff according to internal/external and complex/real
 # WARNING: Complex external parameter input not tested!
 if args.verbose:
-    print 'verbose mode on: printing all parameters'
-    print '-'*60
+    print ('verbose mode on: printing all parameters')
+    print ('-'*60)
     paramsstuff = ('name', 'expression', 'default value', 'nature')
     pprint.pprint(paramsstuff)
 
@@ -155,7 +180,7 @@ try :
         couplingDefns[name]= coupling.expansion_order
 except:
     for coupling in FR.all_couplings:
-        for name,value in coupling.order.iteritems():
+        for name,value in coupling.order.items():
             if(name not in couplingDefns) :
                 couplingDefns[name]=99
 
@@ -330,7 +355,7 @@ vertexConverter.convert()
 cdefs=""
 couplingOrders=""
 ncount=2
-for name,value in couplingDefns.iteritems() :
+for name,value in couplingDefns.items() :
     if(name=="QED") :
         couplingOrders+="  setCouplings(\"%s\",make_pair(%s,%s));\n" %(name,1,value)
     elif (name=="QCD") :
@@ -406,7 +431,7 @@ if vertexConverter.should_print():
         MODEL_CC = [getTemplate('Model1.cc'),getTemplate('Model2.cc'),getTemplate('Model3.cc'),
                     getTemplate('Model4.cc'),getTemplate('Model5.cc')]
     MODEL_H  = getTemplate('Model.h')
-    print 'LENGTH',len(MODEL_CC)
+    print ('LENGTH',len(MODEL_CC))
     MODELINFILE = getTemplate('FR.model')
     writeFile( 'LHC-%s.in' % modelname, 
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
@@ -431,19 +456,19 @@ if vertexConverter.should_print():
             dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
 
-print 'finished generating model:\t', modelname
-print 'model directory:\t\t', args.ufodir
-print 'generated:\t\t\t', len(FR.all_vertices), 'vertices'
-print '='*60
-print 'library:\t\t\t', libname
-print 'input file:\t\t\t', 'LHC-' + modelname +'.in'
-print 'model file:\t\t\t', modelname +'.model'
-print '='*60
-print """\
+print('finished generating model:\t', modelname)
+print('model directory:\t\t', args.ufodir)
+print('generated:\t\t\t', len(FR.all_vertices), 'vertices')
+print('='*60)
+print('library:\t\t\t', libname)
+print('input file:\t\t\t', 'LHC-' + modelname +'.in')
+print('model file:\t\t\t', modelname +'.model')
+print('='*60)
+print("""\
 To complete the installation, compile by typing "make".
 An example input file is provided as LHC-FRModel.in, 
 you'll need to change the required particles in there.
-"""
-print 'DONE!'
-print '='*60
+""")
+print('DONE!')
+print('='*60)
 

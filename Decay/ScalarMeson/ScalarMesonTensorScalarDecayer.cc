@@ -185,7 +185,7 @@ double ScalarMesonTensorScalarDecayer::me2(const int,const Particle & part,
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
     vtemp = _tensors[ix]*part.momentum(); 
-    (*ME())(0,ix,0) = fact * momenta[1].dot(vtemp);
+    (*ME())(0,ix,0) = Complex(fact * momenta[1].dot(vtemp));
   }
   double me = ME()->contract(_rho).real();
   // // test of the matrix element

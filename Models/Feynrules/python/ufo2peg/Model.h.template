@@ -115,7 +115,7 @@ private:
   /** 
    * Private and non-existent assignment operator.
    */
-  ${ModelName} & operator=(const ${ModelName} &);
+  ${ModelName} & operator=(const ${ModelName} &) = delete;
 
 private:
 

@@ -1,10 +1,10 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import logging,sys,os
-from string import strip, Template
-
+from string import Template
 import sys
 if sys.version_info[:3] < (2,4,0):
-    print "rivet scripts require Python version >= 2.4.0... exiting"
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -25,7 +25,7 @@ def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
     res+="do "+thefactory+":Process "+theProcess+" "
     if ( mergedlegs != 0 ):
       if simulation!="Merging":
-          print "simulation is not Merging, trying to add merged legs."
+          print ("simulation is not Merging, trying to add merged legs.")
           sys.exit(1)
       res+="["
       for j in range(mergedlegs):
@@ -34,7 +34,7 @@ def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
     res+="\n"
     if (NLOprocesses!=0):
        if simulation!="Merging":
-          print "simulation is not Merging, trying to add NLOProcesses."
+          print ("simulation is not Merging, trying to add NLOProcesses.")
           sys.exit(1)
        res+="set MergingFactory:NLOProcesses %s \n" % NLOprocesses
     if ( scale != "" ):
@@ -165,7 +165,7 @@ if len(args) != 1:
     sys.exit(1)
 
 name = args[0]
-print name
+print (name)
 
 
 # select the template to load
@@ -288,7 +288,7 @@ if simulation=="" :
         elif("Double-Resolved" in name) :
             templateName="EE-Gamma-Double-Resolved.in"
         else :
-            print "Unknown type of EE-Gamma event ",name
+            print ("Unknown type of EE-Gamma event ",name)
             quit()
     elif collider=="GammaGamma" :
         templateName="GammaGamma.in"
@@ -430,10 +430,10 @@ elif(collider=="EE-Gamma") :
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
         else :
-            print "process not supported for Gamma Gamma processes at EE"
+            print ("process not supported for Gamma Gamma processes at EE")
             quit()
     else :
-        print "Only internal matrix elements currently supported for Gamma Gamma processes at EE"
+        print ("Only internal matrix elements currently supported for Gamma Gamma processes at EE")
         quit()
 elif(collider=="GammaGamma") :
     if(simulation=="") :
@@ -442,10 +442,10 @@ elif(collider=="GammaGamma") :
             process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         else :
-            print "process not supported for Gamma Gamma processes at EE"
+            print ("process not supported for Gamma Gamma processes at EE")
             quit()
     else :
-        print "Only internal matrix elements currently supported for Gamma Gamma processes at EE"
+        print ("Only internal matrix elements currently supported for Gamma Gamma processes at EE")
         quit()
 # TVT
 elif(collider=="TVT") :

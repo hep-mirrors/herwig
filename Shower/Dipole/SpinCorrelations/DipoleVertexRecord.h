@@ -164,7 +164,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    DipoleVertexRecord & operator=(const DipoleVertexRecord &);
+    DipoleVertexRecord & operator=(const DipoleVertexRecord &) = delete;
 
   };
 

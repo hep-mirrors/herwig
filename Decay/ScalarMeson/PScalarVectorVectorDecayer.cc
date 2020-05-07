@@ -202,8 +202,8 @@ double PScalarVectorVectorDecayer::me2(const int,const Particle & part,
     if(photon[0] && ix==1) continue;
     for(unsigned int iy=0;iy<3;++iy) {
       if(photon[1] && iy==1) continue;
-      (*ME())(0,ix,iy)=fact*epsilon(_vectors[0][ix],momenta[1],
-				    _vectors[1][iy])*momenta[0];
+      (*ME())(0,ix,iy)=Complex(fact*epsilon(_vectors[0][ix],momenta[1],
+					    _vectors[1][iy])*momenta[0]);
     }
   }
   double output = ME()->contract(_rho).real();

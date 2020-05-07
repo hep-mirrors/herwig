@@ -145,7 +145,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SpinHadronizer & operator=(const SpinHadronizer &);
+  SpinHadronizer & operator=(const SpinHadronizer &) = delete;
 
 private:
 

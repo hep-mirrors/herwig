@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import yoda,glob,math,optparse
 import subprocess,os
 op = optparse.OptionParser(usage=__doc__)
@@ -7,7 +8,7 @@ op.add_option("-m"         , dest="plots"       , default=[], action="append")
 opts, args = op.parse_args()
 
 if(len(args)!=1) :
-    print 'Must be one and only 1 name'
+    print ('Must be one and only 1 name')
     quit()
 
 cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],
@@ -26,7 +27,7 @@ for runType in ["NonPerturbative","Perturbative"]:
         energy = float(fileName.split("-")[-1].strip(".yoda"))
         energyMeV = energy*1000.
         aos = yoda.read(fileName)
-        for hpath,histo in aos.iteritems():
+        for hpath,histo in aos.items():
             if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
             if(len(opts.plots)>0 and hpath not in opts.plots) : continue
             if(type(histo)==yoda.core.Histo1D or
@@ -93,8 +94,9 @@ for runType in ["NonPerturbative","Perturbative"]:
                     break
     if len(outhistos) == 0: continue
     p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
-    path=p.communicate()[0].strip()
-    for val in outhistos.keys() :
+    path=p.communicate()[0].encode("UTF-8").strip()
+    temp = list(outhistos.keys())
+    for val in  temp :
         if type(outhistos[val]) is yoda.core.Scatter2D :
             if(outhistos[val].numPoints()==0) :
                 del outhistos[val]
@@ -116,7 +118,7 @@ for runType in ["NonPerturbative","Perturbative"]:
                 del outhistos[val]
                 continue
         else :
-            print  type(outhistos[val])
+            print  (type(outhistos[val]) )
     
     yoda.writeYODA(outhistos,"LowEnergy-EE-%s-%s.yoda" % (runType,args[0]))
 

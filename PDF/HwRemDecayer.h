@@ -65,7 +65,8 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : allowTop_(false), multiPeriph_(true), quarkPair_(false),
+  HwRemDecayer() : allowTop_(false), allowLeptons_(false), 
+		   multiPeriph_(true), quarkPair_(false),
                    ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0),
@@ -225,7 +226,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwRemDecayer & operator=(const HwRemDecayer &);
+  HwRemDecayer & operator=(const HwRemDecayer &) = delete;
 
 public:
   
@@ -596,6 +597,11 @@ private:
    *  Switch to control handling of top quarks in proton
    */
   bool allowTop_;
+  
+  /**
+   *  Switch to control handling of charged leptons in proton
+   */
+  bool allowLeptons_;
   
   /**
    *  Switch to control using multiperipheral kinemaics

@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import glob,os,sys
 
 if __name__ == "__main__":
@@ -286,8 +287,8 @@ particleNames = {
     511 : "$B^0,\\bar{B}^0$", "511B" : "$B^0,\\bar{B}^0, B^\\pm$",
     521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
     
-    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$",
-    441  : "$\\eta_c$", 100553 : "$\Upsilon(2S)$", 200553 : "$\Upsilon(3S)$", 300553 : "$\Upsilon(4S)$", 400553 : "$\Upsilon(5S)$", 445 : "$\\chi_{c2}(1P)$",
+    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$",
+    441  : "$\\eta_c$", 100553 : "$\\Upsilon(2S)$", 200553 : "$\\Upsilon(3S)$", 300553 : "$\\Upsilon(4S)$", 400553 : "$\\Upsilon(5S)$", 445 : "$\\chi_{c2}(1P)$",
     120553 : "$\chi_{b1}(2S)$", 110551 : "$\chi_{b0}(2S)$", 100555 : "$\chi_{b2}(2S)$",
     30443 : "$\\psi(3770)$", 
     2212 : "$p,\\bar{p}$", 2224 : "$\\Delta^{++},\\bar{\\Delta}^{--}$",
@@ -1220,7 +1221,7 @@ analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to J/\\psi\\pi^0\\pi^
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to J/\\psi\\pi^+\\pi^-$"     ]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_553_mpippim",
                                                                                                  "/MC_Onium_PiPi_Decay/h_300553_553_hpippim"]
 analyses["HadronDecays"][300553]["DistChargedMult"]["data"] = ["/ARGUS_1992_I319102/d03-x01-y01","/CLEOII_1999_I504672/d02-x01-y01"]
-analyses["HadronDecays"][300553]["Mult"]["Charged"] = ["/CLEOII_1999_I504672/d01-x01-y01","/CLEOII_1999_I504672/d01-x01-y02",
+analyses["HadronDecays"][300553]["Mult"][0] = ["/CLEOII_1999_I504672/d01-x01-y01","/CLEOII_1999_I504672/d01-x01-y02",
                                                        "/CLEOII_1999_I504672/d01-x01-y03","/ARGUS_1992_I319102/d05-x01-y01"]
 analyses["HadronDecays"][300553]["Mult"][   211 ] = ["/ARGUS_1993_S2653028/d07-x01-y01","/ARGUS_1993_S2653028/d08-x01-y01",
                                                      "/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d87-x01-y01"]
@@ -1299,9 +1300,9 @@ analyses["HadronDecays"][300553]["Spectrum"][423] = ["/BELLE_2005_I686014/d04-x0
 analyses["HadronDecays"][110551] = { "Mult" : {},"DistChargedMult" : {},"Shapes" : []}
 analyses["HadronDecays"][120553] = { "Mult" : {},"DistChargedMult" : {},"Shapes" : []}
 analyses["HadronDecays"][100555] = { "Mult" : {},"DistChargedMult" : {},"Shapes" : []}
-analyses["HadronDecays"][110551]["Mult"]["Charged"] = ["/CLEOII_1992_I32611/d01-x03-y01"]
-analyses["HadronDecays"][120553]["Mult"]["Charged"] = ["/CLEOII_1992_I32611/d01-x02-y01"]
-analyses["HadronDecays"][100555]["Mult"]["Charged"] = ["/CLEOII_1992_I32611/d01-x01-y01"]
+analyses["HadronDecays"][110551]["Mult"][0] = ["/CLEOII_1992_I32611/d01-x03-y01"]
+analyses["HadronDecays"][120553]["Mult"][0] = ["/CLEOII_1992_I32611/d01-x02-y01"]
+analyses["HadronDecays"][100555]["Mult"][0] = ["/CLEOII_1992_I32611/d01-x01-y01"]
 analyses["HadronDecays"][110551]["DistChargedMult"]["data"] = ["/CLEOII_1992_I32611/d02-x01-y01"]
 analyses["HadronDecays"][120553]["DistChargedMult"]["data"] = ["/CLEOII_1992_I32611/d02-x01-y02"]
 analyses["HadronDecays"][100555]["DistChargedMult"]["data"] = ["/CLEOII_1992_I32611/d02-x01-y03"]
@@ -3560,9 +3561,9 @@ def writeMisc(index) :
         if(val in figures) :
             del figures[figures.index(val)]
     index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
-    print 'Unused figures',len(figures)
+    print ('Unused figures',len(figures))
     for val in figures:
-        print val
+        print (val)
     misc=open(os.path.join(directory,"misc.html"),'w')
     misc.write(header.format(title="Comparisions of Herwig7 and Miscellaneous $e^+e^-$ Data"))
     misc.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
@@ -3679,7 +3680,7 @@ def writeParticleDecays(particles,decays,index) :
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         if("Modes" in analyses["HadronDecays"][val] and len(analyses["HadronDecays"][val]["Modes"]) !=0) :
-            for mode,plots in analyses["HadronDecays"][val]["Modes"].iteritems() :
+            for mode,plots in analyses["HadronDecays"][val]["Modes"].items() :
                 decays.write("<h5>Mode: %s</h5>\n" % mode)
                 if("data" in plots) :
                     decays.write("<h5>Data</h5>\n")
@@ -3700,9 +3701,9 @@ def writeParticleDecays(particles,decays,index) :
         # multiplicities
         if("Mult" in analyses["HadronDecays"][val] and
            len(analyses["HadronDecays"][val]["Mult"]) !=0) :
-            for prod,plots in sorted(analyses["HadronDecays"][val]["Mult"].iteritems()):
+            for prod,plots in sorted(analyses["HadronDecays"][val]["Mult"].items()):
                 if(len(plots)==0) : continue
-                if(prod!="Charged") :
+                if(prod!=0) :
                     decays.write("<h5>Multiplicity of %s</h5>\n" % particleNames[prod])
                 else : 
                     decays.write("<h5>Multiplicity of Charged Particles</h5>\n")
@@ -3710,7 +3711,7 @@ def writeParticleDecays(particles,decays,index) :
         # spectra
         if("Spectrum" in analyses["HadronDecays"][val] and
            len(analyses["HadronDecays"][val]["Spectrum"]) !=0) :
-            for prod,plots in sorted(analyses["HadronDecays"][val]["Spectrum"].iteritems()):
+            for prod,plots in sorted(analyses["HadronDecays"][val]["Spectrum"].items()):
                 if(len(plots)==0) : continue
                 decays.write("<h5>Spectrum of %s</h5>\n" % particleNames[prod])
                 writePlots2(plots,decays)
@@ -4089,7 +4090,7 @@ def writeFlavour(index) :
             if(val not in analyses["IdentifiedParticleFlavour"]) : continue
             if(flav not in analyses["IdentifiedParticleFlavour"][val]) : continue
             aSum=0
-            for key,temp in analyses["IdentifiedParticleFlavour"][val][flav].iteritems():
+            for key,temp in analyses["IdentifiedParticleFlavour"][val][flav].items():
                 aSum+=len(temp)
             if(aSum==0) : continue
             flavour.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"f_%s_%s\">%s</h4>\n" % (flav,val,particleNames[val]))
@@ -4528,7 +4529,7 @@ def writePolarization(index) :
     pol.write("</body>\n</html>")
     pol.close()
 
-print 'Total no of figures',len(figures)
+print ('Total no of figures',len(figures))
 index=open(os.path.join(directory,"herwig.html"),'w')
 index.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data"))
 # event shapes
@@ -4557,7 +4558,7 @@ writeDecays(index)
 if(len(figures)>0) :
     writeMisc(index)
 else :
-    print 'All figures used'
+    print ('All figures used')
 # footer
 index.write("</ul>\n")
 index.write("</body>\n</html>")
