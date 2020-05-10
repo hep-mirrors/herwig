@@ -23,7 +23,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565208), h_(0.000763), f_(0.465464), Ch_(-0.75),
+  : fPi_(130.2*MeV), g_(0.565208), h_(0.000763), f_(0.465464), Ch_(-1.058455),
     deltaEta_(1./43.7), Lambda_(1.*GeV), psi_(-2.792963),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
@@ -152,7 +152,7 @@ void HQETStrongDecayer::Init() {
   static Parameter<HQETStrongDecayer,double> interfaceCh
      ("Ch",
       "EM coefficient for heavy meson decays",
-      &HQETStrongDecayer::Ch_, -0.75, -1.0, 1.0,
+      &HQETStrongDecayer::Ch_, -1.058455, -2.0, 2.0,
       false, false, Interface::limited);
 
   static ParVector<HQETStrongDecayer,double> interfaceMaxWeight
