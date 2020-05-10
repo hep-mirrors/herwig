@@ -491,36 +491,36 @@ decaymode K*bar0->Kbar0,pi0; 0.332563 1 /Herwig/Decays/Vector2Meson
 decaymode K*bar0->Kbar0,gamma; 0.00231 1 /Herwig/Decays/VectorVP
 #
 decaymode D*0->D0,pi0; 0.619 1 /Herwig/Decays/HQETMeson
-decaymode D*0->D0,gamma; 0.381 1 /Herwig/Decays/VectorVP
+decaymode D*0->D0,gamma; 0.381 1 /Herwig/Decays/HQETMeson
 #
 decaymode D*+->D0,pi+; 0.677 1 /Herwig/Decays/HQETMeson
 decaymode D*+->D+,pi0; 0.307 1 /Herwig/Decays/HQETMeson
-decaymode D*+->D+,gamma; 0.016 1 /Herwig/Decays/VectorVP
+decaymode D*+->D+,gamma; 0.016 1 /Herwig/Decays/HQETMeson
 #
 decaymode D*bar0->Dbar0,pi0; 0.619 1 /Herwig/Decays/HQETMeson
 decaymode D*bar0->Dbar0,gamma; 0.381 1 /Herwig/Decays/VectorVP
 #
 decaymode D*-->Dbar0,pi-; 0.677 1 /Herwig/Decays/HQETMeson
 decaymode D*-->D-,pi0; 0.307 1 /Herwig/Decays/HQETMeson
-decaymode D*-->D-,gamma; 0.016 1 /Herwig/Decays/VectorVP
+decaymode D*-->D-,gamma; 0.016 1 /Herwig/Decays/HQETMeson
 #
-decaymode D_s*+->D_s+,pi0; 0.942 1 /Herwig/Decays/Vector2Meson
-decaymode D_s*+->D_s+,gamma; 0.058 1 /Herwig/Decays/VectorVP
+decaymode D_s*+->D_s+,pi0; 0.942 1 /Herwig/Decays/HQETMeson
+decaymode D_s*+->D_s+,gamma; 0.058 1 /Herwig/Decays/HQETMeson
 #
-decaymode D_s*-->D_s-,gamma; 0.942 1 /Herwig/Decays/VectorVP
-decaymode D_s*-->D_s-,pi0; 0.058 1 /Herwig/Decays/Vector2Meson
+decaymode D_s*-->D_s-,gamma; 0.942 1 /Herwig/Decays/HQETMeson
+decaymode D_s*-->D_s-,pi0; 0.058 1 /Herwig/Decays/HQETMeson
 #
-decaymode B*0->B0,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B*0->B0,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
-decaymode B*+->B+,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B*+->B+,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
-decaymode B*bar0->Bbar0,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B*bar0->Bbar0,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
-decaymode B*-->B-,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B*-->B-,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
-decaymode B_s*0->B_s0,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B_s*0->B_s0,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
-decaymode B_s*bar0->B_sbar0,gamma; 1 1 /Herwig/Decays/VectorVP
+decaymode B_s*bar0->B_sbar0,gamma; 1 1 /Herwig/Decays/HQETMeson
 #
 decaymode B_c*+->B_c+,gamma; 1 1 /Herwig/Decays/VectorVP
 #

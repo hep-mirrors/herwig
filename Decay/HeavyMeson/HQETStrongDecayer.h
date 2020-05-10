@@ -170,6 +170,11 @@ private:
   double f_;
 
   /**
+   *  coefficient for radiative heavy meson decays
+   */
+  double Ch_;
+
+  /**
    *  D_1 mixing angle
    */
   double psi_;
