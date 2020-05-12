@@ -209,6 +209,7 @@ double HQETRadiativeDecayer::me2(const int, const Particle & part,
 					     momenta[1].mass());
   if(abs(type_[imode()])==1 || abs(type_[imode()])==2) {
     // get the polarization vectors
+    vecOut_.resize(3);
     for(unsigned int ix=0;ix<3;++ix) {
       if(ix==1) continue;
       vecOut_[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
