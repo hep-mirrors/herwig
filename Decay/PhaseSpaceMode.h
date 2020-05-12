@@ -140,6 +140,11 @@ public:
    *  Number of rnadom numbers needed
    */
   unsigned int nRand() const {return nRand_;}
+
+  /**
+   *  Set whether of not decays are generated on-shell
+   */
+  void checkOnShell(bool in) {testOnShell_=in;}
   
 public:
 
