@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_HQETStrongDecayer_H
-#define Herwig_HQETStrongDecayer_H
+#ifndef Herwig_HQETRadiativeDecayer_H
+#define Herwig_HQETRadiativeDecayer_H
 //
-// This is the declaration of the HQETStrongDecayer class.
+// This is the declaration of the HQETRadiativeDecayer class.
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
@@ -14,20 +14,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
- * The HQETStrongDecayer class implements the strong decays of excited heavy, i.e. bottom and charm mesons, using
- * heavy quark effective theory results
+ * The HQETRadiativeDecayer class implements the EM decays of excited heavy,
+ * i.e. bottom and charm mesons, using heavy quark effective theory results
  *
- * @see \ref HQETStrongDecayerInterfaces "The interfaces"
- * defined for HQETStrongDecayer.
+ * @see \ref HQETRadiativeDecayerInterfaces "The interfaces"
+ * defined for HQETRadiativeDecayer.
  */
-class HQETStrongDecayer: public DecayIntegrator {
+class HQETRadiativeDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * The default constructor.
    */
-  HQETStrongDecayer();
+  HQETRadiativeDecayer();
 
   /**
    * Which of the possible decays is required
@@ -141,7 +141,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HQETStrongDecayer & operator=(const HQETStrongDecayer &) = delete;
+  HQETRadiativeDecayer & operator=(const HQETRadiativeDecayer &) = delete;
 
 private:
 
@@ -149,35 +149,11 @@ private:
    *  Coupings for the decays
    */
   //@{
-  /**
-   *  Pion decay constant
-   */
-  Energy fPi_;
 
   /**
-   *  Coupling for decays within the \f$(0^-,1^-)\f$ multiplet
+   *  coefficient for radiative heavy meson decays
    */
-  double g_;
-
-  /**
-   *  Coupling for decays within the \f$(1^+ ,2^+)\f$ multiplet
-   */
-  double h_;
-
-  /**
-   *  Coupling for decays within the \f$(0^+ ,1^+)\f$ multiplet
-   */
-  double f_;
-
-  /**
-   *  D_1 mixing angle (up and down)
-   */
-  double psiL_;
-
-  /**
-   *  D_1 mixing angle (strange)
-   */
-  double psiS_;
+  double Ch_;
 
   /**
    *   \f$\eta-\pi^0 \f$ mixing for isospin violating decays
@@ -251,4 +227,4 @@ private:
 
 }
 
-#endif /* Herwig_HQETStrongDecayer_H */
+#endif /* Herwig_HQETRadiativeDecayer_H */

@@ -23868,4 +23868,7 @@ newdef RadiativeHyperon:GenerateIntermediates 0
 create Herwig::HQETStrongDecayer HQETMeson
 newdef HQETMeson:Initialize 1
 
+create Herwig::HQETRadiativeDecayer HQETMesonEM
+newdef HQETMesonEM:Initialize 1
+
 @LOAD_EVTGEN_DECAYER@

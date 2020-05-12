@@ -23,7 +23,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565208), h_(0.82390288463), f_(-0.465289596481), Ch_(-1.058455),
+  : fPi_(130.2*MeV), g_(0.565208), h_(0.82390288463), f_(-0.465289596481),
     psiL_(0.), psiS_(-0.0470218429577),
     deltaEta_(1./43.7), Lambda_(1.*GeV),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
@@ -31,41 +31,31 @@ HQETStrongDecayer::HQETStrongDecayer()
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
                 10413,10413,10423,10423,10433,10433,   //D_1  decay modes: VtoVS
                 10411,10411,10421,10421,10431,         //D*_0 decay modes: StoSS
-                20413,20413,20423,20423,20433,         //D'_1 decay modes: VtoVS
-                413,423,433,                           //D* EM decay modes: VtoSV
-                513,523,533}),                         //B* EM decay modes: VtoSV
+                20413,20413,20423,20423,20433}),       //D'_1 decay modes: VtoVS
     outgoingH_({421,411,421,431,
                 411,421,411,421,411,421,
                 413,423,413,423,413,423,
                 413,423,413,423,413,423,
                 411,421,411,421,431,
-                413,423,413,423,433,
-                411,421,431,
-                511,521,531}),
+                413,423,413,423,433}),
     outgoingL_({211,111,111,111,
                 111,211,-211,111,311,321,
                 111,211,-211,111,311,321,
                 111,211,-211,111,311,321,
                 111,211,-211,111,111,
-                111,211,-211,111,111,
-                22,22,22,
-                22,22,22}),
+                111,211,-211,111,111}),
     type_     ({1,  1,  1, -1,
                 2,  2,  2,  2,  2,  2,
                 3,  3,  3,  3,  3,  3,
                 4,  4,  4,  4,  4,  4,
                 5,  5,  5,  5,  5,
-                6,  6,  6,  6,  6,
-                7,  7,  7,
-                8,  8,  8}),
+                6,  6,  6,  6,  6}),
     maxWeight_({1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1., 1.,
                 1., 1., 1., 1., 1.,
-                1., 1., 1., 1., 1.,
-                1., 1., 1.,
-                1., 1., 1.})
+                1., 1., 1., 1., 1.})
 {}
 
 void HQETStrongDecayer::doinit() {
@@ -109,12 +99,12 @@ IBPtr HQETStrongDecayer::fullclone() const {
 
 void HQETStrongDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(fPi_,MeV) << g_ << h_ << f_ << psiL_ << psiS_
-     << Ch_ << deltaEta_ << ounit(Lambda_,GeV) << maxWeight_;
+     << deltaEta_ << ounit(Lambda_,GeV) << maxWeight_;
 }
 
 void HQETStrongDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(fPi_,MeV) >> g_ >> h_ >> f_ >> psiL_ >> psiS_
-     >> Ch_ >> deltaEta_ >> iunit(Lambda_,GeV) >> maxWeight_;
+     >> deltaEta_ >> iunit(Lambda_,GeV) >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -151,12 +141,6 @@ void HQETStrongDecayer::Init() {
      &HQETStrongDecayer::f_, 0.465464, 0.0, 1.0,
      false, false, Interface::limited);
 
-  static Parameter<HQETStrongDecayer,double> interfaceCh
-     ("Ch",
-      "EM coefficient for heavy meson decays",
-      &HQETStrongDecayer::Ch_, -1.058455, -2.0, 2.0,
-      false, false, Interface::limited);
-
   static ParVector<HQETStrongDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
@@ -180,7 +164,7 @@ void HQETStrongDecayer::Init() {
      "D_1 mixing angle for up and down heavy mesons",
      &HQETStrongDecayer::psiL_, 0., -M_PI/2., M_PI/2.,
      false, false, Interface::limited);
-  
+
   static Parameter<HQETStrongDecayer,double> interfacefpsiS
     ("psiS",
      "D_1 mixing angle for strange heavy mesons",
@@ -273,14 +257,11 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
     if(abs(type_[imode()])==5) {
       ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
     }
-    if(abs(type_[imode()])==7 || abs(type_[imode()])==8) {
-      ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin1)));
-    }
   }
   // stuff for incoming particle
   if(meopt==Initialize) {
     unsigned int Type = abs(type_[imode()]);
-    if(Type==1 || Type==4 || Type==6 || Type==7 || Type==8) {
+    if(Type==1 || Type==4 || Type==6) {
       rho_ = RhoDMatrix(PDT::Spin1);
       Helicity::VectorWaveFunction::calculateWaveFunctions(vecIn_,rho_,const_ptr_cast<tPPtr>(&part),
   							   Helicity::incoming,false);
@@ -348,7 +329,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
 	     HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
 	     HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
     // mixing
-    double psi = (abs(part.id())%100)/10!=3 ? psiL_ : psiS_; 
+    double psi = (abs(part.id())%100)/10!=3 ? psiL_ : psiS_;
     double m1(cos(psi)),m2(sin(psi));
     if(abs(type_[imode()])==6) {
       swap(m1,m2);
@@ -379,49 +360,6 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
     // test = sqr(f_)/(4.*sqr(fPi_)) * sqr(part.mass()-momenta[0].mass())
     //   * sqr(sqr(part.mass()+momenta[0].mass())-sqr(momenta[1].mass()))
     //   / part.mass()/momenta[0].mass()/sqr(part.mass());
-  }
-  // Radiative deacay of VectorMeson to Photon + ScalarMeson
-  else if(abs(type_[imode()])==7 || abs(type_[imode()])==8) {
-    // get the polarization vectors
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(ix==1) continue;
-      vecOut_[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
-    }
-    // calculate coupling A
-    InvEnergy A;
-    Energy mQ;
-    double eq(1./3.), eQ(2./3.);
-    if(abs(part.id())==423 || abs(part.id())==523) {
-      eq = -2./3.;
-    }
-    if(abs(type_[imode()])==7) { //i.e. for the c quarks
-      mQ = getParticleData(ParticleID::c)->mass();
-    }
-    else { //i.e. for the b quarks
-      eQ = -1./3.;
-      mQ = getParticleData(ParticleID::b)->mass();
-    }
-    if(part.id()<0) {
-      eq *= -1.;
-      eQ *= -1.;
-    }
-    A = eQ/4./mQ*sqrt(SM().alphaEM(sqr(mQ)))+Ch_/Lambda_*eq*sqrt(SM().alphaEM(sqr(Lambda_)));
-    //calculate ME
-    InvEnergy2 fact = 4.*sqrt(8.*M_PI)*A*sqrt(momenta[0].mass()/part.mass())/part.mass();
-    for(unsigned int ix=0;ix<3;++ix) {
-      for(unsigned int iy=0;iy<3;++iy) {
-        if(iy==1) {
-          (*ME())(ix,iy,0) = 0.;
-        }
-        else {
-	         (*ME())(ix,iy,0) = Complex(fact*epsilon(vecOut_[iy],momenta[1],vecIn_[ix])
-                      *part.momentum());
-        }
-      }
-    }
-    // analytic test of the answer
-    //test = 32.*M_PI*sqr(A)*momenta[0].mass()/part.mass()/3.
-    //     *sqr(sqr(part.mass())-sqr(momenta[0].mass()))/sqr(part.mass());
   }
   else {
     assert(false);
@@ -488,8 +426,13 @@ void HQETStrongDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   // couplings
-  output << "newdef " << name() << ":fPi " << fPi_/MeV << "\n";
-  output << "newdef " << name() << ":g   " << g_      << "\n";
+  output << "newdef " << name() << ":fPi    " << fPi_/MeV    << "\n";
+  output << "newdef " << name() << ":g      " << g_          << "\n";
+  output << "newdef " << name() << ":h      " << h_          << "\n";
+  output << "newdef " << name() << ":f      " << f_          << "\n";
+  output << "newdef " << name() << ":Lambda " << Lambda_/GeV << "\n";
+  output << "newdef " << name() << ":psiL   " << psiL_       << "\n";
+  output << "newdef " << name() << ":psiS   " << psiS_       << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\""
   		    << fullName() << "\";" << endl;
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
