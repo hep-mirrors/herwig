@@ -22,7 +22,9 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.565208), h_(0.000763), f_(0.465464), deltaEta_(1./43.7), Lambda_(1.*GeV), psi_(-2.792963),
+  : fPi_(130.2*MeV), g_(0.565208), h_(0.82390288463), f_(-0.465289596481),
+    psiL_(0.), psiS_(-0.0470218429577),
+    deltaEta_(1./43.7), Lambda_(1.*GeV),
     incoming_ ({413,413,423,433,                       //D*   decay modes: VtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoSS
                 415,415,425,425,435,435,               //D*_2 decay modes: TtoVS
@@ -69,8 +71,9 @@ void HQETStrongDecayer::doinit() {
     tPDPtr     in = getParticleData(incoming_[ix]);
     tPDVector out = {getParticleData(outgoingH_[ix]),
 		     getParticleData(outgoingL_[ix])};
-    if(in&&out[0]&&out[1])
+    if(in&&out[0]&&out[1]) {
       mode=new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
+    }
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
@@ -94,11 +97,13 @@ IBPtr HQETStrongDecayer::fullclone() const {
 }
 
 void HQETStrongDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(fPi_,MeV) << g_ << h_ << f_<< deltaEta_ << ounit(Lambda_,GeV) << maxWeight_;
+  os << ounit(fPi_,MeV) << g_ << h_ << f_ << psiL_ << psiS_
+     << deltaEta_ << ounit(Lambda_,GeV) << maxWeight_;
 }
 
 void HQETStrongDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(fPi_,MeV) >> g_ >> h_ >> f_ >> deltaEta_ >> iunit(Lambda_,GeV) >> maxWeight_;
+  is >> iunit(fPi_,MeV) >> g_ >> h_ >> f_ >> psiL_ >> psiS_
+     >> deltaEta_ >> iunit(Lambda_,GeV) >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -153,10 +158,16 @@ void HQETStrongDecayer::Init() {
      &HQETStrongDecayer::Lambda_, GeV, 1.*GeV, .1*GeV, 2.*GeV,
      false, false, Interface::limited);
 
-  static Parameter<HQETStrongDecayer,double> interfacefpsi
-    ("psi",
-     "D_1 mixing angle",
-     &HQETStrongDecayer::psi_, -2.792963, -M_PI/2., M_PI/2.,
+  static Parameter<HQETStrongDecayer,double> interfacefpsiL
+    ("psiL",
+     "D_1 mixing angle for up and down heavy mesons",
+     &HQETStrongDecayer::psiL_, 0., -M_PI/2., M_PI/2.,
+     false, false, Interface::limited);
+  
+  static Parameter<HQETStrongDecayer,double> interfacefpsiS
+    ("psiS",
+     "D_1 mixing angle for strange heavy mesons",
+     &HQETStrongDecayer::psiS_, -0.0470218429577, -M_PI/2., M_PI/2.,
      false, false, Interface::limited);
 }
 
@@ -270,9 +281,9 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   }
   // calculate the matrix element
   Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-					     momenta[1].mass()); //test subject
-
-  double test(0.);
+					     momenta[1].mass());
+  //test subject
+  // double test(0.);
   // HeavyVectorMeson to PScalarMeson + PScalarMeson
   if(abs(type_[imode()])==1) {
     InvEnergy fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
@@ -280,7 +291,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       (*ME())(ix,0,0) = fact*(vecIn_[ix]*momenta[1]);
     }
     // analytic test of the answer
-    test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
+    // test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
   }
   // HeavyTensorMeson to PScalarMeson + PScalarMeson
   else if(abs(type_[imode()])==2) {
@@ -289,7 +300,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       (*ME())(ix,0,0) = fact*(tensorIn_[ix]*momenta[1]*momenta[0]);
     }
     // analytic test of the answer
-    test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/15./sqr(fPi_)/sqr(Lambda_)/part.mass();
+    // test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/15./sqr(fPi_)/sqr(Lambda_)/part.mass();
   }
   // HeavyTensorMeson to VectorMeson + PScalarMeson
   else if(abs(type_[imode()])==3) {
@@ -307,7 +318,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       }
     }
     // analytic test of the answer
-    test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/5./sqr(fPi_)/sqr(Lambda_)/part.mass();
+    // test = 4.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/5./sqr(fPi_)/sqr(Lambda_)/part.mass();
   }
   // PVectorMeson to VectorMeson + PScalarMeson
   else if(abs(type_[imode()])==4 || abs(type_[imode()])==6) {
@@ -315,54 +326,48 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
     vecOut_={HelicityFunctions::polarizationVector(-momenta[0],0,Helicity::outgoing),
 	     HelicityFunctions::polarizationVector(-momenta[0],1,Helicity::outgoing),
 	     HelicityFunctions::polarizationVector(-momenta[0],2,Helicity::outgoing)};
-    double m1(cos(psi_)),m2(sin(psi_));
+    // mixing
+    double psi = (abs(part.id())%100)/10!=3 ? psiL_ : psiS_; 
+    double m1(cos(psi)),m2(sin(psi));
     if(abs(type_[imode()])==6) {
       swap(m1,m2);
       m1 *=-1.;
     }
-    InvEnergy2 factD1 = sqrt(2./3.)*(h_/fPi_)*sqrt(momenta[0].mass()/part.mass())
-      /Lambda_*momenta[0].mass()/part.mass();
-    InvEnergy  factD1prim = -(f_/fPi_)*sqrt(momenta[0].mass()/part.mass());
+    // D_1 and D_1' couplings
+    InvEnergy2 f_D1  = sqrt(2./3.)*(h_/fPi_/Lambda_)*sqrt(momenta[0].mass()/part.mass());
+    InvEnergy2 f_D1p = f_/fPi_*(part.mass()-momenta[0].mass())/sqrt(part.mass()*momenta[0].mass())/part.mass();
+    // couplings with mixing
+    double     A = -   f_D1*sqr(pcm)*m1 - 0.5*f_D1p*m2*(sqr(part.mass()+momenta[0].mass())-sqr(momenta[1].mass()));
+    InvEnergy2 B = -3.*f_D1         *m1 - f_D1p*m2;
+    // matrix element
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int iy=0;iy<3;++iy) {
-	(*ME())(ix,iy,0)  = m1*Complex(factD1*(vecOut_[iy].dot(vecIn_[ix])
-					       *(momenta[1].mass2()-sqr(part.momentum()*momenta[1]/part.mass()))
-					       - 3.*(vecIn_[ix]*momenta[1])*(vecOut_[iy]*momenta[1])));
-	(*ME())(ix,iy,0) += m2*Complex(factD1prim*(momenta[1]*(part.momentum()/part.mass()
-							       + momenta[0]/momenta[0].mass())*vecIn_[ix].dot(vecOut_[iy])
-						   - vecOut_[iy].dot(part.momentum())*vecIn_[ix].dot(momenta[1])/part.mass()
-						   - vecOut_[iy].dot(momenta[1]     )*vecIn_[ix].dot(momenta[0])/momenta[0].mass()));
+	(*ME())(ix,iy,0)  = A*vecOut_[iy].dot(vecIn_[ix]) + B*vecOut_[iy].dot(momenta[1])*vecIn_[ix].dot(momenta[1]);
       }
     }
-    // analytic test of the answer (N.B. missing interference term)
-    test = 4.*sqr(m1*h_)*momenta[0].mass()*sqr(sqr(pcm))/3./sqr(fPi_)/sqr(Lambda_)/part.mass()*
-      (25.-2.*sqr(momenta[0].mass()/part.mass())+10.*sqr(momenta[1].mass()/part.mass())
-       +sqr((sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass())))/24.+
-      sqr(f_*m2)/(4.*sqr(fPi_))*sqr(part.mass()-momenta[0].mass())
-      * sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
-      * sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
-      / (part.mass()*momenta[0].mass())/sqr(part.mass());
+    // analytic test of the answer
+    // test = sqr(A)*(1.+sqr(pcm/momenta[0].mass())/3.)+
+    //   sqr(pcm)/3./sqr(momenta[0].mass())*
+    //   (sqr(B*part.mass()*pcm) - A*B*(sqr(part.mass())+sqr(momenta[0].mass())-sqr(momenta[1].mass())));
   }
   // ScalarMeson to ScalarMeson + ScalarMeson
   else if(abs(type_[imode()])==5) {
     InvEnergy fact = f_/fPi_*sqrt(momenta[0].mass()/part.mass());
     (*ME())(0,0,0) = fact*momenta[1]*(part.momentum()/part.mass() + momenta[0]/momenta[0].mass());
     // analytic test of the answer
-    test = sqr(f_)/(4.*sqr(fPi_))*(momenta[0].mass()/part.mass())
-      * sqr(part.mass()-momenta[0].mass())
-      * sqr(part.mass()+momenta[0].mass()-momenta[1].mass())
-      * sqr(part.mass()+momenta[0].mass()+momenta[1].mass())
-      / part.mass()/momenta[0].mass()/sqr(part.mass());
+    // test = sqr(f_)/(4.*sqr(fPi_)) * sqr(part.mass()-momenta[0].mass())
+    //   * sqr(sqr(part.mass()+momenta[0].mass())-sqr(momenta[1].mass()))
+    //   / part.mass()/momenta[0].mass()/sqr(part.mass());
   }
   else {
     assert(false);
   }
   double output = ME()->contract(rho_).real();
   // testing
-  double ratio = (output-test)/(output+test);
-  generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
-		     << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
-		     << output << " " << test << " " << ratio << endl;
+  // double ratio = (output-test)/(output+test);
+  // generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
+  // 		     << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  // 		     << output << " " << test << " " << ratio << endl;
   // isospin factors
   if(abs(outgoing[1]->id())==ParticleID::pi0) {
     output *= type_[imode()]>0 ? 0.5 : 0.125*sqr(deltaEta_);
