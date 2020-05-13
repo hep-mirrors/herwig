@@ -308,7 +308,7 @@ for f in yodafiles:
                         title=""
                         path=""
                         if hasattr(ao, 'title'):
-                            title=ao.title()
+                            title=ao.title
                         if hasattr(ao, 'path'):
                             path=ao.path()
                         temp = yoda.core.Histo1D(path,title)
@@ -456,7 +456,7 @@ for hpath,hsets in inhistos_pt.items():
         path=""
         histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
-            title=histo.title()
+            title=histo.title
         if hasattr(histo, 'path'):
             path=histo.path()
         if(type(histo)==yoda.core.Counter) :

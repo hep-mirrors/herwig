@@ -22,3 +22,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1991_I314060
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I281039
 # ARGUS Xi_c+ spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I296522
+# BELLE Sigma_c(2800) spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I668024
+# BELLE charm hadron producion
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014

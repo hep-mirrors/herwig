@@ -137,7 +137,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     // set masses of products
     Lorentz5Momentum pout[3],pin(parent.momentum());
     for(unsigned int ix=0;ix<3;++ix) pout[ix].setMass(partons[ix]->mass());
-    double xs(partons[2]->mass()/pin.e()),xb(1.-xs);
+    double xs(partons[2]->mass()/pin.mass()),xb(1.-xs);
     pout[2]=xs*pin;
     // Get the particle quark that is decaying
     long idQ, idSpec;
@@ -179,7 +179,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
       swap(partons[0],partons[1]);
     // get the momenta of the decaying quark and the spectator
     Lorentz5Momentum pin(parent.momentum());
-    double xs(partons[3]->mass()/pin.e()),xb(1.-xs);
+    double xs(partons[3]->mass()/pin.mass()),xb(1.-xs);
     Lorentz5Momentum pspect(xs*pin),pdec(xb*pin);
     pspect.setMass(partons[3]->mass());
     pdec.rescaleMass();
