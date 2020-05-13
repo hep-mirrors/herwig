@@ -8,7 +8,7 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.096916
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-do /Herwig/Particles/Jpsi:SelectDecayModes /Herwig/Particles/Jpsi/Jpsi->n0,nbar0; /Herwig/Particles/Jpsi/Jpsi->p+,pbar-; /Herwig/Particles/Jpsi/Jpsi->Sigma0,Sigmabar0; /Herwig/Particles/Jpsi/Jpsi->Lambda0,Lambdabar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*-,Sigma*bar+;  /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*+,Sigma*bar-; /Herwig/Particles/Jpsi/Jpsi->Xi-,Xibar+; /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Xi0,Xibar0; Jpsi->Xi*-,Xibar+; Jpsi->Xi*bar+,Xi-; Jpsi->eta,e-,e+;
+do /Herwig/Particles/Jpsi:SelectDecayModes /Herwig/Particles/Jpsi/Jpsi->n0,nbar0; /Herwig/Particles/Jpsi/Jpsi->p+,pbar-; /Herwig/Particles/Jpsi/Jpsi->Sigma0,Sigmabar0; /Herwig/Particles/Jpsi/Jpsi->Lambda0,Lambdabar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*-,Sigma*bar+;  /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*+,Sigma*bar-; /Herwig/Particles/Jpsi/Jpsi->Xi-,Xibar+; /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Xi0,Xibar0; Jpsi->Xi*-,Xibar+; Jpsi->Xi*bar+,Xi-;
 # J/psi-> lambda anti-lambda and sigma anti-sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563
 # J/psi -> p pbar and n nbar
