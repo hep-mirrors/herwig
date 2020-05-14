@@ -1,2 +1,3 @@
+# -*- ThePEG-repository -*-
 # ATLAS Z Gamma analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863:LMODE=ZMU
