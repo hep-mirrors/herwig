@@ -670,7 +670,8 @@ elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == 
     process+="set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     if(collider=="SppS") :
         process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if  "27.4"   in parameterName : process+=collider_lumi( 27.4)
+    if    "17.4" in parameterName : process+=collider_lumi( 17.4)
+    elif  "27.4" in parameterName : process+=collider_lumi( 27.4)
     elif  "30"   in parameterName : process+=collider_lumi( 30.4)
     elif  "38.8" in parameterName : process+=collider_lumi( 38.8)
     elif  "44"   in parameterName : process+=collider_lumi( 44.4)
