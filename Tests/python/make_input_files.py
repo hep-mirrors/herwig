@@ -677,15 +677,36 @@ elif(collider=="ISR" or collider =="SppS" or collider == "EHS" ) :
     elif "500" in parameterName : process+=collider_lumi(500.0)
     elif "546" in parameterName : process+=collider_lumi(546.0)
     elif "900" in parameterName : process+=collider_lumi(900.0)
-    if(simulation=="") :
-        if "Dipole" in parameters["shower"]:
-            process+="read snippets/MB-DipoleShower.in\n"
-        else:
-            process+="read snippets/MB.in\n"
-        process+="read snippets/Diffraction.in\n"
+    if "UE" in parameterName :
+        if(simulation=="") :
+            if "Dipole" in parameters["shower"]:
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="read snippets/MB.in\n"
+                process+="read snippets/Diffraction.in\n"
+        else :
+            logging.error(" SppS and ISR not supported for %s " % simulation)
+            sys.exit(1)
+    elif "Z-mu" in parameterName :
+        if simulation == "" :
+            process+=insert_ME("MEqq2gZ2ff","Muon")
+            process+=mhat_minm_maxm(2,2,20)
+        elif simulation == "Powheg" :
+            process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
+            process+=mhat_minm_maxm(2,2,20)
+        elif(simulation=="Matchbox"):
+            process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            process+=addLeptonPairCut("2","20")
+        elif(simulation=="Merging"):
+            process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("2","20")
+        else :
+            logging.error(" SppS and ISR not supported for %s " % simulation)
+            sys.exit(1)
     else :
-        logging.error(" SppS and ISR not supported for %s " % simulation)
+        logging.error(" Process not supported for SppS and ISR %s " % parameterName )
         sys.exit(1)
+        
 # LHC
 elif(collider=="LHC") :
     if   parameterName.startswith("7-")   : process = StringBuilder(collider_lumi(7000.0))

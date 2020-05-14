@@ -39,7 +39,9 @@ if __name__ == "__main__":
 #######################################
 
 name=args[0].replace("SppS","")
-yodafiles=["ISR%s-44-UE.yoda"  %name,
+yodafiles=["ISR%s-44-Z-mu.yoda"%name,
+           "ISR%s-62-Z-mu.yoda"%name,
+           "ISR%s-44-UE.yoda"  %name,
            "ISR%s-62-UE.yoda"  %name,
            "SppS%s-63-UE.yoda" %name,
            "ISR%s-30-UE.yoda"  %name, 
@@ -87,6 +89,7 @@ for fname in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
+        if "R209" in aopath and "x01" not in aopath : continue
         if(aopath.find("1926373")>0 or aopath.find("1867512")>0 or
            aopath.find("1583476")>0 or aopath.find("2044935")>0 or
            aopath.find("1178091")>0 ) :

@@ -180,7 +180,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.in) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in) \
-                  $(shell echo Rivet/ISR{,-Dipole}-{30,44,53,62}-UE.in Rivet/EHS{,-Dipole}-UE.in)
+                  $(shell echo Rivet/ISR{,-Dipole}-{{30,44,53,62}-UE,{44,62}-Z-mu}.in Rivet/EHS{,-Dipole}-UE.in)
 
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
@@ -290,7 +290,7 @@ Rivet-SppS : Rivet-SppS/done
 
 
 Rivet-SppS/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
-	          $(shell echo Rivet-ISR-{30,44,53,62}-UE.yoda ) Rivet-EHS-UE.yoda
+	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda ) Rivet-EHS-UE.yoda
 	rm -rf Rivet-SppS
 	python/merge-SppS SppS
 	rivet-mkhtml -o Rivet-SppS SppS.yoda:Hw

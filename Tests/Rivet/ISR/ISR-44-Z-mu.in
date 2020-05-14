@@ -2,4 +2,4 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SFM_1984_S1178091
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 R209_1982_I168182
