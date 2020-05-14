@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E605_1991_I302822
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 NUSEA_2003_I613362

@@ -179,6 +179,7 @@ KNOWN_COLLIDERS = [
     "LHC-GammaGamma",
     "LHC",
     "ISR",
+    "Fermilab",
     "SppS",
     "Star",
     "EHS",
@@ -191,7 +192,7 @@ for cand_collider in KNOWN_COLLIDERS:
         break
 del cand_collider
 assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS"]
+have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS","Fermilab"]
 
 thefactory="Factory"
 
@@ -663,20 +664,22 @@ elif(collider=="Star" ) :
         logging.error("Star not supported for %s " % simulation)
         sys.exit(1)
 # ISR and SppS
-elif(collider=="ISR" or collider =="SppS" or collider == "EHS" ) :
+elif ( collider=="ISR" or collider =="SppS" or collider == "EHS" or collider == "Fermilab" ) :
     process = StringBuilder("set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n")
     process+="set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     if(collider=="SppS") :
         process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if    "30" in parameterName : process+=collider_lumi( 30.4)
-    elif  "44" in parameterName : process+=collider_lumi( 44.4)
-    elif  "53" in parameterName : process+=collider_lumi( 53.0)
-    elif  "62" in parameterName : process+=collider_lumi( 62.2)
-    elif  "63" in parameterName : process+=collider_lumi( 63.0)
-    elif "200" in parameterName : process+=collider_lumi(200.0)
-    elif "500" in parameterName : process+=collider_lumi(500.0)
-    elif "546" in parameterName : process+=collider_lumi(546.0)
-    elif "900" in parameterName : process+=collider_lumi(900.0)
+    if  "27.4"   in parameterName : process+=collider_lumi( 27.4)
+    elif  "30"   in parameterName : process+=collider_lumi( 30.4)
+    elif  "38.8" in parameterName : process+=collider_lumi( 38.8)
+    elif  "44"   in parameterName : process+=collider_lumi( 44.4)
+    elif  "53"   in parameterName : process+=collider_lumi( 53.0)
+    elif  "62"   in parameterName : process+=collider_lumi( 62.2)
+    elif  "63"   in parameterName : process+=collider_lumi( 63.0)
+    elif "200"   in parameterName : process+=collider_lumi(200.0)
+    elif "500"   in parameterName : process+=collider_lumi(500.0)
+    elif "546"   in parameterName : process+=collider_lumi(546.0)
+    elif "900"   in parameterName : process+=collider_lumi(900.0)
     if "UE" in parameterName :
         if(simulation=="") :
             if "Dipole" in parameters["shower"]:
