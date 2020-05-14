@@ -165,7 +165,7 @@ if len(args) != 1:
     sys.exit(1)
 
 name = args[0]
-print (name)
+print ("AA",name)
 
 
 # select the template to load
@@ -182,18 +182,20 @@ KNOWN_COLLIDERS = [
     "Fermilab",
     "SppS",
     "Star",
-    "EHS",
+    "SPS",
     "GammaGamma",
 ]
+print ("!!!!!!",name,"!!!!!")
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
     if cand_collider in name:
         collider = cand_collider
         break
 del cand_collider
+if "EHS" in name : collider="SPS"
 assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS","Fermilab"]
-
+have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
+print (collider)
 thefactory="Factory"
 
 parameters = { 
@@ -664,7 +666,7 @@ elif(collider=="Star" ) :
         logging.error("Star not supported for %s " % simulation)
         sys.exit(1)
 # ISR and SppS
-elif ( collider=="ISR" or collider =="SppS" or collider == "EHS" or collider == "Fermilab" ) :
+elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == "Fermilab" ) :
     process = StringBuilder("set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n")
     process+="set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     if(collider=="SppS") :
@@ -1958,12 +1960,14 @@ elif(collider=="LHC-GammaGamma" ) :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
-
-parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
+if "EHS" in name :
+    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
+else :
+    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
 if have_hadronic_collider :
-    if collider == "EHS" :
+    if "EHS" in name :
         parameters['collider'] = "PPCollider.in\nread snippets/FixedTarget-PP.in"
     else :
         parameters['collider'] = "PPCollider.in"
