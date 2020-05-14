@@ -165,7 +165,7 @@ if len(args) != 1:
     sys.exit(1)
 
 name = args[0]
-print ("AA",name)
+print (name)
 
 
 # select the template to load
@@ -185,7 +185,6 @@ KNOWN_COLLIDERS = [
     "SPS",
     "GammaGamma",
 ]
-print ("!!!!!!",name,"!!!!!")
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
     if cand_collider in name:
