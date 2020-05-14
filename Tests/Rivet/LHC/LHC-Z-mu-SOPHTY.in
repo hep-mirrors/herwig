@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 # CMS photon radiation in Z decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1346843
 # delete the final-state splittings

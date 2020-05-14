@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 
 ##################################################
 # select the analyses
@@ -6,3 +7,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094568
 # ATLAS b-jet shapes in top events
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1243871
+# ATLAS KS0 and Lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1746286

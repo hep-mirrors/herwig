@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 cd /Herwig/Generators
 set EventGenerator:EventHandler:BeamB /Herwig/Particles/p+
 set EventGenerator:EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV

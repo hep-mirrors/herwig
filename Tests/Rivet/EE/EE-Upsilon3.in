@@ -16,4 +16,3 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I356001
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1992_I32611
 # BABAR anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
-
