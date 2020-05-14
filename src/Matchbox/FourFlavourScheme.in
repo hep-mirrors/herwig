@@ -89,15 +89,15 @@ set IIgx2bbbarxDipoleKernel:UseKernel No
 set IIgx2bbarbxDipoleKernel:UseKernel No
 
 cd /Herwig/Shower
-do SplittingGenerator:DeleteInitialSplitting b->b,g; QtoQGSudakov
-do SplittingGenerator:DeleteInitialSplitting b->b,gamma; QtoQGammaSudakov
-do SplittingGenerator:DeleteInitialSplitting t->t,gamma; QtoQGammaSudakov
-do SplittingGenerator:DeleteInitialSplitting g->b,bbar; GtobbbarSudakov
-do SplittingGenerator:DeleteInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
-do SplittingGenerator:DeleteInitialSplitting b->g,b; QtoGQSudakov
-do SplittingGenerator:DeleteInitialSplitting bbar->g,bbar; QtoGQSudakov
-do SplittingGenerator:DeleteInitialSplitting b->gamma,b; QtoGammaQSudakov
-do SplittingGenerator:DeleteInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
+do SplittingGenerator:DeleteInitialSplitting b->b,g; QtoQGSudakovISR
+do SplittingGenerator:DeleteInitialSplitting b->b,gamma; QtoQGammaSudakovISR
+do SplittingGenerator:DeleteInitialSplitting t->t,gamma; QtoQGammaSudakovISR
+do SplittingGenerator:DeleteInitialSplitting g->b,bbar; GtobbbarSudakovISR
+do SplittingGenerator:DeleteInitialSplitting gamma->b,bbar; GammatoQQbarSudakovISR
+do SplittingGenerator:DeleteInitialSplitting b->g,b; QtoGQSudakovISR
+do SplittingGenerator:DeleteInitialSplitting bbar->g,bbar; QtoGQSudakovISR
+do SplittingGenerator:DeleteInitialSplitting b->gamma,b; QtoGammaQSudakovISR
+do SplittingGenerator:DeleteInitialSplitting bbar->gamma,bbar; QtoGammaQSudakovISR
 
 
 cd /Herwig/UnderlyingEvent

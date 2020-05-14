@@ -26,6 +26,9 @@ set CMWGtoGGSplitFn:Alpha AlphaQCD
 
 cp CMWGtoGGSplitFn CMWGtoGGSplitFnIS
 cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
+set CMWGtoGGSplitFnIS:Alpha         AlphaQCDISR
+set CMWQtoQGSplitFnIS:Alpha         AlphaQCDISR
+
 
 set CMWGtoGGSplitFnIS:isInititalState Yes
 set CMWQtoQGSplitFnIS:isInititalState Yes
@@ -37,11 +40,13 @@ set CMWQtoQGSplitFn:isInititalState No
 
 cp QtoQGSudakov CMWQtoQGSudakov
 cp QtoQGSudakov CMWQtoQGSudakovIS
+set CMWQtoQGSudakovIS:Alpha AlphaQCDISR
 set CMWQtoQGSudakov:SplittingFunction CMWQtoQGSplitFn
 set CMWQtoQGSudakovIS:SplittingFunction CMWQtoQGSplitFnIS
 
 cp GtoGGSudakov CMWGtoGGSudakov
 cp GtoGGSudakov CMWGtoGGSudakovIS
+set CMWGtoGGSudakovIS:Alpha AlphaQCDISR
 set CMWGtoGGSudakov:SplittingFunction CMWGtoGGSplitFn
 set CMWGtoGGSudakovIS:SplittingFunction CMWGtoGGSplitFnIS
 
