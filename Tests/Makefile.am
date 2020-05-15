@@ -129,7 +129,7 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 
 
 
-tests-Rivet : Rivet-EE Rivet-DIS Rivet-Star Rivet-SppS \
+tests-Rivet : Rivet-EE Rivet-DIS Rivet-Fixed \
 	      Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
 	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
@@ -180,7 +180,9 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.in) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in) \
-                  $(shell echo Rivet/ISR{,-Dipole}-{{30,44,53,62}-UE,{44,62}-Z-mu}.in Rivet/EHS{,-Dipole}-UE.in)
+                  $(shell echo Rivet/ISR{,-Dipole}-{{30,44,53,62}-UE,{44,62}-Z-mu}.in Rivet/EHS{,-Dipole}-UE.in) \
+                  $(shell echo Rivet/SPS{,-Dipole}-{17.4-UE,200-Z-mu}.in ) \
+                  $(shell echo Rivet/Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.in )
 
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
@@ -274,26 +276,18 @@ Rivet-TVT-Jets/done:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1.
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw
 	touch $@
 
-Rivet-Star : Rivet-Star/done
-	touch $@
-
-Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
-	rm -rf Rivet-Star
-	python/merge-Star Star
-	rivet-mkhtml -o Rivet-Star Star.yoda:Hw
+Rivet-Fixed : Rivet-Fixed/done
 	touch $@
 
 
-
-Rivet-SppS : Rivet-SppS/done
-	touch $@
-
-
-Rivet-SppS/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
-	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda ) Rivet-EHS-UE.yoda
-	rm -rf Rivet-SppS
-	python/merge-SppS SppS
-	rivet-mkhtml -o Rivet-SppS SppS.yoda:Hw
+Rivet-Fixed/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
+	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda ) Rivet-EHS-UE.yoda \
+                  $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) \
+                  $(shell echo Rivet-SPS-{17.4-UE,200-Z-mu}.yoda ) \
+                  $(shell echo Rivet-Fermilab-{27.4,38.8}-Z-mu.yoda )
+	rm -rf Rivet-Fixed
+	python/merge-Fixed Fixed
+	rivet-mkhtml -o Rivet-Fixed Fixed.yoda:Hw
 	touch $@
 
 Rivet-LHC-Jets : Rivet-LHC-Jets/done

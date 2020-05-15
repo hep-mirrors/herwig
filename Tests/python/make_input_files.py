@@ -182,7 +182,7 @@ KNOWN_COLLIDERS = [
     "Fermilab",
     "SppS",
     "Star",
-    "EHS",
+    "SPS",
     "GammaGamma",
 ]
 collider = ""
@@ -191,9 +191,10 @@ for cand_collider in KNOWN_COLLIDERS:
         collider = cand_collider
         break
 del cand_collider
+if "EHS" in name : collider="SPS"
 assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS","Fermilab"]
-
+have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
+print (collider)
 thefactory="Factory"
 
 parameters = { 
@@ -664,12 +665,13 @@ elif(collider=="Star" ) :
         logging.error("Star not supported for %s " % simulation)
         sys.exit(1)
 # ISR and SppS
-elif ( collider=="ISR" or collider =="SppS" or collider == "EHS" or collider == "Fermilab" ) :
+elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == "Fermilab" ) :
     process = StringBuilder("set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n")
     process+="set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     if(collider=="SppS") :
         process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if  "27.4"   in parameterName : process+=collider_lumi( 27.4)
+    if    "17.4" in parameterName : process+=collider_lumi( 17.4)
+    elif  "27.4" in parameterName : process+=collider_lumi( 27.4)
     elif  "30"   in parameterName : process+=collider_lumi( 30.4)
     elif  "38.8" in parameterName : process+=collider_lumi( 38.8)
     elif  "44"   in parameterName : process+=collider_lumi( 44.4)
@@ -1958,12 +1960,14 @@ elif(collider=="LHC-GammaGamma" ) :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
-
-parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
+if "EHS" in name :
+    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
+else :
+    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
 if have_hadronic_collider :
-    if collider == "EHS" :
+    if "EHS" in name :
         parameters['collider'] = "PPCollider.in\nread snippets/FixedTarget-PP.in"
     else :
         parameters['collider'] = "PPCollider.in"

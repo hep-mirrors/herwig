@@ -1,0 +1,5 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PHENIX_2019_I1672015
