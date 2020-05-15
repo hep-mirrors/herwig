@@ -283,8 +283,8 @@ Rivet-Fixed : Rivet-Fixed/done
 Rivet-Fixed/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
 	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda ) Rivet-EHS-UE.yoda \
                   $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) \
-                  $(shell echo Rivet-SPS{,-Dipole}-{17.4-UE,200-Z-mu}.yoda ) \
-                  $(shell echo Rivet-Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.yoda )
+                  $(shell echo Rivet-SPS-{17.4-UE,200-Z-mu}.yoda ) \
+                  $(shell echo Rivet-Fermilab-{27.4,38.8}-Z-mu.yoda )
 	rm -rf Rivet-Fixed
 	python/merge-Fixed Fixed
 	rivet-mkhtml -o Rivet-Fixed Fixed.yoda:Hw
