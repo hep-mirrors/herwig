@@ -1,0 +1,4 @@
+# -*- ThePEG-repository -*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2015_PPCentrality
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2016_I1471838
+insert /Herwig/Analysis/RivetAnalysis:PreLoad 0 Rivet-LHC-7-Cent.yoda

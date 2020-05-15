@@ -1,0 +1,4 @@
+# -*- ThePEG-repository -*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2015_PPCentrality
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1723697
+insert /Herwig/Analysis/RivetAnalysis:PreLoad 0 Rivet-LHC-13-Cent.yoda
