@@ -11,11 +11,22 @@ op.add_option("--print-descriptions", dest="output" , default=False, action="sto
 opts, args = op.parse_args()
 
 # analyses to skip
-skip = [ "ATLAS_2010_I849050", # alias
-         "TOTEM_2012_002"    , # alias
-         "TEST"              , # test analysis
-         "ATLAS_2015_I1351916", # same as _EL version
-         "ATLAS_2015_CONF_2015_041", # superseeded
+skip = [ "ATLAS_2010_I849050",        # alias
+         "TOTEM_2012_002"    ,        # alias
+         "TEST"              ,        # test analysis
+         "ATLAS_2015_I1351916",       # same as _EL version
+         "ATLAS_2015_CONF_2015_041",  # superseeded
+         "ALICE_2012_I1127497",       # lead-lead
+         "ALICE_2012_I930312",        # lead-lead
+         "ALICE_2015_PBPBCentrality", # lead-lead
+         "ATLAS_PBPB_CENTRALITY",     # lead-lead
+         "ALICE_2015_PPBCentrality",  # lead-p
+         "ATLAS_pPb_Calib",           # lead-p
+         "BRAHMS_2004_AUAUCentrality",# heavy ion
+         "STAR_2008_S7993412",        # heavy ion
+         "STAR_BES_CALIB",            # heavy ion
+         "DELPHI_2002_069_CONF_603",  # superseeded
+         "CMS_2015_I1370682_PARTON",  # parton-level version
         ]
 searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 
@@ -111,7 +122,7 @@ for analysis in sorted(analyses.keys()) :
         else :
             print ("MISSING ANALYSIS",analysis,analyses[analysis])
             if(opts.output) : print (desc)
-# outout analyses missing from rivet
+# output analyses missing from rivet
 for val in not_in_rivet:
     print ("NOT IN RIVET ",val)
 # output second file for rivet
