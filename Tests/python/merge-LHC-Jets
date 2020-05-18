@@ -145,7 +145,8 @@ if(opts.ue) :
                   "-900-UE.yoda"   ,"-2360-UE.yoda"    ,
                   "-2760-UE.yoda"     ,"-7-UE.yoda"     ,
                   "-900-UE-Long.yoda" ,"-8-UE.yoda"     ,
-                  "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda"]
+                  "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda",
+                  "-7-UE-Cent.yoda","-13-UE-Cent.yoda"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -308,7 +309,7 @@ for f in yodafiles:
                         title=""
                         path=""
                         if hasattr(ao, 'title'):
-                            title=ao.title
+                            title=ao.title()
                         if hasattr(ao, 'path'):
                             path=ao.path()
                         temp = yoda.core.Histo1D(path,title)
@@ -456,7 +457,7 @@ for hpath,hsets in inhistos_pt.items():
         path=""
         histo = list(list(hsets.values())[0].values())[0]
         if hasattr(histo, 'title'):
-            title=histo.title
+            title=histo.title()
         if hasattr(histo, 'path'):
             path=histo.path()
         if(type(histo)==yoda.core.Counter) :

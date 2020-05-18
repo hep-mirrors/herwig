@@ -133,6 +133,15 @@ tests-Rivet : Rivet-EE Rivet-DIS Rivet-Fixed \
 	      Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
 	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
+Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
+	rm -rf $(subst .yoda,,$@)
+	mkdir $(subst .yoda,,$@)
+	mv $(subst .yoda,.run,$@) $(subst UE-,,$(subst .yoda,.run,$@)) $(subst .yoda,,$@)
+	cd $(subst .yoda,,$@); ../$(HWRUN) $(subst UE-,,$(subst .yoda,.run,$@)); mv $(subst UE-,,$@) ALICE_2015_PPCentrality.yoda
+	cd $(subst .yoda,,$@); export RIVET_ANALYSIS_PATH=`pwd`; ../$(HWRUN)  $(subst .yoda,.run,$@)
+	mv $(subst .yoda,,$@)/$@ .
+	rm -rf $(subst .yoda,,$@)
+
 Rivet-%.run : Rivet/%.in
 	$(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
@@ -162,6 +171,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-13-DiJets-{{1..11}-A,{6..11}-B}.in ) \
                   $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{7,8,13}-Jets-{0..10}.in ) \
 	          $(shell echo Rivet/LHC{,-Dipole}-{900,2360,2760,7,8,13}-UE.in ) \
+	          $(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole}-2760-Jets-{1..3}.in ) \
 	          $(shell echo Rivet/LHC{,-Dipole}-{900,7,13}-UE-Long.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Charm-{1..5}.in) \
@@ -299,6 +309,7 @@ Rivet-LHC-Jets/done : \
 	        $(shell echo Rivet-LHC-{7,8,13}-Jets-{0..10}.yoda     ) \
 	        $(shell echo Rivet-LHC-2760-Jets-{1..3}.yoda     ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE.yoda ) \
+	        $(shell echo Rivet-LHC-{7,13}-UE-Cent.yoda ) \
 	        $(shell echo Rivet-LHC-{900,7,13}-UE-Long.yoda        ) \
 		$(shell echo Rivet-LHC-7-Charm-{1..5}.yoda            ) \
 		$(shell echo Rivet-LHC-7-Bottom-{0..9}.yoda           ) \
@@ -308,7 +319,6 @@ Rivet-LHC-Jets/done : \
 	python/merge-LHC-Jets LHC
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.yoda:Hw
 	touch $@
-
 
 
 Rivet-LHC-EW : Rivet-LHC-EW/done

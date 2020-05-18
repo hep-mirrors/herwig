@@ -1,0 +1,2 @@
+# -*- ThePEG-repository -*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2015_PPCentrality

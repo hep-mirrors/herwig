@@ -92,3 +92,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1624693
 # LHCF
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2015_I1351909
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2016_I1385877
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I944757
