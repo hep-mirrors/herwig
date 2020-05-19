@@ -79,6 +79,7 @@ FormFactors/BaryonFormFactor.cc \
 FormFactors/ScalarFormFactor.cc \
 FormFactors/BtoSGammaHadronicMass.cc \
 FormFactors/KMatrix.cc \
+FormFactors/ScalarAmplitude.cc \
 FormFactors/BaryonFormFactor.fh \
 FormFactors/BaryonFormFactor.h \
 FormFactors/ScalarFormFactor.fh \
@@ -86,7 +87,9 @@ FormFactors/ScalarFormFactor.h \
 FormFactors/BtoSGammaHadronicMass.h \
 FormFactors/BtoSGammaHadronicMass.fh \
 FormFactors/KMatrix.h \
-FormFactors/KMatrix.fh
+FormFactors/KMatrix.fh \
+FormFactors/ScalarAmplitude.h \
+FormFactors/ScalarAmplitude.fh
 
 pkglib_LTLIBRARIES += HwFormFactors.la
 
