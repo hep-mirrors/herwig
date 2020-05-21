@@ -7,9 +7,12 @@ op.add_option("-m"         , dest="plots"       , default=[], action="append")
 
 opts, args = op.parse_args()
 
+
 if(len(args)!=1) :
     print ('Must be one and only 1 name')
     quit()
+
+name=args[0].split("-")
 
 cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],
                  1907.5: [17.5,5497], 1877 : [7 ,16803], 1830 : [30,8287],
@@ -23,7 +26,7 @@ for key in cmd3_weights.keys() :
     
 for runType in ["NonPerturbative","Perturbative"]:
     outhistos={}
-    for fileName in glob.glob("Rivet-LowEnergy-EE-%s-*.yoda" % runType):
+    for fileName in glob.glob("Rivet-LowEnergy-%s-%s-*.yoda" % (name[0],runType) ):
         energy = float(fileName.split("-")[-1].strip(".yoda"))
         energyMeV = energy*1000.
         aos = yoda.read(fileName)
@@ -120,5 +123,5 @@ for runType in ["NonPerturbative","Perturbative"]:
         else :
             print  (type(outhistos[val]) )
     
-    yoda.writeYODA(outhistos,"LowEnergy-EE-%s-%s.yoda" % (runType,args[0]))
+    yoda.writeYODA(outhistos,"LowEnergy-%s-%s.yoda" % (runType,args[0]))
 
