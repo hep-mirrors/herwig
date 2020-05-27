@@ -138,6 +138,9 @@ double MEGammaGamma2PiPi::helicityME(vector<VectorWaveFunction> &p1,
 				     bool calc) const {
   // for(unsigned int ix=0;ix<4;++ix)
   //   cerr << mePartonData()[ix]->PDGName() <<" " << meMomenta()[ix]/GeV << " " << meMomenta()[ix].mass()/GeV << "\n";
+  // double beta = meMomenta()[2].vect().mag()/meMomenta()[2].t();
+  // double ct   = meMomenta()[2].cosTheta();
+  // double phi  = meMomenta()[2].phi();
   // scale (external photons so scale in couplings is 0)
   Energy2 mt(0.*GeV2);
   // matrix element to be stored
@@ -159,10 +162,10 @@ double MEGammaGamma2PiPi::helicityME(vector<VectorWaveFunction> &p1,
       diag[1] = a2*b1/d2;
       sumdiag[0] += norm(diag[0]);
       sumdiag[1] += norm(diag[1]);
-      diag[0] += diag[1] - 1.;
-      output += norm(diag[0]);
+      Complex amp = p1[ihel1].wave()*p2[ihel2].wave()-diag[0]-diag[1];
+      output += norm(amp);
       // store the me if needed
-      if(calc) me_(2*ihel1,2*ihel2,0,0) = diag[0];
+      if(calc) me_(2*ihel1,2*ihel2,0,0) = amp;
     }
   }
   // diagrams
