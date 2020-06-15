@@ -137,7 +137,7 @@ if(opts.decay) :
     yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0","Xicp",
-                  "Omegac0","Xim","JPsi","Psi2S","Psi3770"]
+                  "Omegac0","Xim","JPsi","Psi2S","Psi2S-All","Psi3770"]
 ## Get histos
 inhistos = {}
 outhistos={}
