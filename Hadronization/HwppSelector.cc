@@ -132,7 +132,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   // if the Herwig algorithm
   if(_mode ==1) {
     if(UseRandom::rnd() > 1./(1.+pwtDIquark())
-       &&cluMass > massLightestBaryonPair(par1,par2)) {
+       && cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;
     }
@@ -168,9 +168,16 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
                   T2.begin()->mass) continue;
     // quark weight
     double quarkWeight =  pwt(quarktopick->id());
-    if (quarktopick->id() == 3) {
+    if (abs(quarktopick->id()) == 3) {
+      // Decoupling the weight of heavy strenge hadrons
+      if (_enhanceSProb == 0
+          && (abs(par1->id()) == 4 || abs(par1->id()) == 5)) {
+        double scale = double(sqr(_m0Decay/cluMass));
+        quarkWeight = (_maxScale < scale) ?
+          pwt(quarktopick->id()) : 0.5*pow(quarkWeight,scale);
+      }
       // Scaling strangeness enhancement
-      if (_enhanceSProb == 1){
+      else if (_enhanceSProb == 1) {
 	double scale = double(sqr(_m0Decay/cluMass));
 	quarkWeight = (_maxScale < scale) ? 0. : pow(quarkWeight,scale);
       }
@@ -193,7 +200,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
 	weight = quarkWeight * H1->overallWeight * H2->overallWeight *
-	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
+	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass);
 
 	int signQ = 0;
 	assert (par1 && quarktopick);
