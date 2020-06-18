@@ -33,7 +33,8 @@ public:
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV)
+  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
+                  _charmDIQuarkWtFactor(1.), _bottomDIQuarkWtFactor(1.)
   {}
 
   /**
@@ -160,6 +161,13 @@ private:
   *  becoming too large
   */
   const double _maxScale = 20.;
+
+  /**
+  *  Heavy diquark wight coefficients
+  */
+  double _charmDIQuarkWtFactor;
+
+  double _bottomDIQuarkWtFactor;
 
 };
 
