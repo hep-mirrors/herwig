@@ -31,6 +31,7 @@ set /Herwig/Particles/K+:Stable Unstable
 ##################################################
 cd /Herwig/MatrixElements
 
+# using currents
 insert SubProcess:MatrixElements 0 MEDM2Kaons
 insert SubProcess:MatrixElements 0 MEDM2Pions
 insert SubProcess:MatrixElements 0 MEDM2Kaons
@@ -47,7 +48,13 @@ insert SubProcess:MatrixElements 0 MEDM2EtaOmega
 insert SubProcess:MatrixElements 0 MEDM2ppbar
 insert SubProcess:MatrixElements 0 MEDM2KKPi
 insert SubProcess:MatrixElements 0 MEDM2PhiPi
-
+# using standard matrix elements and hadronization
+# cd /Herwig/NewPhysics
+# insert HPConstructor:Incoming 0 /Herwig/Particles/chi
+# insert HPConstructor:Incoming 1 /Herwig/Particles/chi
+# insert HPConstructor:Outgoing 0 /Herwig/Particles/u
+# insert HPConstructor:Outgoing 1 /Herwig/Particles/d
+# insert HPConstructor:Outgoing 2 /Herwig/Particles/s
 
 ##################################################
 # LEP physics parameters (override defaults) 
