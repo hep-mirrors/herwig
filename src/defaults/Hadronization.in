@@ -84,7 +84,6 @@ newdef PartonSplitter:SplitPwtSquark 0.824135
 newdef PartonSplitter:Split uds
 
 # 
-<<<<<<< working copy
 newdef HadronSelector:PwtDquark             1.0
 newdef HadronSelector:PwtUquark             1.0
 newdef HadronSelector:PwtSquark             0.291717
@@ -96,18 +95,6 @@ newdef HadronSelector:SngWt                 0.74
 newdef HadronSelector:DecWt                 0.62
 newdef HadronSelector:Mode                  1
 newdef HadronSelector:BelowThreshold        All
-=======
-newdef HadronSelector:PwtDquark  1.0
-newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark 0.291717
-newdef HadronSelector:PwtCquark  0.0
-newdef HadronSelector:PwtBquark  0.0
-newdef HadronSelector:PwtDIquark  0.298
-newdef HadronSelector:SngWt      0.74
-newdef HadronSelector:DecWt      0.62
-newdef HadronSelector:Mode 1
-newdef HadronSelector:BelowThreshold All
->>>>>>> destination
 newdef HadronSelector:charmDIQuarkWtFactor  2.5
 newdef HadronSelector:bottomDIQuarkWtFactor 2.5
 
