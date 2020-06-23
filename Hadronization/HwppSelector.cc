@@ -42,11 +42,13 @@ void HwppSelector::doinit() {
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure;
+  os << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
+              << _charmDIQuarkWtFactor << _bottomDIQuarkWtFactor;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure;
+  is >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
+              >> _charmDIQuarkWtFactor >> _bottomDIQuarkWtFactor;
 }
 
 void HwppSelector::Init() {
@@ -69,11 +71,13 @@ void HwppSelector::Init() {
     ("Mode",
      "Which algorithm to use",
      &HwppSelector::_mode, 1, false, false);
+
   static SwitchOption interfaceModeKupco
     (interfaceMode,
      "Kupco",
      "Use the Kupco approach",
      0);
+
   static SwitchOption interfaceModeHwpp
     (interfaceMode,
      "Hwpp",
@@ -84,16 +88,19 @@ void HwppSelector::Init() {
     ("EnhanceSProb",
      "Option for enhancing strangeness",
      &HwppSelector::_enhanceSProb, 0, false, false);
+
   static SwitchOption interfaceEnhanceSProbNo
     (interfaceEnhanceSProb,
      "No",
      "No strangeness enhancement.",
      0);
+
   static SwitchOption interfaceEnhanceSProbScaled
     (interfaceEnhanceSProb,
      "Scaled",
      "Scaled strangeness enhancement",
      1);
+
   static SwitchOption interfaceEnhanceSProbExponential
     (interfaceEnhanceSProb,
      "Exponential",
@@ -104,16 +111,30 @@ void HwppSelector::Init() {
      ("MassMeasure",
       "Option to use different mass measures",
       &HwppSelector::_massMeasure,0,false,false);
+
    static SwitchOption interfaceMassMeasureMass
      (interfaceMassMeasure,
       "Mass",
       "Mass Measure",
       0);
+
    static SwitchOption interfaceMassMeasureLambda
      (interfaceMassMeasure,
       "Lambda",
       "Lambda Measure",
       1);
+
+   static Parameter<HwppSelector,double> interfaceCharmDIQuarkWtFactor
+     ("charmDIQuarkWtFactor",
+     "Charmed diquark wight coefficients",
+     &HwppSelector::_charmDIQuarkWtFactor, 1., 0., 10.,
+     false, false, Interface::limited);
+
+   static Parameter<HwppSelector,double> interfaceBottomDIQuarkWtFactor
+     ("bottomDIQuarkWtFactor",
+     "Bottom diquark wight coefficients",
+     &HwppSelector::_bottomDIQuarkWtFactor, 1., 0., 10.,
+     false, false, Interface::limited);
 
   static Parameter<HwppSelector,Energy> interfaceDecayMassScale
     ("DecayMassScale",
@@ -131,7 +152,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   bool quark = true;
   // if the Herwig algorithm
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+pwtDIquark())
+    if(UseRandom::rnd() > 1./(1.+pwtDIquarkS0()+pwtDIquarkS1())
        && cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;
@@ -168,21 +189,21 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
                   T2.begin()->mass) continue;
     // quark weight
     double quarkWeight =  pwt(quarktopick->id());
-    if (abs(quarktopick->id()) == 3) {
+    if(abs(quarktopick->id()) == 3) {
       // Decoupling the weight of heavy strenge hadrons
-      if (_enhanceSProb == 0
-          && (abs(par1->id()) == 4 || abs(par1->id()) == 5)) {
-        double scale = double(sqr(_m0Decay/cluMass));
-        quarkWeight = (_maxScale < scale) ?
-          pwt(quarktopick->id()) : 0.5*pow(quarkWeight,scale);
+      if(_enhanceSProb == 0 && abs(par1->id()) == 4) {
+        quarkWeight = pwt(quarktopick->id())*_charmDIQuarkWtFactor;
+      }
+      else if(_enhanceSProb == 0 && abs(par1->id()) == 5) {
+        quarkWeight = pwt(quarktopick->id())*_bottomDIQuarkWtFactor;
       }
       // Scaling strangeness enhancement
-      else if (_enhanceSProb == 1) {
+      else if(_enhanceSProb == 1) {
 	double scale = double(sqr(_m0Decay/cluMass));
 	quarkWeight = (_maxScale < scale) ? 0. : pow(quarkWeight,scale);
       }
       // Exponential strangeness enhancement
-      else if (_enhanceSProb == 2) {
+      else if(_enhanceSProb == 2) {
 	Energy2 mass2;
 	Energy endpointmass = par1->mass() + par2->mass();
 	// Choose to use either the cluster mass
