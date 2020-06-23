@@ -43,12 +43,12 @@ void HwppSelector::doinit() {
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
   os << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
-              << _charmDIQuarkWtFactor << _bottomDIQuarkWtFactor;
+              << _scHadronWtFactor << _sbHadronWtFactor;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
   is >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
-              >> _charmDIQuarkWtFactor >> _bottomDIQuarkWtFactor;
+              >> _scHadronWtFactor >> _sbHadronWtFactor;
 }
 
 void HwppSelector::Init() {
@@ -124,16 +124,16 @@ void HwppSelector::Init() {
       "Lambda Measure",
       1);
 
-   static Parameter<HwppSelector,double> interfaceCharmDIQuarkWtFactor
-     ("charmDIQuarkWtFactor",
-     "Charmed diquark wight coefficients",
-     &HwppSelector::_charmDIQuarkWtFactor, 1., 0., 10.,
+   static Parameter<HwppSelector,double> interfacescHadronWtFactor
+     ("scHadronWtFactor",
+     "Wight factor for strenge-charm heavy hadrns",
+     &HwppSelector::_scHadronWtFactor, 1., 0., 10.,
      false, false, Interface::limited);
 
-   static Parameter<HwppSelector,double> interfaceBottomDIQuarkWtFactor
-     ("bottomDIQuarkWtFactor",
-     "Bottom diquark wight coefficients",
-     &HwppSelector::_bottomDIQuarkWtFactor, 1., 0., 10.,
+   static Parameter<HwppSelector,double> interfacesbHadronWtFactor
+     ("sbHadronWtFactor",
+     "Wight factor for strenge-bottom heavy hadrns",
+     &HwppSelector::_sbHadronWtFactor, 1., 0., 10.,
      false, false, Interface::limited);
 
   static Parameter<HwppSelector,Energy> interfaceDecayMassScale
@@ -192,10 +192,10 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     if(abs(quarktopick->id()) == 3) {
       // Decoupling the weight of heavy strenge hadrons
       if(_enhanceSProb == 0 && abs(par1->id()) == 4) {
-        quarkWeight = pwt(quarktopick->id())*_charmDIQuarkWtFactor;
+        quarkWeight = pwt(quarktopick->id())*_scHadronWtFactor;
       }
       else if(_enhanceSProb == 0 && abs(par1->id()) == 5) {
-        quarkWeight = pwt(quarktopick->id())*_bottomDIQuarkWtFactor;
+        quarkWeight = pwt(quarktopick->id())*_sbHadronWtFactor;
       }
       // Scaling strangeness enhancement
       else if(_enhanceSProb == 1) {

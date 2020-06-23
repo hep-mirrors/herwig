@@ -95,7 +95,7 @@ newdef HadronSelector:SngWt                 0.74
 newdef HadronSelector:DecWt                 0.62
 newdef HadronSelector:Mode                  1
 newdef HadronSelector:BelowThreshold        All
-newdef HadronSelector:charmDIQuarkWtFactor  2.5
-newdef HadronSelector:bottomDIQuarkWtFactor 2.5
+newdef HadronSelector:scHadronWtFactor      2.5
+newdef HadronSelector:sbHadronWtFactor      2.5
 
 create Herwig::SpinHadronizer SpinHadronizer
