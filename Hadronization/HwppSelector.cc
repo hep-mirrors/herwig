@@ -222,7 +222,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
  	if(cluMass < H1->mass + H2->mass) break;
 	weight = quarkWeight * H1->overallWeight * H2->overallWeight *
 	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass);
-
+  //cerr<<H1->id<<" "<<H2->id<<" "<<weight/GeV<<"\n";
 	int signQ = 0;
 	assert (par1 && quarktopick);
 	assert (par2);

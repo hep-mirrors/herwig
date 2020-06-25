@@ -684,7 +684,8 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     if(toHadron) Mc1 = toHadron->mass();
     // check if need to force diquark cluster to be on-shell
     toDiQuark = false;
-    diquark = CheckId::makeDiquark(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
+    long rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
+    diquark = CheckId::makeDiquark(ptrQ[iq2]->dataPtr(),newPtr2->dataPtr(),rndSpin);
     if(Mc2 < diquark->constituentMass()) {
       Mc2 = diquark->constituentMass();
       toDiQuark = true;

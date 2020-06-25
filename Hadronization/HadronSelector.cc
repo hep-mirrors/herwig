@@ -48,8 +48,6 @@ namespace {
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
-
-
 }
 
 ostream & operator<< (ostream & os,
@@ -432,7 +430,9 @@ void HadronSelector::doinit() {
   // the diquarks
   for(unsigned int ix=1;ix<=5;++ix) {
     for(unsigned int iy=1; iy<=ix;++iy) {
-      _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy)));
+      _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
+      if(ix!=iy)
+        _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(1))));
     }
   }
   // set the weights for the various excited mesons
@@ -476,10 +476,14 @@ void HadronSelector::doinit() {
   _pwt[5]  = _pwtBquark;
   _pwt[1103] =       _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
   _pwt[2101] = 0.5 * _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
+  _pwt[2103] = 0.5 * _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
   _pwt[2203] =       _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
   _pwt[3101] = 0.5 * _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
+  _pwt[3103] = 0.5 * _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
   _pwt[3201] = 0.5 * _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
+  _pwt[3203] = 0.5 * _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
   _pwt[3303] =       _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
+
   // Commenting out heavy di-quark weights
   _pwt[4101] = 0.0;
   _pwt[4201] = 0.0;
@@ -499,7 +503,6 @@ void HadronSelector::doinit() {
   }
   // construct the hadron tables
   constructHadronTable();
-
   // for debugging
   // dumpTable(table());
 }
@@ -556,7 +559,8 @@ void HadronSelector::constructHadronTable() {
       flav2 = x3;
     }
     else { // baryon
-      flav1 = CheckId::makeDiquarkID(x2,x3);
+      long rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
+      flav1 = CheckId::makeDiquarkID(x2,x3,rndSpin);
       flav2 = x4;
     }
     if (wantSusy) flav2 += 1000000 * x7;
