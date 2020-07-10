@@ -818,7 +818,7 @@ elif(collider=="LHC") :
             addedBRReweighter = True
             process+=insert_ME("MEPP2ZH")
             process+=jet_kt_cut(0.0)
-        elif "UE"  or "Cent" in parameterName :
+        elif "UE"  in parameterName or "Cent" in parameterName :
             if "Dipole" in parameters["shower"]:
                 process+="read snippets/MB-DipoleShower.in\n"
             else:

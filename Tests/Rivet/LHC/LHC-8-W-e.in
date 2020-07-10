@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# CMS W+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1635273
