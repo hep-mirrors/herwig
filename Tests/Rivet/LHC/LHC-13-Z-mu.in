@@ -6,3 +6,7 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_MU
 # CMS Z UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1635889
+# CMS Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=MU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
