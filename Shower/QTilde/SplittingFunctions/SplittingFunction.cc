@@ -13,8 +13,6 @@
 
 #include "SplittingFunction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
@@ -22,7 +20,7 @@
 
 using namespace Herwig;
 
-DescribeAbstractClass<SplittingFunction,Interfaced>
+DescribeAbstractNoPIOClass<SplittingFunction,Interfaced>
 describeSplittingFunction ("Herwig::SplittingFunction","");
 
 void SplittingFunction::Init() {
@@ -30,12 +28,4 @@ void SplittingFunction::Init() {
   static ClassDocumentation<SplittingFunction> documentation
     ("The SplittingFunction class is the based class for 1->2 splitting functions"
      " in Herwig");
-}
-
-void SplittingFunction::persistentOutput(PersistentOStream & os) const {
-  os << colourFactor_;
-}
-
-void SplittingFunction::persistentInput(PersistentIStream & is, int) {
-  is >> colourFactor_;
 }

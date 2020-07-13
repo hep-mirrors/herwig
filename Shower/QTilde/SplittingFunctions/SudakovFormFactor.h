@@ -155,7 +155,7 @@ public:
 			interactionType_(ShowerInteraction::UNDEFINED),
 			colourStructure_(Undefined),
 			angularOrdered_(true), scaleChoice_(2),
-			strictAO_(true)
+			strictAO_(true), colourFactor_(-1.)
   {}
 
   /**
@@ -568,9 +568,9 @@ protected:
   const vector<IdList> & particles() const { return particles_; }
 
   /**
-   *  Set the colour factor
+   *  Return the colour factor
    */
-  void setColourFactor(const IdList &ids);
+  double colourFactor() const;
 
 public:
 
@@ -745,6 +745,11 @@ private:
    *   Enforce strict AO
    */
   bool strictAO_;
+
+  /**
+   *  The colour factor
+   */
+  double colourFactor_;
 
 };
 

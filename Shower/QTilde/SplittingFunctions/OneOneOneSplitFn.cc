@@ -34,12 +34,12 @@ double OneOneOneSplitFn::P(const double z, const Energy2,
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig shower! Alberto
   // & Stefan, 25/04/2002).
-  return colourFactor()*sqr(1.-z*(1.-z))/(z*(1.-z));
+  return sqr(1.-z*(1.-z))/(z*(1.-z));
 }
 
 double OneOneOneSplitFn::overestimateP(const double z,
 				       const IdList & ids) const {
-  return colourFactor()*(1/z + 1/(1.-z)); 
+  return 1/z + 1/(1.-z); 
 }
 
 
@@ -53,7 +53,7 @@ double OneOneOneSplitFn::invIntegOverP(const double r,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1./(1.+exp(-r/colourFactor())); 
+    return 1./(1.+exp(-r)); 
   case 1:
   case 2:
   case 3:
@@ -68,7 +68,7 @@ double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
   switch(PDFfactor) {
   case 0:
     assert(z>0.&&z<1.);
-    return colourFactor()*log(z/(1.-z)); 
+    return log(z/(1.-z)); 
   case 1:
   case 2:
   case 3:

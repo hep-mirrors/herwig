@@ -65,7 +65,7 @@ public:
    * @param b All splitting functions must have an interaction order
    */
   SplittingFunction()
-    : Interfaced(), colourFactor_(-1.) {}
+    : Interfaced() {}
 
 public:
 
@@ -184,22 +184,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -208,23 +192,6 @@ public:
    */
   static void Init();
 
-protected:
-
-  /**
-   *  Access to colour factor
-   */
-  //@{
-  /**
-   *  Return the colour factor
-   */
-  double colourFactor() const {return colourFactor_;}
-
-  /**
-   *  Set the colour factor
-   */
-  void colourFactor(double in) {colourFactor_=in;}
-  //@}
-
 private:
 
   /**
@@ -232,13 +199,6 @@ private:
    * In fact, it should not even be implemented.
    */
   SplittingFunction & operator=(const SplittingFunction &) = delete;
-
-private:
-
-  /**
-   *  The colour factor
-   */
-  double colourFactor_;
 
 };
 

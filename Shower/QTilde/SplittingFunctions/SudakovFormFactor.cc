@@ -40,13 +40,13 @@ describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_
      << oenum(interactionType_) << oenum(colourStructure_) 
-     << angularOrdered_ << scaleChoice_ << strictAO_;
+     << angularOrdered_ << scaleChoice_ << strictAO_ << colourFactor_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_
      >> ienum(interactionType_) >> ienum(colourStructure_) 
-     >> angularOrdered_ >> scaleChoice_ >> strictAO_;
+     >> angularOrdered_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
 }
 
 void SudakovFormFactor::Init() {
@@ -328,11 +328,11 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  const IdList &ids,
 				  double enhance,bool ident,
 				  double detune, 
-				  Energy2 &t_main, double &z_main){
+				  Energy2 &t_main, double &z_main) {
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
   double lower = splittingFn_->integOverP(zlimits_.first ,ids,pdfopt);
   double upper = splittingFn_->integOverP(zlimits_.second,ids,pdfopt);
-  double c = 1./((upper - lower)
+  double c = 1./((upper - lower) * colourFactor()
            * alpha_->overestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
   assert(iopt<=2);
@@ -2020,46 +2020,52 @@ void SudakovFormFactor::doinit() {
    	 (colourStructure_<0&&interactionType_==ShowerInteraction::QED) );
   // compute the colour factors if need
   if(colourStructure_==TripletTripletOctet) {
-    splittingFn()->colourFactor(4./3.);
+    colourFactor_ = 4./3.;
   }
   else if(colourStructure_==OctetOctetOctet) {
-    splittingFn()->colourFactor(3.);
+    colourFactor_ = 3.;
   }
   else if(colourStructure_==OctetTripletTriplet) {
-    splittingFn()->colourFactor(0.5);
+    colourFactor_ = 0.5;
   }
   else if(colourStructure_==TripletOctetTriplet) {
-    splittingFn()->colourFactor(4./3.);
+    colourFactor_ = 4./3.;
   }
   else if(colourStructure_==SextetSextetOctet) {
-    splittingFn()->colourFactor(10./3.);
+    colourFactor_ = 10./3.;
   }
   else if(colourStructure_<0) {
-    splittingFn()->colourFactor(1.);
+    colourFactor_ = 1.;
   }
   else {
     assert(false);
   }
 }
 
-void SudakovFormFactor::setColourFactor(const IdList &ids) {
-  // genuine colour factors were handled during initialisation
-  if(colourStructure_>0) return;
-  if(colourStructure_==ChargedChargedNeutral ||
-     colourStructure_==ChargedNeutralCharged) {
-    splittingFn()->colourFactor(sqr(double(ids[0]->iCharge())/3.));
-  }
-  else if(colourStructure_==NeutralChargedCharged) {
-    double fact = sqr(double(ids[1]->iCharge())/3.);
-    if(ids[1]->coloured())
-      fact *= abs(double(ids[1]->iColour()));
-    splittingFn()->colourFactor(fact);
+double SudakovFormFactor::colourFactor() const {
+  if(colourStructure_>0)
+    return colourFactor_;
+  else if(colourStructure_<0) {
+    if(colourStructure_==ChargedChargedNeutral ||
+       colourStructure_==ChargedNeutralCharged) {
+      return sqr(double(ids_[0]->iCharge())/3.);
+    }
+    else if(colourStructure_==NeutralChargedCharged) {
+      double fact = sqr(double(ids_[1]->iCharge())/3.);
+      if(ids_[1]->coloured())
+	fact *= abs(double(ids_[1]->iColour()));
+      return fact;
+    }
+    else {
+      assert(false);
+      return 0.;
+    }
   }
   else {
     assert(false);
+    return 0.;
   }
 }
-
 
 bool SudakovFormFactor::checkColours(const IdList & ids) const {
   if(colourStructure_==TripletTripletOctet) {

@@ -37,12 +37,12 @@ double ZeroZeroOneSplitFn::P(const double z, const Energy2 t,
     Energy m = ids[0]->mass();
     val-=  sqr(m)/t;
   }
-  return 2.*colourFactor()*val;
+  return 2.*val;
 }
 
 double ZeroZeroOneSplitFn::overestimateP(const double z,
 					 const IdList &ids) const { 
-  return 2.*colourFactor()/(1.-z); 
+  return 2./(1.-z); 
 }
 
 double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
@@ -59,7 +59,7 @@ double ZeroZeroOneSplitFn::integOverP(const double z, const IdList & ids,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return -2.*colourFactor()*log(1.-z); 
+    return -2.*log(1.-z); 
   case 1:
   case 2:
   case 3:
@@ -73,7 +73,7 @@ double ZeroZeroOneSplitFn::invIntegOverP(const double r, const IdList & ids,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1. - exp(- 0.5*r/colourFactor());
+    return 1. - exp(- 0.5*r);
   case 1:
   case 2:
   case 3:

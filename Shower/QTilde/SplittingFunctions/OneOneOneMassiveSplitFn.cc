@@ -34,14 +34,14 @@ double OneOneOneMassiveSplitFn::P(const double z, const Energy2 t,
 				  const IdList & ids, const bool, const RhoDMatrix & rho )const {
   Energy2 m2 = sqr(ids[0]->mass());
   double rho00 = rho(1,1).real();
-  return 2.*colourFactor()*(z/(1.-z)-m2/t
+  return 2.*(z/(1.-z)-m2/t
 			       + (1.-rho00)*( (1.-z)/z + z*(1.-z) -sqr(1.-z)*m2/t )
 			       + 2.*rho00*sqr(1.-z)*m2/t);
 }
 
 double OneOneOneMassiveSplitFn::overestimateP(const double z,
 					      const IdList & ids) const {
-  return 2.*colourFactor()*(1/z + 1/(1.-z)); 
+  return 2.*(1/z + 1/(1.-z)); 
 }
 
 
@@ -59,7 +59,7 @@ double OneOneOneMassiveSplitFn::invIntegOverP(const double r,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1./(1.+exp(-0.5*r/colourFactor())); 
+    return 1./(1.+exp(-0.5*r)); 
   case 1:
   case 2:
   case 3:
@@ -74,7 +74,7 @@ double OneOneOneMassiveSplitFn::integOverP(const double z, const IdList & ids,
   switch(PDFfactor) {
   case 0:
     assert(z>0.&&z<1.);
-    return 2.*colourFactor()*log(z/(1.-z)); 
+    return 2.*log(z/(1.-z)); 
   case 1:
   case 2:
   case 3:
