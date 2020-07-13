@@ -559,14 +559,16 @@ void HadronSelector::constructHadronTable() {
       flav2 = x3;
     }
     else { // baryon
-      long rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
+      long rndSpin;
+      if(x2 == x3) rndSpin = 3;
+      else rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
       flav1 = CheckId::makeDiquarkID(x2,x3,rndSpin);
       flav2 = x4;
     }
     if (wantSusy) flav2 += 1000000 * x7;
     HadronInfo a(pid,
 		 particle,
-		 specialWeight(pid),
+		 specialWeight(pid,flav1),
 		 particle->mass());
     // set the weight to the number of spin states
     a.overallWeight = pspin;
@@ -678,8 +680,14 @@ void HadronSelector::constructHadronTable() {
   }
 }
 
-double HadronSelector::specialWeight(long id) const {
+double HadronSelector::specialWeight(long id, int part1) const {
   const int pspin = id % 10;
+  // Get the flavours
+  const int x4 = (id/1000)%10;
+  const int x3 = (id/100 )%10;
+  const int x2 = (id/10  )%10;
+  // Clebsch-Gordan coefficients of baryons
+  double CGcoefficient(1.);
   // Only K0L and K0S have pspin == 0, should
   // not get them until Decay step
   assert( pspin != 0 );
@@ -688,11 +696,59 @@ double HadronSelector::specialWeight(long id) const {
     // Singlet (Lambda-like) baryon
     if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
     // octet
-    else                            return 1.;
+    else {
+      // return 1 if part1 is not a diquark
+      if(part1 < 1100) return 1.;
+      // if part1 is a diquark
+      int diquarkSpin = (part1%10 == 1) ? 1 : 3;
+      // ud0+u
+      if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==1)
+        CGcoefficient = 3./4.;
+      // ud0+s
+      else if(x4 != x3 && (x2 != x3 || x2 != x4) && diquarkSpin==1)
+        CGcoefficient = 1./2.;
+      // uu1+u
+      else if(x4 == x3 && x4 == x2 && diquarkSpin==3)
+        CGcoefficient = 0.;
+      // uu1+d
+      else if(x4 == x3 && x4 != x2 && diquarkSpin==3)
+        CGcoefficient = 1./6.;
+      // ud1+u
+      else if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==3)
+        CGcoefficient = 1./12.;
+      // ud1+s
+      else if(x4 != x3 && (x2 != x3 || x2 != x4) && diquarkSpin==3)
+        CGcoefficient = 1./6.;
+
+      return CGcoefficient;
+    }
   }
   // Decuplet baryon
   else if (pspin == 4) {
-    return sqr(_decWt);
+    // return 1 if part1 is not a diquark
+    if(part1 < 1100) return sqr(_decWt);
+    // if part1 is a diquark
+    int diquarkSpin = (part1%10 == 1) ? 1 : 3;
+    // ud0+u
+    if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==1)
+      CGcoefficient = 0.;
+    // ud0+s
+    else if(x4 != x3 && (x2 != x3 || x2 != x4) && diquarkSpin==1)
+      CGcoefficient = 0.;
+    // uu1+u
+    else if(x4 == x3 && x4 == x2 && diquarkSpin==3)
+      CGcoefficient = 1.;
+    // uu1+d
+    else if(x4 == x3 && x4 != x2 && diquarkSpin==3)
+      CGcoefficient = 1./3.;
+    // ud1+u
+    else if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==3)
+      CGcoefficient = 2./3.;
+    // ud1+s
+    else if(x4 != x3 && (x2 != x3 || x2 != x4) && diquarkSpin==3)
+      CGcoefficient = 1./3.;
+
+    return sqr(_decWt)*CGcoefficient;
   }
   // Meson
   else if(pspin % 2 == 1) {

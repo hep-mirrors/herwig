@@ -55,8 +55,8 @@ long CheckId::makeDiquarkID(long id1, long id2, long pspin) {
   // have spin 1, and therefore the less significant digit (which
   // corresponds to 2*J+1) is 3 rather than 1 as all other Diquarks.
   if (id1 == id2 && pspin == 1) {
-    cerr<<"WARNING: spin-0 diquiark of the same type cannot exist."
-        <<" Switching to spin-1 diquark.\n";
+    //cerr<<"WARNING: spin-0 diquiark of the same type cannot exist."
+    //    <<" Switching to spin-1 diquark.\n";
     idnew = ida*1000 + idb*100 + 3;
   }
 
