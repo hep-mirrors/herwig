@@ -59,27 +59,27 @@ void CMWOneOneOneSplitFn::persistentInput(PersistentIStream & is, int) {
 double CMWOneOneOneSplitFn::P(const double z, const Energy2 t,
                               const IdList & ids, const bool, const RhoDMatrix &)const {
   
-  auto scale2=t;
-  if (!isIS_){
-    scale2*=pTScale() ? z*(1.-z):1.;
-  }else{
-    scale2*=pTScale() ? z*(1.-z):z;
-  }
+  // auto scale2=t;
+  // if (!isIS_){
+  //   scale2*=pTScale() ? z*(1.-z):1.;
+  // }else{
+  //   scale2*=pTScale() ? z*(1.-z):z;
+  // }
   
-  return colourFactor(ids) * alpha_->value(scale2) * Kg(scale2)/2./Constants::pi/(z*(1.-z));
+  // return colourFactor() * alpha_->value(scale2) * Kg(scale2)/2./Constants::pi/(z*(1.-z));
   
 }
 
 double CMWOneOneOneSplitFn::ratioP(const double z, const Energy2 t,
                                    const IdList & , const bool, const RhoDMatrix &) const {
   
-  auto scale2=t;
-  if (!isIS_){
-    scale2*=pTScale() ? z*(1.-z):1.;
-  }else{
-    scale2*=pTScale() ? z*(1.-z):z;
-  }
+  // auto scale2=t;
+  // if (!isIS_){
+  //   scale2*=pTScale() ? z*(1.-z):1.;
+  // }else{
+  //   scale2*=pTScale() ? z*(1.-z):z;
+  // }
   
-  return alpha_->value(scale2)  * Kg(scale2)/2./Constants::pi;
+  // return alpha_->value(scale2)  * Kg(scale2)/2./Constants::pi;
 }
 

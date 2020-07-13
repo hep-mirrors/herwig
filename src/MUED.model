@@ -310,13 +310,13 @@ insert ShowerHandler:DecayInShower 25 5100025
 insert ShowerHandler:DecayInShower 26 5100036
 insert ShowerHandler:DecayInShower 27 5100037
 
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
-set PhitoPhiGammaSplitFn:InteractionType QED
-set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
-set PhitoPhiGammaSplitFn:AngularOrdered Yes
 
 cp SudakovCommon PhitoPhiGammaSudakov
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
 set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+set PhitoPhiGammaSudakov:InteractionType QED
+set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSudakov:AngularOrdered Yes
 
 do SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov

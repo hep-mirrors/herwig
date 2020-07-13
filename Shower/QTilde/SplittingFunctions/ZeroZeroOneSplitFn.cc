@@ -37,12 +37,12 @@ double ZeroZeroOneSplitFn::P(const double z, const Energy2 t,
     Energy m = ids[0]->mass();
     val-=  sqr(m)/t;
   }
-  return 2.*colourFactor(ids)*val;
+  return 2.*colourFactor()*val;
 }
 
 double ZeroZeroOneSplitFn::overestimateP(const double z,
 					 const IdList &ids) const { 
-  return 2.*colourFactor(ids)/(1.-z); 
+  return 2.*colourFactor()/(1.-z); 
 }
 
 double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
@@ -59,7 +59,7 @@ double ZeroZeroOneSplitFn::integOverP(const double z, const IdList & ids,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return -2.*colourFactor(ids)*log(1.-z); 
+    return -2.*colourFactor()*log(1.-z); 
   case 1:
   case 2:
   case 3:
@@ -73,7 +73,7 @@ double ZeroZeroOneSplitFn::invIntegOverP(const double r, const IdList & ids,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1. - exp(- 0.5*r/colourFactor(ids));
+    return 1. - exp(- 0.5*r/colourFactor());
   case 1:
   case 2:
   case 3:
@@ -88,7 +88,7 @@ bool ZeroZeroOneSplitFn::accept(const IdList &ids) const {
   if(ids[0]!=ids[1]) return false;
   if(ids[0]->iSpin()!=PDT::Spin0 ||
      ids[2]->iSpin()!=PDT::Spin1) return false;
-  return checkColours(ids);
+  return true;
 }
 
 vector<pair<int, Complex> > 

@@ -25,17 +25,6 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-  /** \ingroup Shower
-   * Enum to define the possible types of colour structure which can occur in
-   * the branching.
-   */
-  enum ColourStructure {Undefined=0,
-			TripletTripletOctet  = 1,OctetOctetOctet    =2,
-			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
-			SextetSextetOctet    = 5,
-			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
-			NeutralChargedCharged=-3};
-
 /** \ingroup Shower
  *
  *  This is an abstract class which defines the common interface
@@ -66,7 +55,9 @@ using namespace ThePEG;
  * defined for SplittingFunction.
  */
 class SplittingFunction: public Interfaced {
-
+  
+  friend class SudakovFormFactor;
+  
 public:
 
   /**
@@ -74,9 +65,7 @@ public:
    * @param b All splitting functions must have an interaction order
    */
   SplittingFunction()
-    : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
-      _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true), scaleChoice_(2), strictAO_(true) {}
+    : Interfaced(), colourFactor_(-1.) {}
 
 public:
 
@@ -85,55 +74,12 @@ public:
    */
   //@{
   /**
-   *  Return the type of the interaction
-   */
-  ShowerInteraction interactionType() const {return _interactionType;}
-
-  /**
-   *  Return the colour structure
-   */
-  ColourStructure colourStructure() const {return _colourStructure;}
-
-  /**
-   *  Return the colour factor
-   */
-  double colourFactor(const IdList &ids) const {
-    if(_colourStructure>0)
-      return _colourFactor;
-    else if(_colourStructure<0) {
-      if(_colourStructure==ChargedChargedNeutral ||
-	 _colourStructure==ChargedNeutralCharged) {
-	return sqr(double(ids[0]->iCharge())/3.);
-      }
-      else if(_colourStructure==NeutralChargedCharged) {
-	double fact = sqr(double(ids[1]->iCharge())/3.);
-	if(ids[1]->coloured())
-	  fact *= abs(double(ids[1]->iColour()));
-	return fact;
-      }
-      else {
-	assert(false);
-	return 0.;
-      }
-    }
-    else {
-      assert(false);
-      return 0.;
-    }
-  }
-  //@}
-
-  /**
    *  Purely virtual method which should determine whether this splitting
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
   virtual bool accept(const IdList & ids) const = 0;
-
-  /**
-   *  Method to check the colours are correct
-   */
-  virtual bool checkColours(const IdList & ids) const;
+  //@}
 
   /**
    *   Methods to return the splitting function.
@@ -202,21 +148,6 @@ public:
   //@}
 
   /**
-   * Purely virtual method which should make the proper colour connection 
-   * between the emitting parent and the branching products.
-   * @param parent The parent for the branching
-   * @param first  The first  branching product
-   * @param second The second branching product
-   * @param partnerType The type of evolution partner
-   * @param back Whether this is foward or backward evolution.
-   */
-  virtual void colourConnection(tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second,
-				ShowerPartnerType partnerType, 
-				const bool back) const;
-
-  /**
    * Method to calculate the azimuthal angle for forward evolution
    * @param z The energy fraction
    * @param t The scale \f$t=2p_j\cdot p_k\f$.
@@ -251,49 +182,6 @@ public:
 				   const IdList & ids, const double phi,
                                    bool timeLike) = 0;
 
-  /**
-   *  Whether or not the interaction is angular ordered
-   */
-  bool angularOrdered() const {return angularOrdered_;}
-
-  /**
-   *  Scale choice
-   */
-  bool pTScale() const {
-    return scaleChoice_ == 2 ? angularOrdered_ : scaleChoice_ == 0;
-  }
-
-  /**
-   *  Functions to state scales after branching happens
-   */
-  //@{
-  /**
-   *  Sort out scales for final-state emission
-   */
-  void evaluateFinalStateScales(ShowerPartnerType type,
-				Energy scale, double z,
-				tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second);
-  /**
-   *  Sort out scales for initial-state emission
-   */
-  void evaluateInitialStateScales(ShowerPartnerType type,
-				  Energy scale, double z,
-				  tShowerParticlePtr parent,
-				  tShowerParticlePtr first,
-				  tShowerParticlePtr second);
-
-  /**
-   *  Sort out scales for decay emission
-   */
-  void evaluateDecayScales(ShowerPartnerType type,
-			   Energy scale, double z,
-			   tShowerParticlePtr parent,
-			   tShowerParticlePtr first,
-			   tShowerParticlePtr second);
-  //@}
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -322,22 +210,20 @@ public:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
+  /**
+   *  Access to colour factor
+   */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
+   *  Return the colour factor
    */
-  virtual void doinit();
-  //@}
-
-protected:
+  double colourFactor() const {return colourFactor_;}
 
   /**
    *  Set the colour factor
    */
-  void colourFactor(double in) {_colourFactor=in;}
+  void colourFactor(double in) {colourFactor_=in;}
+  //@}
 
 private:
 
@@ -350,34 +236,9 @@ private:
 private:
 
   /**
-   *  The interaction type for the splitting function.
-   */
-  ShowerInteraction _interactionType;
-
-  /**
-   *  The colour structure
-   */
-  ColourStructure _colourStructure;
-
-  /**
    *  The colour factor
    */
-  double _colourFactor;
-
-  /**
-   *  Whether or not this interaction is angular-ordered
-   */
-  bool angularOrdered_;
-
-  /**
-   *  The choice of scale
-   */
-  unsigned int scaleChoice_;
-
-  /**
-   *   Enforce strict AO 
-   */
-  bool strictAO_;
+  double colourFactor_;
 
 };
 

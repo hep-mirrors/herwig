@@ -31,7 +31,20 @@ using namespace ThePEG;
 /**
  *  A typedef for the BeamParticleData
  */
-typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+
+  
+
+/**  \ingroup Shower
+ * Enum to define the possible types of colour structure which can occur in
+ * the branching.
+ */
+enum ColourStructure {Undefined=0,
+		      TripletTripletOctet  = 1,OctetOctetOctet    =2,
+		      OctetTripletTriplet  = 3,TripletOctetTriplet=4,
+		      SextetSextetOctet    = 5,
+		      ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
+		      NeutralChargedCharged=-3};
 
 /**  \ingroup Shower
  *
@@ -138,7 +151,12 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			z_( 0.0 ),phi_(0.0), pT_(){}
+			z_( 0.0 ),phi_(0.0), pT_(),
+			interactionType_(ShowerInteraction::UNDEFINED),
+			colourStructure_(Undefined),
+			angularOrdered_(true), scaleChoice_(2),
+			strictAO_(true)
+  {}
 
   /**
    *  Members to generate the scale of the next branching
@@ -236,12 +254,6 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   tShowerAlphaPtr alpha() const { return alpha_; }
-
-  /**
-   *  The type of interaction
-   */
-  inline ShowerInteraction interactionType() const 
-  {return splittingFn_->interactionType();}
   //@}
 
 public:
@@ -277,6 +289,77 @@ public:
    */
   virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
+  /**
+   *  Whether or not the interaction is angular ordered
+   */
+  bool angularOrdered() const {return angularOrdered_;}
+
+  /**
+   *  Scale choice
+   */
+  bool pTScale() const {
+    return scaleChoice_ == 2 ? angularOrdered_ : scaleChoice_ == 0;
+  }
+  
+  /**
+   *  Return the type of the interaction
+   */
+  ShowerInteraction interactionType() const {return interactionType_;}
+
+  /**
+   *  Return the colour structure
+   */
+  ColourStructure colourStructure() const {return colourStructure_;}
+
+  /**
+   *  Method to check the colours are correct
+   */
+  virtual bool checkColours(const IdList & ids) const;
+
+  /**
+   * Purely virtual method which should make the proper colour connection 
+   * between the emitting parent and the branching products.
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param partnerType The type of evolution partner
+   * @param back Whether this is foward or backward evolution.
+   */
+  void colourConnection(tShowerParticlePtr parent, tShowerParticlePtr first,
+			tShowerParticlePtr second, ShowerPartnerType partnerType, 
+			const bool back) const;
+
+  /**
+   *  Functions to state scales after branching happens
+   */
+  //@{
+  /**
+   *  Sort out scales for final-state emission
+   */
+  void evaluateFinalStateScales(ShowerPartnerType type,
+				Energy scale, double z,
+				tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second);
+  /**
+   *  Sort out scales for initial-state emission
+   */
+  void evaluateInitialStateScales(ShowerPartnerType type,
+				  Energy scale, double z,
+				  tShowerParticlePtr parent,
+				  tShowerParticlePtr first,
+				  tShowerParticlePtr second);
+
+  /**
+   *  Sort out scales for decay emission
+   */
+  void evaluateDecayScales(ShowerPartnerType type,
+			   Energy scale, double z,
+			   tShowerParticlePtr parent,
+			   tShowerParticlePtr first,
+			   tShowerParticlePtr second);
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -302,6 +385,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 protected:
   /**
@@ -472,6 +567,11 @@ protected:
    */
   const vector<IdList> & particles() const { return particles_; }
 
+  /**
+   *  Set the colour factor
+   */
+  void setColourFactor(const IdList &ids);
+
 public:
 
   /**
@@ -618,6 +718,33 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy2> masssquared_;
+
+private:
+
+  /**
+   *  The interaction type for the splitting function.
+   */
+  ShowerInteraction interactionType_;
+
+  /**
+   *  The colour structure
+   */
+  ColourStructure colourStructure_;
+
+  /**
+   *  Whether or not this interaction is angular-ordered
+   */
+  bool angularOrdered_;
+
+  /**
+   *  The choice of scale
+   */
+  unsigned int scaleChoice_;
+
+  /**
+   *   Enforce strict AO
+   */
+  bool strictAO_;
 
 };
 

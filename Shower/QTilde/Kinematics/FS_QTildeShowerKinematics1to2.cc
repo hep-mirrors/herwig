@@ -57,13 +57,13 @@ updateChildren(const tShowerParticlePtr parent,
 	       ShowerPartnerType partnerType) const {
   assert(children.size()==2);
   // calculate the scales
-  splittingFn()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
-					  children[0],children[1]);
+  SudakovFormFactor()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
+						children[0],children[1]);
 
   // update the parameters
   updateParameters(parent, children[0], children[1], true);
   // set up the colour connections
-  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
+  SudakovFormFactor()->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);

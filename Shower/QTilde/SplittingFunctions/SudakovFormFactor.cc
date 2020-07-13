@@ -27,6 +27,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "SudakovCutOff.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 #include <array>
 using std::array;
@@ -37,11 +38,15 @@ DescribeClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_;
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_
+     << oenum(interactionType_) << oenum(colourStructure_) 
+     << angularOrdered_ << scaleChoice_ << strictAO_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_;
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_
+     >> ienum(interactionType_) >> ienum(colourStructure_) 
+     >> angularOrdered_ >> scaleChoice_ >> strictAO_;
 }
 
 void SudakovFormFactor::Init() {
@@ -109,6 +114,115 @@ void SudakovFormFactor::Init() {
      "Include an additional factor of sqrt(z)",
      5);
 
+  static Switch<SudakovFormFactor,bool> interfaceAngularOrdered
+    ("AngularOrdered",
+     "Whether or not this interaction is angular ordered, "
+     "normally only g->q qbar and gamma-> f fbar are the only ones which aren't.",
+     &SudakovFormFactor::angularOrdered_, true, false, false);
+  static SwitchOption interfaceAngularOrderedYes
+    (interfaceAngularOrdered,
+     "Yes",
+     "Interaction is angular ordered",
+     true);
+  static SwitchOption interfaceAngularOrderedNo
+    (interfaceAngularOrdered,
+     "No",
+     "Interaction isn't angular ordered",
+     false);
+
+  static Switch<SudakovFormFactor,unsigned int> interfaceScaleChoice
+    ("ScaleChoice",
+     "The scale choice to be used",
+     &SudakovFormFactor::scaleChoice_, 2, false, false);
+  static SwitchOption interfaceScaleChoicepT
+    (interfaceScaleChoice,
+     "pT",
+     "pT of the branching",
+     0);
+  static SwitchOption interfaceScaleChoiceQ2
+    (interfaceScaleChoice,
+     "Q2",
+     "Q2 of the branching",
+     1);
+  static SwitchOption interfaceScaleChoiceFromAngularOrdering
+    (interfaceScaleChoice,
+     "FromAngularOrdering",
+     "If angular order use pT, otherwise Q2",
+     2);
+
+  static Switch<SudakovFormFactor,bool> interfaceStrictAO
+    ("StrictAO",
+     "Whether or not to apply strict angular-ordering,"
+     " i.e. for QED even in QCD emission, and vice versa",
+     &SudakovFormFactor::strictAO_, true, false, false);
+  static SwitchOption interfaceStrictAOYes
+    (interfaceStrictAO,
+     "Yes",
+     "Apply strict ordering",
+     true);
+  static SwitchOption interfaceStrictAONo
+    (interfaceStrictAO,
+     "No",
+     "Don't apply strict ordering",
+     false);
+
+  static Switch<SudakovFormFactor,ColourStructure> interfaceColourStructure
+    ("ColourStructure",
+     "The colour structure for the splitting function",
+     &SudakovFormFactor::colourStructure_, Undefined, false, false);
+  static SwitchOption interfaceColourStructureTripletTripletOctet
+    (interfaceColourStructure,
+     "TripletTripletOctet",
+     "3 -> 3 8",
+     TripletTripletOctet);
+  static SwitchOption interfaceColourStructureOctetOctetOctet
+    (interfaceColourStructure,
+     "OctetOctetOctet",
+     "8 -> 8 8",
+     OctetOctetOctet);
+  static SwitchOption interfaceColourStructureOctetTripletTriplet
+    (interfaceColourStructure,
+     "OctetTripletTriplet",
+     "8 -> 3 3bar",
+     OctetTripletTriplet);
+  static SwitchOption interfaceColourStructureTripletOctetTriplet
+    (interfaceColourStructure,
+     "TripletOctetTriplet",
+     "3 -> 8 3",
+     TripletOctetTriplet); 
+  static SwitchOption interfaceColourStructureSextetSextetOctet
+    (interfaceColourStructure,
+     "SextetSextetOctet",
+     "6 -> 6 8",
+     SextetSextetOctet);
+  static SwitchOption interfaceColourStructureChargedChargedNeutral
+    (interfaceColourStructure,
+     "ChargedChargedNeutral",
+     "q -> q 0",
+     ChargedChargedNeutral);
+  static SwitchOption interfaceColourStructureNeutralChargedCharged
+    (interfaceColourStructure,
+     "NeutralChargedCharged",
+     "0 -> q qbar",
+     NeutralChargedCharged);
+  static SwitchOption interfaceColourStructureChargedNeutralCharged
+    (interfaceColourStructure,
+     "ChargedNeutralCharged",
+     "q -> 0 q",
+     ChargedNeutralCharged);
+
+  static Switch<SudakovFormFactor,ShowerInteraction> 
+    interfaceInteractionType
+    ("InteractionType",
+     "Type of the interaction",
+     &SudakovFormFactor::interactionType_, 
+     ShowerInteraction::UNDEFINED, false, false);
+  static SwitchOption interfaceInteractionTypeQCD
+    (interfaceInteractionType,
+     "QCD","QCD",ShowerInteraction::QCD);
+  static SwitchOption interfaceInteractionTypeQED
+    (interfaceInteractionType,
+     "QED","QED",ShowerInteraction::QED);
 
 }
 
@@ -320,7 +434,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
     }
     while(PSVeto(t) ||
         SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
-        alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+        alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
   else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
@@ -329,8 +443,8 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
       PSRew=PSVeto(t);
       if (PSRew) continue;
       SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning);
-      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
-      double factor=alphaSVetoRatio(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
+      alphaRew=alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
+      double factor=alphaSVetoRatio(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
                     SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
 
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
@@ -347,7 +461,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
           if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
 	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
 
-                double newfactor = alphaSVetoRatio(splittingFn()->pTScale() ?
+                double newfactor = alphaSVetoRatio(pTScale() ?
                                         sqr(z()*(1.-z()))*t :
                                         z()*(1.-z())*t,var->second.renormalizationScaleFactor)
 		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
@@ -412,7 +526,7 @@ generateNextSpaceBranching(const Energy startingQ,
     while(pt2 < cutoff_->pT2min()||
         z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
-        alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
+        alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,ids[0],ids[1],beam));
   }
   // shower variations
@@ -426,10 +540,10 @@ generateNextSpaceBranching(const Energy startingQ,
       zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
-      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
+      alphaRew=alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t);
       PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
       double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
-                    alphaSVetoRatio(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+                    alphaSVetoRatio(pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
 	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
 
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
@@ -449,7 +563,7 @@ generateNextSpaceBranching(const Energy startingQ,
 
 
             double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
-                           alphaSVetoRatio(splittingFn()->pTScale() ?
+                           alphaSVetoRatio(pTScale() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
 	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
 
@@ -520,7 +634,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
     pt2 = QTildeKinematics::pT2_Decay(t,z(),masssquared_[0],masssquared_[2]);
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
-	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
+	alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<cutoff_->pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
@@ -762,7 +876,7 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
     (canBeSoft[0] || canBeSoft[1]);
   if(softAllowed) {
     // find the partner for the soft correlations
-    tShowerParticlePtr partner=findCorrelationPartner(particle,true,splittingFn()->interactionType());
+    tShowerParticlePtr partner=findCorrelationPartner(particle,true,interactionType());
     // remember we want the softer gluon 
     bool swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
     double zFact = !swapOrder ? (1.-z) : z;
@@ -954,7 +1068,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
   InvEnergy2 aziMax(ZERO);
   if(softAllowed) {
     // find the partner for the soft correlations
-    tShowerParticlePtr partner=findCorrelationPartner(particle,false,splittingFn()->interactionType());
+    tShowerParticlePtr partner=findCorrelationPartner(particle,false,interactionType());
     double zFact = (1.-z);
     // compute the transforms to the shower reference frame
     // first the boost
@@ -1092,7 +1206,7 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
   Energy pT = kinematics->pT();
   // if soft correlations
   // find the partner for the soft correlations
-  tShowerParticlePtr partner = findCorrelationPartner(particle,true,splittingFn()->interactionType());
+  tShowerParticlePtr partner = findCorrelationPartner(particle,true,interactionType());
   double zFact(1.-z);
   // compute the transforms to the shower reference frame
   // first the boost
@@ -1222,4 +1336,784 @@ Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
     throw Exception() << "Unknown option in SudakovFormFactor::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
   }
+}
+
+void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
+                                         tShowerParticlePtr first,
+                                         tShowerParticlePtr second,
+					 ShowerPartnerType partnerType, 
+                                         const bool back) const {
+  if(colourStructure_==TripletTripletOctet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+                                      parent->antiColourLine());
+      // ensure input consistency
+      assert((  cparent.first && !cparent.second && 
+		partnerType==ShowerPartnerType::QCDColourLine) || 
+             ( !cparent.first &&  cparent.second && 
+		partnerType==ShowerPartnerType::QCDAntiColourLine));
+      // q -> q g
+      if(cparent.first) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        newline->addColoured     ( first);
+        newline->addAntiColoured (second);
+      }
+      // qbar -> qbar g
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.second->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addAntiColoured(first);
+      }
+      // Set progenitor
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+                                     first->antiColourLine());
+      // ensure input consistency
+      assert((  cfirst.first && !cfirst.second && 
+		partnerType==ShowerPartnerType::QCDColourLine) || 
+             ( !cfirst.first &&  cfirst.second && 
+		partnerType==ShowerPartnerType::QCDAntiColourLine));
+      // q -> q g
+      if(cfirst.first) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.first->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addColoured(parent);
+      }
+      // qbar -> qbar g
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.second->addColoured(second);
+        newline->addAntiColoured(second);
+        newline->addAntiColoured(parent);
+      }
+      // Set progenitor
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
+    }
+  }
+  else if(colourStructure_==OctetOctetOctet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+                                      parent->antiColourLine());
+      // ensure input consistency
+      assert(cparent.first&&cparent.second);
+      // ensure first gluon is hardest
+      if( first->id()==second->id() && parent->showerKinematics()->z()<0.5 ) 
+	swap(first,second);
+      // colour line radiates
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	// The colour line is radiating
+	ColinePtr newline=new_ptr(ColourLine());
+	cparent.first->addColoured(second);
+	cparent.second->addAntiColoured(first);
+	newline->addColoured(first);
+	newline->addAntiColoured(second);
+      }
+      // anti colour line radiates
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cparent.first->addColoured(first);
+	cparent.second->addAntiColoured(second);
+	newline->addColoured(second);
+	newline->addAntiColoured(first);
+      }
+      else
+	assert(false);
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+                                     first->antiColourLine());
+      // ensure input consistency
+      assert(cfirst.first&&cfirst.second);
+      // The colour line is radiating
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cfirst.first->addAntiColoured(second);
+	cfirst.second->addAntiColoured(parent);
+	newline->addColoured(parent);
+	newline->addColoured(second);
+      }
+      // anti colour line radiates
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cfirst.first->addColoured(parent);
+	cfirst.second->addColoured(second);
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);
+      }
+      else
+	assert(false);
+    }    
+  }
+  else if(colourStructure_ == OctetTripletTriplet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+                                      parent->antiColourLine());
+      // ensure input consistency
+      assert(cparent.first&&cparent.second);
+      cparent.first ->addColoured    ( first);
+      cparent.second->addAntiColoured(second);
+      // Set progenitor
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+                                     first->antiColourLine());
+      // ensure input consistency
+      assert(( cfirst.first && !cfirst.second) ||
+             (!cfirst.first &&  cfirst.second));
+      // g -> q qbar
+      if(cfirst.first) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cfirst.first->addColoured(parent);
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);	
+      }
+      // g -> qbar q
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.second->addAntiColoured(parent);
+        newline->addColoured(second);
+        newline->addColoured(parent);
+      }
+      // Set progenitor
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
+    }
+  }
+  else if(colourStructure_ == TripletOctetTriplet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+                                      parent->antiColourLine());
+      // ensure input consistency
+      assert(( cparent.first && !cparent.second) || 
+             (!cparent.first &&  cparent.second));
+      // q -> g q
+      if(cparent.first) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        newline->addColoured    (second);
+        newline->addAntiColoured( first);
+      }
+      // qbar -> g qbar
+      else {
+	ColinePtr newline=new_ptr(ColourLine());
+	cparent.second->addAntiColoured(first);
+	newline->addColoured    ( first);
+	newline->addAntiColoured(second);	
+      }
+      // Set progenitor
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+                                     first->antiColourLine());
+      // ensure input consistency
+      assert(cfirst.first&&cfirst.second);
+      // q -> g q
+      if(parent->id()>0) {
+        cfirst.first ->addColoured(parent);
+        cfirst.second->addColoured(second);
+      }
+      else {
+        cfirst.first ->addAntiColoured(second);
+        cfirst.second->addAntiColoured(parent);
+      }
+      // Set progenitor
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
+    }
+  }
+  else if(colourStructure_==SextetSextetOctet) {
+    //make sure we're not doing backward evolution
+    assert(!back);
+
+    //make sure something sensible
+    assert(parent->colourLine() || parent->antiColourLine());
+   
+    //get the colour lines or anti-colour lines
+    bool isAntiColour=true;
+    ColinePair cparent;
+    if(parent->colourLine()) {
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[0]), 
+			   const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[1]));
+      isAntiColour=false;
+    }
+    else {
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[0]), 
+			   const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[1]));
+    }
+    
+    //check for sensible input
+    //    assert(cparent.first && cparent.second);
+
+    // sextet has 2 colour lines
+    if(!isAntiColour) {
+      //pick at random which of the colour topolgies to take
+      double topology = UseRandom::rnd();
+      if(topology < 0.25) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addColoured(first);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
+      }
+      else if(topology >=0.25 && topology < 0.5) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addColoured(second);
+        newline->addColoured(first);
+        newline->addAntiColoured(second); 
+      }
+      else if(topology >= 0.5 && topology < 0.75) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addColoured(first); 
+        newline->addColoured(first); 
+        newline->addAntiColoured(second); 
+      }
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addColoured(second);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
+      }
+    }
+    // sextet has 2 anti-colour lines
+    else {
+      double topology = UseRandom::rnd();
+      if(topology < 0.25){
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addAntiColoured(first);
+        newline->addColoured(second);
+      }
+      else if(topology >=0.25 && topology < 0.5) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addAntiColoured(first);
+        newline->addColoured(second); 
+      }
+      else if(topology >= 0.5 && topology < 0.75) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addAntiColoured(first);
+        newline->addColoured(second); 
+      }
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addAntiColoured(first);
+        newline->addColoured(second);
+      }
+    }   
+  }
+  else if(colourStructure_ == ChargedChargedNeutral) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // q -> q g
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar g
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(colourStructure_ == ChargedNeutralCharged) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(second);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(second);
+      }
+    }
+    else {
+      if (second->dataPtr()->iColour()==PDT::Colour3 ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addColoured(second);
+	newline->addColoured(parent);
+      }
+      else if (second->dataPtr()->iColour()==PDT::Colour3bar ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(colourStructure_ == NeutralChargedCharged ) {
+    if(!back) {
+      if(first->dataPtr()->coloured()) {
+	ColinePtr newline=new_ptr(ColourLine());
+	if(first->dataPtr()->iColour()==PDT::Colour3) {
+	  newline->addColoured    (first );
+	  newline->addAntiColoured(second);
+	}
+	else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
+	  newline->addColoured    (second);
+	  newline->addAntiColoured(first );
+	}
+	else if(parent->dataPtr()->coloured()||
+		first ->dataPtr()->coloured()||
+		second->dataPtr()->coloured())
+	  assert(false);
+      }
+    }
+    else {   
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // gamma -> q qbar
+      if(cfirst.first) {
+	cfirst.first->addAntiColoured(second);
+      }
+      // gamma -> qbar q
+      else if(cfirst.second) {
+	cfirst.second->addColoured(second);
+      }
+      else if(parent->dataPtr()->coloured()||
+	      first ->dataPtr()->coloured()||
+	      second->dataPtr()->coloured())
+	assert(false);
+    }
+  }
+  else {
+    assert(false);
+  }
+}
+
+namespace {
+
+  bool hasColour(tPPtr p) {
+    PDT::Colour colour = p->dataPtr()->iColour();
+    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6;
+  }
+
+  bool hasAntiColour(tPPtr p) {
+    PDT::Colour colour = p->dataPtr()->iColour();
+    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar;
+  }
+  
+}
+
+void SudakovFormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
+						 Energy scale, double z,
+						 tShowerParticlePtr parent,
+						 tShowerParticlePtr emitter,
+						 tShowerParticlePtr emitted) {
+  // identify emitter and emitted
+  double zEmitter = z, zEmitted = 1.-z;
+  bool bosonSplitting(false);
+  // special for g -> gg, particle highest z is emitter
+  if(emitter->id() == emitted->id() && emitter->id() == parent->id() &&
+     zEmitted > zEmitter) {
+    swap(zEmitted,zEmitter);
+    swap( emitted, emitter);
+  }
+  // otherwise if particle ID same
+  else if(emitted->id()==parent->id()) {
+    swap(zEmitted,zEmitter);
+    swap( emitted, emitter);
+  }
+  // no real emitter/emitted
+  else if(emitter->id()!=parent->id()) {
+    bosonSplitting = true;
+  }
+  // may need to add angularOrder flag here
+  // now the various scales
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    assert(colourStructure()==ChargedChargedNeutral ||
+	   colourStructure()==ChargedNeutralCharged ||
+	   colourStructure()==NeutralChargedCharged );
+    // normal case
+    if(!bosonSplitting) {
+      assert(colourStructure()==ChargedChargedNeutral ||
+	     colourStructure()==ChargedNeutralCharged );
+      // set the scales
+      // emitter
+      emitter->scales().QED         = zEmitter*scale;
+      emitter->scales().QED_noAO    =          scale;
+      if(strictAO_)
+	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+      else
+	emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c      );
+      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
+      if(strictAO_)
+	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
+      else
+	emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac     );
+      emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
+      // emitted 
+      emitted->scales().QED         = zEmitted*scale;
+      emitted->scales().QED_noAO    =          scale;
+      emitted->scales().QCD_c       = ZERO;
+      emitted->scales().QCD_c_noAO  = ZERO;
+      emitted->scales().QCD_ac      = ZERO;
+      emitted->scales().QCD_ac_noAO = ZERO;
+    }
+    // gamma -> f fbar
+    else {
+      assert(colourStructure()==NeutralChargedCharged );
+      // emitter
+      emitter->scales().QED         = zEmitter*scale;
+      emitter->scales().QED_noAO    =          scale;
+      if(hasColour(emitter)) {
+	emitter->scales().QCD_c       = zEmitter*scale;
+	emitter->scales().QCD_c_noAO  =          scale;
+      }
+      if(hasAntiColour(emitter)) {
+	emitter->scales().QCD_ac      = zEmitter*scale;
+	emitter->scales().QCD_ac_noAO =          scale;
+      }
+      // emitted 
+      emitted->scales().QED         = zEmitted*scale;
+      emitted->scales().QED_noAO    =          scale;
+      if(hasColour(emitted)) {
+	emitted->scales().QCD_c       = zEmitted*scale;
+	emitted->scales().QCD_c_noAO  =          scale;
+      }
+      if(hasAntiColour(emitted)) {
+	emitted->scales().QCD_ac      = zEmitted*scale;
+	emitted->scales().QCD_ac_noAO =          scale;
+      }
+    }
+  }
+  // QCD
+  else {
+   // normal case eg q -> q g and g -> g g
+    if(!bosonSplitting) {
+      if(strictAO_)
+	emitter->scales().QED         = min(zEmitter*scale,parent->scales().QED     );
+      else
+	emitter->scales().QED         = min(         scale,parent->scales().QED     );
+      emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	emitter->scales().QCD_c       = zEmitter*scale;
+	emitter->scales().QCD_c_noAO  =          scale;
+	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
+	emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO);
+      }
+      else {
+	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+	emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
+	emitter->scales().QCD_ac      = zEmitter*scale;
+	emitter->scales().QCD_ac_noAO =          scale;
+      }
+      // emitted 
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+    }
+    // g -> q qbar
+    else {
+      // emitter
+      if(emitter->dataPtr()->charged()) {
+	emitter->scales().QED         = zEmitter*scale;
+	emitter->scales().QED_noAO    =          scale;
+      }
+      emitter->scales().QCD_c       = zEmitter*scale;
+      emitter->scales().QCD_c_noAO  =          scale;
+      emitter->scales().QCD_ac      = zEmitter*scale;
+      emitter->scales().QCD_ac_noAO =          scale;
+      // emitted 
+      if(emitted->dataPtr()->charged()) {
+	emitted->scales().QED         = zEmitted*scale;
+	emitted->scales().QED_noAO    =          scale;
+      }
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+    }
+  }
+}
+
+void SudakovFormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType,
+						   Energy scale, double z,
+						   tShowerParticlePtr parent,
+						   tShowerParticlePtr spacelike,
+						   tShowerParticlePtr timelike) {
+  // scale for time-like child
+  Energy AOScale = (1.-z)*scale;
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    if(parent->id()==spacelike->id()) {
+      // parent
+      parent   ->scales().QED         =   scale;
+      parent   ->scales().QED_noAO    =   scale;
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c      );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      // timelike
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      timelike->scales().QCD_c       =    ZERO;
+      timelike->scales().QCD_c_noAO  =    ZERO;
+      timelike->scales().QCD_ac      =    ZERO;
+      timelike->scales().QCD_ac_noAO =    ZERO;
+    }
+    else if(parent->id()==timelike->id()) {
+      parent   ->scales().QED         =   scale;
+      parent   ->scales().QED_noAO    =   scale;
+      if(hasColour(parent)) {
+	parent   ->scales().QCD_c       = scale;
+	parent   ->scales().QCD_c_noAO  = scale;
+      }
+      if(hasAntiColour(parent)) {
+	parent   ->scales().QCD_ac      = scale;
+	parent   ->scales().QCD_ac_noAO = scale;
+      }
+      // timelike 
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      if(hasColour(timelike)) {
+	timelike->scales().QCD_c       = AOScale;
+	timelike->scales().QCD_c_noAO  =   scale;
+      }
+      if(hasAntiColour(timelike)) {
+	timelike->scales().QCD_ac      = AOScale;
+	timelike->scales().QCD_ac_noAO =   scale;
+      }
+    }
+    else {
+      parent   ->scales().QED         = scale;
+      parent   ->scales().QED_noAO    = scale;
+      parent   ->scales().QCD_c       = ZERO ;
+      parent   ->scales().QCD_c_noAO  = ZERO ;
+      parent   ->scales().QCD_ac      = ZERO ;
+      parent   ->scales().QCD_ac_noAO = ZERO ;
+      // timelike 
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      if(hasColour(timelike)) {
+	timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac     );
+	timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO);
+      }
+      if(hasAntiColour(timelike)) {
+	timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c      );
+	timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO );
+      }
+    }
+  }
+  // QCD
+  else {
+    // timelike 
+    if(timelike->dataPtr()->charged()) {
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+    }
+    if(hasColour(timelike)) {
+      timelike->scales().QCD_c       = AOScale;
+      timelike->scales().QCD_c_noAO  =   scale;
+    }
+    if(hasAntiColour(timelike)) {
+      timelike->scales().QCD_ac      = AOScale;
+      timelike->scales().QCD_ac_noAO =   scale;
+    }
+    if(parent->id()==spacelike->id()) {
+      parent   ->scales().QED         = min(scale,spacelike->scales().QED        );
+      parent   ->scales().QED_noAO    = min(scale,spacelike->scales().QED_noAO   );
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c      );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+    }
+    else {
+      if(parent->dataPtr()->charged()) {
+	parent   ->scales().QED         = scale;
+	parent   ->scales().QED_noAO    = scale;
+      }
+      if(hasColour(parent)) {
+	parent   ->scales().QCD_c      = scale;
+	parent   ->scales().QCD_c_noAO  = scale;
+      }
+      if(hasAntiColour(parent)) {
+	parent   ->scales().QCD_ac      = scale;
+	parent   ->scales().QCD_ac_noAO = scale;
+      }
+    }
+  }
+}
+
+void SudakovFormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
+					    Energy scale, double z,
+					    tShowerParticlePtr parent,
+					    tShowerParticlePtr spacelike,
+					    tShowerParticlePtr timelike) {
+  assert(parent->id()==spacelike->id());
+  // angular-ordered scale for 2nd child
+  Energy AOScale = (1.-z)*scale;
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    // timelike
+    timelike->scales().QED         = AOScale;
+    timelike->scales().QED_noAO    =   scale;
+    timelike->scales().QCD_c       =    ZERO;
+    timelike->scales().QCD_c_noAO  =    ZERO;
+    timelike->scales().QCD_ac      =    ZERO;
+    timelike->scales().QCD_ac_noAO =    ZERO;
+    // spacelike
+    spacelike->scales().QED         =   scale;
+    spacelike->scales().QED_noAO    =   scale;
+  }
+  // QCD
+  else {
+    // timelike 
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    timelike->scales().QCD_c       = AOScale;
+    timelike->scales().QCD_c_noAO  =   scale;
+    timelike->scales().QCD_ac      = AOScale;
+    timelike->scales().QCD_ac_noAO =   scale;
+    // spacelike
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+  }
+  spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
+  spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
+  spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );
+  spacelike->scales().QCD_ac_noAO = max(scale,parent->scales().QCD_ac_noAO);
+}
+
+void SudakovFormFactor::doinit() {
+  Interfaced::doinit();
+  assert(interactionType_!=ShowerInteraction::UNDEFINED);
+  assert((colourStructure_>0&&interactionType_==ShowerInteraction::QCD) ||
+   	 (colourStructure_<0&&interactionType_==ShowerInteraction::QED) );
+  // compute the colour factors if need
+  if(colourStructure_==TripletTripletOctet) {
+    splittingFn()->colourFactor(4./3.);
+  }
+  else if(colourStructure_==OctetOctetOctet) {
+    splittingFn()->colourFactor(3.);
+  }
+  else if(colourStructure_==OctetTripletTriplet) {
+    splittingFn()->colourFactor(0.5);
+  }
+  else if(colourStructure_==TripletOctetTriplet) {
+    splittingFn()->colourFactor(4./3.);
+  }
+  else if(colourStructure_==SextetSextetOctet) {
+    splittingFn()->colourFactor(10./3.);
+  }
+  else if(colourStructure_<0) {
+    splittingFn()->colourFactor(1.);
+  }
+  else {
+    assert(false);
+  }
+}
+
+void SudakovFormFactor::setColourFactor(const IdList &ids) {
+  // genuine colour factors were handled during initialisation
+  if(colourStructure_>0) return;
+  if(colourStructure_==ChargedChargedNeutral ||
+     colourStructure_==ChargedNeutralCharged) {
+    splittingFn()->colourFactor(sqr(double(ids[0]->iCharge())/3.));
+  }
+  else if(colourStructure_==NeutralChargedCharged) {
+    double fact = sqr(double(ids[1]->iCharge())/3.);
+    if(ids[1]->coloured())
+      fact *= abs(double(ids[1]->iColour()));
+    splittingFn()->colourFactor(fact);
+  }
+  else {
+    assert(false);
+  }
+}
+
+
+bool SudakovFormFactor::checkColours(const IdList & ids) const {
+  if(colourStructure_==TripletTripletOctet) {
+    if(ids[0]!=ids[1]) return false;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[2]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(colourStructure_==OctetOctetOctet) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ids[ix]->iColour()!=PDT::Colour8) return false;
+    }
+    return true;
+  }
+  else if(colourStructure_==OctetTripletTriplet) {
+    if(ids[0]->iColour()!=PDT::Colour8) return false;
+    if(ids[1]->iColour()==PDT::Colour3&&ids[2]->iColour()==PDT::Colour3bar)
+      return true;
+    if(ids[1]->iColour()==PDT::Colour3bar&&ids[2]->iColour()==PDT::Colour3)
+      return true;
+    return false;
+  }
+  else if(colourStructure_==TripletOctetTriplet) {
+    if(ids[0]!=ids[2]) return false;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[1]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(colourStructure_==SextetSextetOctet) {
+    if(ids[0]!=ids[1]) return false;
+    if((ids[0]->iColour()==PDT::Colour6 || ids[0]->iColour()==PDT::Colour6bar) &&
+       ids[2]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(colourStructure_==ChargedChargedNeutral) {
+    if(ids[0]!=ids[1]) return false;
+    if(ids[2]->iCharge()!=0) return false;
+    if(ids[0]->iCharge()==ids[1]->iCharge()) return true;
+    return false;
+  }
+  else if(colourStructure_==ChargedNeutralCharged) {
+    if(ids[0]!=ids[2]) return false;
+    if(ids[1]->iCharge()!=0) return false;
+    if(ids[0]->iCharge()==ids[2]->iCharge()) return true;
+    return false;
+  }
+  else if(colourStructure_==NeutralChargedCharged) {
+    if(ids[1]->id()!=-ids[2]->id()) return false;
+    if(ids[0]->iCharge()!=0) return false;
+    if(ids[1]->iCharge()==-ids[2]->iCharge()) return true;
+    return false;
+  }
+  else {
+    assert(false);
+  }
+  return false;
 }

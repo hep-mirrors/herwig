@@ -36,12 +36,12 @@ double HalfHalfOneSplitFn::P(const double z, const Energy2 t,
     Energy m = ids[0]->mass();  
     val -= 2.*sqr(m)/t;
   }
-  return colourFactor(ids)*val;
+  return colourFactor()*val;
 }
 
 double HalfHalfOneSplitFn::overestimateP(const double z,
 					 const IdList & ids) const { 
-  return 2.*colourFactor(ids)/(1.-z); 
+  return 2.*colourFactor()/(1.-z); 
 }
 
 double HalfHalfOneSplitFn::ratioP(const double z, const Energy2 t,
@@ -59,11 +59,11 @@ double HalfHalfOneSplitFn::integOverP(const double z,
 				      unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
-    return -2.*colourFactor(ids)*Math::log1m(z);
+    return -2.*colourFactor()*Math::log1m(z);
   case 1:
-    return  2.*colourFactor(ids)*log(z/(1.-z));
+    return  2.*colourFactor()*log(z/(1.-z));
   case 2:
-    return  2.*colourFactor(ids)/(1.-z);
+    return  2.*colourFactor()/(1.-z);
   case 3:
   default:
     throw Exception() << "HalfHalfOneSplitFn::integOverP() invalid PDFfactor = "
@@ -75,11 +75,11 @@ double HalfHalfOneSplitFn::invIntegOverP(const double r, const IdList & ids,
 					 unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
-    return 1. - exp(- 0.5*r/colourFactor(ids)); 
+    return 1. - exp(- 0.5*r/colourFactor()); 
   case 1:
-    return 1./(1.-exp(-0.5*r/colourFactor(ids)));
+    return 1./(1.-exp(-0.5*r/colourFactor()));
   case 2:
-    return 1.-2.*colourFactor(ids)/r;
+    return 1.-2.*colourFactor()/r;
   case 3:
   default:
     throw Exception() << "HalfHalfOneSplitFn::invIntegOverP() invalid PDFfactor = "
@@ -92,7 +92,7 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3 || ids[0]!=ids[1]) return false;
   if(ids[0]->iSpin()!=PDT::Spin1Half ||
      ids[2]->iSpin()!=PDT::Spin1) return false;
-  return checkColours(ids);
+  return true;
 }
 
 vector<pair<int, Complex> > 

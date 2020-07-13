@@ -194,7 +194,7 @@ public:
   //@}
 
   /**
-   *  Set and get methods for the SplittingFunction object
+   *  Access method for the SplittingFunction object
    */
   //@{
   /**

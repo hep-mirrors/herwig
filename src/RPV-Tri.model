@@ -388,35 +388,35 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_2+
 ###################################################
 cd /Herwig/Shower
 
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
-set PhitoPhiGSplitFn:InteractionType QCD
-set PhitoPhiGSplitFn:ColourStructure TripletTripletOctet
 
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
-set PhitoPhiGammaSplitFn:InteractionType QED
-set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
-set PhitoPhiGammaSplitFn:AngularOrdered Yes
 
-create Herwig::HalfHalfOneSplitFn CharginotoCharginoGammaSplitFn
-set CharginotoCharginoGammaSplitFn:InteractionType QED
-set CharginotoCharginoGammaSplitFn:ColourStructure ChargedChargedNeutral
-set CharginotoCharginoGammaSplitFn:AngularOrdered Yes
-
-create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
-set GluinotoGluinoGSplitFn:InteractionType QCD
-set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
 
 cp SudakovCommon PhitoPhiGSudakov
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
 set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
+set PhitoPhiGSudakov:InteractionType QCD
+set PhitoPhiGSudakov:ColourStructure TripletTripletOctet
+
 
 cp SudakovCommon PhitoPhiGammaSudakov
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
 set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+set PhitoPhiGammaSudakov:InteractionType QED
+set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSudakov:AngularOrdered Yes
 
 cp SudakovCommon GluinotoGluinoGSudakov
+create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
+set GluinotoGluinoGSudakov:InteractionType QCD
+set GluinotoGluinoGSudakov:ColourStructure OctetOctetOctet
 
 cp SudakovCommon CharginotoCharginoGammaSudakov
+create Herwig::HalfHalfOneSplitFn CharginotoCharginoGammaSplitFn
 set CharginotoCharginoGammaSudakov:SplittingFunction CharginotoCharginoGammaSplitFn
+set CharginotoCharginoGammaSudakov:InteractionType QED
+set CharginotoCharginoGammaSudakov:ColourStructure ChargedChargedNeutral
+set CharginotoCharginoGammaSudakov:AngularOrdered Yes
 
 do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov

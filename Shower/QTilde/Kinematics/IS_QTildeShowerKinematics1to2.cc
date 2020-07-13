@@ -53,11 +53,11 @@ updateParent(const tShowerParticlePtr parent,
 	     unsigned int ,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
-  splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
-					    children[0],children[1]);
+  SudakovFormFactor()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
+						  children[0],children[1]);
   // set proper colour connections
-  splittingFn()->colourConnection(parent,children[0],children[1],
-				  partnerType,true);
+  SudakovFormFactor()->colourConnection(parent,children[0],children[1],
+					partnerType,true);
   // set proper parent/child relationships
   parent->addChild(children[0]);
   parent->addChild(children[1]);

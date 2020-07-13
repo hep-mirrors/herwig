@@ -37,12 +37,12 @@ double OneHalfHalfSplitFn::P(const double z, const Energy2 t,
     Energy m = ids[1]->mass();
     val +=2.*sqr(m)/t;
   }
-  return colourFactor(ids)*val;
+  return colourFactor()*val;
 }
 
 double OneHalfHalfSplitFn::overestimateP(const double,
 					 const IdList &ids) const {
-  return colourFactor(ids); 
+  return colourFactor(); 
 }
 
 double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t, 
@@ -60,17 +60,17 @@ double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ids,
 				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
-    return colourFactor(ids)*z; 
+    return colourFactor()*z; 
   case 1:
-    return colourFactor(ids)*log(z);
+    return colourFactor()*log(z);
   case 2:
-    return -colourFactor(ids)*log(1.-z);
+    return -colourFactor()*log(1.-z);
   case 3:
-    return colourFactor(ids)*log(z/(1.-z));
+    return colourFactor()*log(z/(1.-z));
   case 4:
-    return colourFactor(ids)*2.*sqrt(z);
+    return colourFactor()*2.*sqrt(z);
   case 5:
-    return colourFactor(ids)*(2./3.)*z*sqrt(z);
+    return colourFactor()*(2./3.)*z*sqrt(z);
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -82,17 +82,17 @@ double OneHalfHalfSplitFn::invIntegOverP(const double r,
 					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return r/colourFactor(ids); 
+    return r/colourFactor(); 
   case 1:
-    return exp(r/colourFactor(ids));
+    return exp(r/colourFactor());
   case 2:
-    return 1.-exp(-r/colourFactor(ids));
+    return 1.-exp(-r/colourFactor());
   case 3:
-    return 1./(1.+exp(-r/colourFactor(ids)));
+    return 1./(1.+exp(-r/colourFactor()));
   case 4:
-    return 0.25*sqr(r/colourFactor(ids));
+    return 0.25*sqr(r/colourFactor());
   case 5:
-    return pow(1.5*r/colourFactor(ids),2./3.);
+    return pow(1.5*r/colourFactor(),2./3.);
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -104,7 +104,7 @@ bool OneHalfHalfSplitFn::accept(const IdList &ids) const {
   if(ids[1]!=ids[2]->CC()) return false;
   if(ids[1]->iSpin()!=PDT::Spin1Half) return false;
   if(ids[0]->iSpin()!=PDT::Spin1) return false;
-  return checkColours(ids);
+  return true;
 }
 
 vector<pair<int, Complex> > 
