@@ -321,6 +321,28 @@ if __name__ == "__main__":
                 aopath=aopath.replace("_EL","").replace("_MU","")
                 ao.setPath(aopath)
                 outhistos[aopath] = ao
+            elif "CMS_2019_I1753680" in aopath :
+                if("d26" in aopath or "d27" in aopath or "d28" in aopath) :
+                    if ("y01" in aopath and "=MU" in aopath) or ("y02" in aopath and "=EL" in aopath) :
+                        outhistos[aopath] = ao
+                    elif ("y03" in aopath and "=EMU" in aopath) :
+                        if aopath in outhistos :
+                            outhistos[aopath] += ao
+                        else :
+                            outhistos[aopath] = ao
+                elif  "=EMU" in aopath:
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                        if "d29" not in aopath :
+                            outhistos[aopath].scaleW(0.5)
+                    else :
+                        outhistos[aopath]  = ao
+            elif "CMS_2018_I1667854" in aopath :
+                if "=EMU" in aopath:
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                    else :
+                        outhistos[aopath]  = ao
             else :
                 outhistos[aopath] = ao
     for hpath,hsets in inhistos_mass.items():
