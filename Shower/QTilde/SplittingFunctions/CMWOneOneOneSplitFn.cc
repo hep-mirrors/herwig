@@ -12,10 +12,8 @@
   //
 
 #include "CMWOneOneOneSplitFn.h"
-#include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 
 
@@ -29,12 +27,6 @@ void CMWOneOneOneSplitFn::Init() {
   static ClassDocumentation<CMWOneOneOneSplitFn> documentation
   ("The CMWOneOneOneSplitFn class implements the g -> gg splitting function");
   
-  static Reference<CMWOneOneOneSplitFn,ShowerAlpha>
-  interfaceAlpha("Alpha",
-                 "A reference to the Alpha object",
-                 &Herwig::CMWOneOneOneSplitFn::alpha_,
-                 false, false, true, false);
-  
   static Switch<CMWOneOneOneSplitFn, bool> interfaceIsIS
   ("isInititalState",
    "Switch on if this kernel is used for initial state emission.",
@@ -47,39 +39,9 @@ void CMWOneOneOneSplitFn::Init() {
 }
 
 void CMWOneOneOneSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << isIS_ ;
+  os << isIS_ ;
 }
 
 void CMWOneOneOneSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> isIS_ ;
+  is >> isIS_ ;
 }
-
-
-
-double CMWOneOneOneSplitFn::P(const double z, const Energy2 t,
-                              const IdList & ids, const bool, const RhoDMatrix &)const {
-  
-  // auto scale2=t;
-  // if (!isIS_){
-  //   scale2*=pTScale() ? z*(1.-z):1.;
-  // }else{
-  //   scale2*=pTScale() ? z*(1.-z):z;
-  // }
-  
-  // return colourFactor() * alpha_->value(scale2) * Kg(scale2)/2./Constants::pi/(z*(1.-z));
-  
-}
-
-double CMWOneOneOneSplitFn::ratioP(const double z, const Energy2 t,
-                                   const IdList & , const bool, const RhoDMatrix &) const {
-  
-  // auto scale2=t;
-  // if (!isIS_){
-  //   scale2*=pTScale() ? z*(1.-z):1.;
-  // }else{
-  //   scale2*=pTScale() ? z*(1.-z):z;
-  // }
-  
-  // return alpha_->value(scale2)  * Kg(scale2)/2./Constants::pi;
-}
-

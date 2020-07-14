@@ -12,12 +12,9 @@
   //
 
 #include "CMWHalfHalfOneSplitFn.h"
-#include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
-
 
 using namespace Herwig;
 
@@ -28,12 +25,6 @@ void CMWHalfHalfOneSplitFn::Init() {
   
   static ClassDocumentation<CMWHalfHalfOneSplitFn> documentation
   ("The CMWHalfHalfOneSplitFn class implements the q -> qg splitting function");
-  
-  static Reference<CMWHalfHalfOneSplitFn,ShowerAlpha>
-  interfaceAlpha("Alpha",
-                 "A reference to the Alpha object",
-                 &Herwig::CMWHalfHalfOneSplitFn::alpha_,
-                 false, false, true, false);
   
   static Switch<CMWHalfHalfOneSplitFn, bool> interfaceIsIS
   ("isInititalState",
@@ -48,38 +39,9 @@ void CMWHalfHalfOneSplitFn::Init() {
 
 
 void CMWHalfHalfOneSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << isIS_ ;
+  os << isIS_ ;
 }
 
 void CMWHalfHalfOneSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> isIS_ ;
-}
-
-double CMWHalfHalfOneSplitFn::P(const double z, const Energy2 t,
-                                const IdList & ids, const bool , const RhoDMatrix & ) const {
-  // auto scale2=t;
-  // if (!isIS_){
-  //   scale2*=pTScale() ? z*(1.-z):1.;
-  // }else{
-  //   scale2*=pTScale() ? z*(1.-z):z;
-  // }
-  
-  // return colourFactor()
-  // * Kg(scale2)
-  // * alpha_->value(scale2)/2./Constants::pi/(1.-z);
-}
-
-
-double CMWHalfHalfOneSplitFn::ratioP(const double z, const Energy2 t,
-                                     const IdList &, const bool , const RhoDMatrix & ) const {
-  
-  // auto scale2=t;
-  // //See pt definitions in QTildeSudakov.cc
-  // // Note: t here is t * f(z)
-  // if (!isIS_)    scale2*=pTScale() ? z*(1.-z):1.;
-  // else           scale2*=pTScale() ? z*(1.-z):z;
-  
-  // return 0.5
-  // * Kg(scale2)
-  // * alpha_->value(scale2)/2./Constants::pi;
+  is >> isIS_ ;
 }
