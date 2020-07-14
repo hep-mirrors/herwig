@@ -71,7 +71,7 @@ HadronSelector::HadronSelector(unsigned int opt)
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
     _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
-    _sngWt( 1.0 ),_decWt( 1.0 ),
+    _sngWt( 1.0 ),_octWt(1.0), _decWt( 1.0 ),
     _topt(opt),_trial(0),
     _limBottom(), _limCharm(), _limExotic(), belowThreshold_(0)
 {
@@ -109,7 +109,7 @@ void HadronSelector::persistentOutput(PersistentOStream & os) const {
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
-     << _forbidden << _sngWt << _decWt << _repwt << _pwt
+     << _forbidden << _sngWt << _octWt << _decWt << _repwt << _pwt
      << _limBottom << _limCharm << _limExotic << belowThreshold_
      << _table;
 }
@@ -121,7 +121,7 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
-     >> _forbidden >> _sngWt >> _decWt >> _repwt >> _pwt
+     >> _forbidden >> _sngWt >> _octWt >> _decWt >> _repwt >> _pwt
      >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
      >> _table;
 }
@@ -170,6 +170,11 @@ void HadronSelector::Init() {
     interfaceSngWt("SngWt","Weight for singlet baryons",
                   &HadronSelector::_sngWt, 0, 1.0, 0.0, 10.0,
 		   false,false,false);
+
+  static Parameter<HadronSelector,double>
+    interfaceOctWt("OctWt","Weight for octet baryons",
+                  &HadronSelector::_octWt, 0, 1.0, 0.0, 10.0,
+     		false,false,false);
 
   static Parameter<HadronSelector,double>
     interfaceDecWt("DecWt","Weight for decuplet baryons",
@@ -568,7 +573,7 @@ void HadronSelector::constructHadronTable() {
     if (wantSusy) flav2 += 1000000 * x7;
     HadronInfo a(pid,
 		 particle,
-		 specialWeight(pid,flav1),
+		 specialWeight(pid,flav1,flav2),
 		 particle->mass());
     // set the weight to the number of spin states
     a.overallWeight = pspin;
@@ -680,12 +685,8 @@ void HadronSelector::constructHadronTable() {
   }
 }
 
-double HadronSelector::specialWeight(long id, int part1) const {
+double HadronSelector::specialWeight(long id, int part1, int part2) const {
   const int pspin = id % 10;
-  // Get the flavours
-  const int x4 = (id/1000)%10;
-  const int x3 = (id/100 )%10;
-  const int x2 = (id/10  )%10;
   // Clebsch-Gordan coefficients of baryons
   double CGcoefficient(1.);
   // Only K0L and K0S have pspin == 0, should
@@ -698,9 +699,13 @@ double HadronSelector::specialWeight(long id, int part1) const {
     // octet
     else {
       // return 1 if part1 is not a diquark
-      if(part1 < 1100) return 1.;
+      if(part1 < 1100) return sqr(_octWt);
       // if part1 is a diquark
       int diquarkSpin = (part1%10 == 1) ? 1 : 3;
+      // Get the flavours
+      const int x4 = (part1/1000)%10;
+      const int x3 = (part1/100 )%10;
+      const int x2 = (part2     )%10;
       // ud0+u
       if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==1)
         CGcoefficient = 3./4.;
@@ -720,7 +725,7 @@ double HadronSelector::specialWeight(long id, int part1) const {
       else if(x4 != x3 && (x2 != x3 || x2 != x4) && diquarkSpin==3)
         CGcoefficient = 1./6.;
 
-      return CGcoefficient;
+      return sqr(_octWt)*CGcoefficient;
     }
   }
   // Decuplet baryon
@@ -729,6 +734,10 @@ double HadronSelector::specialWeight(long id, int part1) const {
     if(part1 < 1100) return sqr(_decWt);
     // if part1 is a diquark
     int diquarkSpin = (part1%10 == 1) ? 1 : 3;
+    // Get the flavours
+    const int x4 = (part1/1000)%10;
+    const int x3 = (part1/100 )%10;
+    const int x2 = (part2     )%10;
     // ud0+u
     if(x4 != x3 && (x2 == x3 || x2 == x4) && diquarkSpin==1)
       CGcoefficient = 0.;

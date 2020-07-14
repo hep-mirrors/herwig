@@ -92,6 +92,7 @@ newdef HadronSelector:PwtBquark             0.0
 newdef HadronSelector:PwtDIquarkS0          0.2
 newdef HadronSelector:PwtDIquarkS1          0.1
 newdef HadronSelector:SngWt                 1.
+newdef HadronSelector:OctWt                 1.
 newdef HadronSelector:DecWt                 1.
 newdef HadronSelector:Mode                  1
 newdef HadronSelector:BelowThreshold        All
