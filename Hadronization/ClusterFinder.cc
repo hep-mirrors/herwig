@@ -402,7 +402,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     if(!other) other = vec[2];
 
     long rndSpin;
-    if(temp1 == temp2) rndSpin = 3;
+    if(temp1->id() == temp2->id()) rndSpin = 3;
     else rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
     tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2,rndSpin);
 
