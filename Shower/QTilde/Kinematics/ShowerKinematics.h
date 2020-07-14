@@ -194,17 +194,6 @@ public:
   //@}
 
   /**
-   *  Access method for the SplittingFunction object
-   */
-  //@{
-  /**
-   * Access the SplittingFunction object responsible of the 
-   * eventual branching of this particle.
-   */
-  tSplittingFnPtr splittingFn() const { return _sudakov-> splittingFn(); }
-  //@}
-
-  /**
    *  Set and get methods for the SudakovFormFactor object
    */
   /**

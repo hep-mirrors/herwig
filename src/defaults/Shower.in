@@ -116,33 +116,26 @@ newdef AlphaQCD:AlphaIn 0.1186
 # cut-off
 create Herwig::PTCutOff PTCutOff
 newdef PTCutOff:pTmin 0.958*GeV
-# base sudakov
-create Herwig::SudakovFormFactor SudakovCommon
-newdef SudakovCommon:Alpha AlphaQCD
-newdef SudakovCommon:Cutoff PTCutOff
-newdef SudakovCommon:PDFmax 1.0
 
 # q -> q g
-cp SudakovCommon QtoQGSudakov
-create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
-newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
+create Herwig::HalfHalfOneSplitFn QtoQGSudakov
 newdef QtoQGSudakov:InteractionType QCD
+newdef QtoQGSudakov:Alpha AlphaQCD
+newdef QtoQGSudakov:Cutoff PTCutOff
 newdef QtoQGSudakov:ColourStructure TripletTripletOctet
 newdef QtoQGSudakov:AngularOrdered Yes
 newdef QtoQGSudakov:StrictAO Yes
 newdef QtoQGSudakov:PDFmax 1.9
 
 # q -> q gamma 
-cp SudakovCommon QtoQGammaSudakov
-create Herwig::HalfHalfOneSplitFn QtoQGammaSplitFn
-newdef QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
+create Herwig::HalfHalfOneSplitFn QtoQGammaSudakov
 newdef QtoQGammaSudakov:ColourStructure ChargedChargedNeutral
 newdef QtoQGammaSudakov:AngularOrdered Yes
 newdef QtoQGammaSudakov:StrictAO Yes
 newdef QtoQGammaSudakov:InteractionType QED
 newdef QtoQGammaSudakov:Alpha AlphaQED
+newdef QtoQGammaSudakov:Cutoff PTCutOff
 newdef QtoQGammaSudakov:PDFmax 1.9
-
 # l -> l gamma
 cp QtoQGammaSudakov LtoLGammaSudakov
 cp PTCutOff LtoLGammaPTCutOff
@@ -151,9 +144,9 @@ newdef LtoLGammaPTCutOff:pTmin 0.000001
 newdef LtoLGammaSudakov:Cutoff LtoLGammaPTCutOff
 
 # g -> g g
-cp SudakovCommon GtoGGSudakov
-create Herwig::OneOneOneSplitFn GtoGGSplitFn
-newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
+create Herwig::OneOneOneSplitFn GtoGGSudakov
+newdef GtoGGSudakov:Alpha AlphaQCD
+newdef GtoGGSudakov:Cutoff PTCutOff
 newdef GtoGGSudakov:PDFmax 2.0
 newdef GtoGGSudakov:ColourStructure OctetOctetOctet
 newdef GtoGGSudakov:AngularOrdered Yes
@@ -161,19 +154,18 @@ newdef GtoGGSudakov:StrictAO Yes
 newdef GtoGGSudakov:InteractionType QCD
 
 # W -> W gamma
-cp SudakovCommon WtoWGammaSudakov
-create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
-newdef WtoWGammaSudakov:SplittingFunction WtoWGammaSplitFn
+create Herwig::OneOneOneMassiveSplitFn WtoWGammaSudakov
 newdef WtoWGammaSudakov:ColourStructure ChargedChargedNeutral
+newdef WtoWGammaSudakov:Cutoff PTCutOff
 newdef WtoWGammaSudakov:AngularOrdered Yes
 newdef WtoWGammaSudakov:StrictAO Yes
 newdef WtoWGammaSudakov:InteractionType QED
 newdef WtoWGammaSudakov:Alpha AlphaQED
 
 # g to q qbar
-cp SudakovCommon GtoQQbarSudakov
-create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
-newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
+create Herwig::OneHalfHalfSplitFn GtoQQbarSudakov
+newdef GtoQQbarSudakov:Alpha AlphaQCD
+newdef GtoQQbarSudakov:Cutoff PTCutOff
 newdef GtoQQbarSudakov:ColourStructure OctetTripletTriplet
 newdef GtoQQbarSudakov:AngularOrdered Yes
 newdef GtoQQbarSudakov:StrictAO Yes
@@ -187,20 +179,20 @@ cp GtoQQbarSudakov GtoccbarSudakov
 newdef GtoccbarSudakov:PDFmax 2000.0
 
 # gamma -> q qbar
-cp SudakovCommon GammatoQQbarSudakov
-create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
-newdef GammatoQQbarSudakov:SplittingFunction GammatoQQbarSplitFn
+create Herwig::OneHalfHalfSplitFn GammatoQQbarSudakov
+newdef GammatoQQbarSudakov:Alpha AlphaQCD
+newdef GammatoQQbarSudakov:Cutoff PTCutOff
 newdef GammatoQQbarSudakov:ColourStructure NeutralChargedCharged
 newdef GammatoQQbarSudakov:AngularOrdered Yes
 newdef GammatoQQbarSudakov:StrictAO Yes
 newdef GammatoQQbarSudakov:InteractionType QED
 newdef GammatoQQbarSudakov:Alpha AlphaQED
-newdef GammatoQQbarSudakov:PDFmax 120.0
+newdef GammatoQQbarSudakov:PDFmax 120.0TCutOff
 
 # q -> g q
-cp SudakovCommon QtoGQSudakov
-create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
-newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
+create Herwig::HalfOneHalfSplitFn QtoGQSudakov
+newdef QtoGQSudakov:Alpha AlphaQCD
+newdef QtoGQSudakov:Cutoff PTCutOff
 newdef QtoGQSudakov:ColourStructure TripletOctetTriplet
 newdef QtoGQSudakov:AngularOrdered Yes
 newdef QtoGQSudakov:StrictAO Yes
@@ -214,16 +206,14 @@ cp QtoGQSudakov dtoGdSudakov
 newdef dtoGdSudakov:PDFFactor OverOneMinusZ
 
 # q -> gamma q
-cp SudakovCommon QtoGammaQSudakov
-create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
-newdef QtoGammaQSudakov:SplittingFunction QtoGammaQSplitFn
+create Herwig::HalfOneHalfSplitFn QtoGammaQSudakov
+newdef QtoGammaQSudakov:Alpha AlphaQCD
+newdef QtoGammaQSudakov:Cutoff PTCutOff
 newdef QtoGammaQSudakov:ColourStructure ChargedNeutralCharged
 newdef QtoGammaQSudakov:AngularOrdered Yes
 newdef QtoGammaQSudakov:StrictAO Yes
 newdef QtoGammaQSudakov:InteractionType QED
 newdef QtoGammaQSudakov:Alpha AlphaQED
-
-
 
 #
 # Now add the final splittings

@@ -236,9 +236,9 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/nu_taumT
 ###################################################
 cd /Herwig/Shower
 
-cp SudakovCommon PhitoPhiGammaSudakov
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
-set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:Alpha AlphaQED
+set PhitoPhiGammaSudakov:Cutoff PTCutOff
 set PhitoPhiGammaSudakov:InteractionType QED
 set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
 set PhitoPhiGammaSudakov:AngularOrdered Yes

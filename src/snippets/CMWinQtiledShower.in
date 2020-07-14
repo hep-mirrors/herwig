@@ -10,17 +10,17 @@ set AlphaQCD:AlphaMZ 0.118
 get AlphaQCD:AlphaMZ
 
 create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSplitFn
-set CMWQtoQGSplitFn:InteractionType QCD
-set CMWQtoQGSplitFn:ColourStructure TripletTripletOctet
-set CMWQtoQGSplitFn:AngularOrdered Yes
-set CMWQtoQGSplitFn:Alpha AlphaQCD
+set CMWQtoQGSudakov:InteractionType QCD
+set CMWQtoQGSudakov:ColourStructure TripletTripletOctet
+set CMWQtoQGSudakov:AngularOrdered Yes
+set CMWQtoQGSudakov:Alpha AlphaQCD
 
 
 create Herwig::CMWOneOneOneSplitFn CMWGtoGGSplitFn
-set CMWGtoGGSplitFn:InteractionType QCD
-set CMWGtoGGSplitFn:ColourStructure OctetOctetOctet
-set CMWGtoGGSplitFn:AngularOrdered Yes
-set CMWGtoGGSplitFn:Alpha AlphaQCD
+set CMWGtoGGSudakov:InteractionType QCD
+set CMWGtoGGSudakov:ColourStructure OctetOctetOctet
+set CMWGtoGGSudakov:AngularOrdered Yes
+set CMWGtoGGSudakov:Alpha AlphaQCD
 
 
 
@@ -30,8 +30,8 @@ cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
 set CMWGtoGGSplitFnIS:isInititalState Yes
 set CMWQtoQGSplitFnIS:isInititalState Yes
 
-set CMWGtoGGSplitFn:isInititalState No
-set CMWQtoQGSplitFn:isInititalState No
+set CMWGtoGGSudakov:isInititalState No
+set CMWQtoQGSudakov:isInititalState No
 
 
 

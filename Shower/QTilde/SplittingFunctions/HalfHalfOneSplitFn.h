@@ -12,7 +12,7 @@
 // This is the declaration of the HalfHalfOneSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "SudakovFormFactor.h"
 
 namespace Herwig {
 
@@ -36,7 +36,7 @@ using namespace ThePEG;
  * @see \ref HalfHalfOneSplitFnInterfaces "The interfaces"
  * defined for HalfHalfOneSplitFn.
  */
-class HalfHalfOneSplitFn: public SplittingFunction {
+class HalfHalfOneSplitFn: public SudakovFormFactor {
 
 public:
 

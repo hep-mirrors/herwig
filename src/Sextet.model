@@ -148,16 +148,16 @@ insert ShowerHandler:DecayInShower 0 6000223
 insert ShowerHandler:DecayInShower 0 6000213
 
 
-cp SudakovCommon SDiquarktoSDiquarkSudakov
-create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSplitFn
-set SDiquarktoSDiquarkSudakov:SplittingFunction SDiquarktoSDiquarkSplitFn
+
+create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSudakov
+set SDiquarktoSDiquarkSudakov:Alpha AlphaQCD
+set SDiquarktoSDiquarkSudakov:Cutoff PTCutOff
 set SDiquarktoSDiquarkSudakov:InteractionType QCD
 set SDiquarktoSDiquarkSudakov:ColourStructure SextetSextetOctet
 
-
-cp SudakovCommon VDiquarktoVDiquarkSudakov
-create Herwig::OneOneOneSplitFn VDiquarktoVDiquarkSplitFn
-set VDiquarktoVDiquarkSudakov:SplittingFunction VDiquarktoVDiquarkSplitFn
+create Herwig::OneOneOneSplitFn VDiquarktoVDiquarkSudakov
+set VDiquarktoVDiquarkSudakov:Alpha AlphaQCD
+set VDiquarktoVDiquarkSudakov:Cutoff PTCutOff
 set VDiquarktoVDiquarkSudakov:InteractionType QCD
 set VDiquarktoVDiquarkSudakov:ColourStructure SextetSextetOctet
 

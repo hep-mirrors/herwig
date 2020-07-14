@@ -155,10 +155,9 @@ set LH/Model:ModelGenerator NewModel
 # Shower stuff for coloured particles
 cd /Herwig/Shower
 
-
-cp SudakovCommon PhitoPhiGammaSudakov
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
-set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:Alpha AlphaQED
+set PhitoPhiGammaSudakov:Cutoff PTCutOff
 set PhitoPhiGammaSudakov:InteractionType QED
 set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
 set PhitoPhiGammaSudakov:AngularOrdered Yes

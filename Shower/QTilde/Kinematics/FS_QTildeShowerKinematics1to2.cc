@@ -13,7 +13,7 @@
 
 #include "FS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
@@ -85,7 +85,7 @@ updateChildren(const tShowerParticlePtr parent,
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),true));
+  vertex->ME(SudakovFormFactor()->matrixElement(z(),t,ids,phi(),true));
   RhoDMatrix mapping;
   SpinPtr inspin;
   bool needMapping = parent->getMapping(inspin,mapping);

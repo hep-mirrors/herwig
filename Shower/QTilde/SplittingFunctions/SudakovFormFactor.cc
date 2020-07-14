@@ -34,17 +34,17 @@ using std::array;
 
 using namespace Herwig;
 
-DescribeClass<SudakovFormFactor,Interfaced>
+DescribeAbstractClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_
+  os << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_
      << oenum(interactionType_) << oenum(colourStructure_) 
      << angularOrdered_ << scaleChoice_ << strictAO_ << colourFactor_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_
+  is >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_
      >> ienum(interactionType_) >> ienum(colourStructure_) 
      >> angularOrdered_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
 }
@@ -54,12 +54,6 @@ void SudakovFormFactor::Init() {
   static ClassDocumentation<SudakovFormFactor> documentation
     ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
      " form factors in Herwig");
-
-  static Reference<SudakovFormFactor,SplittingFunction>
-    interfaceSplittingFunction("SplittingFunction",
-			       "A reference to the SplittingFunction object",
-			       &Herwig::SudakovFormFactor::splittingFn_,
-			       false, false, true, false);
 
   static Reference<SudakovFormFactor,ShowerAlpha>
     interfaceAlpha("Alpha",
@@ -330,8 +324,8 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  double detune, 
 				  Energy2 &t_main, double &z_main) {
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
-  double lower = splittingFn_->integOverP(zlimits_.first ,ids,pdfopt);
-  double upper = splittingFn_->integOverP(zlimits_.second,ids,pdfopt);
+  double lower = integOverP(zlimits_.first ,ids,pdfopt);
+  double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
            * alpha_->overestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
@@ -342,14 +336,14 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
     if(ident) c*=0.5;
   }
   else if(iopt==2) c*=-1.;
-// guessing t
+  // guessing t
   if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
     t_main = t1*pow(r,c);
   }
   else
     t_main = Constants::MaxEnergy2;
-// guessing z
-  z_main = splittingFn_->invIntegOverP(lower + UseRandom::rnd()
+  // guessing z
+  z_main = invIntegOverP(lower + UseRandom::rnd()
          *(upper - lower),ids,pdfopt);
 }
 
@@ -983,7 +977,7 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;     
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // calculate the weights
-    wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
+    wgts = generatePhiForward(z,t,ids,rho);
   }
   else {
     wgts = {{ {0, 1.} }};
@@ -1134,7 +1128,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // get the weights
-    wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
+    wgts = generatePhiBackward(z,t,ids,rho);
   }
   else {
     wgts = {{ {0, 1.} }};

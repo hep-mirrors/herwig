@@ -353,22 +353,22 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/H+
 ###################################################
 cd /Herwig/Shower
 
-cp SudakovCommon PhitoPhiGSudakov
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
-set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGSudakov
+set PhitoPhiGSudakov:Alpha AlphaQCD
+set PhitoPhiGSudakov:Cutoff PTCutOff
 set PhitoPhiGSudakov:InteractionType QCD
 set PhitoPhiGSudakov:ColourStructure TripletTripletOctet
 
-cp SudakovCommon PhitoPhiGammaSudakov
-create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
-set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:Alpha AlphaQED
+set PhitoPhiGammaSudakov:Cutoff PTCutOff
 set PhitoPhiGammaSudakov:InteractionType QED
 set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
 set PhitoPhiGammaSudakov:AngularOrdered Yes
 
-cp SudakovCommon GluinotoGluinoGSudakov
-create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
-set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
+create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSudakov
+set GluinotoGluinoGSudakov:Alpha AlphaQCD
+set GluinotoGluinoGSudakov:Cutoff PTCutOff
 set GluinotoGluinoGSudakov:InteractionType QCD
 set GluinotoGluinoGSudakov:ColourStructure OctetOctetOctet
 

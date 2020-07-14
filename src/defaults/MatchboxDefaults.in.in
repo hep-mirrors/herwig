@@ -509,8 +509,7 @@ set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
 set QTildeMatching:SafeCut 4.*GeV
-# just a dummy, since SudakovCommonn can't be used
-# it's only used to get the value of the kinCutoffScale
+# just a dummy, it's only used to get the value of the kinCutoffScale
 set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
 
 ################################################################################

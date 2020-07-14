@@ -12,7 +12,7 @@
 // This is the declaration of the ZeroZeroOneSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "SudakovFormFactor.h"
 
 namespace Herwig {
 
@@ -35,7 +35,7 @@ using namespace ThePEG;
  * @see \ref ZeroZeroOneSplitFnInterfaces "The interfaces"
  * defined for ZeroZeroOneSplitFn.
  */
-class ZeroZeroOneSplitFn: public SplittingFunction {
+class ZeroZeroOneSplitFn: public SudakovFormFactor {
 
 public:
 

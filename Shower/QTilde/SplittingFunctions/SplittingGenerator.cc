@@ -130,7 +130,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->checkColours(ids) || !s->splittingFn()->accept(ids)) 
+  if(!s->checkColours(ids) || !s->accept(ids)) 
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // add to map
   addToMap(ids,s,final);
@@ -163,7 +163,7 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->checkColours(ids) || !s->splittingFn()->accept(ids)) 
+  if(!s->checkColours(ids) || !s->accept(ids)) 
     return "Error: Sudakov " + sudakov + " Splitting Function can't handle particles\n";
   // delete from map
   deleteFromMap(ids,s,final);
