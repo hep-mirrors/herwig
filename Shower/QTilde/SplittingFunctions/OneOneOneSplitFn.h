@@ -60,8 +60,13 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
+  double P(const double z, const Energy2,
+	   const IdList & , const bool, const RhoDMatrix &)const {
+    // (this is historically important! the first physics - two years
+    // after the birth of the project - in the Herwig shower! Alberto
+    // & Stefan, 25/04/2002).
+    return sqr(1.-z*(1.-z))/(z*(1.-z));
+  }
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -69,7 +74,9 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  double overestimateP(const double z, const IdList &) const {
+    return 1/z + 1/(1.-z); 
+  }
 
   /**
    * The concrete implementation of the
@@ -81,9 +88,11 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const;
-
+  double ratioP(const double z, const Energy2,
+		const IdList & , const bool, const RhoDMatrix &) const {
+    return sqr(1.-z*(1.-z));
+  }
+  
   /**
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
@@ -93,8 +102,12 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids,
-			    unsigned int PDFfactor=0) const;
+  double integOverP(const double z, const IdList & ,
+		    unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    assert(z>0.&&z<1.);
+    return log(z/(1.-z)); 
+  }
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -104,8 +117,11 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids,
-			       unsigned int PDFfactor=0) const;
+  virtual double invIntegOverP(const double r, const IdList & ,
+			       unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    return 1./(1.+exp(-r)); 
+  }
   //@}
 
   /**

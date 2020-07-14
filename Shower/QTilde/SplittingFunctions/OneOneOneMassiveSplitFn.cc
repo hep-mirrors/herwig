@@ -39,11 +39,6 @@ double OneOneOneMassiveSplitFn::P(const double z, const Energy2 t,
 			       + 2.*rho00*sqr(1.-z)*m2/t);
 }
 
-double OneOneOneMassiveSplitFn::overestimateP(const double z,
-					      const IdList & ids) const {
-  return 2.*(1/z + 1/(1.-z)); 
-}
-
 
 double OneOneOneMassiveSplitFn::ratioP(const double z, const Energy2 t,
 				       const IdList & ids , const bool, const RhoDMatrix & rho) const {
@@ -55,8 +50,8 @@ double OneOneOneMassiveSplitFn::ratioP(const double z, const Energy2 t,
 }
 
 double OneOneOneMassiveSplitFn::invIntegOverP(const double r,
-				       const IdList & ids,
-				       unsigned int PDFfactor) const {
+					      const IdList & ,
+					      unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 1./(1.+exp(-0.5*r)); 
@@ -69,7 +64,7 @@ double OneOneOneMassiveSplitFn::invIntegOverP(const double r,
   }
 } 
 
-double OneOneOneMassiveSplitFn::integOverP(const double z, const IdList & ids,
+double OneOneOneMassiveSplitFn::integOverP(const double z, const IdList & ,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:

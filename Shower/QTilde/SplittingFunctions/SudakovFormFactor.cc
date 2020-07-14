@@ -232,15 +232,15 @@ double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
 
 
 bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x,
-	const tcPDPtr parton0, const tcPDPtr parton1,
-	Ptr<BeamParticleData>::transient_const_pointer beam) const {
+				const tcPDPtr parton0, const tcPDPtr parton1,
+				Ptr<BeamParticleData>::transient_const_pointer beam) const {
   double ratio=PDFVetoRatio(t,x,parton0,parton1,beam,1.);
   return UseRandom::rnd() > ratio;
 }
 
 double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
-        const tcPDPtr parton0, const tcPDPtr parton1,
-        Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
+				       const tcPDPtr parton0, const tcPDPtr parton1,
+				       Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
   assert(pdf_);
   Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
@@ -400,8 +400,6 @@ bool SudakovFormFactor::PSVeto(const Energy2 t) {
   return false;
 }
 
-
- 
 ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,
 						   const RhoDMatrix & rho,
@@ -510,7 +508,7 @@ generateNextSpaceBranching(const Energy startingQ,
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
   // no shower variations
-  if(ShowerHandler::currentHandler()->showerVariations().empty()){
+  if(ShowerHandler::currentHandler()->showerVariations().empty()) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
@@ -524,8 +522,7 @@ generateNextSpaceBranching(const Energy startingQ,
         PDFVeto(t,x,ids[0],ids[1],beam));
   }
   // shower variations
-  else
-    {
+  else {
     bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;

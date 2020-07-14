@@ -29,55 +29,6 @@ void OneOneOneSplitFn::Init() {
 
 }
 
-double OneOneOneSplitFn::P(const double z, const Energy2,
-			   const IdList & ids, const bool, const RhoDMatrix &)const {
-  // (this is historically important! the first physics - two years
-  // after the birth of the project - in the Herwig shower! Alberto
-  // & Stefan, 25/04/2002).
-  return sqr(1.-z*(1.-z))/(z*(1.-z));
-}
-
-double OneOneOneSplitFn::overestimateP(const double z,
-				       const IdList & ids) const {
-  return 1/z + 1/(1.-z); 
-}
-
-
-double OneOneOneSplitFn::ratioP(const double z, const Energy2,
-				const IdList & , const bool, const RhoDMatrix &) const {
-  return sqr(1.-z*(1.-z));
-}
-
-double OneOneOneSplitFn::invIntegOverP(const double r,
-				       const IdList & ids,
-				       unsigned int PDFfactor) const {
-  switch(PDFfactor) {
-  case 0:
-    return 1./(1.+exp(-r)); 
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "OneOneOneSplitFn::integOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-} 
-
-double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
-				    unsigned int PDFfactor) const {
-  switch(PDFfactor) {
-  case 0:
-    assert(z>0.&&z<1.);
-    return log(z/(1.-z)); 
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "OneOneOneSplitFn::integOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-}
-
 bool OneOneOneSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix) {

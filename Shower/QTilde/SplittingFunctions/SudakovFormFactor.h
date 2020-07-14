@@ -32,7 +32,7 @@ using namespace ThePEG;
 /**
  *  A typedef for the BeamParticleData
  */
-  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
   
 
@@ -681,10 +681,7 @@ protected:
   /**
    * The alpha S veto ratio
    */
-   
   double alphaSVetoRatio(Energy2 pt2,double factor) const;
-
-
   //@}
 
   /**

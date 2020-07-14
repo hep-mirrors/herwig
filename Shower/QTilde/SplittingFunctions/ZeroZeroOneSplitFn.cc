@@ -40,11 +40,6 @@ double ZeroZeroOneSplitFn::P(const double z, const Energy2 t,
   return 2.*val;
 }
 
-double ZeroZeroOneSplitFn::overestimateP(const double z,
-					 const IdList &ids) const { 
-  return 2./(1.-z); 
-}
-
 double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
 				  const IdList &ids,const bool mass, const RhoDMatrix &) const { 
   double val = z;
@@ -55,7 +50,7 @@ double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 } 
 
-double ZeroZeroOneSplitFn::integOverP(const double z, const IdList & ids,
+double ZeroZeroOneSplitFn::integOverP(const double z, const IdList &,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
@@ -69,7 +64,7 @@ double ZeroZeroOneSplitFn::integOverP(const double z, const IdList & ids,
   }
 }
 
-double ZeroZeroOneSplitFn::invIntegOverP(const double r, const IdList & ids,
+double ZeroZeroOneSplitFn::invIntegOverP(const double r, const IdList &,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:

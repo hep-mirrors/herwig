@@ -68,7 +68,9 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const;   
+  double overestimateP(const double z, const IdList &) const { 
+    return 2./z; 
+  }
 
   /**
    * The concrete implementation of the

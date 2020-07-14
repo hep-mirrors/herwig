@@ -57,7 +57,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
+  double P(const double z, const Energy2 t, const IdList & ids,
 		   bool mass, const RhoDMatrix & rho) const;
 
   /**
@@ -66,7 +66,9 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  double overestimateP(const double z, const IdList & ) const {
+    return 2./(1.-z); 
+  }
 
   /**
    * The concrete implementation of the
@@ -77,8 +79,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			bool mass, const RhoDMatrix & rho) const;
+  double ratioP(const double z, const Energy2 t, const IdList & ids,
+		bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -117,6 +119,7 @@ public:
   virtual vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 	      const RhoDMatrix &);
+
   /**
    * Method to calculate the azimuthal angle for backward
    * Shouldn't be needed and NOT IMPLEMENTED

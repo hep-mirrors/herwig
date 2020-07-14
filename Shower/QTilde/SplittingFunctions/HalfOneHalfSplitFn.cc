@@ -40,11 +40,6 @@ double HalfOneHalfSplitFn::P(const double z, const Energy2 t,
   return val;
 }
 
-double HalfOneHalfSplitFn::overestimateP(const double z,
-					 const IdList &ids) const { 
-  return 2./z; 
-}
-
 double HalfOneHalfSplitFn::ratioP(const double z, const Energy2 t,
 				  const IdList &ids,const bool mass, const RhoDMatrix & ) const {
   double val=2.*(1.-z)+sqr(z);
@@ -55,7 +50,7 @@ double HalfOneHalfSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 }
 
-double HalfOneHalfSplitFn::integOverP(const double z, const IdList & ids,
+double HalfOneHalfSplitFn::integOverP(const double z, const IdList & ,
 				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
@@ -71,8 +66,7 @@ double HalfOneHalfSplitFn::integOverP(const double z, const IdList & ids,
   }
 }
 
-double HalfOneHalfSplitFn::invIntegOverP(const double r, 
-					 const IdList & ids,
+double HalfOneHalfSplitFn::invIntegOverP(const double r, const IdList & ,
 					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
