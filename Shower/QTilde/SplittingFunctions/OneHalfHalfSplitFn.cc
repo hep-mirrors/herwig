@@ -40,10 +40,6 @@ double OneHalfHalfSplitFn::P(const double z, const Energy2 t,
   return val;
 }
 
-double OneHalfHalfSplitFn::overestimateP(const double, const IdList &) const {
-  return 1.; 
-}
-
 double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t, 
 				  const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double zz = z*(1.-z);
@@ -115,17 +111,11 @@ OneHalfHalfSplitFn::generatePhiForward(const double z, const Energy2 t, const Id
   double fact = z*(1.-z)-mq2/t;
   double max = 1.+2.*fact*(-1.+2.*modRho);
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*(1.-2.*fact)/max));
   output.push_back(make_pair(-2,2.*fact*rho(0,2)/max));
   output.push_back(make_pair( 2,2.*fact*rho(2,0)/max));
   return output;
-}
-
-vector<pair<int, Complex> > 
-OneHalfHalfSplitFn::generatePhiBackward(const double, const Energy2, const IdList &,
-					const RhoDMatrix & ) { 
-  // no dependance
-  return {{ {0, 1.} }};
 }
 
 DecayMEPtr OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t, 

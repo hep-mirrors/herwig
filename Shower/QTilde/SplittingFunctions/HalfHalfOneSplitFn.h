@@ -45,7 +45,7 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  bool accept(const IdList & ids) const;
 
   /**
    *   Methods to return the splitting function.
@@ -59,8 +59,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
+  double P(const double z, const Energy2 t, const IdList & ids,
+	   const bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -68,7 +68,9 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  double overestimateP(const double z, const IdList & ) const { 
+    return 2./(1.-z); 
+  }
 
   /**
    * The concrete implementation of the
@@ -80,8 +82,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const;
+  double ratioP(const double z, const Energy2 t, const IdList & ids,
+		const bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -92,8 +94,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
-			    unsigned int PDFfactor=0) const;
+  double integOverP(const double z, const IdList & ids, 
+		    unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -103,8 +105,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
-			       unsigned int PDFfactor=0) const;
+  double invIntegOverP(const double r, const IdList & ids, 
+		       unsigned int PDFfactor=0) const;
   //@}
 
   /**
@@ -115,9 +117,12 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+  vector<pair<int,Complex> >
+  generatePhiForward(const double, const Energy2, const IdList & , const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return {{ {0, 1.} }};
+  }
 
   /**
    * Method to calculate the azimuthal angle for backward evolution
@@ -127,9 +132,12 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
+  vector<pair<int,Complex> >
+  generatePhiBackward(const double, const Energy2, const IdList & , const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return {{ {0, 1.} }};
+  }
   
   /**
    * Calculate the matrix element for the splitting
@@ -138,8 +146,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+			   const IdList & ids, const double phi, bool timeLike);
 
 public:
 

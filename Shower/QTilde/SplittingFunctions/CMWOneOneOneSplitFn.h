@@ -66,7 +66,7 @@ namespace Herwig {
      * Nucl.Phys. B349 (1991) 635-654
      */
     double Kg(Energy2 )const{
-        //TODO: Might be t-dependent
+      //TODO: Might be t-dependent
       int Nf=5;//alpha_->Nf(t)
       return (3.*(67./18.-1./6.*sqr(Constants::pi))-5./9.*Nf);
     }

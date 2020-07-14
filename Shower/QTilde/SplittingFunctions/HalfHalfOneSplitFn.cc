@@ -39,11 +39,6 @@ double HalfHalfOneSplitFn::P(const double z, const Energy2 t,
   return val;
 }
 
-double HalfHalfOneSplitFn::overestimateP(const double z,
-					 const IdList & ids) const { 
-  return 2./(1.-z); 
-}
-
 double HalfHalfOneSplitFn::ratioP(const double z, const Energy2 t,
 				  const IdList & ids, const bool mass, const RhoDMatrix & ) const {
   double val = 1. + sqr(z);
@@ -95,21 +90,6 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
   return true;
 }
 
-vector<pair<int, Complex> > 
-HalfHalfOneSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
-				       const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return {{ {0, 1.} }};
-}
-
-vector<pair<int, Complex> > 
-HalfHalfOneSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
-					const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return {{ {0, 1.} }};
-}
 
 DecayMEPtr HalfHalfOneSplitFn::matrixElement(const double z, const Energy2 t, 
                                              const IdList & ids, const double phi,

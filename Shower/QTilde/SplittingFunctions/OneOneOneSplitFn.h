@@ -46,7 +46,13 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      if(ids[0]->iSpin()!=PDT::Spin1) return false;
+    }
+    return true;
+  }
 
   /**
    *   Methods to return the splitting function.
@@ -117,10 +123,10 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ,
+  double invIntegOverP(const double r, const IdList & ,
 			       unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
-    return 1./(1.+exp(-r)); 
+    return 1./(1.+exp(-r));
   }
   //@}
 
@@ -132,7 +138,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
+  vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 	      const RhoDMatrix &);
 
@@ -144,7 +150,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  vector<pair<int,Complex> > 
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 		      const RhoDMatrix &);
   
@@ -155,8 +161,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+			   const IdList & ids, const double phi, bool timeLike);
 
 public:
 

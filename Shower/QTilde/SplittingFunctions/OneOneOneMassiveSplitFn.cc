@@ -94,6 +94,7 @@ OneOneOneMassiveSplitFn::generatePhiForward(const double z, const Energy2, const
   double modRho = abs(rho(0,2));
   double max = 2.*z*modRho*(1.-z)+sqr(1.-(1.-z)*z)/(z*(1.-z));
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*sqr(1.-(1.-z)*z)/(z*(1.-z))/max));
   output.push_back(make_pair(-2,-rho(0,2)*z*(1.-z)/max));
   output.push_back(make_pair( 2,-rho(2,0)*z*(1.-z)/max));
@@ -108,6 +109,7 @@ OneOneOneMassiveSplitFn::generatePhiBackward(const double z, const Energy2, cons
   double off  = (1.-z)/z;
   double max  = 2.*abs(rho(0,2))*off+diag;
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
   output.push_back(make_pair( 2,-rho(0,2)           * off/max));
   output.push_back(make_pair(-2,-rho(2,0)           * off/max));

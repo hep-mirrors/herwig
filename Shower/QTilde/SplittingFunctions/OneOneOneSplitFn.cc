@@ -29,14 +29,6 @@ void OneOneOneSplitFn::Init() {
 
 }
 
-bool OneOneOneSplitFn::accept(const IdList & ids) const {
-  if(ids.size()!=3) return false;
-  for(unsigned int ix=0;ix<ids.size();++ix) {
-    if(ids[0]->iSpin()!=PDT::Spin1) return false;
-  }
-  return true;
-}
-
 vector<pair<int, Complex> > 
 OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
 				     const RhoDMatrix & rho) {
@@ -44,6 +36,7 @@ OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList
   double modRho = abs(rho(0,2));
   double max = 2.*z*modRho*(1.-z)+sqr(1.-(1.-z)*z)/(z*(1.-z));
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*sqr(1.-(1.-z)*z)/(z*(1.-z))/max));
   output.push_back(make_pair(-2,-rho(0,2)*z*(1.-z)/max));
   output.push_back(make_pair( 2,-rho(2,0)*z*(1.-z)/max));
@@ -52,12 +45,13 @@ OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList
 
 vector<pair<int, Complex> > 
 OneOneOneSplitFn::generatePhiBackward(const double z, const Energy2, const IdList &,
-			      const RhoDMatrix & rho) {
+				      const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
   double off  = (1.-z)/z;
   double max  = 2.*abs(rho(0,2))*off+diag;
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
   output.push_back(make_pair( 2,-rho(0,2)           * off/max));
   output.push_back(make_pair(-2,-rho(2,0)           * off/max));
