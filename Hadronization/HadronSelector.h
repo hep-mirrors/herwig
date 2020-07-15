@@ -145,7 +145,17 @@ public:
     /**
      * debug output
      */
-    friend ostream & operator<< (ostream & os, const HadronInfo & hi );
+    friend ostream & operator<< (ostream & os, const HadronInfo & hi ) {
+      os << std::scientific << std::showpoint
+	 << std::setprecision(4)
+	 << setw(2)
+	 << hi.id << '\t'
+	 << hi.swtef << '\t'
+	 << hi.wt << '\t'
+	 << hi.overallWeight << '\t'
+	 << ounit(hi.mass,GeV);
+      return os;
+    }
     
     /**
      * Friend method used to read in the value of a table element.
