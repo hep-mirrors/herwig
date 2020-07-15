@@ -32,38 +32,23 @@ DescribeAbstractClass<HadronSelector,Interfaced>
 describeHadronSelector("Herwig::HadronSelector","");
 
 namespace {
-  // // debug helper
-  // void dumpTable(const HadronSelector::HadronTable & tbl) {
-  //   typedef HadronSelector::HadronTable::const_iterator TableIter;
-  //   for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-  //     cerr << it->first.first << ' ' 
-  // 	   << it->first.second << '\n';
-  //     for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-  // 	   jt != it->second.end(); ++jt) {
-  // 	cerr << '\t' << *jt << '\n';
-  //     }
-  //   }
-  // }
+  // debug helper
+  void dumpTable(const HadronSelector::HadronTable & tbl) {
+    typedef HadronSelector::HadronTable::const_iterator TableIter;
+    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+      cerr << it->first.first << ' ' 
+  	   << it->first.second << '\n';
+      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+  	   jt != it->second.end(); ++jt) {
+  	cerr << '\t' << *jt << '\n';
+      }
+    }
+  }
 
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
 
-
-}
-
-ostream & operator<< (ostream & os, 
-		      const HadronSelector::HadronInfo & hi ) {
-  os << std::scientific << std::showpoint
-     << std::setprecision(4)
-     << setw(2)
-     << hi.id << '\t'
-//   << hi.ptrData << ' ' 
-     << hi.swtef << '\t'
-     << hi.wt << '\t'
-     << hi.overallWeight << '\t'
-     << ounit(hi.mass,GeV);
-  return os;
 }
 
 HadronSelector::HadronSelector(unsigned int opt) 
