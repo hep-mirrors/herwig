@@ -32,36 +32,22 @@ DescribeAbstractClass<HadronSelector,Interfaced>
 describeHadronSelector("Herwig::HadronSelector","Herwig.so");
 
 namespace {
-  // // debug helper
-  // void dumpTable(const HadronSelector::HadronTable & tbl) {
-  //   typedef HadronSelector::HadronTable::const_iterator TableIter;
-  //   for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-  //     cerr << it->first.first << ' '
-  // 	   << it->first.second << '\n';
-  //     for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-  // 	   jt != it->second.end(); ++jt) {
-  // 	cerr << '\t' << *jt << '\n';
-  //     }
-  //   }
-  // }
+  // debug helper
+  void dumpTable(const HadronSelector::HadronTable & tbl) {
+    typedef HadronSelector::HadronTable::const_iterator TableIter;
+    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+      cerr << it->first.first << ' '
+       	   << it->first.second << '\n';
+      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+      	   jt != it->second.end(); ++jt) {
+      	cerr << '\t' << *jt << '\n';
+      }
+    }
+  }
 
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
-}
-
-ostream & operator<< (ostream & os,
-		      const HadronSelector::HadronInfo & hi ) {
-  os << std::scientific << std::showpoint
-     << std::setprecision(4)
-     << setw(2)
-     << hi.id << '\t'
-//   << hi.ptrData << ' '
-     << hi.swtef << '\t'
-     << hi.wt << '\t'
-     << hi.overallWeight << '\t'
-     << ounit(hi.mass,GeV);
-  return os;
 }
 
 HadronSelector::HadronSelector(unsigned int opt)
@@ -509,7 +495,7 @@ void HadronSelector::doinit() {
   // construct the hadron tables
   constructHadronTable();
   // for debugging
-  // dumpTable(table());
+  dumpTable(table());
 }
 
 void HadronSelector::constructHadronTable() {
@@ -555,19 +541,18 @@ void HadronSelector::constructHadronTable() {
     const int x2 = (pid/10  )%10;
     const int x7 = (pid/1000000)%10;
     const bool wantSusy = x7 == 1 || x7 == 2;
-    int flav1;
-    int flav2;
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
-    else if(x4 == 0) { // meson
+    int flav1,flav2;
+    // meson
+    if(x4 == 0) {
       flav1 = x2;
       flav2 = x3;
     }
-    else { // baryon
-      long rndSpin;
-      if(x2 == x3) rndSpin = 3;
-      else rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
-      flav1 = CheckId::makeDiquarkID(x2,x3,rndSpin);
+    // baryon
+    else { 
+      long spin = x2 == x3 ? 3: 1;
+      flav1 = CheckId::makeDiquarkID(x2,x3,spin);
       flav2 = x4;
     }
     if (wantSusy) flav2 += 1000000 * x7;
