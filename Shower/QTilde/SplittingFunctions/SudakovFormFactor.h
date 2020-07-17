@@ -41,10 +41,12 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
  * the branching.
  */
 enum ColourStructure {Undefined=0,
-		      TripletTripletOctet  = 1,OctetOctetOctet    =2,
-		      OctetTripletTriplet  = 3,TripletOctetTriplet=4,
-		      SextetSextetOctet    = 5,
-		      ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
+		      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
+		      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
+		      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
+		      OctetOctetSinglet    = 7,
+		      ChargedChargedNeutral=-1,
+		      ChargedNeutralCharged=-2,
 		      NeutralChargedCharged=-3};
 
 /**  \ingroup Shower
@@ -175,7 +177,7 @@ public:
   /**
    * The default constructor.
    */
-  SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
+  SudakovFormFactor() : pdfMax_(35.0), pdfFactor_(0),
 			z_( 0.0 ),phi_(0.0), pT_(),
 			interactionType_(ShowerInteraction::UNDEFINED),
 			colourStructure_(Undefined),
@@ -414,11 +416,6 @@ public:
   //@}
 
   /**
-   *  Access the maximum weight for the PDF veto
-   */
-  double pdfMax() const { return pdfmax_;}
-
-  /**
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
@@ -620,9 +617,9 @@ protected:
    * @param t_main rerurns the value of the energy fraction for the veto algorithm
    * @param z_main returns the value of the scale for the veto algorithm
    */
-  void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
-	      double enhance,bool ident,
-	      double detune, Energy2 &t_main, double &z_main);
+  virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
+		       double enhance,bool ident,
+		       double detune, Energy2 &t_main, double &z_main);
 
   /**
    * Veto on the PDF for the initial-state shower
@@ -681,7 +678,7 @@ protected:
   /**
    * The alpha S veto ratio
    */
-  double alphaSVetoRatio(Energy2 pt2,double factor) const;
+  virtual double alphaSVetoRatio(Energy2 pt2,double factor) const;
   //@}
 
   /**
@@ -699,11 +696,28 @@ protected:
    */
   const vector<IdList> & particles() const { return particles_; }
 
+protected:
+
+  /**
+   *  The PDF factor
+   */
+  unsigned pdfFactor() const {return pdfFactor_;}
+
+  /**
+   * Maximum value of the PDF weight
+   */
+  double pdfMax() const {return pdfMax_;}
+
   /**
    *  Return the colour factor
    */
   double colourFactor() const;
 
+  /**
+   *  The limits of \f$z\f$ in the splitting
+   */
+  pair<double,double> zLimits() const {return zlimits_;};
+  
 public:
 
   /**
@@ -751,7 +765,7 @@ private:
   /**
    * Maximum value of the PDF weight
    */
-  double pdfmax_;
+  double pdfMax_;
 
   /**
    * List of the particles this Sudakov is used for to aid in setting up
@@ -762,7 +776,7 @@ private:
   /**
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
-  unsigned pdffactor_;
+  unsigned pdfFactor_;
 
 private:
 

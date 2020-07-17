@@ -38,13 +38,13 @@ DescribeAbstractClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_
+  os << alpha_ << pdfMax_ << particles_ << pdfFactor_ << cutoff_
      << oenum(interactionType_) << oenum(colourStructure_) 
      << angularOrdered_ << scaleChoice_ << strictAO_ << colourFactor_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_
+  is >> alpha_ >> pdfMax_ >> particles_ >> pdfFactor_ >> cutoff_
      >> ienum(interactionType_) >> ienum(colourStructure_) 
      >> angularOrdered_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
 }
@@ -67,16 +67,16 @@ void SudakovFormFactor::Init() {
 		   &Herwig::SudakovFormFactor::cutoff_,
 		   false, false, true, false);
 
-  static Parameter<SudakovFormFactor,double> interfacePDFmax
+  static Parameter<SudakovFormFactor,double> interfacePdfMax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 1000000.0,
+     &SudakovFormFactor::pdfMax_, 35.0, 1.0, 1000000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
     ("PDFFactor",
      "Include additional factors in the overestimate for the PDFs",
-     &SudakovFormFactor::pdffactor_, 0, false, false);
+     &SudakovFormFactor::pdfFactor_, 0, false, false);
   static SwitchOption interfacePDFFactorNo
     (interfacePDFFactor,
      "No",
@@ -189,6 +189,16 @@ void SudakovFormFactor::Init() {
      "SextetSextetOctet",
      "6 -> 6 8",
      SextetSextetOctet);
+  static SwitchOption interfaceColourStructureTripletTripletSinglet
+    (interfaceColourStructure,
+     "TripletTripletSinglet",
+     "3 -> 3 1",
+     TripletTripletOctet);
+  static SwitchOption interfaceColourStructureOctetOctetSinglet
+    (interfaceColourStructure,
+     "OctetOctetSinglet",
+     "8 -> 8 1",
+     OctetOctetSinglet);
   static SwitchOption interfaceColourStructureChargedChargedNeutral
     (interfaceColourStructure,
      "ChargedChargedNeutral",
@@ -252,9 +262,9 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   if(oldpdf<=0.) return 1.;
   
   const double ratio = newpdf/oldpdf;
-  double maxpdf = pdfmax_;
+  double maxpdf = pdfMax_;
 
-  switch (pdffactor_) {
+  switch (pdfFactor_) {
   case 0: break;
   case 1: maxpdf /= z(); break;
   case 2: maxpdf /= 1.-z(); break;
@@ -263,7 +273,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   case 5: maxpdf *= sqrt(z()); break;
   default :
     throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
-		      << pdffactor_ << Exception::runerror;
+		      << pdfFactor_ << Exception::runerror;
     
   }
 
@@ -323,7 +333,7 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  double enhance,bool ident,
 				  double detune, 
 				  Energy2 &t_main, double &z_main) {
-  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
+  unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor_;
   double lower = integOverP(zlimits_.first ,ids,pdfopt);
   double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
@@ -331,7 +341,7 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {
-    c/=pdfmax_;
+    c/=pdfMax_;
     //symmetry of FS gluon splitting
     if(ident) c*=0.5;
   }
@@ -1612,6 +1622,46 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }   
   }
+  else if(colourStructure_ == OctetOctetSinglet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      cparent.first->addColoured(first);
+      cparent.second->addAntiColoured(first);
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      cfirst.first->addColoured(parent);
+      cfirst.second->addAntiColoured(parent);
+    }
+  }
+  else if(colourStructure_ == TripletTripletSinglet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q 
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar 
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // q -> q 
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar 
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
   else if(colourStructure_ == ChargedChargedNeutral) {
     if(!parent->data().coloured()) return;
     if(!back) {
@@ -2022,6 +2072,10 @@ void SudakovFormFactor::doinit() {
   else if(colourStructure_==TripletOctetTriplet) {
     colourFactor_ = 4./3.;
   }
+  else if(colourStructure_ == TripletTripletSinglet ||
+	  colourStructure_ == OctetOctetSinglet    ) {
+    colourFactor_ = 1.;
+  }
   else if(colourStructure_==SextetSextetOctet) {
     colourFactor_ = 10./3.;
   }
@@ -2089,6 +2143,17 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[0]!=ids[1]) return false;
     if((ids[0]->iColour()==PDT::Colour6 || ids[0]->iColour()==PDT::Colour6bar) &&
        ids[2]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(colourStructure_==TripletTripletSinglet) {
+    if(ids[0]!=ids[1]) return false;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[2]->iColour()==PDT::Colour0) return true;
+    return false;
+  }
+  else if(colourStructure_==OctetOctetSinglet) {
+    if(ids[0]!=ids[1]) return false;
+    if(ids[0]->iColour()==PDT::Colour8 && ids[2]->iColour()==PDT::Colour0) return true;
     return false;
   }
   else if(colourStructure_==ChargedChargedNeutral) {
