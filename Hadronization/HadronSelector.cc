@@ -498,6 +498,124 @@ void HadronSelector::doinit() {
   dumpTable(table());
 }
 
+void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2) {
+  // inserting a new Hadron in the hadron table.
+  long pid  = particle->id();
+  int pspin = particle->iSpin();
+  double maxdd(0.),maxss(0.),maxrest(0.);
+  HadronInfo a(pid,
+   particle,
+   specialWeight(pid,flav1,flav2),
+   particle->mass());
+  // set the weight to the number of spin states
+  a.overallWeight = pspin;
+  // identical light flavours
+  if(flav1 == flav2 && flav1<=3) {
+    // ddbar> uubar> admixture states
+    if(flav1==1) {
+      if(_topt != 0) a.overallWeight *= 0.5*a.swtef;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+      if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
+    }
+    // load up ssbar> uubar> ddbar> admixture states
+    else {
+      a.wt = mixingStateWeight(pid);
+      a.overallWeight *= a.wt;
+      if(_topt != 0) a.overallWeight *= a.swtef;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+      if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
+      a.wt = (_topt != 0) ? 1.- 2.*a.wt : 1 - a.wt;
+      if(a.wt > 0) {
+        a.overallWeight = a.wt * a.swtef * pspin;
+        _table[make_pair(3,3)].insert(a);
+        if(_topt == 0 && a.overallWeight > maxss) maxss = a.overallWeight;
+      }
+    }
+  }
+  // light baryons with all quarks identical
+  else if((flav1 == 1 && flav2 == 1103) || (flav1 == 1103 && flav2 == 1) ||
+    (flav1 == 2 && flav2 == 2203) || (flav1 == 2203 && flav2 == 2) ||
+    (flav1 == 3 && flav2 == 3303) || (flav1 == 3303 && flav2 == 3)) {
+    if(_topt != 0) a.overallWeight *= 1.5*a.swtef;
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
+    if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
+  }
+  // all other cases
+  else {
+    if(_topt != 0) a.overallWeight *=a.swtef;
+    _table[make_pair(flav1,flav2)].insert(a);
+    if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
+    if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
+  }
+
+  // Account for identical combos of diquark/quarks and symmetrical elements
+  // e.g. U UD = D UU
+ HadronTable::iterator tit;
+ for(tit=_table.begin();tit!=_table.end();++tit) {
+   if(tit->first.first>ParticleID::c) continue;
+   if(!DiquarkMatcher::Check(tit->first.second)) continue;
+   long k, l, sub;
+   if(tit->first.second>=ParticleID::bd_0) {
+     k = ParticleID::b;
+     sub = ParticleID::bd_0/100;
+   }
+   else if(tit->first.second>=ParticleID::cd_0) {
+     k = ParticleID::c;
+     sub = ParticleID::cd_0/100;
+   }
+   else if(tit->first.second>=ParticleID::sd_0) {
+     k = ParticleID::s;
+     sub = ParticleID::sd_0/100;
+   }
+   else if(tit->first.second>=ParticleID::ud_0) {
+     k = ParticleID::u;
+     sub = ParticleID::ud_0/100;
+   }
+   else if(tit->first.second==ParticleID::dd_1) {
+     k = ParticleID::d;
+     sub = ParticleID::dd_1/100;
+   }
+   else continue;
+   sub=tit->first.second/100-sub+1;
+   if(sub > tit->first.first) {
+     l = 1000*sub+100*tit->first.first+1;
+   }
+   else if(sub==tit->first.first) {
+     l = 1000*sub+ 100*tit->first.first+3;
+   }
+   else {
+     l = 100*sub +1000*tit->first.first+1;
+   }
+   if(tit->second.empty()) {
+     pair<long,long> newpair(k,l);
+     tit->second=_table[newpair];
+     newpair=make_pair(tit->first.second,tit->first.first);
+     _table[newpair]=tit->second;
+   };
+ }
+
+ // normalise weights to one for first option
+ if(_topt == 0) {
+   HadronTable::const_iterator tit;
+   KupcoData::iterator it;
+   for(tit=_table.begin();tit!=_table.end();++tit) {
+     double weight;
+     if(tit->first.first==tit->first.second) {
+ if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
+ else if (tit->first.first==3)                weight=1./maxss;
+ else                                         weight=1./maxrest;
+     }
+     else                                           weight=1./maxrest;
+     for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
+ it->rescale(weight);
+     }
+   }
+ }
+}
+
 void HadronSelector::constructHadronTable() {
   // initialise the table
   _table.clear();
@@ -511,13 +629,11 @@ void HadronSelector::constructHadronTable() {
   // get the particles from the event generator
   ParticleMap particles = generator()->particles();
   // loop over the particles
-  double maxdd(0.),maxss(0.),maxrest(0.);
   for(ParticleMap::iterator it=particles.begin();
       it!=particles.end(); ++it) {
     long pid = it->first;
     tPDPtr particle = it->second;
     int pspin = particle->iSpin();
-    bool baryonSpinRedoRequired(false);
     // Don't include hadrons which are explicitly forbidden
     if(find(_forbidden.begin(),_forbidden.end(),particle)!=_forbidden.end())
       continue;
@@ -544,137 +660,34 @@ void HadronSelector::constructHadronTable() {
     const bool wantSusy = x7 == 1 || x7 == 2;
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
-    int flav1,flav2;
-    // spin of the prospective diquark
-    long spin = x2 == x3 ? 3: 1;
-  // in case x2 != x3, both spin-0 and spin-1 diquarks are possible
-  SPIN_REDO:
-      // meson
-      if(x4 == 0) {
-        flav1 = x2;
-        flav2 = x3;
-      }
-      // baryon
-      else {
-        spin  = baryonSpinRedoRequired ? 3 : spin;
-        baryonSpinRedoRequired = spin == 1 ? true : false;
-        // go on as usual
-        flav1 = CheckId::makeDiquarkID(x2,x3,spin);
-        flav2 = x4;
-      }
+    int flav1,flav2,spin;
+    // meson
+    if(x4 == 0) {
+      flav1 = x2;
+      flav2 = x3;
       if (wantSusy) flav2 += 1000000 * x7;
-      HadronInfo a(pid,
-  		 particle,
-  		 specialWeight(pid,flav1,flav2),
-  		 particle->mass());
-      // set the weight to the number of spin states
-      a.overallWeight = pspin;
-      // identical light flavours
-      if(flav1 == flav2 && flav1<=3) {
-        // ddbar> uubar> admixture states
-        if(flav1==1) {
-        	if(_topt != 0) a.overallWeight *= 0.5*a.swtef;
-        	_table[make_pair(1,1)].insert(a);
-        	_table[make_pair(2,2)].insert(a);
-        	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-        }
-        // load up ssbar> uubar> ddbar> admixture states
-        else {
-        	a.wt = mixingStateWeight(pid);
-        	a.overallWeight *= a.wt;
-        	if(_topt != 0) a.overallWeight *= a.swtef;
-        	_table[make_pair(1,1)].insert(a);
-        	_table[make_pair(2,2)].insert(a);
-        	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-        	a.wt = (_topt != 0) ? 1.- 2.*a.wt : 1 - a.wt;
-        	if(a.wt > 0) {
-        	  a.overallWeight = a.wt * a.swtef * pspin;
-        	  _table[make_pair(3,3)].insert(a);
-        	  if(_topt == 0 && a.overallWeight > maxss) maxss = a.overallWeight;
-        	}
-        }
-      }
-      // light baryons with all quarks identical
-      else if((flav1 == 1 && flav2 == 1103) || (flav1 == 1103 && flav2 == 1) ||
-  	    (flav1 == 2 && flav2 == 2203) || (flav1 == 2203 && flav2 == 2) ||
-  	    (flav1 == 3 && flav2 == 3303) || (flav1 == 3303 && flav2 == 3)) {
-        if(_topt != 0) a.overallWeight *= 1.5*a.swtef;
-        _table[make_pair(flav1,flav2)].insert(a);
-        _table[make_pair(flav2,flav1)].insert(a);
-        if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-      }
-      // all other cases
-      else {
-        if(_topt != 0) a.overallWeight *=a.swtef;
-        _table[make_pair(flav1,flav2)].insert(a);
-        if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
-        if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-      }
-  // redo all steps if spin == 1
-  if(baryonSpinRedoRequired)
-    goto SPIN_REDO;
-  }
-
-   // Account for identical combos of diquark/quarks and symmetrical elements
-   // e.g. U UD = D UU
-  HadronTable::iterator tit;
-  for(tit=_table.begin();tit!=_table.end();++tit) {
-    if(tit->first.first>ParticleID::c) continue;
-    if(!DiquarkMatcher::Check(tit->first.second)) continue;
-    long k, l, sub;
-    if(tit->first.second>=ParticleID::bd_0) {
-      k = ParticleID::b;
-      sub = ParticleID::bd_0/100;
+      insertToHadronTable(particle,flav1,flav2);
     }
-    else if(tit->first.second>=ParticleID::cd_0) {
-      k = ParticleID::c;
-      sub = ParticleID::cd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::sd_0) {
-      k = ParticleID::s;
-      sub = ParticleID::sd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::ud_0) {
-      k = ParticleID::u;
-      sub = ParticleID::ud_0/100;
-    }
-    else if(tit->first.second==ParticleID::dd_1) {
-      k = ParticleID::d;
-      sub = ParticleID::dd_1/100;
-    }
-    else continue;
-    sub=tit->first.second/100-sub+1;
-    if(sub > tit->first.first) {
-      l = 1000*sub+100*tit->first.first+1;
-    }
-    else if(sub==tit->first.first) {
-      l = 1000*sub+ 100*tit->first.first+3;
-    }
+    // baryon
     else {
-      l = 100*sub +1000*tit->first.first+1;
-    }
-    if(tit->second.empty()) {
-      pair<long,long> newpair(k,l);
-      tit->second=_table[newpair];
-      newpair=make_pair(tit->first.second,tit->first.first);
-      _table[newpair]=tit->second;
-    };
-  }
-
-  // normalise weights to one for first option
-  if(_topt == 0) {
-    HadronTable::const_iterator tit;
-    KupcoData::iterator it;
-    for(tit=_table.begin();tit!=_table.end();++tit) {
-      double weight;
-      if(tit->first.first==tit->first.second) {
-	if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
-	else if (tit->first.first==3)                weight=1./maxss;
-	else                                         weight=1./maxrest;
+      flav2 = x4;
+      if (wantSusy) flav2 += 1000000 * x7;
+      if (x2 == x3) {
+        // case x2 == x3 : only spin-1 diquark can exist
+        spin = 3;
+        flav1 = CheckId::makeDiquarkID(x2,x3,spin);
+        insertToHadronTable(particle,flav1,flav2);
       }
-      else                                           weight=1./maxrest;
-      for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
-	it->rescale(weight);
+      else {
+        // case x2 != x3 :
+        // insert spin-0 diquark first
+        spin = 1;
+        flav1 = CheckId::makeDiquarkID(x2,x3,spin);
+        insertToHadronTable(particle,flav1,flav2);
+        // now insert spin-1 diquark
+        spin = 3;
+        flav1 = CheckId::makeDiquarkID(x2,x3,spin);
+        insertToHadronTable(particle,flav1,flav2);
       }
     }
   }

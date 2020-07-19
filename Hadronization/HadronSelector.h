@@ -466,6 +466,16 @@ protected:
 protected:
 
   /**
+   *  A sub-function of HadronSelector::constructHadronTable().
+   *  It receives the information of a prospective Hadron and inserts it
+   *  into the hadron table construct.
+   *  @param particle is a particle data pointer to the hadron
+   *  @param flav1 is the first  constituent of the hadron
+   *  @param flav2 is the second constituent of the hadron
+   */
+  void insertToHadronTable(tPDPtr &particle, int flav1, int flav2);
+
+  /**
    *  Construct the table of hadron data
    *  This is the main method to initialize the hadron data (mainly the
    *  weights associated to each hadron, taking into account its spin,
