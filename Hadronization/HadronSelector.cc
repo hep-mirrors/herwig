@@ -579,7 +579,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       _table[make_pair(flav2 ,f3   )].insert(a);
       if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
       // and uu1 d type
-      f3 = CheckId::makeDiquarkID(iq1,iq1,1);
+      f3 = CheckId::makeDiquarkID(iq1,iq1,3);
       a.overallWeight /= a.wt;
       a.wt = 1./6.;
       a.overallWeight *= a.wt;
