@@ -585,10 +585,8 @@ protected:
   /**
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
-   * @param part1 The PDG code of the first particle componant of the hadron
-   * @param part2 The PDG code of the second particle componant of the hadron
    */
-  double specialWeight(long id, int part1, int part2) const;
+  double specialWeight(long id) const;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
