@@ -165,23 +165,74 @@ if test "x$GCC" = "xyes"; then
 fi
 AC_MSG_RESULT([$enable_looptools])
 
-if test "x$GCC" = "xyes"; then
-   AC_LANG_PUSH([Fortran])
-   	oldFCFLAGS="$FCFLAGS"
-	AC_MSG_CHECKING([checking if fortran compiler supports -std=legacy])
-   	FCFLAGS="-std=legacy"
-   	AC_COMPILE_IFELSE(
-	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
-		[AC_MSG_RESULT([yes])
-		 AM_FCFLAGS="$AM_FCFLAGS -std=legacy"
-		 AM_FFLAGS="$AM_FFLAGS -std=legacy"],
-		[AC_MSG_RESULT([no])]
-	)
-	FCFLAGS="$oldFCFLAGS"
-   AC_LANG_POP([Fortran])
-fi
+AC_LANG_PUSH([Fortran])
+AC_MSG_CHECKING([checking if fortran compiler compiles argument mismatches])
+AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+      program temp
+      call a(1.0D0)
+      end program
+      subroutine a(b)
+      double complex b
+      end]]),
+      [AC_MSG_RESULT([yes])],
+      [oldFCFLAGS="$FCFLAGS"
+      FCFLAGS="-std=legacy"
+      AC_MSG_CHECKING([checking if fortran compiler compiles argument mismatches with -std=legacy])
+      AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+      program temp
+      double precision b
+      double complex c
+      b = 1.0D0
+      c  =1.0D0
+      call a(b)
+      call a(c)
+      end program
+      subroutine a(b)
+      double complex b
+      end]]),
+      [AC_MSG_RESULT([yes])
+       AM_FCFLAGS="$AM_FCFLAGS -std=legacy"],
+      [AC_MSG_RESULT([no])
+      AC_MSG_ERROR([fortran compiler won't compile LoopTools])])
+     FCFLAGS="$oldFCFLAGS -std=legacy"]
+)
+
+AC_MSG_CHECKING([checking if fortran compiler compiles long lines])
+AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+       program temp
+       write (*,*) 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+       end program]]),
+       [AC_MSG_RESULT([yes])],
+       [AC_MSG_RESULT([no])
+       oldFCFLAGS="$FCFLAGS"
+       FCFLAGS="-ffixed-line-length-none"
+       AC_MSG_CHECKING([checking if fortran compiler compiles long lines with -ffixed-line-length-none])
+       AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+       program temp
+       write (*,*) 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+       end program]]),
+       [AC_MSG_RESULT([yes])
+       AM_FCFLAGS="$AM_FCFLAGS -ffixed-line-length-none"
+       FCFLAGS="$oldFCFLAGS -ffixed-line-length-none"],
+       [FCFLAGS="-132"
+       AC_MSG_CHECKING([checking if fortran compiler compiles long lines with -132])
+       AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+       program temp
+       write (*,*) 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+       end program]]),
+       [AC_MSG_RESULT([yes])
+       AM_FCFLAGS="$AM_FCFLAGS -132"
+       FCFLAGS="$oldFCFLAGS -132"],
+       [AC_MSG_RESULT([no])
+       AC_MSG_ERROR([fortran compiler won't compile LoopTools])])])
+      ]
+)
 
 
+
+
+
+AC_LANG_POP([Fortran])
 
 
 AC_SUBST([F77],[$FC])
