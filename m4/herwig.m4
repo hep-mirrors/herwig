@@ -203,7 +203,8 @@ AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
        write (*,*) 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
        end program]]),
        [AC_MSG_RESULT([yes])],
-       [oldFCFLAGS="$FCFLAGS"
+       [AC_MSG_RESULT([no])
+       oldFCFLAGS="$FCFLAGS"
        FCFLAGS="-ffixed-line-length-none"
        AC_MSG_CHECKING([checking if fortran compiler compiles long lines with -ffixed-line-length-none])
        AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
@@ -213,10 +214,23 @@ AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
        [AC_MSG_RESULT([yes])
        AM_FCFLAGS="$AM_FCFLAGS -ffixed-line-length-none"
        FCFLAGS="$oldFCFLAGS -ffixed-line-length-none"],
+       [FCFLAGS="-132"
+       AC_MSG_CHECKING([checking if fortran compiler compiles long lines with -132])
+       AC_COMPILE_IFELSE(AC_LANG_SOURCE([[
+       program temp
+       write (*,*) 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+       end program]]),
+       [AC_MSG_RESULT([yes])
+       AM_FCFLAGS="$AM_FCFLAGS -132"
+       FCFLAGS="$oldFCFLAGS -132"],
        [AC_MSG_RESULT([no])
-       AC_MSG_ERROR([fortran compiler won't compile LoopTools])])
+       AC_MSG_ERROR([fortran compiler won't compile LoopTools])])])
       ]
 )
+
+
+
+
 
 AC_LANG_POP([Fortran])
 
