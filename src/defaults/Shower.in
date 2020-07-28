@@ -293,11 +293,11 @@ do SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
 do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
 #
-do SplittingGenerator:AddInitialSplitting gamma->d,dbar; GammatoQQbarSudakov
-do SplittingGenerator:AddInitialSplitting gamma->u,ubar; GammatoQQbarSudakov
-do SplittingGenerator:AddInitialSplitting gamma->s,sbar; GammatoQQbarSudakov
-do SplittingGenerator:AddInitialSplitting gamma->c,cbar; GammatoQQbarSudakov
-do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->d,dbar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->u,ubar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->s,sbar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->c,cbar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting gamma->e-,e+; GammatoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting gamma->mu-,mu+; GammatoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting gamma->tau-,tau+; GammatoQQbarSudakov
