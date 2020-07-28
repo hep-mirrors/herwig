@@ -267,31 +267,30 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"
 			  << Exception::warning;
-    if(theRadCorr) {
-      fermionMasses(n);
-      bosonMasses(n);
+  if(theRadCorr) {
+    fermionMasses(n);
+    bosonMasses(n);
+  }
+  else {
+    cerr << 
+      "Warning: Radiative corrections to particle masses have been "
+      "turned off.\n  The masses will be set to (n/R + m_sm)^1/2 and "
+      "the spectrum will be\n  highly degenerate so that no decays "
+      "will occur.\n  This is only meant to be used for debugging "
+      "purposes.\n";
+    //set masses to tree level for each kk mode
+    long level1 = 5000000 + n*100000;
+    long level2 = 6000000 + n*100000;
+    Energy2 ndmass2 = sqr(n*theInvRadius);
+    for ( int i = 1; i < 38; ++i ) {
+      if(i == 7 || i == 17) i += 4;
+      if(i == 26) i += 10;
+      Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
+      resetMass(level1 + i, kkmass);
+      if( i < 7 || i == 11 || i == 13 || i == 15 )
+	resetMass(level2 + i, kkmass);
     }
-    else {
-      cerr << 
-	"Warning: Radiative corrections to particle masses have been "
-	"turned off.\n  The masses will be set to (n/R + m_sm)^1/2 and "
-	"the spectrum will be\n  highly degenerate so that no decays "
-	"will occur.\n  This is only meant to be used for debugging "
-	"purposes.\n";
-      //set masses to tree level for each kk mode
-      long level1 = 5000000 + n*100000;
-      long level2 = 6000000 + n*100000;
-      Energy2 ndmass2 = sqr(n*theInvRadius);
-      for ( int i = 1; i < 38; ++i ) {
-	if(i == 7 || i == 17) i += 4;
-	if(i == 26) i += 10;
-	Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
-	resetMass(level1 + i, kkmass);
-	if( i < 7 || i == 11 || i == 13 || i == 15 )
-	  resetMass(level2 + i, kkmass);
-      }
-    }
-
+  }
 }
 
 void UEDBase::bosonMasses(const unsigned int n) {

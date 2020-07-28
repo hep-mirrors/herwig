@@ -86,7 +86,6 @@ void GeneralCurrentDecayer::doinit() {
   vector<double> channelwgts;
   int iq(0),ia(0);
   bool done;
-  vector<double>::iterator start,end;
   for(unsigned int ix=0;ix<current_->numberOfModes();++ix) {
     // get the external particles for this mode
     extpart.resize(2);
