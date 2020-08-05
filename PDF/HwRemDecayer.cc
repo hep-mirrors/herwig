@@ -165,7 +165,7 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     parton->colourLine(!anti)->addColoured(newValence, anti);
     return;
   }
-  else if( lastID == ParticleID::gamma) {
+  else if( !parton->coloured()) {
     partners.push_back(make_pair(parton, newValence));
     anti = newValence->hasAntiColour();
     ColinePtr newLine(new_ptr(ColourLine()));
@@ -544,7 +544,8 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   double z=ey/(1.+ey);
   Energy2 pt2=sqr((1.-z)*q)- z*sqr(_kinCutoff);
   // create the particle
-  if(pit->first!=ParticleID::g) child=pit->first;
+  if(pit->first!=ParticleID::g &&
+     pit->first!=ParticleID::gamma) child=pit->first;
   PPtr parton = getParticleData(child)->produceParticle();
   Energy2 emittedm2 = sqr(parton->dataPtr()->constituentMass());
   // Now boost pcm and pf to z only frame

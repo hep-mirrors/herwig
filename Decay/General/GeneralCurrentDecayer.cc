@@ -77,7 +77,6 @@ void GeneralCurrentDecayer::doinit() {
   // make sure the current got initialised
   current_->init();
   Energy mdiff(inpart_->mass()-outpart_->mass());
-  // vector<double>::iterator start,end;
   for(unsigned int ix=0;ix<current_->numberOfModes();++ix) {
     // get the external particles for this mode
     int iq(0),ia(0);
