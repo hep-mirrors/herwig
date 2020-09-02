@@ -52,7 +52,7 @@ public:
    * The number of internal degrees of freedom used in the matrix
    * element.
    */
-  virtual int nDim() const = 0;
+  virtual int nDim(unsigned int iopt) const = 0;
 
   /**
    *  The Feynman diagrams (iopt=0 gamma gamma, iopt=1, e+e-)
@@ -67,7 +67,8 @@ public:
 		     const Energy2 & t1, const Energy2 & t2,
 		     const Energy2 & scale, 
 		     const vector<Lorentz5Momentum> & momenta,
-		     const cPDVector & partons) const = 0;
+		     const cPDVector & partons,
+		     DVector & dweights) const = 0;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -78,6 +79,18 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(unsigned int iopt, tcDiagPtr diag) const;
+
+  /**
+   * Generate internal degrees of freedom given 'nDim()' uniform
+   * random numbers in the interval ]0,1[. To help the phase space
+   * generator, the 'dSigHatDR()' should be a smooth function of these
+   * numbers, although this is not strictly necessary. Return
+   * false if the chosen points failed the kinematical cuts.
+   */
+  virtual double generateKinematics(const double * r,
+				    const Energy2 & scale, 
+				    vector<Lorentz5Momentum> & momenta,
+				    const tcPDVector & partons);
   //@}
 
 public:

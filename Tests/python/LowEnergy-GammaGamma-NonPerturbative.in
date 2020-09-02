@@ -8,7 +8,9 @@ read snippets/EECollider.in
 # leading-order processes
 ##################################################
 cd /Herwig/MatrixElements
-create Herwig::MEGammaGamma2PiPi MEgg2PiPi HwMEGammaGamma.so
+create Herwig::MEGammaGamma2X MEgg2PiPi HwMEGammaGamma.so
+create Herwig::GammaGamma2PiPiAmplitude GG2PiPiAmp
+set MEgg2PiPi:Amplitude GG2PiPiAmp
 # set the process
 ${processes}
 

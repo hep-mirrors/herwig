@@ -1,33 +1,32 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGammaGamma2PiPi_H
-#define Herwig_MEGammaGamma2PiPi_H
+#ifndef Herwig_MEGammaGamma2X_H
+#define Herwig_MEGammaGamma2X_H
 //
-// This is the declaration of the MEGammaGamma2PiPi class.
+// This is the declaration of the MEGammaGamma2X class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "GammaGammaAmplitude.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Helicity::VectorWaveFunction;
 
 /**
- * The MEGammaGamma2PiPi class provides a smiple matrix element for \f$\gamma\gamma\to \pi^+\pi^-$ using scalar QED
+ * The MEGammaGamma2X class implements the matrix element for $\gamma\gamma\to X$ processes using
+ * the GammaGammaAmplitude
  *
- * @see \ref MEGammaGamma2PiPiInterfaces "The interfaces"
- * defined for MEGammaGamma2PiPi.
+ * @see \ref MEGammaGamma2XInterfaces "The interfaces"
+ * defined for MEGammaGamma2X.
  */
-class MEGammaGamma2PiPi: public HwMEBase {
+class MEGammaGamma2X: public HwMEBase {
 
 public:
-
+  
   /**
    * The default constructor.
    */
-  MEGammaGamma2PiPi();
+  MEGammaGamma2X() {}
 
 public:
 
@@ -37,13 +36,17 @@ public:
    * Return the order in \f$\alpha_S\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaS() const;
+  virtual unsigned int orderInAlphaS() const {
+    return amp_->orderInAlphaS();    
+  }
 
   /**
    * Return the order in \f$\alpha_{EW}\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaEW() const;
+  virtual unsigned int orderInAlphaEW() const {
+    return amp_->orderInAlphaS();
+  }
 
   /**
    * The matrix element for the kinematical configuration
@@ -58,6 +61,39 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
+
+  /**
+   * Set the typed and momenta of the incoming and outgoing partons to
+   * be used in subsequent calls to me() and colourGeometries()
+   * according to the associated XComb object. If the function is
+   * overridden in a sub class the new function must call the base
+   * class one first.
+   */
+  virtual void setKinematics();
+
+  /**
+   * The number of internal degrees of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const {
+    return amp_->nDim(0);
+  }
+
+  /**
+   * Generate internal degrees of freedom given nDim() uniform
+   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
+   * generator, the dSigHatDR should be a smooth function of these
+   * numbers, although this is not strictly necessary.
+   * @param r a pointer to the first of nDim() consecutive random numbers.
+   * @return true if the generation succeeded, otherwise false.
+   */
+  virtual bool generateKinematics(const double * r);
+
+  /**
+   * Return the matrix element squared differential in the variables
+   * given by the last call to generateKinematics().
+   */
+  virtual CrossSection dSigHatDR() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -85,10 +121,6 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
 
 public:
 
@@ -118,19 +150,6 @@ public:
 
 protected:
 
-  /**
-   * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
-   * @param p1   The wavefunctions for the first  incoming photon
-   * @param p2   The wavefunctions for the second incoming photon
-   * @param momenta The momenta
-   * @param calc Whether or not to calculate the matrix element
-   */
-  double helicityME(vector<VectorWaveFunction> &p1,vector<VectorWaveFunction> &p2,
-		    const vector<Lorentz5Momentum> & momenta,
-		    bool calc) const;
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
@@ -152,17 +171,17 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaGamma2PiPi & operator=(const MEGammaGamma2PiPi &) = delete;
+  MEGammaGamma2X & operator=(const MEGammaGamma2X &);
 
 private:
 
   /**
-   *  Matrix element
+   *  Pointer to the amplitude for the \f$\gamma\gamma$ process
    */
-  mutable ProductionMatrixElement me_;
-
+  GammaGammaAmpPtr amp_;
+  
 };
 
 }
 
-#endif /* Herwig_MEGammaGamma2PiPi_H */
+#endif /* Herwig_MEGammaGamma2X_H */

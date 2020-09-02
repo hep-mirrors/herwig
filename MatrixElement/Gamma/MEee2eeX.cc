@@ -30,7 +30,7 @@ Energy2 MEee2eeX::scale() const {
 }
 
 int MEee2eeX::nDim() const {
-  return 4+amp_->nDim();
+  return 4+amp_->nDim(1);
 }
 
 void MEee2eeX::setKinematics() {
@@ -43,7 +43,7 @@ bool MEee2eeX::generateKinematics(const double * r) {
   // roots
   Energy rS(sqrt(sHat()));
   Energy W(ZERO);
-  if(amp_->nDim()==0) {
+  if(amp_->nDim(1)==0) {
     W = mePartonData()[4]->mass();
   }
   else {
@@ -190,9 +190,11 @@ double MEee2eeX::me2() const {
   // calculate the leptonic currents
   vector<VectorWaveFunction> eCurrent = electronCurrent();
   vector<VectorWaveFunction> pCurrent = positronCurrent();
+  DVector save;
   double output = amp_->me2(eCurrent,pCurrent,t1_,t2_,sHat(),
 			    vector<Lorentz5Momentum>(meMomenta().begin()+4,meMomenta().end()),
-			    cPDVector(mePartonData().begin()+4,mePartonData().end()));
+			    cPDVector(mePartonData().begin()+4,mePartonData().end()),save);
+  meInfo(save);
   return output*pow(sHat()*UnitRemoval::InvE2,7-meMomenta().size());
 }
 
