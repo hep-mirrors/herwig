@@ -4,7 +4,6 @@ HwMEGammaGamma_la_SOURCES = \
 MEGammaGamma2ff.cc MEGammaGamma2ff.h \
 MEGammaGamma2WW.cc MEGammaGamma2WW.h \
 MEGammaGamma2PseudoScalar.cc MEGammaGamma2PseudoScalar.h \
-MEee2eePseudoScalar.cc MEee2eePseudoScalar.h \
 MEee2eeX.cc MEee2eeX.h \
 MEGammaGamma2X.cc MEGammaGamma2X.h \
 GammaGammaAmplitude.h GammaGammaAmplitude.fh GammaGammaAmplitude.cc \
