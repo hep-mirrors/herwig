@@ -28,7 +28,7 @@ void GammaGammaAmplitude::Init() {
 }
 
 Selector<const ColourLines *>
-GammaGammaAmplitude::colourGeometries(unsigned int, tcDiagPtr ) const {
+GammaGammaAmplitude::colourGeometries(unsigned int, const cPDVector &, tcDiagPtr ) const {
   static ColourLines c("");
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &c);

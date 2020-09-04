@@ -47,7 +47,7 @@ void MEGammaGamma2X::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<MEGammaGamma2X,HwMEBase>
-  describeHerwigMEGammaGamma2X("Herwig::MEGammaGamma2X", "HwMEGammaGamma.so");
+describeHerwigMEGammaGamma2X("Herwig::MEGammaGamma2X", "HwMEGammaGamma.so");
 
 void MEGammaGamma2X::Init() {
 
@@ -63,7 +63,7 @@ void MEGammaGamma2X::Init() {
 
 Selector<const ColourLines *>
 MEGammaGamma2X::colourGeometries(tcDiagPtr diag) const {
-  return amp_->colourGeometries(0,diag);
+  return amp_->colourGeometries(0,mePartonData(),diag);
 }
 
 bool MEGammaGamma2X::generateKinematics(const double * r) {

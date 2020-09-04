@@ -303,7 +303,9 @@ newdef PowhegMEDISCC:Contribution 1
 ##########################################################
 
 # fermion-antiferimon
-create Herwig::MEGammaGamma2ff MEgg2ff HwMEGammaGamma.so
+create Herwig::MEGammaGamma2X MEgg2ff HwMEGammaGamma.so
+create Herwig::GammaGamma2ffAmplitude gg2ffAmp
+newdef MEgg2ff:Amplitude gg2ffAmp
 
 # W+ W-
 create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so

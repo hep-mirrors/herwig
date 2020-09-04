@@ -78,7 +78,7 @@ public:
    * relative probabilities.
    */
   virtual Selector<const ColourLines *>
-  colourGeometries(unsigned int iopt, tcDiagPtr diag) const;
+  colourGeometries(unsigned int iopt,  const cPDVector & partons, tcDiagPtr diag) const;
 
   /**
    * Generate internal degrees of freedom given 'nDim()' uniform
@@ -91,6 +91,13 @@ public:
 				    const Energy2 & scale, 
 				    vector<Lorentz5Momentum> & momenta,
 				    const tcPDVector & partons);
+
+  /**
+   * Generate the mass of the \f$\gamma\gamma\f$ system
+   */
+  virtual Energy generateW(double , const tcPDVector &,Energy ,Energy2 &) {
+    assert(false);
+  }
   //@}
 
 public:

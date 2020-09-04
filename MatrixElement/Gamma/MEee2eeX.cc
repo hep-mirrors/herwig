@@ -43,13 +43,15 @@ bool MEee2eeX::generateKinematics(const double * r) {
   // roots
   Energy rS(sqrt(sHat()));
   Energy W(ZERO);
+  Energy m = mePartonData()[0]->mass();
   if(amp_->nDim(1)==0) {
     W = mePartonData()[4]->mass();
   }
   else {
-    assert(false);
+    Energy2 jacW(ZERO);
+    W = amp_->generateW(r[4],tcPDVector(mePartonData().begin()+4,mePartonData().end()),rS-2.*m,jacW);
+    jacobian(jacW*jacobian()/sHat());
   }
-  Energy m = mePartonData()[0]->mass();
   Energy2 m2=sqr(m), W2=sqr(W);
   double beta = sqrt(1.-4.*m2/sHat());
   // initialise the jacobian
@@ -174,7 +176,13 @@ bool MEee2eeX::generateKinematics(const double * r) {
     meMomenta()[4] = pX;
   }
   else {
-    assert(false);
+    vector<Lorentz5Momentum> pout(meMomenta().size()-4);
+    tcPDVector tout(mePartonData().begin()+4,mePartonData().end());
+    double jac = amp_->generateKinematics(r+5,W2,pout,tout);
+    Boost bv = pX.boostVector();
+    for(unsigned int ix=0;ix<pout.size();++ix)
+      meMomenta()[ix+4] = pout[ix].boost(bv);
+    jacobian(pow(Constants::twopi,3)*jac*jacobian());
   }
   // check the cuts
   vector<LorentzMomentum> out(meMomenta().size()-2);
@@ -195,34 +203,30 @@ double MEee2eeX::me2() const {
 			    vector<Lorentz5Momentum>(meMomenta().begin()+4,meMomenta().end()),
 			    cPDVector(mePartonData().begin()+4,mePartonData().end()),save);
   meInfo(save);
-  return output*pow(sHat()*UnitRemoval::InvE2,7-meMomenta().size());
+  return output;
 }
 
 CrossSection MEee2eeX::dSigHatDR() const {
-  return 0.5/pow(Constants::twopi,5)*sqr(hbarc)*me2()*jacobian()/sHat();
+  return 0.5/pow(Constants::twopi,5)*sqr(hbarc)*me2()*jacobian()/sHat()*sqr(sHat()*UnitRemoval::InvE2);
 }
 
 Selector<MEBase::DiagramIndex>
 MEee2eeX::diagrams(const DiagramVector & diags) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    if ( diags[i]->id() == -1 ) sel.insert(1.0, i);
-    else if ( diags[i]->id() == -2 )  sel.insert(1.0, i);
-    else if ( diags[i]->id() == -3 )  sel.insert(1.0, i);
-  // You probably do not want equal weights here...
+  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+    unsigned int id = abs(diags[i]->id())-1;
+    if(id<meInfo().size())
+      sel.insert(meInfo()[0], i);
+    else if ( meInfo().empty() ) sel.insert(1., i);
+    else
+      assert(false);
+  }
   return sel;
-
-  // If there is only one possible diagram you can override the
-  // MEBase::diagram function instead.
-
 }
 
 Selector<const ColourLines *>
 MEee2eeX::colourGeometries(tcDiagPtr diag) const {
-  return amp_->colourGeometries(1,diag);
+  return amp_->colourGeometries(1,mePartonData(),diag);
 }
 
 IBPtr MEee2eeX::clone() const {
