@@ -140,11 +140,13 @@ bool MEee2eeX::generateKinematics(const double * r) {
   Energy6 D6 = -0.25*m2*(s1-m2)*(s2-m2)
     + 0.125*sHat()*((-m2 + s2 - t1_)*(-m2 + s1 - t2_) + t1_*t2_ - (sHat()-4*m2)*(W2-t1_-t2_));
   Energy6 D5 = D1+D3+2.*D6;
-  double sThetaX = 2.*sqrt(D5)/sHat()/beta/PX;
+  if(D5<ZERO) return false;
+  double sThetaX = 2.*sqrt(max(ZERO,D5))/sHat()/beta/PX;
   double cThetaX = 0.5*(s2-s1+2.*t2_-2.*t1_)/beta/rS/PX;
   // azimuths
   auto Delta4 = -Delta/64./a*sqr(sin(r[3]*Constants::pi));
-  double sPhi1 = 2.*sqrt(-Delta4)/sHat()/beta/PX/sThetaX/P1/sTheta1;
+  if(Delta4>ZERO) return false;
+  double sPhi1 = 2.*sqrt(max(ZERO,-Delta4))/sHat()/beta/PX/sThetaX/P1/sTheta1;
   double cPhi1 = (D1+D6)/sqrt(D1*D5);
   double sPhi2 =-2.*sqrt(-Delta4)/sHat()/beta/PX/sThetaX/P2/sTheta2;
   double cPhi2 = (D3+D6)/sqrt(D3*D5);
