@@ -286,8 +286,12 @@ GammaGamma2ffAmplitude::colourGeometries(unsigned int iopt, const cPDVector & pa
 // }
 
 Energy GammaGamma2ffAmplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW) {
+  // Energy Wmin = 2.*partons[0]->constituentMass();
+  // Energy W = Wmin+r*(Wmax-Wmin);
+  // jacW = 2.*W*(Wmax-Wmin);
+  // return W;
   Energy Wmin = 2.*partons[0]->constituentMass();
-  Energy W = Wmin+r*(Wmax-Wmin);
-  jacW = 2.*W*(Wmax-Wmin);
+  Energy W = Wmin*pow(Wmax/Wmin,r);
+  jacW = 2.*sqr(W)*log(Wmax/Wmin);
   return W;
 }

@@ -70,6 +70,12 @@ public:
 		     const cPDVector & partons,
 		     DVector & dweights ) const; 
 
+  /**
+   * Generate the mass of the \f$\gamma\gamma\f$ system
+   */
+  virtual Energy generateW(double , const tcPDVector & partons,Energy Wmax,Energy2 & jacW);
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
