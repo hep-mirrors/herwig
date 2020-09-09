@@ -114,6 +114,8 @@ analyses['3Pi']["ND_1991_I321108"        ] = ["d05-x01-y01","d10-x01-y04"]
 analyses['3Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y01"]
 analyses["3Pi"]["CLEO_2006_I691720"      ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2015_I1389908"      ] = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2020_I1809286"      ] = ["d01-x01-y01","d02-x01-y01",
+                                              "d03-x01-y01","d03-x01-y02","d03-x01-y03"]
 # eta pipi
 analyses["EtaPiPi"]["BABAR_2018_I1700745"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["EtaPiPi"]["BABAR_2018_I1647139"] = ["d01-x01-y01"]
@@ -307,6 +309,8 @@ analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 # hyperons
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
+                                          "d02-x01-y01","d02-x01-y02"]
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
@@ -340,6 +344,12 @@ if(opts.plot) :
                 for ix in range(1,6) :
                     output+= " -m/%s/%s" % (analysis,"d07-x01-y0%s"% ix)
                     output+= " -m/%s/%s" % (analysis,"d08-x01-y0%s"% ix)
+            elif(analysis=="BESIII_2020_I1814783") :
+                for ix in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d03-x01-y0%s"% ix)
+            elif(analysis=="SND_2020_I1809286") :
+                for ix in range(1,5) :
+                    output+= " -m/%s/%s" % (analysis,"d04-x01-y0%s"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
