@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS 13 TeV ZZ ->ll
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1625109

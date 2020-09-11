@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOTEM_2014_I1328627
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1380605
 # ALICE neutral pions
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1620477
+# ATLAS single-diffractive
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1762584
