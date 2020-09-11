@@ -83,3 +83,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
 # BELLE charm hadron producion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
+# BELLE B+ -> pi+pi- l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
