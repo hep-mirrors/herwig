@@ -8,7 +8,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # BELLE charged particle spectra
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1777678
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1777678
 # BABAR azimuthal
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1377201
