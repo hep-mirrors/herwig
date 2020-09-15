@@ -60,6 +60,7 @@ cd /Herwig/Generators
 ###################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
+set /Herwig/Decays/Vector2Baryons:Initialize 1
 saverun LEP EventGenerator
 
 ##################################################
