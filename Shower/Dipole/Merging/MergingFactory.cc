@@ -432,14 +432,13 @@ void MergingFactory::setup() {
       // Use the colour basis of the first element of amplitudes
       // to set the large N colour basis for the MergingHelper
     assert(!amplitudes().empty() );
-    if ( !amplitudes()[0]->colourBasis() )
-        throw Exception() << "MergingFactory::setup(): Expecting a colour basis object."
-        << Exception::runerror;
-    auto largeNBasis =
-    amplitudes()[0]->colourBasis()->cloneMe();
-    largeNBasis->clear();
-    largeNBasis->doLargeN();
-    MH()->largeNBasis(largeNBasis);
+    if ( amplitudes()[0]->colourBasis() ) {
+      auto largeNBasis =
+	amplitudes()[0]->colourBasis()->cloneMe();
+      largeNBasis->clear();
+      largeNBasis->doLargeN();
+      MH()->largeNBasis(largeNBasis);
+    }
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);

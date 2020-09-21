@@ -376,7 +376,8 @@ NodePtr Node::getHistory(bool normal, double hardScaleFactor) {
     minpt = Constants::MaxEnergy;
     subprosel.clear();    
     for (NodePtr const &  child : temp) {
-      assert(deepHead()->MH()->largeNBasis());
+      // colour basis is not strictly needed for evaluating the colour correlator
+      //assert(deepHead()->MH()->largeNBasis());
       if( child->dipole()->underlyingBornME()->largeNColourCorrelatedME2(
                              {child->dipole()->bornEmitter(),
                               child->dipole()->bornSpectator()},
