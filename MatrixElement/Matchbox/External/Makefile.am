@@ -64,7 +64,7 @@ HwMatchboxNJet_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 14:0:0
 HwMatchboxNJet_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(NJETINCLUDEPATH) \
 -DNJET_PREFIX="\"$(NJETPREFIX)\"" \
 -DNJET_LIBS="\"$(NJETLIBPATH)\"" \
--DNJET_VERSION="\"$(NJET_VERSION)\""
+-DNJET_VERSION="$(NJET_VERSION)"
 
 HwMatchboxNJet_la_SOURCES = \
 NJet/NJetsAmplitude.cc
