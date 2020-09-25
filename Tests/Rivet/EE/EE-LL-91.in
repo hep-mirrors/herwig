@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I511443
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_I554583
