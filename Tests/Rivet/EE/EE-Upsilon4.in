@@ -85,3 +85,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
 # BELLE B+ -> pi+pi- l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
+# BELLE B0 -> D*- tau+ nu_tau D* polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
+# BELLE B -> D* tau+ nu_tau  tau polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
+# BESIII D_s^+ K^0 e^+ nu_e
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
