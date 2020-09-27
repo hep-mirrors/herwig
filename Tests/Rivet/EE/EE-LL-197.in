@@ -2,11 +2,10 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 58.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197.
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################
-# tau polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 VENUS_1997_I440852
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 AMY_1990_I298238
+# tau polarization in e+e- > tau+tau-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2008_I763352
