@@ -390,7 +390,7 @@ if test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64" ; then
      	DO_NJET="do"
 else
      	LOAD_NJET="# library"
-	CREATE_NJET="# create"
+      CREATE_NJET="# create"
      	INSERT_NJET="# insert"
      	DO_NJET="# do"
 fi
@@ -769,7 +769,7 @@ AC_DEFUN([HERWIG_CHECK_PYTHIA],
 [
 dnl check if a directory is specified for Pythia
 AC_ARG_WITH(pythia,
-            [AC_HELP_STRING([--with-pythia=dir], 
+            [AC_HELP_STRING([--with-pythia=dir],
                             [Assume the given directory for Pythia])])
 
 dnl search for the pythia-config script
