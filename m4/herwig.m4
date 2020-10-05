@@ -374,14 +374,13 @@ AS_IF([test "x$with_njet" != "xno"  -a "x$have_njet" = "xno"],
 
 AM_CONDITIONAL(HAVE_NJET,[test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64"])
 
-
 AS_IF([test "x$with_njet" != "xno"],[AC_MSG_CHECKING([for Njet version])
-tmp_njetversion=[$(${with_njet}/bin/njet.py --version 2>&1 )]
-AS_IF([test index(${tmp_njetversion},`version not recognized') -gt 0],[tmp_njetversion=1023],
-      [tmp_njetversion=`echo ${tmp_njetversion} | sed s"A.*version.AA"`])
-AC_MSG_RESULT([${tmp_njetversion}])
-NJET_VERSION=${tmp_njetversion}
-AC_SUBST(NJET_VERSION)
+tmp_njetversion=[$(${with_njet}/bin/njet.py --version 2>&1 | grep -oE '[0-9]{4}$')]
+AS_IF([test -z "$tmp_njetversion"],
+      [tmp_njetversion=1023])
+      AC_MSG_RESULT([${tmp_njetversion}])
+      NJET_VERSION=${tmp_njetversion}
+      AC_SUBST(NJET_VERSION)
 ])
 
 if test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64" ; then
