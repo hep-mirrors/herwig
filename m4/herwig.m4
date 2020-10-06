@@ -966,7 +966,7 @@ cat << _HW_EOF_ > config.herwig
 *** GoSam:		$with_gosam
 *** GoSam-Contrib:      $with_gosam_contrib
 *** MadGraph:        	$with_madgraph
-*** njet:		$with_njet
+*** njet:		$with_njet ${NJET_VERSION}
 *** OpenLoops:		$with_openloops
 *** VBFNLO:		$with_vbfnlo
 ***
