@@ -193,7 +193,7 @@ void SudakovFormFactor::Init() {
     (interfaceColourStructure,
      "TripletTripletSinglet",
      "3 -> 3 1",
-     TripletTripletOctet);
+     TripletTripletSinglet);
   static SwitchOption interfaceColourStructureOctetOctetSinglet
     (interfaceColourStructure,
      "OctetOctetSinglet",
@@ -2146,7 +2146,7 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     return false;
   }
   else if(colourStructure_==TripletTripletSinglet) {
-    if(ids[0]!=ids[1]) return false;
+    if(ids[0]->iColour()!=ids[1]->iColour()) return false;
     if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
        ids[2]->iColour()==PDT::Colour0) return true;
     return false;
