@@ -96,7 +96,7 @@ do SplittingGenerator:DeleteInitialSplitting b->b,g; QtoQGSudakov
 do SplittingGenerator:DeleteInitialSplitting b->b,gamma; QtoQGammaSudakov
 do SplittingGenerator:DeleteInitialSplitting t->t,gamma; QtoQGammaSudakov
 do SplittingGenerator:DeleteInitialSplitting g->b,bbar; GtobbbarSudakov
-do SplittingGenerator:DeleteInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
+#do SplittingGenerator:DeleteInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
 do SplittingGenerator:DeleteInitialSplitting b->g,b; QtoGQSudakov
 do SplittingGenerator:DeleteInitialSplitting bbar->g,bbar; QtoGQSudakov
 do SplittingGenerator:DeleteInitialSplitting b->gamma,b; QtoGammaQSudakov
@@ -109,7 +109,7 @@ do SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
-do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
+#do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting b->gamma,b; QtoGammaQSudakov

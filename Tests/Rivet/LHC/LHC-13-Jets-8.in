@@ -9,3 +9,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1637587
 # ATLAS Lund plane
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1790256
+# CMS correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955

@@ -5,3 +5,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_CONF_2016_092
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1682495
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
+# CMS correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955
+# ATLAS soft-drop
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1772062
+

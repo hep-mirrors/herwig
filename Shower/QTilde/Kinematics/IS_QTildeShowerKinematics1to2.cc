@@ -121,7 +121,41 @@ reconstructParent(const tShowerParticlePtr parent,
 		     c2param.ptx  , c2param.pty);
   pnew.setMass(m);
   pnew.rescaleEnergy();
-  c2->set5Momentum( pnew );
+  // fix the spin info AHHHH
+  if(c2->spinInfo()&&abs(c2->id())==ParticleID::tauminus) {
+    // rotate old momentum along z
+    Axis axis(c2->momentum().vect().unit());
+    double sinth(sqrt(1.-sqr(axis.z())));
+    LorentzRotation r1;
+    if(axis.perp2()>1e-10) {
+      r1.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    Lorentz5Momentum p1 = r1*c2->momentum();
+    // rotate new momentum along z
+    axis = pnew.vect().unit();
+    sinth = sqrt(1.-sqr(axis.z()));
+    LorentzRotation r2;
+    if(axis.perp2()>1e-10) {
+      r2.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    Lorentz5Momentum p2 = r2*pnew;
+    // compute boost along z old -> new
+    // full result
+    double a = p2.t()/p2.z();
+    double b1  = (p1.t()-a*p1.z())/(p1.z()-a*p1.t());
+    // small mass expansion
+    Energy2 o2 = sqr(p1.z()), n2=sqr(p2.z());
+    double b2  = (o2-n2)/(o2+n2)*(1. - sqr(p1.mass())/(n2+o2) +pow<4,1>(p1.mass())*(0.125/(n2*o2)+1./sqr(n2+o2)));
+    // compute the total boost
+    LorentzRotation r3; r3.boostZ(b1);
+    LorentzRotation r4; r4.boostZ(b2);
+    Energy t1 = p2.t(), t2 = (r3*p1).t(), t3 = (r4*p1).t();
+    LorentzRotation r = abs(t1-t2)<abs(t1-t3) ? r3*r1 : r4*r1;
+    r *= r2.inverse();
+    c2->transform(r);
+  }
+  else
+    c2->set5Momentum( pnew );
   // spacelike child
   Lorentz5Momentum pc1(parent->momentum() - c2->momentum());
   pc1.rescaleMass();
