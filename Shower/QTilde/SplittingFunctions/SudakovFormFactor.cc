@@ -199,6 +199,11 @@ void SudakovFormFactor::Init() {
      "OctetOctetSinglet",
      "8 -> 8 1",
      OctetOctetSinglet);
+  static SwitchOption interfaceColourStructureEpsilon
+    (interfaceColourStructure,
+     "Epsilon",
+     "3 -> 3 3",
+     Epsilon);
   static SwitchOption interfaceColourStructureChargedChargedNeutral
     (interfaceColourStructure,
      "ChargedChargedNeutral",
@@ -1315,7 +1320,7 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
 
 
 Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
-				     unsigned int iopt) {
+					 unsigned int iopt) {
   Energy2 tmin;
   initialize(ids,tmin);
   // final-state branching
@@ -1661,6 +1666,25 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
 	cfirst.second->addAntiColoured(parent);
       }
     }
+  }
+  else if(colourStructure_ == Epsilon) {
+    if(!back) {
+      ColinePair newlines(new_ptr(ColourLine()),new_ptr(ColourLine()));
+      if(parent->colourLine()) {
+	newlines.first ->addAntiColoured(first );
+	newlines.second->addAntiColoured(second);
+	parent->colourLine()->setSinkNeighbours(newlines.first,
+						newlines.second);
+      }
+      else if(parent->antiColourLine()) {
+	newlines.first ->addColoured(first );
+	newlines.second->addColoured(second);
+	parent->antiColourLine()->setSourceNeighbours(newlines.first,
+						      newlines.second);
+      }
+    }
+    else
+      assert(false);
   }
   else if(colourStructure_ == ChargedChargedNeutral) {
     if(!parent->data().coloured()) return;
@@ -2073,7 +2097,8 @@ void SudakovFormFactor::doinit() {
     colourFactor_ = 4./3.;
   }
   else if(colourStructure_ == TripletTripletSinglet ||
-	  colourStructure_ == OctetOctetSinglet    ) {
+	  colourStructure_ == OctetOctetSinglet    ||
+	  colourStructure_ == Epsilon    ) {
     colourFactor_ = 1.;
   }
   else if(colourStructure_==SextetSextetOctet) {
@@ -2155,6 +2180,12 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[0]!=ids[1]) return false;
     if(ids[0]->iColour()==PDT::Colour8 && ids[2]->iColour()==PDT::Colour0) return true;
     return false;
+  }
+  else if(colourStructure_==Epsilon) {
+    if(ids[0]->iColour()!=PDT::Colour3&&ids[0]->iColour()!=PDT::Colour3bar) return false;
+    if(ids[0]->iColour()!=-ids[1]->iColour()) return false;
+    if(ids[0]->iColour()!=-ids[2]->iColour()) return false;
+    return true;
   }
   else if(colourStructure_==ChargedChargedNeutral) {
     if(ids[0]!=ids[1]) return false;

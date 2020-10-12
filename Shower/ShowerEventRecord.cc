@@ -36,6 +36,25 @@ void ShowerEventRecord::updateColour(PPtr particle,
 	c1->removeColoured(particle);
 	colourLines()[c1]->addColoured(particle);
 	reset=true;
+	if(c1->sinkNeighbours().first) {
+	  ColinePtr c2 = c1->sinkNeighbours().first ;
+	  ColinePtr c2new;
+	  if(colourLines().find(c2)!=colourLines().end())
+	    c2new = colourLines()[c2];
+	  else {
+	    c2new = new_ptr(ColourLine());
+	    colourLines()[c2] = c2new;
+	  }
+	  ColinePtr c3 = c1->sinkNeighbours().second;
+	  ColinePtr c3new;
+	  if(colourLines().find(c3)!=colourLines().end())
+	    c3new = colourLines()[c3];
+	  else {
+	    c3new = new_ptr(ColourLine());
+	    colourLines()[c3] = c3new;
+	  }
+	  colourLines()[c1]->setSinkNeighbours(c2new,c3new);
+	}
       }
       // ensure properly connected to the line
       if(!reset) {
@@ -68,6 +87,25 @@ void ShowerEventRecord::updateColour(PPtr particle,
 	c1->removeColoured(particle,true);
 	colourLines()[c1]->addColoured(particle,true);
 	reset=true;
+	if(c1->sourceNeighbours().first) {
+	  ColinePtr c2 = c1->sourceNeighbours().first ;
+	  ColinePtr c2new;
+	  if(colourLines().find(c2)!=colourLines().end())
+	    c2new = colourLines()[c2];
+	  else {
+	    c2new = new_ptr(ColourLine());
+	    colourLines()[c2] = c2new;
+	  }
+	  ColinePtr c3 = c1->sourceNeighbours().second;
+	  ColinePtr c3new;
+	  if(colourLines().find(c3)!=colourLines().end())
+	    c3new = colourLines()[c3];
+	  else {
+	    c3new = new_ptr(ColourLine());
+	    colourLines()[c3] = c3new;
+	  }
+	  colourLines()[c1]->setSourceNeighbours(c2new,c3new);
+	}
       }
       if(!reset) {
 	ColinePtr c1=particle->antiColourLine();
