@@ -1934,8 +1934,9 @@ elif(collider=="LHC-GammaGamma" ) :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
+with open(os.path.join("Rivet",os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))), 'r') as f:
+    parameters['parameterFile'] = f.read()
 
-parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
 if have_hadronic_collider :

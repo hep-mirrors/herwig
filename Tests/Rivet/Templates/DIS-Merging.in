@@ -51,7 +51,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
-read ${parameterFile}
+${parameterFile}
 
 ## Select the process
 cd /Herwig/Merging/
