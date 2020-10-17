@@ -219,7 +219,7 @@ if False:
                   
     if selfconjugate == 0:
         plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
-        if len(v.particles) is 4:                                                                                                                      
+        if len(v.particles) == 4:                                                                                                                      
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
         #print 'Conjugate vertex:', plistarray[1]
 
@@ -289,12 +289,16 @@ def convertFileToPython3(fName,names) :
         if("import" in line) :
             for val in names :
                 if("import %s" %val in line) :
-                    line=line.replace("import %s"  %val,
-                                      "from . import %s" %val)
+                    if("from ." not in line) :
+                        line=line.replace("import %s"  %val,
+                                          "from . import %s" %val)
                     if(val in tNames) : tNames.remove(val)
                 if("from %s" %val in line) :
                     line=line.replace("from %s"  %val,
                                       "from .%s" %val)
+        # and raise
+        elif "raise" in line and "," in line :
+            line = line.replace(",","(").rstrip() + ")\n"
         # add brackets to print statements
         if("print" in line) :
             if line.strip()[0:5] == "print" :
