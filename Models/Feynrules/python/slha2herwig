@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 from __future__ import division
+from __future__ import print_function
 import os, sys, argparse, re, string
 
 comment_pat = re.compile('\s*#.*$')
@@ -103,9 +104,9 @@ while line:
 				elif name == 'DECAY':
 					outputLine += str(0.) + split2[1]
 				else :
-					print 'Parameter ',key,'not set in SLHA file, keeping default'
+					print ('Parameter ',key,'not set in SLHA file, keeping default')
 					outputLine = '#' + outputLine + "${" + split2[0] + "}" + split2[1]
 		output.write(outputLine)
 	line = template.readline()
 output.write("\n")
-print "Output written as : ",args.output
+print ("Output written as : ",args.output)
