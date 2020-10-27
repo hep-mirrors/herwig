@@ -76,6 +76,7 @@ parser.add_argument(
 args = parser.parse_args()
 # convert model to python 3 if needed
 if(args.convert) :
+    prepForConversion(args.ufodir)
     convertToPython3(args.ufodir)
 # import the model
 try :
