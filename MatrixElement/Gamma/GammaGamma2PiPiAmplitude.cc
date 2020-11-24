@@ -81,7 +81,8 @@ double GammaGamma2PiPiAmplitude::me2(const vector<VectorWaveFunction> & v1,
   Energy2 mt(0.*GeV2);
   double output(0.),sumdiag[2]={0.,0.};
   Complex diag[2];
-  Energy2 d1 = v1[0].momentum()*out[0], d2 = v1[0].momentum()*out[1];
+  Energy2 off = -0.5*v1[0].momentum().m2(); 
+  Energy2 d1  = off+v1[0].momentum()*out[0], d2 = off+v1[0].momentum()*out[1];
   for(unsigned int ihel1=0;ihel1<v1.size();++ihel1) {
     complex<Energy> a1 = out[0]*v1[ihel1].wave();
     complex<Energy> a2 = out[1]*v1[ihel1].wave();
