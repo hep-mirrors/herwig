@@ -6,6 +6,7 @@
 
 #include "MEee2eeX.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -240,13 +241,13 @@ IBPtr MEee2eeX::fullclone() const {
 }
 
 void MEee2eeX::persistentOutput(PersistentOStream & os) const {
-  os << FFPVertex_ << gamma_ << amp_
+  os << FFPVertex_ << gamma_ << amp_ << currentMode_
      << ounit(Q2_1min_,GeV2) << ounit(Q2_1max_,GeV2)
      << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2);
 }
 
 void MEee2eeX::persistentInput(PersistentIStream & is, int) {
-  is >> FFPVertex_ >> gamma_ >> amp_
+  is >> FFPVertex_ >> gamma_ >> amp_ >> currentMode_
      >> iunit(Q2_1min_,GeV2) >> iunit(Q2_1max_,GeV2)
      >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2);
 }
@@ -300,129 +301,182 @@ void MEee2eeX::Init() {
      "The gamma gamma -> X amplitude",
      &MEee2eeX::amp_, false, false, true, false, false);
 
+  static Switch<MEee2eeX,unsigned int> interfaceCurrentMode
+    ("CurrentMode",
+     "Approximation in which to calculate the electron and position currents",
+     &MEee2eeX::currentMode_, 0, false, false);
+  static SwitchOption interfaceCurrentModeFull
+    (interfaceCurrentMode,
+     "Full",
+     "Use the full result, calculated to be numerically stable in the collineart limit",
+     0);
+  static SwitchOption interfaceCurrentModeEquivalentPhoton
+    (interfaceCurrentMode,
+     "EquivalentPhoton",
+     "Use the equivalent photon approximation",
+     1);
+
 }
 
 vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
-  Energy m = mePartonData()[0]->mass();
-  double mr2 = sqr(m/meMomenta()[0].t());
-  vector<VectorWaveFunction> output; output.reserve(4);
-  Lorentz5Momentum pGamma = meMomenta()[0]-meMomenta()[2];
-  Complex II(0.,1.);
-  double x = meMomenta()[2].t()/meMomenta()[0].t();
-  double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
-  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
-  double fact1 = 2.*meMomenta()[0].t()*sqrt(x)/t1_*UnitRemoval::E*ee*sHalf1_/sqrt(bb1);
-  double fact2 = m/sqrt(x)/t1_*UnitRemoval::E*ee/sqrt(bb1);
-  Complex phase = exp(II*phi1_);
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+
-										     b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
-										     -0.5*II*phase*(bb1-mr2/x)
-										     +b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
-										     (1.+b1-(1.+b)/x)*mr2*cHalf1_/sHalf1_/(1.-x)
-										     -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-(1.+b-(1.+b1)*x)*cHalf1_,
-										     II*(1.+b-(1.+b1)*x)*cHalf1_,
-										     (1.+b-(1.+b1)*x)*sHalf1_/phase,
-										     (1.+b+(1.+b1)*x)*sHalf1_/phase)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b1)*x)*cHalf1_,
-										     II*(1.+b-(1.+b1)*x)*cHalf1_,
-										     -phase*(1.+b-(1.+b1)*x)*sHalf1_,
-										     -phase*(1.+b+(1.+b1)*x)*sHalf1_)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5/phase*(bb1-mr2/x)+ 
-										     b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
-										     0.5/phase*II*(bb1-mr2/x)+ 
-										     b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
-										     mr2*(1.+b1-(1.+b)/x)*cHalf1_/sHalf1_/(1.-x) + 
-										     -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
-  // test code
-  // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
-  // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
-  // vector<SpinorWaveFunction>    fin;
-  // vector<SpinorBarWaveFunction> fout;
-  // for(unsigned int ix=0;ix<2;++ix) {
-  //   ein .reset(ix); fin .push_back(ein );
-  //   eout.reset(ix); fout.push_back(eout);
-  // }
-  // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     LorentzPolarizationVector test = FFPVertex_->evaluate(ZERO,1,gamma_,fin[ih1],fout[ih2]).wave();
-  //     if(ih1==ih2) test -= test.t()*pGamma/pGamma.t();
-  //     cerr << "testing in current\n"
-  // 	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
-  // 	   << ih1 << " " << ih2 << " " << output[2*ih1+ih2].x() << " " << output[2*ih1+ih2].y() << " "
-  // 	   << output[2*ih1+ih2].z() << " " << output[2*ih1+ih2].t() << "\n"
-  // 	   << (test.x()-output[2*ih1+ih2].x())/(test.x()+output[2*ih1+ih2].x()) << " "
-  // 	   << (test.y()-output[2*ih1+ih2].y())/(test.y()+output[2*ih1+ih2].y()) << " "
-  // 	   << (test.z()-output[2*ih1+ih2].z())/(test.z()+output[2*ih1+ih2].z()) << " ";
-  //     if(output[2*ih1+ih2].t()!=0.)
-  // 	cerr << (test.t()-output[2*ih1+ih2].t())/(test.t()+output[2*ih1+ih2].t());
-  //     cerr << "\n";
-  //   }
-  // }
-  return output;
+  // fuill current, safe in small x limit
+  if(currentMode_==0) {
+    Energy m = mePartonData()[0]->mass();
+    double mr2 = sqr(m/meMomenta()[0].t());
+    vector<VectorWaveFunction> output; output.reserve(4);
+    Lorentz5Momentum pGamma = meMomenta()[0]-meMomenta()[2];
+    Complex II(0.,1.);
+    double x = meMomenta()[2].t()/meMomenta()[0].t();
+    double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
+    double ee = FFPVertex_->electroMagneticCoupling(ZERO);
+    double fact1 = 2.*meMomenta()[0].t()*sqrt(x)/t1_*UnitRemoval::E*ee*sHalf1_/sqrt(bb1);
+    double fact2 = m/sqrt(x)/t1_*UnitRemoval::E*ee/sqrt(bb1);
+    Complex phase = exp(II*phi1_);
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+
+										       b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
+										       -0.5*II*phase*(bb1-mr2/x)
+										       +b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
+										       (1.+b1-(1.+b)/x)*mr2*cHalf1_/sHalf1_/(1.-x)
+										       -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-(1.+b-(1.+b1)*x)*cHalf1_,
+										       II*(1.+b-(1.+b1)*x)*cHalf1_,
+										       (1.+b-(1.+b1)*x)*sHalf1_/phase,
+										       (1.+b+(1.+b1)*x)*sHalf1_/phase)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b1)*x)*cHalf1_,
+										       II*(1.+b-(1.+b1)*x)*cHalf1_,
+										       -phase*(1.+b-(1.+b1)*x)*sHalf1_,
+										       -phase*(1.+b+(1.+b1)*x)*sHalf1_)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5/phase*(bb1-mr2/x)+ 
+										       b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
+										       0.5/phase*II*(bb1-mr2/x)+ 
+										       b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
+										       mr2*(1.+b1-(1.+b)/x)*cHalf1_/sHalf1_/(1.-x) + 
+										       -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
+    // test code
+    // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
+    // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
+    // vector<SpinorWaveFunction>    fin;
+    // vector<SpinorBarWaveFunction> fout;
+    // for(unsigned int ix=0;ix<2;++ix) {
+    //   ein .reset(ix); fin .push_back(ein );
+    //   eout.reset(ix); fout.push_back(eout);
+    // }
+    // for(unsigned int ih1=0;ih1<2;++ih1) {
+    //   for(unsigned int ih2=0;ih2<2;++ih2) {
+    //     LorentzPolarizationVector test = FFPVertex_->evaluate(ZERO,1,gamma_,fin[ih1],fout[ih2]).wave();
+    //     if(ih1==ih2) test -= test.t()*pGamma/pGamma.t();
+    //     cerr << "testing in current\n"
+    // 	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
+    // 	   << ih1 << " " << ih2 << " " << output[2*ih1+ih2].x() << " " << output[2*ih1+ih2].y() << " "
+    // 	   << output[2*ih1+ih2].z() << " " << output[2*ih1+ih2].t() << "\n"
+    // 	   << (test.x()-output[2*ih1+ih2].x())/(test.x()+output[2*ih1+ih2].x()) << " "
+    // 	   << (test.y()-output[2*ih1+ih2].y())/(test.y()+output[2*ih1+ih2].y()) << " "
+    // 	   << (test.z()-output[2*ih1+ih2].z())/(test.z()+output[2*ih1+ih2].z()) << " ";
+    //     if(output[2*ih1+ih2].t()!=0.)
+    // 	cerr << (test.t()-output[2*ih1+ih2].t())/(test.t()+output[2*ih1+ih2].t());
+    //     cerr << "\n";
+    //   }
+    // }
+    return output;
+  }
+  // Equivalent Photon
+  else if(currentMode_==1) {
+    Lorentz5Momentum p = meMomenta()[0];
+    Lorentz5Momentum n(meMomenta()[0].t(),ZERO,ZERO,-meMomenta()[0].t());
+    Energy m = meMomenta()[0].mass();
+    double z = (n*meMomenta()[2])/(n*p);
+    Energy2 pT2 = -z*t1_-sqr(1-z)*sqr(m);
+    Energy pT = sqrt(pT2);
+    
+    cerr << "testing " << z << " " << meMomenta()[0]/GeV << " " << meMomenta()[0].m()/GeV << "\n";
+
+    cerr << "testing " << t1_/GeV2 << " " << pT2/GeV2 << "\n";
+    vector<VectorWaveFunction> output; output.reserve(4);
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector());
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector());
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector());
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector());
+    
+    assert(false);
+  }
+  // no other option
+  else {
+    assert(false);
+  }
 }
 
 vector<VectorWaveFunction> MEee2eeX::positronCurrent() const {
-  Energy m = mePartonData()[1]->mass();
-  double mr2 = sqr(m/meMomenta()[1].t());
-  vector<VectorWaveFunction> output;
-  Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
-  Complex II(0.,1.);
-  double x = meMomenta()[3].t()/meMomenta()[1].t();
-  double b = sqrt(1.-mr2), b2 = sqrt(1-mr2/sqr(x)), bb2=(1.+b)*(1.+b2);
-  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
-  double fact1 = 2.*meMomenta()[1].t()*sqrt(x)/t2_*UnitRemoval::E*ee*cHalf2_/sqrt(bb2);
-  double fact2 = m/sqrt(x)/t2_*UnitRemoval::E*ee/sqrt(bb2);
-  Complex phase = exp(II*phi2_);
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) +
-										     b2*phase*(mr2+bb2*x)*cos(phi2_)*
-										     sqr(sHalf2_)/(1.-x),
-										     0.5*II*(bb2-mr2/x) + 
-										     b2*phase*(mr2+bb2*x)*sin(phi2_)*
-										     sqr(sHalf2_)/(1.-x),
-										     phase*(b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
-											    mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_/x)/(1.-x),0)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b2)*x)*sHalf2_/phase,
-										     II*(1.+b-(1.+b2)*x)*sHalf2_/phase,
-										     (1.+b-(1.+b2)*x)*cHalf2_,
-										     -(1.+b+(1.+b2)*x)*cHalf2_)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-phase*(1.+b-(1.+b2)*x)*sHalf2_,
-										     II*phase*(1.+b-(1.+b2)*x)*sHalf2_,
-										     -(1.+b-(1.+b2)*x)*cHalf2_,
-										     (1.+b+(1.+b2)*x)*cHalf2_)));
-  output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) + 
-										     b2/phase*(mr2+bb2*x)*cos(phi2_)*
-										     sqr(sHalf2_)/(1.-x),
-										     -0.5*II*(bb2-mr2/x) + 
-										     b2/phase*(mr2+bb2*x)*sin(phi2_)*
-										     sqr(sHalf2_)/(1.-x),
-										     (b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
-										      (mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_)/x)/phase/(1.-x),0.)));
-  // test code
-  // SpinorBarWaveFunction pin (meMomenta()[1],mePartonData()[1],incoming);
-  // SpinorWaveFunction    pout(meMomenta()[3],mePartonData()[3],outgoing);
-  // vector<SpinorBarWaveFunction> fin;
-  // vector<SpinorWaveFunction>    fout;
-  // for(unsigned int ix=0;ix<2;++ix) {
-  //   pin .reset(ix); fin .push_back(pin );
-  //   pout.reset(ix); fout.push_back(pout);
-  // }
-  // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     LorentzPolarizationVector test = FFPVertex_->evaluate(ZERO,1,gamma_,fout[ih2],fin[ih1]).wave();
-  //     if(ih1==ih2) test -= test.t()*pGamma/pGamma.t();
-  //     cerr << "testing in current\n"
-  // 	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
-  // 	   << ih1 << " " << ih2 << " " << output[2*ih1+ih2].x() << " " << output[2*ih1+ih2].y() << " "
-  // 	   << output[2*ih1+ih2].z() << " " << output[2*ih1+ih2].t() << "\n"
-  // 	   << (test.x()-output[2*ih1+ih2].x())/(test.x()+output[2*ih1+ih2].x()) << " "
-  // 	   << (test.y()-output[2*ih1+ih2].y())/(test.y()+output[2*ih1+ih2].y()) << " "
-  // 	   << (test.z()-output[2*ih1+ih2].z())/(test.z()+output[2*ih1+ih2].z()) << " ";
-  //     if(output[2*ih1+ih2].t()!=0.) cerr << (test.t()-output[2*ih1+ih2].t())/(test.t()+output[2*ih1+ih2].t());
-  //     cerr << "\n";
-  //   }
-  // }
-  return output;
+  if(currentMode_==0) {
+    Energy m = mePartonData()[1]->mass();
+    double mr2 = sqr(m/meMomenta()[1].t());
+    vector<VectorWaveFunction> output;
+    Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
+    Complex II(0.,1.);
+    double x = meMomenta()[3].t()/meMomenta()[1].t();
+    double b = sqrt(1.-mr2), b2 = sqrt(1-mr2/sqr(x)), bb2=(1.+b)*(1.+b2);
+    double ee = FFPVertex_->electroMagneticCoupling(ZERO);
+    double fact1 = 2.*meMomenta()[1].t()*sqrt(x)/t2_*UnitRemoval::E*ee*cHalf2_/sqrt(bb2);
+    double fact2 = m/sqrt(x)/t2_*UnitRemoval::E*ee/sqrt(bb2);
+    Complex phase = exp(II*phi2_);
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) +
+										       b2*phase*(mr2+bb2*x)*cos(phi2_)*
+										       sqr(sHalf2_)/(1.-x),
+										       0.5*II*(bb2-mr2/x) + 
+										       b2*phase*(mr2+bb2*x)*sin(phi2_)*
+										       sqr(sHalf2_)/(1.-x),
+										       phase*(b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
+											      mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_/x)/(1.-x),0)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b2)*x)*sHalf2_/phase,
+										       II*(1.+b-(1.+b2)*x)*sHalf2_/phase,
+										       (1.+b-(1.+b2)*x)*cHalf2_,
+										       -(1.+b+(1.+b2)*x)*cHalf2_)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-phase*(1.+b-(1.+b2)*x)*sHalf2_,
+										       II*phase*(1.+b-(1.+b2)*x)*sHalf2_,
+										       -(1.+b-(1.+b2)*x)*cHalf2_,
+										       (1.+b+(1.+b2)*x)*cHalf2_)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) + 
+										       b2/phase*(mr2+bb2*x)*cos(phi2_)*
+										       sqr(sHalf2_)/(1.-x),
+										       -0.5*II*(bb2-mr2/x) + 
+										       b2/phase*(mr2+bb2*x)*sin(phi2_)*
+										       sqr(sHalf2_)/(1.-x),
+										       (b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
+											(mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_)/x)/phase/(1.-x),0.)));
+    // test code
+    // SpinorBarWaveFunction pin (meMomenta()[1],mePartonData()[1],incoming);
+    // SpinorWaveFunction    pout(meMomenta()[3],mePartonData()[3],outgoing);
+    // vector<SpinorBarWaveFunction> fin;
+    // vector<SpinorWaveFunction>    fout;
+    // for(unsigned int ix=0;ix<2;++ix) {
+    //   pin .reset(ix); fin .push_back(pin );
+    //   pout.reset(ix); fout.push_back(pout);
+    // }
+    // for(unsigned int ih1=0;ih1<2;++ih1) {
+    //   for(unsigned int ih2=0;ih2<2;++ih2) {
+    //     LorentzPolarizationVector test = FFPVertex_->evaluate(ZERO,1,gamma_,fout[ih2],fin[ih1]).wave();
+    //     if(ih1==ih2) test -= test.t()*pGamma/pGamma.t();
+    //     cerr << "testing in current\n"
+    // 	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
+    // 	   << ih1 << " " << ih2 << " " << output[2*ih1+ih2].x() << " " << output[2*ih1+ih2].y() << " "
+    // 	   << output[2*ih1+ih2].z() << " " << output[2*ih1+ih2].t() << "\n"
+    // 	   << (test.x()-output[2*ih1+ih2].x())/(test.x()+output[2*ih1+ih2].x()) << " "
+    // 	   << (test.y()-output[2*ih1+ih2].y())/(test.y()+output[2*ih1+ih2].y()) << " "
+    // 	   << (test.z()-output[2*ih1+ih2].z())/(test.z()+output[2*ih1+ih2].z()) << " ";
+    //     if(output[2*ih1+ih2].t()!=0.) cerr << (test.t()-output[2*ih1+ih2].t())/(test.t()+output[2*ih1+ih2].t());
+    //     cerr << "\n";
+    //   }
+    // }
+    return output;
+  }
+  // Equivalent Photon
+  else if(currentMode_==1) {
+
+    assert(false);
+  }
+  // no other option
+  else {
+    assert(false);
+  }
 }
 
 

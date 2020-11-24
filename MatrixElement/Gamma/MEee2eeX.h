@@ -28,7 +28,8 @@ public:
    * The default constructor.
    */
   MEee2eeX() : Q2_1min_(ZERO), Q2_1max_(Constants::MaxEnergy2),
-	       Q2_2min_(ZERO), Q2_2max_(Constants::MaxEnergy2)
+	       Q2_2min_(ZERO), Q2_2max_(Constants::MaxEnergy2),
+	       currentMode_(0)
   {}
   
 public:
@@ -265,6 +266,13 @@ private:
   double cHalf2_,sHalf2_,phi2_;
   Energy2 t2_;
   //@}
+
+private:
+
+  /**
+   * Switch for the current approximation
+   */
+  unsigned int currentMode_;
 
 };
 
