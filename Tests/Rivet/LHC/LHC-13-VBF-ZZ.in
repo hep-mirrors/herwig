@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS gg -> H -> ZZ
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1790439
+
+do /Herwig/Particles/h0:SelectDecayModes h0->Z0,Z0;
