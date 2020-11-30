@@ -324,10 +324,10 @@ vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
   Complex II(0.,1.);
   Complex phase = exp(II*phi1_);
   Energy m = mePartonData()[0]->mass();
+  vector<VectorWaveFunction> output; output.reserve(4);
   // fuill current, safe in small x limit
   if(currentMode_==0) {
     double mr2 = sqr(m/meMomenta()[0].t());
-    vector<VectorWaveFunction> output; output.reserve(4);
     double x = meMomenta()[2].t()/meMomenta()[0].t();
     double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
     double fact1 = 2.*meMomenta()[0].t()*sqrt(x)/t1_*UnitRemoval::E*ee*sHalf1_/sqrt(bb1);
@@ -377,49 +377,44 @@ vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
     //     cerr << "\n";
     //   }
     // }
-    return output;
   }
   // Equivalent Photon
   else if(currentMode_==1) {
     Lorentz5Momentum p = meMomenta()[0];
-    Lorentz5Momentum n(meMomenta()[0].t(),ZERO,ZERO,-meMomenta()[0].t());
+    Lorentz5Momentum n(ZERO,ZERO,-meMomenta()[0].t(),meMomenta()[0].t());
     double z = (n*meMomenta()[2])/(n*p);
     Energy2 pT2 = -z*t1_-sqr(1-z)*sqr(m);
+    if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
-    
-    cerr << "testing " << z << " " << meMomenta()[0]/GeV << " " << meMomenta()[0].m()/GeV << "\n";
-
-    cerr << "testing " << t1_/GeV2 << " " << pT2/GeV2 << "\n";
-    vector<VectorWaveFunction> output; output.reserve(4);
     Energy Ea = meMomenta()[0].t();
     double fact = ee*Ea*UnitRemoval::E/t1_;
-    
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(  -pT/Ea/phase*(sqr(phase)+z)/sqrt(z)/(1.-z),
-											II*pT/Ea/phase*(sqr(phase)-z)/sqrt(z)/(1.-z),
-											0., 0.)));
-    //output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector()));
-    //output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector()));
-    //output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector()));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(  pT/Ea/phase*(sqr(phase)+z)/sqrt(z)/(1.-z),
+											-II*pT/Ea/phase*(sqr(phase)-z)/sqrt(z)/(1.-z),0., 0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(-Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( pT/Ea/sqrt(z)/(1.-z)/phase*(1.+z*sqr(phase)),
+										       -II*pT/Ea/sqrt(z)/(1.-z)*(1.-sqr(phase)*z),0.,0.)));
   }
   // no other option
   else {
     assert(false);
   }
+  return output;
 }
 
 vector<VectorWaveFunction> MEee2eeX::positronCurrent() const {
+  Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
+  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
+  Complex II(0.,1.);
+  Complex phase = exp(II*phi2_);
+  Energy m = mePartonData()[1]->mass();
+  vector<VectorWaveFunction> output; output.reserve(4);
   if(currentMode_==0) {
-    Energy m = mePartonData()[1]->mass();
     double mr2 = sqr(m/meMomenta()[1].t());
-    vector<VectorWaveFunction> output;
-    Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
-    Complex II(0.,1.);
     double x = meMomenta()[3].t()/meMomenta()[1].t();
     double b = sqrt(1.-mr2), b2 = sqrt(1-mr2/sqr(x)), bb2=(1.+b)*(1.+b2);
-    double ee = FFPVertex_->electroMagneticCoupling(ZERO);
     double fact1 = 2.*meMomenta()[1].t()*sqrt(x)/t2_*UnitRemoval::E*ee*cHalf2_/sqrt(bb2);
     double fact2 = m/sqrt(x)/t2_*UnitRemoval::E*ee/sqrt(bb2);
-    Complex phase = exp(II*phi2_);
     output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) +
 										       b2*phase*(mr2+bb2*x)*cos(phi2_)*
 										       sqr(sHalf2_)/(1.-x),
@@ -468,17 +463,31 @@ vector<VectorWaveFunction> MEee2eeX::positronCurrent() const {
     //     cerr << "\n";
     //   }
     // }
-    return output;
   }
   // Equivalent Photon
   else if(currentMode_==1) {
-
-    assert(false);
+    Lorentz5Momentum p = meMomenta()[1];
+    Lorentz5Momentum n(ZERO,ZERO,meMomenta()[1].t(),meMomenta()[1].t());
+    double z = (n*meMomenta()[3])/(n*p);
+    Energy2 pT2 = -z*t2_-sqr(1-z)*sqr(m);
+    if(pT2<ZERO) pT2=ZERO;
+    Energy pT = sqrt(pT2);
+    Energy Eb = meMomenta()[1].t();
+    double fact = ee*Eb*UnitRemoval::E/t2_;
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(   pT/Eb/(1.-z)/sqrt(z)*(1.+z*sqr(phase)),
+										      II*pT/Eb/(1.-z)/sqrt(z)*(1.-z*sqr(phase)),0., 0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(   m/Eb*(1.-z)/sqrt(z)/phase,
+										      II*m/Eb*(1.-z)/sqrt(z)/phase,0.,0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(-  m/Eb*phase*(1.-z)/sqrt(z),
+										      II*m/Eb*phase*(1.-z)/sqrt(z),0.,0.)));
+    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(    pT/Eb/(1.-z)/sqrt(z)*(1.+z/sqr(phase)),
+										      -II*pT/Eb/(1.-z)/sqrt(z)*(1.-z/sqr(phase)),0.,0.)));
   }
   // no other option
   else {
     assert(false);
   }
+  return output;
 }
 
 
