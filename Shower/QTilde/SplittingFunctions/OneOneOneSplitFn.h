@@ -12,7 +12,7 @@
 // This is the declaration of the OneOneOneSplitFn class.
 //
 
-#include "SudakovFormFactor.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 namespace Herwig {
@@ -38,7 +38,7 @@ using namespace ThePEG;
  * @see \ref OneOneOneSplitFnInterfaces "The interfaces"
  * defined for OneOneOneSplitFn.
  */
-class OneOneOneSplitFn: public SudakovFormFactor {
+class OneOneOneSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

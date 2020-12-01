@@ -17,6 +17,7 @@ Kinematics/Decay_QTildeShowerKinematics1to2.cc \
 Kinematics/Decay_QTildeShowerKinematics1to2.h  \
 Kinematics/IS_QTildeShowerKinematics1to2.cc    Kinematics/IS_QTildeShowerKinematics1to2.h  \
 Kinematics/FS_QTildeShowerKinematics1to2.cc    Kinematics/FS_QTildeShowerKinematics1to2.h  \
+Kinematics/FS_QTildeShowerKinematics1to1.cc    Kinematics/FS_QTildeShowerKinematics1to1.h  \
 Kinematics/KinematicHelpers.h \
 Kinematics/KinematicsReconstructor.cc \
 Kinematics/KinematicsReconstructor.tcc \
@@ -37,6 +38,7 @@ Kinematics/ShowerKinematics.fh  Kinematics/ShowerKinematics.h Kinematics/ShowerK
 Kinematics/ShowerBasis.fh  Kinematics/ShowerBasis.h Kinematics/ShowerBasis.cc \
 Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
 SplittingFunctions/SudakovFormFactor.cc SplittingFunctions/SudakovFormFactor.h SplittingFunctions/SudakovFormFactor.fh \
+SplittingFunctions/Sudakov1to2FormFactor.cc SplittingFunctions/Sudakov1to2FormFactor.h SplittingFunctions/Sudakov1to2FormFactor.fh \
 SplittingFunctions/SudakovCutOff.cc SplittingFunctions/SudakovCutOff.h SplittingFunctions/SudakovCutOff.fh \
 SplittingFunctions/PTCutOff.cc SplittingFunctions/PTCutOff.h \
 SplittingFunctions/MassCutOff.cc SplittingFunctions/MassCutOff.h \

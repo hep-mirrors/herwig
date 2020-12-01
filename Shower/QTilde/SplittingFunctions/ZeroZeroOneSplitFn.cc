@@ -18,7 +18,7 @@
 
 using namespace Herwig;
 
-DescribeNoPIOClass<ZeroZeroOneSplitFn,Herwig::SudakovFormFactor>
+DescribeNoPIOClass<ZeroZeroOneSplitFn,Herwig::Sudakov1to2FormFactor>
 describeZeroZeroOneSplitFn ("Herwig::ZeroZeroOneSplitFn","HwShower.so");
 
 void ZeroZeroOneSplitFn::Init() {

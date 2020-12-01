@@ -15,7 +15,7 @@
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 
@@ -186,7 +186,7 @@ private:
   /**
    * The qtilde Sudakov to access the cutoff
    */
-  Ptr<SudakovFormFactor>::ptr theQTildeSudakov;
+  Sudakov1to2Ptr theQTildeSudakov;
 
   /**
    * True, if PDF weight should be corrected for z/x mismatch at the

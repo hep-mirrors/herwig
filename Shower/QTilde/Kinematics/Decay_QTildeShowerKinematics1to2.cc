@@ -13,7 +13,7 @@
 
 #include "Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include <cassert>
 #include "Herwig/Shower/ShowerHandler.h"
@@ -21,20 +21,25 @@
 
 using namespace Herwig;
 
+
+Decay_QTildeShowerKinematics1to2::Decay_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud)
+  : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
+
+
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
 	       ShowerPartnerType partnerType) const {
   assert(children.size() == 2);
   // calculate the scales
-  SudakovFormFactor()->evaluateDecayScales(partnerType,scale(),z(),parent,
+  sudakov1to2_->evaluateDecayScales(partnerType,scale(),z(),parent,
 					   children[0],children[1]);
   // set the maximum virtual masses
   IdList ids(3);
   ids[0] = parent->dataPtr();
   ids[1] = children[0]->dataPtr();
   ids[2] = children[1]->dataPtr();
-  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  const vector<Energy> & virtualMasses = sudakov1to2_->virtualMasses(ids);
   Energy2 q2 = sqr(virtualMasses[0])-(1.-z())*sqr(scale());
   children[0]->virtualMass(sqrt(q2));
   // determine alphas of children according to interpretation of z
@@ -53,7 +58,7 @@ updateChildren(const tShowerParticlePtr parent,
   child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
 
   // set up the colour connections
-  SudakovFormFactor()->colourConnection(parent,children[0],children[1],partnerType,false);
+  sudakov1to2_->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
@@ -100,7 +105,7 @@ void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr par
   ids[0] = parent->dataPtr();
   ids[1] = children[0]->dataPtr();
   ids[2] = children[1]->dataPtr();
-  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  const vector<Energy> & virtualMasses = sudakov1to2_->virtualMasses(ids);
   children[0]->virtualMass(sqrt(sqr(virtualMasses[0])-(1.-z())*sqr(scale())));
   if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
   // compute the new pT of the branching

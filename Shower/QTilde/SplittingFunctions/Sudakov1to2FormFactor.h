@@ -1,26 +1,23 @@
 // -*- C++ -*-
 //
-// SudakovFormFactor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Sudakov1to2FormFactor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_SudakovFormFactor_H
-#define HERWIG_SudakovFormFactor_H
+#ifndef HERWIG_Sudakov1to2FormFactor_H
+#define HERWIG_Sudakov1to2FormFactor_H
 //
-// This is the declaration of the SudakovFormFactor class.
+// This is the declaration of the Sudakov1to2FormFactor class.
 //
 
-#include "ThePEG/Interface/Interfaced.h"
+#include "SudakovFormFactor.h"
 #include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
-#include "ThePEG/PDF/BeamParticleData.h"
-#include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
-#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
-#include "SudakovFormFactor.fh"
+#include "Sudakov1to2FormFactor.fh"
 #include "SudakovCutOff.h"
 #include "Herwig/Decay/DecayMatrixElement.h"
 
@@ -28,26 +25,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
-/**
- *  A typedef for the BeamParticleData
- */
-typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
-
-  
-
-/**  \ingroup Shower
- * Enum to define the possible types of colour structure which can occur in
- * the branching.
- */
-enum ColourStructure {Undefined=0,
-		      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
-		      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
-		      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
-		      OctetOctetSinglet    = 7, Epsilon               = 8,
-		      ChargedChargedNeutral=-1,
-		      ChargedNeutralCharged=-2,
-		      NeutralChargedCharged=-3};
 
 /**  \ingroup Shower
  *
@@ -161,27 +138,18 @@ enum ColourStructure {Undefined=0,
  *
  *  @see SplittingGenerator
  *  @see ShowerAlpha
- *  @see \ref SudakovFormFactorInterfaces "The interfaces"
- *  defined for SudakovFormFactor.
+ *  @see \ref Sudakov1to2FormFactorInterfaces "The interfaces"
+ *  defined for Sudakov1to2FormFactor.
  */
-class SudakovFormFactor: public Interfaced {
-
-  /**
-   *  The SplittingGenerator is a friend to insert the particles in the 
-   *  branchings at initialisation
-   */
-  friend class SplittingGenerator;
+class Sudakov1to2FormFactor: public SudakovFormFactor {
 
 public:
 
   /**
    * The default constructor.
    */
-  SudakovFormFactor() : pdfMax_(35.0), pdfFactor_(0),
-			z_( 0.0 ),phi_(0.0), pT_(),
-			interactionType_(ShowerInteraction::UNDEFINED),
-			colourStructure_(Undefined),
-			angularOrdered_(true), scaleChoice_(2),
+  Sudakov1to2FormFactor() : 
+			z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
 			strictAO_(true), colourFactor_(-1.)
   {}
 
@@ -279,18 +247,6 @@ public:
   //@}
 
 public:
-
-  /**
-   *  Methods to return the interaction type and order for the splitting function
-   */
-  //@{
-  /**
-   *  Purely virtual method which should determine whether this splitting
-   *  function can be used for a given set of particles.
-   *  @param ids The PDG codes for the particles in the splitting.
-   */
-  virtual bool accept(const IdList & ids) const = 0;
-  //@}
 
   /**
    *   Methods to return the splitting function.
@@ -422,31 +378,11 @@ public:
   Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
   /**
-   *  Whether or not the interaction is angular ordered
-   */
-  bool angularOrdered() const {return angularOrdered_;}
-
-  /**
    *  Scale choice
    */
   bool pTScale() const {
-    return scaleChoice_ == 2 ? angularOrdered_ : scaleChoice_ == 0;
+    return scaleChoice_ == 2 ? angularOrdered() : scaleChoice_ == 0;
   }
-  
-  /**
-   *  Return the type of the interaction
-   */
-  ShowerInteraction interactionType() const {return interactionType_;}
-
-  /**
-   *  Return the colour structure
-   */
-  ColourStructure colourStructure() const {return colourStructure_;}
-
-  /**
-   *  Method to check the colours are correct
-   */
-  bool checkColours(const IdList & ids) const;
 
   /**
    * Method which should make the proper colour connection 
@@ -622,26 +558,6 @@ protected:
 		       double detune, Energy2 &t_main, double &z_main);
 
   /**
-   * Veto on the PDF for the initial-state shower
-   * @param t The scale
-   * @param x The fraction of the beam momentum
-   * @param parton0 Pointer to the particleData for the 
-   *                new parent (this is the particle we evolved back to)
-   * @param parton1 Pointer to the particleData for the 
-   *                original particle
-   * @param beam The BeamParticleData object
-   */
-  bool PDFVeto(const Energy2 t, const double x,
-	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       tcBeamPtr beam) const;
-  /**
-   * The PDF veto ratio
-   */
-  double PDFVetoRatio(const Energy2 t, const double x,
-               const tcPDPtr parton0, const tcPDPtr parton1,
-               tcBeamPtr beam,double factor) const;
-
-  /**
    *  The veto on the splitting function.
    * @param t The scale
    * @param ids The PDG codes of the particles in the splitting
@@ -681,32 +597,7 @@ protected:
   virtual double alphaSVetoRatio(Energy2 pt2,double factor) const;
   //@}
 
-  /**
-   *  Set the particles in the splittings
-   */
-  void addSplitting(const IdList &);
-
-  /**
-   *  Delete the particles in the splittings
-   */
-  void removeSplitting(const IdList &);
-
-  /**
-   *  Access the potential branchings
-   */
-  const vector<IdList> & particles() const { return particles_; }
-
 protected:
-
-  /**
-   *  The PDF factor
-   */
-  unsigned pdfFactor() const {return pdfFactor_;}
-
-  /**
-   * Maximum value of the PDF weight
-   */
-  double pdfMax() const {return pdfMax_;}
 
   /**
    *  Return the colour factor
@@ -717,16 +608,6 @@ protected:
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zLimits() const {return zlimits_;};
-  
-public:
-
-  /**
-   *   Set the PDF
-   */
-  void setPDF(tcPDFPtr pdf, Energy scale) {
-    pdf_ = pdf;
-    freeze_ = scale;
-  }
 
 public:
 
@@ -748,7 +629,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SudakovFormFactor & operator=(const SudakovFormFactor &) = delete;
+  Sudakov1to2FormFactor & operator=(const Sudakov1to2FormFactor &) = delete;
 
 private:
 
@@ -761,22 +642,6 @@ private:
    *  Pointer to the coupling for this Sudakov form factor
    */
   SudakovCutOffPtr cutoff_;
-
-  /**
-   * Maximum value of the PDF weight
-   */
-  double pdfMax_;
-
-  /**
-   * List of the particles this Sudakov is used for to aid in setting up
-   * interpolation tables if needed
-   */
-  vector<IdList> particles_;
-
-  /**
-   *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
-   */
-  unsigned pdfFactor_;
 
 private:
 
@@ -806,21 +671,6 @@ private:
    */
   pair<double,double> zlimits_;
 
-  /**
-   *  Stuff for the PDFs
-   */
-  //@{
-  /**
-   *  PDf
-   */
-  tcPDFPtr pdf_;
-
-  /**
-   *  Freezing scale
-   */
-  Energy freeze_;
-  //@}
-
 private:
   
   /**
@@ -844,22 +694,6 @@ private:
   vector<Energy2> masssquared_;
 
 private:
-
-  /**
-   *  The interaction type for the splitting function.
-   */
-  ShowerInteraction interactionType_;
-
-  /**
-   *  The colour structure
-   */
-  ColourStructure colourStructure_;
-
-  /**
-   *  Whether or not this interaction is angular-ordered
-   */
-  bool angularOrdered_;
-
   /**
    *  The choice of scale
    */
@@ -879,4 +713,4 @@ private:
 
 }
 
-#endif /* HERWIG_SudakovFormFactor_H */
+#endif /* HERWIG_Sudakov1to2FormFactor_H */

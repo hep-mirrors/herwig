@@ -13,6 +13,7 @@
 //
 
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.fh"
 
 namespace Herwig {
 
@@ -40,8 +41,7 @@ public:
   /**
    * The constructor.
    */
-  FS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
-    : ShowerKinematics(scale,z,phi,pt,sud) {}
+  FS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud);
   
 
   /**
@@ -116,6 +116,13 @@ private:
    * In fact, it should not even be implemented.
    */
   FS_QTildeShowerKinematics1to2 & operator=(const FS_QTildeShowerKinematics1to2 &) = delete;
+
+private:
+
+  /**
+   * \f$1\to2\f$ sudakov for extra features
+   */
+  tSudakov1to2Ptr sudakov1to2_;
 
 };
 

@@ -17,7 +17,7 @@
 
 using namespace Herwig;
 
-DescribeNoPIOClass<HalfHalfOneSplitFn,Herwig::SudakovFormFactor>
+DescribeNoPIOClass<HalfHalfOneSplitFn,Herwig::Sudakov1to2FormFactor>
 describeHalfHalfOneSplitFn ("Herwig::HalfHalfOneSplitFn","HwShower.so");
 
 void HalfHalfOneSplitFn::Init() {

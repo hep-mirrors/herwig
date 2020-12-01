@@ -12,7 +12,7 @@
 // This is the declaration of the OneOneOneMassiveSplitFn class.
 //
 
-#include "SudakovFormFactor.h"
+#include "Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 
@@ -37,7 +37,7 @@ using namespace ThePEG;
  * @see \ref OneOneOneMassiveSplitFnInterfaces "The interfaces"
  * defined for OneOneOneMassiveSplitFn.
  */
-class OneOneOneMassiveSplitFn: public SudakovFormFactor {
+class OneOneOneMassiveSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// SudakovFormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Sudakov1to2FormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,11 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the SudakovFormFactor class.
+// functions of the Sudakov1to2FormFactor class.
 //
 
-#include "SudakovFormFactor.h"
+#include "Sudakov1to2FormFactor.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -21,113 +22,50 @@
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "SudakovCutOff.h"
-#include "ThePEG/Utilities/EnumIO.h"
 
 #include <array>
 using std::array;
 
 using namespace Herwig;
 
-DescribeAbstractClass<SudakovFormFactor,Interfaced>
-describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
+DescribeAbstractClass<Sudakov1to2FormFactor,SudakovFormFactor>
+describeSudakov1to2FormFactor ("Herwig::Sudakov1to2FormFactor","HwShower.so");
 
-void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << pdfMax_ << particles_ << pdfFactor_ << cutoff_
-     << oenum(interactionType_) << oenum(colourStructure_) 
-     << angularOrdered_ << scaleChoice_ << strictAO_ << colourFactor_;
+void Sudakov1to2FormFactor::persistentOutput(PersistentOStream & os) const {
+  os << alpha_ << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_;
 }
 
-void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> pdfMax_ >> particles_ >> pdfFactor_ >> cutoff_
-     >> ienum(interactionType_) >> ienum(colourStructure_) 
-     >> angularOrdered_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
+void Sudakov1to2FormFactor::persistentInput(PersistentIStream & is, int) {
+  is >> alpha_ >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
 }
 
-void SudakovFormFactor::Init() {
+void Sudakov1to2FormFactor::Init() {
 
-  static ClassDocumentation<SudakovFormFactor> documentation
-    ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
+  static ClassDocumentation<Sudakov1to2FormFactor> documentation
+    ("The Sudakov1to2FormFactor class is the base class for the implementation of Sudakov"
      " form factors in Herwig");
 
-  static Reference<SudakovFormFactor,ShowerAlpha>
+  static Reference<Sudakov1to2FormFactor,ShowerAlpha>
     interfaceAlpha("Alpha",
 		   "A reference to the Alpha object",
-		   &Herwig::SudakovFormFactor::alpha_,
+		   &Herwig::Sudakov1to2FormFactor::alpha_,
 		   false, false, true, false);
 
-  static Reference<SudakovFormFactor,SudakovCutOff>
+  static Reference<Sudakov1to2FormFactor,SudakovCutOff>
     interfaceCutoff("Cutoff",
 		   "A reference to the SudakovCutOff object",
-		   &Herwig::SudakovFormFactor::cutoff_,
+		   &Herwig::Sudakov1to2FormFactor::cutoff_,
 		   false, false, true, false);
 
-  static Parameter<SudakovFormFactor,double> interfacePdfMax
-    ("PDFmax",
-     "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfMax_, 35.0, 1.0, 1000000.0,
-     false, false, Interface::limited);
-
-  static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
-    ("PDFFactor",
-     "Include additional factors in the overestimate for the PDFs",
-     &SudakovFormFactor::pdfFactor_, 0, false, false);
-  static SwitchOption interfacePDFFactorNo
-    (interfacePDFFactor,
-     "No",
-     "Don't include any factors",
-     0);
-  static SwitchOption interfacePDFFactorOverZ
-    (interfacePDFFactor,
-     "OverZ",
-     "Include an additional factor of 1/z",
-     1);
-  static SwitchOption interfacePDFFactorOverOneMinusZ
-    (interfacePDFFactor,
-     "OverOneMinusZ",
-     "Include an additional factor of 1/(1-z)",
-     2);
-  static SwitchOption interfacePDFFactorOverZOneMinusZ
-    (interfacePDFFactor,
-     "OverZOneMinusZ",
-     "Include an additional factor of 1/z/(1-z)",
-     3);
-  static SwitchOption interfacePDFFactorOverRootZ
-    (interfacePDFFactor,
-     "OverRootZ",
-     "Include an additional factor of 1/sqrt(z)",
-     4);
-  static SwitchOption interfacePDFFactorRootZ
-    (interfacePDFFactor,
-     "RootZ",
-     "Include an additional factor of sqrt(z)",
-     5);
-
-  static Switch<SudakovFormFactor,bool> interfaceAngularOrdered
-    ("AngularOrdered",
-     "Whether or not this interaction is angular ordered, "
-     "normally only g->q qbar and gamma-> f fbar are the only ones which aren't.",
-     &SudakovFormFactor::angularOrdered_, true, false, false);
-  static SwitchOption interfaceAngularOrderedYes
-    (interfaceAngularOrdered,
-     "Yes",
-     "Interaction is angular ordered",
-     true);
-  static SwitchOption interfaceAngularOrderedNo
-    (interfaceAngularOrdered,
-     "No",
-     "Interaction isn't angular ordered",
-     false);
-
-  static Switch<SudakovFormFactor,unsigned int> interfaceScaleChoice
+  static Switch<Sudakov1to2FormFactor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
      "The scale choice to be used",
-     &SudakovFormFactor::scaleChoice_, 2, false, false);
+     &Sudakov1to2FormFactor::scaleChoice_, 2, false, false);
   static SwitchOption interfaceScaleChoicepT
     (interfaceScaleChoice,
      "pT",
@@ -144,11 +82,11 @@ void SudakovFormFactor::Init() {
      "If angular order use pT, otherwise Q2",
      2);
 
-  static Switch<SudakovFormFactor,bool> interfaceStrictAO
+  static Switch<Sudakov1to2FormFactor,bool> interfaceStrictAO
     ("StrictAO",
      "Whether or not to apply strict angular-ordering,"
      " i.e. for QED even in QCD emission, and vice versa",
-     &SudakovFormFactor::strictAO_, true, false, false);
+     &Sudakov1to2FormFactor::strictAO_, true, false, false);
   static SwitchOption interfaceStrictAOYes
     (interfaceStrictAO,
      "Yes",
@@ -160,185 +98,24 @@ void SudakovFormFactor::Init() {
      "Don't apply strict ordering",
      false);
 
-  static Switch<SudakovFormFactor,ColourStructure> interfaceColourStructure
-    ("ColourStructure",
-     "The colour structure for the splitting function",
-     &SudakovFormFactor::colourStructure_, Undefined, false, false);
-  static SwitchOption interfaceColourStructureTripletTripletOctet
-    (interfaceColourStructure,
-     "TripletTripletOctet",
-     "3 -> 3 8",
-     TripletTripletOctet);
-  static SwitchOption interfaceColourStructureOctetOctetOctet
-    (interfaceColourStructure,
-     "OctetOctetOctet",
-     "8 -> 8 8",
-     OctetOctetOctet);
-  static SwitchOption interfaceColourStructureOctetTripletTriplet
-    (interfaceColourStructure,
-     "OctetTripletTriplet",
-     "8 -> 3 3bar",
-     OctetTripletTriplet);
-  static SwitchOption interfaceColourStructureTripletOctetTriplet
-    (interfaceColourStructure,
-     "TripletOctetTriplet",
-     "3 -> 8 3",
-     TripletOctetTriplet); 
-  static SwitchOption interfaceColourStructureSextetSextetOctet
-    (interfaceColourStructure,
-     "SextetSextetOctet",
-     "6 -> 6 8",
-     SextetSextetOctet);
-  static SwitchOption interfaceColourStructureTripletTripletSinglet
-    (interfaceColourStructure,
-     "TripletTripletSinglet",
-     "3 -> 3 1",
-     TripletTripletSinglet);
-  static SwitchOption interfaceColourStructureOctetOctetSinglet
-    (interfaceColourStructure,
-     "OctetOctetSinglet",
-     "8 -> 8 1",
-     OctetOctetSinglet);
-  static SwitchOption interfaceColourStructureEpsilon
-    (interfaceColourStructure,
-     "Epsilon",
-     "3 -> 3 3",
-     Epsilon);
-  static SwitchOption interfaceColourStructureChargedChargedNeutral
-    (interfaceColourStructure,
-     "ChargedChargedNeutral",
-     "q -> q 0",
-     ChargedChargedNeutral);
-  static SwitchOption interfaceColourStructureNeutralChargedCharged
-    (interfaceColourStructure,
-     "NeutralChargedCharged",
-     "0 -> q qbar",
-     NeutralChargedCharged);
-  static SwitchOption interfaceColourStructureChargedNeutralCharged
-    (interfaceColourStructure,
-     "ChargedNeutralCharged",
-     "q -> 0 q",
-     ChargedNeutralCharged);
-
-  static Switch<SudakovFormFactor,ShowerInteraction> 
-    interfaceInteractionType
-    ("InteractionType",
-     "Type of the interaction",
-     &SudakovFormFactor::interactionType_, 
-     ShowerInteraction::UNDEFINED, false, false);
-  static SwitchOption interfaceInteractionTypeQCD
-    (interfaceInteractionType,
-     "QCD","QCD",ShowerInteraction::QCD);
-  static SwitchOption interfaceInteractionTypeQED
-    (interfaceInteractionType,
-     "QED","QED",ShowerInteraction::QED);
-
 }
 
-bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
+bool Sudakov1to2FormFactor::alphaSVeto(Energy2 pt2) const {
   double ratio=alphaSVetoRatio(pt2,1.);
   return UseRandom::rnd() > ratio;
 }
 
-double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
+double Sudakov1to2FormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
   factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
   return alpha_->ratio(pt2, factor);
 }
 
-
-bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x,
-				const tcPDPtr parton0, const tcPDPtr parton1,
-				Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  double ratio=PDFVetoRatio(t,x,parton0,parton1,beam,1.);
-  return UseRandom::rnd() > ratio;
-}
-
-double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
-				       const tcPDPtr parton0, const tcPDPtr parton1,
-				       Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
-  assert(pdf_);
-  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
-  if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
-
-  const double newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
-  if(newpdf<=0.) return 0.;
-
-  const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
-  if(oldpdf<=0.) return 1.;
-  
-  const double ratio = newpdf/oldpdf;
-  double maxpdf = pdfMax_;
-
-  switch (pdfFactor_) {
-  case 0: break;
-  case 1: maxpdf /= z(); break;
-  case 2: maxpdf /= 1.-z(); break;
-  case 3: maxpdf /= (z()*(1.-z())); break;
-  case 4: maxpdf /= sqrt(z()); break;
-  case 5: maxpdf *= sqrt(z()); break;
-  default :
-    throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
-		      << pdfFactor_ << Exception::runerror;
-    
-  }
-
-  if (ratio > maxpdf) {
-    generator()->log() << "PDFVeto warning: Ratio > " << name()
-                       << ":PDFmax (by a factor of "
-                       << ratio/maxpdf <<") for "
-                       << parton0->PDGName() << " to "
-                       << parton1->PDGName() << "\n";
-  }
-  return ratio/maxpdf ;
-}
-
-void SudakovFormFactor::addSplitting(const IdList & in) {
-  bool add=true;
-  for(unsigned int ix=0;ix<particles_.size();++ix) {
-    if(particles_[ix].size()==in.size()) {
-      bool match=true;
-      for(unsigned int iy=0;iy<in.size();++iy) {
-	if(particles_[ix][iy]!=in[iy]) {
-	  match=false;
-	  break;
-	}
-      }
-      if(match) {
-	add=false;
-	break;
-      }
-    }
-  }
-  if(add) particles_.push_back(in);
-}
-
-void SudakovFormFactor::removeSplitting(const IdList & in) {
-  for(vector<IdList>::iterator it=particles_.begin();
-      it!=particles_.end();++it) {
-    if(it->size()==in.size()) {
-      bool match=true;
-      for(unsigned int iy=0;iy<in.size();++iy) {
-	if((*it)[iy]!=in[iy]) {
-	  match=false;
-	  break;
-	}
-      }
-      if(match) {
-	vector<IdList>::iterator itemp=it;
-	--itemp;
-	particles_.erase(it);
-	it = itemp;
-      }
-    }
-  }
-}
-
-void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
+void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  const IdList &ids,
 				  double enhance,bool ident,
 				  double detune, 
 				  Energy2 &t_main, double &z_main) {
-  unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor_;
+  unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor();
   double lower = integOverP(zlimits_.first ,ids,pdfopt);
   double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
@@ -346,7 +123,7 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {
-    c/=pdfMax_;
+    c/=pdfMax();
     //symmetry of FS gluon splitting
     if(ident) c*=0.5;
   }
@@ -362,7 +139,7 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
          *(upper - lower),ids,pdfopt);
 }
 
-bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
+bool Sudakov1to2FormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
 				  double detune) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
@@ -379,7 +156,7 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
     return true; 
 } 
 
-bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
+bool Sudakov1to2FormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
 				   double enhance,
 				   double detune) {
   Energy2 told = t;
@@ -397,7 +174,7 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return true; 
 } 
 
-bool SudakovFormFactor::PSVeto(const Energy2 t) {
+bool Sudakov1to2FormFactor::PSVeto(const Energy2 t) {
   // still inside PS, return true if outside
   // check vs overestimated limits
   if (z() < zlimits_.first || z() > zlimits_.second) return true;
@@ -415,7 +192,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t) {
   return false;
 }
 
-ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
+ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,
 						   const RhoDMatrix & rho,
 						   double enhance,
@@ -502,7 +279,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   return new_ptr(FS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-ShoKinPtr SudakovFormFactor::
+ShoKinPtr Sudakov1to2FormFactor::
 generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
 			   double x,
@@ -534,7 +311,7 @@ generateNextSpaceBranching(const Energy startingQ,
         z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
-        PDFVeto(t,x,ids[0],ids[1],beam));
+	  PDFVeto(t,x,z(),ids[0],ids[1],beam));
   }
   // shower variations
   else {
@@ -547,8 +324,8 @@ generateNextSpaceBranching(const Energy startingQ,
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
       alphaRew=alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t);
-      PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
-      double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
+      PDFRew=PDFVeto(t,x,z(),ids[0],ids[1],beam);
+      double factor=PDFVetoRatio(t,x,z(),ids[0],ids[1],beam,1.)*
                     alphaSVetoRatio(pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
 	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
 
@@ -568,7 +345,7 @@ generateNextSpaceBranching(const Energy startingQ,
 
 
 
-            double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
+            double newfactor = PDFVetoRatio(t,x,z(),ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
                            alphaSVetoRatio(pTScale() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
 	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
@@ -604,7 +381,7 @@ generateNextSpaceBranching(const Energy startingQ,
   return new_ptr(IS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
+void Sudakov1to2FormFactor::initialize(const IdList & ids, Energy2 & tmin) {
   ids_=ids;
   tmin = 4.*cutoff_->pT2min();
   masses_ = cutoff_->virtualMasses(ids);
@@ -615,7 +392,7 @@ void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
   }
 }
 
-ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
+ShoKinPtr Sudakov1to2FormFactor::generateNextDecayBranching(const Energy startingScale,
 						    const Energy stoppingScale,
 						    const Energy minmass,
 						    const IdList &ids,
@@ -653,7 +430,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   return new_ptr(Decay_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
+bool Sudakov1to2FormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 				   double enhance, double detune) {
   minmass = max(minmass,GeV);
   // previous scale
@@ -694,7 +471,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return true; 
 } 
 
-bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
+bool Sudakov1to2FormFactor::computeTimeLikeLimits(Energy2 & t) {
   if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
@@ -731,7 +508,7 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
   return true;
 }
 
-bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
+bool Sudakov1to2FormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
   if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
@@ -858,7 +635,7 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
 
 }
 
-double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
+double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
 					 const IdList & ids,
 					 ShoKinPtr kinematics,
 					 const RhoDMatrix & rho) {
@@ -1054,7 +831,7 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
   return phi;
 }
 
-double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
+double Sudakov1to2FormFactor::generatePhiBackward(ShowerParticle & particle,
 					  const IdList & ids,
 					  ShoKinPtr kinematics,
 					  const RhoDMatrix & rho) {
@@ -1198,7 +975,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
   return phi;
 }
 
-double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
+double Sudakov1to2FormFactor::generatePhiDecay(ShowerParticle & particle,
 				       const IdList & ids,
 				       ShoKinPtr kinematics,
 				       const RhoDMatrix &) {
@@ -1319,7 +1096,7 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
 }
 
 
-Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
+Energy Sudakov1to2FormFactor::calculateScale(double zin, Energy pt, IdList ids,
 					 unsigned int iopt) {
   Energy2 tmin;
   initialize(ids,tmin);
@@ -1339,17 +1116,17 @@ Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
   else {
-    throw Exception() << "Unknown option in SudakovFormFactor::calculateScale() "
+    throw Exception() << "Unknown option in Sudakov1to2FormFactor::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
   }
 }
 
-void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
+void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,
                                          tShowerParticlePtr second,
 					 ShowerPartnerType partnerType, 
                                          const bool back) const {
-  if(colourStructure_==TripletTripletOctet) {
+  if(colourStructure()==TripletTripletOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
                                       parent->antiColourLine());
@@ -1403,7 +1180,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       second->progenitor(first->progenitor());
     }
   }
-  else if(colourStructure_==OctetOctetOctet) {
+  else if(colourStructure()==OctetOctetOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
                                       parent->antiColourLine());
@@ -1457,7 +1234,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
 	assert(false);
     }    
   }
-  else if(colourStructure_ == OctetTripletTriplet) {
+  else if(colourStructure() == OctetTripletTriplet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
                                       parent->antiColourLine());
@@ -1494,7 +1271,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       second->progenitor(first->progenitor());
     }
   }
-  else if(colourStructure_ == TripletOctetTriplet) {
+  else if(colourStructure() == TripletOctetTriplet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
                                       parent->antiColourLine());
@@ -1538,7 +1315,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       second->progenitor(first->progenitor());
     }
   }
-  else if(colourStructure_==SextetSextetOctet) {
+  else if(colourStructure()==SextetSextetOctet) {
     //make sure we're not doing backward evolution
     assert(!back);
 
@@ -1627,7 +1404,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }   
   }
-  else if(colourStructure_ == OctetOctetSinglet) {
+  else if(colourStructure() == OctetOctetSinglet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
 				      parent->antiColourLine());
@@ -1641,7 +1418,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       cfirst.second->addAntiColoured(parent);
     }
   }
-  else if(colourStructure_ == TripletTripletSinglet) {
+  else if(colourStructure() == TripletTripletSinglet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
 				      parent->antiColourLine());
@@ -1667,7 +1444,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
-  else if(colourStructure_ == Epsilon) {
+  else if(colourStructure() == Epsilon) {
     if(!back) {
       ColinePair newlines(new_ptr(ColourLine()),new_ptr(ColourLine()));
       if(parent->colourLine()) {
@@ -1686,7 +1463,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
     else
       assert(false);
   }
-  else if(colourStructure_ == ChargedChargedNeutral) {
+  else if(colourStructure() == ChargedChargedNeutral) {
     if(!parent->data().coloured()) return;
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
@@ -1713,7 +1490,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
-  else if(colourStructure_ == ChargedNeutralCharged) {
+  else if(colourStructure() == ChargedNeutralCharged) {
     if(!parent->data().coloured()) return;
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
@@ -1740,7 +1517,7 @@ void SudakovFormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
-  else if(colourStructure_ == NeutralChargedCharged ) {
+  else if(colourStructure() == NeutralChargedCharged ) {
     if(!back) {
       if(first->dataPtr()->coloured()) {
 	ColinePtr newline=new_ptr(ColourLine());
@@ -1794,7 +1571,7 @@ namespace {
   
 }
 
-void SudakovFormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
 						 Energy scale, double z,
 						 tShowerParticlePtr parent,
 						 tShowerParticlePtr emitter,
@@ -1930,7 +1707,7 @@ void SudakovFormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
   }
 }
 
-void SudakovFormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType,
 						   Energy scale, double z,
 						   tShowerParticlePtr parent,
 						   tShowerParticlePtr spacelike,
@@ -2038,7 +1815,7 @@ void SudakovFormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType
   }
 }
 
-void SudakovFormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
 					    Energy scale, double z,
 					    tShowerParticlePtr parent,
 					    tShowerParticlePtr spacelike,
@@ -2078,33 +1855,33 @@ void SudakovFormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
   spacelike->scales().QCD_ac_noAO = max(scale,parent->scales().QCD_ac_noAO);
 }
 
-void SudakovFormFactor::doinit() {
-  Interfaced::doinit();
-  assert(interactionType_!=ShowerInteraction::UNDEFINED);
-  assert((colourStructure_>0&&interactionType_==ShowerInteraction::QCD) ||
-   	 (colourStructure_<0&&interactionType_==ShowerInteraction::QED) );
+void Sudakov1to2FormFactor::doinit() {
+  SudakovFormFactor::doinit();
+  assert(interactionType()!=ShowerInteraction::UNDEFINED);
+  assert((colourStructure()>0&&interactionType()==ShowerInteraction::QCD) ||
+   	 (colourStructure()<0&&interactionType()==ShowerInteraction::QED) );
   // compute the colour factors if need
-  if(colourStructure_==TripletTripletOctet) {
+  if(colourStructure()==TripletTripletOctet) {
     colourFactor_ = 4./3.;
   }
-  else if(colourStructure_==OctetOctetOctet) {
+  else if(colourStructure()==OctetOctetOctet) {
     colourFactor_ = 3.;
   }
-  else if(colourStructure_==OctetTripletTriplet) {
+  else if(colourStructure()==OctetTripletTriplet) {
     colourFactor_ = 0.5;
   }
-  else if(colourStructure_==TripletOctetTriplet) {
+  else if(colourStructure()==TripletOctetTriplet) {
     colourFactor_ = 4./3.;
   }
-  else if(colourStructure_ == TripletTripletSinglet ||
-	  colourStructure_ == OctetOctetSinglet    ||
-	  colourStructure_ == Epsilon    ) {
+  else if(colourStructure() == TripletTripletSinglet ||
+	  colourStructure() == OctetOctetSinglet    ||
+	  colourStructure() == Epsilon    ) {
     colourFactor_ = 1.;
   }
-  else if(colourStructure_==SextetSextetOctet) {
+  else if(colourStructure()==SextetSextetOctet) {
     colourFactor_ = 10./3.;
   }
-  else if(colourStructure_<0) {
+  else if(colourStructure()<0) {
     colourFactor_ = 1.;
   }
   else {
@@ -2112,15 +1889,15 @@ void SudakovFormFactor::doinit() {
   }
 }
 
-double SudakovFormFactor::colourFactor() const {
-  if(colourStructure_>0)
+double Sudakov1to2FormFactor::colourFactor() const {
+  if(colourStructure()>0)
     return colourFactor_;
-  else if(colourStructure_<0) {
-    if(colourStructure_==ChargedChargedNeutral ||
-       colourStructure_==ChargedNeutralCharged) {
+  else if(colourStructure()<0) {
+    if(colourStructure()==ChargedChargedNeutral ||
+       colourStructure()==ChargedNeutralCharged) {
       return sqr(double(ids_[0]->iCharge())/3.);
     }
-    else if(colourStructure_==NeutralChargedCharged) {
+    else if(colourStructure()==NeutralChargedCharged) {
       double fact = sqr(double(ids_[1]->iCharge())/3.);
       if(ids_[1]->coloured())
 	fact *= abs(double(ids_[1]->iColour()));
@@ -2135,78 +1912,4 @@ double SudakovFormFactor::colourFactor() const {
     assert(false);
     return 0.;
   }
-}
-
-bool SudakovFormFactor::checkColours(const IdList & ids) const {
-  if(colourStructure_==TripletTripletOctet) {
-    if(ids[0]!=ids[1]) return false;
-    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
-       ids[2]->iColour()==PDT::Colour8) return true;
-    return false;
-  }
-  else if(colourStructure_==OctetOctetOctet) {
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(ids[ix]->iColour()!=PDT::Colour8) return false;
-    }
-    return true;
-  }
-  else if(colourStructure_==OctetTripletTriplet) {
-    if(ids[0]->iColour()!=PDT::Colour8) return false;
-    if(ids[1]->iColour()==PDT::Colour3&&ids[2]->iColour()==PDT::Colour3bar)
-      return true;
-    if(ids[1]->iColour()==PDT::Colour3bar&&ids[2]->iColour()==PDT::Colour3)
-      return true;
-    return false;
-  }
-  else if(colourStructure_==TripletOctetTriplet) {
-    if(ids[0]!=ids[2]) return false;
-    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
-       ids[1]->iColour()==PDT::Colour8) return true;
-    return false;
-  }
-  else if(colourStructure_==SextetSextetOctet) {
-    if(ids[0]!=ids[1]) return false;
-    if((ids[0]->iColour()==PDT::Colour6 || ids[0]->iColour()==PDT::Colour6bar) &&
-       ids[2]->iColour()==PDT::Colour8) return true;
-    return false;
-  }
-  else if(colourStructure_==TripletTripletSinglet) {
-    if(ids[0]->iColour()!=ids[1]->iColour()) return false;
-    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
-       ids[2]->iColour()==PDT::Colour0) return true;
-    return false;
-  }
-  else if(colourStructure_==OctetOctetSinglet) {
-    if(ids[0]!=ids[1]) return false;
-    if(ids[0]->iColour()==PDT::Colour8 && ids[2]->iColour()==PDT::Colour0) return true;
-    return false;
-  }
-  else if(colourStructure_==Epsilon) {
-    if(ids[0]->iColour()!=PDT::Colour3&&ids[0]->iColour()!=PDT::Colour3bar) return false;
-    if(ids[0]->iColour()!=-ids[1]->iColour()) return false;
-    if(ids[0]->iColour()!=-ids[2]->iColour()) return false;
-    return true;
-  }
-  else if(colourStructure_==ChargedChargedNeutral) {
-    if(ids[0]!=ids[1]) return false;
-    if(ids[2]->iCharge()!=0) return false;
-    if(ids[0]->iCharge()==ids[1]->iCharge()) return true;
-    return false;
-  }
-  else if(colourStructure_==ChargedNeutralCharged) {
-    if(ids[0]!=ids[2]) return false;
-    if(ids[1]->iCharge()!=0) return false;
-    if(ids[0]->iCharge()==ids[2]->iCharge()) return true;
-    return false;
-  }
-  else if(colourStructure_==NeutralChargedCharged) {
-    if(ids[1]->id()!=-ids[2]->id()) return false;
-    if(ids[0]->iCharge()!=0) return false;
-    if(ids[1]->iCharge()==-ids[2]->iCharge()) return true;
-    return false;
-  }
-  else {
-    assert(false);
-  }
-  return false;
 }
