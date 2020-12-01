@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SudakovFormFactor class.
+//
+#ifndef Herwig_SudakovFormFactor_FH
+#define Herwig_SudakovFormFactor_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class SudakovFormFactor;
+
+ThePEG_DECLARE_POINTERS(Herwig::SudakovFormFactor,SudakovPtr);
+
+}
+
+#endif
