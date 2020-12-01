@@ -343,7 +343,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 		     ShowerPartnerType::Undefined);
   }
   // if not hard generate phi
-  kinematics->phi(sudakov->generatePhiForward(particle,ids,kinematics,rho));
+  if(ids.size()>2) kinematics->phi(sudakov->generatePhiForward(particle,ids,kinematics,rho));
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }

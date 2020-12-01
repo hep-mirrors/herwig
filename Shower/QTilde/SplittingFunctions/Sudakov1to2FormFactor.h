@@ -13,7 +13,6 @@
 //
 
 #include "SudakovFormFactor.h"
-#include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
@@ -235,15 +234,6 @@ public:
   double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
 			  ShoKinPtr kinematics,
 			  const RhoDMatrix & rho);
-
-  /**
-   *  Methods to provide public access to the private member variables
-   */
-  //@{
-  /**
-   * Return the pointer to the ShowerAlpha object.
-   */
-  tShowerAlphaPtr alpha() const { return alpha_; }
   //@}
 
 public:
@@ -583,18 +573,6 @@ protected:
 			      double detune) const {
     return ratioP(z_, t, ids,mass,rho)/detune;
   }
-
-  /**
-   *  The veto on the coupling constant
-   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
-   * @return true if vetoed
-   */
-  bool alphaSVeto(Energy2 pt2) const;
-
-  /**
-   * The alpha S veto ratio
-   */
-  virtual double alphaSVetoRatio(Energy2 pt2,double factor) const;
   //@}
 
 protected:
@@ -632,11 +610,6 @@ private:
   Sudakov1to2FormFactor & operator=(const Sudakov1to2FormFactor &) = delete;
 
 private:
-
-  /**
-   *  Pointer to the coupling for this Sudakov form factor
-   */
-  ShowerAlphaPtr alpha_;
 
   /**
    *  Pointer to the coupling for this Sudakov form factor

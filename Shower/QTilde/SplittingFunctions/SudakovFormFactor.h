@@ -10,6 +10,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/PDF/BeamParticleData.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -24,6 +25,7 @@ enum ColourStructure {Undefined=0,
 		      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
 		      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
 		      OctetOctetSinglet    = 7, Epsilon               = 8,
+		      OctetSinglet         = 9,
 		      ChargedChargedNeutral=-1,
 		      ChargedNeutralCharged=-2,
 		      NeutralChargedCharged=-3};
@@ -96,7 +98,7 @@ public:
 						 const IdList &ids,
 						 const RhoDMatrix & rho,
 						 double enhance,
-						 double detuning)=0;
+						 double detuning) = 0;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -113,7 +115,7 @@ public:
 						 const RhoDMatrix & rho,
 						 double enhance,
 						 tcBeamPtr beam,
-						 double detuning)=0;
+						 double detuning) = 0;
   //@}
 
   /**
@@ -159,6 +161,15 @@ public:
    *  Method to check the colours are correct
    */
   bool checkColours(const IdList & ids) const;
+
+  /**
+   *  Methods to provide public access to the private member variables
+   */
+  //@{
+  /**
+   * Return the pointer to the ShowerAlpha object.
+   */
+  tShowerAlphaPtr alpha() const { return alpha_; }
 
 public:
 
@@ -246,6 +257,18 @@ protected:
     freeze_ = scale;
   }
 
+  /**
+   *  The veto on the coupling constant
+   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
+   * @return true if vetoed
+   */
+  bool alphaSVeto(Energy2 pt2) const;
+
+  /**
+   * The alpha S veto ratio
+   */
+  virtual double alphaSVetoRatio(Energy2 pt2,double factor) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -328,6 +351,11 @@ private:
    */
   unsigned pdfFactor_;
   //@}
+
+  /**
+   *  Pointer to the coupling for this Sudakov form factor
+   */
+  ShowerAlphaPtr alpha_;
 
 };
 

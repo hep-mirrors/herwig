@@ -37,11 +37,11 @@ DescribeAbstractClass<Sudakov1to2FormFactor,SudakovFormFactor>
 describeSudakov1to2FormFactor ("Herwig::Sudakov1to2FormFactor","HwShower.so");
 
 void Sudakov1to2FormFactor::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_;
+  os << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_;
 }
 
 void Sudakov1to2FormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
+  is  >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
 }
 
 void Sudakov1to2FormFactor::Init() {
@@ -49,12 +49,6 @@ void Sudakov1to2FormFactor::Init() {
   static ClassDocumentation<Sudakov1to2FormFactor> documentation
     ("The Sudakov1to2FormFactor class is the base class for the implementation of Sudakov"
      " form factors in Herwig");
-
-  static Reference<Sudakov1to2FormFactor,ShowerAlpha>
-    interfaceAlpha("Alpha",
-		   "A reference to the Alpha object",
-		   &Herwig::Sudakov1to2FormFactor::alpha_,
-		   false, false, true, false);
 
   static Reference<Sudakov1to2FormFactor,SudakovCutOff>
     interfaceCutoff("Cutoff",
@@ -100,16 +94,6 @@ void Sudakov1to2FormFactor::Init() {
 
 }
 
-bool Sudakov1to2FormFactor::alphaSVeto(Energy2 pt2) const {
-  double ratio=alphaSVetoRatio(pt2,1.);
-  return UseRandom::rnd() > ratio;
-}
-
-double Sudakov1to2FormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
-  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-  return alpha_->ratio(pt2, factor);
-}
-
 void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  const IdList &ids,
 				  double enhance,bool ident,
@@ -119,7 +103,7 @@ void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
   double lower = integOverP(zlimits_.first ,ids,pdfopt);
   double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
-           * alpha_->overestimateValue()/Constants::twopi*enhance*detune);
+		 * alpha()->overestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {

@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -21,12 +22,12 @@ using namespace Herwig;
 
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << pdfMax_ << pdfFactor_ << angularOrdered_
+  os << alpha_ << pdfMax_ << pdfFactor_ << angularOrdered_
      << oenum(interactionType_) << oenum(colourStructure_) << particles_ ;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> pdfMax_ >> pdfFactor_ >> angularOrdered_ 
+  is >> alpha_ >> pdfMax_ >> pdfFactor_ >> angularOrdered_ 
      >> ienum(interactionType_) >> ienum(colourStructure_) >> particles_;
 }
 
@@ -40,6 +41,12 @@ void SudakovFormFactor::Init() {
 
   static ClassDocumentation<SudakovFormFactor> documentation
     ("There is no documentation for the SudakovFormFactor class");
+
+  static Reference<SudakovFormFactor,ShowerAlpha>
+    interfaceAlpha("Alpha",
+		   "A reference to the Alpha object",
+		   &Herwig::SudakovFormFactor::alpha_,
+		   false, false, true, false);
 
   static Switch<SudakovFormFactor,ShowerInteraction> 
     interfaceInteractionType
@@ -114,6 +121,11 @@ void SudakovFormFactor::Init() {
      "Epsilon",
      "3 -> 3 3",
      Epsilon);
+  static SwitchOption interfaceColourStructureOctetSinglet
+    (interfaceColourStructure,
+     "OctetSinglet",
+     "8 -> 8 1",
+     OctetSinglet);
   static SwitchOption interfaceColourStructureChargedChargedNeutral
     (interfaceColourStructure,
      "ChargedChargedNeutral",
@@ -221,6 +233,10 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[0]->iColour()!=-ids[1]->iColour()) return false;
     if(ids[0]->iColour()!=-ids[2]->iColour()) return false;
     return true;
+  }
+  else if(colourStructure_==OctetSinglet) {
+    if(ids[0]->iColour()==PDT::Colour8 && ids[1]->iColour()==PDT::Colour0) return true;
+    return false;
   }
   else if(colourStructure_==ChargedChargedNeutral) {
     if(ids[0]!=ids[1]) return false;
@@ -331,4 +347,15 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const do
                        << parton1->PDGName() << "\n";
   }
   return ratio/maxpdf ;
+}
+
+
+bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
+  double ratio=alphaSVetoRatio(pt2,1.);
+  return UseRandom::rnd() > ratio;
+}
+
+double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
+  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+  return alpha_->ratio(pt2, factor);
 }
