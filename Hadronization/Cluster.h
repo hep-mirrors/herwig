@@ -18,7 +18,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
- 
+
 /** \ingroup Hadronization
  *  \class Cluster
  *  \brief This class describes a cluster object.
@@ -28,37 +28,37 @@ using namespace ThePEG;
  *  This class represents a cluster, which is a colour singlet made usually
  *  of two components (quark-antiquark, quark-diquark, antiquark-antidiquark)
  *  or rarely by three components (quark-quark-quark, antiquark-antiquark-
- *  antiquark). A reference to the container with the pointers to its 
+ *  antiquark). A reference to the container with the pointers to its
  *  Components is provided.
  *
  *  The class provides access to the pointers which point to:
  *
- *     - The cluster parent. In the case that the cluster it is a fission 
+ *     - The cluster parent. In the case that the cluster it is a fission
  *       product of a heavy cluster the parent is a cluster. If the cluster
  *       is formed from the perturbative partons then the parents will be
  *       the colour connected partons that formed the cluster.
  *     - The children (usually two). In the case the cluster is a
  *       heavy cluster that undergoes fission the children are clusters.
- *       Occasionally the cluster has been "redefined" (re-interpreted). For 
- *       example in the case that three quark or anti-quark components 
+ *       Occasionally the cluster has been "redefined" (re-interpreted). For
+ *       example in the case that three quark or anti-quark components
  *       have been redefined as two components (quark+diquark, or antiquark+
  *       antidiquark).
- *     - The (eventual) reshuffling partner, necessary for energy-momentum 
+ *     - The (eventual) reshuffling partner, necessary for energy-momentum
  *       conservation when light clusters are decayed into single hadron. Not
  *       all clusters will have a reshuffling partner.
- *  
+ *
  *  Notice that in order to determine the cluster position from the positions
  *  of the components, the Cluster class needs some parameters.
- *  Because the Cluster class is neither interfaced nor persistent, 
- *  a static pointer to the ClusterHadronizationHandler class instance, 
- *  where the parameters are, is used. This static pointer is 
+ *  Because the Cluster class is neither interfaced nor persistent,
+ *  a static pointer to the ClusterHadronizationHandler class instance,
+ *  where the parameters are, is used. This static pointer is
  *  set via the method setPointerClusterHadHandler(), during the
  *  run initialization, doinitrun() of ClusterHadronizationHandler.
  *
  *  @see ClusterHadronizationHandler
- */ 
+ */
 class Cluster : public Particle {
-  
+
 protected:
 
   /** @name Standard constructors and destructors. */
@@ -79,29 +79,29 @@ public:
    * Constructor with a particleData pointer
    */
   Cluster(tcEventPDPtr);
-  
+
   /**
    * This creates a cluster from 2 (or 3) partons.
    */
-  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());    
-  
+  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());
+
   /**
    * Also a constructor where a particle is given not a cluster.
    */
   Cluster(const Particle &);
   //@}
-  
+
   /**
-   * Number of quark (diquark) constituents (normally two).    
+   * Number of quark (diquark) constituents (normally two).
    */
   unsigned int numComponents() const
   { return _numComp; }
-  
+
   /**
-   * Sum of the constituent masses of the components of the cluster.    
+   * Sum of the constituent masses of the components of the cluster.
    */
   Energy sumConstituentMasses() const;
-    
+
   /**
    * Returns the ith constituent.
    */
@@ -116,26 +116,31 @@ public:
    * Returns the original constituent carrying anticolour
    */
   tPPtr antiColParticle() const;
-  
+
   /**
    * Returns whether the ith constituent is from a perturbative process.
    */
   bool isPerturbative(int) const;
-  
+
   /**
    * Indicates whether the ith constituent is a beam remnant.
    */
   bool isBeamRemnant(int) const;
-  
+
   /**
    * Sets whether the ith constituent is a beam remnant.
    */
   void setBeamRemnant(int,bool);
-  
+
   /**
    * Returns the clusters id, not the same as the PDG id.
    */
   int clusterId() const { return _id; }
+
+  /**
+  *  Returns the pre-colour-reconnected cluster ancestors
+  */
+  ClusterPair ancestors() const;
 
 public:
 
@@ -143,7 +148,7 @@ public:
    * Returns true when a constituent is a beam remnant.
    */
   bool isBeamCluster() const;
-  
+
   /**
    * Set the pointer to the reshuffling partner cluster.
    */
@@ -154,50 +159,50 @@ public:
    * Sets the component (if any) that points to "part" as a beam remnant.
    */
   void isBeamCluster(tPPtr part);
-  
+
   /**
    * Returns true if this cluster is to be handled by the hadronization.
    */
   bool isAvailable() const
   { return _isAvailable; }
-  
+
   /**
-   * Sets the value of availability. 
+   * Sets the value of availability.
    */
   void isAvailable(bool inputAvailable)
   { _isAvailable = inputAvailable; }
-  
+
   /**
    * Return true if the cluster does not have cluster parent.
    */
   bool isStatusInitial() const
   { return parents().empty(); }
-  
-  /** 
-   * Return true if the cluster does not have cluster children and 
+
+  /**
+   * Return true if the cluster does not have cluster children and
    * it is not already decayed (i.e. it does not have hadron children)
-   * (to be used only after the fission of heavy clusters).    
+   * (to be used only after the fission of heavy clusters).
    */
    bool isReadyToDecay() const
   { return children().empty(); }
-  
+
   /**
    * Return true if the cluster has one and only one cluster children
-   * and no hadron children: that means either that its three quarks or 
-   * anti-quarks components have been redefined as two components 
-   * (quark+diquark, or antiquark+antidiquark), or that the cluster 
-   * has been used as a partner for the momentum reshuffling necessary 
+   * and no hadron children: that means either that its three quarks or
+   * anti-quarks components have been redefined as two components
+   * (quark+diquark, or antiquark+antidiquark), or that the cluster
+   * has been used as a partner for the momentum reshuffling necessary
    * to conserve energy-momentum when a light cluster is decayed into
-   * a single hadron (notice that this latter light cluster has 
+   * a single hadron (notice that this latter light cluster has
    *  isRedefined()  false, because it has an hadron child).
-   * In both cases, the unique cluster children is the new redefined 
-   * cluster. The two cases can be distinguish by the next method.  
+   * In both cases, the unique cluster children is the new redefined
+   * cluster. The two cases can be distinguish by the next method.
    */
-  bool isRedefined() const { 
-    return ( children().size() == 1 
+  bool isRedefined() const {
+    return ( children().size() == 1
 	     && children()[0]->id() == ParticleID::Cluster );
   }
-  
+
   /**
    * Return true when it has a reshuffling partner.
    * Notice that a cluster can have  hasBeenReshuffled()  true but
@@ -206,7 +211,7 @@ public:
    */
   bool hasBeenReshuffled() const
   { return _hasReshuffled; }
-  
+
   /**
    * Return true if the cluster has hadron children.
    */
@@ -232,9 +237,9 @@ public:
    * \f[ X = \frac{1}{2} ( x_1 +x_2 + s_1 D_1 + s_2 D_2). \f]
    */
   static LorentzPoint calculateX(tPPtr q1, tPPtr q2);
-  
+
 protected:
-  
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -264,12 +269,12 @@ public:
    */
   void persistentInput(PersistentIStream &, int);
 
-private:   
+private:
   /**
    * Private and non-existent assignment operator.
    */
   Cluster & operator=(const Cluster &) = delete;
-  
+
   /**
    * Calculate the 5-momentum vector of the cluster
    * The 5-momentum of the cluster is given by
@@ -277,7 +282,7 @@ private:
    * and the mass of the cluster is \f$m^2 = P^2\f$
    */
   void calculateP();
-  
+
   /**
    * Determines whether constituent p is perturbative or not.
    */
@@ -286,7 +291,7 @@ private:
   /**
    * Describe an abstract base class with persistent data.
    */
-  static ClassDescription<Cluster> initCluster; 
+  static ClassDescription<Cluster> initCluster;
 
 
 
@@ -299,8 +304,8 @@ private:
   unsigned int _numComp;                    //!< The number of constituents
   long _id;                        //!< The id of this cluster
 };
-  
-} // end namespace Herwig  
+
+} // end namespace Herwig
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -321,7 +326,7 @@ struct BaseClassTrait<Herwig::Cluster,1> {
 /**
  * The following template specialization informs ThePEG about the
  * name of this class and the shared object where it is defined.
- */ 
+ */
 template <>
 struct ClassTraits<Herwig::Cluster>:
   public ClassTraitsBase<Herwig::Cluster> {
@@ -338,4 +343,4 @@ struct ClassTraits<Herwig::Cluster>:
 
 
 
-#endif // HERWIG_Cluster_H 
+#endif // HERWIG_Cluster_H

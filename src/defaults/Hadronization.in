@@ -1,12 +1,12 @@
 # -*- ThePEG-repository -*-
 
 ############################################################
-# Setup of default hadronization 
+# Setup of default hadronization
 #
 # There are no user servicable parts inside.
 #
-# Anything that follows below should only be touched if you 
-# know what you're doing. 
+# Anything that follows below should only be touched if you
+# know what you're doing.
 #############################################################
 
 cd /Herwig/Particles
@@ -37,7 +37,7 @@ newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
 newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
 newdef ClusterHadHandler:UnderlyingEventHandler NULL
 
-newdef ClusterFissioner:HadronSelector HadronSelector 
+newdef ClusterFissioner:HadronSelector HadronSelector
 newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
 
@@ -79,11 +79,11 @@ newdef ClusterDecayer:ClDirExotic 1
 newdef ClusterDecayer:ClSmrExotic 0.
 newdef HadronSelector:SingleHadronLimitExotic 0.
 
-# 
+#
 newdef PartonSplitter:SplitPwtSquark 0.824135
 newdef PartonSplitter:Split uds
 
-# 
+#
 newdef HadronSelector:PwtDquark  1.0
 newdef HadronSelector:PwtUquark  1.0
 newdef HadronSelector:PwtSquark 0.291717
