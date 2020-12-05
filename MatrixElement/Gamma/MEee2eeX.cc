@@ -393,7 +393,7 @@ vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
     output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(-Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
     output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
     output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( pT/Ea/sqrt(z)/(1.-z)/phase*(1.+z*sqr(phase)),
-										       -II*pT/Ea/sqrt(z)/(1.-z)*(1.-sqr(phase)*z),0.,0.)));
+										       -II*pT/Ea/sqrt(z)/(1.-z)*(1.-sqr(phase)*z)/phase,0.,0.)));
   }
   // no other option
   else {
