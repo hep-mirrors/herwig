@@ -137,11 +137,6 @@ public:
    */
   int clusterId() const { return _id; }
 
-  /**
-  *  Returns the pre-colour-reconnected cluster ancestors
-  */
-  ClusterPair ancestors() const;
-
 public:
 
   /**

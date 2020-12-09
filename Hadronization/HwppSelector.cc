@@ -236,6 +236,9 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   assert(hadrons[ix].idQ);
+  // Update the picked quark species
+  // This is a cheeky work aroun to update the quark species
+  _qPicked = hadrons[ix].idQ->id();
   int signHad1 = signHadron(par1, hadrons[ix].idQ->CC(), hadrons[ix].hadron1);
   int signHad2 = signHadron(par2, hadrons[ix].idQ, hadrons[ix].hadron2);
   assert( signHad1 != 0 && signHad2 != 0 );

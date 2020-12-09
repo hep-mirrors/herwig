@@ -44,9 +44,14 @@ public:
    * @param par2 The particle pointer of the second constituent
    * @param par3 The particle pointer of the third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1,
 						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
    ;
+
+   /**
+   *  species picked
+   */
+   long getQ(){ return _qPicked; }
 
 public:
 
@@ -103,6 +108,13 @@ private:
    * In fact, it should not even be implemented.
    */
   Hw64Selector & operator=(const Hw64Selector &) = delete;
+
+  /**
+  *  Internal variable to keep tracke of which quark species was pair
+  *  produced
+  */
+  mutable long _qPicked;
+
 
 };
 

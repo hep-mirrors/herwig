@@ -56,6 +56,8 @@ public:
   void decay(const ClusterVector & clusters, tPVector & finalhadrons)
    ;
 
+  using CluVecIt = ClusterVector::iterator;
+
 public:
 
   /**
@@ -112,6 +114,20 @@ public:
    */
   pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr);
 
+  CluVecIt _findPartnerCluster(CluVecIt cl, ClusterVector & cv,
+                                               const ClusterVector& a) const;
+
+
+
+  /**
+   * @return	true, if the two partons are splitting products of the same
+   * 		gluon
+   */
+  bool _isColour8(tcPPtr p, tcPPtr q) const;
+
+  ParticleVector twoClusterDecay(tClusterPtr clA,
+    tClusterPtr clB);
+
 private:
 
   /** Compute the positions of the new hadrons based on the clusters position.
@@ -157,6 +173,18 @@ private:
    * Number of tries to generate the masses of the decay products
    */
   unsigned int _masstry;
+
+  /**
+  *  Flag to choose whether or not to allow clusters to swap
+  *  constituents.
+  */
+  bool _swapConstituents;
+
+
+  /**
+   *  Option for handling octets
+   */
+  unsigned int _octetOption;
 
 
 };

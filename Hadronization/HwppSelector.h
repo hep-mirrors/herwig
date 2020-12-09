@@ -94,6 +94,11 @@ public:
    */
   static void Init();
 
+  /**
+  *  species picked
+  */
+  long getQ(){ return _qPicked; }
+
 protected:
 
   /** @name Clone Methods. */
@@ -160,6 +165,12 @@ private:
   *  becoming too large
   */
   const double _maxScale = 20.;
+
+  /**
+  *  Internal variable to keep tracke of which quark species was pair
+  *  produced
+  */
+  mutable long _qPicked;
 
 };
 
