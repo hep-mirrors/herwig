@@ -189,6 +189,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
+		Shower/QTilde/SplittingFunctions/Onium/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile
@@ -196,6 +197,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Dipole/Utility/Makefile
 		Shower/Dipole/AlphaS/Makefile
 		Shower/Dipole/SpinCorrelations/Makefile
+		Shower/Dipole/Merging/Makefile
 		Utilities/Makefile
 		Utilities/XML/Makefile
 		Utilities/Statistics/Makefile
@@ -229,7 +231,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/Powheg-DefaultShower.in
 		src/Matchbox/Powheg-DipoleShower.in
 		src/Merging/Makefile
-		Shower/Dipole/Merging/Makefile
 		src/defaults/MatchboxMergingDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh

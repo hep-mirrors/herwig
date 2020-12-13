@@ -1,4 +1,4 @@
-SUBDIRS = Matching
+SUBDIRS = Matching SplittingFunctions/Onium
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 27:0:0
 HwShower_la_SOURCES =  \
