@@ -506,7 +506,7 @@ protected:
    * @param maxQ2 The maximum virtuality
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t);
+  virtual bool PSVeto(const Energy2 t);
 
   /**
    * Compute the limits on \f$z\f$ for time-like branching

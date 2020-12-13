@@ -658,7 +658,7 @@ ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticle
   // the emitting particle; set the parent/child relationship
   // if same as definition create particles, otherwise create cc
   ShowerParticleVector children;
-  for(unsigned int ix=0;ix<2;++ix) {
+  for(unsigned int ix=0;ix+1<ids.size();++ix) {
     children.push_back(new_ptr(ShowerParticle(ids[ix+1],true)));
     if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable()&&abs(ids[ix+1]->id())!=ParticleID::tauminus)
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
@@ -699,6 +699,12 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     progenitor()->highestpT(fb.kinematics->pT());
   // create the children
   children = createTimeLikeChildren(particle,fb.ids);
+
+  if(fb.ids.size()==2) {
+    cerr << "testing in timelike " << fb.ids[1]->PDGName() << "\n";
+    cerr << *children[0] << "\n";
+    assert(false);
+  }
   // update the children
   particle->showerKinematics()->
     updateChildren(particle, children,fb.type);

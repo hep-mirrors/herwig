@@ -168,7 +168,6 @@ bool Sudakov1to2FormFactor::PSVeto(const Energy2 t) {
   
   Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2],
 					  masssquared_[1],masssquared_[2]);
-
   // if pt2<0 veto
   if (pt2<cutoff_->pT2min()) return true;
   // otherwise calculate pt and return
@@ -199,10 +198,15 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
     // No need for more if-statements in this loop.
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
+      // if(!PSVeto(t) && z()<0.05) {
+      // 	  double aR = alphaSVetoRatio(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.);
+      // 	  double pR = SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
+      // 	  cerr << "testing in sudakov " << z() << " " << t/GeV2 << " " << " " << aR << " " << pR << "\n";
+      // 	}
     }
     while(PSVeto(t) ||
-        SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
-        alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+	  SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
+	  alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
   else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
