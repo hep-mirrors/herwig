@@ -10,7 +10,7 @@ Helper functions for the Herwig Feynrules converter
 
 class CheckUnique:
     """Uniqueness checker.
-    
+
     An object of this class remembers the value it was called with first.
     Any subsequent call to it will only succeed if the same value is passed again.
     For example,
@@ -108,14 +108,14 @@ def add_brackets(expr, syms):
 def banner():
     return """\
 ===============================================================================================================
-______                  ______        _                 __ _   _                        _                      
-|  ___|                 | ___ \      | |               / /| | | |                      (_)          _      _   
-| |_  ___  _   _  _ __  | |_/ /_   _ | |  ___  ___    / / | |_| |  ___  _ __ __      __ _   __ _  _| |_  _| |_ 
+______                  ______        _                 __ _   _                        _
+|  ___|                 | ___ \      | |               / /| | | |                      (_)          _      _
+| |_  ___  _   _  _ __  | |_/ /_   _ | |  ___  ___    / / | |_| |  ___  _ __ __      __ _   __ _  _| |_  _| |_
 |  _|/ _ \| | | || \_ \ |    /| | | || | / _ \/ __|  / /  |  _  | / _ \| \__|\ \ /\ / /| | / _` ||_   _||_   _|
-| | |  __/| |_| || | | || |\ \| |_| || ||  __/\__ \ / /   | | | ||  __/| |    \ V  V / | || (_| |  |_|    |_|  
-\_|  \___| \__, ||_| |_|\_| \_|\__,_||_| \___||___//_/    \_| |_/ \___||_|     \_/\_/  |_| \__, |              
-            __/ |                                                                           __/ |              
-           |___/                                                                           |___/               
+| | |  __/| |_| || | | || |\ \| |_| || ||  __/\__ \ / /   | | | ||  __/| |    \ V  V / | || (_| |  |_|    |_|
+\_|  \___| \__, ||_| |_|\_| \_|\__,_||_| \___||___//_/    \_| |_/ \___||_|     \_/\_/  |_| \__, |
+            __/ |                                                                           __/ |
+           |___/                                                                           |___/
 ===============================================================================================================
 generating model/vertex/.model/.in files
 please be patient!
@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
 
 if False:
-    
+
 # Check if the Vertex is self-conjugate or not
     pdgcode = [0,0,0,0]
     notsmvertex = False
@@ -188,17 +188,17 @@ if False:
             vhasf += 1
         if pdgcode[i] not in SMPARTICLES:
             notsmvertex = True
-        
 
-#  treat replacement of SM vertices with BSM vertices?               
+
+#  treat replacement of SM vertices with BSM vertices?
     if notsmvertex == False:
         if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
             #print 'VERTEX INCLUDED IN STANDARD MODEL!'
             v.include = 0
             notincluded += 1
             #continue
-            
-    
+
+
     selfconjugate = 0
     for j in range(len(pdgcode)):
         for k in range(len(pdgcode)):
@@ -216,10 +216,10 @@ if False:
               if v.particles[u].selfconjugate == 0:
                   scfac[u] = -1
 #                  print 'particle ', v.particles[u].pdg_code, ' found not to be self-conjugate'
-                  
+
     if selfconjugate == 0:
         plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
-        if len(v.particles) is 4:                                                                                                                      
+        if len(v.particles) == 4:
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
         #print 'Conjugate vertex:', plistarray[1]
 
@@ -264,7 +264,7 @@ def isGhost(p) :
     except AttributeError:
         return False
     return p.GhostNumber != 0
-    
+
 def convertToPython3(ufodir) :
     # find all the python files
     fNames=glob.glob(path.abspath(ufodir)+"/*.py")
@@ -274,6 +274,32 @@ def convertToPython3(ufodir) :
     # convert them
     for fName in fNames :
         convertFileToPython3(fName,mNames)
+
+def copy(path1, path2):
+    path1 = format_path(path1)
+    path2 = format_path(path2)
+    shutil.copy(path1, path2)
+
+def prepForConversion(ufodir) :
+    import os
+    path=os.path.abspath(ufodir)
+    if not os.path.isdir(path):
+        raise Exception( 'path to the UFO directory seems to be wrong!')
+    model_dir = path
+    text = open(os.path.join(model_dir, 'object_library.py')).read()
+    text = text.replace('.iteritems()', '.items()')
+    text = re.sub('raise (\w+)\s*,\s*["\']([^"]+)["\']','raise \g<1>("\g<2>")', text)
+    text = open(os.path.join(model_dir, 'object_library.py'),'w').write(text)
+    text = open(os.path.join(model_dir, '__init__.py')).read()
+    mod = False
+    to_check =  ['object_library', 'function_library']
+    for lib in to_check:
+        if 'import %s' % lib in text:
+            continue
+        mod = True
+        text = "import %s \n" % lib + text
+    if mod:
+        open(os.path.join(model_dir, '__init__.py'),'w').write(text)
 
 def convertFileToPython3(fName,names) :
     output=""
@@ -285,7 +311,7 @@ def convertFileToPython3(fName,names) :
     while line :
         # iteritems -> items
         line=line.replace("iteritems","items")
-        # fix imports 
+        # fix imports
         if("import" in line) :
             for val in names :
                 if("import %s" %val in line) :
