@@ -9,4 +9,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516:LMODE=MU
 # ATLAS high mass drell-yan
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454:LMODE=MU
 # ATLAS splittings rivet problem with this at the moment)
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844:LMODE=MU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844:LMODE=MU
+# LHCb W/Z analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1454404:MODE=ZJET
