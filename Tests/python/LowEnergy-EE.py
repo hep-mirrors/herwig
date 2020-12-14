@@ -140,7 +140,7 @@ analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
 analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
 analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
 analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
-Eta Omega
+# Eta Omega
 analyses["EtaOmega"]["BESIII_2020_I1817739" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
@@ -316,6 +316,7 @@ analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
                                           "d02-x01-y01","d02-x01-y02"]
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
+analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
@@ -482,14 +483,14 @@ for energy in sorted(energies) :
     # input file for perturbative QCD
     if(opts.perturbative and energy> thresholds[0]) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : "", "maxflavour" : maxflavour})
+                                                     "lepton" : "", "maxflavour" : maxflavour, 'name' : "EE"})
         with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
     # input file for currents
     if(opts.nonPerturbative and proc!="") :
         inputNonPerturbative = nonPerturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                           "processes" : proc})
+                                                           "processes" : proc, 'name' : "EE"})
         with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-EE-NonPerturbative-%8.6f.yoda " % energy
