@@ -177,6 +177,11 @@ THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository
+
+	@if [ "$(PYTHON_PLATFORM)" = "darwin" ]; then\
+				install_name_tool -add_rpath $(DESTDIR)$(libdir) $(DESTDIR)$(pkglibdir)/HwEvtGenInterface.so;\
+	fi
+
 	@./Herwig init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) -i$(DESTDIR)$(pkgdatadir)/snippets $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
 	@if test -n "$(DESTDIR)"; \
         then sed -i.bak -e "s@$(DESTDIR)@@g" $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo; \
@@ -227,4 +232,3 @@ GENGETOPT = gengetopt
 
 %opts.h %opts.c : %opts.ggo
 	$(GENGETOPT) < $<
-
