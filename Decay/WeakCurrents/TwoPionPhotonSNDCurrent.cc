@@ -210,7 +210,7 @@ bool TwoPionPhotonSNDCurrent::createMode(int icharge, tcPDPtr resonance,
 		      ires+1,omega,ires+1,iloc+1,
 		      ires+2,iloc+2,ires+2,iloc+3));
     // channel with the pions exchanged
-    if(icharge==0) 
+    if(icharge==0)
       mode->addChannel((PhaseSpaceChannel(phase),ires,rho[ix],
 			ires+1,omega,ires+1,iloc+2,
 			ires+2,iloc+1,ires+2,iloc+3));
@@ -252,11 +252,11 @@ void TwoPionPhotonSNDCurrent::constructSpinInfo(ParticleVector decay) const {
 					outgoing,true,true);
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVectorE> 
+// the hadronic currents
+vector<LorentzPolarizationVectorE>
 TwoPionPhotonSNDCurrent::current(tcPDPtr resonance,
 			      FlavourInfo flavour,
-			      const int imode, const int ichan, Energy & scale, 
+			      const int imode, const int ichan, Energy & scale,
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
@@ -357,7 +357,7 @@ TwoPionPhotonSNDCurrent::current(tcPDPtr resonance,
       Energy2 mR2 = sqr(rhoMasses_[ix]);
       bw += mR2*wgts_[ix]/(mR2-q2-Complex(0.,1.)*q.mass()*wid);
     }
-    pre *=bw;
+    pre = pre * bw;
     for(unsigned int ix=0;ix<3;++ix) {
       if(ix==1) continue;
       LorentzVector<complex<Energy2> > v2 = Helicity::epsilon(pout,temp[ix],momenta[2]);
@@ -397,30 +397,30 @@ unsigned int TwoPionPhotonSNDCurrent::decayMode(vector<int> id) {
 void TwoPionPhotonSNDCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::TwoPionPhotonSNDCurrent " << name() 
+  if(create) output << "create Herwig::TwoPionPhotonSNDCurrent " << name()
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<rhoMasses_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":RhoMasses " << ix 
+    if(ix<3) output << "newdef " << name() << ":RhoMasses " << ix
 		    << " " << rhoMasses_[ix]/GeV << "\n";
-    else     output << "insert " << name() << ":RhoMasses " << ix 
+    else     output << "insert " << name() << ":RhoMasses " << ix
 		    << " " << rhoMasses_[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<rhoWidths_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":RhoWidths " << ix 
+    if(ix<3) output << "newdef " << name() << ":RhoWidths " << ix
 		    << " " << rhoWidths_[ix]/GeV << "\n";
-    else     output << "insert " << name() << ":RhoWidths " << ix 
+    else     output << "insert " << name() << ":RhoWidths " << ix
 		    << " " << rhoWidths_[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<amp_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":Amplitudes " << ix 
+    if(ix<3) output << "newdef " << name() << ":Amplitudes " << ix
 		    << " " << amp_[ix] << "\n";
-    else     output << "insert " << name() << ":Amplitudes " << ix 
+    else     output << "insert " << name() << ":Amplitudes " << ix
 		    << " " << amp_[ix] << "\n";
   }
   for(unsigned int ix=0;ix<phase_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":Phases " << ix 
+    if(ix<3) output << "newdef " << name() << ":Phases " << ix
 		    << " " << phase_[ix] << "\n";
-    else     output << "insert " << name() << ":Phases " << ix 
+    else     output << "insert " << name() << ":Phases " << ix
 		    << " " << phase_[ix] << "\n";
   }
   output << "newdef " << name() << ":fRho "    << fRho_ << "\n";
@@ -429,6 +429,6 @@ void TwoPionPhotonSNDCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":OmegaMass "    << omegaMass_/GeV << "\n";
   output << "newdef " << name() << ":OmegaWidth "    << omegaWidth_/GeV << "\n";
   WeakCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+  if(header) output << "\n\" where BINARY ThePEGName=\""
 		    << fullName() << "\";" << endl;
 }
