@@ -188,6 +188,11 @@ private:
   /* Use only delta as excited state */
   bool deltaOnly; 
 
+  /* use correction weight for diffraction compared to inelastic weights */
+  bool correctionWeightSwitch;
+
+  /* manual set min mass */
+  double thefixedM2min;
   
   /* Direction of the excited proton */
   unsigned int diffDirection; 
@@ -268,17 +273,21 @@ private:
    * Returns the minimal possible value of diffractive mass
    */
   //lowest possible mass given the constituent masses of quark and diquark
-  Energy2 M2min() const{return sqr(getParticleData(2212)->mass()+mq()+mqq());}
-  
+  Energy2 M2min() const;  
+
   /**
    * Returns the maximal possible value of diffractive mass
    */
-  Energy2 M2max() const{
-    return sqr(generator()->maximumCMEnergy()-getParticleData(2212)->mass());
-  }//TODO:modify to get proper parameters
+  Energy2 M2max() const;
+
+  //TODO:modify to get proper parameters
 
   InvEnergy2 softPomeronSlope() const;
-  
+
+  /**
+  *  Allows for a fixed m2 value
+  */
+  Energy2 fixedM2min() const;
    
 
   /* Kallen function */

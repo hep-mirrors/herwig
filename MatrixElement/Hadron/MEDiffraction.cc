@@ -6,6 +6,7 @@
 
 #include "MEDiffraction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Utilities/UnitIO.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
@@ -675,7 +676,13 @@ double MEDiffraction::me2() const{
 }
 
 CrossSection MEDiffraction::dSigHatDR() const {
-  return me2()*jacobian()/sHat()*sqr(hbarc)*correctionweight();
+  // Apply the correction weight switch if turned on
+  if ( correctionWeightSwitch ) {
+    return me2()*jacobian()/sHat()*sqr(hbarc)*correctionweight();
+  } else {
+    // for single diffraction
+    return me2()*jacobian()/sHat()*sqr(hbarc);
+  }
 }
 
 unsigned int MEDiffraction::orderInAlphaS() const {
@@ -827,13 +834,15 @@ describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope
      << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay
-     << ounit(theProtonMass,GeV) << MPIHandler_;
+     << ounit(theProtonMass,GeV) << MPIHandler_ << correctionWeightSwitch
+     << thefixedM2min;
 }
 
 void MEDiffraction::persistentInput(PersistentIStream & is, int) {
   is >> theme2 >> deltaOnly >> diffDirection >> theprotonPomeronSlope
      >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay
-     >> iunit(theProtonMass,GeV)>> MPIHandler_;
+     >> iunit(theProtonMass,GeV)>> MPIHandler_ >> correctionWeightSwitch
+     >> thefixedM2min;
 }
 
 InvEnergy2 MEDiffraction::protonPomeronSlope() const{
@@ -846,6 +855,22 @@ double MEDiffraction::softPomeronIntercept() const {
 
 InvEnergy2 MEDiffraction::softPomeronSlope() const {
   return thesoftPomeronSlope/GeV2;
+}
+
+// return fixedM2min if in allowed range, else return kinematic limits
+Energy2 MEDiffraction::M2min() const{
+  if (fixedM2min() < sqr(getParticleData(2212)->mass()+mq()+mqq()))
+    return sqr(getParticleData(2212)->mass()+mq()+mqq());
+  else
+    return fixedM2min() < M2max() ? fixedM2min(): M2max();
+}
+
+Energy2 MEDiffraction::M2max() const{
+  return sqr(generator()->maximumCMEnergy()-getParticleData(2212)->mass());
+}
+
+Energy2 MEDiffraction::fixedM2min() const {
+  return thefixedM2min*GeV2;
 }
 
 void MEDiffraction::Init() {
@@ -916,7 +941,18 @@ void MEDiffraction::Init() {
      "The object that administers all additional scatterings.",
      &MEDiffraction::MPIHandler_, false, false, true, true);
 
+  static Switch<MEDiffraction, bool> interfaceCorrectionWeightSwitch
+    ("CorrectionWeight",
+     "use correction weight for diffraction crosssection",
+     &MEDiffraction::correctionWeightSwitch, 1, false, false);
+  static SwitchOption interfaceCorrectionWeight0
+    (interfaceCorrectionWeightSwitch,"No","Correction weight is not used", 0);
+  static SwitchOption interfaceCorrectionWeight1
+    (interfaceCorrectionWeightSwitch,"Yes","Correction weight is used", 1);
 
-
-
-} 
+   static Parameter<MEDiffraction,double> interfacesoftM2min
+    ("MinDiffMass",
+     "Manually set the minimum diffractive mass(GeV^2), bound by kinematics",
+     &MEDiffraction::thefixedM2min, 0.0, 0.0, 100.0,
+     false, false, Interface::nolimits);
+}
