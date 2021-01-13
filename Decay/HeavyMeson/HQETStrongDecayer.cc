@@ -290,7 +290,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   if(abs(type_[imode()])==1) {
     InvEnergy fact = -2.*g_/fPi_*sqrt(momenta[0].mass()/part.mass());
     for(unsigned int ix=0;ix<3;++ix) {
-      (*ME())(ix,0,0) = fact*(vecIn_[ix]*momenta[1]);
+      (*ME())(ix,0,0) = Complex(fact*(vecIn_[ix]*momenta[1]));
     }
     // analytic test of the answer
     // test = 4.*sqr(g_)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
@@ -299,7 +299,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   else if(abs(type_[imode()])==2) {
     InvEnergy2 fact = -2.*h_/fPi_*sqrt(momenta[0].mass()/part.mass())/Lambda_;
     for(unsigned int ix=0;ix<5;++ix) {
-      (*ME())(ix,0,0) = fact*(tensorIn_[ix]*momenta[1]*momenta[0]);
+      (*ME())(ix,0,0) = Complex(fact*(tensorIn_[ix]*momenta[1]*momenta[0]));
     }
     // analytic test of the answer
     // test = 8.*sqr(h_)*momenta[0].mass()*sqr(sqr(pcm))/15./sqr(fPi_)/sqr(Lambda_)/part.mass();
@@ -316,7 +316,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       for(unsigned int iy=0;iy<3;++iy) {
 	LorentzVector<complex<InvEnergy> > vtemp =
 	  fact*epsilon(momenta[0],vecOut_[iy],momenta[1]);
-	(*ME())(ix,iy,0) = (momenta[1]*tensorIn_[ix]).dot(vtemp);
+	(*ME())(ix,iy,0) = Complex((momenta[1]*tensorIn_[ix]).dot(vtemp));
       }
     }
     // analytic test of the answer
