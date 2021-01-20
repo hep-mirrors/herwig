@@ -628,6 +628,7 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
                 # bizarre number for checks, must be a better option
                 parmsubs[kine] = 987654321.
         if(not tval) :
+            value = all_couplings[icolor][0]
             tval = evaluate(value,model,parmsubs)
         else :
             tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
@@ -716,7 +717,10 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                     value = all_couplings[icolor][ix]
                     tval = evaluate(value,model,parmsubs)
                 else :
-                    tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs)
+                    if all_couplings[icolor][ix] == False:
+                        raise SkipThisVertex()
+                    else:
+                        tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs)
                     if(abs(tval-tval2)>1e-6) :
                         raise SkipThisVertex()
     elif(lorentztag=="VVVV") :
