@@ -83,48 +83,48 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   _a1opt=true;
   double  a1q2in[200]={0      ,15788.6,31577.3,47365.9,63154.6,78943.2,
 		       94731.9,110521 ,126309 ,142098 ,157886 ,173675 ,
-		       189464 ,205252 ,221041 ,236830 ,252618 ,268407 ,     
-		       284196 ,299984 ,315773 ,331562 ,347350 ,363139 ,     
-		       378927 ,394716 ,410505 ,426293 ,442082 ,457871 ,     
-		       473659 ,489448 ,505237 ,521025 ,536814 ,552603 ,      
-		       568391 ,584180 ,599969 ,615757 ,631546 ,647334 ,      
-		       663123 ,678912 ,694700 ,710489 ,726278 ,742066 ,      
-		       757855 ,773644 ,789432 ,805221 ,821010 ,836798 ,      
-		       852587 ,868375 ,884164 ,899953 ,915741 ,931530 ,     
-		       947319 ,963107 ,978896 ,994685 ,     
-		       1.01047e+06,1.02626e+06,1.04205e+06,1.05784e+06, 
-		       1.07363e+06,1.08942e+06,1.10521e+06,1.12099e+06, 
-		       1.13678e+06,1.15257e+06,1.16836e+06,1.18415e+06, 
-		       1.19994e+06,1.21573e+06,1.23151e+06,1.24730e+06, 
-		       1.26309e+06,1.27888e+06,1.29467e+06,1.31046e+06, 
-		       1.32625e+06,1.34203e+06,1.35782e+06,1.37361e+06, 
-		       1.38940e+06,1.40519e+06,1.42098e+06,1.43677e+06, 
-		       1.45256e+06,1.46834e+06,1.48413e+06,1.49992e+06, 
-		       1.51571e+06,1.53150e+06,1.54729e+06,1.56308e+06, 
-		       1.57886e+06,1.59465e+06,1.61044e+06,1.62623e+06, 
-		       1.64202e+06,1.65781e+06,1.67360e+06,1.68939e+06, 
-		       1.70517e+06,1.72096e+06,1.73675e+06,1.75254e+06, 
-		       1.76833e+06,1.78412e+06,1.79991e+06,1.81569e+06, 
-		       1.83148e+06,1.84727e+06,1.86306e+06,1.87885e+06, 
-		       1.89464e+06,1.91043e+06,1.92621e+06,1.94200e+06, 
-		       1.95779e+06,1.97358e+06,1.98937e+06,2.00516e+06, 
-		       2.02095e+06,2.03674e+06,2.05252e+06,2.06831e+06, 
-		       2.08410e+06,2.09989e+06,2.11568e+06,2.13147e+06, 
-		       2.14726e+06,2.16304e+06,2.17883e+06,2.19462e+06, 
-		       2.21041e+06,2.22620e+06,2.24199e+06,2.25778e+06, 
-		       2.27356e+06,2.28935e+06,2.30514e+06,2.32093e+06, 
-		       2.33672e+06,2.35251e+06,2.36830e+06,2.38409e+06, 
-		       2.39987e+06,2.41566e+06,2.43145e+06,2.44724e+06, 
-		       2.46303e+06,2.47882e+06,2.49461e+06,2.51039e+06, 
-		       2.52618e+06,2.54197e+06,2.55776e+06,2.57355e+06, 
-		       2.58934e+06,2.60513e+06,2.62092e+06,2.63670e+06, 
-		       2.65249e+06,2.66828e+06,2.68407e+06,2.69986e+06, 
-		       2.71565e+06,2.73144e+06,2.74722e+06,2.76301e+06, 
-		       2.77880e+06,2.79459e+06,2.81038e+06,2.82617e+06, 
-		       2.84196e+06,2.85774e+06,2.87353e+06,2.88932e+06, 
-		       2.90511e+06,2.92090e+06,2.93669e+06,2.95248e+06, 
-		       2.96827e+06,2.98405e+06,2.99984e+06,3.01563e+06, 
-		       3.03142e+06,3.04721e+06,3.06300e+06,3.07879e+06, 
+		       189464 ,205252 ,221041 ,236830 ,252618 ,268407 ,
+		       284196 ,299984 ,315773 ,331562 ,347350 ,363139 ,
+		       378927 ,394716 ,410505 ,426293 ,442082 ,457871 ,
+		       473659 ,489448 ,505237 ,521025 ,536814 ,552603 ,
+		       568391 ,584180 ,599969 ,615757 ,631546 ,647334 ,
+		       663123 ,678912 ,694700 ,710489 ,726278 ,742066 ,
+		       757855 ,773644 ,789432 ,805221 ,821010 ,836798 ,
+		       852587 ,868375 ,884164 ,899953 ,915741 ,931530 ,
+		       947319 ,963107 ,978896 ,994685 ,
+		       1.01047e+06,1.02626e+06,1.04205e+06,1.05784e+06,
+		       1.07363e+06,1.08942e+06,1.10521e+06,1.12099e+06,
+		       1.13678e+06,1.15257e+06,1.16836e+06,1.18415e+06,
+		       1.19994e+06,1.21573e+06,1.23151e+06,1.24730e+06,
+		       1.26309e+06,1.27888e+06,1.29467e+06,1.31046e+06,
+		       1.32625e+06,1.34203e+06,1.35782e+06,1.37361e+06,
+		       1.38940e+06,1.40519e+06,1.42098e+06,1.43677e+06,
+		       1.45256e+06,1.46834e+06,1.48413e+06,1.49992e+06,
+		       1.51571e+06,1.53150e+06,1.54729e+06,1.56308e+06,
+		       1.57886e+06,1.59465e+06,1.61044e+06,1.62623e+06,
+		       1.64202e+06,1.65781e+06,1.67360e+06,1.68939e+06,
+		       1.70517e+06,1.72096e+06,1.73675e+06,1.75254e+06,
+		       1.76833e+06,1.78412e+06,1.79991e+06,1.81569e+06,
+		       1.83148e+06,1.84727e+06,1.86306e+06,1.87885e+06,
+		       1.89464e+06,1.91043e+06,1.92621e+06,1.94200e+06,
+		       1.95779e+06,1.97358e+06,1.98937e+06,2.00516e+06,
+		       2.02095e+06,2.03674e+06,2.05252e+06,2.06831e+06,
+		       2.08410e+06,2.09989e+06,2.11568e+06,2.13147e+06,
+		       2.14726e+06,2.16304e+06,2.17883e+06,2.19462e+06,
+		       2.21041e+06,2.22620e+06,2.24199e+06,2.25778e+06,
+		       2.27356e+06,2.28935e+06,2.30514e+06,2.32093e+06,
+		       2.33672e+06,2.35251e+06,2.36830e+06,2.38409e+06,
+		       2.39987e+06,2.41566e+06,2.43145e+06,2.44724e+06,
+		       2.46303e+06,2.47882e+06,2.49461e+06,2.51039e+06,
+		       2.52618e+06,2.54197e+06,2.55776e+06,2.57355e+06,
+		       2.58934e+06,2.60513e+06,2.62092e+06,2.63670e+06,
+		       2.65249e+06,2.66828e+06,2.68407e+06,2.69986e+06,
+		       2.71565e+06,2.73144e+06,2.74722e+06,2.76301e+06,
+		       2.77880e+06,2.79459e+06,2.81038e+06,2.82617e+06,
+		       2.84196e+06,2.85774e+06,2.87353e+06,2.88932e+06,
+		       2.90511e+06,2.92090e+06,2.93669e+06,2.95248e+06,
+		       2.96827e+06,2.98405e+06,2.99984e+06,3.01563e+06,
+		       3.03142e+06,3.04721e+06,3.06300e+06,3.07879e+06,
 		       3.09457e+06,3.11036e+06,3.12615e+06,3.14194e+06};
   double a1widthin[200]={0,0,0,0,0,0,0,0,
 			 0,0,0,0.00021256,0.0107225,0.0554708,0.150142,0.303848,
@@ -156,7 +156,7 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
     std::transform(tmp1.begin(), tmp1.end(),
 		   back_inserter(_a1runwidth),
 		   [](double x){return x*GeV;});
-    
+
     vector<double> tmp2(a1q2in,a1q2in+200);
     _a1runq2.clear();
     std::transform(tmp2.begin(), tmp2.end(),
@@ -196,17 +196,17 @@ void ThreePionCLEOCurrent::doinit() {
 void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
   os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV)
      << ounit(_f2mass,GeV) << ounit(_f2width,GeV)
-     << ounit(_f0mass,GeV) << ounit(_f0width,GeV) 
+     << ounit(_f0mass,GeV) << ounit(_f0width,GeV)
      << ounit(_sigmamass,GeV) << ounit(_sigmawidth,GeV)
-     << ounit(_mpi0,GeV) << ounit(_mpic,GeV) 
-     << ounit(_fpi,GeV) << ounit(_fact,1/GeV) 
-     << _rhomagP << _rhophaseP 
-     << _rhocoupP << ounit(_rhomagD,1/GeV2) << _rhophaseD 
+     << ounit(_mpi0,GeV) << ounit(_mpic,GeV)
+     << ounit(_fpi,GeV) << ounit(_fact,1/GeV)
+     << _rhomagP << _rhophaseP
+     << _rhocoupP << ounit(_rhomagD,1/GeV2) << _rhophaseD
      << ounit(_rhocoupD,1/GeV2) <<ounit(_f2mag,1/GeV2) << _f2phase << ounit(_f2coup ,1/GeV2)
      << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup
-     << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV) 
+     << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV)
      << ounit(_a1runq2,GeV2) <<  _initializea1
-     << ounit(_mKstar,GeV) << ounit(_mK,GeV) << _gammk << _a1opt 
+     << ounit(_mKstar,GeV) << ounit(_mK,GeV) << _gammk << _a1opt
      << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV) << _a1runinter;
 }
 
@@ -215,15 +215,15 @@ void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(_f2mass,GeV) >> iunit(_f2width,GeV)
      >> iunit(_f0mass,GeV) >> iunit(_f0width,GeV)
      >> iunit(_sigmamass,GeV) >> iunit(_sigmawidth,GeV)
-     >> iunit(_mpi0,GeV) >> iunit(_mpic,GeV) 
-     >> iunit(_fpi,GeV) >> iunit(_fact,1/GeV) 
-     >> _rhomagP >> _rhophaseP 
-     >> _rhocoupP >> iunit(_rhomagD,1/GeV2) >> _rhophaseD >> iunit(_rhocoupD,1/GeV2) 
-     >> iunit(_f2mag,1/GeV2) >> _f2phase >> iunit(_f2coup,1/GeV2) 
+     >> iunit(_mpi0,GeV) >> iunit(_mpic,GeV)
+     >> iunit(_fpi,GeV) >> iunit(_fact,1/GeV)
+     >> _rhomagP >> _rhophaseP
+     >> _rhocoupP >> iunit(_rhomagD,1/GeV2) >> _rhophaseD >> iunit(_rhocoupD,1/GeV2)
+     >> iunit(_f2mag,1/GeV2) >> _f2phase >> iunit(_f2coup,1/GeV2)
      >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup
-     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >>  iunit(_a1runwidth,GeV) 
+     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >>  iunit(_a1runwidth,GeV)
      >> iunit(_a1runq2,GeV2) >>  _initializea1
-     >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt 
+     >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt
      >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV) >> _a1runinter;
 }
 
@@ -393,7 +393,7 @@ void ThreePionCLEOCurrent::Init() {
      "The values of the a_1 width for interpolation to giving the running width.",
      &ThreePionCLEOCurrent::_a1runwidth,
      MeV, 0, ZERO, ZERO, 10000000*MeV, false, false, true);
-  
+
   static ParVector<ThreePionCLEOCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
@@ -414,7 +414,7 @@ void ThreePionCLEOCurrent::Init() {
      "No",
      "Use the default values",
      false);
-  
+
   static Switch<ThreePionCLEOCurrent,bool> interfacea1WidthOption
     ("a1WidthOption",
      "Option for the treatment of the a1 width",
@@ -478,7 +478,7 @@ void ThreePionCLEOCurrent::inita1Width(int iopt) {
 
 void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 					  Energy2 q2,Energy2 s1, Energy2 s2, Energy2 s3,
-					  Complex & F1, Complex & F2, 
+					  Complex & F1, Complex & F2,
 					  Complex & F3) const {
   useMe();
   double fact=1.;
@@ -526,7 +526,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
     else if(ichan==3) {
       complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
       F1+=Complex(_f2coup*0.5*(s3-s2)*f2bws1);
-      F2-=Complex(_f2coup*Dfact1); 
+      F2-=Complex(_f2coup*Dfact1);
       F3-=Complex(_f2coup*Dfact1);
     }
     else if(ichan==4) {
@@ -947,26 +947,26 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create) {
-    output << "create Herwig::ThreePionCLEOCurrent " << name() 
+    output << "create Herwig::ThreePionCLEOCurrent " << name()
 	   << " HwWeakCurrents.so\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) {
-      output << "newdef    " << name() << ":RhoMasses " << ix 
+      output << "newdef    " << name() << ":RhoMasses " << ix
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << name() << ":RhoMasses " << ix 
+      output << "insert " << name() << ":RhoMasses " << ix
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) {
-      output << "newdef    " << name() << ":RhoWidths " << ix 
+      output << "newdef    " << name() << ":RhoWidths " << ix
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << name() << ":RhoWidths " << ix 
+      output << "insert " << name() << ":RhoWidths " << ix
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
   }
@@ -985,41 +985,41 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
       if(ix<2) {
-	output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix 
+	output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix
 	       << " " << _rhomagP[ix] << "\n";
       }
       else {
-	output << "insert " << name() << ":RhoPWaveMagnitude " << ix 
+	output << "insert " << name() << ":RhoPWaveMagnitude " << ix
 	       << " " << _rhomagP[ix] << "\n";
       }
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
     if(ix<2) {
-      output << "newdef    " << name() << ":RhoPWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoPWavePhase " << ix
 	     << " " << _rhophaseP[ix] << "\n";
     }
     else {
-      output << "insert " << name() << ":RhoPWavePhase " << ix 
+      output << "insert " << name() << ":RhoPWavePhase " << ix
 	     << " " << _rhophaseP[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) {
-      output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix 
+      output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
     else {
-      output << "insert " << name() << ":RhoDWaveMagnitude " << ix 
+      output << "insert " << name() << ":RhoDWaveMagnitude " << ix
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
     if(ix<2) {
-      output << "newdef    " << name() << ":RhoDWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoDWavePhase " << ix
 	     << " " << _rhophaseD[ix] << "\n";
     }
     else {
-      output << "insert " << name() << ":RhoDWavePhase " << ix 
+      output << "insert " << name() << ":RhoDWavePhase " << ix
 	     << " " << _rhophaseD[ix] << "\n";
     }
   }
@@ -1032,26 +1032,26 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
-      output << "newdef    " << name() << ":a1RunningWidth " << ix 
+      output << "newdef    " << name() << ":a1RunningWidth " << ix
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << name() << ":a1RunningWidth " << ix 
+      output << "insert " << name() << ":a1RunningWidth " << ix
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) {
-      output << "newdef    " << name() << ":a1RunningQ2 " << ix 
+      output << "newdef    " << name() << ":a1RunningQ2 " << ix
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
     else {
-      output << "insert " << name() << ":a1RunningQ2 " << ix 
+      output << "insert " << name() << ":a1RunningQ2 " << ix
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
   }
   WeakCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+  if(header) output << "\n\" where BINARY ThePEGName=\""
 		    << fullName() << "\";" << endl;
 }
 
@@ -1108,9 +1108,9 @@ Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const {
   return output;
 }
 
-double 
+double
 ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
-					     const Energy2 s3, const Energy2 s2, 
+					     const Energy2 s3, const Energy2 s2,
 					     const Energy2 s1, const Energy,
 					     const Energy, const Energy) const {
   Energy p1[5],p2[5],p3[5];
@@ -1127,16 +1127,16 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
     p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
     // take momentum of 1 parallel to z axis
     p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
-    // construct 2 
+    // construct 2
     double cos2 = 0.5*(p1sq+p2sq-p3sq-2.*mpi20+mpi2c)/p1[4]/p2[4];
     p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
     // construct 3
     double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
-    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3; 
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3;
     // calculate the form factors
     CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
   }
-  // construct the momenta for the 3 charged mode 
+  // construct the momenta for the 3 charged mode
   else {
     // construct the momenta of the decay products
     p1[0] = 0.5*(q2+mpi2c-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi2c);
@@ -1144,12 +1144,12 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
     p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
     // take momentum of 1 parallel to z axis
     p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
-    // construct 2 
+    // construct 2
     double cos2 = 0.5*(p1sq+p2sq-p3sq-mpi2c)/p1[4]/p2[4];
     p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
     // construct 3
     double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
-    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3; 
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3;
     // calculate the form factors
     CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
   }
@@ -1163,11 +1163,11 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
   return(-dot1+dot2*conj(dot2)/q2).real() / sqr(_rhomass[0]);
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVectorE> 
+// the hadronic currents
+vector<LorentzPolarizationVectorE>
 ThreePionCLEOCurrent::current(tcPDPtr resonance,
 			      FlavourInfo flavour,
-			      const int imode, const int ichan, Energy & scale, 
+			      const int imode, const int ichan, Energy & scale,
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
@@ -1211,7 +1211,7 @@ ThreePionCLEOCurrent::current(tcPDPtr resonance,
   F2 =- F2;
   // prefactor
   complex<InvEnergy> a1fact = _fact;
-  if(!resonance) a1fact *= a1BreitWigner(q2);
+  if(!resonance) a1fact = a1fact * a1BreitWigner(q2);
   // current
   LorentzPolarizationVectorE vect = q.mass()*a1fact*
     ((F2-F1)*momenta[2] + (F1-F3)*momenta[1] + (F3-F2)*momenta[0]);
@@ -1225,7 +1225,7 @@ ThreePionCLEOCurrent::current(tcPDPtr resonance,
 bool ThreePionCLEOCurrent::accept(vector<int> id) {
   if(id.size()!=3) return false;
   for(unsigned int ix=0;ix<id.size();++ix) {
-    if(id[ix]==ParticleID::piplus) continue; 
+    if(id[ix]==ParticleID::piplus) continue;
     else if(id[ix]==ParticleID::piminus) continue;
     else if(id[ix]==ParticleID::pi0)     continue;
     return false;
@@ -1243,7 +1243,7 @@ unsigned int ThreePionCLEOCurrent::decayMode(vector<int> id) {
   }
   if       (npi0==3)                                  return 0;
   else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) return 2;
-  else if( npi0==1 && npip==1 && npim==1 )            return 3; 
+  else if( npi0==1 && npip==1 && npim==1 )            return 3;
   else if( (npip==2&&npim==1) || (npim==2&&npip==1) ) return 5;
   else return -1;
 }
@@ -1281,4 +1281,3 @@ tPDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,in
   // return the answer
   return extpart;
 }
-
