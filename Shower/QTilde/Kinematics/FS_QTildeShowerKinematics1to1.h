@@ -35,6 +35,29 @@ public:
 public:
 
   /**
+   *
+   */
+  virtual void updateChildren( const tShowerParticlePtr parent, 
+			       const ShowerParticleVector & children,
+			       ShowerPartnerType partnerType) const;
+  
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the KinematicsReconstructor.
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
+   */
+  virtual void updateParent(const tShowerParticlePtr parent,
+			    const ShowerParticleVector & children,
+			    unsigned int pTscheme,
+			    ShowerPartnerType partnerType) const;
+
+  virtual void resetChildren( const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
+public:
+
+  /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
    * before the main function starts or

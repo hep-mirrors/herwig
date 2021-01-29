@@ -688,8 +688,6 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return false;
   }
-  Branching fc[2] = {Branching(),Branching()};
-
   assert(fb.kinematics);
   // has emitted
   // Assign the shower kinematics to the emitting particle.
@@ -700,11 +698,6 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
   // create the children
   children = createTimeLikeChildren(particle,fb.ids);
 
-  if(fb.ids.size()==2) {
-    cerr << "testing in timelike " << fb.ids[1]->PDGName() << "\n";
-    cerr << *children[0] << "\n";
-    assert(false);
-  }
   // update the children
   particle->showerKinematics()->
     updateChildren(particle, children,fb.type);
@@ -717,14 +710,15 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     return true;
   }
   // select branchings for children
-  fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
-  fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
-  // shower the first  particle
-  if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-  if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-  // shower the second particle
-  if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-  if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+  for(tShowerParticlePtr child : children) {
+    // select branching
+    Branching fc = selectTimeLikeBranching(child,type,HardBranchingPtr());
+    // if branching shower particle
+    if(fc.kinematics) timeLikeShower(child,type,fc,false);
+    if(child->spinInfo()) child->spinInfo()->develop(); 
+  }
+
+  
   particle->showerKinematics()->updateParent(particle, children,_evolutionScheme,fb.type);
   // branching has happened
   if(first&&!children.empty())
