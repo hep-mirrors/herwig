@@ -8,6 +8,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 
 using namespace Herwig;
 void FS_QTildeShowerKinematics1to1::
@@ -23,8 +24,8 @@ updateChildren(const tShowerParticlePtr parent,
   // updateParameters(parent, children[0], children[1], true);
   // // set up the colour connections
   // sudakov1to2_->colourConnection(parent,children[0],children[1],partnerType,false);
-  // // make the products children of the parent
-  // parent->addChild(children[0]);
+  // make the product a child of the parent
+  parent->addChild(children[0]);
   // parent->addChild(children[1]);
   // // set the momenta of the children
   // for(ShowerParticleVector::const_iterator pit=children.begin();
@@ -118,4 +119,54 @@ resetChildren(const tShowerParticlePtr parent,
   // 			    (children[ix]->children()[iy]));
   //   children[ix]->showerKinematics()->resetChildren(children[ix],newChildren);
   // }
+}
+
+void FS_QTildeShowerKinematics1to1::reconstructLast(const tShowerParticlePtr last,
+						    Energy mass) const {
+  // // set beta component and consequently all missing data from that,
+  // // using the nominal (i.e. PDT) mass.
+  // Energy theMass =ZERO;
+  // if(!(mass > ZERO) && ShowerHandler::currentHandler()->retConstituentMasses())
+  //   theMass = last->data().constituentMass();
+  // else
+  //   theMass = mass > ZERO ? mass : last->data().mass();
+  
+  // Lorentz5Momentum pVector = last->showerBasis()->pVector();
+  // ShowerParticle::Parameters & lastParam = last->showerParameters();
+  // Energy2 denom = 2. * lastParam.alpha * last->showerBasis()->p_dot_n();
+  // if(abs(denom)/(sqr(pVector.e())+pVector.rho2())<1e-10) {
+  //   throw KinematicsReconstructionVeto();
+  // }
+  // lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt)
+  // 		     - sqr(lastParam.alpha) * pVector.m2() )
+  //   / denom;
+  // // set that new momentum
+  // Lorentz5Momentum newMomentum = last->showerBasis()->
+  //   sudakov2Momentum( lastParam.alpha, lastParam.beta,
+  // 		      lastParam.ptx  , lastParam.pty);
+  // newMomentum.setMass(theMass);
+  // newMomentum.rescaleEnergy();
+  // if(last->data().stable()) {
+  //   last->set5Momentum( newMomentum );
+  // }
+  // else {
+  //   last->boost(last->momentum().findBoostToCM());
+  //   last->boost(newMomentum.boostVector());
+  // }
+}
+
+
+void FS_QTildeShowerKinematics1to1::
+reconstructParent(const tShowerParticlePtr parent, 
+		  const ParticleVector & children ) const {
+  // assert(children.size() == 2);
+  // ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(children[0]);
+  // ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
+  // parent->showerParameters().beta= 
+  //   c1->showerParameters().beta + c2->showerParameters().beta; 
+  // Lorentz5Momentum pnew = c1->momentum() + c2->momentum();
+  // Energy2 m2 = sqr(pT())/z()/(1.-z()) + sqr(c1->mass())/z()
+  //   + sqr(c2->mass())/(1.-z());
+  // pnew.setMass(sqrt(m2));
+  // parent->set5Momentum( pnew );
 }

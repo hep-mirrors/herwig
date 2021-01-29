@@ -55,6 +55,25 @@ public:
 
   virtual void resetChildren( const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children) const;
+
+  /**
+   * Update the kinematical data of a particle when a reconstruction
+   * fixpoint was found. This will highly depend on the kind of
+   * kinematics chosen and will be defined in the inherited concrete
+   * classes. This method will be used by the KinematicsReconstructor.
+   * @param last The particle to update
+   * @param mass The mass to be used, if less than zero on-shell
+   */
+  virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
+
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the 
+   * KinematicsReconstructor.
+   */
+  virtual void reconstructParent( const tShowerParticlePtr parent, 
+				  const ParticleVector & children ) const;
+
 public:
 
   /**

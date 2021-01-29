@@ -147,7 +147,10 @@ public:
    * @param children The outgoing particles in the branching
    */
   void addFinalStateBranching(ShowerParticlePtr parent,
-			      const ShowerParticleVector & children);
+			      const ShowerParticleVector & children) {
+    _forward.erase(parent);
+    for(tShowerParticlePtr child : children) _forward.insert(child);
+  }
 
   /**
    *  Add an initial-state branching. This method removes the oldParent of the

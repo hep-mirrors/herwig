@@ -183,6 +183,9 @@ void KinematicsReconstructor::doinit() {
 
 bool KinematicsReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
+  if(generator()->currentEventNumber()==433) {
+    cerr << "in jet recon " << *particleJetParent << "\n";
+  }
   assert(particleJetParent);
   bool emitted=true;
   // if this is not a fixed point in the reconstruction
@@ -251,6 +254,8 @@ reconstructHardJets(ShowerTreePtr hard,
 		    pair<Energy,double> > & intrinsic,
 		    ShowerInteraction type,
 		    bool switchRecon) const {
+  if(generator()->currentEventNumber()==433)
+    cerr << "testing in recon\n";
   _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree

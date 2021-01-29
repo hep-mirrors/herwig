@@ -109,18 +109,15 @@ ShowerTree::ShowerTree(PerturbativeProcessPtr process)
 void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
 					       ShowerParticlePtr parent,
 					       const ShowerParticleVector & children) {
-  assert(children.size()==2);
-  bool matches[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    matches[ix] = children[ix]->id()==progenitor->id();
-  }
   ShowerParticlePtr newpart;
-  if(matches[0]&&matches[1]) {
-    if(parent->showerKinematics()->z()>0.5) newpart=children[0];
-    else                                    newpart=children[1];
+  double amax(0.);
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    if(children[ix]->id()==progenitor->id() &&
+       children[ix]->showerParameters().alpha>amax) {
+      amax = children[ix]->showerParameters().alpha;
+      newpart=children[ix];
+    }
   }
-  else if(matches[0]) newpart=children[0];
-  else if(matches[1]) newpart=children[1];
   _outgoingLines[progenitor]=newpart;
 }
 
@@ -609,15 +606,6 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
       _treelinks.insert(make_pair(newtree,
 				  make_pair(tShowerProgenitorPtr(),*cit)));
     }
-  }
-}
-
-void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
-					const ShowerParticleVector & children) {
-  assert(children.size()==2);
-  _forward.erase(parent);
-  for(unsigned int ix=0; ix<children.size(); ++ix) {
-    _forward.insert(children[ix]);
   }
 }
 
