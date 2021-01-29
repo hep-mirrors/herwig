@@ -717,9 +717,6 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     if(fc.kinematics) timeLikeShower(child,type,fc,false);
     if(child->spinInfo()) child->spinInfo()->develop(); 
   }
-  if(children.size()==1) {
-    cerr << "testing in event " << generator()->currentEventNumber() << " made " << *children[0] << "\n";
-  }
   particle->showerKinematics()->updateParent(particle, children,_evolutionScheme,fb.type);
   // branching has happened
   if(first&&!children.empty())
