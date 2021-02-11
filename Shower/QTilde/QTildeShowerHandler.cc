@@ -56,7 +56,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _nReWeight(100), _reWeight(false),
   interaction_(ShowerInteraction::Both),
   _trunc_Mode(true), _hardEmission(1),
-  _softOpt(2), _hardPOWHEG(false), muPt(ZERO)
+  _softOpt(2), _hardPOWHEG(false), muPt(ZERO), _oneToOneMode(0)
 {}
 
 QTildeShowerHandler::~QTildeShowerHandler() {}
@@ -76,7 +76,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
      << _trunc_Mode << _hardEmission << _evolutionScheme 
-     << ounit(muPt,GeV) << oenum(interaction_) 
+     << ounit(muPt,GeV) << _oneToOneMode << oenum(interaction_) 
      << _reconstructor << _partnerfinder;
 }
 
@@ -87,7 +87,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
      >> _trunc_Mode >> _hardEmission >> _evolutionScheme
-     >> iunit(muPt,GeV) >> ienum(interaction_)
+     >> iunit(muPt,GeV) >> _oneToOneMode >> ienum(interaction_)
      >> _reconstructor >> _partnerfinder;
 }
 
@@ -355,6 +355,21 @@ void QTildeShowerHandler::Init() {
     ("PartnerFinder",
      "Reference to the PartnerFinder object",
      &QTildeShowerHandler::_partnerfinder, false, false, true, false, false);
+
+  static Switch<QTildeShowerHandler,unsigned int> interfaceOneToOneMode
+    ("OneToOneMode",
+     "Option for 1->1 splittings",
+     &QTildeShowerHandler::_oneToOneMode, 0, false, false);
+  static SwitchOption interfaceOneToOneModeAll
+    (interfaceOneToOneMode,
+     "All",
+     "Allow all one to one splittings",
+     0);
+  static SwitchOption interfaceOneToOneModeShower
+    (interfaceOneToOneMode,
+     "Shower",
+     "Only allow one to one splittings of particles produced in the shower",
+     1);
 
 }
 
@@ -2577,6 +2592,9 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
       if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
       continue;
     }
+    // veto 1->1 branchings of perturbative particles
+    if(_oneToOneMode==1 && fb.ids.size()==2 && particle->perturbative()!=0)
+      continue;
     // special for already decayed particles
     // don't allow flavour changing branchings
     bool vetoDecay = false;

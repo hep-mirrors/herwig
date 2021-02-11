@@ -817,6 +817,12 @@ private :
    */
   Energy muPt;
 
+  /**
+   *  Option for 1->1 splittings
+   */
+  unsigned int _oneToOneMode;
+
+  
 private:
   /**
    *  Pointer to the various objects
