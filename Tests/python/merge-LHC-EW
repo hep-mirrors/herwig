@@ -87,7 +87,7 @@ if __name__ == "__main__":
                "-8-Z-Mass1-e" ,"-8-Z-Mass1-mu" ,"-8-Z-Mass2-e" ,"-8-Z-Mass2-mu" ,"-8-Z-Mass3-e" ,"-8-Z-Mass3-mu" ,"-8-Z-Mass4-e" ,"-8-Z-Mass4-mu" ,
                "-13-Z-Mass1-e","-13-Z-Mass1-mu","-13-Z-Mass2-e","-13-Z-Mass2-mu","-13-Z-Mass3-e","-13-Z-Mass3-mu","-13-Z-Mass4-e","-13-Z-Mass4-mu",
                "-W-e","-W-mu","-Z-e","-Z-mu","-Z-mu-Short","-Z-LowMass-e","-Z-LowMass-mu",
-               "-Z-MedMass-e","8-W-e","8-W-mu",
+               "-Z-MedMass-e","-8-W-e","-8-W-mu",
                "-WW-emu","-WW-ll","13-W-emu","-WZ","-ZZ-ll","-ZZ-lv","-13-ZZ-ll",
                "-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
                "-7-W-Jet-1-e","-7-W-Jet-2-e","-7-W-Jet-3-e","-7-Z-Jet-1-e","-7-Z-Jet-2-e","-7-Z-Jet-3-e",
@@ -486,6 +486,23 @@ if __name__ == "__main__":
                 del outhistos[den]
             elif num in outhistos :
                 del outhistos[num]
+    # LHCB W/Z + jets
+    if("/LHCB_2016_I1454404:MODE=WJET/d01-x01-y01" in outhistos and
+       "/LHCB_2016_I1454404:MODE=WJET/d01-x01-y02" in outhistos and
+       "/LHCB_2016_I1454404:MODE=ZJET/d01-x01-y03" in outhistos) :
+        hZ = outhistos["/LHCB_2016_I1454404:MODE=ZJET/d01-x01-y03"]
+        hWp= outhistos["/LHCB_2016_I1454404:MODE=WJET/d01-x01-y01"]
+        hWm= outhistos["/LHCB_2016_I1454404:MODE=WJET/d01-x01-y02"]
+        hsum=hWp+hWm
+        r1=hsum/hZ
+        r1.setPath("/LHCB_2016_I1454404/d02-x01-y01")
+        outhistos["/LHCB_2016_I1454404/d02-x01-y01"]=r1
+        r1=hWp/hZ
+        r1.setPath("/LHCB_2016_I1454404/d02-x01-y02")
+        outhistos["/LHCB_2016_I1454404/d02-x01-y02"]=r1
+        r1=hWm/hZ
+        r1.setPath("/LHCB_2016_I1454404/d02-x01-y03")
+        outhistos["/LHCB_2016_I1454404/d02-x01-y03"]=r1
     # Choose output file
     name = args[0]+"-EW.yoda"
     yoda.writeYODA(outhistos,name)
