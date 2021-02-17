@@ -271,7 +271,6 @@ void MEee2eeX::Init() {
     ("The MEee2eeX class implements e+e- -> e+e- gamma gamma processes with"
      " gamma gamma-X via the GammaGammaAmplitude");
 
-
   static Parameter<MEee2eeX,Energy2> interfaceQ2_1Min
     ("Q2_1Min",
      "The minimum value of Q2 for the off-shell photon from the electron",
@@ -315,6 +314,11 @@ void MEee2eeX::Init() {
      "EquivalentPhoton",
      "Use the equivalent photon approximation",
      1);
+  static SwitchOption interfaceCurrentModeEquivalentPhoton
+    (interfaceCurrentMode,
+     "EquivalentPhotonNoSpin",
+     "Use the equivalent photon approximation, neglecting spin correlations",
+     2);
 
 }
 
