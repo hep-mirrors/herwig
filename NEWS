@@ -5,7 +5,7 @@ Herwig News							 -*- outline -*-
 
 ** support for python 3 and gcc 10
 
-** ufo2herwig script is updated to be compaible with python 2 and 3, using --convert option 
+** ufo2herwig script is updated to be compatible with python 2 and 3, using --convert option 
 
 * Herwig 7.2.1 release: 2020-04-10
 
