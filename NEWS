@@ -1,6 +1,12 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.2.2 release: 2021-01-22
+
+** support for python 3 and gcc 10
+
+** ufo2herwig script is updated to be compaible with python 2 and 3, using --convert option 
+
 * Herwig 7.2.1 release: 2020-04-10
 
 ** vertex position fix for taus in dipole shower events
