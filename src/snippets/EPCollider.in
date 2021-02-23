@@ -29,6 +29,9 @@ insert EventHandler:Cuts:TwoCuts[1] /Herwig/Cuts/ChargedCurrentCut
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteInitialSplitting gamma->e-,e+; /Herwig/Shower/GammatoQQbarSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteInitialSplitting gamma->mu-,mu+; /Herwig/Shower/GammatoQQbarSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteInitialSplitting gamma->tau-,tau+; /Herwig/Shower/GammatoQQbarSudakov
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
 # Matchbox settings
 cd /Herwig/MatrixElements/Matchbox

@@ -50,7 +50,7 @@ cd /Herwig/MatrixElements
 ${process}
 
 cd /Herwig/Generators
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig run'

@@ -122,8 +122,11 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
   orderFile << "NJetReturnAccuracy        yes\n"
 	    << "NJetRenormalize           yes\n"
-	    << "NJetNf                    " << factory()->nLight() << "\n";
-
+#if NJET_VERSION > 1023
+	    << "SetParameter qcd(nf) " << factory()->nLight() << "\n"; // NJet >= 2.1.0: 
+#else
+            << "NJetNf                    " << factory()->nLight() << "\n"; // NJet <=2.0.0
+#endif
   olpOrderFileProcesses(orderFile,procs);
 
   orderFile << flush;

@@ -39,7 +39,7 @@ insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 ${process}
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig run'
