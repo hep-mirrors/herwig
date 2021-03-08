@@ -178,7 +178,7 @@ THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 install-data-hook:
 	@echo Creating repository
 
-	@if [ "$(PYTHON_PLATFORM)" = "darwin" ]; then\
+	@if [ "$(PYTHON_PLATFORM)" = "darwin" ] && [ "$(EVTGENLIBS)" != "" ]; then\
 				install_name_tool -add_rpath $(DESTDIR)$(libdir) $(DESTDIR)$(pkglibdir)/HwEvtGenInterface.so;\
 	fi
 
