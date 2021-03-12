@@ -314,7 +314,7 @@ void MEee2eeX::Init() {
      "EquivalentPhoton",
      "Use the equivalent photon approximation",
      1);
-  static SwitchOption interfaceCurrentModeEquivalentPhoton
+  static SwitchOption interfaceCurrentModeEquivalentPhotonNoSpin
     (interfaceCurrentMode,
      "EquivalentPhotonNoSpin",
      "Use the equivalent photon approximation, neglecting spin correlations",
