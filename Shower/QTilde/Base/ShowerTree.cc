@@ -516,24 +516,72 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
 void ShowerTree::clear() {
   // reset the has showered flag
   _hasShowered=false;
-  // clear the colour map
+  // clear the colour map and reisolate the process
   colourLines().clear();
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  vector<PPtr> original,copy;
+  for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines() ) { 
+    original.push_back(in.first->original());
+    copy    .push_back(in.first->copy()    );
+  }
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
+    original.push_back(out.first->original());
+    copy    .push_back(out.first->copy()    );
+  }
+  // remove colour lines of copies
+  for(PPtr part : copy ) {
+    if(!part->colourInfo()->colourLines().empty()) {
+      if(part->colourInfo()->colourLines().size()==1) {
+	part->colourLine()->removeColoured(part);
+      }
+      else {
+	Ptr<MultiColour>::pointer colour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(part->colourInfo());
+	vector<tcColinePtr> lines = colour->colourLines();
+	for(unsigned int ix=0;ix<lines.size();++ix) {
+	  ColinePtr line = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(line) line->removeColoured(part);
+	}
+      }
+    }
+    if(!part->colourInfo()->antiColourLines().empty()) {
+      if(part->colourInfo()->antiColourLines().size()==1) {
+	part->antiColourLine()->removeAntiColoured(part);
+      }
+      else {
+	Ptr<MultiColour>::pointer colour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(part->colourInfo());
+	vector<tcColinePtr> lines = colour->antiColourLines();
+	for(unsigned int ix=0;ix<lines.size();++ix) {
+	  ColinePtr line = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(line) line->removeAntiColoured(part);
+	}
+      }
+    }
+  }
+  // isolate the colour
+  colourIsolate(original,copy);
+  // now sort out the particle's children
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cjt;
   // abandon the children of the outgoing particles
-  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit) {
-    ShowerParticlePtr orig=cit->first->progenitor();
-    orig->set5Momentum(cit->first->copy()->momentum());
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
+    ShowerParticlePtr orig=out.first->progenitor();
+    orig->set5Momentum(out.first->copy()->momentum());
     ParticleVector children=orig->children();
     for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
-    _outgoingLines[cit->first]=orig;
-    cit->first->hasEmitted(false);
-    cit->first->reconstructed(ShowerProgenitor::notReconstructed);
+    ShowerParticlePtr temp=
+      new_ptr(ShowerParticle(*out.first->copy(),
+			     out.first->progenitor()->perturbative(),
+			     out.first->progenitor()->isFinalState()));
+    fixColour(temp);
+    _outgoingLines[out.first]=temp;
+    out.first->progenitor(temp);
+    out.first->hasEmitted(false);
+    out.first->reconstructed(ShowerProgenitor::notReconstructed);
   }
   // forward products
   _forward.clear();
-  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
-    _forward.insert(cit->first->progenitor());
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() )
+    _forward.insert(out.first->progenitor());
   // if a decay
   if(!_wasHard) {
     ShowerParticlePtr orig=_incomingLines.begin()->first->progenitor();
@@ -544,21 +592,21 @@ void ShowerTree::clear() {
   }
   // if a hard process
   else {
-    for(cjt=_incomingLines.begin();cjt!=_incomingLines.end();++cjt) {
-      tPPtr parent = cjt->first->original()->parents().empty() ? 
-	tPPtr() : cjt->first->original()->parents()[0];
+    for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines()) {
+      tPPtr parent = in.first->original()->parents().empty() ? 
+	tPPtr() : in.first->original()->parents()[0];
       ShowerParticlePtr temp=
-	new_ptr(ShowerParticle(*cjt->first->copy(),
-			       cjt->first->progenitor()->perturbative(),
-			       cjt->first->progenitor()->isFinalState()));
+	new_ptr(ShowerParticle(*in.first->copy(),
+			       in.first->progenitor()->perturbative(),
+			       in.first->progenitor()->isFinalState()));
       fixColour(temp);
-      temp->x(cjt->first->progenitor()->x());
-      cjt->first->hasEmitted(false);
-      if(!(cjt->first->progenitor()==cjt->second)&&cjt->second&&parent)
-	parent->abandonChild(cjt->second);
-      cjt->first->progenitor(temp);
-      _incomingLines[cjt->first]=temp;
-      cjt->first->reconstructed(ShowerProgenitor::notReconstructed);
+      temp->x(in.first->progenitor()->x());
+      in.first->hasEmitted(false);
+      if(!(in.first->progenitor()==in.second)&&in.second&&parent)
+	parent->abandonChild(in.second);
+      in.first->progenitor(temp);
+      _incomingLines[in.first]=temp;
+      in.first->reconstructed(ShowerProgenitor::notReconstructed);
     }
   }
   clearTransforms();
