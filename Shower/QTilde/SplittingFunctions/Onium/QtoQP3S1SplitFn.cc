@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QtoQP1S0SplitFn class.
+// functions of the QtoQP3S1SplitFn class.
 //
 
-#include "QtoQP1S0SplitFn.h"
+#include "QtoQP3S1SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -16,49 +16,50 @@
 
 using namespace Herwig;
 
-const double QtoQP1S0SplitFn::pOver_ = 3.;
+const double QtoQP3S1SplitFn::pOver_ = 6.;
 
-IBPtr QtoQP1S0SplitFn::clone() const {
+IBPtr QtoQP3S1SplitFn::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr QtoQP1S0SplitFn::fullclone() const {
+IBPtr QtoQP3S1SplitFn::fullclone() const {
   return new_ptr(*this);
 }
 
-void QtoQP1S0SplitFn::persistentOutput(PersistentOStream & os) const {
+void QtoQP3S1SplitFn::persistentOutput(PersistentOStream & os) const {
   os << ounit(O1_,GeV*GeV2) << fixedAlphaS_;
 }
 
-void QtoQP1S0SplitFn::persistentInput(PersistentIStream & is, int) {
+void QtoQP3S1SplitFn::persistentInput(PersistentIStream & is, int) {
   is >> iunit(O1_,GeV*GeV2) >> fixedAlphaS_;
 }
 
+
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<QtoQP1S0SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQP1S0SplitFn("Herwig::QtoQP1S0SplitFn", "HwOniumShower.so");
+DescribeClass<QtoQP3S1SplitFn,Sudakov1to2FormFactor>
+describeHerwigQtoQP3S1SplitFn("Herwig::QtoQP3S1SplitFn", "HwOniumShower.so");
 
-void QtoQP1S0SplitFn::Init() {
+void QtoQP3S1SplitFn::Init() {
 
-  static ClassDocumentation<QtoQP1S0SplitFn> documentation
-    ("The QtoQP1S0SplitFn class implements the branching q-> q' 1S0");
+  static ClassDocumentation<QtoQP3S1SplitFn> documentation
+    ("The QtoQP3S1SplitFn class implements the branching q-> q' 3S1");
 
-  static Parameter<QtoQP1S0SplitFn,Energy3> interfaceO1
+  static Parameter<QtoQP3S1SplitFn,Energy3> interfaceO1
     ("O1",
      "The colour singlet excpetation value",
-     &QtoQP1S0SplitFn::O1_, GeV*GeV2, 0.573*GeV*GeV2, 0.0*GeV*GeV2, 10.0*GeV*GeV2,
+     &QtoQP3S1SplitFn::O1_, GeV*GeV2, 0.573*GeV*GeV2, 0.0*GeV*GeV2, 10.0*GeV*GeV2,
      false, false, Interface::limited);
   
-  static Parameter<QtoQP1S0SplitFn,double> interfacefixedAlphaS_
+  static Parameter<QtoQP3S1SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
-     &QtoQP1S0SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
+     &QtoQP3S1SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
 }
 
-void QtoQP1S0SplitFn::guesstz(Energy2 t1,unsigned int iopt,
+void QtoQP3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
 			      const IdList &ids,
 			      double enhance,bool ident,
 			      double detune, 
