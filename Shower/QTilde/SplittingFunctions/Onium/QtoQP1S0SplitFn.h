@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_GGEtaSplitFn_H
-#define Herwig_GGEtaSplitFn_H
+#ifndef Herwig_QtoQP1S0SplitFn_H
+#define Herwig_QtoQP1S0SplitFn_H
 //
-// This is the declaration of the GGEtaSplitFn class.
+// This is the declaration of the QtoQP1S0SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,19 +14,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GGEtaSplitFn class implements the colour singlet splitting function for \f$g\to g \eta_{c,b}\f$.
+ * The QtoQP1S0SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}'\f$
  *
- * @see \ref GGEtaSplitFnInterfaces "The interfaces"
- * defined for GGEtaSplitFn.
+ * @see \ref QtoQP1S0SplitFnInterfaces "The interfaces"
+ * defined for QtoQP1S0SplitFn.
  */
-class GGEtaSplitFn: public Sudakov1to2FormFactor {
+class QtoQP1S0SplitFn: public Sudakov1to2FormFactor {
 
 public:
-  
+
   /**
    * The default constructor.
    */
-  GGEtaSplitFn();
+  QtoQP1S0SplitFn()
+  {}
 
 public:
 
@@ -37,12 +38,14 @@ public:
    */
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
-    for(unsigned int ix=0;ix<2;++ix) {
-      if(ids[ix]->id()!=ParticleID::g) return false;
-    }
-    return true;
-  }
 
+
+    
+    // for(unsigned int ix=0;ix<2;++ix) {
+    //   if(ids[ix]->id()!=ParticleID::g) return false;
+    // }
+    // return true;
+  }
   /**
    *   Methods to return the splitting function.
    */
@@ -73,9 +76,15 @@ public:
    * @param rho The spin density matrix
    */
   double P(const double z, const Energy2 t,
-	   const IdList & , const bool, const RhoDMatrix &) const {
-    double r = sqr(m_)/(t-4.*sqr(m_));
-    return 1./(z*(1.-z))*(1.-2.*z+2.*sqr(z) - 8.*r*z*(1.-2.*z)  + 32.*sqr(r*z) );
+	   const IdList & ids, const bool, const RhoDMatrix &) const {
+    Energy m1 = ids[0]->mass();
+    Energy M  = m1 + ids[1]->mass();
+    double a1 = m1/M;
+    double r = sqr(M)/t;
+    double W0 = sqr(1.+(1.-a1)*(1.-z))*z/sqr(1.-a1*(1.-z));
+    double W1 = (-2.*sqr(a1*z)+2.*sqr(a1)+a1*sqr(z)+2.*a1*z-7.*a1-3.*z+5)/(1.-a1*(1.-z));
+    double W2 = -4.*a1*(1.-a1);
+    return (W0+r*W1+sqr(r)*W2)/(z*(1.-z));
   }
 
   /**
@@ -85,7 +94,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    */
   double overestimateP(const double z, const IdList &) const {
-    return 1/z + 1/(1.-z); 
+    return pOver_/z/(1.-z);
   }
 
   /**
@@ -99,9 +108,17 @@ public:
    * @param rho The spin density matrix
    */
   double ratioP(const double z, const Energy2 t,
-		const IdList & , const bool, const RhoDMatrix &) const {
-    double r = sqr(m_)/(t-4.*sqr(m_));
-    return 1.-2.*z+2.*sqr(z) -8.*r*z*(1.-2.*z) + 32.*sqr(r*z);
+		const IdList & ids, const bool, const RhoDMatrix &) const {
+    Energy m1 = ids[0]->mass();
+    Energy M  = m1 + ids[1]->mass();
+    double a1 = m1/M;
+    double r = sqr(M)/t;
+    double W0 = sqr(1.+(1.-a1)*(1.-z))*z/sqr(1.-a1*(1.-z));
+    double W1 = (-2.*sqr(a1*z)+2.*sqr(a1)+a1*sqr(z)+2.*a1*z-7.*a1-3.*z+5)/(1.-a1*(1.-z));
+    double W2 = -4.*a1*(1.-a1);
+    double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
+    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
+    return ratio;
   }
   
   /**
@@ -116,7 +133,7 @@ public:
   double integOverP(const double z, const IdList & ,
 		    unsigned int PDFfactor=0) const {
     assert(PDFfactor==0 && z>0. && z<1.);
-    return log(z/(1.-z)); 
+    return pOver_*log(z/(1.-z)); 
   }
 
   /**
@@ -128,9 +145,9 @@ public:
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
   double invIntegOverP(const double r, const IdList & ,
-			       unsigned int PDFfactor=0) const {
+		       unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
-    return 1./(1.+exp(-r));
+    return 1./(1.+exp(-r/pOver_));
   }
   //@}
 
@@ -143,19 +160,9 @@ public:
    * @return The weight
    */
   vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList &,
-		     const RhoDMatrix & rho) {
-    assert(rho.iSpin()==PDT::Spin1);
-    double r = sqr(m_)/(t-4.*sqr(m_));
-    double on  = 0.5*(1.-2.*z*(1.-z)) - 4.*z*(1.-2.*z)*r + 16.*sqr(z*r);
-    double off = z*(1.-z) + 4.*z*(1.-2.*z)*r - 16.*sqr(z*r);
-    double max = on+ 2.*abs(rho(0,2))*off;
-    vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*on/max));
-    output.push_back(make_pair(-2, rho(0,2)*off/max));
-    output.push_back(make_pair( 2, rho(2,0)*off/max));
-    return output;
+  generatePhiForward(const double , const Energy2 , const IdList &,
+		     const RhoDMatrix & ) {
+    return {{ {0, 1.} }};
   }
 
   /**
@@ -167,19 +174,9 @@ public:
    * @return The weight
    */
   vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2, const IdList &,
-		      const RhoDMatrix & rho) {
-    assert(false);
-    assert(rho.iSpin()==PDT::Spin1);
-    double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
-    double off  = (1.-z)/z;
-    double max  = 2.*abs(rho(0,2))*off+diag;
-    vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
-    output.push_back(make_pair( 2,-rho(0,2)           * off/max));
-    output.push_back(make_pair(-2,-rho(2,0)           * off/max));
-    return output;
+  generatePhiBackward(const double , const Energy2, const IdList &,
+		      const RhoDMatrix & ) {
+    return {{ {0, 1.} }};
   }
   
   
@@ -191,21 +188,29 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
-			   const IdList &, const double phi, bool) {
-    // calculate the kernal
-    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
+			   const IdList & ids, const double phi, bool) {
+    Energy m1 = ids[0]->mass();
+    Energy M  = m1 + ids[1]->mass();
+    double a1 = m1/M, a2=1-a1;
+    double r = sqr(M)/t;
+    double rz=sqrt(z);
     Complex ii(0.,1.);
-    double r  = sqr(m_)/(t-4.*sqr(m_));
-    Complex phase = exp(2.*ii*phi);
-    (*kernal)(0,0,0) =  z*(1.+4.*r);
-    (*kernal)(2,2,0) = -(*kernal)(0,0,0) ;
-    (*kernal)(0,2,0) = -(1.-z-4.*z*r)/phase;
-    (*kernal)(2,0,0) = -conj((*kernal)(0,2,0));
+    Complex phase = exp(ii*phi);
+    Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
+    // calculate the kernal
+    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
+    (*kernal)(0,0,0) = -(1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z)) - r*(1.-a1-a1*z)/rz;
+    (*kernal)(2,2,0) = -(*kernal)(2,2,0);
+    (*kernal)(0,2,0) = -double(pT/M)*r/rz/phase;
+    (*kernal)(2,0,0) = conj((*kernal)(0,2,0));
     return kernal;
   }
 
 protected:
-
+  
+  /**
+   *  Implementation of the \f$\alpha_S\f$ veto
+   */
   double alphaSVetoRatio(Energy2 pt2, double factor) const {
     factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
     return sqr(alpha()->ratio(pt2, factor));
@@ -239,15 +244,6 @@ public:
 
 protected:
 
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
@@ -269,27 +265,22 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GGEtaSplitFn & operator=(const GGEtaSplitFn &) = delete;
+  QtoQP1S0SplitFn & operator=(const QtoQP1S0SplitFn &) = delete;
 
 private:
-
+  
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
   Energy3 O1_;
 
   /**
-   *  The quark mass
-   */
-  Energy m_;
+   *  Overestimate of the splitting function
+   **/
+  static const double pOver_;
 
-  /**
-   *  Option for the quark mass
-   */
-  unsigned int massOpt_;
-  
 };
 
 }
 
-#endif /* Herwig_GGEtaSplitFn_H */
+#endif /* Herwig_QtoQP1S0SplitFn_H */
