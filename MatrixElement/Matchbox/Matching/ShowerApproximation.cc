@@ -285,8 +285,14 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
     emissionScale = showerFactorizationScale();
     // emissionAlpha is evaluated at the pT of the emission. We apply the CMW prescription
     if(splittingCMW){
-      // FIND A BETTER WAY TO DEFINE NF  
-      const int Nf=5;
+      int Nf;
+      if(emissionScale > 4.*sqr(getParticleData(5)->mass())){
+	Nf=5;
+      }else if(emissionScale > 4.*sqr(getParticleData(4)->mass())){
+       	Nf=4;
+      }else{
+	Nf=3;
+      }
       const double K = 3.*(67./18.-1./6.*sqr(ThePEG::Constants::pi))-5./9.*Nf;
       emissionAlpha = emissionAlpha * ( 1. + 0.5*K/ThePEG::Constants::pi*emissionAlpha);
       }
