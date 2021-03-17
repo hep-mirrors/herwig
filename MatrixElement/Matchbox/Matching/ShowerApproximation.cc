@@ -286,9 +286,9 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
     // emissionAlpha is evaluated at the pT of the emission. We apply the CMW prescription
     if(splittingCMW){
       int Nf;
-      if(emissionScale > sqr(getParticleData(5)->mass())){
+      if(emissionScale > 4.*sqr(getParticleData(5)->mass())){
 	Nf=5;
-      }else if(emissionScale > sqr(getParticleData(4)->mass())){
+      }else if(emissionScale > 4.*sqr(getParticleData(4)->mass())){
        	Nf=4;
       }else{
 	Nf=3;
