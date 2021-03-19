@@ -130,14 +130,14 @@ protected:
    */
   //@{
   /**
-   *  Calculation of the electron current
+   *  Calculation of the current in the positive direction
    */
-  vector<VectorWaveFunction> electronCurrent() const;
+  vector<VectorWaveFunction> firstCurrent() const;
 
   /**
-   *  Calculation of the positron current
+   *  Calculation of the current in the negative direction
    */
-  vector<VectorWaveFunction> positronCurrent() const;
+  vector<VectorWaveFunction> secondCurrent() const;
   //@}
 
 

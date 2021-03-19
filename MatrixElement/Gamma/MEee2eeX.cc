@@ -199,10 +199,10 @@ bool MEee2eeX::generateKinematics(const double * r) {
 
 double MEee2eeX::me2() const {
   // calculate the leptonic currents
-  vector<VectorWaveFunction> eCurrent = electronCurrent();
-  vector<VectorWaveFunction> pCurrent = positronCurrent();
+  vector<VectorWaveFunction> current1 =  firstCurrent();
+  vector<VectorWaveFunction> current2 = secondCurrent();
   DVector save;
-  double output = amp_->me2(eCurrent,pCurrent,t1_,t2_,sHat(),
+  double output = amp_->me2(current1,current2,t1_,t2_,sHat(),
 			    vector<Lorentz5Momentum>(meMomenta().begin()+4,meMomenta().end()),
 			    cPDVector(mePartonData().begin()+4,mePartonData().end()),save);
   meInfo(save);
@@ -322,40 +322,64 @@ void MEee2eeX::Init() {
 
 }
 
-vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
+vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
+  // form factors
+  Energy m = mePartonData()[0]->mass();
+  double F1(0.),F2(0.);
+  if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
+    F1 = 1;
+  }
+  else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
+    //defining the form factors F1 and F2 from Ginzburg
+    Energy2 q02 = 0.71*GeV2;
+    double Ge = 1/sqr(1-t1_/q02);
+    double Gm = Ge*sqrt(7.78);
+    double tau = -t1_/4./sqr(m);
+    F1 = (Ge + tau*Gm)/(1.+ tau);
+    F2 = (Gm - Ge)/(1 + tau);
+  }
+  // calculation of the current
   Lorentz5Momentum pGamma = meMomenta()[0]-meMomenta()[2];
   double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi1_);
-  Energy m = mePartonData()[0]->mass();
-  vector<VectorWaveFunction> output; output.reserve(4);
-  // fuill current, safe in small x limit
+  Energy Ea = meMomenta()[0].t();
+  // full current, safe in small x limit
+  vector<LorentzPolarizationVector> current(4);
   if(currentMode_==0) {
-    double mr2 = sqr(m/meMomenta()[0].t());
-    double x = meMomenta()[2].t()/meMomenta()[0].t();
+    double mr2 = sqr(m/Ea);
+    double x = meMomenta()[2].t()/Ea;
     double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
-    double fact1 = 2.*meMomenta()[0].t()*sqrt(x)/t1_*UnitRemoval::E*ee*sHalf1_/sqrt(bb1);
-    double fact2 = m/sqrt(x)/t1_*UnitRemoval::E*ee/sqrt(bb1);
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+
-										       b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
-										       -0.5*II*phase*(bb1-mr2/x)
-										       +b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
-										       (1.+b1-(1.+b)/x)*mr2*cHalf1_/sHalf1_/(1.-x)
-										       -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-(1.+b-(1.+b1)*x)*cHalf1_,
-										       II*(1.+b-(1.+b1)*x)*cHalf1_,
-										       (1.+b-(1.+b1)*x)*sHalf1_/phase,
-										       (1.+b+(1.+b1)*x)*sHalf1_/phase)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b1)*x)*cHalf1_,
-										       II*(1.+b-(1.+b1)*x)*cHalf1_,
-										       -phase*(1.+b-(1.+b1)*x)*sHalf1_,
-										       -phase*(1.+b+(1.+b1)*x)*sHalf1_)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5/phase*(bb1-mr2/x)+ 
-										       b1*(mr2+bb1*x)*cos(phi1_)*sqr(cHalf1_)/(1.-x),
-										       0.5/phase*II*(bb1-mr2/x)+ 
-										       b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
-										       mr2*(1.+b1-(1.+b)/x)*cHalf1_/sHalf1_/(1.-x) + 
-										       -b1*(mr2+bb1*x)*cHalf1_*sHalf1_/(1.-x),0)));
+    double fact1 = (F1+F2)*2.*Ea*sqrt(x)*sHalf1_/sqrt(bb1)/t1_*UnitRemoval::E*ee;
+    double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t1_*UnitRemoval::E*ee;
+    // F1 piece
+    current.push_back(fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+b1*(mr2+bb1*x)*sqr(cHalf1_)*cos(phi1_)/(1.-x),
+						      -0.5*II*phase*(bb1-mr2/x)+b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
+						      cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0));
+    current.push_back(fact2*LorentzPolarizationVector(-cHalf1_*(1.+b-(1.+b1)*x),II*(1.+b-(1.+b1)*x)*cHalf1_,
+						      (1.+b-(1.+b1)*x)*sHalf1_/phase,sHalf1_*(1.+b+(1.+b1)*x)/phase));
+    current.push_back(fact2*LorentzPolarizationVector(cHalf1_*(1.+b-(1.+b1)*x),
+						      II*cHalf1_*(1.+b-(1.+b1)*x),
+						      -phase*sHalf1_*(1.+b-(1.+b1)*x),
+						      -phase*sHalf1_*(1.+b+(1.+b1)*x)));
+    current.push_back(fact1*LorentzPolarizationVector(0.5/phase*(bb1-mr2/x)+b1*sqr(cHalf1_)*(mr2+bb1*x)*cos(phi1_)/(1.-x),
+						      0.5*II*(bb1-mr2/x)/phase+b1*sqr(cHalf1_)*(mr2+bb1*x)*sin(phi1_)/(1.-x),
+						      cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0));
+    // F2 piece if non-zero
+    if(F2!=0) {
+      double fact3 = F2*2.*    Ea *sqrt(x)*cHalf1_/sqrt(bb1)*(1.+b +x*(1.+b1))/(1.-x)/t1_*UnitRemoval::E*ee;
+      double fact4 = F2*   sqr(Ea)*(mr2+bb1*x)/m/sqrt(x)*sHalf1_/sqrt(bb1)/t1_*UnitRemoval::E*ee;
+      current[0] -= fact3*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*cos(phi1_),b1*cHalf1_*sHalf1_*sin(phi1_),
+						    -b1*sqr(sHalf1_)-0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0.);
+      current[1] -= fact4/phase*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*x*cos(phi1_),b1*cHalf1_*sHalf1_*x*sin(phi1_),
+							  0.5*(b+b1*(1.-2.*sqr(sHalf1_))*x),0.5*(1.+x));
+      current[2] -= fact4*phase*LorentzPolarizationVector(-b1*cHalf1_*sHalf1_*x*cos(phi1_),
+							  -b1*cHalf1_*sHalf1_*x*sin(phi1_),
+							  -0.5*(b+b1*(1.-2.*sqr(sHalf1_))*x),
+							  -0.5*((1 + x)));
+      current[3] -= fact3*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*cos(phi1_),b1*cHalf1_*sHalf1_*sin(phi1_),
+						    -0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x))-b1*sqr(sHalf1_),0.);
+    }
     // test code
     // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
     // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
@@ -385,64 +409,92 @@ vector<VectorWaveFunction> MEee2eeX::electronCurrent() const {
   // Equivalent Photon
   else if(currentMode_==1) {
     Lorentz5Momentum p = meMomenta()[0];
-    Lorentz5Momentum n(ZERO,ZERO,-meMomenta()[0].t(),meMomenta()[0].t());
+    Lorentz5Momentum n(ZERO,ZERO,-Ea,Ea);
     double z = (n*meMomenta()[2])/(n*p);
     Energy2 pT2 = -z*t1_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
-    Energy Ea = meMomenta()[0].t();
     double fact = ee*Ea*UnitRemoval::E/t1_;
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(  pT/Ea/phase*(sqr(phase)+z)/sqrt(z)/(1.-z),
-											-II*pT/Ea/phase*(sqr(phase)-z)/sqrt(z)/(1.-z),0., 0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(-Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( Complex(m/Ea/sqrt(z)*(1.-z)),II*m/Ea*(1.-z)/sqrt(z),0.,0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector( pT/Ea/sqrt(z)/(1.-z)/phase*(1.+z*sqr(phase)),
-										       -II*pT/Ea/sqrt(z)/(1.-z)*(1.-sqr(phase)*z)/phase,0.,0.)));
+    // normal piece
+    double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
+    double fact2 = fact*(F1+F2)* m/Ea/sqrt(z)*(1.-z);
+    current.push_back(fact1*LorentzPolarizationVector(phase+z/phase,-II*(phase-z/phase),0., 0.));
+    current.push_back(fact2*LorentzPolarizationVector(-1.,II,0.,0.));
+    current.push_back(fact2*LorentzPolarizationVector( 1.,II,0.,0.));
+    current.push_back(fact1*LorentzPolarizationVector(1./phase+z*phase,II*(1./phase-phase*z),0.,0.));
+    // F2 piece if non-zero
+    if(F2!=0) {
+      double fact3 = fact*F2*    pT /Ea  *(1.+z)/(1.-z)/sqrt(z);
+      double fact4 = fact*F2*sqr(pT)/Ea/m       /(1.-z)/sqrt(z);
+      current[0] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+      current[1] -= fact4/phase*LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+      current[2] -= fact4*phase*LorentzPolarizationVector(-cos(phi1_),-sin(phi1_),0,0);
+      current[3] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+    }
   }
   // no other option
   else {
     assert(false);
   }
+  vector<VectorWaveFunction> output; output.reserve(4);
+  for(unsigned int ix=0;ix<4;++ix)
+    output.push_back(VectorWaveFunction(pGamma,gamma_,current[ix]));
   return output;
 }
 
-vector<VectorWaveFunction> MEee2eeX::positronCurrent() const {
+vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
+  // form factors
+  Energy m = mePartonData()[0]->mass();
+  double F1(0.),F2(0.);
+  if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
+    F1 = 1;
+  }
+  else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
+    //defining the form factors F1 and F2 from Ginzburg
+    Energy2 q02 = 0.71*GeV2;
+    double Ge = 1/sqr(1-t2_/q02);
+    double Gm = Ge*sqrt(7.78);
+    double tau = -t2_/4./sqr(m);
+    F1 = (Ge + tau*Gm)/(1.+ tau);
+    F2 = (Gm - Ge)/(1 + tau);
+  }
+  // calculation of the current
   Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
   double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi2_);
-  Energy m = mePartonData()[1]->mass();
-  vector<VectorWaveFunction> output; output.reserve(4);
-  if(currentMode_==0) {
-    double mr2 = sqr(m/meMomenta()[1].t());
-    double x = meMomenta()[3].t()/meMomenta()[1].t();
-    double b = sqrt(1.-mr2), b2 = sqrt(1-mr2/sqr(x)), bb2=(1.+b)*(1.+b2);
-    double fact1 = 2.*meMomenta()[1].t()*sqrt(x)/t2_*UnitRemoval::E*ee*cHalf2_/sqrt(bb2);
-    double fact2 = m/sqrt(x)/t2_*UnitRemoval::E*ee/sqrt(bb2);
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) +
-										       b2*phase*(mr2+bb2*x)*cos(phi2_)*
-										       sqr(sHalf2_)/(1.-x),
-										       0.5*II*(bb2-mr2/x) + 
-										       b2*phase*(mr2+bb2*x)*sin(phi2_)*
-										       sqr(sHalf2_)/(1.-x),
-										       phase*(b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
-											      mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_/x)/(1.-x),0)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector((1.+b-(1.+b2)*x)*sHalf2_/phase,
-										       II*(1.+b-(1.+b2)*x)*sHalf2_/phase,
-										       (1.+b-(1.+b2)*x)*cHalf2_,
-										       -(1.+b+(1.+b2)*x)*cHalf2_)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact2*LorentzPolarizationVector(-phase*(1.+b-(1.+b2)*x)*sHalf2_,
-										       II*phase*(1.+b-(1.+b2)*x)*sHalf2_,
-										       -(1.+b-(1.+b2)*x)*cHalf2_,
-										       (1.+b+(1.+b2)*x)*cHalf2_)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact1*LorentzPolarizationVector(0.5*(bb2-mr2/x) + 
-										       b2/phase*(mr2+bb2*x)*cos(phi2_)*
-										       sqr(sHalf2_)/(1.-x),
-										       -0.5*II*(bb2-mr2/x) + 
-										       b2/phase*(mr2+bb2*x)*sin(phi2_)*
-										       sqr(sHalf2_)/(1.-x),
-										       (b2*(mr2+bb2*x)*cHalf2_*sHalf2_ + 
-											(mr2*(1.+b-(1.+b2)*x)*sHalf2_/cHalf2_)/x)/phase/(1.-x),0.)));
+  Energy Ea = meMomenta()[1].t();
+  vector<LorentzPolarizationVector> current(4);
+  // full result stable for small pT and x->1
+  if(currentMode_==0) {    
+    double mr2 = sqr(m/Ea);
+    double x = meMomenta()[3].t()/Ea;
+    double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
+    double fact1 = (F1+F2)*2.*Ea*sqrt(x)*cHalf2_/sqrt(bb1)/t2_*UnitRemoval::E*ee;
+    double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t2_*UnitRemoval::E*ee;
+    current.push_back(fact1*LorentzPolarizationVector(0.5*(bb1-mr2/x)   +b1*phase*sqr(sHalf2_)*(mr2+bb1*x)*cos(phi2_)/(1.-x),
+						      0.5*II*(bb1-mr2/x)+b1*phase*sqr(sHalf2_)*(mr2+bb1*x)*sin(phi2_)/(1.-x),
+						      phase*(mr2*sHalf2_*(1.+b-(1.+b1)*x)/cHalf2_/x+b1*cHalf2_*sHalf2_*(mr2+bb1*x))/(1.-x),0));    
+    current.push_back(fact2*LorentzPolarizationVector(sHalf2_*(1.+b-(1.+b1)*x)/phase,II*sHalf2_*(1.+b-(1.+b1)*x)/phase,
+						      cHalf2_*(1.+b-(1.+b1)*x),-(1.+b+(1.+b1)*x)*cHalf2_));
+    current.push_back(fact2*LorentzPolarizationVector(-phase*sHalf2_*(1.+b-(1.+b1)*x),II*phase*sHalf2_*(1.+b-(1.+b1)*x),
+						      -cHalf2_*(1.+b-(1.+b1)*x),cHalf2_*(1.+b+(1.+b1)*x)));
+    current.push_back(fact1*LorentzPolarizationVector(0.5*(bb1-mr2/x)+b1*sqr(sHalf2_)*(mr2+bb1*x)*cos(phi2_)/phase/(1.-x),
+						      -0.5*II*(bb1-mr2/x)+b1*sqr(sHalf2_)*(mr2+bb1*x)*sin(phi2_)/phase/(1.-x),
+						      (mr2*sHalf2_*(1.+b-(1.+b1)*x)/x/cHalf2_+b1*cHalf2_*sHalf2_*(mr2+bb1*x))/phase/(1.-x),0.));
+    // F2 piece if non-zero
+    if(F2!=0) {
+      double fact3 = F2*2.*    Ea   *sqrt(x)*sHalf2_/sqrt(bb1)*(1.+b+x*(1.+b1))/(1.-x)/t2_*UnitRemoval::E*ee;
+      double fact4 = F2*   sqr(Ea)/m/sqrt(x)*cHalf2_/sqrt(bb1)*(mr2+bb1*x)            /t2_*UnitRemoval::E*ee;
+      current[0] -= fact3*phase*LorentzPolarizationVector(b1*cHalf2_*sHalf2_*cos(phi2_),b1*cHalf2_*sHalf2_*sin(phi2_),
+							  b1*sqr(cHalf2_)+0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0);
+      current[1] -= fact4*      LorentzPolarizationVector(-b1*cHalf2_*sHalf2_*x*cos(phi2_),-b1*cHalf2_*sHalf2_*x*sin(phi2_),
+							  0.5*(b+b1*(1.-2*sqr(cHalf2_))*x),-0.5*(1.+x));
+      current[2] -= fact4*      LorentzPolarizationVector(b1*cHalf2_*sHalf2_*x*cos(phi2_),b1*cHalf2_*sHalf2_*x*sin(phi2_),
+							  -0.5*(b+b1*(1.-2*sqr(cHalf2_))*x),0.5*(1.+x));
+      current[3] -= fact3/phase*LorentzPolarizationVector(b1*cHalf2_*sHalf2_*cos(phi2_),b1*cHalf2_*sHalf2_*sin(phi2_),
+							  b1*sqr(cHalf2_)+0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0);
+    }
     // test code
     // SpinorBarWaveFunction pin (meMomenta()[1],mePartonData()[1],incoming);
     // SpinorWaveFunction    pout(meMomenta()[3],mePartonData()[3],outgoing);
@@ -471,26 +523,43 @@ vector<VectorWaveFunction> MEee2eeX::positronCurrent() const {
   // Equivalent Photon
   else if(currentMode_==1) {
     Lorentz5Momentum p = meMomenta()[1];
-    Lorentz5Momentum n(ZERO,ZERO,meMomenta()[1].t(),meMomenta()[1].t());
+    Lorentz5Momentum n(ZERO,ZERO,Ea,Ea);
     double z = (n*meMomenta()[3])/(n*p);
     Energy2 pT2 = -z*t2_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
-    Energy Eb = meMomenta()[1].t();
-    double fact = ee*Eb*UnitRemoval::E/t2_;
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(   pT/Eb/(1.-z)/sqrt(z)*(1.+z*sqr(phase)),
-										      II*pT/Eb/(1.-z)/sqrt(z)*(1.-z*sqr(phase)),0., 0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(   m/Eb*(1.-z)/sqrt(z)/phase,
-										      II*m/Eb*(1.-z)/sqrt(z)/phase,0.,0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(-  m/Eb*phase*(1.-z)/sqrt(z),
-										      II*m/Eb*phase*(1.-z)/sqrt(z),0.,0.)));
-    output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(    pT/Eb/(1.-z)/sqrt(z)*(1.+z/sqr(phase)),
-										      -II*pT/Eb/(1.-z)/sqrt(z)*(1.-z/sqr(phase)),0.,0.)));
+    double fact = ee*Ea*UnitRemoval::E/t2_;
+    double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
+    double fact2 = fact*(F1+F2)*m /Ea/sqrt(z)*(1.-z);
+    current.push_back(fact1      *LorentzPolarizationVector(1.+z*sqr(phase), II*(1.-z*sqr(phase)),0., 0.));
+    current.push_back(fact2/phase*LorentzPolarizationVector( 1.,II,0.,0.));
+    current.push_back(fact2*phase*LorentzPolarizationVector(-1.,II,0.,0.));    
+    current.push_back(fact1      *LorentzPolarizationVector(1.+z/sqr(phase),-II*(1.-z/sqr(phase)),0.,0.));
+    // F2 piece if non-zero
+    if(F2!=0) {
+      double fact1 = fact*F2*    pT *(1.+z)/(Ea  *(1.-z)*sqrt(z));
+      double fact2 = fact*F2*sqr(pT)       /(Ea*m*(1.-z)*sqrt(z));
+      current[0] -= fact1*phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+      current[1] -= fact2      *LorentzPolarizationVector(-cos(phi2_),-sin(phi2_),0,0);
+      current[2] -= fact2      *LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+      current[3] -= fact1/phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+    }
+    
+    // // cerr << "testing " << t1_/GeV2 << " " << pT2/GeV2 << "\n";
+    // vector<VectorWaveFunction> output; output.reserve(4);
+    // output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(pT*(2*F1+ F2-F2*z + sqr(phase)*(F2*(z-1.)+2*F1*z))/2./sqrt(z)/(z-1.)/Ea,II*pT*(2*F1+F2-F2*z +sqr(phase)*(F2-z*(2*F1+F2)))/2./(z-1.)/sqrt(z)/Ea,
+    // 											0., 0.)));
+    // output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(((1.+sqr(phase))*F2*sqr(pT) + 2*F1*sqr(m)*sqr(z-1) + 2.*F2*sqr(m)*sqr(z-1.))/2./m/(z-1.)/sqrt(z)/Ea/phase,-II*((-1.+sqr(phase))*F2*sqr(pT) - 2*F1*sqr(m)*sqr(z-1) - 2.*F2*sqr(m)*sqr(z-1.))/2./m/(z-1.)/sqrt(z)/Ea/phase, 0.,0.)));
+    // output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector((-F2*sqr(pT)-sqr(phase)*(F2*(sqr(pT)+2.*sqr(m)*sqr(z-1.))+ 2.*F1*sqr(m)*sqr(z-1)))/2./m/(z-1.)/sqrt(z)/phase/Ea,(-II*F2*sqr(pT)+II*sqr(phase)*(F2*(sqr(pT)+2.*sqr(m)*sqr(z-1.))+ 2.*F1*sqr(m)*sqr(z-1)))/2./m/(z-1.)/sqrt(z)/phase/Ea,0.,0.)));
+    // output.push_back(VectorWaveFunction(pGamma,gamma_, fact*LorentzPolarizationVector(pT*(F2*(z-1.)+2*F1*z+sqr(phase)*(2*F1+F2-z*F2))/2./(z-1.)/sqrt(z)/sqr(phase)/Ea,-II*pT*(-F2*(z-1.)+2*F1*z+sqr(phase)*(2*F1+F2-z*F2))/2./(z-1.)/sqrt(z)/sqr(phase)/Ea,0,0)));
   }
   // no other option
   else {
     assert(false);
   }
+  vector<VectorWaveFunction> output; output.reserve(4);
+  for(unsigned int ix=0;ix<4;++ix)
+    output.push_back(VectorWaveFunction(pGamma,gamma_,current[ix]));
   return output;
 }
 

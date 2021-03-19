@@ -115,6 +115,7 @@ vector<DiagPtr> GammaGamma2ffAmplitude::getDiagrams(unsigned int iopt) const {
   vector<DiagPtr> output; output.reserve(24);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   tcPDPtr ep = getParticleData(ParticleID::eplus );
+  tcPDPtr pp = getParticleData(ParticleID::pplus ); 
   tcPDPtr em = getParticleData(ParticleID::eminus);
   for(int ix=1;ix<17;++ix) {
     // increment counter to switch between quarks and leptons
@@ -140,6 +141,10 @@ vector<DiagPtr> GammaGamma2ffAmplitude::getDiagrams(unsigned int iopt) const {
       output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 2,lm, 3,lp,-1)));
       // interchange							              
       output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 3,lm, 2,lp,-2)));
+ // first t-channel
+      output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 2,lm, 3,lp,-1)));
+      // interchange							              
+      output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 3,lm, 2,lp,-2)));
     }
   }
   return output;
@@ -291,6 +296,7 @@ Energy GammaGamma2ffAmplitude::generateW(double r, const tcPDVector & partons,En
   // jacW = 2.*W*(Wmax-Wmin);
   // return W;
   Energy Wmin = 2.*partons[0]->constituentMass();
+  //Energy Wmin=3.*GeV;
   Energy W = Wmin*pow(Wmax/Wmin,r);
   jacW = 2.*sqr(W)*log(Wmax/Wmin);
   return W;
