@@ -327,7 +327,7 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
   Energy m = mePartonData()[0]->mass();
   double F1(0.),F2(0.);
   if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
-    F1 = 1;
+    F1 = 1.;
   }
   else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
     //defining the form factors F1 and F2 from Ginzburg
@@ -353,58 +353,33 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
     double fact1 = (F1+F2)*2.*Ea*sqrt(x)*sHalf1_/sqrt(bb1)/t1_*UnitRemoval::E*ee;
     double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t1_*UnitRemoval::E*ee;
     // F1 piece
-    current.push_back(fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+b1*(mr2+bb1*x)*sqr(cHalf1_)*cos(phi1_)/(1.-x),
-						      -0.5*II*phase*(bb1-mr2/x)+b1*(mr2+bb1*x)*sqr(cHalf1_)*sin(phi1_)/(1.-x),
-						      cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0));
-    current.push_back(fact2*LorentzPolarizationVector(-cHalf1_*(1.+b-(1.+b1)*x),II*(1.+b-(1.+b1)*x)*cHalf1_,
-						      (1.+b-(1.+b1)*x)*sHalf1_/phase,sHalf1_*(1.+b+(1.+b1)*x)/phase));
-    current.push_back(fact2*LorentzPolarizationVector(cHalf1_*(1.+b-(1.+b1)*x),
-						      II*cHalf1_*(1.+b-(1.+b1)*x),
-						      -phase*sHalf1_*(1.+b-(1.+b1)*x),
-						      -phase*sHalf1_*(1.+b+(1.+b1)*x)));
-    current.push_back(fact1*LorentzPolarizationVector(0.5/phase*(bb1-mr2/x)+b1*sqr(cHalf1_)*(mr2+bb1*x)*cos(phi1_)/(1.-x),
-						      0.5*II*(bb1-mr2/x)/phase+b1*sqr(cHalf1_)*(mr2+bb1*x)*sin(phi1_)/(1.-x),
-						      cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0));
+    current[0] = fact1*LorentzPolarizationVector(0.5*phase*(bb1-mr2/x)+b1*sqr(cHalf1_)*(mr2+bb1*x)*cos(phi1_)/(1.-x),
+						 -0.5*II*phase*(bb1-mr2/x)+b1*sqr(cHalf1_)*(mr2+bb1*x)*sin(phi1_)/(1.-x),
+						 cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0);
+    current[1] = fact2*LorentzPolarizationVector(-cHalf1_*(1 +b-(1 +b1)*x)+2.*b1*cHalf1_*sqr(sHalf1_)*x*(1.+b+(1.+b1)*x)*cos(phi1_)/(phase*(1.-x)),
+						 II*cHalf1_*(1.+b-(1.+b1)*x)+2.*b1*cHalf1_*sqr(sHalf1_)*x*(1.+b+(1.+b1)*x)*sin(phi1_)/(phase*(1.-x)),
+						 -2.*sHalf1_*x*((1.+b)*(1.+b1*sqr(sHalf1_))-(1.+b1)*(1.-b1*sqr(sHalf1_))*x)/(phase*(1.-x)),0);
+    current[2] = fact2*LorentzPolarizationVector(cHalf1_   *(1.+b-(1.+b1)*x)-2.*b1*cHalf1_*phase*sqr(sHalf1_)*x*(1.+b+(1.+b1)*x)*cos(phi1_)/(1.-x),
+						 II*cHalf1_*(1.+b-(1.+b1)*x)-2.*b1*cHalf1_*phase*sqr(sHalf1_)*x*(1.+b+(1.+b1)*x)*sin(phi1_)/(1.-x),
+						 2.*phase*sHalf1_*x*((1.+b)*(1.+b1*sqr(sHalf1_))-(1.+b1)*(1.-b1*sqr(sHalf1_))*x)/(1.-x),0);
+    current[3] = fact1*LorentzPolarizationVector(0.5*(bb1-mr2/x)/phase+b1*sqr(cHalf1_)*(mr2+bb1*x)*cos(phi1_)/(1.-x),
+						 0.5*II*(bb1-mr2/x)/phase+b1*sqr(cHalf1_)*(mr2+bb1*x)*sin(phi1_)/(1.-x),
+						 cHalf1_*mr2*(1.+b1-(1.+b)/x)/(sHalf1_*(1.-x))-b1*cHalf1_*sHalf1_*(mr2+bb1*x)/(1.-x),0);
     // F2 piece if non-zero
     if(F2!=0) {
-      double fact3 = F2*2.*    Ea *sqrt(x)*cHalf1_/sqrt(bb1)*(1.+b +x*(1.+b1))/(1.-x)/t1_*UnitRemoval::E*ee;
-      double fact4 = F2*   sqr(Ea)*(mr2+bb1*x)/m/sqrt(x)*sHalf1_/sqrt(bb1)/t1_*UnitRemoval::E*ee;
+      double fact3 = F2*2.*    Ea *sqrt(x)*cHalf1_/sqrt(bb1)*(1.+b+x*(1.+b1))/(1.-x)/t1_*UnitRemoval::E*ee;
+      double fact4 = F2*   sqr(Ea)*(mr2+bb1*x)/m/sqrt(x)*sHalf1_/sqrt(bb1)/(1.-x)/t1_*UnitRemoval::E*ee;
       current[0] -= fact3*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*cos(phi1_),b1*cHalf1_*sHalf1_*sin(phi1_),
 						    -b1*sqr(sHalf1_)-0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0.);
-      current[1] -= fact4/phase*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*x*cos(phi1_),b1*cHalf1_*sHalf1_*x*sin(phi1_),
-							  0.5*(b+b1*(1.-2.*sqr(sHalf1_))*x),0.5*(1.+x));
-      current[2] -= fact4*phase*LorentzPolarizationVector(-b1*cHalf1_*sHalf1_*x*cos(phi1_),
-							  -b1*cHalf1_*sHalf1_*x*sin(phi1_),
-							  -0.5*(b+b1*(1.-2.*sqr(sHalf1_))*x),
-							  -0.5*((1 + x)));
+      current[1] -= fact4/phase*LorentzPolarizationVector(2.*b1*cHalf1_*sHalf1_*x*cos(phi1_),
+							  2.*b1*cHalf1_*sHalf1_*x*sin(phi1_),
+							  -x*(2.*b1*sqr(sHalf1_)+mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x))),0);
+      current[2] -= fact4*phase*LorentzPolarizationVector(-2.*b1*cHalf1_*sHalf1_*x*cos(phi1_),
+							  -2.*b1*cHalf1_*sHalf1_*x*sin(phi1_),
+							  x*(2.*b1*sqr(sHalf1_)+mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x))),0.);
       current[3] -= fact3*LorentzPolarizationVector(b1*cHalf1_*sHalf1_*cos(phi1_),b1*cHalf1_*sHalf1_*sin(phi1_),
-						    -0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x))-b1*sqr(sHalf1_),0.);
+						    -b1*sqr(sHalf1_)-0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0.);
     }
-    // test code
-    // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
-    // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
-    // vector<SpinorWaveFunction>    fin;
-    // vector<SpinorBarWaveFunction> fout;
-    // for(unsigned int ix=0;ix<2;++ix) {
-    //   ein .reset(ix); fin .push_back(ein );
-    //   eout.reset(ix); fout.push_back(eout);
-    // }
-    // for(unsigned int ih1=0;ih1<2;++ih1) {
-    //   for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     LorentzPolarizationVector test = FFPVertex_->evaluate(ZERO,1,gamma_,fin[ih1],fout[ih2]).wave();
-    //     if(ih1==ih2) test -= test.t()*pGamma/pGamma.t();
-    //     cerr << "testing in current\n"
-    // 	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
-    // 	   << ih1 << " " << ih2 << " " << output[2*ih1+ih2].x() << " " << output[2*ih1+ih2].y() << " "
-    // 	   << output[2*ih1+ih2].z() << " " << output[2*ih1+ih2].t() << "\n"
-    // 	   << (test.x()-output[2*ih1+ih2].x())/(test.x()+output[2*ih1+ih2].x()) << " "
-    // 	   << (test.y()-output[2*ih1+ih2].y())/(test.y()+output[2*ih1+ih2].y()) << " "
-    // 	   << (test.z()-output[2*ih1+ih2].z())/(test.z()+output[2*ih1+ih2].z()) << " ";
-    //     if(output[2*ih1+ih2].t()!=0.)
-    // 	cerr << (test.t()-output[2*ih1+ih2].t())/(test.t()+output[2*ih1+ih2].t());
-    //     cerr << "\n";
-    //   }
-    // }
   }
   // Equivalent Photon
   else if(currentMode_==1) {
@@ -418,10 +393,10 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
     // normal piece
     double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
     double fact2 = fact*(F1+F2)* m/Ea/sqrt(z)*(1.-z);
-    current.push_back(fact1*LorentzPolarizationVector(phase+z/phase,-II*(phase-z/phase),0., 0.));
-    current.push_back(fact2*LorentzPolarizationVector(-1.,II,0.,0.));
-    current.push_back(fact2*LorentzPolarizationVector( 1.,II,0.,0.));
-    current.push_back(fact1*LorentzPolarizationVector(1./phase+z*phase,II*(1./phase-phase*z),0.,0.));
+    current[0] = fact1*LorentzPolarizationVector(phase+z/phase,-II*(phase-z/phase),0., 0.);
+    current[1] = fact2*LorentzPolarizationVector(-1.,II,0.,0.);
+    current[2] = fact2*LorentzPolarizationVector( 1.,II,0.,0.);
+    current[3] = fact1*LorentzPolarizationVector(1./phase+z*phase,II*(1./phase-phase*z),0.,0.);
     // F2 piece if non-zero
     if(F2!=0) {
       double fact3 = fact*F2*    pT /Ea  *(1.+z)/(1.-z)/sqrt(z);
@@ -436,6 +411,34 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
   else {
     assert(false);
   }
+  // test code
+  // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
+  // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
+  // vector<SpinorWaveFunction>    fin;
+  // vector<SpinorBarWaveFunction> fout;
+  // for(unsigned int ix=0;ix<2;++ix) {
+  //   ein .reset(ix); fin .push_back(ein );
+  //   eout.reset(ix); fout.push_back(eout);
+  // }
+  // cerr << "testing +z dirn " << mePartonData()[0]->PDGName() << " " << currentMode_ << " " << F1 << " " << F2 << "\n";
+  // for(unsigned int ih1=0;ih1<2;++ih1) {
+  //   for(unsigned int ih2=0;ih2<2;++ih2) {
+  //     LorentzPolarizationVector test  = (F1+F2)*ee/t1_*UnitRemoval::E2*fin[ih1].wave().vectorCurrent(fout[ih2].wave());
+  //     test -= F2*(meMomenta()[0]+meMomenta()[2])/2./m*ee/t1_*UnitRemoval::E2*fin[ih1].wave().scalar(fout[ih2].wave());
+  //     test -= test.t()*pGamma/pGamma.t();
+  //     cerr << "testing in current\n"
+  //   	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
+  //   	   << ih1 << " " << ih2 << " " << current[2*ih1+ih2].x() << " " << current[2*ih1+ih2].y() << " "
+  //   	   << current[2*ih1+ih2].z() << " " << current[2*ih1+ih2].t() << "\n"
+  //    	   << (test.x()-current[2*ih1+ih2].x())/(test.x()+current[2*ih1+ih2].x()) << " "
+  //    	   << (test.y()-current[2*ih1+ih2].y())/(test.y()+current[2*ih1+ih2].y()) << " "
+  //    	   << (test.z()-current[2*ih1+ih2].z())/(test.z()+current[2*ih1+ih2].z()) << " ";
+  //     if(current[2*ih1+ih2].t()!=0.)
+  //   	cerr << (test.t()-current[2*ih1+ih2].t())/(test.t()+current[2*ih1+ih2].t());
+  //     cerr << "\n";
+  //   }
+  // }
+  // return the currents
   vector<VectorWaveFunction> output; output.reserve(4);
   for(unsigned int ix=0;ix<4;++ix)
     output.push_back(VectorWaveFunction(pGamma,gamma_,current[ix]));
@@ -447,7 +450,7 @@ vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
   Energy m = mePartonData()[0]->mass();
   double F1(0.),F2(0.);
   if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
-    F1 = 1;
+    F1 = 1.;
   }
   else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
     //defining the form factors F1 and F2 from Ginzburg
