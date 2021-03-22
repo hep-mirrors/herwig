@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQP3P0SplitFn_H
-#define Herwig_QtoQP3P0SplitFn_H
+#ifndef Herwig_QtoQP3P2SplitFn_H
+#define Herwig_QtoQP3P2SplitFn_H
 //
-// This is the declaration of the QtoQP3P0SplitFn class.
+// This is the declaration of the QtoQP3P2SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,12 +14,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQP3P0SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^3P_0)'\f$
+ * The QtoQP3P2SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^3P_2)'\f$
  *
- * @see \ref QtoQP3P0SplitFnInterfaces "The interfaces"
- * defined for QtoQP3P0SplitFn.
+ * @see \ref QtoQP3P2SplitFnInterfaces "The interfaces"
+ * defined for QtoQP3P2SplitFn.
  */
-class QtoQP3P0SplitFn: public Sudakov1to2FormFactor {
+class QtoQP3P2SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -28,7 +28,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQP3P0SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), fixedAlphaS_(-1.)
+  QtoQP3P2SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), fixedAlphaS_(-1.)
   {}
   //@}
 
@@ -42,8 +42,8 @@ public:
     // construct the meson PDG code from quark ids and check it
     long id1=ids[0]->id();
     long id2=ids[1]->id();
-    long idtest = id1>id2 ? id1*100+id2*10+1 : id2*100+id1*10+1;
-    idtest += 10000 + (n_-1)*100000;
+    long idtest = id1>id2 ? id1*100+id2*10+5 : id2*100+id1*10+5;
+    idtest += (n_-1)*100000;
     if(abs(ids[2]->id()) != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
@@ -86,19 +86,16 @@ public:
     Energy M  = m1 + ids[1]->mass();
     double a1 = m1/M;
     double r = sqr(M)/t;
-    double W0 = z*sqr( 3.*(-2.+z) +
-		       a1*(15.-12.*z+sqr(z) +
-			   a1*((-13.+18.*z-5.*sqr(z)) +
-			       4.*a1*sqr(1.-z))))/(48.*sqr(a1*sqr(1.-a1*(1.-z))));
-    double W1 = (45.-27*z + 6.*a1*(6.-13.*z+5.*sqr(z) +
-				   a1*(-407.+591.*z-233.*sqr(z)+9.*z*sqr(z) +
-				       a1*(590.-998.*z+498.*sqr(z)-58.*z*sqr(z) +
-					   8.*a1*(-41.+84.*z-53.*sqr(z)+.10*z*sqr(z) +
-						  32.*a1*sqr(1.-z)*(2.-z))))))/(48.*sqr(a1)*sqr(1 - a1*(1 - z)));
-    double W2 = (1.-a1)*(-3.+a1*((-22.+12.*z) +
-				 a1*((41.-30.*z+3.*sqr(z)) +
-				     2.*a1*(-8.+9.*z-sqr(z)))))/(6.*a1*(1 - a1*(1 - z)));
-    double W3 = 4./3.*sqr(1.-a1)*a1;
+    double W0 = z*(30.-72.*z+69*sqr(z)-30.*z*sqr(z)+5.*sqr(sqr(z)) 
+		   +a1*( -4.*(18.-51.*z+55.*sqr(z)-27*z*sqr(z)+5.*sqr(sqr(z)))
+			 +a1*( +4.*sqr(1.-z)*(14.-17.*z+6.*sqr(z))
+			       +a1*(-8.*pow(1.-z,3)*(2.-z) +  + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
+    double W1 = (5.-z*(93.-98*z+30.*sqr(z))
+		 +a1*(+ 2.*(5.+46.*z-57.*sqr(z)+14.*z*sqr(z))
+		      + a1*( -35.+45.*z-17.*sqr(z)+7.*z*sqr(z)
+			     +4.*a1*sqr(1.-z)*(5.-z))))/(12.*sqr(1.-a1*(1.-z)));
+    double W2 = (1.-a1)*(-11.+45.*z + a1*(3.*z*(4.-5.*z)-23. + 2.*a1*(17.-4.*z)*(1.-z)))/(6.*(1.-a1*(1.-z)));
+    double W3 = 20.*sqr(1.-a1)*a1/3.;
     return (W0+r*(W1+r*(W2+r*W3)))/(z*(1.-z));
   }
 
@@ -128,19 +125,16 @@ public:
     Energy M  = m1 + ids[1]->mass();
     double a1 = m1/M;
     double r = sqr(M)/t;
-    double W0 = z*sqr( 3.*(-2.+z) +
-		       a1*(15.-12.*z+sqr(z) +
-			   a1*((-13.+18.*z-5.*sqr(z)) +
-			       4.*a1*sqr(1.-z))))/(48.*sqr(a1*sqr(1.-a1*(1.-z))));
-    double W1 = (45.-27*z + 6.*a1*(6.-13.*z+5.*sqr(z) +
-				   a1*(-407.+591.*z-233.*sqr(z)+9.*z*sqr(z) +
-				       a1*(590.-998.*z+498.*sqr(z)-58.*z*sqr(z) +
-					   8.*a1*(-41.+84.*z-53.*sqr(z)+.10*z*sqr(z) +
-						  32.*a1*sqr(1.-z)*(2.-z))))))/(48.*sqr(a1)*sqr(1 - a1*(1 - z)));
-    double W2 = (1.-a1)*(-3.+a1*((-22.+12.*z) +
-				 a1*((41.-30.*z+3.*sqr(z)) +
-				     2.*a1*(-8.+9.*z-sqr(z)))))/(6.*a1*(1 - a1*(1 - z)));
-    double W3 = 4./3.*sqr(1.-a1)*a1;
+    double W0 = z*(30.-72.*z+69*sqr(z)-30.*z*sqr(z)+5.*sqr(sqr(z)) 
+		   +a1*( -4.*(18.-51.*z+55.*sqr(z)-27*z*sqr(z)+5.*sqr(sqr(z)))
+			 +a1*( +4.*sqr(1.-z)*(14.-17.*z+6.*sqr(z))
+			       +a1*(-8.*pow(1.-z,3)*(2.-z) +  + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
+    double W1 = (5.-z*(93.-98*z+30.*sqr(z))
+		 +a1*(+ 2.*(5.+46.*z-57.*sqr(z)+14.*z*sqr(z))
+		      + a1*( -35.+45.*z-17.*sqr(z)+7.*z*sqr(z)
+			     +4.*a1*sqr(1.-z)*(5.-z))))/(12.*sqr(1.-a1*(1.-z)));
+    double W2 = (1.-a1)*(-11.+45.*z + a1*(3.*z*(4.-5.*z)-23. + 2.*a1*(17.-4.*z)*(1.-z)))/(6.*(1.-a1*(1.-z)));
+    double W3 = 20.*sqr(1.-a1)*a1/3.;
     double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
     if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
     return ratio;
@@ -222,7 +216,7 @@ public:
     Complex phase = exp(ii*phi);
     Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
     // calculate the kernal
-    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
+    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2)));
     (*kernal)(0,0,0) = -(1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z)) - r*(1.-a1-a1*z)/rz;
     (*kernal)(1,1,0) = -(*kernal)(2,2,0);
     (*kernal)(0,1,0) = -double(pT/M)*r/rz/phase;
@@ -294,7 +288,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQP3P0SplitFn & operator=(const QtoQP3P0SplitFn &) = delete;
+  QtoQP3P2SplitFn & operator=(const QtoQP3P2SplitFn &) = delete;
 
 private:
   
@@ -322,4 +316,4 @@ private:
 
 }
 
-#endif /* Herwig_QtoQP3P0SplitFn_H */
+#endif /* Herwig_QtoQP3P2SplitFn_H */

@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QtoQP3P0SplitFn class.
+// functions of the QtoQP3P2SplitFn class.
 //
 
-#include "QtoQP3P0SplitFn.h"
+#include "QtoQP3P2SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -16,56 +16,56 @@
 
 using namespace Herwig;
 
-const double QtoQP3P0SplitFn::pOver_ = 120.;
+const double QtoQP3P2SplitFn::pOver_ = 1.;
 
-IBPtr QtoQP3P0SplitFn::clone() const {
+IBPtr QtoQP3P2SplitFn::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr QtoQP3P0SplitFn::fullclone() const {
+IBPtr QtoQP3P2SplitFn::fullclone() const {
   return new_ptr(*this);
 }
 
-void QtoQP3P0SplitFn::persistentOutput(PersistentOStream & os) const {
+void QtoQP3P2SplitFn::persistentOutput(PersistentOStream & os) const {
   os << ounit(O1_,GeV*sqr(GeV2)) << n_ << fixedAlphaS_;
 }
 
-void QtoQP3P0SplitFn::persistentInput(PersistentIStream & is, int) {
+void QtoQP3P2SplitFn::persistentInput(PersistentIStream & is, int) {
   is >> iunit(O1_,GeV*sqr(GeV2)) >> n_ >> fixedAlphaS_;
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<QtoQP3P0SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQP3P0SplitFn("Herwig::QtoQP3P0SplitFn", "HwOniumShower.so");
+DescribeClass<QtoQP3P2SplitFn,Sudakov1to2FormFactor>
+describeHerwigQtoQP3P2SplitFn("Herwig::QtoQP3P2SplitFn", "HwOniumShower.so");
 
-void QtoQP3P0SplitFn::Init() {
+void QtoQP3P2SplitFn::Init() {
 
-  static ClassDocumentation<QtoQP3P0SplitFn> documentation
-    ("The QtoQP3P0SplitFn class implements the branching q-> q' 3P0");
+  static ClassDocumentation<QtoQP3P2SplitFn> documentation
+    ("The QtoQP3P2SplitFn class implements the branching q-> q' 3P2");
 
-  static Parameter<QtoQP3P0SplitFn,Energy5> interfaceO1
+  static Parameter<QtoQP3P2SplitFn,Energy5> interfaceO1
     ("O1",
      "The colour singlet excpetation value",
-     &QtoQP3P0SplitFn::O1_, GeV*GeV2*GeV2, 0.794*GeV*GeV2*GeV2, 0.0*GeV*GeV2*GeV2, 10.0*GeV*GeV2*GeV2,
+     &QtoQP3P2SplitFn::O1_, GeV*GeV2*GeV2, 0.794*GeV*GeV2*GeV2, 0.0*GeV*GeV2*GeV2, 10.0*GeV*GeV2*GeV2,
      false, false, Interface::limited);
   
-  static Parameter<QtoQP3P0SplitFn,double> interfacefixedAlphaS_
+  static Parameter<QtoQP3P2SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
-     &QtoQP3P0SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
+     &QtoQP3P2SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
      false, false, Interface::limited);
   
-  static Parameter<QtoQP3P0SplitFn,unsigned int> interfacePrincipalQuantumNumber
+  static Parameter<QtoQP3P2SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
      "The principle quantum number of the states",
-     &QtoQP3P0SplitFn::n_, 1, 1, 10,
+     &QtoQP3P2SplitFn::n_, 1, 1, 10,
      false, false, Interface::limited);
 
 }
 
-void QtoQP3P0SplitFn::guesstz(Energy2 t1,unsigned int iopt,
+void QtoQP3P2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
 			      const IdList &ids,
 			      double enhance,bool ident,
 			      double detune, 
