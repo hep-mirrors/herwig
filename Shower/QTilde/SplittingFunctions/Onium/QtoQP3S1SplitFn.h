@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQP3S1SplitFn() : O1_(0.573*GeV*GeV2), fixedAlphaS_(-1.)
+  QtoQP3S1SplitFn() : O1_(0.573*GeV*GeV2), n_(1), fixedAlphaS_(-1.)
   {}
 
 public:
@@ -42,7 +42,8 @@ public:
     long id1=ids[0]->id();
     long id2=ids[1]->id();
     long idtest = id1>id2 ? id1*100+id2*10+3 : id2*100+id1*10+3;
-    if(abs(ids[2]->id())%100000 != idtest) return false;
+    idtest += (n_-1)*100000;
+    if(abs(ids[2]->id()) != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
     // looks OK
@@ -295,6 +296,11 @@ private:
    *  The \f$O_1\f$ colour-singlet coefficient
    */
   Energy3 O1_;
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int n_;
 
   /**
    *  Overestimate of the splitting function

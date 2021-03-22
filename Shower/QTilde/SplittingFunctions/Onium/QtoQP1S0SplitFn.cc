@@ -27,11 +27,11 @@ IBPtr QtoQP1S0SplitFn::fullclone() const {
 }
 
 void QtoQP1S0SplitFn::persistentOutput(PersistentOStream & os) const {
-  os << ounit(O1_,GeV*GeV2) << fixedAlphaS_;
+  os << ounit(O1_,GeV*GeV2) << n_ << fixedAlphaS_;
 }
 
 void QtoQP1S0SplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(O1_,GeV*GeV2) >> fixedAlphaS_;
+  is >> iunit(O1_,GeV*GeV2) >> n_ >> fixedAlphaS_;
 }
 
 // The following static variable is needed for the type
@@ -54,6 +54,12 @@ void QtoQP1S0SplitFn::Init() {
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
      &QtoQP1S0SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
+     false, false, Interface::limited);
+  
+  static Parameter<QtoQP1S0SplitFn,unsigned int> interfacePrincipalQuantumNumber
+    ("PrincipalQuantumNumber",
+     "The principle quantum number of the states",
+     &QtoQP1S0SplitFn::n_, 1, 1, 10,
      false, false, Interface::limited);
 
 }

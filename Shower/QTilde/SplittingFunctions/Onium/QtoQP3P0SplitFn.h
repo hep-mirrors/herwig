@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQP1S0SplitFn_H
-#define Herwig_QtoQP1S0SplitFn_H
+#ifndef Herwig_QtoQP3P0SplitFn_H
+#define Herwig_QtoQP3P0SplitFn_H
 //
-// This is the declaration of the QtoQP1S0SplitFn class.
+// This is the declaration of the QtoQP3P0SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,22 +14,23 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQP1S0SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^1S_0)'\f$
+ * The QtoQP3P0SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^3P_0)'\f$
  *
- * @see \ref QtoQP1S0SplitFnInterfaces "The interfaces"
- * defined for QtoQP1S0SplitFn.
+ * @see \ref QtoQP3P0SplitFnInterfaces "The interfaces"
+ * defined for QtoQP3P0SplitFn.
  */
-class QtoQP1S0SplitFn: public Sudakov1to2FormFactor {
+class QtoQP3P0SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  QtoQP1S0SplitFn() : O1_(0.573*GeV*GeV2), n_(1), fixedAlphaS_(-1.)
+  QtoQP3P0SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), fixedAlphaS_(-1.)
   {}
-
-public:
+  //@}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -42,7 +43,7 @@ public:
     long id1=ids[0]->id();
     long id2=ids[1]->id();
     long idtest = id1>id2 ? id1*100+id2*10+1 : id2*100+id1*10+1;
-    idtest += (n_-1)*100000;
+    idtest += 10000 + (n_-1)*100000;
     if(abs(ids[2]->id()) != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
@@ -85,10 +86,11 @@ public:
     Energy M  = m1 + ids[1]->mass();
     double a1 = m1/M;
     double r = sqr(M)/t;
-    double W0 = sqr(1.+(1.-a1)*(1.-z))*z/sqr(1.-a1*(1.-z));
-    double W1 = (-2.*sqr(a1*z)+2.*sqr(a1)+a1*sqr(z)+2.*a1*z-7.*a1-3.*z+5)/(1.-a1*(1.-z));
-    double W2 = -4.*a1*(1.-a1);
-    return (W0+r*W1+sqr(r)*W2)/(z*(1.-z));
+    double W0 = 0.;
+    double W1 = 0.;
+    double W2 = 0.;
+    double W3 = 0.;
+    return (W0+r*(W1+r*(W2+r*W3)))/(z*(1.-z));
   }
 
   /**
@@ -117,10 +119,11 @@ public:
     Energy M  = m1 + ids[1]->mass();
     double a1 = m1/M;
     double r = sqr(M)/t;
-    double W0 = sqr(1.+(1.-a1)*(1.-z))*z/sqr(1.-a1*(1.-z));
-    double W1 = (-2.*sqr(a1*z)+2.*sqr(a1)+a1*sqr(z)+2.*a1*z-7.*a1-3.*z+5)/(1.-a1*(1.-z));
-    double W2 = -4.*a1*(1.-a1);
-    double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
+    double W0 = 0.;
+    double W1 = 0.;
+    double W2 = 0.;
+    double W3 = 0.;
+    double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
     if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
     return ratio;
   }
@@ -273,14 +276,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQP1S0SplitFn & operator=(const QtoQP1S0SplitFn &) = delete;
+  QtoQP3P0SplitFn & operator=(const QtoQP3P0SplitFn &) = delete;
 
 private:
   
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy3 O1_;
+  Energy5 O1_;
 
   /**
    *  Principal quantum number
@@ -301,4 +304,4 @@ private:
 
 }
 
-#endif /* Herwig_QtoQP1S0SplitFn_H */
+#endif /* Herwig_QtoQP3P0SplitFn_H */
