@@ -136,7 +136,7 @@ public:
     double W2 = (1.-a1)*(-11.+45.*z + a1*(3.*z*(4.-5.*z)-23. + 2.*a1*(17.-4.*z)*(1.-z)))/(6.*(1.-a1*(1.-z)));
     double W3 = 20.*sqr(1.-a1)*a1/3.;
     double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
-    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
+    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP3P2SplitFn " << ratio << "\n";
     return ratio;
   }
   

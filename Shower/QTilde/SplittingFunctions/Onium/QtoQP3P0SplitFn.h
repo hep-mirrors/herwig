@@ -132,17 +132,19 @@ public:
 		       a1*(15.-12.*z+sqr(z) +
 			   a1*((-13.+18.*z-5.*sqr(z)) +
 			       4.*a1*sqr(1.-z))))/(48.*sqr(a1*sqr(1.-a1*(1.-z))));
-    double W1 = (45.-27*z + 6.*a1*(6.-13.*z+5.*sqr(z) +
-				   a1*(-407.+591.*z-233.*sqr(z)+9.*z*sqr(z) +
-				       a1*(590.-998.*z+498.*sqr(z)-58.*z*sqr(z) +
-					   8.*a1*(-41.+84.*z-53.*sqr(z)+.10*z*sqr(z) +
-						  32.*a1*sqr(1.-z)*(2.-z))))))/(48.*sqr(a1)*sqr(1 - a1*(1 - z)));
+    double W1 = (45.-27*z + a1*(6.*(6.-13.*z+5.*sqr(z)) +
+				a1*(-407.+591.*z-233.*sqr(z)+9.*z*sqr(z) +
+				    a1*(590.-998.*z+498.*sqr(z)-58.*z*sqr(z) +
+					8.*a1*(-41.+84.*z-53.*sqr(z)+10.*z*sqr(z) +
+					       4.*a1*sqr(1.-z)*(2.-z))))))/(48.*sqr(a1)*sqr(1 - a1*(1 - z)));
     double W2 = (1.-a1)*(-3.+a1*((-22.+12.*z) +
 				 a1*((41.-30.*z+3.*sqr(z)) +
 				     2.*a1*(-8.+9.*z-sqr(z)))))/(6.*a1*(1 - a1*(1 - z)));
     double W3 = 4./3.*sqr(1.-a1)*a1;
     double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
-    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
+    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP3P0SplitFn " << ratio << "\n";
+    if(ratio<0.) cerr << "ratio negative       in QtoQP3P0SplitFn " << ratio << " "
+		      << r << " " << a1 << " " << z << " " << W0 << " " << W1 << " " << W2 << " " << W3 << "\n";
     return ratio;
   }
   
