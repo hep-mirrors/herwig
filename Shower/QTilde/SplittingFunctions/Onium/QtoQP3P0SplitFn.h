@@ -219,16 +219,16 @@ public:
     Energy M  = m1 + ids[1]->mass();
     double a1 = m1/M, a2=1-a1;
     double r = sqr(M)/t;
-    double rz=sqrt(z);
     Complex ii(0.,1.);
     Complex phase = exp(ii*phi);
     Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
-    // calculate the kernal
+    // calculate the kernal N.B. prefactor 1./4./sqrt(3.)/sqrt(z) removed
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
-    (*kernal)(0,0,0) = -(1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z)) - r*(1.-a1-a1*z)/rz;
-    (*kernal)(1,1,0) = -(*kernal)(2,2,0);
-    (*kernal)(0,1,0) = -double(pT/M)*r/rz/phase;
-    (*kernal)(1,0,0) = conj((*kernal)(0,2,0));
+    (*kernal)(0,0,0) = z*(6.-3.*z-a1*(15.-a1*(13.-5.*z)*(1.-z)+4.*sqr(a1)*sqr(1.-z)-(12.-z)*z))/(a1*sqr(1.-a1*(1.-z)))
+      +r*(3.+(1.-2.*a1)*a1*(7.-4.*a1*(1.-z)-5.*z))/a1 - 8.*(1.-a1)*a1*sqr(r)*(1.-a1*(1.-z));
+    (*kernal)(1,1,0) = (*kernal)(0,0,0);
+    (*kernal)(0,1,0) = double(pT/M)*r/phase*(-8.*(1.-a1)*a1*r+(3.+a1*(7.-2.*a1*(9.-4.*a1*(1.-z)-5.*z)-z))/(a1*(1.-a1*(1.-z))));
+    (*kernal)(1,0,0) = -conj((*kernal)(0,1,0));
     return kernal;
   }
 
