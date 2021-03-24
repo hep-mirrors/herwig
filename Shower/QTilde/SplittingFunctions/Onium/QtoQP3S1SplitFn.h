@@ -70,26 +70,6 @@ public:
   virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
 		       double enhance,bool ident,
 		       double detune, Energy2 &t_main, double &z_main);
-  
-  /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  double P(const double z, const Energy2 t,
-	   const IdList & ids, const bool, const RhoDMatrix &) const {
-    Energy m1 = ids[0]->mass();
-    Energy M  = m1 + ids[1]->mass();
-    double a1 = m1/M;
-    double r = sqr(M)/t;
-    double W0 = z*(6.+sqr(a1*(1.-z))+2.*a1*(1.-z)*(z-2.)+ z*(3.*z-8.))/sqr(1.-a1*(1.-z));
-    double W1 = (3.+2.*sqr(a1)*(1.-z)*(z-3.)-9.*z+a1*(3.-2.*z+3.*sqr(z)))/(1.-a1*(1.-z));
-    double W2 = -12.*(1.-a1)*a1;
-    return (W0+r*W1+sqr(r)*W2)/(z*(1.-z));
-  }
 
   /**
    * The concrete implementation of the overestimate of the splitting function,

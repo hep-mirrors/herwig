@@ -30,16 +30,6 @@ void OneOneOneMassiveSplitFn::Init() {
 
 }
 
-double OneOneOneMassiveSplitFn::P(const double z, const Energy2 t,
-				  const IdList & ids, const bool, const RhoDMatrix & rho )const {
-  Energy2 m2 = sqr(ids[0]->mass());
-  double rho00 = rho(1,1).real();
-  return 2.*(z/(1.-z)-m2/t
-			       + (1.-rho00)*( (1.-z)/z + z*(1.-z) -sqr(1.-z)*m2/t )
-			       + 2.*rho00*sqr(1.-z)*m2/t);
-}
-
-
 double OneOneOneMassiveSplitFn::ratioP(const double z, const Energy2 t,
 				       const IdList & ids , const bool, const RhoDMatrix & rho) const {
   Energy2 m2 = sqr(ids[0]->mass());

@@ -60,22 +60,6 @@ public:
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  double P(const double z, const Energy2,
-	   const IdList & , const bool, const RhoDMatrix &)const {
-    // (this is historically important! the first physics - two years
-    // after the birth of the project - in the Herwig shower! Alberto
-    // & Stefan, 25/04/2002).
-    return sqr(1.-z*(1.-z))/(z*(1.-z));
-  }
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.

@@ -251,8 +251,10 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const = 0;
+  double P(const double z, const Energy2 t, const IdList & ids,
+	   const bool mass, const RhoDMatrix & rho) {
+    return ratioP(z,t,ids,mass,rho)*overestimateP(z,ids);
+  }
 
   /**
    * Purely virtual method which should return

@@ -58,25 +58,6 @@ public:
    *   Methods to return the splitting function.
    */
   //@{
-  
-  /**
-   *  Very similar to HalfHalfOneSplitFn.
-   *  Here the kernel only contains the soft part multiplied by the 
-   *  alphas/2pi * Kg from 
-   *  Nucl.Phys. B349 (1991) 635-654
-   *
-   */
-  double P(const double z, const Energy2 t, const IdList & ,
-	   const bool , const RhoDMatrix & ) const {
-    Energy2 scale2=t;
-    if (!isIS_) {
-      scale2*=pTScale() ? z*(1.-z):1.;
-    } else {
-      scale2*=pTScale() ? z*(1.-z):z;
-    }
-    return Kg(scale2)* alpha()->value(scale2)/2./Constants::pi/(1.-z);
-  }
-
   /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.

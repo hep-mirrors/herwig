@@ -71,33 +71,6 @@ public:
   virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
 		       double enhance,bool ident,
 		       double detune, Energy2 &t_main, double &z_main);
-  
-  /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  double P(const double z, const Energy2 t,
-	   const IdList & ids, const bool, const RhoDMatrix &) const {
-    Energy m1 = ids[0]->mass();
-    Energy M  = m1 + ids[1]->mass();
-    double a1 = m1/M;
-    double r = sqr(M)/t;
-    double W0 = z*(30.-72.*z+69*sqr(z)-30.*z*sqr(z)+5.*sqr(sqr(z)) 
-		   +a1*( -4.*(18.-51.*z+55.*sqr(z)-27*z*sqr(z)+5.*sqr(sqr(z)))
-			 +a1*( +4.*sqr(1.-z)*(14.-17.*z+6.*sqr(z))
-			       +a1*(-8.*pow(1.-z,3)*(2.-z) +  + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
-    double W1 = (5.-z*(93.-98*z+30.*sqr(z))
-		 +a1*(+ 2.*(5.+46.*z-57.*sqr(z)+14.*z*sqr(z))
-		      + a1*( -35.+45.*z-17.*sqr(z)+7.*z*sqr(z)
-			     +4.*a1*sqr(1.-z)*(5.-z))))/(12.*sqr(1.-a1*(1.-z)));
-    double W2 = (1.-a1)*(-11.+45.*z + a1*(3.*z*(4.-5.*z)-23. + 2.*a1*(17.-4.*z)*(1.-z)))/(6.*(1.-a1*(1.-z)));
-    double W3 = 20.*sqr(1.-a1)*a1/3.;
-    return (W0+r*(W1+r*(W2+r*W3)))/(z*(1.-z));
-  }
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
