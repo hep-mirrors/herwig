@@ -96,63 +96,7 @@ public:
    * @param rho The spin density matrix
    */
   double ratioP(const double z, const Energy2 t,
-		const IdList & ids, const bool, const RhoDMatrix &) const {
-    Energy m1 = ids[0]->mass();
-    Energy M  = m1 + ids[1]->mass();
-    double a1 = m1/M;
-    double r = sqr(M)/t;
-    // 1P1 coefficients
-    double W1P1[4];
-    W1P1[0] =
-      z*(6. + a1*(1.-z)*( -2.*(4.+(-3.+z)*z)
-			  +a1*(1.-z)*(-1.+3.*sqr(z)
-				      +a1*(1.-z)*( +2.*(1 + z) + z*(-8 + 3*z)
-						   +a1*(1.-z)))))/(16.*sqr(a1)*pow(1.-a1*(1.-z),4));
-    W1P1[1] =
-      (3.-9.*z
-       +a1*( 2.*(-8.+ z*(9.+.5*z))
-	     +a1*(55.+z*(-123.+(73.-13.*z)*z)
-		  +a1*(-2.*(1.-z)*(37.+z*(-64.+19.*z))
-		       -8.*a1*sqr(1.-z)*(-4 + 3*z)))))/(16.*sqr(a1)*sqr(1.-a1*(1.-z)));
-    W1P1[2] = 0.5*(1.-a1)/(a1*(1.-a1*(1.-z)))*
-      (-1.+a1*(-4.+a1+2.*sqr(a1)*(2.-z)*(1.-z) + 10.*z - a1*z*(2.+z)));
-    W1P1[3] = 4*sqr(1.-a1)*a1;
-    // 3P1 coefficients
-    double W3P1[4];
-    W3P1[0]=z*(6 + sqr(a1)*(-5 + z)*(-3 + z)*sqr(1.-z) - 2*pow(a1,3)*(-3 + z)*pow(-1 + z,3) +  pow(a1,4)*pow(-1 + z,4) + 
-	       z*(-8 + 3*z) + 2*a1*(-1 + z)*(8 + (-7 + z)*z))/(8.*sqr(a1)*pow(1 + a1*(-1 + z),4));
-    W3P1[1]=(3 - 9*z + a1*(4 - 2*pow(a1,3)*pow(-1 + z,3) + 10*(-1 + z)*z + 2*sqr(a1)*sqr(1.-z)*(3 + z) - a1*(-1 + z)*(-15 + z*(20 + z))))/
-      (8.*sqr(a1)*sqr(1.-a1*(1.-z)));
-    W3P1[2]=((-1 + a1)*(2 + a1*(5 - 11*z + a1*(-5 + 2*a1*(-1 + z) - (-8 + z)*z))))/(2.*a1*(1 + a1*(-1 + z)));
-    W3P1[3]=4.*sqr(1.-a1)*a1;
-    // mixing coefficients
-    double Wmixed[4];
-    Wmixed[0] = z*(-6.+(8.-3.*z)*z
-		   +a1*(6 + z*(-8 + z + sqr(z))
-			+a1*sqr(1.-z)*((1.-2.*z)-a1*(1.-z))))/
-      (4.*sqr(a1)*pow(1.-a1*(1.-z),3));
-    Wmixed[1] = (-3.+9.*z
-		 +a1*(2.*(1.+z)*(3.-5.*z)
-		      +a1*(5.+z*(-25.+(35.-11.*z)*z)
-			   +a1*(8.*(1.-z)*(2.+z*(-3.+2.*z))
-				+4.*a1*(2.-z)*sqr(1.-z)))))/
-      (4.*sqr(a1)*sqr(1.-a1*(1.-z)));
-    Wmixed[2] = 2./a1*(1.-2.*a1*(1.+z) + 3.*sqr(a1)*z + pow(a1,3)*(1.-z));
-    Wmixed[3] = 0.;
-    double ratio = 0., rr=1.;
-    int itest = (abs(ids[2]->id())%100000)/10000;
-    double mix1 = itest==1 ? sTheta_ :  cTheta_;
-    double mix2 = itest==1 ? cTheta_ : -sTheta_;
-    double ort=sqrt(0.5);
-    for(unsigned int ix=0;ix<4;++ix) {
-      ratio += rr*(sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix]);
-      rr*=r;
-    }
-    ratio /= pOver_;
-    if(ratio>1.) cerr << "ratio greater than 1 in QtoQPP1SplitFn " << ratio << "\n";
-    if(ratio<0.) cerr << "ratio negative       in QtoQPP1SplitFn " << ratio << "\n";
-    return ratio;
-  }
+		const IdList & ids, const bool, const RhoDMatrix &) const;
   
   /**
    * The concrete implementation of the indefinite integral of the 
