@@ -91,3 +91,45 @@ void QtoQP3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   // guess z
   z_main = invIntegOverP(lower + UseRandom::rnd()*(upper - lower),ids,pdfopt);
 }
+
+double QtoQP3S1SplitFn::ratioP(const double z, const Energy2 t,
+			       const IdList & ids, const bool, const RhoDMatrix &) const {
+  Energy m1 = ids[0]->mass();
+  Energy M  = m1 + ids[1]->mass();
+  double a1 = m1/M;
+  double r = sqr(M)/t;
+  double W0 = z*(6.+sqr(a1*(1.-z))+2.*a1*(1.-z)*(z-2.)+ z*(3.*z-8.))/sqr(1.-a1*(1.-z));
+  double W1 = (3.+2.*sqr(a1)*(1.-z)*(z-3.)-9.*z+a1*(3.-2.*z+3.*sqr(z)))/(1.-a1*(1.-z));
+  double W2 = -12.*(1.-a1)*a1;
+  double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
+  if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
+  return ratio;
+}
+
+DecayMEPtr QtoQP3S1SplitFn::matrixElement(const double z, const Energy2 t, 
+			 const IdList & ids, const double phi, bool) {
+  Energy m1 = ids[0]->mass();
+  Energy M  = m1 + ids[1]->mass();
+  double a1 = m1/M, a2=1-a1;
+  double r = sqr(M)/t;
+  double rz=sqrt(z);
+  double r2=sqrt(2.);
+  Complex ii(0.,1.);
+  Complex phase = exp(ii*phi);
+  Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
+  // calculate the kernal
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  (*kernal)(0,0,0) = -r2*phase*double(pT/M)*r/((1 - z)*rz);
+  (*kernal)(0,0,1) = (1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z)) - r*(1.+a1*(-2.+(-1.+2.*a1)*(1.-z))*(1.-z)+z)/((1 - z)*rz);
+  (*kernal)(0,0,2) = (r2*double(pT/M)*r*rz)/(phase*(1 - z));
+  (*kernal)(0,1,0) = r2*( (1.-z)*rz/(1.-a1*(1.-z)) + r*(1.-a1*(1.+z))/rz);
+  (*kernal)(0,1,1) = (-1.+2.*a1)*double(pT/M)*r/(phase*rz);
+  (*kernal)(0,1,2) = 0.;
+  (*kernal)(1,0,0) = 0.;
+  (*kernal)(1,0,1) = ((1.-2.*a1)*phase*double(pT/M)*r)/rz;
+  (*kernal)(1,0,2) = r2*((1.-z)*rz/(1.-a1*(1.-z)) + r*(1.-a1*(1.+z))/rz); 
+  (*kernal)(1,1,0) = -r2*r*phase*double(pT/M)*rz/(1 - z);
+  (*kernal)(1,1,1) = r*(-1-a1*(-2.+(-1.+2.*a1)*(1.-z))*(1.-z) - z)/((1 - z)*rz) + (1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z));
+  (*kernal)(1,1,2) = r*r2*double(pT/M)/(phase*(1.-z)*rz);
+  return kernal;
+}

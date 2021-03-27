@@ -91,3 +91,74 @@ void QtoQP3P2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   // guess z
   z_main = invIntegOverP(lower + UseRandom::rnd()*(upper - lower),ids,pdfopt);
 }
+
+double QtoQP3P2SplitFn::ratioP(const double z, const Energy2 t,
+			       const IdList & ids, const bool, const RhoDMatrix &) const {
+  Energy m1 = ids[0]->mass();
+  Energy M  = m1 + ids[1]->mass();
+  double a1 = m1/M;
+  double r = sqr(M)/t;
+  double W0 = z*(30.-72.*z+69*sqr(z)-30.*z*sqr(z)+5.*sqr(sqr(z)) 
+		 +a1*( -4.*(18.-51.*z+55.*sqr(z)-27*z*sqr(z)+5.*sqr(sqr(z)))
+		       +a1*( +4.*sqr(1.-z)*(14.-17.*z+6.*sqr(z))
+			     +a1*(-8.*pow(1.-z,3)*(2.-z) +  + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
+  double W1 = (5.-z*(93.-98*z+30.*sqr(z))
+	       +a1*(+ 2.*(5.+46.*z-57.*sqr(z)+14.*z*sqr(z))
+		    + a1*( -35.+45.*z-17.*sqr(z)+7.*z*sqr(z)
+			   +4.*a1*sqr(1.-z)*(5.-z))))/(12.*sqr(1.-a1*(1.-z)));
+  double W2 = (1.-a1)*(-11.+45.*z + a1*(3.*z*(4.-5.*z)-23. + 2.*a1*(17.-4.*z)*(1.-z)))/(6.*(1.-a1*(1.-z)));
+  double W3 = 20.*sqr(1.-a1)*a1/3.;
+  double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
+  if(ratio>1.) cerr << "ratio greater than 1 in QtoQP3P2SplitFn " << ratio << "\n";
+  if(ratio<0.) cerr << "ratio negative       in QtoQP3P2SplitFn " << ratio << "\n";
+  return ratio;
+}
+
+DecayMEPtr QtoQP3P2SplitFn::matrixElement(const double z, const Energy2 t, 
+					  const IdList & ids, const double phi, bool) {
+  Energy m1 = ids[0]->mass();
+  Energy M  = m1 + ids[1]->mass();
+  double a1 = m1/M, a2=1-a1;
+  double r = sqr(M)/t;
+  double rz=sqrt(z);
+  Complex ii(0.,1.);
+  Complex phase = exp(ii*phi);
+  Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
+  // calculate the kernal
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2)));
+  (*kernal)(0,0,0) = -ii*sqr(phase)*r/rz/(1.-z)*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);  
+  (*kernal)(0,0,1) =  0.5*ii*phase*double(pT/M)*r/rz/(1.-z)*(-(1.+2.*z-sqr(z)+a1*(-1.+sqr(z)))/(1.-a1*(1.-z))
+							     + r*(3.+2.*sqr(a1)*sqr(1.-z)+z-a1*(5.-6.*z+sqr(z)))/(1.-z));
+  (*kernal)(0,0,2) =  ii/sqrt(6.)/rz*(z*(3.+sqr(a1)*sqr(1.-z)-3.*z+sqr(z)-2.*a1*(2.-3.*z+sqr(z)))/sqr(1.-a1*(1.-z))
+				      -r*(1 + 2*sqr(a1)*sqr(1.-z) + 6*z - sqr(z) + a1*(-3 + 2*z + sqr(z)))/(1.-z)
+				      + sqr(r)*(-sqr(a1)*(-11.+z)*sqr(1.-z)-4.*pow(a1,3)*pow(1.-z,3)+3.*(1.+z)+2.*a1*(-5.+4.*z+sqr(z)))/sqr(1.-z));
+  (*kernal)(0,0,3) = -0.5*ii/phase*double(pT/M)*r/rz/(1.-z)*( -(3.-2*a1*(1.-z)-z)*z/((1.-a1*(1.-z)))
+							      + r*(1.+2.*sqr(a1)*sqr(1.-z)+3.*z+a1*(-3.+2.*z+sqr(z)))/(1.-z));
+  (*kernal)(0,0,4) =-ii/sqr(phase)*r/(1.-z)*rz*( r*sqr(1.-a1*(1.-z))/(1.-z) - z);
+  (*kernal)(0,1,0) =-ii*phase*double(pT/M)/rz*r*( z/(1.-a1*(1.-z)) + r*(1.-a1-a1*z)/(1.-z));  
+  (*kernal)(0,1,1) = 0.5*ii/rz*((2.-2.*a1*(1.-z)-z)*(1.-z)*z/sqr(1.-a1*(1.-z))
+				+r*(1.-a1-z-3.*a1*z)
+				+sqr(r)*(-3.-2.*a1*(-4.+z)+2.*pow(a1,3)*sqr(1.-z)+sqr(a1)*(-7.+6.*z+sqr(z)))/(1.-z));
+  (*kernal)(0,1,2) = ii*double(pT/M)/sqrt(6.)/phase*r/rz*(r*(3.-a1*(7.-z)+4.*sqr(a1)*(1.-z))/(1.-z)
+							  +(-1.+a1*(3.-z)-2.*sqr(a1)*(1.-z)+z)/(1.-a1*(1.-z)));
+  (*kernal)(0,1,3) = 0.5*ii*(1.-2.*a1)/sqr(phase)*r/rz*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);
+  (*kernal)(0,1,4) = 0.;
+  (*kernal)(1,0,0) = 0.;  
+  (*kernal)(1,0,1) = 0.5*ii*(1.-2.*a1)*sqr(phase)*r/rz*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);
+  (*kernal)(1,0,2) =-ii*double(pT/M)/sqrt(6.)*phase*r/rz*(r*(3.-a1*(7.-z)+4.*sqr(a1)*(1.-z))/(1.-z)
+							  +(-1.+a1*(3.-z)-2.*sqr(a1)*(1.-z)+z)/(1.-a1*(1.-z)));
+  (*kernal)(1,0,3) =+0.5*ii/rz*((2.-2.*a1*(1.-z)-z)*(1.-z)*z/sqr(1.-a1*(1.-z))
+				+r*(1.-a1-z-3.*a1*z)
+				+sqr(r)*(-3.-2.*a1*(-4.+z)+2.*pow(a1,3)*sqr(1.-z)+sqr(a1)*(-7.+6.*z+sqr(z)))/(1.-z));
+  (*kernal)(1,0,4) = ii/phase*double(pT/M)/rz*r*( z/(1.-a1*(1.-z)) + r*(1.-a1-a1*z)/(1.-z));
+  (*kernal)(1,1,0) =-ii*sqr(phase)*r/(1.-z)*rz*( r*sqr(1.-a1*(1.-z))/(1.-z) - z);
+  (*kernal)(1,1,1) = 0.5*ii*phase*double(pT/M)*r/rz/(1.-z)*(-(3.-2.*a1*(1.-z)-z)*z/(1.-a1*(1.-z))
+							    + r*(1.+2.*sqr(a1)*sqr(1.-z)+3.*z+a1*(-3.+2.*z+sqr(z)))/(1.-z));
+  (*kernal)(1,1,2) = ii/sqrt(6.)/rz* (z*(3.+sqr(a1)*sqr(1.-z)-3.*z+sqr(z)-2.*a1*(2.-3.*z+sqr(z)))/sqr(1.-a1*(1.-z))
+				      -r*(1.+2.*sqr(a1)*sqr(1.-z)+6.*z-sqr(z)+a1*(-3.+2.*z+sqr(z)))/(1.-z)
+				      +sqr(r)*(-(sqr(a1)*(-11.+z)*sqr(1.-z))-4.*pow(a1,3)*pow(1.-z,3)+3.*(1.+z)+2.*a1*(-5.+4.*z+sqr(z)))/(sqr(1.-z)));
+  (*kernal)(1,1,3) = -0.5*ii/phase*double(pT/M)*r/rz/(1.-z)*(-(1.+2.*z-sqr(z)+a1*(-1.+sqr(z)))/(1.-a1*(1.-z))
+							     +r*(3.+2.*sqr(a1)*sqr(1.-z)+z-a1*(5.-6.*z+sqr(z)))/(1.-z));
+  (*kernal)(1,1,4) =-ii/sqr(phase)*r/rz/(1.-z)*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);
+  return kernal;
+}

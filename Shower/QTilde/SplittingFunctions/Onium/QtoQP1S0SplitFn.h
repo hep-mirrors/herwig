@@ -92,18 +92,7 @@ public:
    * @param rho The spin density matrix
    */
   double ratioP(const double z, const Energy2 t,
-		const IdList & ids, const bool, const RhoDMatrix &) const {
-    Energy m1 = ids[0]->mass();
-    Energy M  = m1 + ids[1]->mass();
-    double a1 = m1/M;
-    double r = sqr(M)/t;
-    double W0 = sqr(1.+(1.-a1)*(1.-z))*z/sqr(1.-a1*(1.-z));
-    double W1 = (-2.*sqr(a1*z)+2.*sqr(a1)+a1*sqr(z)+2.*a1*z-7.*a1-3.*z+5)/(1.-a1*(1.-z));
-    double W2 = -4.*a1*(1.-a1);
-    double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
-    if(ratio>1.) cerr << "ratio greater than 1 in QtoQP1S0SplitFn " << ratio << "\n";
-    return ratio;
-  }
+		const IdList & ids, const bool, const RhoDMatrix &) const;
   
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -171,23 +160,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
-			   const IdList & ids, const double phi, bool) {
-    Energy m1 = ids[0]->mass();
-    Energy M  = m1 + ids[1]->mass();
-    double a1 = m1/M, a2=1-a1;
-    double r = sqr(M)/t;
-    double rz=sqrt(z);
-    Complex ii(0.,1.);
-    Complex phase = exp(ii*phi);
-    Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
-    // calculate the kernal
-    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
-    (*kernal)(0,0,0) = -(1.+(1.-a1)*(1.-z))*rz/(1.-a1*(1.-z)) - r*(1.-a1-a1*z)/rz;
-    (*kernal)(1,1,0) = -(*kernal)(2,2,0);
-    (*kernal)(0,1,0) = -double(pT/M)*r/rz/phase;
-    (*kernal)(1,0,0) = conj((*kernal)(0,2,0));
-    return kernal;
-  }
+			   const IdList & ids, const double phi, bool);
 
 protected:
   
