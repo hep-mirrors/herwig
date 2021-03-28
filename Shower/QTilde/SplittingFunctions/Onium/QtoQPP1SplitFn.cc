@@ -36,8 +36,8 @@ void QtoQPP1SplitFn::persistentInput(PersistentIStream & is, int) {
 
 void QtoQPP1SplitFn::doinit() {
   Sudakov1to2FormFactor::doinit();
-  sTheta_ = sin(theta_);
-  cTheta_ = cos(theta_);
+  sTheta_ = sin(theta_/180.*Constants::pi);
+  cTheta_ = cos(theta_/180.*Constants::pi);
 }
 
 // The following static variable is needed for the type
@@ -141,19 +141,78 @@ double QtoQPP1SplitFn::ratioP(const double z, const Energy2 t,
 		    + a1*(5.+z*(-25.+(35.-11.*z)*z)
 			  -4.*a1*(1.-z)*(2*(2.+z*(-3.+2*z))
 					 +a1*(1.-z)*(-2.+z)))))/(4.*sqr(a1)*sqr(1-a1*(1.-z)));
-  Wmixed[2] = 2./a1*(1.-2.*a1*(1.+z) + 3.*sqr(a1)*z + pow(a1,3)*(1.-z));
+  Wmixed[2] = 2./a1*(1. - 2.*a1*(1.+z) + 3.*sqr(a1)*z + pow(a1,3)*(1.-z));
+
+
   Wmixed[3] = 0.;
   double ratio = 0., rr=1.;
   int itest = (abs(ids[2]->id())%100000)/10000;
   double mix1 = itest==1 ? sTheta_ :  cTheta_;
   double mix2 = itest==1 ? cTheta_ : -sTheta_;
   double ort=sqrt(0.5);
+  cerr << "testing values " << a1 << " " << z << " " << mix1 << " " << mix2 << "\n";
+  
   for(unsigned int ix=0;ix<4;++ix) {
-    ratio += rr*(sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix]);
+    cerr << "testing W "<< ix <<"  " << sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix] << "\n";
+    ratio += rr*(sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix]); 
     rr*=r;
   }
   ratio /= pOver_;
   if(ratio>1.) cerr << "ratio greater than 1 in QtoQPP1SplitFn " << ratio << "\n";
   if(ratio<0.) cerr << "ratio negative       in QtoQPP1SplitFn " << ratio << "\n";
   return ratio;
+}
+
+DecayMEPtr QtoQPP1SplitFn::matrixElement(const double z, const Energy2 t, 
+					 const IdList & ids, const double phi, bool) {
+  Energy m1 = ids[0]->mass();
+  Energy M  = m1 + ids[1]->mass();
+  double a1 = m1/M, a2=1-a1;
+  double r = sqr(M)/t;
+  Complex ii(0.,1.);
+  Complex phase = exp(ii*phi);
+  Energy pT = sqrt(z*(1.-z)*t+sqr(M)*(sqr(a1)*z*(1.-z)-sqr(a2)*(1.-z)-z));
+  double rz = sqrt(z);
+  double r2 = sqrt(2.);
+  int itest = (abs(ids[2]->id())%100000)/10000;
+  double mix1 = itest==1 ? sTheta_ :  cTheta_;
+  double mix2 = itest==1 ? cTheta_ : -sTheta_;
+  // calculate the kernal
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  (*kernal)(0,0,0) =  mix2*0.5*ii*phase*double(pT/M)*r/rz/(1.-z)*(r*(1.+a1*(1.-z)-2.*sqr(a1)*(1.-z))
+								  +(-1.+sqr(a1)*sqr(1.-z)+a1*(1.-z)*z)/(a1*(1.-a1*(1.-z))));
+  (*kernal)(0,0,1) = mix2*ii/r2/rz*(+ sqr(r)*sqr(1.-a1*(1.-z))/(1.-z)
+				    + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(a1*(1.-z))
+				    + 0.5*(2.-a1*(1.-z)-z)*z/(a1*(1.-a1*(1.-z))));
+  (*kernal)(0,0,2) = mix2*0.5*ii*double(pT/M)/phase*r/rz/(1.-z)*( +r*(-1 + a1*(-3 + 2*a1)*(-1 + z))
+								  + z/(a1*(1.-a1*(1.-z))));
+  (*kernal)(0,1,0) = mix2*0.5*ii/rz/a1*(r*(1.-sqr(a1)*(1.-z)-2.*a1*z) + (1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
+					-sqr(r)*a1*(1.-a1*(1.-z))*(1.+a1-2.*sqr(a1)*(1.-z)-3.*a1*z)/(1.-z));
+  (*kernal)(0,1,1) =-mix2*ii*double(pT/M)*r/rz/r2/phase*(1.-a1*(1.+z))*(0.5/(a1*(1.-a1*(1.-z)))- r/(1.-z));
+  (*kernal)(0,1,2) =-mix2*0.5*ii*(1.-2.*a1)*r/sqr(phase)/rz*( -r*sqr(1.-a1*(1.-z))/(1.-z) + z);
+  (*kernal)(1,0,0) = mix2*0.5*ii*(-1 + 2*a1)*sqr(phase)*r/rz*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);
+  (*kernal)(1,0,1) = mix2*ii*phase*double(pT/M)*r/rz*(-1 + a1 + a1*z)/r2*(0.5/(a1*(1.-a1*(1.-z)))- r/(1.-z));
+  (*kernal)(1,0,2) = -0.5*ii*mix2/a1/rz*(r*(1.+sqr(a1)*(-1 + z)-2.*a1*z)
+					 +(1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
+					 +sqr(r)*a1*(1 + a1*(-1 + z))*(1 + a1 + 2*sqr(a1)*(-1 + z) - 3*a1*z)/((-1 + z)));
+  (*kernal)(1,1,0) = +0.5*ii*phase*pT/M*mix2/rz/(1.-z)*(sqr(r)*(-1.+3.*a1*(1.-z)-2.*sqr(a1)*(1.-z))
+							+r*z/(a1*(1.-a1*(1.-z))));
+  (*kernal)(1,1,1) =-mix2*ii/r2/rz/a1*(sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
+				       + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(1.-z)
+				       + 0.5*(2 + a1*(-1 + z) - z)*z/(1.-a1*(1.-z)));
+  (*kernal)(1,1,2) = 0.5*ii*double(pT/M)*r*mix2/phase/rz/(1.-z)*(r*(1 + a1*(-1 + 2*a1)*(-1 + z))
+								 +(-1 + a1*(a1*(-1 + z) - z)*(-1 + z))/(a1*(1.-a1*(1.-z))));
+  
+
+  cerr << "testing in kernal " << a1 << " " << z << " " << r << " " << pT/M << " " << phi << "\n";
+  for(unsigned int ih1=0;ih1<2;++ih1) {
+    for(unsigned int ih2=0;ih2<2;++ih2) {
+      for(unsigned int ih3=0;ih3<3;++ih3) {
+  	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
+      }
+    }
+  }
+
+  
+  return kernal;
 }
