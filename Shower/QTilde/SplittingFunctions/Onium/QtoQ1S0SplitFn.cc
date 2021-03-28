@@ -117,13 +117,3 @@ DecayMEPtr QtoQ1S0SplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,0,0) = conj((*kernal)(0,1,0));
   return kernal;
 }
-
-  // cerr << "testing values " << " " << z << " " << r << " " << ratio*pOver_ << "\n";
-  // cerr << "testing in kernal " << " " << z << " " << r << " " << pT/m << " " << phi << "\n";
-  // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     for(unsigned int ih3=0;ih3<1;++ih3) {
-  // 	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
-  //     }
-  //   }
-  // }
