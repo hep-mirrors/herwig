@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QtoQP3S1SplitFn class.
+// functions of the QtoQ3S1SplitFn class.
 //
 
-#include "QtoQP3S1SplitFn.h"
+#include "QtoQ3S1SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -16,55 +16,56 @@
 
 using namespace Herwig;
 
-const double QtoQP3S1SplitFn::pOver_ = 6.;
+const double QtoQ3S1SplitFn::pOver_ = 1.;
 
-IBPtr QtoQP3S1SplitFn::clone() const {
+IBPtr QtoQ3S1SplitFn::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr QtoQP3S1SplitFn::fullclone() const {
+IBPtr QtoQ3S1SplitFn::fullclone() const {
   return new_ptr(*this);
 }
 
-void QtoQP3S1SplitFn::persistentOutput(PersistentOStream & os) const {
+void QtoQ3S1SplitFn::persistentOutput(PersistentOStream & os) const {
   os << ounit(O1_,GeV*GeV2) << n_ << fixedAlphaS_;
+
 }
 
-void QtoQP3S1SplitFn::persistentInput(PersistentIStream & is, int) {
+void QtoQ3S1SplitFn::persistentInput(PersistentIStream & is, int) {
   is >> iunit(O1_,GeV*GeV2) >> n_ >> fixedAlphaS_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<QtoQP3S1SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQP3S1SplitFn("Herwig::QtoQP3S1SplitFn", "HwOniumShower.so");
+DescribeClass<QtoQ3S1SplitFn,Sudakov1to2FormFactor>
+describeHerwigQtoQ3S1SplitFn("Herwig::QtoQ3S1SplitFn", "HwOniumShower.so");
 
-void QtoQP3S1SplitFn::Init() {
+void QtoQ3S1SplitFn::Init() {
 
-  static ClassDocumentation<QtoQP3S1SplitFn> documentation
-    ("The QtoQP3S1SplitFn class implements the branching q-> q' 3S1");
+  static ClassDocumentation<QtoQ3S1SplitFn> documentation
+    ("The QtoQ3S1SplitFn class implements the branching q-> q 3S1");
 
-  static Parameter<QtoQP3S1SplitFn,Energy3> interfaceO1
+  static Parameter<QtoQ3S1SplitFn,Energy3> interfaceO1
     ("O1",
      "The colour singlet excpetation value",
-     &QtoQP3S1SplitFn::O1_, GeV*GeV2, 0.573*GeV*GeV2, 0.0*GeV*GeV2, 10.0*GeV*GeV2,
+     &QtoQ3S1SplitFn::O1_, GeV*GeV2, 0.573*GeV*GeV2, 0.0*GeV*GeV2, 10.0*GeV*GeV2,
      false, false, Interface::limited);
   
-  static Parameter<QtoQP3S1SplitFn,double> interfacefixedAlphaS_
+  static Parameter<QtoQ3S1SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
-     &QtoQP3S1SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
+     &QtoQ3S1SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
      false, false, Interface::limited);
   
-  static Parameter<QtoQP3S1SplitFn,unsigned int> interfacePrincipalQuantumNumber
+  static Parameter<QtoQ3S1SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
      "The principle quantum number of the states",
-     &QtoQP3S1SplitFn::n_, 1, 1, 10,
+     &QtoQ3S1SplitFn::n_, 1, 1, 10,
      false, false, Interface::limited);
 
 }
 
-void QtoQP3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
+void QtoQ3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
 			      const IdList &ids,
 			      double enhance,bool ident,
 			      double detune, 
@@ -91,7 +92,7 @@ void QtoQP3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   z_main = invIntegOverP(lower + UseRandom::rnd()*(upper - lower),ids,pdfopt);
 }
 
-double QtoQP3S1SplitFn::ratioP(const double z, const Energy2 t,
+double QtoQ3S1SplitFn::ratioP(const double z, const Energy2 t,
 			       const IdList & ids, const bool, const RhoDMatrix &) const {
   Energy m1 = ids[0]->mass();
   Energy M  = m1 + ids[1]->mass();
@@ -101,12 +102,12 @@ double QtoQP3S1SplitFn::ratioP(const double z, const Energy2 t,
   double W1 = (3.+2.*sqr(a1)*(1.-z)*(z-3.)-9.*z+a1*(3.-2.*z+3.*sqr(z)))/(1.-a1*(1.-z));
   double W2 = -12.*(1.-a1)*a1;
   double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
-  if(ratio>1.) cerr << "ratio greater than 1 in QtoQP3S1SplitFn " << ratio << "\n";
-  if(ratio<0.) cerr << "ratio negative       in QtoQP3S1SplitFn " << ratio << "\n";
+  if(ratio>1.) cerr << "ratio greater than 1 in QtoQ3S1SplitFn " << ratio << "\n";
+  if(ratio<0.) cerr << "ratio negative       in QtoQ3S1SplitFn " << ratio << "\n";
   return ratio;
 }
 
-DecayMEPtr QtoQP3S1SplitFn::matrixElement(const double z, const Energy2 t, 
+DecayMEPtr QtoQ3S1SplitFn::matrixElement(const double z, const Energy2 t, 
 			 const IdList & ids, const double phi, bool) {
   Energy m1 = ids[0]->mass();
   Energy M  = m1 + ids[1]->mass();
@@ -133,3 +134,4 @@ DecayMEPtr QtoQP3S1SplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,1,2) = r*r2*double(pT/M)/(phase*(1.-z)*rz);
   return kernal;
 }
+
