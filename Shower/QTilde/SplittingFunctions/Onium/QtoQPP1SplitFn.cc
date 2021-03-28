@@ -150,10 +150,7 @@ double QtoQPP1SplitFn::ratioP(const double z, const Energy2 t,
   double mix1 = itest==1 ? sTheta_ :  cTheta_;
   double mix2 = itest==1 ? cTheta_ : -sTheta_;
   double ort=sqrt(0.5);
-  cerr << "testing values " << a1 << " " << z << " " << mix1 << " " << mix2 << "\n";
-  
   for(unsigned int ix=0;ix<4;++ix) {
-    cerr << "testing W "<< ix <<"  " << sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix] << "\n";
     ratio += rr*(sqr(mix1)*W1P1[ix]+sqr(mix2)*W3P1[ix]+ort*mix1*mix2*Wmixed[ix]); 
     rr*=r;
   }
@@ -179,40 +176,96 @@ DecayMEPtr QtoQPP1SplitFn::matrixElement(const double z, const Energy2 t,
   double mix2 = itest==1 ? cTheta_ : -sTheta_;
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
-  (*kernal)(0,0,0) =  mix2*0.5*ii*phase*double(pT/M)*r/rz/(1.-z)*(r*(1.+a1*(1.-z)-2.*sqr(a1)*(1.-z))
-								  +(-1.+sqr(a1)*sqr(1.-z)+a1*(1.-z)*z)/(a1*(1.-a1*(1.-z))));
-  (*kernal)(0,0,1) = mix2*ii/r2/rz*(+ sqr(r)*sqr(1.-a1*(1.-z))/(1.-z)
-				    + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(a1*(1.-z))
-				    + 0.5*(2.-a1*(1.-z)-z)*z/(a1*(1.-a1*(1.-z))));
-  (*kernal)(0,0,2) = mix2*0.5*ii*double(pT/M)/phase*r/rz/(1.-z)*( +r*(-1 + a1*(-3 + 2*a1)*(-1 + z))
-								  + z/(a1*(1.-a1*(1.-z))));
-  (*kernal)(0,1,0) = mix2*0.5*ii/rz/a1*(r*(1.-sqr(a1)*(1.-z)-2.*a1*z) + (1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
-					-sqr(r)*a1*(1.-a1*(1.-z))*(1.+a1-2.*sqr(a1)*(1.-z)-3.*a1*z)/(1.-z));
-  (*kernal)(0,1,1) =-mix2*ii*double(pT/M)*r/rz/r2/phase*(1.-a1*(1.+z))*(0.5/(a1*(1.-a1*(1.-z)))- r/(1.-z));
-  (*kernal)(0,1,2) =-mix2*0.5*ii*(1.-2.*a1)*r/sqr(phase)/rz*( -r*sqr(1.-a1*(1.-z))/(1.-z) + z);
-  (*kernal)(1,0,0) = mix2*0.5*ii*(-1 + 2*a1)*sqr(phase)*r/rz*(r*sqr(1.-a1*(1.-z))/(1.-z)-z);
-  (*kernal)(1,0,1) = mix2*ii*phase*double(pT/M)*r/rz*(-1 + a1 + a1*z)/r2*(0.5/(a1*(1.-a1*(1.-z)))- r/(1.-z));
-  (*kernal)(1,0,2) = -0.5*ii*mix2/a1/rz*(r*(1.+sqr(a1)*(-1 + z)-2.*a1*z)
-					 +(1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
-					 +sqr(r)*a1*(1 + a1*(-1 + z))*(1 + a1 + 2*sqr(a1)*(-1 + z) - 3*a1*z)/((-1 + z)));
-  (*kernal)(1,1,0) = +0.5*ii*phase*pT/M*mix2/rz/(1.-z)*(sqr(r)*(-1.+3.*a1*(1.-z)-2.*sqr(a1)*(1.-z))
-							+r*z/(a1*(1.-a1*(1.-z))));
-  (*kernal)(1,1,1) =-mix2*ii/r2/rz/a1*(sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
-				       + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(1.-z)
-				       + 0.5*(2 + a1*(-1 + z) - z)*z/(1.-a1*(1.-z)));
-  (*kernal)(1,1,2) = 0.5*ii*double(pT/M)*r*mix2/phase/rz/(1.-z)*(r*(1 + a1*(-1 + 2*a1)*(-1 + z))
-								 +(-1 + a1*(a1*(-1 + z) - z)*(-1 + z))/(a1*(1.-a1*(1.-z))));
-  
-
-  cerr << "testing in kernal " << a1 << " " << z << " " << r << " " << pT/M << " " << phi << "\n";
-  for(unsigned int ih1=0;ih1<2;++ih1) {
-    for(unsigned int ih2=0;ih2<2;++ih2) {
-      for(unsigned int ih3=0;ih3<3;++ih3) {
-  	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
-      }
-    }
-  }
-
-  
+  (*kernal)(0,0,0) = ii*phase*double(pT/M)*r/(1.-z)/rz/r2/a1*
+    (-mix1   *(r*a1*(-1.+a1*(1.+z))
+	       -0.5*(1.+2.*sqr(a1)*sqr(1.-z)+a1*(-3.+5.*z-2.*sqr(z)))/(1.-a1*(1.-z)))
+     +mix2/r2*(r*a1*(1.+a1*(1.-z)-2.*sqr(a1)*(1.-z))
+	       +(-1.+sqr(a1)*sqr(1.-z)+a1*(1.-z)*z)/(1.-a1*(1.-z))));
+  (*kernal)(0,0,1) = ii/rz/a1*
+    (mix1*(sqr(r)*a1*(1.-a1*(1.-z))*(1.-a1*(1.+z))/(1.-z)
+	   + 0.25*z*(-2.+a1+sqr(a1)*sqr(1.-z)+z-a1*sqr(z))/sqr(1.-a1*(1.-z))
+	   - 0.25*r*(-1.-z+a1*(1.-z)*(5.-4.*a1-3.*z))/(1.-z))
+     +mix2/r2*(+ sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
+	       + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(1.-z)
+	       + 0.5*(2.-a1*(1.-z)-z)*z/(1.-a1*(1.-z))));
+  (*kernal)(0,0,2) = ii*double(pT/M)/phase*r/rz/r2/(1.-z)/a1*
+    (mix1   *(-0.5*(1.+a1*(1.-z))*z/(1.-a1*(1.-z))-r*a1*(1.-a1*(1.+z)))-
+     mix2/r2*(r*a1*(1.+a1*(-3.+2*a1)*(1.-z))-z/(1.-a1*(1.-z))));
+  (*kernal)(0,1,0) = ii/rz/a1/r2*
+    (mix1*(- sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
+	   - 0.5*(1.-z)*z/(1.-a1*(1.-z))
+	   + 0.5*r*(-1.+a1*(3.-2*a1*(1.-z)+z)))
+     +mix2/r2*(r*(1.-sqr(a1)*(1.-z)-2.*a1*z) + (1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
+	       -sqr(r)*a1*(1.-a1*(1.-z))*(1.+a1-2.*sqr(a1)*(1.-z)-3.*a1*z)/(1.-z)));
+  (*kernal)(0,1,1) = ii*r*double(pT/M)/phase/rz/a1*
+    (mix1   *(0.25*(1.-4.*a1)+r*a1*(1.-a1*(1.-z))/(1.-z))-
+     mix2/r2*(1.-a1*(1.+z))*(0.5/(1.-a1*(1.-z))-r*a1/(1.-z)));
+  (*kernal)(0,1,2) = ii/sqr(phase)*r/rz/r2*
+    (mix1*(r*sqr(1.-a1*(1.-z))/(1.-z)-z)
+    -mix2/r2*(1.-2.*a1)*(-r*sqr(1.-a1*(1.-z))/(1.-z)+z));
+  (*kernal)(1,0,0) = -sqr(phase)*ii*r/rz/r2*
+    ( mix1    *(r*sqr(1.-a1*(1.-z))/(1.-z)-z) +
+      mix2/r2*(1.-2*a1)*(r*sqr(1.-a1*(1.-z))/(1.-z)-z));
+  (*kernal)(1,0,1) = ii*phase*double(pT/M)*r/rz/a1*
+    (mix1*((-0.25*(-1 + 4*a1)) - r*a1*(1.-a1*(1.-z))/((-1 + z)))-
+     mix2*(1.-a1*(1.+z))/r2*(0.5/(1.-a1*(1.-z))- r*a1/(1.-z)));
+  (*kernal)(1,0,2) = ii/rz/a1/r2*
+    (mix1    *(+sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
+	       +0.5*(1.-z)*z/(1.-a1*(1.-z))
+	       -0.5*r*(-1.+a1*(3.-2.*a1*(1.-z)+z)))
+     -mix2/r2*(r*(1.+sqr(a1)*(-1 + z)-2.*a1*z)
+	       +(1.-a1)*(1.-z)*z/sqr(1.-a1*(1.-z))
+	       +sqr(r)*a1*(1.-a1*(1.-z))*(1 + a1 + 2*sqr(a1)*(-1 + z) - 3*a1*z)/((-1 + z))));
+  (*kernal)(1,1,0) = ii*phase*pT/M*r/rz/(1.-z)/r2*
+    (-mix1/a1*(0.5*(1.+a1*(1.-z))*z/(1.-a1*(1.-z))+r*a1*(1.-a1*(1.+z)))
+     +mix2/r2*(r*(-1.+3.*a1*(1.-z)-2.*sqr(a1)*(1.-z))+z/(a1*(1.-a1*(1.-z)))));
+  (*kernal)(1,1,1) = ii/rz/a1*
+    (mix1*(-sqr(r)*a1*(1.-a1*(1.-z))*(1.-a1*(1.+z))/(1.-z)
+	   -0.25*z*(-2.+a1+sqr(a1)*sqr(1.-z)+z-a1*sqr(z))/sqr(1.-a1*(1.-z))
+	   +0.25*r*(-1.-z+a1*(1.-z)*(5.-4.*a1-3.*z))/(1.-z))
+     -mix2/r2*(sqr(r)*a1*sqr(1.-a1*(1.-z))/(1.-z)
+	       + 0.5*r*(-1.+a1*sqr(1.-z)-z)/(1.-z)
+	       + 0.5*(2.-a1*(1.-z)-z)*z/(1.-a1*(1.-z))));
+  (*kernal)(1,1,2) = ii*double(pT/M)/phase*r/rz/(1.-z)/r2/a1*
+    (mix1*(0.5*(1.-a1*(3.-2.*a1*(1.-z)-2.*z)*(1.-z))/(1.-a1*(1.-z))
+	   + a1*r*(1.-a1*(1.+z)))
+     +mix2/r2*(a1*r*(1.+a1*(1.-2.*a1)*(1.-z))
+	       +(-1 + a1*(a1*(-1 + z) - z)*(-1 + z))/(1.-a1*(1.-z))));
+  // testing code
+  // DecayMEPtr test1P1(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  // (*test1P1)(0,0,0) =(Complex(0,1)*phase*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*M*(-1 + z)*rz) - (Complex(0,0.5)*phase*pT*r*(1 + 2*pow(a1,2)*pow(-1 + z,2) + a1*(-3 + 5*z - 2*pow(z,2))))/(r2*a1*M*(1 + a1*(-1 + z))*(-1 + z)*rz);
+  // (*test1P1)(0,0,1) =(Complex(0,1)*pow(r,2)*(1 + a1*(-1 + z))*(-1 + a1 + a1*z))/((-1 + z)*rz) + (Complex(0,0.25)*rz*(-2 + a1 + pow(a1,2)*pow(-1 + z,2) + z - a1*pow(z,2)))/(a1*pow(1 + a1*(-1 + z),2)) + (Complex(0,0.25)*r*(-1 - z + a1*(-1 + z)*(-5 + 4*a1 + 3*z)))/(a1*(-1 + z)*rz);
+  // (*test1P1)(0,0,2) =(Complex(0,-0.5)*pT*r*(-1 + a1*(-1 + z))*rz)/(r2*a1*phase*M*(1 + a1*(-1 + z))*(-1 + z)) - (Complex(0,1)*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*phase*M*(-1 + z)*rz);
+  // (*test1P1)(0,1,0) =(Complex(0,1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*(-1 + z)*rz) + (Complex(0,0.5)*(-1 + z)*rz)/(r2*a1*(1 + a1*(-1 + z))) + (Complex(0,0.5)*r*(-1 + a1*(3 + 2*a1*(-1 + z) + z)))/(r2*a1*rz);
+  // (*test1P1)(0,1,1) =(Complex(0,0.25)*(1 - 4*a1)*pT*r)/(a1*phase*M*rz) - (Complex(0,1)*pT*pow(r,2)*(1 + a1*(-1 + z)))/(phase*M*(-1 + z)*rz);
+  // (*test1P1)(0,1,2) =(Complex(0,-1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*sqr(phase)*(-1 + z)*rz) - (Complex(0,1)*r*rz)/(r2*sqr(phase));
+  // (*test1P1)(1,0,0) =(Complex(0,1)*sqr(phase)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*(-1 + z)*rz) + (Complex(0,1)*sqr(phase)*r*rz)/r2;
+  // (*test1P1)(1,0,1) =(Complex(0,-0.25)*(-1 + 4*a1)*phase*pT*r)/(a1*M*rz) - (Complex(0,1)*phase*pT*pow(r,2)*(1 + a1*(-1 + z)))/(M*(-1 + z)*rz);
+  // (*test1P1)(1,0,2) =(Complex(0,-1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*(-1 + z)*rz) - (Complex(0,0.5)*(-1 + z)*rz)/(r2*a1*(1 + a1*(-1 + z))) - (Complex(0,0.5)*r*(-1 + a1*(3 + 2*a1*(-1 + z) + z)))/(r2*a1*rz);
+  // (*test1P1)(1,1,0) =(Complex(0,-0.5)*phase*pT*r*(-1 + a1*(-1 + z))*rz)/(r2*a1*M*(1 + a1*(-1 + z))*(-1 + z)) - (Complex(0,1)*phase*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*M*(-1 + z)*rz);
+  // (*test1P1)(1,1,1) =(Complex(0,-1)*pow(r,2)*(1 + a1*(-1 + z))*(-1 + a1 + a1*z))/((-1 + z)*rz) - (Complex(0,0.25)*rz*(-2 + a1 + pow(a1,2)*pow(-1 + z,2) + z - a1*pow(z,2)))/(a1*pow(1 + a1*(-1 + z),2)) - (Complex(0,0.25)*r*(-1 - z + a1*(-1 + z)*(-5 + 4*a1 + 3*z)))/(a1*(-1 + z)*rz);
+  // (*test1P1)(1,1,2) =(Complex(0,-0.5)*pT*r*(1 + a1*(3 + 2*a1*(-1 + z) - 2*z)*(-1 + z)))/(r2*a1*phase*M*(1 + a1*(-1 + z))*(-1 + z)*rz) + (Complex(0,1)*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*phase*M*(-1 + z)*rz);
+  // DecayMEPtr test3P1(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  // (*test3P1)(0,0,0) = (Complex(0,-0.5)*phase*pT*pow(r,2)*(1 + a1 + 2*pow(a1,2)*(-1 + z) - a1*z))/(M*(-1 + z)*rz) - (Complex(0,0.5)*phase*pT*r*(-1 + pow(a1,2)*pow(-1 + z,2) - a1*(-1 + z)*z))/(a1*M*(1 + a1*(-1 + z))*(-1 + z)*rz);
+  // (*test3P1)(0,0,1) = (Complex(0,-1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*(-1 + z)*rz) - (Complex(0,0.5)*r*(-1 + a1*pow(-1 + z,2) - z))/(r2*a1*(-1 + z)*rz) + (Complex(0,0.5)*(2 + a1*(-1 + z) - z)*rz)/(r2*a1*(1 + a1*(-1 + z)));	
+  // (*test3P1)(0,0,2) = (Complex(0,-0.5)*pT*pow(r,2)*(-1 + a1*(-3 + 2*a1)*(-1 + z)))/(phase*M*(-1 + z)*rz) - (Complex(0,0.5)*pT*r*rz)/(a1*phase*M*(1 + a1*(-1 + z))*(-1 + z));								
+  // (*test3P1)(0,1,0) = (Complex(0,0.5)*r*(1/a1 + a1*(-1 + z) - 2*z))/rz + (Complex(0,0.5)*(-1 + a1)*(-1 + z)*rz)/(a1*pow(1 + a1*(-1 + z),2)) + (Complex(0,0.5)*pow(r,2)*(1 + a1*(-1 + z))*(1 + a1 + 2*pow(a1,2)*(-1 + z) - 3*a1*z))/((-1 + z)*rz);	
+  // (*test3P1)(0,1,1) = (Complex(0,0.5)*pT*r*(-1 + a1 + a1*z))/(r2*a1*phase*M*(1 + a1*(-1 + z))*rz) + (Complex(0,1)*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*phase*M*(-1 + z)*rz);							
+  // (*test3P1)(0,1,2) = (Complex(0,0.5)*(-1 + 2*a1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(sqr(phase)*(-1 + z)*rz) + (Complex(0,0.5)*(-1 + 2*a1)*r*rz)/sqr(phase);											
+  // (*test3P1)(1,0,0) = (Complex(0,-0.5)*(-1 + 2*a1)*sqr(phase)*pow(r,2)*pow(1 + a1*(-1 + z),2))/((-1 + z)*rz) - Complex(0,0.5)*(-1 + 2*a1)*sqr(phase)*r*rz;											
+  // (*test3P1)(1,0,1) = (Complex(0,0.5)*phase*pT*r*(-1 + a1 + a1*z))/(r2*a1*M*(1 + a1*(-1 + z))*rz) + (Complex(0,1)*phase*pT*pow(r,2)*(-1 + a1 + a1*z))/(r2*M*(-1 + z)*rz);							
+  // (*test3P1)(1,0,2) = (Complex(0,-0.5)*r*(1/a1 + a1*(-1 + z) - 2*z))/rz - (Complex(0,0.5)*(-1 + a1)*(-1 + z)*rz)/(a1*pow(1 + a1*(-1 + z),2)) - (Complex(0,0.5)*pow(r,2)*(1 + a1*(-1 + z))*(1 + a1 + 2*pow(a1,2)*(-1 + z) - 3*a1*z))/((-1 + z)*rz);
+  // (*test3P1)(1,1,0) = (Complex(0,-0.5)*phase*pT*pow(r,2)*(-1 - 3*a1*(-1 + z) + 2*pow(a1,2)*(-1 + z)))/(M*(-1 + z)*rz) - (Complex(0,0.5)*phase*pT*r*rz)/(a1*M*(1 + a1*(-1 + z))*(-1 + z));						
+  // (*test3P1)(1,1,1) = (Complex(0,1)*pow(r,2)*pow(1 + a1*(-1 + z),2))/(r2*(-1 + z)*rz) + (Complex(0,0.5)*r*(-1 + a1*pow(-1 + z,2) - z))/(r2*a1*(-1 + z)*rz) - (Complex(0,0.5)*(2 + a1*(-1 + z) - z)*rz)/(r2*a1*(1 + a1*(-1 + z)));	
+  // (*test3P1)(1,1,2) = (Complex(0,-0.5)*pT*pow(r,2)*(1 + a1*(-1 + 2*a1)*(-1 + z)))/(phase*M*(-1 + z)*rz) - (Complex(0,0.5)*pT*r*(-1 + a1*(a1*(-1 + z) - z)*(-1 + z)))/(a1*phase*M*(1 + a1*(-1 + z))*(-1 + z)*rz);				
+  // cerr << "testing in kernal " << a1 << " " << z << " " << r << " " << pT/M << " " << phi << "\n";
+  // for(unsigned int ih1=0;ih1<2;++ih1) {
+  //   for(unsigned int ih2=0;ih2<2;++ih2) {
+  //     for(unsigned int ih3=0;ih3<3;++ih3) {
+  // 	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
+  // 	cerr << "testing diff " << abs((*kernal)(ih1,ih2,ih3)-mix1*(*test1P1)(ih1,ih2,ih3)-mix2*(*test3P1)(ih1,ih2,ih3)) << "\n";
+  //     }
+  //   }
+  // }
   return kernal;
 }
