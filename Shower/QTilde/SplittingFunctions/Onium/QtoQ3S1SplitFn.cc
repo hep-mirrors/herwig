@@ -100,7 +100,6 @@ double QtoQ3S1SplitFn::ratioP(const double z, const Energy2 t,
   double W1 = 8*(3.-8.*z+sqr(z))/(1+z);
   double W2 = -48.;
   double ratio =(W0+r*W1+sqr(r)*W2)/pOver_;
-  // cerr << "testing values " << " " << z << " " << W0 << " " << W1 << " " << W2 << "\n";
   if(ratio>1.) cerr << "ratio greater than 1 in QtoQ3S1SplitFn " << ratio << "\n";
   if(ratio<0.) cerr << "ratio negative       in QtoQ3S1SplitFn " << ratio << "\n";
   return ratio;
@@ -129,14 +128,6 @@ DecayMEPtr QtoQ3S1SplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,1,0) = -2.*r2*r*phase*double(pT/m)*rz/(1.-z);  
   (*kernal)(1,1,1) = rz*((3.-z)/(1.+z)-8.*r/(1.-z));
   (*kernal)(1,1,2) = 4.*r*r2*0.5*double(pT/m)/(phase*(1.-z)*rz);
-  // cerr << "testing in kernal " << " " << z << " " << r << " " << pT/m << " " << phi << "\n";
-  // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     for(unsigned int ih3=0;ih3<3;++ih3) {
-  // 	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
-  //     }
-  //   }
-  // }
   return kernal;
 }
 
