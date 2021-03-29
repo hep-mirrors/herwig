@@ -34,7 +34,6 @@ void QtoQP3P2SplitFn::persistentInput(PersistentIStream & is, int) {
   is >> iunit(O1_,GeV*sqr(GeV2)) >> n_ >> fixedAlphaS_;
 }
 
-
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<QtoQP3P2SplitFn,Sudakov1to2FormFactor>
@@ -101,7 +100,7 @@ double QtoQP3P2SplitFn::ratioP(const double z, const Energy2 t,
   double W0 = z*(30.-72.*z+69*sqr(z)-30.*z*sqr(z)+5.*sqr(sqr(z)) 
 		 +a1*( -4.*(18.-51.*z+55.*sqr(z)-27*z*sqr(z)+5.*sqr(sqr(z)))
 		       +a1*( +4.*sqr(1.-z)*(14.-17.*z+6.*sqr(z))
-			     +a1*(-8.*pow(1.-z,3)*(2.-z) +  + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
+			     +a1*(-8.*pow(1.-z,3)*(2.-z) + 2.*a1*pow(1.-z,4) ))))/(12.*pow(1.-a1*(1.-z),4));
   double W1 = (5.-z*(93.-98*z+30.*sqr(z))
 	       +a1*(+ 2.*(5.+46.*z-57.*sqr(z)+14.*z*sqr(z))
 		    + a1*( -35.+45.*z-17.*sqr(z)+7.*z*sqr(z)

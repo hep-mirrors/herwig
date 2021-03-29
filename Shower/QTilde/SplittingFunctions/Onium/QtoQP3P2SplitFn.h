@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQP3P2SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^3P_2)'\f$
+ * The QtoQP3P2SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q'}(^3P_2)\f$
  *
  * @see \ref QtoQP3P2SplitFnInterfaces "The interfaces"
  * defined for QtoQP3P2SplitFn.
