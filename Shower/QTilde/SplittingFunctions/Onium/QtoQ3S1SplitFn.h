@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQ3S1SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q}(^3S_1)\f$
+ * The QtoQ3S1SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^3S_1)\f$
  *
  * @see \ref QtoQ3S1SplitFnInterfaces "The interfaces"
  * defined for QtoQ3S1SplitFn.
@@ -38,6 +38,8 @@ public:
    */
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
+    // incoming and quark quark the same
+    if(ids[0]!=ids[1]) return false;
     // construct the meson PDG code from quark ids and check it
     long idtest = ids[0]->id()*110+3 + (n_-1)*100000;
     if(abs(ids[2]->id()) != idtest) return false;
@@ -46,7 +48,6 @@ public:
     // looks OK
     return true;
   }
-  
   
   /**
    *   Methods to return the splitting function.
@@ -217,12 +218,7 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
-
+  
 private:
 
   /**
