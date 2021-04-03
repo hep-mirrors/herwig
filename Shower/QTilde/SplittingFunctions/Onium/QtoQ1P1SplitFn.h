@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQPP1SplitFn_H
-#define Herwig_QtoQPP1SplitFn_H
+#ifndef Herwig_QtoQ1P1SplitFn_H
+#define Herwig_QtoQ1P1SplitFn_H
 //
-// This is the declaration of the QtoQPP1SplitFn class.
+// This is the declaration of the QtoQ1P1SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,13 +14,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQPP1SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q'}(P_1)\f$,
+ * The QtoQ1P1SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(P_1)\f$,
  * in this case there is mixing between the $\phanton{A}^1P_1$ and $\phanton{A}^3P_1$ states
  *
- * @see \ref QtoQPP1SplitFnInterfaces "The interfaces"
- * defined for QtoQPP1SplitFn.
+ * @see \ref QtoQ1P1SplitFnInterfaces "The interfaces"
+ * defined for QtoQ1P1SplitFn.
  */
-class QtoQPP1SplitFn: public Sudakov1to2FormFactor {
+class QtoQ1P1SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -29,8 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQPP1SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), theta_(25.),
-		     sTheta_(0.422618), cTheta_(0.906308),fixedAlphaS_(-1.)
+  QtoQ1P1SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), fixedAlphaS_(-1.)
   {}
   //@}
 
@@ -42,12 +41,8 @@ public:
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
     // construct the meson PDG code from quark ids and check it
-    long id1=ids[0]->id();
-    long id2=ids[1]->id();
-    long idtest = id1>id2 ? id1*100+id2*10+3 : id2*100+id1*10+3;
-    idtest += (n_-1)*100000;
-    if(((abs(ids[2]->id()) != idtest + 10000) &&
-	(abs(ids[2]->id()) != idtest + 20000) )) return false;
+    long idtest = ids[0]->id()*110+3 + 10000 + (n_-1)*100000;
+    if(ids[2]->id() != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
     // looks OK
@@ -224,25 +219,13 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQPP1SplitFn & operator=(const QtoQPP1SplitFn &) = delete;
+  QtoQ1P1SplitFn & operator=(const QtoQ1P1SplitFn &) = delete;
 
 private:
   
@@ -255,22 +238,6 @@ private:
    *  Principal quantum number
    */
   unsigned int n_;
-
-  /**
-   *  Mixing angle between the $\phanton{A}^1P_1$ and $\phanton{A}^3P_1$ states
-   *
-   */
-  double theta_;
-
-  /**
-   *  Sin of the mixing angle
-   */
-  double sTheta_;
-
-  /**
-   *  Sin of the mixing angle
-   */
-  double cTheta_;
 
   /**
    *  Overestimate of the splitting function
@@ -286,4 +253,4 @@ private:
 
 }
 
-#endif /* Herwig_QtoQPP1SplitFn_H */
+#endif /* Herwig_QtoQ1P1SplitFn_H */

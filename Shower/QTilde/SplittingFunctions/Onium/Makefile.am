@@ -12,5 +12,7 @@ QtoQ3S1SplitFn.cc  QtoQ3S1SplitFn.h  \
 QtoQP3P0SplitFn.cc QtoQP3P0SplitFn.h \
 QtoQ3P0SplitFn.cc  QtoQ3P0SplitFn.h  \
 QtoQPP1SplitFn.cc  QtoQPP1SplitFn.h  \
+QtoQ1P1SplitFn.cc  QtoQ1P1SplitFn.h  \
+QtoQ3P1SplitFn.cc  QtoQ3P1SplitFn.h  \
 QtoQP3P2SplitFn.cc QtoQP3P2SplitFn.h \
 QtoQ3P2SplitFn.cc  QtoQ3P2SplitFn.h

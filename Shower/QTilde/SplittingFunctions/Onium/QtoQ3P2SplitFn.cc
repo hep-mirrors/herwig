@@ -100,7 +100,6 @@ double QtoQ3P2SplitFn::ratioP(const double z, const Energy2 t,
   double W2 = -4.*(28.-81.*z+11.*sqr(z))/(3.*(1.+z));
   double W3 = 160./3.;
   double ratio = (W0+r*(W1+r*(W2+r*W3)))/pOver_;
-  // cerr << "testing values " << " " << z << " " << W0 << " " << W1 << " " << W2 << " " << W3 << "\n";
   if(ratio>1.) cerr << "ratio greater than 1 in QtoQ3P2SplitFn " << ratio << "\n";
   if(ratio<0.) cerr << "ratio negative       in QtoQ3P2SplitFn " << ratio << "\n";
   return ratio;
@@ -139,38 +138,5 @@ DecayMEPtr QtoQ3P2SplitFn::matrixElement(const double z, const Energy2 t,
 				      +4.*sqr(r)*(1.+11.*z+11.*sqr(z)+pow(z,3))/sqr(1.-z));
   (*kernal)(1,1,3) = -ii/phase*double(pT/m)*r/rz/(1.-z)*(-(1.+4.*z-sqr(z))/(1.+z)+4.*r*(1.+3*z)/(1.-z));
   (*kernal)(1,1,4) =-ii/sqr(phase)*4.*r/rz/(1.-z)*(r*sqr(1.+z)/(1.-z)-z);
-
-
-
-  // DecayMEPtr test(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2)));
-  // (*test)(0,0,0) = (Complex(0,-4)*sqr(phase)*r*sqrt(z))/(-1 + z) - (Complex(0,4)*sqr(phase)*pow(r,2)*pow(1 + z,2))/(pow(-1 + z,2)*sqrt(z))												  ;
-  // (*test)(0,0,1) = (Complex(0,4)*phase*pT*pow(r,2)*(1 + 3*z))/(m*pow(-1 + z,2)*sqrt(z)) - (Complex(0,1)*phase*pT*r*(-1 - 4*z + pow(z,2)))/(m*(-1 + z)*sqrt(z)*(1 + z))								  ;
-  // (*test)(0,0,2) = (Complex(0,4)*sqrt(6)*r*sqrt(z))/(-1 + z) + (Complex(0,1)*sqrt(z)*(5 - 2*z + pow(z,2)))/(sqrt(6)*pow(1 + z,2)) + (Complex(0,2)*sqrt(0.6666666666666666)*pow(r,2)*(1 + 11*z + 11*pow(z,2) + pow(z,3)))/(pow(-1 + z,2)*sqrt(z)) ;
-  // (*test)(0,0,3) = (Complex(0,-4)*pT*pow(r,2)*sqrt(z)*(3 + z))/(phase*m*pow(-1 + z,2)) + (Complex(0,4)*pT*r*sqrt(z))/(phase*(m - m*pow(z,2)))											  ;
-  // (*test)(0,0,4) = (Complex(0,-4)*r*pow(z,1.5))/(sqr(phase)*(-1 + z)) - (Complex(0,4)*pow(r,2)*sqrt(z)*pow(1 + z,2))/(sqr(phase)*pow(-1 + z,2))											  ;
-  // (*test)(0,1,0) = (Complex(0,-4)*phase*pT*pow(r,2))/(m*sqrt(z)) - (Complex(0,4)*phase*pT*r*sqrt(z))/(m + m*z)																  ;
-  // (*test)(0,1,1) = (Complex(0,-2)*(-1 + z)*sqrt(z))/pow(1 + z,2) - (Complex(0,4)*pow(r,2)*(1 + z))/sqrt(z) - (Complex(0,1)*r*(-1 + 5*z))/sqrt(z)													  ;
-  // (*test)(0,1,2) = (Complex(0,2)*sqrt(0.6666666666666666)*pT*pow(r,2))/(phase*m*sqrt(z)) + (Complex(0,2)*sqrt(0.6666666666666666)*pT*r*sqrt(z))/(phase*(m + m*z))									  ;
-  // (*test)(0,1,3) = 0																													  ;
-  // (*test)(0,1,4) = 0																													  ;
-  // (*test)(1,0,0) = 0																													  ;
-  // (*test)(1,0,1) = 0																													  ;
-  // (*test)(1,0,2) = (Complex(0,-2)*sqrt(0.6666666666666666)*phase*pT*pow(r,2))/(m*sqrt(z)) - (Complex(0,2)*sqrt(0.6666666666666666)*phase*pT*r*sqrt(z))/(m + m*z)									  ;
-  // (*test)(1,0,3) = (Complex(0,-2)*(-1 + z)*sqrt(z))/pow(1 + z,2) - (Complex(0,4)*pow(r,2)*(1 + z))/sqrt(z) - (Complex(0,1)*r*(-1 + 5*z))/sqrt(z)													  ;
-  // (*test)(1,0,4) = (Complex(0,4)*pT*pow(r,2))/(phase*m*sqrt(z)) + (Complex(0,4)*pT*r*sqrt(z))/(phase*(m + m*z))															  ;
-  // (*test)(1,1,0) = (Complex(0,-4)*sqr(phase)*r*pow(z,1.5))/(-1 + z) - (Complex(0,4)*sqr(phase)*pow(r,2)*sqrt(z)*pow(1 + z,2))/pow(-1 + z,2)												  ;
-  // (*test)(1,1,1) = (Complex(0,4)*phase*pT*pow(r,2)*sqrt(z)*(3 + z))/(m*pow(-1 + z,2)) + (Complex(0,4)*phase*pT*r*sqrt(z))/(m*(-1 + pow(z,2)))											  ;
-  // (*test)(1,1,2) = (Complex(0,4)*sqrt(6)*r*sqrt(z))/(-1 + z) + (Complex(0,1)*sqrt(z)*(5 - 2*z + pow(z,2)))/(sqrt(6)*pow(1 + z,2)) + (Complex(0,2)*sqrt(0.6666666666666666)*pow(r,2)*(1 + 11*z + 11*pow(z,2) + pow(z,3)))/(pow(-1 + z,2)*sqrt(z)) ;
-  // (*test)(1,1,3) = (Complex(0,-4)*pT*pow(r,2)*(1 + 3*z))/(phase*m*pow(-1 + z,2)*sqrt(z)) + (Complex(0,1)*pT*r*(-1 - 4*z + pow(z,2)))/(phase*m*(-1 + z)*sqrt(z)*(1 + z))								  ;
-  // (*test)(1,1,4) = (Complex(0,-4)*r*sqrt(z))/(sqr(phase)*(-1 + z)) - (Complex(0,4)*pow(r,2)*pow(1 + z,2))/(sqr(phase)*pow(-1 + z,2)*sqrt(z))                                                                                               ;
-  // cerr << "testing in kernal " << " " << z << " " << r << " " << pT/m << " " << phi << "\n";
-  // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     for(unsigned int ih3=0;ih3<5;++ih3) {
-  // 	cerr << ih1 << " " << ih2 << " " << ih3 << " " << (*kernal)(ih1,ih2,ih3)  << "\n";
-  // 	cerr << "testing diff " << abs( (*kernal)(ih1,ih2,ih3) - (*test)(ih1,ih2,ih3) ) << "\n";
-  //     }
-  //   }
-  // }
   return kernal;
 }
