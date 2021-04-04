@@ -1,0 +1,67 @@
+# -*- ThePEG-repository -*-
+#
+#  Snippet to set up the parton shower to produce double heavy systems
+#  (bottomonium, charmonium, B_c and cc, bc bb diquarks)
+#
+cd /Herwig/Shower
+#
+# Set up Effectively 0 pT cut
+#
+cp  PTCutOff PTCutOff2
+set PTCutOff2:pTmin 0.001
+
+
+#
+#  Diquarks
+#
+
+#
+# cc_1
+#
+create Herwig::QtoQBarQQ1SplitFn QtoQcc1SplittingSudakov HwOniumShower.so
+set QtoQcc1SplittingSudakov:Alpha AlphaQCD
+set QtoQcc1SplittingSudakov:Cutoff PTCutOff2
+set QtoQcc1SplittingSudakov:PDFmax 2.0
+set QtoQcc1SplittingSudakov:ColourStructure Epsilon
+set QtoQcc1SplittingSudakov:AngularOrdered Yes
+set QtoQcc1SplittingSudakov:StrictAO Yes
+set QtoQcc1SplittingSudakov:InteractionType QCD
+do SplittingGenerator:AddFinalSplitting c->cbar,cc_1; QtoQcc1SplittingSudakov
+#
+# bb_1
+#
+create Herwig::QtoQBarQQ1SplitFn QtoQbb1SplittingSudakov HwOniumShower.so
+set QtoQbb1SplittingSudakov:Alpha AlphaQCD
+set QtoQbb1SplittingSudakov:Cutoff PTCutOff2
+set QtoQbb1SplittingSudakov:PDFmax 2.0
+set QtoQbb1SplittingSudakov:ColourStructure Epsilon
+set QtoQbb1SplittingSudakov:AngularOrdered Yes
+set QtoQbb1SplittingSudakov:StrictAO Yes
+set QtoQbb1SplittingSudakov:InteractionType QCD
+do SplittingGenerator:AddFinalSplitting b->cbar,bb_1; QtoQbb1SplittingSudakov
+#
+# bc_0
+#
+create Herwig::QtoQPBarQQP0SplitFn QtoQbc0SplittingSudakov HwOniumShower.so
+set QtoQbc0SplittingSudakov:Alpha AlphaQCD
+set QtoQbc0SplittingSudakov:Cutoff PTCutOff2
+set QtoQbc0SplittingSudakov:PDFmax 2.0
+set QtoQbc0SplittingSudakov:ColourStructure Epsilon
+set QtoQbc0SplittingSudakov:AngularOrdered Yes
+set QtoQbc0SplittingSudakov:StrictAO Yes
+set QtoQbc0SplittingSudakov:InteractionType QCD
+do SplittingGenerator:AddFinalSplitting c->bbar,bc_0; QtoQbc0SplittingSudakov
+do SplittingGenerator:AddFinalSplitting b->cbar,bc_0; QtoQbc0SplittingSudakov
+#
+#  bc_1
+#
+create Herwig::QtoQPBarQQP1SplitFn QtoQbc1SplittingSudakov HwOniumShower.so
+set QtoQbc1SplittingSudakov:Alpha AlphaQCD
+set QtoQbc1SplittingSudakov:Cutoff PTCutOff2
+set QtoQbc1SplittingSudakov:PDFmax 2.0
+set QtoQbc1SplittingSudakov:ColourStructure Epsilon
+set QtoQbc1SplittingSudakov:AngularOrdered Yes
+set QtoQbc1SplittingSudakov:StrictAO Yes
+set QtoQbc1SplittingSudakov:InteractionType QCD
+do SplittingGenerator:AddFinalSplitting c->bbar,bc_1; QtoQbc1SplittingSudakov
+do SplittingGenerator:AddFinalSplitting b->cbar,bc_1; QtoQbc1SplittingSudakov

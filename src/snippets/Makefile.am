@@ -34,7 +34,8 @@ EvolutionScheme-DotProduct-Veto.in  \
 EvolutionScheme-pT.in  \
 EvolutionScheme-Q2.in \
 FixedTarget.in \
-FixedTarget-PP.in
+FixedTarget-PP.in \
+OniumShower.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

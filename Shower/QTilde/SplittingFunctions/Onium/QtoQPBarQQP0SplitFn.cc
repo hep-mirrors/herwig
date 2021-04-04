@@ -16,7 +16,7 @@
 
 using namespace Herwig;
 
-const double QtoQPBarQQP0SplitFn::pOver_ = 1.;
+const double QtoQPBarQQP0SplitFn::pOver_ = 3.;
 
 IBPtr QtoQPBarQQP0SplitFn::clone() const {
   return new_ptr(*this);
