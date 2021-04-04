@@ -37,11 +37,13 @@ DescribeAbstractClass<Sudakov1to2FormFactor,SudakovFormFactor>
 describeSudakov1to2FormFactor ("Herwig::Sudakov1to2FormFactor","HwShower.so");
 
 void Sudakov1to2FormFactor::persistentOutput(PersistentOStream & os) const {
-  os << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_;
+  os << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_
+     << enhancementFactor_;
 }
 
 void Sudakov1to2FormFactor::persistentInput(PersistentIStream & is, int) {
-  is  >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_;
+  is  >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_
+      >> enhancementFactor_;
 }
 
 void Sudakov1to2FormFactor::Init() {
@@ -91,6 +93,12 @@ void Sudakov1to2FormFactor::Init() {
      "No",
      "Don't apply strict ordering",
      false);
+
+  static Parameter<Sudakov1to2FormFactor,double> interfaceEnhancementFactor
+    ("EnhancementFactor",
+     "Factor by which to enhance the splitting, compenstated by weight events.",
+     &Sudakov1to2FormFactor::enhancementFactor_, 1., 0.0, 1e6,
+     false, false, Interface::limited);
 
 }
 
@@ -193,16 +201,12 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
-  if(ShowerHandler::currentHandler()->showerVariations().empty()){
+  if(ShowerHandler::currentHandler()->showerVariations().empty() &&
+     enhancementFactor_==1.) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
-      // if(!PSVeto(t) && z()<0.05) {
-      // 	  double aR = alphaSVetoRatio(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.);
-      // 	  double pR = SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
-      // 	  cerr << "testing in sudakov " << z() << " " << t/GeV2 << " " << " " << aR << " " << pR << "\n";
-      // 	}
     }
     while(PSVeto(t) ||
 	  SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
@@ -211,52 +215,66 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
   else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
     do {
-      if(!guessTimeLike(t,tmin,enhance,detuning)) break;
+      // generate trial emission
+      if(!guessTimeLike(t,tmin,enhance*enhancementFactor_,detuning)) break;
+      // check in phase space
       PSRew=PSVeto(t);
       if (PSRew) continue;
+      // alpha_S and splitting function vetos
       SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning);
       alphaRew=alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
       double factor=alphaSVetoRatio(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
                     SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
-
+      // access the shower handler
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
-
       if( !(SplitRew || alphaRew) ) {
         //Emission
         q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
         if (q_ <= ZERO) break;
       }
-
-        for ( map<string,ShowerVariation>::const_iterator var =
-	          ch->showerVariations().begin();
-	          var != ch->showerVariations().end(); ++var ) {
-          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
-	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
-
-                double newfactor = alphaSVetoRatio(pTScale() ?
-                                        sqr(z()*(1.-z()))*t :
-                                        z()*(1.-z())*t,var->second.renormalizationScaleFactor)
-		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
-
-                double varied;
-                if ( SplitRew || alphaRew ) {
-                  // No Emission
-                  varied = (1. - newfactor) / (1. - factor);
-                } else {
-                  // Emission
-                  varied = newfactor / factor;
-                }
-
-                map<string,double>::iterator wi = ch->currentWeights().find(var->first);
-	        if ( wi != ch->currentWeights().end() )
-	          wi->second *= varied;
-	        else {
-                  assert(false);
-                  //ch->currentWeights()[var->first] = varied;
-                }
+      // loop over the variations
+      for ( map<string,ShowerVariation>::const_iterator var =
+	      ch->showerVariations().begin();
+	    var != ch->showerVariations().end(); ++var ) {
+	if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	     ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+	  
+	  double newfactor = alphaSVetoRatio(pTScale() ?
+					     sqr(z()*(1.-z()))*t :
+					     z()*(1.-z())*t,var->second.renormalizationScaleFactor)
+	    * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
+	  
+	  double varied;
+	  if ( SplitRew || alphaRew ) {
+	    // No Emission
+	    varied = (1. - newfactor) / (1. - factor);
+	  } else {
+	    // Emission
+	    varied = newfactor / factor;
 	  }
-        }
-      
+	  
+	  map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+	  if ( wi != ch->currentWeights().end() )
+	    wi->second *= varied;
+	  else {
+	    assert(false);
+	    //ch->currentWeights()[var->first] = varied;
+	  }
+	}
+      }
+      // for the enhancement adjust the central weight
+      if(enhancementFactor_!=1.) {
+	double varied;
+	// No Emission
+	if ( SplitRew || alphaRew ) {
+	  varied = (1. - factor) / (1. - enhancementFactor_*factor);
+	}
+	// Emission
+	else {
+	  varied = 1./enhancementFactor_;
+	}
+	ch->reweight(ch->reweight()*varied);
+      }
     }
     while(PSRew || SplitRew || alphaRew);
   }

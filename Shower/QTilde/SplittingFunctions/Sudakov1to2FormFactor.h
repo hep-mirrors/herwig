@@ -149,7 +149,8 @@ public:
    */
   Sudakov1to2FormFactor() : 
 			z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
-			strictAO_(true), colourFactor_(-1.)
+			strictAO_(true), colourFactor_(-1.),
+			enhancementFactor_(1.)
   {}
 
   /**
@@ -683,6 +684,11 @@ private:
    *  The colour factor
    */
   double colourFactor_;
+
+  /**
+   *  Enhancement factor
+   */
+  double enhancementFactor_;
 
 };
 
