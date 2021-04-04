@@ -38,7 +38,7 @@ set QtoQbb1SplittingSudakov:ColourStructure Epsilon
 set QtoQbb1SplittingSudakov:AngularOrdered Yes
 set QtoQbb1SplittingSudakov:StrictAO Yes
 set QtoQbb1SplittingSudakov:InteractionType QCD
-do SplittingGenerator:AddFinalSplitting b->cbar,bb_1; QtoQbb1SplittingSudakov
+do SplittingGenerator:AddFinalSplitting b->bbar,bb_1; QtoQbb1SplittingSudakov
 #
 # bc_0
 #

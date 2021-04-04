@@ -671,7 +671,7 @@ setup Omegabar_bb+ -5532 Omegabar_bb+ 10.5441 0 0 0 3 0 2 1
 makeanti Omega_bb- Omegabar_bb+
 
 create ThePEG::ParticleData Xi_bb*0
-setup Xi_bb*0 5524 Xi_cc*++ 10.5826 0 0 0 0 0 4 1
+setup Xi_bb*0 5524 Xi_bb*0 10.5826 0 0 0 0 0 4 1
 create ThePEG::ParticleData Xibar_bb*0
 setup Xibar_bb*0 -5524 Xibar_bb*0 10.5826 0 0 0 0 0 4 1
 makeanti Xi_bb*0 Xibar_bb*0
