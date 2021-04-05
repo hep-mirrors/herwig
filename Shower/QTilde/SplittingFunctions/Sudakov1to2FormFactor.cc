@@ -267,7 +267,7 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
 	double varied;
 	// No Emission
 	if ( SplitRew || alphaRew ) {
-	  varied = (1. - factor) / (1. - enhancementFactor_*factor);
+	  varied = (1. - factor/enhancementFactor_) / (1. - factor);
 	}
 	// Emission
 	else {
