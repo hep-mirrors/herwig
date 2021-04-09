@@ -143,9 +143,57 @@ private:
   pair <int,int>
     _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
+public:
 
-  /** DATA MEMBERS */
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
 
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+private:
+
+  /**
+   * Private and non-existent assignment operator.
+   */
+  ColourReconnector & operator=(const ColourReconnector &) = delete;
+
+private :
+
+  /** Data Members */
+  //@
   /**
    * Specifies the colour reconnection algorithm to be used.
    */
@@ -208,60 +256,16 @@ private:
    */
   bool _isColour8(tcPPtr p, tcPPtr q) const;
   
-  /**
+  /**s
    *  Option for handling octets
    */
   unsigned int _octetOption = 0;
 
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
   /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
+   *   Option for doubly heavy baryons
    */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
+  bool _doublyHeavyBaryon = true;
   //@}
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const;
-  //@}
-
-
-private:
-
-  /**
-   * Private and non-existent assignment operator.
-   */
-  ColourReconnector & operator=(const ColourReconnector &) = delete;
-
-
 };
 
 

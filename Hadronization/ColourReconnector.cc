@@ -19,10 +19,8 @@
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-
 #include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Interface/Parameter.h>
-
 #include "Herwig/Utilities/Maths.h"
 
 using namespace Herwig;
@@ -311,33 +309,33 @@ double calculateRapidityRF(const Lorentz5Momentum & q1,
   return ( pz < ZERO ) ? -y2 : y2;
 }
 
+bool doublyHeavy(CluVecIt c1, CluVecIt c2) {
+  if(abs((**c1).    colParticle()->id())>=4 &&
+     abs((**c1).    colParticle()->id())>=4) return true;
+  if(abs((**c1).antiColParticle()->id())>=4 &&
+     abs((**c2).antiColParticle()->id())>=4) return true;
+  return true;
+}
+  
 }
 
 
-CluVecIt ColourReconnector::_findPartnerBaryonic(
-             CluVecIt cl, ClusterVector & cv,
-             bool & baryonicCand,
-             const ClusterVector& deleted,
-             CluVecIt &baryonic1, 
-             CluVecIt &baryonic2 ) const {
-
-    using Constants::pi;
-    using Constants::twopi;
+CluVecIt ColourReconnector::_findPartnerBaryonic(CluVecIt cl, ClusterVector & cv,
+						 bool & baryonicCand,
+						 const ClusterVector& deleted,
+						 CluVecIt &baryonic1, 
+						 CluVecIt &baryonic2 ) const {
 
     // Returns a candidate for possible reconnection
     CluVecIt candidate = cl;
 
     bool bcand = false;
 
-    double maxrap = 0.0;
-    double minrap = 0.0;
-    double maxrapNormal = 0.0;  
-    double minrapNormal = 0.0;
+    double maxrap = 0.0, minrap = 0.0;
+    double maxrapNormal = 0.0, minrapNormal = 0.0;
     double maxsumnormal = 0.0;
 
-    double maxsum = 0.0;
-    double secondsum = 0.0;
-
+    double maxsum = 0.0, secondsum = 0.0;
 
     // boost into RF of cl 
     Lorentz5Momentum cl1 = (*cl)->momentum();
@@ -412,28 +410,38 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         // first candidate gets here. If second baryonic candidate has higher Ysum than the first
         // one, the second candidate becomes the first one and the first the second.
         if (sumrap > maxsum) {
-          if(maxsum != 0){
-            baryonic2 = baryonic1;
-            baryonic1 = cit;
-            bcand = true;
-          } else {
-            baryonic1 = cit;
-          }      
+          if(maxsum != 0) {
+	    if(_doublyHeavyBaryon || (!doublyHeavy(candidate,cit)&&
+				      !doublyHeavy(baryonic1,cit))) {
+	      baryonic2 = baryonic1;
+	      baryonic1 = cit;
+	      bcand = true;
+	    }
+	    else if(!doublyHeavy(candidate,cit)) {
+	      baryonic1 = cit;
+	    }
+          }
+	  else {
+	    if(_doublyHeavyBaryon || !doublyHeavy(candidate,cit))
+	      baryonic1 = cit;
+          }
           maxsum = sumrap;
-        } else {
+        }
+	else {
           if (sumrap > secondsum && sumrap != maxsum) {
-            secondsum = sumrap;
-            bcand = true;
-            baryonic2 = cit;
+	    if(_doublyHeavyBaryon || (!doublyHeavy(candidate,cit)&&
+				      !doublyHeavy(baryonic1,cit))) {
+	      secondsum = sumrap;
+	      bcand = true;
+	      baryonic2 = cit;
+	    }
           }
         }  
       }
 
     }
 
-    if(bcand == true){
-      baryonicCand = true;
-    }
+    if(bcand) baryonicCand = true;
 
     return candidate;
 }
@@ -489,16 +497,28 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
 }
 
 // forms two baryonic clusters from three clusters
-void ColourReconnector::_makeBaryonicClusters(
-                ClusterPtr &c1, ClusterPtr &c2, 
-                ClusterPtr &c3, 
-                ClusterPtr &newcluster1,
-                ClusterPtr &newcluster2) const{
-
+void ColourReconnector::_makeBaryonicClusters(ClusterPtr &c1, ClusterPtr &c2, 
+					      ClusterPtr &c3, 
+					      ClusterPtr &newcluster1,
+					      ClusterPtr &newcluster2) const{
     //make sure they all have 2 components
     assert(c1->numComponents()==2);
     assert(c2->numComponents()==2);
     assert(c3->numComponents()==2);
+
+    // check if doubly heavy
+    if( (int(abs(c1->    colParticle()->id())>=4) + int(abs(c2->    colParticle()->id())>=4)+ int(abs(c3->    colParticle()->id())>=4) >=2) ||
+	(int(abs(c1->antiColParticle()->id())>=4) + int(abs(c2->antiColParticle()->id())>=4)+ int(abs(c3->antiColParticle()->id())>=4) >=2) )
+      generator()->log() << "Colour recon making doubly heavy baryon "
+			 << *c1->    colParticle() << "\n" 
+			 << *c2->    colParticle() << "\n" 
+			 << *c3->    colParticle() << "\n" 
+			 << *c1->antiColParticle() << "\n" 
+			 << *c2->antiColParticle() << "\n" 
+			 << *c3->antiColParticle() << "\n"; 
+
+
+    
     //abandon children
     c1->colParticle()->abandonChild(c1);
     c1->antiColParticle()->abandonChild(c1);
@@ -519,6 +539,9 @@ void ColourReconnector::_makeBaryonicClusters(
     c2->antiColParticle()->addChild(newcluster2);
     c3->antiColParticle()->addChild(newcluster2);
     newcluster2->setVertex(LorentzPoint());
+
+
+    
 }
 
 pair <ClusterPtr,ClusterPtr>
@@ -705,13 +728,13 @@ bool ColourReconnector::_isColour8(tcPPtr p, tcPPtr q) const {
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
   os << _clreco << _preco << _precoBaryonic << _algorithm << _initTemp << _annealingFactor
      << _annealingSteps << _triesPerStepFactor << ounit(_maxDistance,femtometer)
-     << _octetOption;
+     << _octetOption << _doublyHeavyBaryon;
 }
 
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
   is >> _clreco >> _preco >> _precoBaryonic >> _algorithm >> _initTemp >> _annealingFactor
      >> _annealingSteps >> _triesPerStepFactor >> iunit(_maxDistance,femtometer)
-     >> _octetOption;
+     >> _octetOption >> _doublyHeavyBaryon;
 }
 
 
@@ -806,7 +829,6 @@ void ColourReconnector::Init() {
      &ColourReconnector::_maxDistance, femtometer, 1000.*femtometer, 0.0*femtometer, 1e100*femtometer,
      false, false, Interface::limited);
 
-
   static Switch<ColourReconnector,unsigned int> interfaceOctetTreatment
     ("OctetTreatment",
      "Which octets are not allowed to be reconnected",
@@ -821,6 +843,21 @@ void ColourReconnector::Init() {
      "All",
      "Prevent for all octets",
      1);
+
+  static Switch<ColourReconnector,bool> interfaceDoublyHeavyBaryon
+    ("DoublyHeavyBaryon",
+     "Allow the production of doubly heavy baryons in colour reconnection",
+     &ColourReconnector::_doublyHeavyBaryon, true, false, false);
+  static SwitchOption interfaceDoublyHeavyBaryonYes
+    (interfaceDoublyHeavyBaryon,
+     "Yes",
+     "Allow doubly heavy baryon production",
+     true);
+  static SwitchOption interfaceDoublyHeavyBaryonNo
+    (interfaceDoublyHeavyBaryon,
+     "No",
+     "Don't allow doubly heavy baryon production",
+     false);
 
 }
 
