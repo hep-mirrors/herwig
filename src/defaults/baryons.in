@@ -619,7 +619,7 @@ makeanti Omega_bc0 Omegabar_bc0
 create ThePEG::ParticleData Xi_bc'+
 setup Xi_bc'+ 5422 Xi_bc'+ 7.0309 0 0 0 3 0 2 1
 create ThePEG::ParticleData Xibar_bc'-
-setup Xibar_bc'- -5242 Xibar_bc'- 7.0309 0 0 0 -3 0 2 1
+setup Xibar_bc'- -5422 Xibar_bc'- 7.0309 0 0 0 -3 0 2 1
 makeanti Xi_bc'+ Xibar_bc'-
 
 create ThePEG::ParticleData Xi_bc'0 
