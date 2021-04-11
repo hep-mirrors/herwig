@@ -188,7 +188,6 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
   // intermediate clusters that have undergone to fission) or not
   // too light (that is final clusters that have been already decayed
   // into single hadron) then decay them into two hadrons.
-
   for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
     if ((*it)->isAvailable() && !(*it)->isStatusFinal()
@@ -372,11 +371,12 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
     uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );
 
   }
-
+  
   pair<tcPDPtr,tcPDPtr> dataPair
     = _hadronsSelector->chooseHadronPair(ptr->mass(),
 					 ptr1data,
 					 ptr2data);
+  
   if(dataPair.first  == tcPDPtr() ||
      dataPair.second == tcPDPtr()) return pair<PPtr,PPtr>();
 

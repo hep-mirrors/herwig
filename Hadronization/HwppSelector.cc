@@ -125,13 +125,14 @@ void HwppSelector::Init() {
 
 pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1,
 						     tcPDPtr par2,tcPDPtr ) const {
+  
   // if either of the input partons is a diquark don't allow diquarks to be
   // produced
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
   bool quark = true;
   // if the Herwig algorithm
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+pwtDIquark())
+    if(UseRandom::rnd() > 1./(1.+pwtDIquarkS0()+pwtDIquarkS1())
        &&cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;
@@ -236,6 +237,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   assert(hadrons[ix].idQ);
+
+  
   int signHad1 = signHadron(par1, hadrons[ix].idQ->CC(), hadrons[ix].hadron1);
   int signHad2 = signHadron(par2, hadrons[ix].idQ, hadrons[ix].hadron2);
   assert( signHad1 != 0 && signHad2 != 0 );
