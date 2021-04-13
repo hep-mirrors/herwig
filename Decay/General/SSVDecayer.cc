@@ -103,16 +103,18 @@ double SSVDecayer::me2(const int , const Particle & inpart,
     // fix rho if no correlations
     fixRho(rho_);
   }
+  bool massless = decay[1]->id()==ParticleID::gamma || decay[1]->id()==ParticleID::g;
   if(meopt==Terminate) {
     ScalarWaveFunction::
       constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
     ScalarWaveFunction::
       constructSpinInfo(decay[isc],outgoing,true);
     VectorWaveFunction::
-      constructSpinInfo(vector_,decay[ivec],outgoing,true,false);
+      constructSpinInfo(vector_,decay[ivec],outgoing,true,massless);
   }
   VectorWaveFunction::
-    calculateWaveFunctions(vector_,decay[ivec],outgoing,false);
+    calculateWaveFunctions(vector_,decay[ivec],outgoing,massless);
+  
   ScalarWaveFunction sca(decay[isc]->momentum(),decay[isc]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
   //make sure decay matrix element is in the correct order
@@ -120,6 +122,7 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   if(ivec == 0) {
     for(unsigned int ix = 0; ix < 3; ++ix) {
       (*ME())(0, ix, 0) = 0.;
+      if(massless && ix==1) continue;
       for(auto vert : vertex_)
 	(*ME())(0, ix, 0) += vert->evaluate(scale,vector_[ix],sca, swave_);
     }
@@ -127,6 +130,7 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   else {
     for(unsigned int ix = 0; ix < 3; ++ix) {
       (*ME())(0, 0, ix) = 0.;
+      if(massless && ix==1) continue;
       for(auto vert : vertex_)
 	(*ME())(0, 0, ix) += vert->evaluate(scale,vector_[ix],sca,swave_);
     }
