@@ -131,6 +131,8 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
 	  dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
 	if(!svert) continue;
 	if(vertex->getNpoint() != 3) continue;
+	// check outgoing higgs allowed
+	if(!vertex->isOutgoing(*ih)) continue;
 	// check incoming W+W- or ZZ allowed
 	if(ix==0) {
 	  if(!vertex->isIncoming(Wminus)||
@@ -138,9 +140,8 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
 	}
 	else {
 	  if(!vertex->isIncoming(Z0)) continue;
+	  if(!vertex->allowed(23,23,(**ih).id())) continue;
 	}
-	// check outgoing higgs allowed
-	if(!vertex->isOutgoing(*ih)) continue;
  	// create the MatrixElement object
  	string objectname ("/Herwig/MatrixElements/");
  	string classname("Herwig::GeneralfftoffH");
