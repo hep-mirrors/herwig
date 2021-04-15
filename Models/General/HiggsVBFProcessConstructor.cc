@@ -127,7 +127,7 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
       // find a suitable vertex
       for(unsigned int nv = 0; nv < model()->numberOfVertices(); ++nv ) {
 	VertexBasePtr vertex = model()->vertex(nv);
-	AbstractVVSVertexPtr svert = 
+	AbstractVVSVertexPtr svert =
 	  dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
 	if(!svert) continue;
 	if(vertex->getNpoint() != 3) continue;
@@ -137,6 +137,7 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
 	if(ix==0) {
 	  if(!vertex->isIncoming(Wminus)||
 	     !vertex->isIncoming(Wplus)) continue;
+    if(!vertex->allowed(-24,24,(**ih).id())) continue;
 	}
 	else {
 	  if(!vertex->isIncoming(Z0)) continue;
@@ -159,13 +160,13 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
 	    << bos  << " + "
 	    << (**ih).PDGName() << " production"
 	    << Exception::runerror;
-	GeneralfftoffH::Process process = _type ? 
+	GeneralfftoffH::Process process = _type ?
 	  GeneralfftoffH::Hadron : GeneralfftoffH::Lepton;
 	// set the information
 	matrixElement->setProcessInfo( process, *ih, svert,_shapeOpt,
 				       ix+1 );
 	// insert it
-	generator()->preinitInterface(subProcess(), "MatrixElements", 
+	generator()->preinitInterface(subProcess(), "MatrixElements",
 				      subProcess()->MEs().size(),
 				      "insert", matrixElement->fullName());
       }
