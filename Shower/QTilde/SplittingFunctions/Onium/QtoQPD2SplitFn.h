@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQPP1SplitFn_H
-#define Herwig_QtoQPP1SplitFn_H
+#ifndef Herwig_QtoQPD2SplitFn_H
+#define Herwig_QtoQPD2SplitFn_H
 //
-// This is the declaration of the QtoQPP1SplitFn class.
+// This is the declaration of the QtoQPD2SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,21 +14,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQPP1SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q'}(P_1)\f$,
- * in this case there is mixing between the $\phanton{A}^1P_1$ and $\phanton{A}^3P_1$ states
+ * Here is the documentation of the QtoQPD2SplitFn class.
  *
- * @see \ref QtoQPP1SplitFnInterfaces "The interfaces"
- * defined for QtoQPP1SplitFn.
+ * @see \ref QtoQPD2SplitFnInterfaces "The interfaces"
+ * defined for QtoQPD2SplitFn.
  */
-class QtoQPP1SplitFn: public Sudakov1to2FormFactor {
+class QtoQPD2SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
   /**
    * The default constructor.
    */
-  QtoQPP1SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), theta_(25.),
-		     sTheta_(0.422618), cTheta_(0.906308),fixedAlphaS_(-1.)
+  QtoQPD2SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), theta_(34.4),
+		     sTheta_(0.564967), cTheta_(0.825113),fixedAlphaS_(-1.)
   {}
 
   /**
@@ -41,7 +40,7 @@ public:
     // construct the meson PDG code from quark ids and check it
     long id1=ids[0]->id();
     long id2=ids[1]->id();
-    long idtest = id1>id2 ? id1*100+id2*10+3 : id2*100+id1*10+3;
+    long idtest = id1>id2 ? id1*100+id2*10+5 : id2*100+id1*10+5;
     idtest += (n_-1)*100000;
     if(((abs(ids[2]->id()) != idtest + 10000) &&
 	(abs(ids[2]->id()) != idtest + 20000) )) return false;
@@ -239,14 +238,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQPP1SplitFn & operator=(const QtoQPP1SplitFn &) = delete;
+  QtoQPD2SplitFn & operator=(const QtoQPD2SplitFn &) = delete;
 
 private:
   
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy5 O1_;
+  Energy7 O1_;
 
   /**
    *  Principal quantum number
@@ -283,4 +282,4 @@ private:
 
 }
 
-#endif /* Herwig_QtoQPP1SplitFn_H */
+#endif /* Herwig_QtoQPD2SplitFn_H */
