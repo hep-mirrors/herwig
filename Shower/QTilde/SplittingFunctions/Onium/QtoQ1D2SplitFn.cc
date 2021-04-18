@@ -105,7 +105,6 @@ double QtoQ1D2SplitFn::ratioP(const double z, const Energy2 t,
   return ratio;
 }
 
-
 DecayMEPtr QtoQ1D2SplitFn::matrixElement(const double z, const Energy2 t, 
 					 const IdList & ids, const double phi, bool) {
   Energy m = ids[0]->mass();

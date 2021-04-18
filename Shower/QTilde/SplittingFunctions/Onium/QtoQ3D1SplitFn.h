@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQ1D2SplitFn_H
-#define Herwig_QtoQ1D2SplitFn_H
+#ifndef Herwig_QtoQ3D1SplitFn_H
+#define Herwig_QtoQ3D1SplitFn_H
 //
-// This is the declaration of the QtoQ1D2SplitFn class.
+// This is the declaration of the QtoQ3D1SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,19 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQ1D2SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^1D_2)\f$.
+ * The QtoQ3D1SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^3D_1)\f$.
  *
- * @see \ref QtoQ1D2SplitFnInterfaces "The interfaces"
- * defined for QtoQ1D2SplitFn.
+ * @see \ref QtoQ3D1SplitFnInterfaces "The interfaces"
+ * defined for QtoQ3D1SplitFn.
  */
-class QtoQ1D2SplitFn: public Sudakov1to2FormFactor {
+class QtoQ3D1SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
   /**
    * The default constructor.
    */
-  QtoQ1D2SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), fixedAlphaS_(-1.)
+  QtoQ3D1SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), fixedAlphaS_(-1.)
   {}
 
   /**
@@ -37,13 +37,14 @@ public:
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
     // construct the meson PDG code from quark ids and check it
-    long idtest = ids[0]->id()*110+5 + 10000 + (n_-1)*100000;
+    long idtest = ids[0]->id()*110+3 + 30000 + (n_-1)*100000;
     if(ids[2]->id() != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
     // looks OK
     return true;
   }
+
   
   /**
    *   Methods to return the splitting function.
@@ -221,7 +222,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQ1D2SplitFn & operator=(const QtoQ1D2SplitFn &) = delete;
+  QtoQ3D1SplitFn & operator=(const QtoQ3D1SplitFn &) = delete;
 
 private:
   
@@ -244,9 +245,8 @@ private:
    *  Fixed value of \f$\alpha_S\f$
    */
   double fixedAlphaS_;
-
 };
 
 }
 
-#endif /* Herwig_QtoQ1D2SplitFn_H */
+#endif /* Herwig_QtoQ3D1SplitFn_H */
