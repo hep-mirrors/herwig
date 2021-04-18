@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQ1P1SplitFn_H
-#define Herwig_QtoQ1P1SplitFn_H
+#ifndef Herwig_QtoQP3D1SplitFn_H
+#define Herwig_QtoQP3D1SplitFn_H
 //
-// This is the declaration of the QtoQ1P1SplitFn class.
+// This is the declaration of the QtoQP3D1SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,19 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQ1P1SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^1P_1)\f$.
+ * The QtoQP3D1SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q'}(^3D_1)\f$,
  *
- * @see \ref QtoQ1P1SplitFnInterfaces "The interfaces"
- * defined for QtoQ1P1SplitFn.
+ * @see \ref QtoQP3D1SplitFnInterfaces "The interfaces"
+ * defined for QtoQP3D1SplitFn.
  */
-class QtoQ1P1SplitFn: public Sudakov1to2FormFactor {
+class QtoQP3D1SplitFn: public Sudakov1to2FormFactor {
 
 public:
-
+  
   /**
    * The default constructor.
    */
-  QtoQ1P1SplitFn() : O1_(0.794*GeV*GeV2*GeV2), n_(1), fixedAlphaS_(-1.)
+  QtoQP3D1SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), fixedAlphaS_(-1.)
   {}
 
   /**
@@ -37,13 +37,17 @@ public:
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
     // construct the meson PDG code from quark ids and check it
-    long idtest = ids[0]->id()*110+3 + 10000 + (n_-1)*100000;
-    if(ids[2]->id() != idtest) return false;
+    long id1=ids[0]->id();
+    long id2=ids[1]->id();
+    long idtest = id1>id2 ? id1*100+id2*10+3 : id2*100+id1*10+3;
+    idtest += 30000 + (n_-1)*100000;
+    if( abs(ids[2]->id()) != idtest ) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
     // looks OK
     return true;
   }
+
   
   /**
    *   Methods to return the splitting function.
@@ -221,14 +225,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQ1P1SplitFn & operator=(const QtoQ1P1SplitFn &) = delete;
+  QtoQP3D1SplitFn & operator=(const QtoQP3D1SplitFn &) = delete;
 
 private:
   
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy5 O1_;
+  Energy7 O1_;
 
   /**
    *  Principal quantum number
@@ -244,9 +248,8 @@ private:
    *  Fixed value of \f$\alpha_S\f$
    */
   double fixedAlphaS_;
-
 };
 
 }
 
-#endif /* Herwig_QtoQ1P1SplitFn_H */
+#endif /* Herwig_QtoQP3D1SplitFn_H */

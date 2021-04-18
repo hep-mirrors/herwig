@@ -77,7 +77,6 @@ void QtoQPD2SplitFn::Init() {
 
 }
 
-
 void QtoQPD2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
 			     const IdList &ids,
 			     double enhance,bool ident,

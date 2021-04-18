@@ -14,7 +14,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the QtoQPD2SplitFn class.
+ * The QtoQPD2SplitFn class implements the splitting function for \f$q\to q' M_q\bar{q'}(D_2)\f$,
+ * in this case there is mixing between the $\phanton{A}^1D_2$ and $\phanton{A}^3D_2$ states
  *
  * @see \ref QtoQPD2SplitFnInterfaces "The interfaces"
  * defined for QtoQPD2SplitFn.
