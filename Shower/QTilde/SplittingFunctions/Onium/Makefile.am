@@ -18,6 +18,7 @@ QtoQP3P2SplitFn.cc     QtoQP3P2SplitFn.h \
 QtoQ3P2SplitFn.cc      QtoQ3P2SplitFn.h  \
 QtoQ1D2SplitFn.cc      QtoQ1D2SplitFn.h  \
 QtoQ3D1SplitFn.cc      QtoQ3D1SplitFn.h  \
+QtoQ3D2SplitFn.cc      QtoQ3D2SplitFn.h  \
 QtoQPD2SplitFn.cc      QtoQPD2SplitFn.h  \
 QtoQP3D1SplitFn.cc      QtoQP3D1SplitFn.h  \
 QtoQBarQQ1SplitFn.cc   QtoQBarQQ1SplitFn.h \

@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_QtoQ3D1SplitFn_H
-#define Herwig_QtoQ3D1SplitFn_H
+#ifndef Herwig_QtoQ3D2SplitFn_H
+#define Herwig_QtoQ3D2SplitFn_H
 //
-// This is the declaration of the QtoQ3D1SplitFn class.
+// This is the declaration of the QtoQ3D2SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
@@ -14,19 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The QtoQ3D1SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^3D_1)\f$.
+ * The QtoQ3D2SplitFn class implements the splitting function for \f$q\to q M_q\bar{q}(^3D_2)\f$.
  *
- * @see \ref QtoQ3D1SplitFnInterfaces "The interfaces"
- * defined for QtoQ3D1SplitFn.
+ * @see \ref QtoQ3D2SplitFnInterfaces "The interfaces"
+ * defined for QtoQ3D2SplitFn.
  */
-class QtoQ3D1SplitFn: public Sudakov1to2FormFactor {
+class QtoQ3D2SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
   /**
    * The default constructor.
    */
-  QtoQ3D1SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), fixedAlphaS_(-1.)
+  QtoQ3D2SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), n_(1), fixedAlphaS_(-1.)
   {}
 
   /**
@@ -37,7 +37,7 @@ public:
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
     // construct the meson PDG code from quark ids and check it
-    long idtest = ids[0]->id()*110+3 + 30000 + (n_-1)*100000;
+    long idtest = ids[0]->id()*110+5 + 20000 + (n_-1)*100000;
     if(ids[2]->id() != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
@@ -221,7 +221,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQ3D1SplitFn & operator=(const QtoQ3D1SplitFn &) = delete;
+  QtoQ3D2SplitFn & operator=(const QtoQ3D2SplitFn &) = delete;
 
 private:
   
@@ -248,4 +248,4 @@ private:
 
 }
 
-#endif /* Herwig_QtoQ3D1SplitFn_H */
+#endif /* Herwig_QtoQ3D2SplitFn_H */
