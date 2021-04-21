@@ -176,11 +176,6 @@ protected:
   virtual void hardestEmission(bool hard);
 
   /**
-   *  Set up for applying a matrix element correction
-   */
-  void setupMECorrection(RealEmissionProcessPtr real);
-
-  /**
    * Extract the particles to be showered, set the evolution scales
    * and apply the hard matrix element correction
    * @param hard Whether this is a hard process or decay

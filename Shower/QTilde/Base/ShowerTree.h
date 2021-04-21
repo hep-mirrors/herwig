@@ -275,6 +275,11 @@ public:
    */
   RealEmissionProcessPtr perturbativeProcess();
 
+  /**
+   *  Set up for applying a matrix element correction
+   */
+  void setUpMECorrection(RealEmissionProcessPtr real);
+
 protected:
 
   /**
@@ -322,7 +327,36 @@ protected:
    */
   void fixColour(tShowerParticlePtr part);
 
+  /**
+   * Find an initial-satate line
+   */
+  ShowerProgenitorPtr findInitialStateLine(long id, Lorentz5Momentum momentum);
+
+  /**
+   * Find a final-state line 
+   */
+  ShowerProgenitorPtr findFinalStateLine(long id, Lorentz5Momentum momentum);
+
+  /**
+   *  Fix the colours of a spectator
+   */
+  void fixSpectatorColours(PPtr newSpect,ShowerProgenitorPtr oldSpect,
+			   ColinePair & cline,ColinePair & aline, bool reconnect);
+
+  /**
+   *  Fix initial-state emitter for ME correction
+   */
+  void fixInitialStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+			      ColinePair cline,ColinePair aline,double x);
+
+  /**
+   *  Fix final-state emitter for ME correction
+   */
+  void fixFinalStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+   			    ColinePair cline,ColinePair aline);
+
 private:
+  
   /**
    * Incoming partons for the hard process
    */
