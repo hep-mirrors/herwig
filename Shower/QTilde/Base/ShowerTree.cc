@@ -107,7 +107,7 @@ ShowerTree::ShowerTree(PerturbativeProcessPtr process)
 }
 
 void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
-					       ShowerParticlePtr parent,
+					       ShowerParticlePtr ,
 					       const ShowerParticleVector & children) {
   ShowerParticlePtr newpart;
   double amax(0.);
@@ -516,50 +516,132 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
 void ShowerTree::clear() {
   // reset the has showered flag
   _hasShowered=false;
-  // clear the colour map and reisolate the process
+  // copy old colour lines
+  map<ColinePtr,ColinePtr> oldLines;
+  for(const auto & kv : colourLines())
+    oldLines[kv.second]=kv.first;
   colourLines().clear();
+  map<tColinePtr,tColinePtr> cmap;
+  // clear the colour map and reisolate the process
   vector<PPtr> original,copy;
   for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines() ) { 
-    original.push_back(in.first->original());
-    copy    .push_back(in.first->copy()    );
+    tPPtr copy = in.first->copy();
+    // if particle has at least one colour line
+    if(copy->colourLine()) {
+      // one and only one line
+      if(int(copy->colourInfo()->colourLines().size())==1) {
+	tColinePtr oldLine = copy->colourLine();
+	if(cmap.find(oldLine)==cmap.end()) {
+	  ColinePtr newLine = new_ptr(ColourLine());
+	  cmap[oldLine]=newLine;
+	  colourLines()[newLine]=oldLines[oldLine];
+	}
+	copy->colourLine()->removeColoured(copy);
+	cmap[oldLine]->addColoured(copy);
+      }
+      else {
+ 	Ptr<MultiColour>::pointer colour = 
+   	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(copy->colourInfo());
+   	vector<tcColinePtr> lines = colour->colourLines();
+	for(unsigned int ix=0;ix<lines.size();++ix) {
+	  tColinePtr oldLine = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(cmap.find(oldLine)==cmap.end()) {
+            ColinePtr newLine = new_ptr(ColourLine());
+	    colourLines()[newLine]=oldLines[oldLine];
+	    cmap[oldLine]=newLine;
+	  }
+	  colour->colourLine(cmap[oldLine],int(ix)+1);
+	}
+      }
+    }
+    // if particle has at least one antiColour line
+    if(copy->antiColourLine()) {
+      // one and only one line
+      if(int(copy->colourInfo()->antiColourLines().size())==1) {
+	tColinePtr oldLine = copy->antiColourLine();
+	if(cmap.find(oldLine)==cmap.end()) {
+	  ColinePtr newLine = new_ptr(ColourLine());
+	  colourLines()[newLine]=oldLines[oldLine];
+	  cmap[oldLine]=newLine;
+	}
+	copy->antiColourLine()->removeAntiColoured(copy);
+	cmap[oldLine]->addAntiColoured(copy);
+      }
+      else {
+ 	Ptr<MultiColour>::pointer colour = 
+   	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(copy->colourInfo());
+   	vector<tcColinePtr> lines = colour->antiColourLines();
+	for(unsigned int ix=0;ix<lines.size();++ix) {
+	  tColinePtr oldLine = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(cmap.find(oldLine)==cmap.end()) {
+            ColinePtr newLine = new_ptr(ColourLine());
+	    colourLines()[newLine]=oldLines[oldLine];
+	    cmap[oldLine]=newLine;
+	  }
+	  colour->antiColourLine(cmap[oldLine],int(ix)+1);
+	}
+      }
+    }
   }
   for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
-    original.push_back(out.first->original());
-    copy    .push_back(out.first->copy()    );
-  }
-  // remove colour lines of copies
-  for(PPtr part : copy ) {
-    if(!part->colourInfo()->colourLines().empty()) {
-      if(part->colourInfo()->colourLines().size()==1) {
-	part->colourLine()->removeColoured(part);
+    tPPtr copy = out.first->copy();
+    // if particle has at least one colour line
+    if(copy->colourLine()) {
+      // one and only one line
+      if(int(copy->colourInfo()->colourLines().size())==1) {
+	tColinePtr oldLine = copy->colourLine();
+	if(cmap.find(oldLine)==cmap.end()) {
+	  ColinePtr newLine = new_ptr(ColourLine());
+	  colourLines()[newLine]=oldLines[oldLine];
+	  cmap[oldLine]=newLine;
+	}
+	copy->colourLine()->removeColoured(copy);
+	cmap[oldLine]->addColoured(copy);
       }
       else {
-	Ptr<MultiColour>::pointer colour = 
-	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(part->colourInfo());
-	vector<tcColinePtr> lines = colour->colourLines();
+ 	Ptr<MultiColour>::pointer colour = 
+   	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(copy->colourInfo());
+   	vector<tcColinePtr> lines = colour->colourLines();
 	for(unsigned int ix=0;ix<lines.size();++ix) {
-	  ColinePtr line = const_ptr_cast<ColinePtr>(lines[ix]);
-	  if(line) line->removeColoured(part);
+	  tColinePtr oldLine = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(cmap.find(oldLine)==cmap.end()) {
+            ColinePtr newLine = new_ptr(ColourLine());
+	    colourLines()[newLine]=oldLines[oldLine];
+	    cmap[oldLine]=newLine;
+	  }
+	  colour->colourLine(cmap[oldLine],int(ix)+1);
 	}
       }
     }
-    if(!part->colourInfo()->antiColourLines().empty()) {
-      if(part->colourInfo()->antiColourLines().size()==1) {
-	part->antiColourLine()->removeAntiColoured(part);
+    // if particle has at least one antiColour line
+    if(copy->antiColourLine()) {
+      // one and only one line
+      if(int(copy->colourInfo()->antiColourLines().size())==1) {
+	tColinePtr oldLine = copy->antiColourLine();
+	if(cmap.find(oldLine)==cmap.end()) {
+	  ColinePtr newLine = new_ptr(ColourLine());
+	  colourLines()[newLine]=oldLines[oldLine];
+	  cmap[oldLine]=newLine;
+	}
+	copy->antiColourLine()->removeAntiColoured(copy);
+	cmap[oldLine]->addAntiColoured(copy);
       }
       else {
-	Ptr<MultiColour>::pointer colour = 
-	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(part->colourInfo());
-	vector<tcColinePtr> lines = colour->antiColourLines();
+ 	Ptr<MultiColour>::pointer colour = 
+   	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>(copy->colourInfo());
+   	vector<tcColinePtr> lines = colour->antiColourLines();
 	for(unsigned int ix=0;ix<lines.size();++ix) {
-	  ColinePtr line = const_ptr_cast<ColinePtr>(lines[ix]);
-	  if(line) line->removeAntiColoured(part);
+	  tColinePtr oldLine = const_ptr_cast<ColinePtr>(lines[ix]);
+	  if(cmap.find(oldLine)==cmap.end()) {
+            ColinePtr newLine = new_ptr(ColourLine());
+	    colourLines()[newLine]=oldLines[oldLine];
+	    cmap[oldLine]=newLine;
+	  }
+	  colour->antiColourLine(cmap[oldLine],int(ix)+1);
 	}
       }
     }
   }
-  // isolate the colour
-  colourIsolate(original,copy);
   // now sort out the particle's children
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cjt;
   // abandon the children of the outgoing particles
