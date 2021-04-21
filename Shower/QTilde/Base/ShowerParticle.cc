@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/Rank3TensorWaveFunction.h"
 #include <ostream>
 
 using namespace Herwig;
@@ -451,8 +452,14 @@ void ShowerParticle::constructSpinInfo(bool timeLike) {
     TensorWaveFunction::calculateWaveFunctions(ttemp,this,outgoing,false,tensor_phase);
     TensorWaveFunction::constructSpinInfo(ttemp,this,outgoing,timeLike,false);
   }
+  // calculate the basis states and construct SpinInfo for a spin-3 particle
+  else if(spin==PDT::Spin3) {
+    vector<Helicity::LorentzRank3Tensor<double> > ttemp;
+    Rank3TensorWaveFunction::calculateWaveFunctions(ttemp,this,outgoing,false);
+    Rank3TensorWaveFunction::constructSpinInfo(ttemp,this,outgoing,timeLike,false);
+  }
   else {
-    throw Exception() << "Spins higher than 2 are not yet implemented in " 
+    throw Exception() << "Spins higher than 3 are not yet implemented in " 
 		      << "ShowerParticle::constructVertex() "
 		      << Exception::runerror;
   }
