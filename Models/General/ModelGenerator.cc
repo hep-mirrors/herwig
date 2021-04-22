@@ -221,6 +221,7 @@ void ModelGenerator::Init() {
 }
 
 namespace {
+  
   /// Helper function for sorting by mass
   inline bool massIsLess(tcPDPtr a, tcPDPtr b) {
     return a->mass() < b->mass();
