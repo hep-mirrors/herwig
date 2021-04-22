@@ -35,6 +35,14 @@ class NBodyDecayConstructorBase: public Interfaced {
 
 public:
 
+  struct MassOrdering {
+    bool operator()(PDPtr p1, PDPtr p2) const {
+      return p1->mass() < p2->mass() || (p1->mass()==p2->mass() && p1->id()>p2->id());
+    }
+  };
+  
+public:
+
   /**
    * The default constructor.
    */
@@ -52,7 +60,7 @@ public:
    * @param particles vector of ParticleData pointers containing 
    * particles in model
    */
-  virtual void DecayList(const set<PDPtr> & particles);
+  virtual void DecayList(const set<PDPtr,MassOrdering> & particles);
 
   /**
    * Number of outgoing lines. Required for correct ordering.
