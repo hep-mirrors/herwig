@@ -83,6 +83,7 @@ analyses["PPbar"]["FENICE_1998_I471263" ] = ["d01-x01-y01"]
 analyses["PPbar"]["FENICE_1994_I377833" ] = ["d01-x01-y01"]
 analyses['PPbar']["BESII_2005_I685906"  ] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
+analyses['PPbar']["BESIII_2021_I1853007"] = ["d01-x01-y01"]
 # pi0 gamma
 analyses["PiGamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
 analyses["PiGamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
@@ -140,6 +141,7 @@ analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
 analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
 analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
 analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
+analyses["EtaPhi"]["BESIII_2021_I1857930"] = ["d01-x01-y01"]
 # Eta Omega
 analyses["EtaOmega"]["BESIII_2020_I1817739" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
@@ -259,6 +261,9 @@ analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y1
                                          "d01-x01-y15","d01-x01-y16","d01-x01-y17","d01-x01-y18"]
 analyses['6m']["SND_2016_I1473343"   ] = ["d01-x01-y01"]
 analyses['6m']["BESIII_2020_I1788734"] = ["d01-x01-y01"]
+analyses['6m']["BABAR_2021_I1844422" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+                                          "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
+analyses['6m']["BESIII_2020_I1837725" ] = ["d01-x01-y01"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
