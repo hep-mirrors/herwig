@@ -642,6 +642,28 @@ void ShowerTree::clear() {
       }
     }
   }
+  // finally sources and sinks
+  for(const auto & kv : oldLines) {
+    if(!kv.first) continue;
+    tColinePair source = kv.first->sourceNeighbours();
+    if(source.first && source.second) {
+      tColinePtr new1 = cmap[source.first ];
+      tColinePtr new2 = cmap[source.second];
+      tColinePtr new3 = cmap[kv.first];
+      if(new1&&new2&&!new3->sourceNeighbours().first) {
+	new3-> setSourceNeighbours(new1,new2);
+      }
+    }
+    tColinePair sink = kv.first->sinkNeighbours();
+    if(sink.first && sink.second) {
+      tColinePtr new1 = cmap[sink.first ];
+      tColinePtr new2 = cmap[sink.second];
+      tColinePtr new3 = cmap[kv.first];
+      if(new1&&new2&&!new3->sinkNeighbours().first) {
+	new3-> setSinkNeighbours(new1,new2);
+      }
+    }
+  }
   // now sort out the particle's children
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cjt;
   // abandon the children of the outgoing particles
