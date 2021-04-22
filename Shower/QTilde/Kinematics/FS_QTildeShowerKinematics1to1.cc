@@ -20,8 +20,8 @@ updateChildren(const tShowerParticlePtr parent,
   assert(children.size()==1);
   // update the parameters
   children[0]->showerParameters() = parent->showerParameters();
-  // // set up the colour connections
-  // sudakov1to2_->colourConnection(parent,children[0],children[1],partnerType,false);
+  // set up the colour connections
+  parent->antiColourLine()->join(parent->colourLine());
   // make the product a child of the parent
   parent->addChild(children[0]);
   // set the momenta of the child

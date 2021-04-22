@@ -90,7 +90,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FS_QTildeShowerKinematics1to1 & operator=(const FS_QTildeShowerKinematics1to1 &);
+  FS_QTildeShowerKinematics1to1 & operator=(const FS_QTildeShowerKinematics1to1 &) = delete;
 
 };
 

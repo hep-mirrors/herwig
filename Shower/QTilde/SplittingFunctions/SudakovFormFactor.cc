@@ -31,7 +31,6 @@ void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
      >> ienum(interactionType_) >> ienum(colourStructure_) >> particles_;
 }
 
-
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<SudakovFormFactor,Interfaced>

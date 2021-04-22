@@ -1128,10 +1128,10 @@ Energy Sudakov1to2FormFactor::calculateScale(double zin, Energy pt, IdList ids,
 }
 
 void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
-                                         tShowerParticlePtr first,
-                                         tShowerParticlePtr second,
-					 ShowerPartnerType partnerType, 
-                                         const bool back) const {
+					     tShowerParticlePtr first,
+					     tShowerParticlePtr second,
+					     ShowerPartnerType partnerType, 
+					     const bool back) const {
   if(colourStructure()==TripletTripletOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
