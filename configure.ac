@@ -115,6 +115,7 @@ if test "xx${host/darwin/foundit}xx" != "xx${host}xx"; then
 fi
 AC_SUBST([APPLE_DSO_FLAGS])
 AC_SUBST([SHARED_FLAG])
+AC_SUBST([PYTHON])
 
 AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile
@@ -237,6 +238,24 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Tests/Makefile
 		Makefile])
 
+AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_check        ])
+AC_CONFIG_FILES([Tests/python/LowEnergy-EE.py    ],[chmod +x Tests/python/LowEnergy-EE.py    ])
+AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEnergy-Photon.py])
+AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
+AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	     ])	 
+AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 
+AC_CONFIG_FILES([Tests/python/merge-EE-Gamma	 ],[chmod +x Tests/python/merge-EE-Gamma     ])	 
+AC_CONFIG_FILES([Tests/python/merge-Fixed	 ],[chmod +x Tests/python/merge-Fixed	     ])
+AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])	 
+AC_CONFIG_FILES([Tests/python/merge-LHC-EW	 ],[chmod +x Tests/python/merge-LHC-EW	     ])
+AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])	 
+AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])	 
+AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])	 
+AC_CONFIG_FILES([Tests/python/merge-TVT-EW	 ],[chmod +x Tests/python/merge-TVT-EW	     ])
+AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])	 
+AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])	 
+AC_CONFIG_FILES([Tests/python/plot-EE		 ],[chmod +x Tests/python/plot-EE	     ])	 
+AC_CONFIG_FILES([Tests/python/R.py		 ],[chmod +x Tests/python/R.py		     ])
 AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 AC_CONFIG_HEADERS([PDF/SaSPhotonPDF.cc])

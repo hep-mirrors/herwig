@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! @PYTHON@
 from __future__ import print_function
 import glob,subprocess,os,optparse
 
