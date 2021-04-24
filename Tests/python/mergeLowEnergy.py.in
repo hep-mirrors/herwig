@@ -97,7 +97,11 @@ for runType in ["NonPerturbative","Perturbative"]:
                     break
     if len(outhistos) == 0: continue
     p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
-    path=p.communicate()[0].encode("UTF-8").strip()
+    path=p.communicate()[0]
+    if not isinstance(path, bytes) :
+        path = path.encode("UTF-8").strip()
+    else :
+        path=path.strip().decode('utf-8')
     temp = list(outhistos.keys())
     for val in  temp :
         if type(outhistos[val]) is yoda.core.Scatter2D :
