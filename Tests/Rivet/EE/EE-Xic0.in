@@ -15,5 +15,6 @@ do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/
 # Xi_c decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2000_I537236
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1859517
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1851126
 # Omega decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719581

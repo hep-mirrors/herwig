@@ -84,6 +84,7 @@ analyses["PPbar"]["FENICE_1994_I377833" ] = ["d01-x01-y01"]
 analyses['PPbar']["BESII_2005_I685906"  ] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
 analyses['PPbar']["BESIII_2021_I1853007"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2021_I1847766"] = ["d01-x01-y01"]
 # pi0 gamma
 analyses["PiGamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
 analyses["PiGamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
