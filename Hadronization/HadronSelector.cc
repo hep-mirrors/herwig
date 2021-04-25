@@ -477,14 +477,22 @@ void HadronSelector::doinit() {
 
   // Commenting out heavy di-quark weights
   _pwt[4101] = 0.0;
+  _pwt[4103] = 0.0;
   _pwt[4201] = 0.0;
+  _pwt[4203] = 0.0;
   _pwt[4301] = 0.0;
+  _pwt[4303] = 0.0;
   _pwt[4403] = 0.0;
   _pwt[5101] = 0.0;
+  _pwt[5103] = 0.0;
   _pwt[5201] = 0.0;
+  _pwt[5203] = 0.0;
   _pwt[5301] = 0.0;
+  _pwt[5303] = 0.0;
   _pwt[5401] = 0.0;
+  _pwt[5403] = 0.0;
   _pwt[5503] = 0.0;
+  
   // find the maximum
   map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess);
