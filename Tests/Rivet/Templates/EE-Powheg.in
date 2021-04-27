@@ -31,7 +31,7 @@ set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/PowhegMEee2gZ2qq
 ${process}
 
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig run'

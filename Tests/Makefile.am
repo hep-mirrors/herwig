@@ -1,6 +1,6 @@
 AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
-EXTRA_DIST = Inputs python Rivet 
+EXTRA_DIST = Inputs python Rivet
 
 EXTRA_LTLIBRARIES = LeptonTest.la GammaTest.la HadronTest.la DISTest.la
 
@@ -12,12 +12,12 @@ Hadron/VTest.h Hadron/VTest.cc\
 Hadron/HTest.h Hadron/HTest.cc
 HadronJetTest_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
-HadronJetTest_la_LIBADD = $(FASTJETLIBS) 
+HadronJetTest_la_LIBADD = $(FASTJETLIBS)
 LeptonJetTest_la_SOURCES = \
 Lepton/TopDecay.h Lepton/TopDecay.cc
 LeptonJetTest_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
-LeptonJetTest_la_LIBADD = $(FASTJETLIBS) 
+LeptonJetTest_la_LIBADD = $(FASTJETLIBS)
 endif
 
 LeptonTest_la_SOURCES = \
@@ -96,7 +96,7 @@ test-LHC-WHJet-Powheg test-LHC-ZHJet-Powheg test-LHC-HJet-Powheg \
 test-LHC-ZShower-Powheg test-LHC-WShower-Powheg
 endif
 
-tests-LHC : $(LHCDEPS) 
+tests-LHC : $(LHCDEPS)
 
 tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 
@@ -105,7 +105,7 @@ tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 LEPLIBS = LeptonTest.la
 HADLIBS = HadronTest.la
 
-if WANT_LIBFASTJET 
+if WANT_LIBFASTJET
 LEPLIBS += LeptonJetTest.la
 HADLIBS += HadronJetTest.la
 endif
@@ -249,7 +249,7 @@ Rivet-DIS : Rivet-DIS/done
 
 Rivet-DIS/done: $(shell echo Rivet{-DIS,-DIS-NoME,-Powheg-DIS}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.yoda)
 	rm -rf Rivet-DIS
-	python/merge-DIS DIS 
+	python/merge-DIS DIS
 	python/merge-DIS Powheg-DIS
 	python/merge-DIS DIS-NoME
 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg DIS-NoME.yoda:Hw-NoME
@@ -332,7 +332,7 @@ Rivet-LHC-EW/done: \
 		$(shell echo Rivet{,-Powheg}-LHC-{13-Z-{e,mu},13-W-mu,Z-HighMass{1,2}-e,{8,13}-Z-Mass{1..4}-{e,mu},{,8-}W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},13-WW-emu,ZZ-{ll,lv},{8,13}-WZ,13-ZZ-ll,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
 		$(shell echo Rivet-LHC-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 		$(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) \
-		$(shell echo Rivet-LHC-8-ZGamma-{e,mu}.yoda) 
+		$(shell echo Rivet-LHC-8-ZGamma-{e,mu}.yoda)
 	rm -rf Rivet-LHC-EW;
 	python/merge-LHC-EW LHC
 	python/merge-LHC-EW Powheg-LHC

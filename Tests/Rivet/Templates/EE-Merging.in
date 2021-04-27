@@ -55,7 +55,7 @@ cd /Herwig/Merging/
 set Merger:MergingScale 5.*GeV
 ${process}
 
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 ## Save the generator

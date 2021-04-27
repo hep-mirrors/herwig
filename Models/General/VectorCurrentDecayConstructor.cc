@@ -78,7 +78,7 @@ void VectorCurrentDecayConstructor::doinit() {
   model_ = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>(generator()->standardModel());
 }
 
-void VectorCurrentDecayConstructor::DecayList(const set<PDPtr> & particles) {
+void VectorCurrentDecayConstructor::DecayList(const set<PDPtr,MassOrdering> & particles) {
   if( particles.empty() ) return;
   unsigned int nv(model_->numberOfVertices());
   for(PDPtr part : particles) {

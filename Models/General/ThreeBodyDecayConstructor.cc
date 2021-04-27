@@ -130,7 +130,7 @@ void ThreeBodyDecayConstructor::Init() {
 
 }
 
-void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
+void ThreeBodyDecayConstructor::DecayList(const set<PDPtr,MassOrdering> & particles) {
   if( particles.empty() ) return;
   // special for weak decays
   for(unsigned int ix=0;ix<decayConstructor()->decayConstructors().size();++ix) {

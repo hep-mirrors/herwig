@@ -96,7 +96,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DMMediatorQuarksVertex & operator=(const DMMediatorQuarksVertex &);
+  DMMediatorQuarksVertex & operator=(const DMMediatorQuarksVertex &) = delete;
 
   /**                           
    * SM couplings to the dark mediator
