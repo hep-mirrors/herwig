@@ -503,7 +503,8 @@ void HadronSelector::doinit() {
   // construct the hadron tables
   constructHadronTable();
   // for debugging
-  // dumpTable(table());
+  if(Debug::level >= 10 ) 
+    dumpTable(table());
 }
 
 void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2) {
@@ -549,7 +550,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
     if(iq1==iq2) {
       assert(flav2!=iq1);
       // first the uu1 d type piece
-      a.wt = 1./6.;
+      a.wt = 1./3.;
       a.overallWeight *= a.wt;
       _table[make_pair(flav1,flav2)].insert(a);
       _table[make_pair(flav2,flav1)].insert(a);
@@ -557,7 +558,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       // also need ud1 u type
       long f3 = CheckId::makeDiquarkID(iq1,flav2,3);
       a.overallWeight /= a.wt;
-      a.wt = 1./12.;
+      a.wt = 1./6.;
       a.overallWeight *= a.wt;
       _table[make_pair(iq1,f3 )].insert(a);
       _table[make_pair(f3 ,iq1)].insert(a);
@@ -565,7 +566,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       // and       ud0 u type
       f3 = CheckId::makeDiquarkID(iq1,flav2,1);
       a.overallWeight /= a.wt;
-      a.wt = 3./4.;
+      a.wt = 0.5;
       a.overallWeight *= a.wt;
       _table[make_pair(iq1,f3 )].insert(a);
       _table[make_pair(f3 ,iq1)].insert(a);
@@ -573,7 +574,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
     }
     else if(iq1==flav2) {
       // ud1 u type
-      a.wt = 1./12.;
+      a.wt = 1./6.;
       a.overallWeight *= a.wt;
       _table[make_pair(flav1,flav2)].insert(a);
       _table[make_pair(flav2,flav1)].insert(a);
@@ -581,7 +582,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       // also need ud0 u type
       long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
       a.overallWeight /= a.wt;
-      a.wt = 3./4.;
+      a.wt = 0.5;
       a.overallWeight *= a.wt;
       _table[make_pair(f3    ,flav2)].insert(a);
       _table[make_pair(flav2 ,f3   )].insert(a);
@@ -589,7 +590,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       // and uu1 d type
       f3 = CheckId::makeDiquarkID(iq1,iq1,3);
       a.overallWeight /= a.wt;
-      a.wt = 1./6.;
+      a.wt = 1./3.;
       a.overallWeight *= a.wt;
       _table[make_pair(f3 ,iq2)].insert(a);
       _table[make_pair(iq2, f3)].insert(a);
@@ -601,18 +602,20 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       long it1 = (pid/100)%10;
       long it2 = (pid/10 )%10;
       // first perm
+      double wgt0(1./4.),wgt1(1./12.);
       // only spin-0
       if(it1<it2) {
 	long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
-	a.wt = 1./2.;
+	a.wt = 1./3.;
 	a.overallWeight *= a.wt;
 	_table[make_pair(f3,flav2)].insert(a);
 	_table[make_pair(flav2,f3)].insert(a);
 	if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
+	swap(wgt0,wgt1);
       }
       // only spin-1
       else {
-	a.wt = 1./6.;
+	a.wt = 1./3.;
 	a.overallWeight *= a.wt;
 	_table[make_pair(flav1,flav2)].insert(a);
 	_table[make_pair(flav2,flav1)].insert(a);
@@ -621,7 +624,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       // not sure here
       // spin 0
       a.overallWeight /= a.wt;
-      a.wt = 1./2.;
+      a.wt = wgt0;
       a.overallWeight *= a.wt;
       // second perm
       long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
@@ -635,7 +638,7 @@ void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2)
       if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
       // spin 1
       a.overallWeight /= a.wt;
-      a.wt = 1./6.;
+      a.wt = wgt1;
       a.overallWeight *= a.wt;
       // second perm
       f3 = CheckId::makeDiquarkID(iq1,flav2,3);
