@@ -381,30 +381,45 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
 						    -b1*sqr(sHalf1_)-0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0.);
     }
   }
-  // Equivalent Photon
-  else if(currentMode_==1) {
+  // approximate modes
+  else if(currentMode_<=2) {
     Lorentz5Momentum p = meMomenta()[0];
     Lorentz5Momentum n(ZERO,ZERO,-Ea,Ea);
     double z = (n*meMomenta()[2])/(n*p);
     Energy2 pT2 = -z*t1_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
-    double fact = ee*Ea*UnitRemoval::E/t1_;
-    // normal piece
-    double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
-    double fact2 = fact*(F1+F2)* m/Ea/sqrt(z)*(1.-z);
-    current[0] = fact1*LorentzPolarizationVector(phase+z/phase,-II*(phase-z/phase),0., 0.);
-    current[1] = fact2*LorentzPolarizationVector(-1.,II,0.,0.);
-    current[2] = fact2*LorentzPolarizationVector( 1.,II,0.,0.);
-    current[3] = fact1*LorentzPolarizationVector(1./phase+z*phase,II*(1./phase-phase*z),0.,0.);
-    // F2 piece if non-zero
-    if(F2!=0) {
-      double fact3 = fact*F2*    pT /Ea  *(1.+z)/(1.-z)/sqrt(z);
-      double fact4 = fact*F2*sqr(pT)/Ea/m       /(1.-z)/sqrt(z);
-      current[0] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
-      current[1] -= fact4/phase*LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
-      current[2] -= fact4*phase*LorentzPolarizationVector(-cos(phi1_),-sin(phi1_),0,0);
-      current[3] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+    // Equivalent Photon (with spin correlations)
+    if(currentMode_==1) {
+      double fact = ee*Ea*UnitRemoval::E/t1_;
+      // normal piece
+      double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
+      double fact2 = fact*(F1+F2)* m/Ea/sqrt(z)*(1.-z);
+      current[0] = fact1*LorentzPolarizationVector(phase+z/phase,-II*(phase-z/phase),0., 0.);
+      current[1] = fact2*LorentzPolarizationVector(-1.,II,0.,0.);
+      current[2] = fact2*LorentzPolarizationVector( 1.,II,0.,0.);
+      current[3] = fact1*LorentzPolarizationVector(1./phase+z*phase,II*(1./phase-phase*z),0.,0.);
+      // F2 piece if non-zero
+      if(F2!=0) {
+	double fact3 = fact*F2*    pT /Ea  *(1.+z)/(1.-z)/sqrt(z);
+	double fact4 = fact*F2*sqr(pT)/Ea/m       /(1.-z)/sqrt(z);
+	current[0] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+	current[1] -= fact4/phase*LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+	current[2] -= fact4*phase*LorentzPolarizationVector(-cos(phi1_),-sin(phi1_),0,0);
+	current[3] -= fact3      *LorentzPolarizationVector( cos(phi1_), sin(phi1_),0,0);
+      }
+    }
+    // no spin correlations
+    else if(currentMode_==2) {
+      Energy2 m2=sqr(m);  
+      double ort=sqrt(0.5);
+      double fact = ort*ee*UnitRemoval::E/t1_*
+	sqrt(2.*pT2*((4.*sqr(F1))/sqr(1.-z) + (2.*sqr(F1)+4.*F1*F2+3.*sqr(F2))/z)
+	     +2.*sqr(F2)*sqr(pT2)/(m2*sqr(1.-z)*z)
+	     +4.*sqr(F1+F2)*m2*sqr(1.-z)/z);
+      current.resize(2);    
+      current[0] = fact*ort*LorentzPolarizationVector( 1,-II,0.,0.);
+      current[1] = fact*ort*LorentzPolarizationVector(-1,-II,0.,0.);
     }
   }
   // no other option
@@ -503,29 +518,44 @@ vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
 							  b1*sqr(cHalf2_)+0.5*mr2*(1.-x)*(1.+x)/((b+b1)*sqr(x)),0);
     }
   }
-  // Equivalent Photon
-  else if(currentMode_==1) {
+  // approximate modes
+  else if(currentMode_<=2) {
     Lorentz5Momentum p = meMomenta()[1];
     Lorentz5Momentum n(ZERO,ZERO,Ea,Ea);
     double z = (n*meMomenta()[3])/(n*p);
     Energy2 pT2 = -z*t2_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
-    double fact = ee*Ea*UnitRemoval::E/t2_;
-    double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
-    double fact2 = fact*(F1+F2)*m /Ea/sqrt(z)*(1.-z);
-    current[0] = fact1      *LorentzPolarizationVector(1.+z*sqr(phase), II*(1.-z*sqr(phase)),0., 0.);
-    current[1] = fact2/phase*LorentzPolarizationVector( 1.,II,0.,0.);
-    current[2] = fact2*phase*LorentzPolarizationVector(-1.,II,0.,0.);    
-    current[3] = fact1      *LorentzPolarizationVector(1.+z/sqr(phase),-II*(1.-z/sqr(phase)),0.,0.);
-    // F2 piece if non-zero
-    if(F2!=0) {
-      double fact1 = fact*F2*    pT *(1.+z)/(Ea  *(1.-z)*sqrt(z));
-      double fact2 = fact*F2*sqr(pT)       /(Ea*m*(1.-z)*sqrt(z));
-      current[0] -= fact1*phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
-      current[1] -= fact2      *LorentzPolarizationVector(-cos(phi2_),-sin(phi2_),0,0);
-      current[2] -= fact2      *LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
-      current[3] -= fact1/phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+    // Equivalent Photon with spin correlations
+    if(currentMode_<=1) {
+      double fact = ee*Ea*UnitRemoval::E/t2_;
+      double fact1 = fact*(F1+F2)*pT/Ea/sqrt(z)/(1.-z);
+      double fact2 = fact*(F1+F2)*m /Ea/sqrt(z)*(1.-z);
+      current[0] = fact1      *LorentzPolarizationVector(1.+z*sqr(phase), II*(1.-z*sqr(phase)),0., 0.);
+      current[1] = fact2/phase*LorentzPolarizationVector( 1.,II,0.,0.);
+      current[2] = fact2*phase*LorentzPolarizationVector(-1.,II,0.,0.);    
+      current[3] = fact1      *LorentzPolarizationVector(1.+z/sqr(phase),-II*(1.-z/sqr(phase)),0.,0.);
+      // F2 piece if non-zero
+      if(F2!=0) {
+	double fact1 = fact*F2*    pT *(1.+z)/(Ea  *(1.-z)*sqrt(z));
+	double fact2 = fact*F2*sqr(pT)       /(Ea*m*(1.-z)*sqrt(z));
+	current[0] -= fact1*phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+	current[1] -= fact2      *LorentzPolarizationVector(-cos(phi2_),-sin(phi2_),0,0);
+	current[2] -= fact2      *LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+	current[3] -= fact1/phase*LorentzPolarizationVector( cos(phi2_), sin(phi2_),0,0);
+      }
+    }
+    // no spin correlations
+    else if(currentMode_==2) {
+      double ort=sqrt(0.5);
+      Energy2 m2=sqr(m);
+      double fact = ort*ee*UnitRemoval::E/t2_*
+	sqrt(2.*pT2*((4.*sqr(F1))/sqr(1.-z) + (2.*sqr(F1)+4.*F1*F2+3.*sqr(F2))/z)
+	     +2.*sqr(F2)*sqr(pT2)/(m2*sqr(1.-z)*z)
+	     +4.*sqr(F1+F2)*m2*sqr(1.-z)/z);
+      current.resize(2);      
+      current[0] = fact*ort*LorentzPolarizationVector(-1,-II,0.,0.);
+      current[1] = fact*ort*LorentzPolarizationVector( 1,-II,0.,0.);
     }
   }
   // no other option
