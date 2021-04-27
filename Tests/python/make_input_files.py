@@ -136,7 +136,11 @@ def collider_lumi(energy):
 def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
     result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
     if process is not None:
-        result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
+        if me=="MEgg2ff" :
+            result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
+        else :
+            result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
+        
     return result
 
 def particlegroup(factory,name,*particles):
@@ -441,7 +445,7 @@ elif(collider=="GammaGamma") :
     if(simulation=="") :
         if("mumu" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff"))
-            process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
+            process +="set /Herwig/MatrixElements/gg2ffAmp:Process Muon\n"
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         else :
             print ("process not supported for Gamma Gamma processes at EE")
