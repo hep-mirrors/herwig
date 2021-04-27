@@ -22,7 +22,7 @@
 #include "ThePEG/Utilities/UtilityBase.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Utilities/Throw.h"
-
+#include "Herwig/Utilities/EnumParticles.h"
 #include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
@@ -610,6 +610,8 @@ void HwRemDecayer::setRemMasses(PPair diquarks) const {
       generator()->currentEvent()->primaryCollision()->incoming().first==hadron ?
       generator()->currentEvent()->primarySubProcess()->incoming().first :
       generator()->currentEvent()->primarySubProcess()->incoming().second;
+    hadron=rem->parents()[0];
+    while(hadron->id()==ParticleID::Remnant) hadron=hadron->parents()[0];
     tPPtr parent=hardin;
     vector<PPtr> tempprog;
     // find the outgoing particles emitted from the backward shower
