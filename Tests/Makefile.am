@@ -209,6 +209,7 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                       $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+                      $(shell echo Rivet-EE-Gamma-pi0-10.58.yoda ) \
 	              $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma

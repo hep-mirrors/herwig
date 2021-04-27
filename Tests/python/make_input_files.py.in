@@ -198,7 +198,6 @@ del cand_collider
 if "EHS" in name : collider="SPS"
 assert collider
 have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
-print (collider)
 thefactory="Factory"
 
 parameters = { 

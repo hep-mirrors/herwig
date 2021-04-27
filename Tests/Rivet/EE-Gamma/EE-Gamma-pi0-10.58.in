@@ -3,10 +3,11 @@
 # LEP physics parameters (override defaults) 
 ##################################################
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10.58
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.9
 ##################################################
 # select the analyses 
 ##################################################
 # CLEO pi0, eta, eta'
-insert /Herwig/Analysis/Rivet:Analyses 0 CLEOII_1997_I446031
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I446031
 # BELLE pi0
-insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2012_I1114749
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2012_I1114749
