@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEee2eeX class.
+// functions of the MEff2ffX class.
 //
 
-#include "MEee2eeX.h"
+#include "MEff2ffX.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -21,24 +21,24 @@
 
 using namespace Herwig;
 
-void MEee2eeX::getDiagrams() const {
+void MEff2ffX::getDiagrams() const {
   vector<DiagPtr> diags = amp_->getDiagrams(1);
   for(DiagPtr diag : diags) add(diag);
 }
 
-Energy2 MEee2eeX::scale() const {
+Energy2 MEff2ffX::scale() const {
   return sHat();
 }
 
-int MEee2eeX::nDim() const {
+int MEff2ffX::nDim() const {
   return 4+amp_->nDim(1);
 }
 
-void MEee2eeX::setKinematics() {
+void MEff2ffX::setKinematics() {
   HwMEBase::setKinematics(); // Always call the base class method first.
 }
 
-bool MEee2eeX::generateKinematics(const double * r) {
+bool MEff2ffX::generateKinematics(const double * r) {
   // initialise the jacobian
   jacobian(1.);
   // roots
@@ -197,7 +197,7 @@ bool MEee2eeX::generateKinematics(const double * r) {
   return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }
 
-double MEee2eeX::me2() const {
+double MEff2ffX::me2() const {
   // calculate the leptonic currents
   vector<VectorWaveFunction> current1 =  firstCurrent();
   vector<VectorWaveFunction> current2 = secondCurrent();
@@ -209,12 +209,12 @@ double MEee2eeX::me2() const {
   return output;
 }
 
-CrossSection MEee2eeX::dSigHatDR() const {
+CrossSection MEff2ffX::dSigHatDR() const {
   return 0.5/pow(Constants::twopi,5)*sqr(hbarc)*me2()*jacobian()/sHat()*sqr(sHat()*UnitRemoval::InvE2);
 }
 
 Selector<MEBase::DiagramIndex>
-MEee2eeX::diagrams(const DiagramVector & diags) const {
+MEff2ffX::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     unsigned int id = abs(diags[i]->id())-1;
@@ -228,31 +228,31 @@ MEee2eeX::diagrams(const DiagramVector & diags) const {
 }
 
 Selector<const ColourLines *>
-MEee2eeX::colourGeometries(tcDiagPtr diag) const {
+MEff2ffX::colourGeometries(tcDiagPtr diag) const {
   return amp_->colourGeometries(1,mePartonData(),diag);
 }
 
-IBPtr MEee2eeX::clone() const {
+IBPtr MEff2ffX::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MEee2eeX::fullclone() const {
+IBPtr MEff2ffX::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEee2eeX::persistentOutput(PersistentOStream & os) const {
+void MEff2ffX::persistentOutput(PersistentOStream & os) const {
   os << FFPVertex_ << gamma_ << amp_ << currentMode_
      << ounit(Q2_1min_,GeV2) << ounit(Q2_1max_,GeV2)
      << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2);
 }
 
-void MEee2eeX::persistentInput(PersistentIStream & is, int) {
+void MEff2ffX::persistentInput(PersistentIStream & is, int) {
   is >> FFPVertex_ >> gamma_ >> amp_ >> currentMode_
      >> iunit(Q2_1min_,GeV2) >> iunit(Q2_1max_,GeV2)
      >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2);
 }
 
-void MEee2eeX::doinit() {
+void MEff2ffX::doinit() {
   HwMEBase::doinit();
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
@@ -262,48 +262,48 @@ void MEee2eeX::doinit() {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<MEee2eeX,HwMEBase>
-describeHerwigMEee2eeX("Herwig::MEee2eeX", "HwMEGammaGamma.so");
+DescribeClass<MEff2ffX,HwMEBase>
+describeHerwigMEff2ffX("Herwig::MEff2ffX", "HwMEGammaGamma.so");
 
-void MEee2eeX::Init() {
+void MEff2ffX::Init() {
 
-  static ClassDocumentation<MEee2eeX> documentation
-    ("The MEee2eeX class implements e+e- -> e+e- gamma gamma processes with"
+  static ClassDocumentation<MEff2ffX> documentation
+    ("The MEff2ffX class implements e+e- -> e+e- gamma gamma processes with"
      " gamma gamma-X via the GammaGammaAmplitude");
 
-  static Parameter<MEee2eeX,Energy2> interfaceQ2_1Min
+  static Parameter<MEff2ffX,Energy2> interfaceQ2_1Min
     ("Q2_1Min",
      "The minimum value of Q2 for the off-shell photon from the electron",
-     &MEee2eeX::Q2_1min_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
+     &MEff2ffX::Q2_1min_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
      false, false, Interface::limited);
 
-  static Parameter<MEee2eeX,Energy2> interfaceQ2_1Max
+  static Parameter<MEff2ffX,Energy2> interfaceQ2_1Max
     ("Q2_1Max",
      "The maximum value of Q2 for the off-shell photon from the electron",
-     &MEee2eeX::Q2_1max_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
+     &MEff2ffX::Q2_1max_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
      false, false, Interface::limited);
 
-  static Parameter<MEee2eeX,Energy2> interfaceQ2_2Min
+  static Parameter<MEff2ffX,Energy2> interfaceQ2_2Min
     ("Q2_2Min",
      "The minimum value of Q2 for the off-shell photon from the electron",
-     &MEee2eeX::Q2_2min_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
+     &MEff2ffX::Q2_2min_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
      false, false, Interface::limited);
 
-  static Parameter<MEee2eeX,Energy2> interfaceQ2_2Max
+  static Parameter<MEff2ffX,Energy2> interfaceQ2_2Max
     ("Q2_2Max",
      "The maximum value of Q2 for the off-shell photon from the electron",
-     &MEee2eeX::Q2_2max_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
+     &MEff2ffX::Q2_2max_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
      false, false, Interface::limited);
   
-  static Reference<MEee2eeX,GammaGammaAmplitude> interfaceAmplitude
+  static Reference<MEff2ffX,GammaGammaAmplitude> interfaceAmplitude
     ("Amplitude",
      "The gamma gamma -> X amplitude",
-     &MEee2eeX::amp_, false, false, true, false, false);
+     &MEff2ffX::amp_, false, false, true, false, false);
 
-  static Switch<MEee2eeX,unsigned int> interfaceCurrentMode
+  static Switch<MEff2ffX,unsigned int> interfaceCurrentMode
     ("CurrentMode",
      "Approximation in which to calculate the electron and position currents",
-     &MEee2eeX::currentMode_, 0, false, false);
+     &MEff2ffX::currentMode_, 0, false, false);
   static SwitchOption interfaceCurrentModeFull
     (interfaceCurrentMode,
      "Full",
@@ -322,7 +322,7 @@ void MEee2eeX::Init() {
 
 }
 
-vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
+vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
   // form factors
   Energy m = mePartonData()[0]->mass();
   double F1(0.),F2(0.);
@@ -460,7 +460,7 @@ vector<VectorWaveFunction> MEee2eeX::firstCurrent() const {
   return output;
 }
 
-vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
+vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
   // form factors
   Energy m = mePartonData()[0]->mass();
   double F1(0.),F2(0.);
@@ -600,14 +600,14 @@ vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
 
 
 
-// Energy2 MEee2eePseudoScalar::scale() const {
+// Energy2 MEff2ffPseudoScalar::scale() const {
 //   return sHat();
 // }
 
 
 
 // Selector<MEBase::DiagramIndex>
-// MEee2eePseudoScalar::diagrams(const DiagramVector & diags) const {
+// MEff2ffPseudoScalar::diagrams(const DiagramVector & diags) const {
 //   Selector<DiagramIndex> sel;
 //   for ( DiagramIndex i = 0; i < diags.size(); ++i )
 //     sel.insert(1.0, i);
@@ -617,7 +617,7 @@ vector<VectorWaveFunction> MEee2eeX::secondCurrent() const {
 
 
 
-// void MEee2eePseudoScalar::constructVertex(tSubProPtr ) {
+// void MEff2ffPseudoScalar::constructVertex(tSubProPtr ) {
 // //   // extract the particles in the hard process
 // //   ParticleVector hard;
 // //   hard.push_back(sub->incoming().first);

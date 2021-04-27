@@ -1,37 +1,37 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGammaGamma2PseudoScalar_H
-#define Herwig_MEGammaGamma2PseudoScalar_H
+#ifndef Herwig_MEff2ffX_H
+#define Herwig_MEff2ffX_H
 //
-// This is the declaration of the MEGammaGamma2PseudoScalar class.
+// This is the declaration of the MEff2ffX class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "GammaGammaAmplitude.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Helicity::VectorWaveFunction;
 
 /**
- * The MEGammaGamma2PseudoScalar class implements the production of
- * $\pi^0$, $\eta$ and $\eta^\prime$ in photon-photon collisions
+ * The MEff2ffX class implements the processes \f$e^+e^-\toe^+e^- \gamma\gamma\f$ followed by
+ * \f$\gamma\gamma\to X\f$ using the GammaGammaAmplitude class
  *
- * @see \ref MEGammaGamma2PseudoScalarInterfaces "The interfaces"
- * defined for MEGammaGamma2PseudoScalar.
+ * @see \ref MEff2ffXInterfaces "The interfaces"
+ * defined for MEff2ffX.
  */
-class MEGammaGamma2PseudoScalar: public HwMEBase {
+class MEff2ffX: public HwMEBase {
 
 public:
-
+  
   /**
    * The default constructor.
    */
-  MEGammaGamma2PseudoScalar() : F00_({0.274/GeV,0.274/GeV,0.344/GeV}),
-				LambdaP2_({0.6*GeV2,0.6*GeV2,0.6*GeV2})
+  MEff2ffX() : Q2_1min_(ZERO), Q2_1max_(Constants::MaxEnergy2),
+	       Q2_2min_(ZERO), Q2_2max_(Constants::MaxEnergy2),
+	       currentMode_(0)
   {}
-
+  
 public:
 
   /** @name Virtual functions required by the MEBase class. */
@@ -40,13 +40,17 @@ public:
    * Return the order in \f$\alpha_S\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaS() const;
+  virtual unsigned int orderInAlphaS() const {
+    return amp_->orderInAlphaS();
+  }
 
   /**
    * Return the order in \f$\alpha_{EW}\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaEW() const;
+  virtual unsigned int orderInAlphaEW() const {
+    return amp_->orderInAlphaS()+2;
+  }
 
   /**
    * The matrix element for the kinematical configuration
@@ -60,9 +64,7 @@ public:
   /**
    * Return the scale associated with the last set phase space point.
    */
-  virtual Energy2 scale() const {
-    return sHat();
-  }
+  virtual Energy2 scale() const;
 
   /**
    * Set the typed and momenta of the incoming and outgoing partons to
@@ -77,9 +79,7 @@ public:
    * The number of internal degrees of freedom used in the matrix
    * element.
    */
-  virtual int nDim() const {
-    return 1;
-  }
+  virtual int nDim() const;
 
   /**
    * Generate internal degrees of freedom given nDim() uniform
@@ -121,11 +121,23 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+  //@}
+
+protected:
 
   /**
-   *  Construct the vertex of spin correlations.
+   * Calculation of the leptonic currents
    */
-  virtual void constructVertex(tSubProPtr);
+  //@{
+  /**
+   *  Calculation of the current in the positive direction
+   */
+  vector<VectorWaveFunction> firstCurrent() const;
+
+  /**
+   *  Calculation of the current in the negative direction
+   */
+  vector<VectorWaveFunction> secondCurrent() const;
   //@}
 
 
@@ -157,17 +169,15 @@ public:
 
 protected:
 
-protected:
-
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
-   * @param p1   The wavefunctions for the first  incoming photon
-   * @param p2   The wavefunctions for the second incoming photon
-   * @param momenta The momenta
-   * @param calc Whether or not to calculate the matrix element
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
-  double helicityME(vector<VectorWaveFunction> &p1,vector<VectorWaveFunction> &p2,
-		    const vector<Lorentz5Momentum> & momenta, int iloc, bool calc) const;
+  virtual void doinit();
+  //@}
 
 protected:
 
@@ -192,34 +202,80 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaGamma2PseudoScalar & operator=(const MEGammaGamma2PseudoScalar &) = delete;
+  MEff2ffX & operator=(const MEff2ffX &) = delete;
 
 private:
 
   /**
-   *   Parameters for the form-factors
+   *   fermion-fermion-photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma_;
+
+  /**
+   *  Pointer to the amplitude for the \f$\gamma\gamma$ process
+   */
+  GammaGammaAmpPtr amp_;
+
+private:
+
+  /**
+   *   Cuts
    */
   //@{
   /**
-   *    Form factors at $Q_1^2=Q_2^2=0$
+   *  Minimum value of \f$Q_1^2\f$
    */
-  vector<InvEnergy> F00_;
-
+  Energy2 Q2_1min_;
+  
   /**
-   * Pole mass squared parameter for the form factors
+   *  Maximum value of \f$Q_1^2\f$
    */
-  vector<Energy2> LambdaP2_;
+  Energy2 Q2_1max_;
+  
+  /**
+   *  Minimum value of \f$Q_2^2\f$
+   */
+  Energy2 Q2_2min_;
+  
+  /**
+   *  Maximum value of \f$Q_2^2\f$
+   */
+  Energy2 Q2_2max_;
   //@}
 
 private:
 
   /**
-   *  Matrix element
+   *  Kinematic quantities stored for accuracy
    */
-  mutable ProductionMatrixElement me_;
+  //@{
+  /**
+   *  Outgoing electron
+   */
+  double cHalf1_,sHalf1_,phi1_;
+  Energy2 t1_;
+  
+  /**
+   *  Outgoing positron
+   */
+  double cHalf2_,sHalf2_,phi2_;
+  Energy2 t2_;
+  //@}
+
+private:
+
+  /**
+   * Switch for the current approximation
+   */
+  unsigned int currentMode_;
 
 };
 
 }
 
-#endif /* Herwig_MEGammaGamma2PseudoScalar_H */
+#endif /* Herwig_MEff2ffX_H */

@@ -2,8 +2,7 @@ pkglib_LTLIBRARIES = HwMEGammaGamma.la HwMEGammaHadron.la
 
 HwMEGammaGamma_la_SOURCES = \
 MEGammaGamma2WW.cc MEGammaGamma2WW.h \
-MEGammaGamma2PseudoScalar.cc MEGammaGamma2PseudoScalar.h \
-MEee2eeX.cc MEee2eeX.h \
+MEff2ffX.cc MEff2ffX.h \
 MEGammaGamma2X.cc MEGammaGamma2X.h \
 GammaGammaAmplitude.h GammaGammaAmplitude.fh GammaGammaAmplitude.cc \
 GammaGamma2PseudoScalarAmplitude.h  GammaGamma2PseudoScalarAmplitude.cc \
