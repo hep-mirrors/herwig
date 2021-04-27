@@ -1,4 +1,4 @@
-#! /@PYTHON@
+#! @PYTHON@
 from __future__ import print_function
 import logging,sys
 import os, yoda, copy

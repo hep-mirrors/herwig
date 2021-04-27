@@ -1,4 +1,4 @@
-#! /@PYTHON@
+#! @PYTHON@
 from __future__ import print_function
 import yoda,os,math,subprocess,optparse
 from string import Template
