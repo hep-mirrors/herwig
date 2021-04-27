@@ -79,7 +79,8 @@ Makefile\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
-Tests/python/LowEnergy.py
+Tests/python/LowEnergy-EE.py
+Tests/python/LowEnergy-Photon.py
 Tests/python/R.py
 Tests/python/make_input_files.py
 Tests/python/merge-DIS

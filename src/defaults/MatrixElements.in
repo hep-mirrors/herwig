@@ -310,6 +310,11 @@ newdef MEgg2ff:Amplitude gg2ffAmp
 # W+ W-
 create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so
 
+# f f -> f f pi0,eta,eta' via 2 photon process
+create Herwig::MEff2ffX MEff2ffPseudoScalar
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2P
+set MEff2ffPseudoScalar:Amplitude AmpGG2P
+
 ##########################################################
 # Gamma-Hadron matrix elements
 ##########################################################

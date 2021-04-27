@@ -294,8 +294,7 @@ if simulation=="" :
         elif("Double-Resolved" in name) :
             templateName="EE-Gamma-Double-Resolved.in"
         else :
-            print ("Unknown type of EE-Gamma event ",name)
-            quit()
+            templateName="EE.in"
     elif collider=="GammaGamma" :
         templateName="GammaGamma.in"
     elif collider != "BFactory" :
@@ -435,6 +434,24 @@ elif(collider=="EE-Gamma") :
                 process = StringBuilder(insert_ME("MEQCD2to2"))
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
+        elif("pi0" in parameterName) :
+            process = StringBuilder(insert_ME("MEff2ffPseudoScalar"))
+            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar2"
+            process+= insert_ME("MEff2ffPseudoScalar2")
+            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar3"
+            process+= insert_ME("MEff2ffPseudoScalar3")
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Min 0.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Max 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Min 0.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Max 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Max 1e10"
         else :
             print ("process not supported for Gamma Gamma processes at EE")
             quit()
@@ -1999,7 +2016,6 @@ if numberOfAddedProcesses == 0 and (simulation =="Merging" or simulation =="Matc
     sys.exit(1)
 
 # get template and write the file
-
 with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
     templateText = f.read()
 
