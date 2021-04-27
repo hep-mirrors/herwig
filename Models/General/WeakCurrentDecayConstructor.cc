@@ -109,10 +109,10 @@ void WeakCurrentDecayConstructor::Init() {
 
 }
 
-void WeakCurrentDecayConstructor::DecayList(const set<PDPtr> & part) {
+void WeakCurrentDecayConstructor::DecayList(const set<PDPtr,MassOrdering> & part) {
   if( part.empty() ) return;
   unsigned int nv(model_->numberOfVertices());
-  for(set<PDPtr>::const_iterator ip=part.begin();ip!=part.end();++ip) {
+  for(set<PDPtr,MassOrdering>::const_iterator ip=part.begin();ip!=part.end();++ip) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       for(unsigned int ilist = 0; ilist < 3; ++ilist) { 
 	vector<TwoBodyDecay> decays =

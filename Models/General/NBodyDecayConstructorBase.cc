@@ -435,13 +435,13 @@ void identicalFromSameDecay(unsigned int & loc, const NBVertex & vertex,
 
 }
 
-void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
+void NBodyDecayConstructorBase::DecayList(const set<PDPtr,MassOrdering> & particles) {
   if( particles.empty() ) return;
   // cast the StandardModel to the Hw++ one to get the vertices
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
   unsigned int nv(model->numberOfVertices());
   // loop over the particles and create the modes
-  for(set<PDPtr>::const_iterator ip=particles.begin();
+  for(set<PDPtr,MassOrdering>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
     // get the decaying particle
     tPDPtr parent = *ip;
@@ -676,7 +676,9 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 
 void NBodyDecayConstructorBase::createDecayMode(vector<NBDiagram> &,
 						bool, double) {
+  assert(false);
   throw Exception() << "In NBodyDecayConstructorBase::createDecayMode() which"
-		    << " should have be overridden in an inheriting class"
+		    << " should have be overridden in an inheriting class "
+		    << fullName()
 		    << Exception::abortnow; 
 }

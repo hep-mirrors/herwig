@@ -97,7 +97,7 @@ void TwoBodyDecayConstructor::Init() {
 
 }
 
-void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
+void TwoBodyDecayConstructor::DecayList(const set<PDPtr,MassOrdering> & particles) {
   // special for weak decays
   for(unsigned int ix=0;ix<decayConstructor()->decayConstructors().size();++ix) {
     Ptr<Herwig::VectorCurrentDecayConstructor>::pointer 
@@ -110,7 +110,7 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
   unsigned int nv(model->numberOfVertices());
   
-  for(set<PDPtr>::const_iterator ip=particles.begin();
+  for(set<PDPtr,MassOrdering>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
     tPDPtr parent = *ip;
     if ( Debug::level > 0 )

@@ -43,7 +43,7 @@ cd /Herwig/MatrixElements/Matchbox
 
 ${process}
 
-read ${parameterFile}
+${parameterFile}
 
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000

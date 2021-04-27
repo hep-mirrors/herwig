@@ -132,7 +132,7 @@ void DecayConstructor::createDecayers(const PDVector & particles,
   _minBR = minBR;
   if ( particles.empty() || NBodyDecayConstructors_.empty() ) return;
   // turn the vector into a set to avoid duplicates
-  set<PDPtr> particleSet(particles.begin(),particles.end());
+  set<PDPtr,NBodyDecayConstructorBase::MassOrdering> particleSet(particles.begin(),particles.end());
   // remove any antiparticles
   for(set<PDPtr>::iterator it=particleSet.begin();it!=particleSet.end();++it) {
     PDPtr cc = (**it).CC();

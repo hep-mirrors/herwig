@@ -214,11 +214,11 @@ void OmegaPionSNDCurrent::constructSpinInfo(ParticleVector decay) const {
 					outgoing,true,true);
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVectorE> 
+// the hadronic currents
+vector<LorentzPolarizationVectorE>
 OmegaPionSNDCurrent::current(tcPDPtr resonance,
 			      FlavourInfo flavour,
-			      const int imode, const int ichan, Energy & scale, 
+			      const int imode, const int ichan, Energy & scale,
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
@@ -293,7 +293,7 @@ OmegaPionSNDCurrent::current(tcPDPtr resonance,
     Energy2 mR2 = sqr(rhoMasses_[ix]);
     bw += mR2*wgts_[ix]/(mR2-q2-Complex(0.,1.)*q.mass()*wid);
   }
-  pre *=bw;
+  pre = pre * bw;
   vector<LorentzPolarizationVectorE> ret(3);
   for(unsigned int ix=0;ix<3;++ix) {
     ret[ix] = pre*Helicity::epsilon(q,temp[ix],momenta[1]);
@@ -331,35 +331,35 @@ unsigned int OmegaPionSNDCurrent::decayMode(vector<int> id) {
 void OmegaPionSNDCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::OmegaPionSNDCurrent " << name() 
+  if(create) output << "create Herwig::OmegaPionSNDCurrent " << name()
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<rhoMasses_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":RhoMasses " << ix 
+    if(ix<3) output << "newdef " << name() << ":RhoMasses " << ix
 		    << " " << rhoMasses_[ix]/GeV << "\n";
-    else     output << "insert " << name() << ":RhoMasses " << ix 
+    else     output << "insert " << name() << ":RhoMasses " << ix
 		    << " " << rhoMasses_[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<rhoWidths_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":RhoWidths " << ix 
+    if(ix<3) output << "newdef " << name() << ":RhoWidths " << ix
 		    << " " << rhoWidths_[ix]/GeV << "\n";
-    else     output << "insert " << name() << ":RhoWidths " << ix 
+    else     output << "insert " << name() << ":RhoWidths " << ix
 		    << " " << rhoWidths_[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<amp_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":Amplitudes " << ix 
+    if(ix<3) output << "newdef " << name() << ":Amplitudes " << ix
 		    << " " << amp_[ix] << "\n";
-    else     output << "insert " << name() << ":Amplitudes " << ix 
+    else     output << "insert " << name() << ":Amplitudes " << ix
 		    << " " << amp_[ix] << "\n";
   }
   for(unsigned int ix=0;ix<phase_.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":Phases " << ix 
+    if(ix<3) output << "newdef " << name() << ":Phases " << ix
 		    << " " << phase_[ix] << "\n";
-    else     output << "insert " << name() << ":Phases " << ix 
+    else     output << "insert " << name() << ":Phases " << ix
 		    << " " << phase_[ix] << "\n";
   }
   output << "newdef " << name() << ":fRho "    << fRho_ << "\n";
   output << "newdef " << name() << ":gRhoOmegaPi "    << gRhoOmegaPi_*GeV << "\n";
   WeakCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+  if(header) output << "\n\" where BINARY ThePEGName=\""
 		    << fullName() << "\";" << endl;
 }

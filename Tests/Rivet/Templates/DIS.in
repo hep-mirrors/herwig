@@ -35,7 +35,7 @@ cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig run'

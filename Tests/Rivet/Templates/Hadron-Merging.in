@@ -38,7 +38,7 @@ set Merger:MergingScale 15.*GeV
 
 ${process}
 
-read ${parameterFile}
+${parameterFile}
 
 ##################################################
 ## Save the generator
