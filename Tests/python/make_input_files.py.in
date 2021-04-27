@@ -1961,9 +1961,12 @@ elif(collider=="LHC-GammaGamma" ) :
         sys.exit(1)
 
 if "EHS" in name :
-    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
+    pFile = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
 else :
-    parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
+    pFile = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
+with open(os.path.join("Rivet",pFile), 'r') as f:
+    parameters['parameterFile'] = f.read()
+    
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
 if have_hadronic_collider :
