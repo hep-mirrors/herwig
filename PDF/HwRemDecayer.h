@@ -377,7 +377,7 @@ private:
   /**
    * Set the momenta of the Remnants properly and boost the decay particles.
    */
-  void setRemMasses() const;
+  void setRemMasses(PPair diquarks) const;
 
   /**
    * This creates a parton from the remaining flavours of the hadron. The
