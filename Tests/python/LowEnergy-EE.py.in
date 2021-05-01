@@ -129,7 +129,8 @@ analyses["EtaPiPi"]["DM2_1988_I264144"   ] = ["d01-x01-y01"]
 analyses['EtaPiPi']["ND_1991_I321108"    ] = ["d06-x01-y01","d14-x01-y01"]
 analyses['EtaPiPi']["CMD3_2019_I1744510" ] = ["d02-x01-y01"]
 # eta' pipi
-analyses["EtaprimePiPi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
+analyses["EtaprimePiPi"]["BABAR_2007_I758568"  ] = ["d05-x01-y01","d06-x01-y01"]
+analyses["EtaprimePiPi"]["BESIII_2020_I1836509"] = ["d01-x01-y01"]
 # Eta Phi
 analyses["EtaPhi"]["BABAR_2008_I765258"  ] = ["d04-x01-y01","d05-x01-y01"]
 analyses["EtaPhi"]["BABAR_2007_I758568"  ] = ["d08-x01-y01","d09-x01-y01"]
