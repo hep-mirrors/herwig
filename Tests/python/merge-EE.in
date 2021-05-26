@@ -1318,15 +1318,10 @@ useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
     
     
 # normalize where we have sum histos
-if("/BABAR_2007_I746745/d01-x01-y01" in outhistos and
-   outhistos["/BABAR_2007_I746745/d01-x01-y01"].effNumEntries()!=0.) :
-    outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
-if("/BABAR_2007_I722622/d03-x01-y01" in outhistos) :
-    outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
-if("/BABAR_2007_I722622/d03-x01-y02" in outhistos) :
-    outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
-if("/BABAR_2007_I722622/d04-x01-y01" in outhistos) :
-    outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
+for i in range(1,5) :
+    hname="/BABAR_2007_I746745/d0%s-x01-y01" %i
+    if(hname in outhistos and outhistos[hname].effNumEntries()!=0.) :
+        outhistos[hname].normalize()
 
 # Choose output file
 name = args[0]+".yoda"
