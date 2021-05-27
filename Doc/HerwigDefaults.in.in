@@ -3,6 +3,7 @@
 # output interfaces for documentation
 # the following need to come first
 globallibrary Herwig.so
+
 library HwWeakCurrents.so
 #
 library Hw64Decay.so
@@ -23,9 +24,9 @@ library HwMPI.so
 library HwReggeonPDF.so
 library HwPomeronPDF.so
 library HwPomeronFlux.so
-library HwPartonicDecay.so
 library HwPerturbativeDecay.so
 library HwShower.so
+library HwPartonicDecay.so
 library HwSMDecay.so
 library HwTauDecay.so
 library HwTMDecay.so
