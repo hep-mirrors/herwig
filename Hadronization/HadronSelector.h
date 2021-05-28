@@ -406,7 +406,21 @@ protected:
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
+  /**
+   *   Insert a meson in the table
+   */
+  virtual void insertMeson(HadronInfo a, int flav1, int flav2);
 
+  /**
+   *   Insert a spin\f$\frac12\f$ baryon in the table
+   */
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
+  
 private:
 
   /**

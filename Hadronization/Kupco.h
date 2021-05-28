@@ -44,19 +44,4 @@ using namespace ThePEG;
      */
     Energy weight;
   };
-
-  /**
-   *  Type defs 
-   */
-  //@{
-  /**
-   * The type is used to contain all the hadrons info of a given flavour.
-   */
-  typedef set<HadronInfo> KupcoData;
-  //@}
-
-  /**
-   * The hadron table type.
-   */
-  typedef map<pair<long,long>,KupcoData> HadronTable;
 }
