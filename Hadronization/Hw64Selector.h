@@ -47,8 +47,8 @@ public:
    * @param par2 The particle pointer of the second constituent
    * @param par3 The particle pointer of the third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const;
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,
+						 tcPDPtr par1, tcPDPtr par2) const;
 
 public:
 

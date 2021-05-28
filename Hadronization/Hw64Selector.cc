@@ -131,8 +131,8 @@ void Hw64Selector::Init() {
 
 }
 
-pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr) const {
+pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,
+						     tcPDPtr par1, tcPDPtr par2) const {
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
   pair<tcPDPtr,tcPDPtr> lighthad = lightestHadronPair(par1, par2);
   if(!lighthad.first || !lighthad.second)

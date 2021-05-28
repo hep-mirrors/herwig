@@ -64,8 +64,8 @@ public:
    * @param par2 The second constituent
    * @param par3 The third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1,
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const = 0;
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, 
+						 tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Select the single hadron for a cluster decay
@@ -194,6 +194,17 @@ public:
     return it->second;
   }
 
+  /**
+   *  Force baryon/meson selection
+   */
+  virtual pair<bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *  Strange quark weight
+   */
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
