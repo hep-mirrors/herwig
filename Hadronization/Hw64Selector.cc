@@ -35,13 +35,13 @@ IBPtr Hw64Selector::fullclone() const {
 void Hw64Selector::persistentOutput(PersistentOStream & os) const {
   os << _pwtDquark  << _pwtUquark << _pwtSquark
      << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
-     << _sngWt << _octWt << _decWt ;
+     << _sngWt << _decWt ;
 }
 
 void Hw64Selector::persistentInput(PersistentIStream & is, int) {
   is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
      >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
-     >> _sngWt >> _octWt >> _decWt ;
+     >> _sngWt >> _decWt ;
 }
 
 void Hw64Selector::doinit() {
@@ -125,11 +125,6 @@ void Hw64Selector::Init() {
 		   false,false,false);
 
   static Parameter<Hw64Selector,double>
-    interfaceOctWt("OctWt","Weight for octet baryons",
-                  &Hw64Selector::_octWt, 0, 1.0, 0.0, 10.0,
-     		false,false,false);
-
-  static Parameter<Hw64Selector,double>
     interfaceDecWt("DecWt","Weight for decuplet baryons",
                   &Hw64Selector::_decWt, 0, 1.0, 0.0, 10.0,
 		   false,false,false);
@@ -210,10 +205,8 @@ double Hw64Selector::baryonWeight(long id) const {
   if(pspin == 2) {
     // Singlet (Lambda-like) baryon
     if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
-    // octet
-    else                            return sqr(_octWt);
   }
   // Decuplet baryon
   else if (pspin == 4)              return sqr(_decWt);
-  else return 1.;
+  return 1.;
 }

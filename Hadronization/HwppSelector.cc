@@ -75,7 +75,7 @@ void HwppSelector::doinit() {
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
   os << _pwtDquark  << _pwtUquark << _pwtSquark
      << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
-     << _sngWt << _octWt << _decWt 
+     << _sngWt << _decWt 
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
      << _scHadronWtFactor << _sbHadronWtFactor;
 }
@@ -83,7 +83,7 @@ void HwppSelector::persistentOutput(PersistentOStream & os) const {
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
   is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
      >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
-     >> _sngWt >> _octWt >> _decWt 
+     >> _sngWt >> _decWt 
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
      >> _scHadronWtFactor >> _sbHadronWtFactor;
 }
@@ -141,11 +141,6 @@ void HwppSelector::Init() {
     interfaceSngWt("SngWt","Weight for singlet baryons",
                   &HwppSelector::_sngWt, 0, 1.0, 0.0, 10.0,
 		   false,false,false);
-
-  static Parameter<HwppSelector,double>
-    interfaceOctWt("OctWt","Weight for octet baryons",
-                  &HwppSelector::_octWt, 0, 1.0, 0.0, 10.0,
-     		false,false,false);
 
   static Parameter<HwppSelector,double>
     interfaceDecWt("DecWt","Weight for decuplet baryons",
@@ -362,10 +357,8 @@ double HwppSelector::baryonWeight(long id) const {
   if(pspin == 2) {
     // Singlet (Lambda-like) baryon
     if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
-    // octet
-    else                            return sqr(_octWt);
   }
   // Decuplet baryon
   else if (pspin == 4)              return sqr(_decWt);
-  else return 1.;
+  return 1.;
 }

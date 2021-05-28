@@ -36,7 +36,7 @@ public:
   Hw64Selector() : HadronSelector(0),
 		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
 		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
-		   _sngWt( 1.0 ),_octWt(1.0), _decWt( 1.0 )
+		   _sngWt( 1.0 ), _decWt( 1.0 )
   {}
 
   /**
@@ -170,11 +170,6 @@ private:
    *  The singlet weight
    */
   double _sngWt;
-
-  /**
-   *  The octet weight
-   */
-  double _octWt;
 
   /**
    *  The decuplet weight
