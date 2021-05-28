@@ -830,14 +830,14 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
   // (which are not normalized probabilities) given
   // by the same weights as used in HadronsSelector for
   // the decay of clusters into two hadrons.
-
-    double prob_d;
-    double prob_u;
-    double prob_s = 0.;
-    double scale = abs(double(sqr(_m0Fission)/mass2));
-    // Choose which splitting weights you wish to use
-switch(_fissionCluster){
-  // 0: ClusterFissioner and ClusterDecayer use the same weights
+  
+  double prob_d;
+  double prob_u;
+  double prob_s = 0.;
+  double scale = abs(double(sqr(_m0Fission)/mass2));
+  // Choose which splitting weights you wish to use
+  switch(_fissionCluster){
+    // 0: ClusterFissioner and ClusterDecayer use the same weights
   case 0:
     prob_d = _hadronsSelector->pwt(1);
     prob_u = _hadronsSelector->pwt(2);
@@ -850,18 +850,20 @@ switch(_fissionCluster){
     else if (_enhanceSProb == 2)
       prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
-  /* 1: ClusterFissioner uses its own unique set of weights,
-        i.e. decoupled from ClusterDecayer */
+    /* 1: ClusterFissioner uses its own unique set of weights,
+       i.e. decoupled from ClusterDecayer */
   case 1:
-     prob_d = _fissionPwtDquark;
-     prob_u = _fissionPwtUquark;
-     if (_enhanceSProb == 1)
-        prob_s = (_maxScale < scale) ? 0. : pow(_fissionPwtSquark,scale);
-     else if (_enhanceSProb == 2)
-        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
+    prob_d = _fissionPwtDquark;
+    prob_u = _fissionPwtUquark;
+    if (_enhanceSProb == 1)
+      prob_s = (_maxScale < scale) ? 0. : pow(_fissionPwtSquark,scale);
+    else if (_enhanceSProb == 2)
+      prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
-}
-
+  default:
+    assert(false);
+  }
+  
   int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
   switch (choice) {
@@ -1092,7 +1094,7 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
   Energy clmax = _clMaxLight;
   // particle data for constituents
   tcPDPtr cptr[3]={tcPDPtr(),tcPDPtr(),tcPDPtr()};
-  for(int ix=0;ix<min(clu->numComponents(),3);++ix) {
+  for(unsigned int ix=0;ix<min(clu->numComponents(),3);++ix) {
     cptr[ix]=clu->particle(ix)->dataPtr();
   }
   // different parameters for exotic, bottom and charm clusters
