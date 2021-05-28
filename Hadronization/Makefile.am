@@ -2,6 +2,7 @@ noinst_LTLIBRARIES = libHwHadronization.la
 libHwHadronization_la_SOURCES = \
 CheckId.cc CheckId.h \
 CluHadConfig.h \
+HadronInfo.h Kupco.h \
 Cluster.h Cluster.cc Cluster.fh \
 ClusterDecayer.cc ClusterDecayer.h ClusterDecayer.fh \
 ClusterFinder.cc ClusterFinder.h ClusterFinder.fh  \

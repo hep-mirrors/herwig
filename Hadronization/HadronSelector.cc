@@ -33,12 +33,12 @@ describeHadronSelector("Herwig::HadronSelector","Herwig.so");
 
 namespace {
   // debug helper
-  void dumpTable(const HadronSelector::HadronTable & tbl) {
-    typedef HadronSelector::HadronTable::const_iterator TableIter;
+  void dumpTable(const HadronTable & tbl) {
+    typedef HadronTable::const_iterator TableIter;
     for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
       cerr << it->first.first << ' '
        	   << it->first.second << '\n';
-      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+      for (KupcoData::const_iterator jt = it->second.begin();
       	   jt != it->second.end(); ++jt) {
       	cerr << '\t' << *jt << '\n';
       }
@@ -458,7 +458,7 @@ void HadronSelector::doinit() {
     _repwt[2][3][ix]=_weight3D3[ix];
   // weights for the different quarks etc
   for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    _pwt[_partons[ix]->id()]=1.;
+    _pwt[_partons[ix]->id()]=0.;
   }
   _pwt[1]  = _pwtDquark;
   _pwt[2]  = _pwtUquark;

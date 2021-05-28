@@ -45,8 +45,7 @@ public:
    * @param par3 The particle pointer of the third constituent
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-   ;
+						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const;
 
 public:
 
@@ -90,11 +89,6 @@ protected:
    */
    virtual IBPtr fullclone() const;
   //@}
-
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
 
 private:
 

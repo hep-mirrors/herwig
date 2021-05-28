@@ -34,17 +34,13 @@ IBPtr Hw64Selector::fullclone() const {
 void Hw64Selector::Init() {
 
   static ClassDocumentation<Hw64Selector> documentation
-    ("There is no documentation for the Hw64Selector class");
+    ("The Hw64Selector class implements the hadron selection algorithm of Hw6");
 
 }
 
 pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr) const
-  {
+						     tcPDPtr par2,tcPDPtr) const {
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
-
-
-
   pair<tcPDPtr,tcPDPtr> lighthad = lightestHadronPair(par1, par2);
   if(!lighthad.first || !lighthad.second)
     throw Exception() << "Hw64Selector::chooseHadronPair "
