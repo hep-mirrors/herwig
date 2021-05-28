@@ -65,8 +65,7 @@ public:
    * @param par3 The third constituent
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1,
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-    = 0;
+						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const = 0;
 
   /**
    * Select the single hadron for a cluster decay
@@ -116,7 +115,7 @@ public:
    * @param ptr3 is the third  constituent
    */
     Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					tcPDPtr ptr3 = PDPtr ()) const  {
+				  tcPDPtr ptr3 = PDPtr ()) const  {
     pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
     if ( ! pairData.first || ! pairData.second ) return ZERO;
     return ( pairData.first->mass() + pairData.second->mass() );
@@ -187,58 +186,13 @@ public:
   Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
-   *  Return the weights for the different quarks and diquarks
+   *  Access the parton weights
    */
-  //@{
-  /**
-   * The down quark weight.
-   */
-   double pwtDquark()  const {
-    return _pwtDquark;
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
+    assert( it != _pwt.end() );
+    return it->second;
   }
-
-  /**
-   * The up quark weight.
-   */
-   double pwtUquark()  const {
-    return _pwtUquark;
-  }
-
-  /**
-   * The strange quark weight.
-   */
-   double pwtSquark()  const {
-    return _pwtSquark;
-  }
-
-  /**
-   * The charm quark weight.
-   */
-   double pwtCquark()  const {
-    return _pwtCquark;
-  }
-
-  /**
-   * The bottom quark weight.
-   */
-   double pwtBquark()  const {
-    return _pwtBquark;
-  }
-
-  /**
-   * The diquark weight for spin-0 diquarks.
-   */
-   double pwtDIquarkS0() const {
-    return _pwtDIquarkS0;
-  }
-
-  /**
-   * The diquark weight for spin-1 diquarks.
-   */
-   double pwtDIquarkS1() const {
-    return _pwtDIquarkS1;
-  }
-  //@}
 
 public:
 
@@ -338,24 +292,29 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-   const HadronTable & table() const {
+  const HadronTable & table() const {
     return _table;
   }
-
+  
   /**
    *  Access to the list of partons
    */
-   const vector<PDPtr> & partons() const {
+  const vector<PDPtr> & partons() const {
+    return _partons;
+  }
+  
+  /**
+   *  Access to the list of partons
+   */
+  vector<PDPtr> & partons() {
     return _partons;
   }
 
   /**
    *  Access the parton weights
    */
-   double pwt(long pid) const {
-    map<long,double>::const_iterator it = _pwt.find(abs(pid));
-    assert( it != _pwt.end() );
-    return it->second;
+  map<long,double> & pwt() {
+    return _pwt;
   }
 
   /**
@@ -406,7 +365,28 @@ protected:
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
    */
-  double specialWeight(long id) const;
+  double specialWeight(long id) const {
+    const int pspin = id % 10;
+    // Only K0L and K0S have pspin == 0, should
+    // not get them until Decay step
+    assert( pspin != 0 );
+    // Baryon : J = 1/2 or 3/2
+    if(pspin%2==0)
+      return baryonWeight(id);
+    // Meson
+    else 
+      return mesonWeight(id); 
+  }
+  
+  /**
+   *  Weights for mesons
+   */
+  virtual double mesonWeight(long id) const;
+
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const = 0;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
@@ -414,6 +394,7 @@ protected:
    * two constituent particle pointers: par1 and par2 (both with proper sign).
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
+
 
 private:
 
@@ -436,49 +417,9 @@ private:
   vector<PDPtr> _forbidden;
 
   /**
-   *  The weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-
-  /**
-   * The probability of producting a spin-0 diquark.
-   */
-  double _pwtDIquarkS0;
-
-  /**
-   * The probability of producting a spin-1 diquark.
-   */
-  double _pwtDIquarkS1;
-
-  /**
    * Weights for quarks and diquarks.
    */
   map<long,double> _pwt;
-  //@}
 
   /**
    *  The mixing angles for the \f$I=0\f$ mesons containing light quarks
@@ -600,26 +541,6 @@ private:
    *  The weights for the excited meson multiplets
    */
   vector<vector<vector<double> > > _repwt;
-
-  /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt;
-
-  /**
-   *  The octet weight
-   */
-  double _octWt;
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt;
-  //@}
 
   /**
    * The table of hadron data

@@ -33,8 +33,12 @@ public:
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
-                  _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
+  HwppSelector() : HadronSelector(1),
+		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
+		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
+		   _sngWt( 1.0 ),_octWt(1.0), _decWt( 1.0 ),
+		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
+		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
 
   /**
@@ -96,6 +100,13 @@ public:
   static void Init();
 
 protected:
+  
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const;
+
+protected:
 
   /** @name Clone Methods. */
   //@{
@@ -132,6 +143,68 @@ private:
    */
   HwppSelector & operator=(const HwppSelector &) = delete;
 
+private:
+
+  /**
+   *  The weights for the different quarks and diquarks
+   */
+  //@{
+  /**
+   * The probability of producting a down quark.
+   */
+  double _pwtDquark;
+
+  /**
+   * The probability of producting an up quark.
+   */
+  double _pwtUquark;
+
+  /**
+   * The probability of producting a strange quark.
+   */
+  double _pwtSquark;
+
+  /**
+   * The probability of producting a charm quark.
+   */
+  double _pwtCquark;
+
+  /**
+   * The probability of producting a bottom quark.
+   */
+  double _pwtBquark;
+
+  /**
+   * The probability of producting a spin-0 diquark.
+   */
+  double _pwtDIquarkS0;
+
+  /**
+   * The probability of producting a spin-1 diquark.
+   */
+  double _pwtDIquarkS1;
+  //@}
+
+  /**
+   * Singlet and Decuplet weights
+   */
+  //@{
+  /**
+   *  The singlet weight
+   */
+  double _sngWt;
+
+  /**
+   *  The octet weight
+   */
+  double _octWt;
+
+  /**
+   *  The decuplet weight
+   */
+  double _decWt;
+  //@}
+  
 private:
 
   /**

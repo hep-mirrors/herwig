@@ -38,17 +38,54 @@ IBPtr HwppSelector::fullclone() const {
 }
 
 void HwppSelector::doinit() {
+  // the default partons allowed
+  // the quarks
+  for ( int ix=1; ix<=5; ++ix ) {
+    partons().push_back(getParticleData(ix));
+  }
+  // the diquarks
+  for(unsigned int ix=1;ix<=5;++ix) {
+    for(unsigned int iy=1; iy<=ix;++iy) {
+      partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
+      if(ix!=iy)
+        partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(1))));
+    }
+  }
+  // weights for the different quarks etc
+  for(unsigned int ix=0; ix<partons().size(); ++ix) {
+    pwt()[partons()[ix]->id()]=0.;
+  }
+  pwt()[1]  = _pwtDquark;
+  pwt()[2]  = _pwtUquark;
+  pwt()[3]  = _pwtSquark;
+  pwt()[4]  = _pwtCquark;
+  pwt()[5]  = _pwtBquark;
+  pwt()[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
+  pwt()[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
+  pwt()[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
+  pwt()[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
+  pwt()[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
+  pwt()[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
+  pwt()[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
+  pwt()[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
+  pwt()[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
   HadronSelector::doinit();
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
-              << _scHadronWtFactor << _sbHadronWtFactor;
+  os << _pwtDquark  << _pwtUquark << _pwtSquark
+     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
+     << _sngWt << _octWt << _decWt 
+     << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
+     << _scHadronWtFactor << _sbHadronWtFactor;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
-              >> _scHadronWtFactor >> _sbHadronWtFactor;
+  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
+     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
+     >> _sngWt >> _octWt >> _decWt 
+     >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
+     >> _scHadronWtFactor >> _sbHadronWtFactor;
 }
 
 void HwppSelector::Init() {
@@ -64,9 +101,57 @@ void HwppSelector::Init() {
      "  arXiv:hep-ph/9906412.\n"
      "  %%CITATION = HEP-PH/9906412;%%\n"
      );
-    // put useMe() only in correct place!
+  
+  static Parameter<HwppSelector,double>
+    interfacePwtDquark("PwtDquark","Weight for choosing a quark D",
+		       &HwppSelector::_pwtDquark, 0, 1.0, 0.0, 10.0,
+		       false,false,false);
 
+  static Parameter<HwppSelector,double>
+    interfacePwtUquark("PwtUquark","Weight for choosing a quark U",
+		       &HwppSelector::_pwtUquark, 0, 1.0, 0.0, 10.0,
+		       false,false,false);
 
+  static Parameter<HwppSelector,double>
+    interfacePwtSquark("PwtSquark","Weight for choosing a quark S",
+		       &HwppSelector::_pwtSquark, 0, 1.0, 0.0, 10.0,
+		       false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
+		       &HwppSelector::_pwtCquark, 0, 0.0, 0.0, 10.0,
+		       false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
+		       &HwppSelector::_pwtBquark, 0, 0.0, 0.0, 10.0,
+		       false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfacePwtDIquarkS0("PwtDIquarkS0","Weight for choosing a spin-0 DIquark",
+			&HwppSelector::_pwtDIquarkS0, 0, 1.0, 0.0, 100.0,
+			false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfacePwtDIquarkS1("PwtDIquarkS1","Weight for choosing a spin-1 DIquark",
+      &HwppSelector::_pwtDIquarkS1, 0, 1.0, 0.0, 100.0,
+    	false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfaceSngWt("SngWt","Weight for singlet baryons",
+                  &HwppSelector::_sngWt, 0, 1.0, 0.0, 10.0,
+		   false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfaceOctWt("OctWt","Weight for octet baryons",
+                  &HwppSelector::_octWt, 0, 1.0, 0.0, 10.0,
+     		false,false,false);
+
+  static Parameter<HwppSelector,double>
+    interfaceDecWt("DecWt","Weight for decuplet baryons",
+                  &HwppSelector::_decWt, 0, 1.0, 0.0, 10.0,
+		   false,false,false);
+  
   static Switch<HwppSelector,unsigned int> interfaceMode
     ("Mode",
      "Which algorithm to use",
@@ -152,7 +237,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   bool quark = true;
   // if the Herwig algorithm
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+pwtDIquarkS0()+pwtDIquarkS1())
+    if(UseRandom::rnd() > 1./(1.+_pwtDIquarkS0+_pwtDIquarkS1)
        && cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;
@@ -270,4 +355,17 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   return make_pair
     ( signHad1 > 0 ? hadrons[ix].hadron1 : tcPDPtr(hadrons[ix].hadron1->CC()),
       signHad2 > 0 ? hadrons[ix].hadron2 : tcPDPtr(hadrons[ix].hadron2->CC()));
+}
+
+double HwppSelector::baryonWeight(long id) const {
+  const int pspin = id % 10;
+  if(pspin == 2) {
+    // Singlet (Lambda-like) baryon
+    if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
+    // octet
+    else                            return sqr(_octWt);
+  }
+  // Decuplet baryon
+  else if (pspin == 4)              return sqr(_decWt);
+  else return 1.;
 }

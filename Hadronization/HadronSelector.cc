@@ -51,13 +51,10 @@ namespace {
 }
 
 HadronSelector::HadronSelector(unsigned int opt)
-  : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-    _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
-    _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
+  : _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
     _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
-    _sngWt( 1.0 ),_octWt(1.0), _decWt( 1.0 ),
     _topt(opt),_trial(0),
     _limBottom(), _limCharm(), _limExotic(), belowThreshold_(0)
 {
@@ -89,25 +86,23 @@ HadronSelector::HadronSelector(unsigned int opt)
 }
 
 void HadronSelector::persistentOutput(PersistentOStream & os) const {
-  os << _partons << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
+  os << _partons 
      << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
-     << _forbidden << _sngWt << _octWt << _decWt << _repwt << _pwt
+     << _forbidden << _repwt << _pwt
      << _limBottom << _limCharm << _limExotic << belowThreshold_
      << _table;
 }
 
 void HadronSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _partons >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
+  is >> _partons 
      >> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
-     >> _forbidden >> _sngWt >> _octWt >> _decWt >> _repwt >> _pwt
+     >> _forbidden >> _repwt >> _pwt
      >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
      >> _table;
 }
@@ -116,56 +111,6 @@ void HadronSelector::Init() {
 
   static ClassDocumentation<HadronSelector> documentation
     ("There is no documentation for the HadronSelector class");
-
-  static Parameter<HadronSelector,double>
-    interfacePwtDquark("PwtDquark","Weight for choosing a quark D",
-		       &HadronSelector::_pwtDquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtUquark("PwtUquark","Weight for choosing a quark U",
-		       &HadronSelector::_pwtUquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtSquark("PwtSquark","Weight for choosing a quark S",
-		       &HadronSelector::_pwtSquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
-		       &HadronSelector::_pwtCquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
-		       &HadronSelector::_pwtBquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtDIquarkS0("PwtDIquarkS0","Weight for choosing a spin-0 DIquark",
-			&HadronSelector::_pwtDIquarkS0, 0, 1.0, 0.0, 100.0,
-			false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtDIquarkS1("PwtDIquarkS1","Weight for choosing a spin-1 DIquark",
-      &HadronSelector::_pwtDIquarkS1, 0, 1.0, 0.0, 100.0,
-    	false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfaceSngWt("SngWt","Weight for singlet baryons",
-                  &HadronSelector::_sngWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfaceOctWt("OctWt","Weight for octet baryons",
-                  &HadronSelector::_octWt, 0, 1.0, 0.0, 10.0,
-     		false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfaceDecWt("DecWt","Weight for decuplet baryons",
-                  &HadronSelector::_decWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
 
   static RefVector<HadronSelector,ParticleData> interfacePartons
     ("Partons",
@@ -413,19 +358,6 @@ double HadronSelector::mixingStateWeight(long id) const {
 
 void HadronSelector::doinit() {
   Interfaced::doinit();
-  // the default partons allowed
-  // the quarks
-  for ( int ix=1; ix<=5; ++ix ) {
-    _partons.push_back(getParticleData(ix));
-  }
-  // the diquarks
-  for(unsigned int ix=1;ix<=5;++ix) {
-    for(unsigned int iy=1; iy<=ix;++iy) {
-      _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
-      if(ix!=iy)
-        _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(1))));
-    }
-  }
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -456,43 +388,7 @@ void HadronSelector::doinit() {
     _repwt[2][2][ix]=_weight3D2[ix];
   for( int ix=0;ix<max(int(_weight3D3.size()),int(Nmax));++ix)
     _repwt[2][3][ix]=_weight3D3[ix];
-  // weights for the different quarks etc
-  for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    _pwt[_partons[ix]->id()]=0.;
-  }
-  _pwt[1]  = _pwtDquark;
-  _pwt[2]  = _pwtUquark;
-  _pwt[3]  = _pwtSquark;
-  _pwt[4]  = _pwtCquark;
-  _pwt[5]  = _pwtBquark;
-  _pwt[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
-  _pwt[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
-  _pwt[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
-  _pwt[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
-  _pwt[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
-  _pwt[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
-  _pwt[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
-  _pwt[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
-  _pwt[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
 
-  // Commenting out heavy di-quark weights
-  _pwt[4101] = 0.0;
-  _pwt[4103] = 0.0;
-  _pwt[4201] = 0.0;
-  _pwt[4203] = 0.0;
-  _pwt[4301] = 0.0;
-  _pwt[4303] = 0.0;
-  _pwt[4403] = 0.0;
-  _pwt[5101] = 0.0;
-  _pwt[5103] = 0.0;
-  _pwt[5201] = 0.0;
-  _pwt[5203] = 0.0;
-  _pwt[5301] = 0.0;
-  _pwt[5303] = 0.0;
-  _pwt[5401] = 0.0;
-  _pwt[5403] = 0.0;
-  _pwt[5503] = 0.0;
-  
   // find the maximum
   map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess);
@@ -806,41 +702,27 @@ void HadronSelector::constructHadronTable() {
   }
 }
 
-double HadronSelector::specialWeight(long id) const {
-  const int pspin = id % 10;
-  // Only K0L and K0S have pspin == 0, should
-  // not get them until Decay step
-  assert( pspin != 0 );
-  // Baryon : J = 1/2 or 3/2
-  if(pspin == 2) {
-    // Singlet (Lambda-like) baryon
-    if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
-    // octet
-    else                            return sqr(_octWt);
-  }
-  // Decuplet baryon
-  else if (pspin == 4)              return sqr(_decWt);
-  // Meson
-  else if(pspin % 2 == 1) {
-    // Total angular momentum
-    int j  = (pspin - 1) / 2;
-    // related to Orbital angular momentum l
-    int nl = (id/10000 )%10;
-    int l  = -999;
-    int n  = (id/100000)%10;  // Radial excitation
-    if(j == 0) l = nl;
-    else if(nl == 0) l = j - 1;
-    else if(nl == 1  || nl == 2) l = j;
-    else if(nl == 3) l = j + 1;
-    // Angular or Radial excited meson
-    if((l||j||n) && l>=0  &&  l<Lmax  &&  j<Jmax  &&  n<Nmax) {
-      return sqr(_repwt[l][j][n]);
-    }
+double HadronSelector::mesonWeight(long id) const {
+  // Total angular momentum
+  int j  = ((id % 10) - 1) / 2;
+  // related to Orbital angular momentum l
+  int nl = (id/10000 )%10;
+  int l  = -999;
+  int n  = (id/100000)%10;  // Radial excitation
+  if(j == 0) l = nl;
+  else if(nl == 0) l = j - 1;
+  else if(nl == 1  || nl == 2) l = j;
+  else if(nl == 3) l = j + 1;
+  // Angular or Radial excited meson
+  if((l||j||n) && l>=0  &&  l<Lmax  &&  j<Jmax  &&  n<Nmax) {
+    return sqr(_repwt[l][j][n]);
   }
   // rest is not excited or
   // has spin >= 5/2 (ispin >= 6), haven't got those
-  return 1.0;
+  else
+    return 1.0;
 }
+
 
 int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 			       tcPDPtr hadron) const {

@@ -795,9 +795,9 @@ void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
   double prob_s;
   switch(_fissionCluster){
   case 0:
-    prob_d = _hadronsSelector->pwtDquark();
-    prob_u = _hadronsSelector->pwtUquark();
-    prob_s = _hadronsSelector->pwtSquark();
+    prob_d = _hadronsSelector->pwt(1);
+    prob_u = _hadronsSelector->pwt(2);
+    prob_s = _hadronsSelector->pwt(3);
     break;
   case 1:
     prob_d = _fissionPwtDquark;
@@ -839,16 +839,16 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
 switch(_fissionCluster){
   // 0: ClusterFissioner and ClusterDecayer use the same weights
   case 0:
-     prob_d = _hadronsSelector->pwtDquark();
-     prob_u = _hadronsSelector->pwtUquark();
-     /* Strangeness enhancement:
-        Case 1: probability scaling
-        Case 2: Exponential scaling
-     */
-     if (_enhanceSProb == 1)
-        prob_s = (_maxScale < scale) ? 0. : pow(_hadronsSelector->pwtSquark(),scale);
-     else if (_enhanceSProb == 2)
-        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
+    prob_d = _hadronsSelector->pwt(1);
+    prob_u = _hadronsSelector->pwt(2);
+    /* Strangeness enhancement:
+       Case 1: probability scaling
+       Case 2: Exponential scaling
+    */
+    if (_enhanceSProb == 1)
+      prob_s = (_maxScale < scale) ? 0. : pow(_hadronsSelector->pwt(3),scale);
+    else if (_enhanceSProb == 2)
+      prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
   /* 1: ClusterFissioner uses its own unique set of weights,
         i.e. decoupled from ClusterDecayer */

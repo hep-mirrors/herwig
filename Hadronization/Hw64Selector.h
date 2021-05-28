@@ -33,7 +33,10 @@ public:
   /**
    * The default constructor.
    */
-  Hw64Selector() : HadronSelector(0)
+  Hw64Selector() : HadronSelector(0),
+		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
+		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
+		   _sngWt( 1.0 ),_octWt(1.0), _decWt( 1.0 )
   {}
 
   /**
@@ -73,6 +76,13 @@ public:
    */
   static void Init();
 
+protected :
+  
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -90,6 +100,18 @@ protected:
    virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -97,6 +119,68 @@ private:
    * In fact, it should not even be implemented.
    */
   Hw64Selector & operator=(const Hw64Selector &) = delete;
+
+private:
+
+  /**
+   *  The weights for the different quarks and diquarks
+   */
+  //@{
+  /**
+   * The probability of producting a down quark.
+   */
+  double _pwtDquark;
+
+  /**
+   * The probability of producting an up quark.
+   */
+  double _pwtUquark;
+
+  /**
+   * The probability of producting a strange quark.
+   */
+  double _pwtSquark;
+
+  /**
+   * The probability of producting a charm quark.
+   */
+  double _pwtCquark;
+
+  /**
+   * The probability of producting a bottom quark.
+   */
+  double _pwtBquark;
+
+  /**
+   * The probability of producting a spin-0 diquark.
+   */
+  double _pwtDIquarkS0;
+
+  /**
+   * The probability of producting a spin-1 diquark.
+   */
+  double _pwtDIquarkS1;
+  //@}
+
+  /**
+   * Singlet and Decuplet weights
+   */
+  //@{
+  /**
+   *  The singlet weight
+   */
+  double _sngWt;
+
+  /**
+   *  The octet weight
+   */
+  double _octWt;
+
+  /**
+   *  The decuplet weight
+   */
+  double _decWt;
+  //@}
 
 };
 
