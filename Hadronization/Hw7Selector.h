@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// Hw64Selector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Hw7Selector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_Hw64Selector_H
-#define HERWIG_Hw64Selector_H
+#ifndef HERWIG_Hw7Selector_H
+#define HERWIG_Hw7Selector_H
 //
-// This is the declaration of the Hw64Selector class.
+// This is the declaration of the Hw7Selector class.
 //
 
 #include "HadronSelector.h"
@@ -19,35 +19,26 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup hadronization
- * The Hw64Selector class selects the hadrons produced in cluster decay using
- * the FORTRAN HERWIG variant of the cluster model.
+ * The Hw7Selector class selects the hadrons produced in cluster decay using
+ * the Herwig variant of the cluster model.
  *
- * @see \ref Hw64SelectorInterfaces "The interfaces"
- * defined for Hw64Selector.
+ * @see \ref Hw7SelectorInterfaces "The interfaces"
+ * defined for Hw7Selector.
  */
-class Hw64Selector: public HadronSelector {
+class Hw7Selector: public HadronSelector {
 
 public:
 
   /**
    * The default constructor.
    */
-  Hw64Selector() : HadronSelector(0),
+  Hw7Selector() : HadronSelector(1),
 		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
 		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
-		   _sngWt( 1.0 ), _decWt( 1.0 )
+		   _sngWt( 1.0 ), _decWt( 1.0 ),
+		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
+		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
-
-  /**
-   * Method to return a pair of hadrons given the PDG codes of
-   * two or three constituents
-   * @param cluMass The mass of the cluster
-   * @param par1 The particle pointer of the first constituent
-   * @param par2 The particle pointer of the second constituent
-   * @param par3 The particle pointer of the third constituent
-   */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,
-						 tcPDPtr par1, tcPDPtr par2) const;
 
 public:
 
@@ -75,12 +66,32 @@ public:
    */
   static void Init();
 
-protected :
+protected:
   
   /**
    *  Weights for baryons
    */
   virtual double baryonWeight(long id) const;
+
+  /**
+   *  Whether to select a meson or a baryon
+   */
+  pair<bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *  Strange quark weight
+   */
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *   Insert a spin\f$\frac12\f$ baryon in the table
+   */
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
 
 protected:
 
@@ -117,7 +128,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Hw64Selector & operator=(const Hw64Selector &) = delete;
+  Hw7Selector & operator=(const Hw7Selector &) = delete;
 
 private:
 
@@ -175,9 +186,49 @@ private:
    */
   double _decWt;
   //@}
+  
+private:
+
+  /**
+   *  Which algorithm to use
+   */
+  unsigned int _mode;
+
+  /**
+  *  Flag that switches between no strangeness enhancement, scaling enhancement,
+  *  and exponential enhancement (in numerical order)
+  */
+  int _enhanceSProb;
+
+  /**
+  *  Parameter that governs the strangeness enhancement scaling
+  */
+  Energy _m0Decay;
+
+  /**
+  *  Flag that switches between mass measures used in strangeness enhancement:
+  *  cluster mass, or the lambda measure -  ( m_{clu}^2 - (m_q + m_{qbar})^2 )
+  */
+  int _massMeasure;
+
+  /**
+  *  Constant variable that stops the scale in strangeness enhancement from
+  *  becoming too large
+  */
+  const double _maxScale = 20.;
+
+  /**
+  *  Heavy strange-charm hadron wight coefficient
+  */
+  double _scHadronWtFactor;
+
+  /**
+  *  Heavy strange-bottom hadron wight coefficient
+  */
+  double _sbHadronWtFactor;
 
 };
 
 }
 
-#endif /* HERWIG_Hw64Selector_H */
+#endif /* HERWIG_Hw7Selector_H */

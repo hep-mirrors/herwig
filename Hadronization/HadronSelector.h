@@ -306,6 +306,13 @@ protected:
   const HadronTable & table() const {
     return _table;
   }
+
+  /**
+   *  Access to the table of hadrons
+   */
+  HadronTable & table() {
+    return _table;
+  }
   
   /**
    *  Access to the list of partons

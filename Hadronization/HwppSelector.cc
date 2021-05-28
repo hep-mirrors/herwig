@@ -60,21 +60,18 @@ void HwppSelector::doinit() {
   pwt()[3]  = _pwtSquark;
   pwt()[4]  = _pwtCquark;
   pwt()[5]  = _pwtBquark;
-  pwt()[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
-  pwt()[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
-  pwt()[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
-  pwt()[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
-  pwt()[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
-  pwt()[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
-  pwt()[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
-  pwt()[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
-  pwt()[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
+  pwt()[1103] =       _pwtDIquark * _pwtDquark * _pwtDquark;
+  pwt()[2101] = 0.5 * _pwtDIquark * _pwtUquark * _pwtDquark;
+  pwt()[2203] =       _pwtDIquark * _pwtUquark * _pwtUquark;
+  pwt()[3101] = 0.5 * _pwtDIquark * _pwtSquark * _pwtDquark;
+  pwt()[3201] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
+  pwt()[3303] =       _pwtDIquark * _pwtSquark * _pwtSquark;
   HadronSelector::doinit();
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
   os << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
+     << _pwtCquark << _pwtBquark << _pwtDIquark
      << _sngWt << _decWt 
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
      << _scHadronWtFactor << _sbHadronWtFactor;
@@ -82,7 +79,7 @@ void HwppSelector::persistentOutput(PersistentOStream & os) const {
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
   is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
+     >> _pwtCquark >> _pwtBquark >> _pwtDIquark
      >> _sngWt >> _decWt 
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
      >> _scHadronWtFactor >> _sbHadronWtFactor;
@@ -128,14 +125,9 @@ void HwppSelector::Init() {
 		       false,false,false);
 
   static Parameter<HwppSelector,double>
-    interfacePwtDIquarkS0("PwtDIquarkS0","Weight for choosing a spin-0 DIquark",
-			&HwppSelector::_pwtDIquarkS0, 0, 1.0, 0.0, 100.0,
+    interfacePwtDIquark("PwtDIquark","Weight for choosing a DIquark",
+			&HwppSelector::_pwtDIquark, 0, 1.0, 0.0, 100.0,
 			false,false,false);
-
-  static Parameter<HwppSelector,double>
-    interfacePwtDIquarkS1("PwtDIquarkS1","Weight for choosing a spin-1 DIquark",
-      &HwppSelector::_pwtDIquarkS1, 0, 1.0, 0.0, 100.0,
-    	false,false,false);
 
   static Parameter<HwppSelector,double>
     interfaceSngWt("SngWt","Weight for singlet baryons",
@@ -239,7 +231,7 @@ pair<bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPDPtr par1, t
   bool quark=true, diquark=true;
   useMe();
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+_pwtDIquarkS0+_pwtDIquarkS1)
+    if(UseRandom::rnd() > 1./(1.+_pwtDIquark)
        && cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;

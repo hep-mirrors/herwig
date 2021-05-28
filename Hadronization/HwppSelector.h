@@ -13,7 +13,6 @@
 //
 
 #include "HadronSelector.h"
-#include "HwppSelector.fh"
 
 namespace Herwig {
 
@@ -35,7 +34,7 @@ public:
    */
   HwppSelector() : HadronSelector(1),
 		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
+		   _pwtBquark( 0.0 ),_pwtDIquark(1.0 ),
 		   _sngWt( 1.0 ), _decWt( 1.0 ),
 		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
 		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
@@ -153,14 +152,9 @@ private:
   double _pwtBquark;
 
   /**
-   * The probability of producting a spin-0 diquark.
+   * The probability of producting a diquark.
    */
-  double _pwtDIquarkS0;
-
-  /**
-   * The probability of producting a spin-1 diquark.
-   */
-  double _pwtDIquarkS1;
+  double _pwtDIquark;
   //@}
 
   /**
