@@ -11,6 +11,7 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
+#include "HadronSelector.h"
 #include "ClusterFinder.fh"
 
 namespace Herwig {
@@ -142,6 +143,11 @@ private:
    *  Force diquarks to be on-shell
    */
   bool diQuarkOnShell_;
+
+  /**
+   * A pointer to a Herwig::HadronSelector object for generating hadrons.
+   */
+  HadronSelectorPtr hadronSelector_;
 
 };
 

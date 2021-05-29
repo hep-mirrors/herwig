@@ -312,7 +312,7 @@ protected:
   /**
    *  Access to the hadron selector
    */
-  HadronSelectorPtr hadronsSelector() const {return _hadronsSelector;}
+  HadronSelectorPtr hadronSelector() const {return _hadronSelector;}
 
   /**
    *  Access to soft-cluster parameter
@@ -350,7 +350,7 @@ private:
   /**
    * A pointer to a Herwig::HadronSelector object for generating hadrons.
    */
-  HadronSelectorPtr _hadronsSelector;
+  HadronSelectorPtr _hadronSelector;
 
   /**
    * @name The Cluster max mass,dependant on which quarks are involved, used to determine when

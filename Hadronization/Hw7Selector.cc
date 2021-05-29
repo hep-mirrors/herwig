@@ -434,3 +434,13 @@ void Hw7Selector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
     table()[make_pair(f3,iq1)].insert(a);
   }
 }
+
+PDPtr Hw7Selector::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
+  long id1 = par1->id(), id2 = par2->id();
+  long pspin = 3;
+  if(id1!=id2) {
+    if(UseRandom::rnd()<_pwtDIquarkS0/(_pwtDIquarkS0+_pwtDIquarkS1)) pspin = 1;
+  }
+  long idnew = CheckId::makeDiquarkID(id1,id2, pspin);
+  return getParticleData(idnew);
+}

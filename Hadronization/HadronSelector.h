@@ -204,6 +204,13 @@ public:
    */
   virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
+  /**
+   * Return the particle data of the diquark (anti-diquark) made by the two
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
   
 public:
 

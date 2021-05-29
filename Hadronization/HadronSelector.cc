@@ -1056,3 +1056,11 @@ void HadronSelector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
     table()[make_pair(f3,iq1)].insert(a);
   }
 }
+
+PDPtr HadronSelector::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
+  long id1 = par1->id();
+  long id2 = par2->id();
+  long pspin = id1==id2 ? 3 : 1;
+  long idnew = CheckId::makeDiquarkID(id1,id2, pspin);
+  return getParticleData(idnew);
+}

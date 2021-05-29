@@ -65,7 +65,7 @@ IBPtr ClusterFissioner::fullclone() const {
 }
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << ounit(_clMaxLight,GeV)
+  os << _hadronSelector << ounit(_clMaxLight,GeV)
      << ounit(_clMaxBottom,GeV) << ounit(_clMaxCharm,GeV)
      << ounit(_clMaxExotic,GeV) << _clPowLight << _clPowBottom
      << _clPowCharm << _clPowExotic << _pSplitLight
@@ -77,7 +77,7 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> iunit(_clMaxLight,GeV)
+  is >> _hadronSelector >> iunit(_clMaxLight,GeV)
      >> iunit(_clMaxBottom,GeV) >> iunit(_clMaxCharm,GeV)
      >> iunit(_clMaxExotic,GeV) >> _clPowLight >> _clPowBottom
      >> _clPowCharm >> _clPowExotic >> _pSplitLight
@@ -96,7 +96,7 @@ void ClusterFissioner::Init() {
   static Reference<ClusterFissioner,HadronSelector>
     interfaceHadronSelector("HadronSelector",
                              "A reference to the HadronSelector object",
-                             &Herwig::ClusterFissioner::_hadronsSelector,
+                             &Herwig::ClusterFissioner::_hadronSelector,
 			     false, false, true, false);
 
   // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
@@ -491,9 +491,9 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
        * procedure that would be necessary if we used LightClusterDecayer
        * to decay the light cluster to the lightest hadron.
        ****************************/
-      toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
+      toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
       if(toHadron1) Mc1 = toHadron1->mass();
-      toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
+      toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
       if(toHadron2) Mc2 = toHadron2->mass();
       // if a beam cluster not allowed to decay to hadrons
       if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
@@ -502,11 +502,11 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       // force the one-hadron decay for the other cluster as well.
       if(Mc1 + Mc2  >  Mc) {
 	if(!toHadron1) {
-	  toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
+	  toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
 	  if(toHadron1) Mc1 = toHadron1->mass();
 	}
 	else if(!toHadron2) {
-	  toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
+	  toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
 	  if(toHadron2) Mc2 = toHadron2->mass();
 	}
       }
@@ -680,14 +680,11 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     Mc2 = drawChildMass(mmax,m2,m1,m,exp2,soft2);
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
     // check if need to force meson clster to hadron
-    toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
+    toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
     if(toHadron) Mc1 = toHadron->mass();
     // check if need to force diquark cluster to be on-shell
     toDiQuark = false;
-    long rndSpin;
-    if(ptrQ[iq2]->dataPtr()->id() == newPtr2->dataPtr()->id()) rndSpin = 3;
-    else rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
-    diquark = CheckId::makeDiquark(ptrQ[iq2]->dataPtr(),newPtr2->dataPtr(),rndSpin);
+    diquark = _hadronSelector->makeDiquark(ptrQ[iq2]->dataPtr(),newPtr2->dataPtr());
     if(Mc2 < diquark->constituentMass()) {
       Mc2 = diquark->constituentMass();
       toDiQuark = true;
@@ -699,11 +696,11 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     // force the one-hadron decay for the other cluster as well.
     if(Mc1 + Mc2  >  mmax) {
       if(!toHadron) {
-	toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
+	toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
 	if(toHadron) Mc1 = toHadron->mass();
       }
       else if(!toDiQuark) {
-	Mc2 = _hadronsSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
+	Mc2 = _hadronSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
 	toDiQuark = true;
       }
     }
@@ -751,7 +748,7 @@ ClusterFissioner::produceHadron(tcPDPtr hadron, tPPtr newPtr, const Lorentz5Mome
 				const LorentzPoint &b) const {
   PPair rval;
   if(hadron->coloured()) {
-    rval.first = (_hadronsSelector->lightestHadron(hadron,newPtr->dataPtr()))->produceParticle();
+    rval.first = (_hadronSelector->lightestHadron(hadron,newPtr->dataPtr()))->produceParticle();
   }
   else
     rval.first = hadron->produceParticle();
@@ -795,9 +792,9 @@ void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
   double prob_s;
   switch(_fissionCluster){
   case 0:
-    prob_d = _hadronsSelector->pwt(1);
-    prob_u = _hadronsSelector->pwt(2);
-    prob_s = _hadronsSelector->pwt(3);
+    prob_d = _hadronSelector->pwt(1);
+    prob_u = _hadronSelector->pwt(2);
+    prob_s = _hadronSelector->pwt(3);
     break;
   case 1:
     prob_d = _fissionPwtDquark;
@@ -839,14 +836,14 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
   switch(_fissionCluster){
     // 0: ClusterFissioner and ClusterDecayer use the same weights
   case 0:
-    prob_d = _hadronsSelector->pwt(1);
-    prob_u = _hadronsSelector->pwt(2);
+    prob_d = _hadronSelector->pwt(1);
+    prob_u = _hadronSelector->pwt(2);
     /* Strangeness enhancement:
        Case 1: probability scaling
        Case 2: Exponential scaling
     */
     if (_enhanceSProb == 1)
-      prob_s = (_maxScale < scale) ? 0. : pow(_hadronsSelector->pwt(3),scale);
+      prob_s = (_maxScale < scale) ? 0. : pow(_hadronSelector->pwt(3),scale);
     else if (_enhanceSProb == 2)
       prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
