@@ -973,103 +973,86 @@ void HadronSelector::insertMeson(HadronInfo a, int flav1, int flav2) {
 }
 
 void HadronSelector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
-  // octet bit
   assert(DiquarkMatcher::Check(flav1));
   long iq1 = flav1/1000;
   long iq2 = (flav1/100)%10;
+  if(iq1!=iq2 && flav1%10==3) flav1-=2;
   if(iq1==iq2) {
-    assert(flav2!=iq1);
-    // first the uu1 d type piece
-    a.wt = 1./3.;
-    a.overallWeight *= a.wt;
-    _table[make_pair(flav1,flav2)].insert(a);
-    _table[make_pair(flav2,flav1)].insert(a);
-    // also need ud1 u type
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,3);
-    a.overallWeight /= a.wt;
-    a.wt = 1./6.;
-    a.overallWeight *= a.wt;
-    _table[make_pair(iq1,f3 )].insert(a);
-    _table[make_pair(f3 ,iq1)].insert(a);
-    // and       ud0 u type
-    f3 = CheckId::makeDiquarkID(iq1,flav2,1);
-    a.overallWeight /= a.wt;
-    a.wt = 0.5;
-    a.overallWeight *= a.wt;
-    _table[make_pair(iq1,f3 )].insert(a);
-    _table[make_pair(f3 ,iq1)].insert(a);
-  }
-  else if(iq1==flav2) {
-    // ud1 u type
-    a.wt = 1./6.;
-    a.overallWeight *= a.wt;
-    _table[make_pair(flav1,flav2)].insert(a);
-    _table[make_pair(flav2,flav1)].insert(a);
-    // also need ud0 u type
-    long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
-    a.overallWeight /= a.wt;
-    a.wt = 0.5;
-    a.overallWeight *= a.wt;
-    _table[make_pair(f3    ,flav2)].insert(a);
-    _table[make_pair(flav2 ,f3   )].insert(a);
-    // and uu1 d type
-    f3 = CheckId::makeDiquarkID(iq1,iq1,3);
-    a.overallWeight /= a.wt;
-    a.wt = 1./3.;
-    a.overallWeight *= a.wt;
-    _table[make_pair(f3 ,iq2)].insert(a);
-    _table[make_pair(iq2, f3)].insert(a);
-  }
-  else if(iq2==flav2) assert(false);
-  else {
-    // determine if light quarks in spin 0 or spin 1
-    long it1 = (a.id/100)%10;
-    long it2 = (a.id/10 )%10;
-    // first perm
-    double wgt0(1./4.),wgt1(1./12.);
-    // only spin-0
-    if(it1<it2) {
-      long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
-      a.wt = 1./3.;
-      a.overallWeight *= a.wt;
-      _table[make_pair(f3,flav2)].insert(a);
-      _table[make_pair(flav2,f3)].insert(a);
-      swap(wgt0,wgt1);
-    }
-    // only spin-1
-    else {
-      a.wt = 1./3.;
-      a.overallWeight *= a.wt;
+    if(iq1==flav2) {
+      a.overallWeight *= 1.5;
       _table[make_pair(flav1,flav2)].insert(a);
       _table[make_pair(flav2,flav1)].insert(a);
     }
-    // not sure here
-    // spin 0
-    a.overallWeight /= a.wt;
-    a.wt = wgt0;
+    else {
+      table()[make_pair(flav1,flav2)].insert(a);
+      table()[make_pair(flav2,flav1)].insert(a);
+      long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+      table()[make_pair(iq1,f3 )].insert(a);
+      table()[make_pair(f3 ,iq1)].insert(a);
+    }
+  }
+  else if(iq1==flav2) {
+    // ud1 u type
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    // and uu1 d type
+    long f3 = CheckId::makeDiquarkID(iq1,iq1,3);
     a.overallWeight *= a.wt;
-    // second perm
+    table()[make_pair(f3 ,iq2)].insert(a);
+    table()[make_pair(iq2, f3)].insert(a);
+  }
+  else if(iq2==flav2) assert(false);
+  else {
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
     long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
-    _table[make_pair(iq2,f3)].insert(a);
-    _table[make_pair(f3,iq2)].insert(a);
+    table()[make_pair(iq2,f3)].insert(a);
+    table()[make_pair(f3,iq2)].insert(a);
     // 3rd perm
     f3 = CheckId::makeDiquarkID(iq2,flav2,1);
-    _table[make_pair(iq1,f3)].insert(a);
-    _table[make_pair(f3,iq1)].insert(a);
-    // spin 1
-    a.overallWeight /= a.wt;
-    a.wt = wgt1;
-    a.overallWeight *= a.wt;
-    // second perm
-    f3 = CheckId::makeDiquarkID(iq1,flav2,3);
-    _table[make_pair(iq2,f3)].insert(a);
-    _table[make_pair(f3,iq2)].insert(a);
-    // 3rd perm
-    f3 = CheckId::makeDiquarkID(iq2,flav2,3);
-    _table[make_pair(iq1,f3)].insert(a);
-    _table[make_pair(f3,iq1)].insert(a);
+    table()[make_pair(iq1,f3)].insert(a);
+    table()[make_pair(f3,iq1)].insert(a);
   }
 }
 
 void HadronSelector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
+  assert(DiquarkMatcher::Check(flav1));
+  long iq1 = flav1/1000;
+  long iq2 = (flav1/100)%10;
+  if(iq1!=iq2 && flav1%10==3) flav1-=2;
+  if(iq1==iq2) {
+    if(iq1==flav2) {
+      a.overallWeight *= 1.5;
+      _table[make_pair(flav1,flav2)].insert(a);
+      _table[make_pair(flav2,flav1)].insert(a);
+    }
+    else {
+      table()[make_pair(flav1,flav2)].insert(a);
+      table()[make_pair(flav2,flav1)].insert(a);
+      long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+      table()[make_pair(iq1,f3 )].insert(a);
+      table()[make_pair(f3 ,iq1)].insert(a);
+    }
+  }
+  else if(iq1==flav2) {
+    // ud1 u type
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    // and uu1 d type
+    long f3 = CheckId::makeDiquarkID(iq1,iq1,3);
+    a.overallWeight *= a.wt;
+    table()[make_pair(f3 ,iq2)].insert(a);
+    table()[make_pair(iq2, f3)].insert(a);
+  }
+  else {
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+    table()[make_pair(iq2,f3)].insert(a);
+    table()[make_pair(f3,iq2)].insert(a);
+    // 3rd perm
+    f3 = CheckId::makeDiquarkID(iq2,flav2,1);
+    table()[make_pair(iq1,f3)].insert(a);
+    table()[make_pair(f3,iq1)].insert(a);
+  }
 }

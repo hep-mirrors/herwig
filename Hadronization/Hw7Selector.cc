@@ -281,7 +281,6 @@ double Hw7Selector::strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr pa
 }
 
 void Hw7Selector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
-  // octet bit
   assert(DiquarkMatcher::Check(flav1));
   long iq1 = flav1/1000;
   long iq2 = (flav1/100)%10;

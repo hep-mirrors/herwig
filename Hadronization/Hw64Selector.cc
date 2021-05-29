@@ -53,8 +53,9 @@ void Hw64Selector::doinit() {
   // the diquarks
   for(unsigned int ix=1;ix<=5;++ix) {
     for(unsigned int iy=1; iy<=ix;++iy) {
-      partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
-      if(ix!=iy)
+      if(ix==iy)
+	partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
+      else
         partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(1))));
     }
   }
