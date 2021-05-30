@@ -481,7 +481,8 @@ void HadronSelector::doinit() {
   constructHadronTable();
 
   // for debugging
-  // dumpTable(table());
+  if(Debug::level >= 10 ) 
+    dumpTable(table());
 }
 
 void HadronSelector::constructHadronTable() {
