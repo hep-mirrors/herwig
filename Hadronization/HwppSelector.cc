@@ -229,21 +229,18 @@ double HwppSelector::baryonWeight(long id) const {
 }
 
 pair<bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
-  bool quark=true, diquark=true;
+  useMe();
+  pair<bool,bool> output=make_pair(true,true);
   useMe();
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+_pwtDIquark)
-       && cluMass > massLightestBaryonPair(par1,par2)) {
-      diquark = true;
-      quark = false;
+    if(UseRandom::rnd() > 1./(1.+_pwtDIquark) && cluMass > massLightestBaryonPair(par1,par2)) {
+      output.first  = false;
     }
     else {
-      useMe();
-      diquark = false;
-      quark = true;
+      output.second = false;
     }
   }
-  return make_pair(quark,diquark);
+  return output;
 }
 
 double HwppSelector::strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {

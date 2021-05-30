@@ -64,8 +64,8 @@ public:
    * @param par2 The second constituent
    * @param par3 The third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, 
-						 tcPDPtr par1, tcPDPtr par2) const;
+  virtual tcPDPair chooseHadronPair(const Energy cluMass, 
+				    tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Select the single hadron for a cluster decay
@@ -105,18 +105,15 @@ public:
    * select the one that produces the lightest pair of hadrons, compatible
    * with the charge conservation constraint.
    */
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					   tcPDPtr ptr3 = PDPtr ()) const;
+  tcPDPair lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-    Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-				  tcPDPtr ptr3 = PDPtr ()) const  {
-    pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  {
+    tcPDPair pairData = lightestHadronPair(ptr1, ptr2);
     if ( ! pairData.first || ! pairData.second ) return ZERO;
     return ( pairData.first->mass() + pairData.second->mass() );
   }
@@ -126,13 +123,10 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-			  tcPDPtr ptr3 = PDPtr ()) const;
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -140,31 +134,20 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param threshold The theshold
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
   vector<pair<tcPDPtr,double> >
   hadronsBelowThreshold(Energy threshold,
-			tcPDPtr ptr1, tcPDPtr ptr2,
-			tcPDPtr ptr3 = PDPtr ()) const;
+			tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-  				   tcPDPtr ptr3 = PDPtr ()) const {
-#else
-                                   tcPDPtr = PDPtr ()) const {
-#endif
-    // The method assumes ptr3 == empty
-    assert(!(ptr3));
+   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
     // find entry in the table
     pair<long,long> ids(abs(ptr1->id()),abs(ptr2->id()));
     HadronTable::const_iterator tit=_table.find(ids);
@@ -183,7 +166,19 @@ public:
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
    */
-  Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    assert(lightest!=lightestBaryons_.end());
+    return lightest->second.first->mass()+lightest->second.second->mass();
+  }
+  
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Access the parton weights
@@ -416,7 +411,7 @@ protected:
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
    * for the input PDG id  idHad > 0, suppose to be made by the
-   * two constituent particle pointers: par1 and par2 (both with proper sign).
+   * two constituent particle pointers: ptr1 and ptr2 (both with proper sign).
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
@@ -623,6 +618,13 @@ private:
    *  Option for the selection of hadrons below the pair threshold
    */
   unsigned int belowThreshold_;
+  
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  //@}
 };
 
 

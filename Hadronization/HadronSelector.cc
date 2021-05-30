@@ -94,7 +94,7 @@ void HadronSelector::persistentOutput(PersistentOStream & os) const {
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
      << _forbidden << _repwt << _pwt
      << _limBottom << _limCharm << _limExotic << belowThreshold_
-     << _table;
+     << _table << lightestBaryons_;
 }
 
 void HadronSelector::persistentInput(PersistentIStream & is, int) {
@@ -105,7 +105,7 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
      >> _forbidden >> _repwt >> _pwt
      >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
-     >> _table;
+     >> _table >> lightestBaryons_;
 }
 
 void HadronSelector::Init() {
@@ -399,6 +399,14 @@ void HadronSelector::doinit() {
   }
   // construct the hadron tables
   constructHadronTable();
+  // lightest members
+  for(const PDPtr & p1 : partons()) {
+    if(DiquarkMatcher::Check(p1->id())) continue;
+    for(const PDPtr & p2 : partons()) {
+      if(DiquarkMatcher::Check(p2->id())) continue;
+      lightestBaryons_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2);
+    }
+  }
   // for debugging
   if(Debug::level >= 10 ) 
     dumpTable(table());
@@ -626,16 +634,9 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
   return sign;
 }
 
-pair<tcPDPtr,tcPDPtr> HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-							 tcPDPtr ptr3) const {
-  // throw exception of id3!=0 as doesn't work
-  if ( ptr3 ) throw Exception()
-    << "ptr3!=0 not yet implemented in HadronSelector::lightestHadronPair"
-    << Exception::abortnow;
-
+tcPDPair HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
   // charge
   int totalcharge = ptr1->iCharge() + ptr2->iCharge();
-  if ( ptr3 ) totalcharge += ptr3->iCharge();
 
   tcPDPtr vIdHad1[2]={tcPDPtr(),tcPDPtr()},vIdHad2[2]={tcPDPtr(),tcPDPtr()};
   bool vOk[2] = {false, false};
@@ -667,10 +668,11 @@ pair<tcPDPtr,tcPDPtr> HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr p
   }
 }
 
-Energy HadronSelector::massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+tcPDPair HadronSelector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
   // Make sure that we don't have any diquarks as input, return arbitrarily
   // large value if we do
   Energy currentSum = Constants::MaxEnergy;
+  tcPDPair output;
   for(unsigned int ix=0; ix<_partons.size(); ++ix) {
     if(!DiquarkMatcher::Check(_partons[ix]->id())) continue;
     HadronTable::const_iterator
@@ -679,19 +681,17 @@ Energy HadronSelector::massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const 
     if( tit1==_table.end() || tit2==_table.end()) continue;
     if(tit1->second.empty()||tit2->second.empty()) continue;
     Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
-    if(currentSum > s) currentSum = s;
+    if(currentSum > s) {
+      currentSum = s;
+      output.first  = tit1->second.begin()->ptrData;
+      output.second = tit2->second.begin()->ptrData;
+    }
   }
-  return currentSum;
+  return output;
 }
 
-tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-				      tcPDPtr ptr3) const {
-#else
-				      tcPDPtr ) const {
-#endif
-  // The method assumes ptr3 == 0 rest not implemented
-  assert(ptr1 && ptr2 && !ptr3);
+tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
+  assert(ptr1 && ptr2);
   // find entry in the table
   pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
@@ -730,14 +730,9 @@ tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
 
 vector<pair<tcPDPtr,double> >
 HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
-				      tcPDPtr ptr2,
-#ifndef NDEBUG
-				      tcPDPtr ptr3) const {
-#else
-				      tcPDPtr ) const {
-#endif
+				      tcPDPtr ptr2) const {
   // The method assumes ptr3 == 0 rest not implemented
-  assert(ptr1 && ptr2 && !ptr3);
+  assert(ptr1 && ptr2);
   // find entry in the table
   pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
@@ -838,8 +833,8 @@ tcPDPtr HadronSelector::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
   return hadron;
 }
 
-pair<tcPDPtr,tcPDPtr> HadronSelector::chooseHadronPair(const Energy cluMass,
-						       tcPDPtr par1, tcPDPtr par2) const {
+tcPDPair HadronSelector::chooseHadronPair(const Energy cluMass,
+					  tcPDPtr par1, tcPDPtr par2) const {
   useMe();
   // if either of the input partons is a diquark don't allow diquarks to be
   // produced
