@@ -112,10 +112,11 @@ public:
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
    */
-  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  {
-    tcPDPair pairData = lightestHadronPair(ptr1, ptr2);
-    if ( ! pairData.first || ! pairData.second ) return ZERO;
-    return ( pairData.first->mass() + pairData.second->mass() );
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  { 
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    assert(lightest!=lightestHadrons_.end());
+    return lightest->second.first->mass()+lightest->second.second->mass();
   }
 
   /**
@@ -160,25 +161,6 @@ public:
     // return the mass
     return tit->second.begin()->mass;
   }
-
-  /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent
-   */
-  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-    map<pair<long,long>,tcPDPair>::const_iterator lightest =
-      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
-    assert(lightest!=lightestBaryons_.end());
-    return lightest->second.first->mass()+lightest->second.second->mass();
-  }
-  
-  /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent
-   */
-  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Access the parton weights
@@ -623,7 +605,10 @@ private:
    *  Caches of lightest pairs for speed
    */
   //@{
-  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  /**
+   * Masses of lightest hadron pair
+   */
+  map<pair<long,long>,tcPDPair> lightestHadrons_;
   //@}
 };
 

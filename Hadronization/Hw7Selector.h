@@ -101,6 +101,25 @@ protected:
    */
   virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
 
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    assert(lightest!=lightestBaryons_.end());
+    return lightest->second.first->mass()+lightest->second.second->mass();
+  }
+  
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -235,6 +254,15 @@ private:
   */
   double _sbHadronWtFactor;
 
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  /**
+   * Masses of lightest baryon pair
+   */
+  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  //@}
 };
 
 }

@@ -94,7 +94,7 @@ void HadronSelector::persistentOutput(PersistentOStream & os) const {
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
      << _forbidden << _repwt << _pwt
      << _limBottom << _limCharm << _limExotic << belowThreshold_
-     << _table << lightestBaryons_;
+     << _table << lightestHadrons_;
 }
 
 void HadronSelector::persistentInput(PersistentIStream & is, int) {
@@ -105,7 +105,7 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
      >> _forbidden >> _repwt >> _pwt
      >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
-     >> _table >> lightestBaryons_;
+     >> _table >> lightestHadrons_;
 }
 
 void HadronSelector::Init() {
@@ -399,12 +399,10 @@ void HadronSelector::doinit() {
   }
   // construct the hadron tables
   constructHadronTable();
-  // lightest members
+  // lightest members (hadrons)
   for(const PDPtr & p1 : partons()) {
-    if(DiquarkMatcher::Check(p1->id())) continue;
     for(const PDPtr & p2 : partons()) {
-      if(DiquarkMatcher::Check(p2->id())) continue;
-      lightestBaryons_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2);
+      lightestHadrons_[make_pair(p1->id(),p2->id())] = lightestHadronPair(p1,p2);
     }
   }
   // for debugging
@@ -635,50 +633,13 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 }
 
 tcPDPair HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-  // charge
-  int totalcharge = ptr1->iCharge() + ptr2->iCharge();
-
-  tcPDPtr vIdHad1[2]={tcPDPtr(),tcPDPtr()},vIdHad2[2]={tcPDPtr(),tcPDPtr()};
-  bool vOk[2] = {false, false};
-  Energy vMassPair[2] = { ZERO, ZERO };
-  for (int i = 0; i < 2; i++) {
-    tcPDPtr idPartner = i==0 ? getParticleData(ParticleID::d) : getParticleData(ParticleID::u);
-    // Change sign to idPartner (transform it into a anti-quark) if it is not
-    // possible to form a meson or a baryon.
-    assert (ptr1 && idPartner);
-    if (!CheckId::canBeHadron(ptr1, idPartner)) idPartner = idPartner->CC();
-
-    vIdHad1[i] = lightestHadron(ptr1, idPartner);
-    vIdHad2[i] = lightestHadron(ptr2, idPartner->CC());
-    if ( vIdHad1[i] && vIdHad2[i] &&
-	 vIdHad1[i]->iCharge() + vIdHad2[i]->iCharge() == totalcharge ) {
-      vOk[i] = true;
-      vMassPair[i] = vIdHad1[i]->mass() + vIdHad2[i]->mass();
-    }
-  }
-  // Take the lightest pair compatible with charge conservation.
-  if       ( vOk[0]  && ( ! vOk[1] || vMassPair[0] <= vMassPair[1] ) ) {
-    return make_pair(vIdHad1[0],vIdHad2[0]);
-  }
-  else if ( vOk[1]  &&  ( ! vOk[0] || vMassPair[1] <  vMassPair[0] ) ) {
-    return make_pair(vIdHad1[1],vIdHad2[1]);
-  }
-  else {
-    return make_pair(tcPDPtr(),tcPDPtr());
-  }
-}
-
-tcPDPair HadronSelector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-  // Make sure that we don't have any diquarks as input, return arbitrarily
-  // large value if we do
   Energy currentSum = Constants::MaxEnergy;
   tcPDPair output;
-  for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    if(!DiquarkMatcher::Check(_partons[ix]->id())) continue;
+  for(unsigned int ix=0; ix<partons().size(); ++ix) {
     HadronTable::const_iterator
-      tit1=_table.find(make_pair(abs(ptr1->id()),_partons[ix]->id())),
-      tit2=_table.find(make_pair(_partons[ix]->id(),abs(ptr2->id())));
-    if( tit1==_table.end() || tit2==_table.end()) continue;
+      tit1=table().find(make_pair(abs(ptr1->id()),partons()[ix]->id())),
+      tit2=table().find(make_pair(partons()[ix]->id(),abs(ptr2->id())));
+    if( tit1==table().end() || tit2==table().end()) continue;
     if(tit1->second.empty()||tit2->second.empty()) continue;
     Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
     if(currentSum > s) {

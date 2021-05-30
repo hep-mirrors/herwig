@@ -68,6 +68,14 @@ void HwppSelector::doinit() {
   pwt()[3201] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
   pwt()[3303] =       _pwtDIquark * _pwtSquark * _pwtSquark;
   HadronSelector::doinit();
+  // lightest members (baryons)
+  for(const PDPtr & p1 : partons()) {
+    if(DiquarkMatcher::Check(p1->id())) continue;
+    for(const PDPtr & p2 : partons()) {
+      if(DiquarkMatcher::Check(p2->id())) continue;
+      lightestBaryons_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2);
+    }
+  }
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
@@ -75,7 +83,7 @@ void HwppSelector::persistentOutput(PersistentOStream & os) const {
      << _pwtCquark << _pwtBquark << _pwtDIquark
      << _sngWt << _decWt 
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
-     << _scHadronWtFactor << _sbHadronWtFactor;
+     << _scHadronWtFactor << _sbHadronWtFactor << lightestBaryons_;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
@@ -83,7 +91,7 @@ void HwppSelector::persistentInput(PersistentIStream & is, int) {
      >> _pwtCquark >> _pwtBquark >> _pwtDIquark
      >> _sngWt >> _decWt 
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
-     >> _scHadronWtFactor >> _sbHadronWtFactor;
+     >> _scHadronWtFactor >> _sbHadronWtFactor >> lightestBaryons_;
 }
 
 void HwppSelector::Init() {
@@ -268,4 +276,26 @@ double HwppSelector::strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr p
     return (_maxScale < scale) ? 0. : exp(-scale);
   }
   return pwt(3);
+}
+
+tcPDPair HwppSelector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+  // Make sure that we don't have any diquarks as input, return arbitrarily
+  // large value if we do
+  Energy currentSum = Constants::MaxEnergy;
+  tcPDPair output;
+  for(unsigned int ix=0; ix<partons().size(); ++ix) {
+    if(!DiquarkMatcher::Check(partons()[ix]->id())) continue;
+    HadronTable::const_iterator
+      tit1=table().find(make_pair(abs(ptr1->id()),partons()[ix]->id())),
+      tit2=table().find(make_pair(partons()[ix]->id(),abs(ptr2->id())));
+    if( tit1==table().end() || tit2==table().end()) continue;
+    if(tit1->second.empty()||tit2->second.empty()) continue;
+    Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
+    if(currentSum > s) {
+      currentSum = s;
+      output.first  = tit1->second.begin()->ptrData;
+      output.second = tit2->second.begin()->ptrData;
+    }
+  }
+  return output;
 }
