@@ -10,16 +10,30 @@ set H7Selector:SingleHadronLimitCharm 0.000
 set H7Selector:SingleHadronLimitExotic 0.
 set H7Selector:PwtDquark  1.0
 set H7Selector:PwtUquark  1.0
-set H7Selector:PwtSquark 0.291717
+set H7Selector:PwtSquark 0.44791808545341966
 set H7Selector:PwtCquark  0.0
 set H7Selector:PwtBquark  0.0
 set H7Selector:PwtDIquarkS0  0.1
 set H7Selector:PwtDIquarkS1  0.2
-set H7Selector:SngWt      0.74
-set H7Selector:DecWt      0.62
+set H7Selector:SngWt      1.
+set H7Selector:DecWt      1.
 set H7Selector:Mode 1
 set H7Selector:BelowThreshold All
 
+set /Herwig/Shower/AlphaQCD:AlphaIn 0.11945016393306016
+set /Herwig/Shower/PTCutOff:pTmin 0.9306282520806936
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.8473684210526315
+set /Herwig/Hadronization/ClusterDecayer:ClSmrLight 0.78
+set /Herwig/Hadronization/HadronSelector:PwtSquark 0.44791808545341966
+set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.399325692181664 
+set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
+
+
+
+
+set /Herwig/Hadronization/PartonSplitter:Split ud
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappa+
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappa0
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappabar0
