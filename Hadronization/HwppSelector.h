@@ -76,7 +76,7 @@ protected:
   /**
    *  Whether to select a meson or a baryon
    */
-  pair<bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+  std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    *  Strange quark weight

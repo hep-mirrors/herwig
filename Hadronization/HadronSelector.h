@@ -21,6 +21,7 @@
 #include "HadronSelector.fh"
 #include "HadronInfo.h"
 #include "Kupco.h"
+#include <tuple>
 
 namespace Herwig {
 
@@ -174,7 +175,7 @@ public:
   /**
    *  Force baryon/meson selection
    */
-  virtual pair<bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+  virtual std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    *  Strange quark weight

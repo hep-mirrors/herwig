@@ -84,7 +84,7 @@ protected:
   /**
    *  Whether to select a meson or a baryon
    */
-  pair<bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+  std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    *  Strange quark weight
@@ -100,25 +100,14 @@ protected:
    *   Insert a spin\f$\frac32\f$ baryon in the table
    */
   virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
-
-  /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent
-   */
-  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-    map<pair<long,long>,tcPDPair>::const_iterator lightest =
-      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
-    assert(lightest!=lightestBaryons_.end());
-    return lightest->second.first->mass()+lightest->second.second->mass();
-  }
   
   /**
    *  Returns the mass of the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
+   * @param pspin Spin in (2S+1) of the diquark
    */
-  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2, int pspin) const;
 
 protected:
 
@@ -261,7 +250,7 @@ private:
   /**
    * Masses of lightest baryon pair
    */
-  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  map<pair<long,long>,tcPDPair> lightestBaryonsS0_,lightestBaryonsS1_;
   //@}
 };
 

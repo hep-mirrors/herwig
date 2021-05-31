@@ -75,7 +75,8 @@ void Hw7Selector::doinit() {
     if(DiquarkMatcher::Check(p1->id())) continue;
     for(const PDPtr & p2 : partons()) {
       if(DiquarkMatcher::Check(p2->id())) continue;
-      lightestBaryons_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2);
+      lightestBaryonsS0_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2,1);
+      lightestBaryonsS1_[make_pair(p1->id(),p2->id())] = lightestBaryonPair(p1,p2,3);
     }
   }
 }
@@ -85,7 +86,8 @@ void Hw7Selector::persistentOutput(PersistentOStream & os) const {
      << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
      << _sngWt << _decWt 
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
-     << _scHadronWtFactor << _sbHadronWtFactor << lightestBaryons_;
+     << _scHadronWtFactor << _sbHadronWtFactor
+     << lightestBaryonsS0_ << lightestBaryonsS1_;
 }
 
 void Hw7Selector::persistentInput(PersistentIStream & is, int) {
@@ -93,7 +95,8 @@ void Hw7Selector::persistentInput(PersistentIStream & is, int) {
      >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
      >> _sngWt >> _decWt 
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
-     >> _scHadronWtFactor >> _sbHadronWtFactor >> lightestBaryons_;
+     >> _scHadronWtFactor >> _sbHadronWtFactor
+     >> lightestBaryonsS0_ >> lightestBaryonsS1_;
 }
 
 void Hw7Selector::Init() {
@@ -243,17 +246,78 @@ double Hw7Selector::baryonWeight(long id) const {
   return 1.;
 }
 
-pair<bool,bool> Hw7Selector::selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
+namespace {
+
+double kinFunction(Energy m0, tcPDPair pd) {
+  Energy m1=pd.first ->mass();
+  Energy m2=pd.second->mass();
+  return pow((1.-sqr((m1+m2)/m0))*(1.-sqr((m1-m2)/m0)),0.25);
+}
+  
+}
+
+std::tuple<bool,bool,bool> Hw7Selector::selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
   useMe();
-  pair<bool,bool> output=make_pair(true,true);
+  std::tuple<bool,bool,bool> output(true,true,true);
   if(_mode ==1) {
-    if(UseRandom::rnd() > 1./(1.+_pwtDIquarkS0+_pwtDIquarkS1)
-       && cluMass > massLightestBaryonPair(par1,par2)) {
-      output.first  = false;
+    pair<long,long> ids(abs(par1->id()),abs(par2->id()));
+    map<pair<long,long>,tcPDPair>::const_iterator lightest = lightestBaryonsS0_.find(ids);
+    assert(lightest!=lightestBaryonsS0_.end());
+    tcPDPair lightS0 = lightest->second;
+    lightest = lightestBaryonsS1_.find(ids);
+    assert(lightest!=lightestBaryonsS1_.end());
+    tcPDPair lightS1 = lightest->second;
+    Energy thresS0 = lightS0.first->mass()+lightS0.second->mass();
+    Energy thresS1 = lightS1.first->mass()+lightS1.second->mass();
+    // baryons not possible
+    if(cluMass<=thresS0&&cluMass<=thresS1) {
+      std::get<1>(output) = false;
+      std::get<2>(output) = false;
     }
-    else {
-      output.second = false;
+    // all baryons possible
+    else if(cluMass>thresS0&&cluMass>thresS1) {
+      double p0 = _pwtDIquarkS0*kinFunction(cluMass,lightS0);
+      double p1 = _pwtDIquarkS1*kinFunction(cluMass,lightS1);
+      double test=UseRandom::rnd()*(1.+p0+p1);
+      if(test<=1.) {
+	std::get<1>(output) = false;
+	std::get<2>(output) = false;
+      }
+      else if(test<=1.+p0) {
+	std::get<0>(output) = false;
+	std::get<2>(output) = false;
+      }
+      else {
+	std::get<0>(output) = false;
+	std::get<1>(output) = false;
+      }
     }
+    // just spin-0 diquarks
+    else if(cluMass>thresS0) {
+      std::get<2>(output) = false;
+      double p0 = _pwtDIquarkS0*kinFunction(cluMass,lightS0);
+      double test=UseRandom::rnd()*(1.+p0);
+      if(test<=1.) {
+	std::get<1>(output) = false;
+      }
+      else {
+	std::get<0>(output) = false;
+      }
+    }
+    // just spin-1 diquarks
+    else if(cluMass>thresS1) {
+      std::get<1>(output) = false;
+      double p1 = _pwtDIquarkS1*kinFunction(cluMass,lightS1);
+      double test=UseRandom::rnd()*(1.+p1);
+      if(test<=1.) {
+	std::get<2>(output) = false;
+      }
+      else {
+	std::get<0>(output) = false;
+      }
+    }
+    else
+      assert(false);
   }
   return output;
 }
@@ -450,13 +514,14 @@ PDPtr Hw7Selector::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
   return getParticleData(idnew);
 }
 
-tcPDPair Hw7Selector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+tcPDPair Hw7Selector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2, int pspin) const {
   // Make sure that we don't have any diquarks as input, return arbitrarily
   // large value if we do
   Energy currentSum = Constants::MaxEnergy;
   tcPDPair output;
   for(unsigned int ix=0; ix<partons().size(); ++ix) {
     if(!DiquarkMatcher::Check(partons()[ix]->id())) continue;
+    if(partons()[ix]->iSpin()!=pspin) continue;
     HadronTable::const_iterator
       tit1=table().find(make_pair(abs(ptr1->id()),partons()[ix]->id())),
       tit2=table().find(make_pair(partons()[ix]->id(),abs(ptr2->id())));
