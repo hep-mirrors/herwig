@@ -117,7 +117,9 @@ public:
     map<pair<long,long>,tcPDPair>::const_iterator lightest =
       lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
     if(lightest!=lightestHadrons_.end())
-    return lightest->second.first->mass()+lightest->second.second->mass();
+      return lightest->second.first->mass()+lightest->second.second->mass();
+    else
+      return ZERO;
   }
 
   /**
