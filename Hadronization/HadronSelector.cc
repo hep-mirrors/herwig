@@ -402,7 +402,9 @@ void HadronSelector::doinit() {
   // lightest members (hadrons)
   for(const PDPtr & p1 : partons()) {
     for(const PDPtr & p2 : partons()) {
-      lightestHadrons_[make_pair(p1->id(),p2->id())] = lightestHadronPair(p1,p2);
+      tcPDPair lp = lightestHadronPair(p1,p2);
+      if(lp.first && lp.second)
+	lightestHadrons_[make_pair(p1->id(),p2->id())] = lp;
     }
   }
   // for debugging

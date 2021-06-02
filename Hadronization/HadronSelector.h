@@ -116,7 +116,7 @@ public:
   Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  { 
     map<pair<long,long>,tcPDPair>::const_iterator lightest =
       lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
-    assert(lightest!=lightestHadrons_.end());
+    if(lightest!=lightestHadrons_.end())
     return lightest->second.first->mass()+lightest->second.second->mass();
   }
 
