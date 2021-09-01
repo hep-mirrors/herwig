@@ -66,6 +66,7 @@ analyses['KK']["ND_1991_I321108"     ] = ["d12-x01-y01","d13-x01-y01"]
 analyses['KK']["OLYA_1981_I173076"   ] = ["d01-x01-y01"]
 analyses['KK']["SND_2016_I1484677"   ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['KK']["BABAR_2020_I1769654" ] = ["d01-x01-y01"]
+analyses['KK']["BESIII_2021_I1866051"] = ["d01-x01-y01"]
 # proton-antiproton
 analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
@@ -324,6 +325,7 @@ analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
+analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
