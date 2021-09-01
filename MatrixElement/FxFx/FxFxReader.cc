@@ -1219,7 +1219,7 @@ bool FxFxReader::uncacheEvent() {
   pos = mread(pos, hepeup.MOTHUP[0], hepeup.NUP);
   hepeup.ICOLUP.resize(hepeup.NUP);
   pos = mread(pos, hepeup.ICOLUP[0], hepeup.NUP);
-  hepeup.PUP.resize(hepeup.NUP, vector<double>(5));
+  hepeup.PUP.resize(hepeup.NUP);
   for ( int i = 0; i < hepeup.NUP; ++i ) 
     pos = mread(pos, hepeup.PUP[i][0], 5);
   hepeup.VTIMUP.resize(hepeup.NUP);
