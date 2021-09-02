@@ -368,8 +368,11 @@ elif(collider=="EE") :
         if "gg" in parameterName :
             process = StringBuilder("create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n")
             process+=insert_ME("MEee2Higgs2SM","Gluon","Allowed")
+        elif "LL" in parameterName :
+            process = StringBuilder(insert_ME("MEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Charged\n"
         else :
-            process = StringBuilder(insert_ME("MEee2gZ2qq"))
+            process  = StringBuilder(insert_ME("MEee2gZ2qq"))
             try :
                 ecms = float(parameterName)
                 if(ecms<=3.75) :

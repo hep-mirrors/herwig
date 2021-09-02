@@ -101,7 +101,9 @@ PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig$
+MatrixElement/Matchbox/External/GoSam/gosam2herwig.py
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
+Sampling/herwig-mergegrids.py
 ^Utilities/Statistics/herwig-combinedistributions$
 ^Utilities/Statistics/herwig-combineruns$
 ^Utilities/Statistics/herwig-makedistributions$

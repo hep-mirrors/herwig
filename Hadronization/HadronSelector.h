@@ -19,6 +19,9 @@
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include "HadronSelector.fh"
+#include "HadronInfo.h"
+#include "Kupco.h"
+#include <tuple>
 
 namespace Herwig {
 
@@ -49,188 +52,6 @@ class HadronSelector: public Interfaced {
 
 public:
 
-  /** \ingroup Hadronization
-   *  \class HadronInfo
-   *  \brief Class used to store all the hadron information for easy access.
-   *  \author Philip Stephens
-   *
-   *  Note that:
-   *  - the hadrons in _table can be filled in any ordered
-   *    w.r.t. the mass value, and flavours for different
-   *    groups (for instance, (u,s) hadrons don't need to
-   *    be placed after (d,s) or any other flavour), but
-   *    all hadrons with the same flavours must be consecutive
-   *    ( for instance you cannot alternate hadrons of type
-   *    (d,s) with those of flavour (u,s) ).
-   *    Furthermore, it is assumed that particle and antiparticle
-   *    have the same weights, and therefore only one of them
-   *    must be entered in the table: we have chosen to refer
-   *    to the particle, defined as PDG id > 0, although if
-   *    an anti-particle is provided in input it is automatically
-   *    transform to its particle, simply by taking the modulus
-   *    of its id.
-   */
-  class HadronInfo {
-
-  public:
-
-    /**
-     *  Constructor
-     * @param idin The PDG code of the hadron
-     * @param datain The pointer to the ParticleData object
-     * @param swtin  The singlet/decuplet/orbital factor
-     * @param massin The mass of the hadron
-     */
-    HadronInfo(long idin=0, tPDPtr datain=tPDPtr(),
-	       double swtin=1., Energy massin=ZERO)
-      : id(idin), ptrData(datain), swtef(swtin), wt(1.0), overallWeight(0.0),
-	mass(massin)
-    {}
-
-    /**
-     *  Comparision operator on mass
-     */
-     bool operator<(const HadronInfo &x) const {
-      if(mass!=x.mass) return mass < x.mass;
-      else return id < x.id;
-    }
-
-    /**
-     * The hadrons id.
-     */
-    long  id;
-
-    /**
-     * pointer to ParticleData, to get the spin, etc...
-     */
-    tPDPtr ptrData;
-
-    /**
-     * singlet/decuplet/orbital factor
-     */
-    double swtef;
-
-    /**
-     * mixing factor
-     */
-    double wt;
-
-    /**
-     * (2*J+1)*wt*swtef
-     */
-    double overallWeight;
-
-    /**
-     * The hadrons mass
-     */
-    Energy mass;
-
-    /**
-     *  Rescale the weight for a given hadron
-     */
-    void rescale(double x) const {
-      const_cast<HadronInfo*>(this)->overallWeight *= x;
-    }
-
-    /**
-     * Friend method used to print the value of a table element.
-     */
-    friend PersistentOStream & operator<< (PersistentOStream & os,
-					   const HadronInfo & hi ) {
-      os << hi.id << hi.ptrData << hi.swtef << hi.wt
-	 << hi.overallWeight << ounit(hi.mass,GeV);
-      return os;
-    }
-
-    /**
-     * debug output
-     */
-    friend ostream & operator<< (ostream & os, const HadronInfo & hi ) {
-      os << std::scientific << std::showpoint
-	 << std::setprecision(4)
-	 << setw(2)
-	 << hi.id << '\t'
-	 << hi.swtef << '\t'
-	 << hi.wt << '\t'
-	 << hi.overallWeight << '\t'
-	 << ounit(hi.mass,GeV);
-      return os;
-    }
-
-    /**
-     * Friend method used to read in the value of a table element.
-     */
-    friend PersistentIStream & operator>> (PersistentIStream & is,
-					   HadronInfo & hi ) {
-      is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt
-	 >> hi.overallWeight >> iunit(hi.mass,GeV);
-      return is;
-    }
-  };
-
-  /** \ingroup Hadronization
-   *  \class Kupco
-   *  \brief Class designed to make STL routines easy to use.
-   *  \author Philip Stephens
-   *
-   *  This class is used to generate a list of the hadron pairs which can
-   *  be produced that allows easy traversal and quick access.
-   */
-  class Kupco {
-
-  public:
-
-    /**
-     *  Constructor
-     * @param inidQ PDG code of the quark drawn from the vacuum.
-     * @param inhad1 ParticleData for the first hadron produced.
-     * @param inhad2 ParticleData for the second hadron produced.
-     * @param inwgt  The weight for the hadron pair
-     */
-     Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt)
-      : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
-    {}
-
-    /**
-     * id of the quark drawn from the vacuum.
-     */
-    tcPDPtr idQ;
-
-    /**
-     * The ParticleData object for the first hadron produced.
-     */
-    tcPDPtr hadron1;
-
-    /**
-     * The ParticleData object for the second hadron produced.
-     */
-    tcPDPtr hadron2;
-
-    /**
-     * Weight factor of this componation.
-     */
-    Energy weight;
-  };
-
-public:
-
-  /**
-   *  The helper classes
-   */
-  //@{
-  /**
-   * The type is used to contain all the hadrons info of a given flavour.
-   */
-  typedef set<HadronInfo> KupcoData;
-  //@}
-
-  /**
-   * The hadron table type.
-   */
-  typedef map<pair<long,long>,KupcoData> HadronTable;
-
-public:
-
   /**
    * The default constructor.
    */
@@ -244,9 +65,8 @@ public:
    * @param par2 The second constituent
    * @param par3 The third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1,
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-    = 0;
+  virtual tcPDPair chooseHadronPair(const Energy cluMass, 
+				    tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Select the single hadron for a cluster decay
@@ -286,20 +106,20 @@ public:
    * select the one that produces the lightest pair of hadrons, compatible
    * with the charge conservation constraint.
    */
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					   tcPDPtr ptr3 = PDPtr ()) const;
+  tcPDPair lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-    Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					tcPDPtr ptr3 = PDPtr ()) const  {
-    pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
-    if ( ! pairData.first || ! pairData.second ) return ZERO;
-    return ( pairData.first->mass() + pairData.second->mass() );
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  { 
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    if(lightest!=lightestHadrons_.end())
+      return lightest->second.first->mass()+lightest->second.second->mass();
+    else
+      return ZERO;
   }
 
   /**
@@ -307,13 +127,10 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-			  tcPDPtr ptr3 = PDPtr ()) const;
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -321,31 +138,20 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param threshold The theshold
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
   vector<pair<tcPDPtr,double> >
   hadronsBelowThreshold(Energy threshold,
-			tcPDPtr ptr1, tcPDPtr ptr2,
-			tcPDPtr ptr3 = PDPtr ()) const;
+			tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
-   * @param ptr3 is the third  constituent
    */
-   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-  				   tcPDPtr ptr3 = PDPtr ()) const {
-#else
-                                   tcPDPtr = PDPtr ()) const {
-#endif
-    // The method assumes ptr3 == empty
-    assert(!(ptr3));
+   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
     // find entry in the table
     pair<long,long> ids(abs(ptr1->id()),abs(ptr2->id()));
     HadronTable::const_iterator tit=_table.find(ids);
@@ -360,66 +166,32 @@ public:
   }
 
   /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent
+   *  Access the parton weights
    */
-  Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
-
-  /**
-   *  Return the weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The down quark weight.
-   */
-   double pwtDquark()  const {
-    return _pwtDquark;
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
+    assert( it != _pwt.end() );
+    return it->second;
   }
 
   /**
-   * The up quark weight.
+   *  Force baryon/meson selection
    */
-   double pwtUquark()  const {
-    return _pwtUquark;
-  }
+  virtual std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
-   * The strange quark weight.
+   *  Strange quark weight
    */
-   double pwtSquark()  const {
-    return _pwtSquark;
-  }
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
-   * The charm quark weight.
+   * Return the particle data of the diquark (anti-diquark) made by the two
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
    */
-   double pwtCquark()  const {
-    return _pwtCquark;
-  }
-
-  /**
-   * The bottom quark weight.
-   */
-   double pwtBquark()  const {
-    return _pwtBquark;
-  }
-
-  /**
-   * The diquark weight for spin-0 diquarks.
-   */
-   double pwtDIquarkS0() const {
-    return _pwtDIquarkS0;
-  }
-
-  /**
-   * The diquark weight for spin-1 diquarks.
-   */
-   double pwtDIquarkS1() const {
-    return _pwtDIquarkS1;
-  }
-  //@}
-
+  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -518,24 +290,36 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-   const HadronTable & table() const {
+  const HadronTable & table() const {
     return _table;
   }
 
   /**
+   *  Access to the table of hadrons
+   */
+  HadronTable & table() {
+    return _table;
+  }
+  
+  /**
    *  Access to the list of partons
    */
-   const vector<PDPtr> & partons() const {
+  const vector<PDPtr> & partons() const {
+    return _partons;
+  }
+  
+  /**
+   *  Access to the list of partons
+   */
+  vector<PDPtr> & partons() {
     return _partons;
   }
 
   /**
    *  Access the parton weights
    */
-   double pwt(long pid) const {
-    map<long,double>::const_iterator it = _pwt.find(abs(pid));
-    assert( it != _pwt.end() );
-    return it->second;
+  map<long,double> & pwt() {
+    return _pwt;
   }
 
   /**
@@ -586,15 +370,51 @@ protected:
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
    */
-  double specialWeight(long id) const;
+  double specialWeight(long id) const {
+    const int pspin = id % 10;
+    // Only K0L and K0S have pspin == 0, should
+    // not get them until Decay step
+    assert( pspin != 0 );
+    // Baryon : J = 1/2 or 3/2
+    if(pspin%2==0)
+      return baryonWeight(id);
+    // Meson
+    else 
+      return mesonWeight(id); 
+  }
+  
+  /**
+   *  Weights for mesons
+   */
+  virtual double mesonWeight(long id) const;
+
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const = 0;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
    * for the input PDG id  idHad > 0, suppose to be made by the
-   * two constituent particle pointers: par1 and par2 (both with proper sign).
+   * two constituent particle pointers: ptr1 and ptr2 (both with proper sign).
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
+  /**
+   *   Insert a meson in the table
+   */
+  virtual void insertMeson(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac12\f$ baryon in the table
+   */
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
+  
 private:
 
   /**
@@ -616,49 +436,9 @@ private:
   vector<PDPtr> _forbidden;
 
   /**
-   *  The weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-
-  /**
-   * The probability of producting a spin-0 diquark.
-   */
-  double _pwtDIquarkS0;
-
-  /**
-   * The probability of producting a spin-1 diquark.
-   */
-  double _pwtDIquarkS1;
-
-  /**
    * Weights for quarks and diquarks.
    */
   map<long,double> _pwt;
-  //@}
 
   /**
    *  The mixing angles for the \f$I=0\f$ mesons containing light quarks
@@ -782,26 +562,6 @@ private:
   vector<vector<vector<double> > > _repwt;
 
   /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt;
-
-  /**
-   *  The octet weight
-   */
-  double _octWt;
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt;
-  //@}
-
-  /**
    * The table of hadron data
    */
   HadronTable _table;
@@ -843,6 +603,16 @@ private:
    *  Option for the selection of hadrons below the pair threshold
    */
   unsigned int belowThreshold_;
+  
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  /**
+   * Masses of lightest hadron pair
+   */
+  map<pair<long,long>,tcPDPair> lightestHadrons_;
+  //@}
 };
 
 

@@ -3,12 +3,9 @@
 # LEP physics parameters (override defaults) 
 ##################################################
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
-# select the analyses
+# select the analyses 
 ##################################################
-# OPAL event shapes and multiplicities at different energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
-# OPAL from gluon paper
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
-# L3 event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2008_I825820
+# tau polarization in e+e- > tau+tau-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2008_I763352

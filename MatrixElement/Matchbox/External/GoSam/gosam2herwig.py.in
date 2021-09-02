@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! @PYTHON@
 
 import os,sys,glob,errno,shutil,time     
 from optparse import OptionParser   # should be argparse replace options by args

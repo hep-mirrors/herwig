@@ -40,6 +40,7 @@ newdef ClusterHadHandler:UnderlyingEventHandler NULL
 newdef ClusterFissioner:HadronSelector HadronSelector 
 newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
+newdef ClusterFinder:HadronSelector HadronSelector
 
 newdef ColourReconnector:ColourReconnection Yes
 newdef ColourReconnector:ReconnectionProbabilityBaryonic 0.7
@@ -84,19 +85,15 @@ newdef PartonSplitter:SplitPwtSquark 0.824135
 newdef PartonSplitter:Split uds
 
 # 
-newdef HadronSelector:PwtDquark             1.0
-newdef HadronSelector:PwtUquark             1.0
-newdef HadronSelector:PwtSquark             0.291717
-newdef HadronSelector:PwtCquark             0.0
-newdef HadronSelector:PwtBquark             0.0
-newdef HadronSelector:PwtDIquarkS0          0.2
-newdef HadronSelector:PwtDIquarkS1          0.1
-newdef HadronSelector:SngWt                 0.75
-newdef HadronSelector:OctWt                 0.60
-newdef HadronSelector:DecWt                 0.50
-newdef HadronSelector:Mode                  1
-newdef HadronSelector:BelowThreshold        All
-newdef HadronSelector:scHadronWtFactor      2.5
-newdef HadronSelector:sbHadronWtFactor      2.5
+newdef HadronSelector:PwtDquark  1.0
+newdef HadronSelector:PwtUquark  1.0
+newdef HadronSelector:PwtSquark 0.291717
+newdef HadronSelector:PwtCquark  0.0
+newdef HadronSelector:PwtBquark  0.0
+newdef HadronSelector:PwtDIquark  0.298
+newdef HadronSelector:SngWt      0.74
+newdef HadronSelector:DecWt      0.62
+newdef HadronSelector:Mode 1
+newdef HadronSelector:BelowThreshold All
 
 create Herwig::SpinHadronizer SpinHadronizer

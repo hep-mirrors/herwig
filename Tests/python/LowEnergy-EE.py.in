@@ -66,6 +66,7 @@ analyses['KK']["ND_1991_I321108"     ] = ["d12-x01-y01","d13-x01-y01"]
 analyses['KK']["OLYA_1981_I173076"   ] = ["d01-x01-y01"]
 analyses['KK']["SND_2016_I1484677"   ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['KK']["BABAR_2020_I1769654" ] = ["d01-x01-y01"]
+analyses['KK']["BESIII_2021_I1866051"] = ["d01-x01-y01"]
 # proton-antiproton
 analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
@@ -83,6 +84,8 @@ analyses["PPbar"]["FENICE_1998_I471263" ] = ["d01-x01-y01"]
 analyses["PPbar"]["FENICE_1994_I377833" ] = ["d01-x01-y01"]
 analyses['PPbar']["BESII_2005_I685906"  ] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
+analyses['PPbar']["BESIII_2021_I1853007"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2021_I1847766"] = ["d01-x01-y01"]
 # pi0 gamma
 analyses["PiGamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
 analyses["PiGamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
@@ -114,6 +117,8 @@ analyses['3Pi']["ND_1991_I321108"        ] = ["d05-x01-y01","d10-x01-y04"]
 analyses['3Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y01"]
 analyses["3Pi"]["CLEO_2006_I691720"      ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2015_I1389908"      ] = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2020_I1809286"      ] = ["d01-x01-y01","d02-x01-y01",
+                                              "d03-x01-y01","d03-x01-y02","d03-x01-y03"]
 # eta pipi
 analyses["EtaPiPi"]["BABAR_2018_I1700745"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["EtaPiPi"]["BABAR_2018_I1647139"] = ["d01-x01-y01"]
@@ -125,7 +130,8 @@ analyses["EtaPiPi"]["DM2_1988_I264144"   ] = ["d01-x01-y01"]
 analyses['EtaPiPi']["ND_1991_I321108"    ] = ["d06-x01-y01","d14-x01-y01"]
 analyses['EtaPiPi']["CMD3_2019_I1744510" ] = ["d02-x01-y01"]
 # eta' pipi
-analyses["EtaprimePiPi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
+analyses["EtaprimePiPi"]["BABAR_2007_I758568"  ] = ["d05-x01-y01","d06-x01-y01"]
+analyses["EtaprimePiPi"]["BESIII_2020_I1836509"] = ["d01-x01-y01"]
 # Eta Phi
 analyses["EtaPhi"]["BABAR_2008_I765258"  ] = ["d04-x01-y01","d05-x01-y01"]
 analyses["EtaPhi"]["BABAR_2007_I758568"  ] = ["d08-x01-y01","d09-x01-y01"]
@@ -138,7 +144,9 @@ analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
 analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
 analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
 analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
+analyses["EtaPhi"]["BESIII_2021_I1857930"] = ["d01-x01-y01"]
 # Eta Omega
+analyses["EtaOmega"]["BESIII_2020_I1817739" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
 analyses["EtaOmega"]["SND_2019_I1726419" ] = ["d01-x01-y01","d01-x01-y02"]
@@ -163,11 +171,12 @@ analyses['4Pi']["DM1_1982_I168552"       ] = ["d01-x01-y01"]
 analyses['4Pi']["DM1_1979_I132828"       ] = ["d01-x01-y01"]
 analyses['4Pi']["GAMMAGAMMA_1980_I153382"] = ["d01-x01-y01"]
 analyses['4Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y02"]
+analyses["4Pi"]["BESIII_2020_I1817739"] = ["d02-x01-y01"]
 # (these are Omega(-> pi0 gamma) pi0)
-analyses["OmegaPi"]["SND_2016_I1489182"  ] = ["d01-x01-y01"]
-analyses["OmegaPi"]["SND_2000_I527752"   ] = ["d01-x01-y01"]
-analyses["OmegaPi"]["SND_2000_I503946"   ] = ["d01-x01-y01"]
-analyses["OmegaPi"]["CMD2_2003_I616446"  ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["SND_2016_I1489182"   ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["SND_2000_I527752"    ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["SND_2000_I503946"    ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["CMD2_2003_I616446"   ] = ["d01-x01-y01"]
 # non Omega
 analyses["OmegaPi"]["SND_2002_I587084"  ] = ["d01-x01-y01"]
 analyses["OmegaPi"]["CMD2_2004_I630009" ] = ["d01-x01-y01"]
@@ -176,6 +185,7 @@ analyses["OmegaPi"]["KLOE_2008_I791841" ] = ["d02-x01-y01"]
 analyses["OmegaPi"]["CMD2_1999_I483994" ] = ["d03-x01-y01"]
 analyses['OmegaPi']["ND_1991_I321108"   ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d10-x01-y03"]
+analyses["OmegaPi"]["BESIII_2020_I1817739"] = ["d02-x01-y01"]
 # 5 pion and related
 analyses["OmegaPiPi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
@@ -254,6 +264,9 @@ analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y1
                                          "d01-x01-y15","d01-x01-y16","d01-x01-y17","d01-x01-y18"]
 analyses['6m']["SND_2016_I1473343"   ] = ["d01-x01-y01"]
 analyses['6m']["BESIII_2020_I1788734"] = ["d01-x01-y01"]
+analyses['6m']["BABAR_2021_I1844422" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+                                          "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
+analyses['6m']["BESIII_2020_I1837725" ] = ["d01-x01-y01"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
@@ -307,8 +320,12 @@ analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 # hyperons
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
+                                          "d02-x01-y01","d02-x01-y02"]
 analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
+analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
+analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
@@ -340,10 +357,17 @@ if(opts.plot) :
                 for ix in range(1,6) :
                     output+= " -m/%s/%s" % (analysis,"d07-x01-y0%s"% ix)
                     output+= " -m/%s/%s" % (analysis,"d08-x01-y0%s"% ix)
+            elif(analysis=="BESIII_2020_I1814783") :
+                for ix in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d03-x01-y0%s"% ix)
+            elif(analysis=="SND_2020_I1809286") :
+                for ix in range(1,5) :
+                    output+= " -m/%s/%s" % (analysis,"d04-x01-y0%s"% ix)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
     quit()
+
 # mapping of process to me to use
 me = { "PiPi"         : "MEee2Pions",
        "KK"           : "MEee2Kaons",
@@ -373,6 +397,7 @@ for val in particles :
     mass = float(vals[0])-float(vals[1])
     particles[val]=mass
     os.remove("temp.in")
+
 # minimum CMS energies for specific processes
 minMass = { "PiPi"         : 2.*particles["pi+"],
             "KK"           : 2.*particles["K+"],
@@ -469,14 +494,14 @@ for energy in sorted(energies) :
     # input file for perturbative QCD
     if(opts.perturbative and energy> thresholds[0]) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : "", "maxflavour" : maxflavour})
+                                                     "lepton" : "", "maxflavour" : maxflavour, 'name' : "EE"})
         with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
     # input file for currents
     if(opts.nonPerturbative and proc!="") :
         inputNonPerturbative = nonPerturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                           "processes" : proc})
+                                                           "processes" : proc, 'name' : "EE"})
         with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-EE-NonPerturbative-%8.6f.yoda " % energy

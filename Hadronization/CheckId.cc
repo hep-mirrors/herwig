@@ -63,14 +63,6 @@ long CheckId::makeDiquarkID(long id1, long id2, long pspin) {
   return id1 > 0 ? idnew : -idnew;
 }
 
-PDPtr CheckId::makeDiquark(tcPDPtr par1, tcPDPtr par2, long pspin) {
-    long id1 = par1->id();
-    long id2 = par2->id();
-    long idnew = makeDiquarkID(id1,id2, pspin);
-    assert(!CurrentGenerator::isVoid());
-    return CurrentGenerator::current().getParticleData(idnew);
-}
-
 bool CheckId::canBeMeson(tcPDPtr par1,tcPDPtr par2) {
   assert(par1 && par2);
   long id1 = par1->id();
@@ -81,8 +73,6 @@ bool CheckId::canBeMeson(tcPDPtr par1,tcPDPtr par2) {
      abs(int(par2->iColour())) == 3 &&
      id1*id2 < 0);
 }
-
-
 
 bool CheckId::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) {
   assert(par1 && par2);

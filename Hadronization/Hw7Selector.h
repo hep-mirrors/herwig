@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// HwppSelector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Hw7Selector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_HwppSelector_H
-#define HERWIG_HwppSelector_H
+#ifndef HERWIG_Hw7Selector_H
+#define HERWIG_Hw7Selector_H
 //
-// This is the declaration of the HwppSelector class.
+// This is the declaration of the Hw7Selector class.
 //
 
 #include "HadronSelector.h"
@@ -19,26 +19,34 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup hadronization
- * The HwppSelector class selects the hadrons produced in cluster decay using
+ * The Hw7Selector class selects the hadrons produced in cluster decay using
  * the Herwig variant of the cluster model.
  *
- * @see \ref HwppSelectorInterfaces "The interfaces"
- * defined for HwppSelector.
+ * @see \ref Hw7SelectorInterfaces "The interfaces"
+ * defined for Hw7Selector.
  */
-class HwppSelector: public HadronSelector {
+class Hw7Selector: public HadronSelector {
 
 public:
 
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1),
+  Hw7Selector() : HadronSelector(1),
 		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-		   _pwtBquark( 0.0 ),_pwtDIquark(1.0 ),
+		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
 		   _sngWt( 1.0 ), _decWt( 1.0 ),
 		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
 		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
+
+  /**
+   * Return the particle data of the diquark (anti-diquark) made by the two
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
 
 public:
 
@@ -84,23 +92,22 @@ protected:
   virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent
+   *   Insert a spin\f$\frac12\f$ baryon in the table
    */
-  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-    map<pair<long,long>,tcPDPair>::const_iterator lightest =
-      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
-    assert(lightest!=lightestBaryons_.end());
-    return lightest->second.first->mass()+lightest->second.second->mass();
-  }
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
   
   /**
    *  Returns the mass of the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
+   * @param pspin Spin in (2S+1) of the diquark
    */
-  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2, int pspin) const;
 
 protected:
 
@@ -137,7 +144,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwppSelector & operator=(const HwppSelector &) = delete;
+  Hw7Selector & operator=(const Hw7Selector &) = delete;
 
 private:
 
@@ -171,9 +178,14 @@ private:
   double _pwtBquark;
 
   /**
-   * The probability of producting a diquark.
+   * The probability of producting a spin-0 diquark.
    */
-  double _pwtDIquark;
+  double _pwtDIquarkS0;
+
+  /**
+   * The probability of producting a spin-1 diquark.
+   */
+  double _pwtDIquarkS1;
   //@}
 
   /**
@@ -238,11 +250,10 @@ private:
   /**
    * Masses of lightest baryon pair
    */
-  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  map<pair<long,long>,tcPDPair> lightestBaryonsS0_,lightestBaryonsS1_;
   //@}
-
 };
 
 }
 
-#endif /* HERWIG_HwppSelector_H */
+#endif /* HERWIG_Hw7Selector_H */

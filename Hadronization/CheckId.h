@@ -49,14 +49,6 @@ namespace CheckId {
   long makeDiquarkID(long id1, long id2, long pspin);
 
   /**
-   * Return the particle data of the diquark (anti-diquark) made by the two
-   * quarks (antiquarks) par1, par2.
-   * @param par1 (anti-)quark data pointer
-   * @param par2 (anti-)quark data pointer
-   */
-  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2, long pspin);
-
-  /**
    * Return true if the two particles in input can be the components of a meson;
    *false otherwise.
    */

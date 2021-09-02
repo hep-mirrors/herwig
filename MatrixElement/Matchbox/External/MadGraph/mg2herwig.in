@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! @PYTHON@
 
 import os,sys,glob,errno,shutil,time,fnmatch,tempfile
 from optparse import OptionParser

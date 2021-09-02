@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The FOCUSDptoKmPipPip class implements the fits of FOCUS,
- * Phys.Lett. B653 (2007) 1-11 for the decay \f$D^+\toK^-\pi^+\pi^-\f$
+ * Phys.Lett. B653 (2007) 1-11 for the decay \f$D^+\to K^-\pi^+\pi^-\f$
  *
  * @see \ref FOCUSDptoKmPipPipInterfaces "The interfaces"
  * defined for FOCUSDptoKmPipPip.

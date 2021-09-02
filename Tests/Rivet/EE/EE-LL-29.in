@@ -2,12 +2,10 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 34.5
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 29.
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################
-# tasso event shapes at various low energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_I284251
-# JADE gamma,pi and eta spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1985_I213948
+# tau polarization in e+e- > tau+tau-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MAC_1987_I245571

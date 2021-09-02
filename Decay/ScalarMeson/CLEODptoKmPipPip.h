@@ -12,7 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The CLEODptoKmPipPip class implements the CLEO model from arXiv:0802.4214 for \f$D^+\toK^-\pi^+\pi^+\f$
+ * The CLEODptoKmPipPip class implements the CLEO model from arXiv:0802.4214 for \f$D^+\to K^-\pi^+\pi^+\f$
  *
  * @see \ref CLEODptoKmPipPipInterfaces "The interfaces"
  * defined for CLEODptoKmPipPip.

@@ -182,15 +182,15 @@ for energy in sorted(energies) :
         maxflavour=4
     if(opts.perturbative and energy >= opts.minEnergy) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : lepton_me, 'maxflavour' : maxflavour})
-        with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:
+                                                     "lepton" : lepton_me, 'maxflavour' : maxflavour, 'name' : "R"})
+        with open(opts.dest+"/Rivet-LowEnergy-R-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
-        targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
+        targets += "Rivet-LowEnergy-R-Perturbative-%8.6f.yoda " % energy
     # input file for currents
     if(opts.nonPerturbative and energy <= opts.maxEnergy) :
         inputNonPerturbative = nonPerturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                           "processes" : proc})
-        with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:
+                                                           "processes" : proc, 'name' : "R"})
+        with open(opts.dest+"/Rivet-LowEnergy-R-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
-        targets += "Rivet-LowEnergy-EE-NonPerturbative-%8.6f.yoda " % energy
+        targets += "Rivet-LowEnergy-R-NonPerturbative-%8.6f.yoda " % energy
 print (targets)

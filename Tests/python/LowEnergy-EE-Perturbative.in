@@ -32,4 +32,4 @@ ${ANALYSES}
 # Save run for later usage with 'Herwig run'
 ##################################################
 set EventGenerator:MaxErrors 10000
-saverun Rivet-LowEnergy-EE-Perturbative-${ECMS} EventGenerator
+saverun Rivet-LowEnergy-${name}-Perturbative-${ECMS} EventGenerator
