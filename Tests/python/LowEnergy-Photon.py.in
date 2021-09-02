@@ -26,6 +26,11 @@ analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      :
              "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
 # pi+pi-
 analyses["PiPi"]["CELLO_1992_I345437"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["BELLE_2007_I749358"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["VENUS_1995_I392360"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["MARKII_1990_I304882"  ] = ["d01-x01-y01",
+                                             "d02-x01-y01","d02-x01-y02","d02-x01-y03",
+                                             "d02-x01-y04","d02-x01-y05","d02-x01-y06"]
 # proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
@@ -45,6 +50,14 @@ if(opts.plot) :
             if(analysis=="CELLO_1992_I345437") :
                 for iy in range(1,22) :
                     output+= " -m/%s/%s" % (analysis,"d02-x01-y%02d"%iy)
+            elif(analysis=="BELLE_2007_I749358") :
+                for iy in range(2,100) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
+                for iy in range(100,142) :
+                    output+= " -m/%s/%s" % (analysis,"d%03d-x01-y01"%iy)
+            elif(analysis=="VENUS_1995_I392360") :
+                for iy in range(1,12) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
