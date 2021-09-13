@@ -82,7 +82,7 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
-        if(aopath.find("4129130")>0 ) :
+        if("4129130" in aopath or "420332" in aopath ) :
            if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
@@ -90,7 +90,7 @@ for f in yodafiles:
                tmpE[q2] = ao
            else:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
-        elif(aopath.find("2919893")>0 ) :
+        elif("2919893" in aopath or "I875006" in aopath) :
             outhistos[aopath] = ao
         elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
             continue
@@ -100,7 +100,7 @@ for f in yodafiles:
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.items():
-    if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
+    if( ("4129130" in hpath and ("d33" in hpath or "d34" in hpath ) ) ) :
         title=""
         path=""
         histo = list(hsets.values())[0]
@@ -119,41 +119,21 @@ for hpath,hsets in inhistos.items():
             sys.exit(1)
 
 # H1 transverse energy
-useOne("/H1_2000_S4129130/d01-x01-y01","0")
-useOne("/H1_2000_S4129130/d02-x01-y01","0")
-useOne("/H1_2000_S4129130/d03-x01-y01","0")
-useOne("/H1_2000_S4129130/d04-x01-y01","0")
-useOne("/H1_2000_S4129130/d05-x01-y01","0")
-useOne("/H1_2000_S4129130/d06-x01-y01","0")
-useOne("/H1_2000_S4129130/d07-x01-y01","0")
-useOne("/H1_2000_S4129130/d08-x01-y01","0")
-useOne("/H1_2000_S4129130/d09-x01-y01","0")
-useOne("/H1_2000_S4129130/d10-x01-y01","0")
-useOne("/H1_2000_S4129130/d11-x01-y01","0")
-useOne("/H1_2000_S4129130/d12-x01-y01","0")
-useOne("/H1_2000_S4129130/d13-x01-y01","0")
-useOne("/H1_2000_S4129130/d14-x01-y01","0")
-useOne("/H1_2000_S4129130/d15-x01-y01","0")
-useOne("/H1_2000_S4129130/d16-x01-y01","50")
-useOne("/H1_2000_S4129130/d17-x01-y01","50")
-useOne("/H1_2000_S4129130/d18-x01-y01","50")
-useOne("/H1_2000_S4129130/d19-x01-y01","50")
-useOne("/H1_2000_S4129130/d20-x01-y01","50")
-useOne("/H1_2000_S4129130/d21-x01-y01","50")
-useOne("/H1_2000_S4129130/d22-x01-y01","50")
-useOne("/H1_2000_S4129130/d23-x01-y01","50")
-useOne("/H1_2000_S4129130/d24-x01-y01","50")
-useOne("/H1_2000_S4129130/d25-x01-y01","0")
-useOne("/H1_2000_S4129130/d26-x01-y01","0")
-useOne("/H1_2000_S4129130/d27-x01-y01","0")
-useOne("/H1_2000_S4129130/d28-x01-y01","0")
-useOne("/H1_2000_S4129130/d29-x01-y01","50")
-useOne("/H1_2000_S4129130/d30-x01-y01","50")
-useOne("/H1_2000_S4129130/d31-x01-y01","50")
-useOne("/H1_2000_S4129130/d32-x01-y01","50")
-
+for i in range(1,16) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"0")
+for i in range(16,25) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"50")
+for i in range(25,29) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"0")
+for i in range(29,33) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"50")
 merge("/H1_2000_S4129130/d33-x01-y01")
 merge("/H1_2000_S4129130/d34-x01-y01")
+# ZEUS F2
+for i in range(1,18) :
+    useOne("/ZEUS_1996_I420332/d%02d-x01-y01" % i,"0")
+for i in range(18,34) :
+    useOne("/ZEUS_1996_I420332/d%02d-x01-y01" % i,"50")
 
 # Choose output file
 name = args[0]+".yoda"

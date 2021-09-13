@@ -11,3 +11,5 @@ set /Herwig/Cuts/NeutralCurrentCut:MinQ2 2.5
 set /Herwig/Cuts/Cuts:MHatMin 0.
 # H1 energy flow analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2000_S4129130
+# ZEUS F2
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1996_I420332
