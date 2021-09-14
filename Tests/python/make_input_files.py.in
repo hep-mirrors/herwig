@@ -342,9 +342,10 @@ process=StringBuilder()
 # DIS
 if(collider=="DIS") :
     if(simulation=="") :
-        if "NoME" in parameterName :
+        if "NoME" in name :
             process = StringBuilder("set /Herwig/Shower/ShowerHandler:HardEmission None")
             parameterName=parameterName.replace("NoME-","")
+            parameterName=parameterName.replace("DIS-" ,"")
         else :
             process = StringBuilder("")
     elif(simulation=="Powheg") :
