@@ -346,21 +346,37 @@ if(collider=="DIS") :
             process = StringBuilder("set /Herwig/Shower/ShowerHandler:HardEmission None")
             parameterName=parameterName.replace("NoME-","")
             parameterName=parameterName.replace("DIS-" ,"")
+        if "CC" in parameterName :
+            process += insert_ME("MEDISCC")
         else :
-            process = StringBuilder("")
+            process += insert_ME("MEDISNC")
     elif(simulation=="Powheg") :
-        process = StringBuilder("")
-    elif(simulation=="Matchbox" ) :
-      if "e-" in parameterName :
-            process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",0,0))
-      else :
-            process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",0,0))
-    elif(simulation=="Merging" ) :
-        if "e-" in parameterName :
-            process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",2,2))
+        if "CC" in parameterName :
+            process = StringBuilder(insert_ME("PowhegMEDISCC"))
         else :
-            process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2))
-
+            process = StringBuilder(insert_ME("PowhegMEDISNC"))
+    elif(simulation=="Matchbox" ) :
+        if "CC" in name :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> nu_e j","0","2","",0,0))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> nu_ebar j","0","2","",0,0))
+        else :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",0,0))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",0,0))
+    elif(simulation=="Merging" ) :
+        if "CC" in name :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",2,2))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2))
+        else :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> nu_e j","0","2","",2,2))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> nu_ebar j","0","2","",2,2))
 # EE
 elif(collider=="EE") :
     if(simulation=="") :
