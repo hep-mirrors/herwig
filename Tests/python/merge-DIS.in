@@ -13,7 +13,7 @@ import os, yoda
 def fillAbove(desthisto, sourcehistosbyq2):
     q2high=1e100
     q2low=-1e100
-    for q2,h in  sorted(sourcehistosbyq2.iteritems(),reverse=True) :
+    for q2,h in  sorted(sourcehistosbyq2.items(),reverse=True) :
         q2low=q2
         for i in range(0,h.numBins()) :
             if(h.bins()[i].xMin()  >= q2low and 
@@ -21,19 +21,19 @@ def fillAbove(desthisto, sourcehistosbyq2):
                 desthisto.bins()[i] += h.bins()[i]
         q2high=q2
 
-def merge(hpath):
+def merge(hpath, beam, energy):
     global inhistos
     global outhistos
     try:
-        fillAbove(outhistos[hpath], inhistos[hpath])
+        fillAbove(outhistos[hpath], inhistos[hpath][beam][energy])
     except:
         pass
 
-def useOne(hpath, q2):
+def useOne(hpath, beam, energy, q2):
     global inhistos
     global outhistos
     try:
-        outhistos[hpath] =  inhistos[hpath][float(q2)]
+        outhistos[hpath] =  inhistos[hpath][beam][energy][float(q2)]
     except:
         pass
 
@@ -56,9 +56,14 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # #######################################
-
-yodafiles=["-e--LowQ2","-e+-LowQ2","-e+-HighQ2"]
-
+yodafiles=["-820-e--LowQ2"]
+for energy in [460,575,820,920] :
+    for q2 in ["Low","Med","High"] :
+        yodafiles.append("-%s-e+-%sQ2" % (energy,q2))
+        if energy==920 :
+            yodafiles.append("-%s-e--%sQ2" % (energy,q2))
+            yodafiles.append("-%s-e+-CC-%sQ2" % (energy,q2))
+            yodafiles.append("-%s-e--CC-%sQ2" % (energy,q2))
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -66,10 +71,18 @@ weights = {}
 
 for f in yodafiles:
     file = "Rivet-%s%s.yoda" % (args[0], f)
-    if(file.find("Low")> 0) :
-        q2=0
-    elif(file.find("High")>0) :
+    # energy and beam
+    temp=f.split("-")
+    energy = int(temp[1])
+    beam = temp[2]
+    if(beam=="e") : beam="e-"
+    # Q2 range
+    if("Low" in file) :
+        q2=2
+    elif("Med" in file) :
         q2=50
+    elif("High" in file) :
+        q2=1000
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
@@ -81,16 +94,25 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
-        if("RAW" in aopath) :continue
-        if(aopath.find("4129130")>0 ) :
+        if "HERA_2015_I1377206" in aopath:
+            if "d06" in aopath or "d07" in aopath :
+                if "CC" not in f : continue
+            else :
+                if "CC" in f : continue
+        if("RAW" in aopath) : continue
+        if("4129130" in aopath or "420332" in aopath or "1377206" in aopath or "I875006" in aopath) :
            if aopath not in inhistos:
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
-           if q2 not in tmpE:
-               tmpE[q2] = ao
+           if beam not in tmpE :
+               tmpE[beam] = {}
+           if energy not in tmpE[beam] :
+               tmpE[beam][energy] = {}
+           if q2 not in tmpE[beam][energy]:
+               tmpE[beam][energy][q2] = ao
            else:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
-        elif(aopath.find("2919893")>0 ) :
+        elif("2919893" in aopath or "I1217865" in aopath) :
             outhistos[aopath] = ao
         elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
             continue
@@ -100,10 +122,11 @@ for f in yodafiles:
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.items():
-    if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
+    if( ("4129130" in hpath and ("d33" in hpath or "d34" in hpath ) ) or
+        ("875006" in hpath and "d01" in hpath ) ) :
         title=""
         path=""
-        histo = list(hsets.values())[0]
+        histo = list(list(list(hsets.values())[0].values())[0].values())[0]
         if hasattr(histo, 'title'):
             title=histo.title()
         if hasattr(histo, 'path'):
@@ -114,46 +137,84 @@ for hpath,hsets in inhistos.items():
             outhistos[hpath] = yoda.core.Profile1D(path,title)
             for i in range(0,histo.numBins()) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
-            logging.error("Histogram %s is of unknown type" % hpath)
+            logging.error("Histogram %s is of unknown type %s" % (hpath,type(histo)))
             sys.exit(1)
-
 # H1 transverse energy
-useOne("/H1_2000_S4129130/d01-x01-y01","0")
-useOne("/H1_2000_S4129130/d02-x01-y01","0")
-useOne("/H1_2000_S4129130/d03-x01-y01","0")
-useOne("/H1_2000_S4129130/d04-x01-y01","0")
-useOne("/H1_2000_S4129130/d05-x01-y01","0")
-useOne("/H1_2000_S4129130/d06-x01-y01","0")
-useOne("/H1_2000_S4129130/d07-x01-y01","0")
-useOne("/H1_2000_S4129130/d08-x01-y01","0")
-useOne("/H1_2000_S4129130/d09-x01-y01","0")
-useOne("/H1_2000_S4129130/d10-x01-y01","0")
-useOne("/H1_2000_S4129130/d11-x01-y01","0")
-useOne("/H1_2000_S4129130/d12-x01-y01","0")
-useOne("/H1_2000_S4129130/d13-x01-y01","0")
-useOne("/H1_2000_S4129130/d14-x01-y01","0")
-useOne("/H1_2000_S4129130/d15-x01-y01","0")
-useOne("/H1_2000_S4129130/d16-x01-y01","50")
-useOne("/H1_2000_S4129130/d17-x01-y01","50")
-useOne("/H1_2000_S4129130/d18-x01-y01","50")
-useOne("/H1_2000_S4129130/d19-x01-y01","50")
-useOne("/H1_2000_S4129130/d20-x01-y01","50")
-useOne("/H1_2000_S4129130/d21-x01-y01","50")
-useOne("/H1_2000_S4129130/d22-x01-y01","50")
-useOne("/H1_2000_S4129130/d23-x01-y01","50")
-useOne("/H1_2000_S4129130/d24-x01-y01","50")
-useOne("/H1_2000_S4129130/d25-x01-y01","0")
-useOne("/H1_2000_S4129130/d26-x01-y01","0")
-useOne("/H1_2000_S4129130/d27-x01-y01","0")
-useOne("/H1_2000_S4129130/d28-x01-y01","0")
-useOne("/H1_2000_S4129130/d29-x01-y01","50")
-useOne("/H1_2000_S4129130/d30-x01-y01","50")
-useOne("/H1_2000_S4129130/d31-x01-y01","50")
-useOne("/H1_2000_S4129130/d32-x01-y01","50")
-
-merge("/H1_2000_S4129130/d33-x01-y01")
-merge("/H1_2000_S4129130/d34-x01-y01")
+for i in range(1,16) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"e+",820,"2")
+for i in range(16,24) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"e+",820,"50")
+useOne("/H1_2000_S4129130/d24-x01-y01","e+",820,"1000")
+for i in range(25,29) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"e+",820,"2")
+for i in range(29,32) :
+    useOne("/H1_2000_S4129130/d%02d-x01-y01" % i,"e+",820,"50")
+useOne("/H1_2000_S4129130/d32-x01-y01","e+",820,"1000")
+merge("/H1_2000_S4129130/d33-x01-y01","e+",820)
+merge("/H1_2000_S4129130/d34-x01-y01","e+",820)
+# ZEUS di-jet
+merge("/ZEUS_2010_I875006/d01-x01-y01","e+",820)
+for i in range(2,10) :
+    useOne("/ZEUS_2010_I875006/d%02d-x01-y01" % i,"e+",820,"50")
+for i in range(10,13) :
+    useOne("/ZEUS_2010_I875006/d%02d-x01-y01" % i,"e+",820,"1000")
+for i in range(13,16) :
+    useOne("/ZEUS_2010_I875006/d%02d-x01-y01" % i,"e+",820,"50")
+for i in range(16,19) :
+    useOne("/ZEUS_2010_I875006/d%02d-x01-y01" % i,"e+",820,"1000")
+# ZEUS F2
+for i in range(1,18) :
+    if(i== 4 or i== 7 or i==10 or
+       i==12 or i==14 or i==16) : continue
+    useOne("/ZEUS_1996_I420332/d%02d-x01-y01" % i,"e+",820,"2")
+for i in range(18,29) :
+    useOne("/ZEUS_1996_I420332/d%02d-x01-y01" % i,"e+",820,"50")
+for i in range(29,34) :
+    useOne("/ZEUS_1996_I420332/d%02d-x01-y01" % i,"e+",820,"1000")
+# HERA F2
+# e+ 920
+for i in range(11,25) :
+    useOne("/HERA_2015_I1377206/d01-x01-y%02d" % i,"e+",920,"2")
+for i in range(25,37) :
+    useOne("/HERA_2015_I1377206/d01-x01-y%02d" % i,"e+",920,"50")
+for i in range(37,46) :
+    useOne("/HERA_2015_I1377206/d01-x01-y%02d" % i,"e+",920,"1000")
+for i in range(1,3) :
+    useOne("/HERA_2015_I1377206/d06-x01-y%02d" % i,"e+",920,"50")
+for i in range(3,11) :
+    useOne("/HERA_2015_I1377206/d06-x01-y%02d" % i,"e+",920,"1000")
+# e+ 820
+for i in range(16,29) :
+    useOne("/HERA_2015_I1377206/d02-x01-y%02d" % i,"e+",820,"2")
+for i in range(29,41) :
+    useOne("/HERA_2015_I1377206/d02-x01-y%02d" % i,"e+",820,"50")
+for i in range(41,51) :
+    useOne("/HERA_2015_I1377206/d02-x01-y%02d" % i,"e+",820,"1000")
+# e+ 575
+for i in range(3,14) :
+    useOne("/HERA_2015_I1377206/d03-x01-y%02d" % i,"e+",575,"2")
+for i in range(14,25) :
+    useOne("/HERA_2015_I1377206/d03-x01-y%02d" % i,"e+",575,"50")
+# e+ 460
+for i in range(3,14) :
+    useOne("/HERA_2015_I1377206/d04-x01-y%02d" % i,"e+",460,"2")
+for i in range(14,25) :
+    useOne("/HERA_2015_I1377206/d04-x01-y%02d" % i,"e+",460,"50")
+# e- 920
+for i in range(1,12) :
+    useOne("/HERA_2015_I1377206/d05-x01-y%02d" % i,"e-",920,"50")
+for i in range(12,23) :
+    useOne("/HERA_2015_I1377206/d05-x01-y%02d" % i,"e-",920,"1000")
+for i in range(1,3) :
+    useOne("/HERA_2015_I1377206/d07-x01-y%02d" % i,"e-",920,"50")
+for i in range(3,11) :
+    useOne("/HERA_2015_I1377206/d07-x01-y%02d" % i,"e-",920,"1000")
 
 # Choose output file
 name = args[0]+".yoda"

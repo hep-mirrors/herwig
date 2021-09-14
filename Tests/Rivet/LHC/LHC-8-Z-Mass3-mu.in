@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454:LMODE=MU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844:LMODE=MU
 # LHCb W/Z analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1454404:MODE=ZJET
+# LHC W/Z spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1471281

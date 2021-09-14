@@ -4,5 +4,7 @@
 ##################################################
 # CMS W+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1491953
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1471281
+
 # LHCb W/Z analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1454404:MODE=WJET
