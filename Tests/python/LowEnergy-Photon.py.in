@@ -25,12 +25,31 @@ analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      :
              "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
              "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
 # pi+pi-
-analyses["PiPi"]["CELLO_1992_I345437"   ] = ["d01-x01-y01"]
-analyses["PiPi"]["BELLE_2007_I749358"   ] = ["d01-x01-y01"]
-analyses["PiPi"]["VENUS_1995_I392360"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["PLUTO_1984_I204487"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["TPC_1986_I228072"     ] = ["d01-x01-y01","d04-x01-y01"]
 analyses["PiPi"]["MARKII_1990_I304882"  ] = ["d01-x01-y01",
                                              "d02-x01-y01","d02-x01-y02","d02-x01-y03",
                                              "d02-x01-y04","d02-x01-y05","d02-x01-y06"]
+analyses["PiPi"]["CELLO_1992_I345437"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["CLEO_1994_I372230"    ] = ["d01-x01-y01"]
+analyses["PiPi"]["VENUS_1995_I392360"   ] = ["d01-x01-y01"]
+analyses["PiPi"]["ALEPH_2003_I626022"   ] = ["d03-x01-y01"]
+analyses["PiPi"]["BELLE_2005_I667712"   ] = ["d01-x01-y02",
+                                             "d03-x01-y01","d03-x01-y02","d03-x01-y03",
+                                             "d03-x01-y04","d03-x01-y05","d03-x01-y06",
+                                             "d05-x01-y01","d05-x01-y02","d05-x01-y03",
+                                             "d05-x01-y04","d05-x01-y05","d05-x01-y06"]
+analyses["PiPi"]["BELLE_2007_I749358"   ] = ["d01-x01-y01"]
+# K+K-
+analyses["KK"  ]["TPC_1986_I228072"     ] = ["d05-x01-y01"]
+analyses["KK"  ]["CLEO_1994_I372230"    ] = ["d01-x01-y01"]
+analyses["KK"  ]["ALEPH_2003_I626022"   ] = ["d04-x01-y01"]
+analyses["KK"  ]["BELLE_2003_I629334"   ] = ["d01-x01-y01"]
+analyses["KK"  ]["BELLE_2005_I667712"   ] = ["d01-x01-y01",
+                                             "d04-x01-y01","d04-x01-y02","d04-x01-y03",
+                                             "d04-x01-y04","d04-x01-y05","d04-x01-y06",
+                                             "d06-x01-y01","d06-x01-y02","d06-x01-y03",
+                                             "d06-x01-y04","d06-x01-y05","d06-x01-y06"]
 # proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
@@ -50,20 +69,31 @@ if(opts.plot) :
             if(analysis=="CELLO_1992_I345437") :
                 for iy in range(1,22) :
                     output+= " -m/%s/%s" % (analysis,"d02-x01-y%02d"%iy)
+            elif(analysis=="VENUS_1995_I392360") :
+                for iy in range(1,12) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
+            elif(analysis=="ALEPH_2003_I626022") :
+                if process =="PiPi" :
+                    output+= " -m/%s/%s" % (analysis,"d01-x01-y01")
+                elif process =="KK" :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
+            elif(analysis=="BELLE_2003_I629334") :
+                for ix in range(2,8) :
+                    for iy in range(1,5) :
+                        if(ix==8 and iy>1) : continue
+                        output+= " -m/%s/%s" % (analysis,"d%02d-x01-y%02d"%(ix,iy))
             elif(analysis=="BELLE_2007_I749358") :
                 for iy in range(2,100) :
                     output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
                 for iy in range(100,142) :
                     output+= " -m/%s/%s" % (analysis,"d%03d-x01-y01"%iy)
-            elif(analysis=="VENUS_1995_I392360") :
-                for iy in range(1,12) :
-                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
     quit()
 # mapping of process to me to use
-me = { "PiPi"         : "MEgg2PiPi"}
+me = { "PiPi"         : "MEgg2PiPi",
+       "KK"           : "MEgg2KK"}
 
 # get the particle masses from Herwig
 particles = { "pi+" : 0., "pi0" : 0. ,"eta" : 0. ,"eta'" : 0. ,"phi" : 0. ,"omega" : 0. ,"p+" : 0. ,"K+" : 0.}
@@ -158,7 +188,6 @@ for energy in sorted(energies) :
         anal+= "insert /Herwig/Analysis/Rivet:Analyses 0 %s\n" %analysis
     proc=""
     matrices = energies[energy][0]
-    if(allProcesses) : matrices = me.values()
     for matrix in  matrices:
         proc+="insert SubProcess:MatrixElements 0 %s\n" % matrix
     maxflavour =5

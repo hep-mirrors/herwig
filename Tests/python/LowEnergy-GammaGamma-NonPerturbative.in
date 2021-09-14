@@ -10,7 +10,12 @@ read snippets/EECollider.in
 cd /Herwig/MatrixElements
 create Herwig::MEGammaGamma2X MEgg2PiPi HwMEGammaGamma.so
 create Herwig::GammaGamma2PiPiAmplitude GG2PiPiAmp
+set GG2PiPiAmp:Mode 1
 set MEgg2PiPi:Amplitude GG2PiPiAmp
+create Herwig::MEGammaGamma2X MEgg2KK HwMEGammaGamma.so
+create Herwig::GammaGamma2PiPiAmplitude GG2KKAmp
+set GG2KKAmp:Mode 2
+set MEgg2KK:Amplitude GG2KKAmp
 # set the process
 ${processes}
 

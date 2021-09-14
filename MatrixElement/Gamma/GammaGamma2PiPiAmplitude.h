@@ -24,7 +24,8 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2PiPiAmplitude() {}
+  GammaGamma2PiPiAmplitude() : mode_(0)
+  {}
 
 public:
 
@@ -125,7 +126,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2PiPiAmplitude & operator=(const GammaGamma2PiPiAmplitude &);
+  GammaGamma2PiPiAmplitude & operator=(const GammaGamma2PiPiAmplitude &) = delete;
+
+private:
+
+  /**
+   *   Which particles to produce
+   */
+  unsigned int mode_;
 
 };
 

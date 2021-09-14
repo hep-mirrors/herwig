@@ -6,6 +6,7 @@
 
 #include "GammaGamma2PiPiAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -25,12 +26,13 @@ IBPtr GammaGamma2PiPiAmplitude::fullclone() const {
   return new_ptr(*this);
 }
 
-void GammaGamma2PiPiAmplitude::persistentOutput(PersistentOStream & ) const {
+void GammaGamma2PiPiAmplitude::persistentOutput(PersistentOStream & os) const {
+  os << mode_;
 }
 
-void GammaGamma2PiPiAmplitude::persistentInput(PersistentIStream & , int) {
+void GammaGamma2PiPiAmplitude::persistentInput(PersistentIStream & is , int) {
+  is >> mode_;
 }
-
 
 // The following static variable is needed for the type
 // description system in ThePEG.
@@ -43,29 +45,59 @@ void GammaGamma2PiPiAmplitude::Init() {
   static ClassDocumentation<GammaGamma2PiPiAmplitude> documentation
     ("The GammaGamma2PiPiAmplitude class implements the amplitude for gamma gamma -> pi+pi-");
 
+  
+  static Switch<GammaGamma2PiPiAmplitude,unsigned int> interfaceMode
+    ("Mode",
+     "Which particles to produce",
+     &GammaGamma2PiPiAmplitude::mode_, 0, false, false);
+  static SwitchOption interfaceModeAll
+    (interfaceMode,
+     "All",
+     "Produce all pions and kaons",
+     0);
+  static SwitchOption interfaceModePiPi
+    (interfaceMode,
+     "PiPi",
+     "Produce pi+pi-",
+     1);
+  static SwitchOption interfaceModeKK
+    (interfaceMode,
+     "KK",
+     "Produce K+K-",
+     2);
+
 }
 
 vector<DiagPtr> GammaGamma2PiPiAmplitude::getDiagrams(unsigned int iopt) const {
   vector<DiagPtr> output;
   output.reserve(2);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
-  tcPDPtr pip = getParticleData(ParticleID::piplus);
-  tcPDPtr pim = pip->CC();
+  vector<long> ids; ids.reserve(2);
+  if(mode_==0 || mode_==1) ids.push_back(211);
+  if(mode_==0 || mode_==2) ids.push_back(321);
   // gamma gamma process
   if(iopt==0) {
     // first t-channel
-    output.push_back(new_ptr((Tree2toNDiagram(3),gamma,pip,gamma,1,pip, 2,pim,-1)));
-    // interchange
-    output.push_back(new_ptr((Tree2toNDiagram(3),gamma,pip,gamma,2,pip, 1,pim,-2)));
+    for (long id : ids) {
+      tcPDPtr pip = getParticleData(id);
+      tcPDPtr pim = pip->CC();
+      output.push_back(new_ptr((Tree2toNDiagram(3),gamma,pip,gamma,1,pip, 2,pim,-1)));
+      // interchange
+      output.push_back(new_ptr((Tree2toNDiagram(3),gamma,pip,gamma,2,pip, 1,pim,-2)));
+    }
   }
   // e+ e- > e+ e- pi+pi-
   else {
     tcPDPtr ep = getParticleData(ParticleID::eplus );
     tcPDPtr em = getParticleData(ParticleID::eminus);
-    // first t-channel
-    output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 2,pip, 3,pim,-1)));
-    // interchange
-    output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 3,pip, 2,pim,-2)));
+    for (long id : ids) {
+      tcPDPtr pip = getParticleData(id);
+      tcPDPtr pim = pip->CC();
+      // first t-channel
+      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 2,pip, 3,pim,-1)));
+      // interchange
+      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 3,pip, 2,pim,-2)));
+    }
   }
   return output;
 }
