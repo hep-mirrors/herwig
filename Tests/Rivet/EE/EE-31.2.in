@@ -2,9 +2,12 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 130.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 31.2
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 ##################################################
 # select the analyses
 ##################################################
-# OPAL b/c/light multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_S5361494
+#  Validated
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1980_I143691
+
