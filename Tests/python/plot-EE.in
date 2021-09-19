@@ -2294,7 +2294,7 @@ analyses["IdentifiedParticle"][3122]["x"    ][10.52] = ["/BELLE_2017_I1606201/d0
 analyses["IdentifiedParticle"][3122]["x"    ][14.0 ] = ["/TASSO_1985_I205119/d04-x01-y01"]
 analyses["IdentifiedParticle"][3122]["x"    ][22.0 ] = ["/TASSO_1985_I205119/d05-x01-y01"]
 analyses["IdentifiedParticle"][3122]["x"    ][29.0 ] = ["/HRS_1992_I339573/d01-x01-y01","/MARKII_1985_I209198/d02-x01-y01",
-                                                        "/HRS_1987_I215848/d06-x01-y01"]
+                                                        "/HRS_1987_I215848/d06-x01-y01","/HRS_1986_I17781/d01-x01-y01"]
 analyses["IdentifiedParticle"][3122]["x"    ][34.0 ] = ["/TASSO_1985_I205119/d06-x01-y01"] 
 analyses["IdentifiedParticle"][3122]["x"    ][34.8 ] = ["/TASSO_1989_I266893/d08-x01-y01"]
 analyses["IdentifiedParticle"][3122]["x"    ][42.1 ] = ["/TASSO_1989_I266893/d14-x01-y01"]
@@ -2315,7 +2315,7 @@ analyses["IdentifiedParticle"][3122]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d02
 analyses["IdentifiedParticle"][3122]["xi"   ][183. ] =["/DELPHI_2001_I526164/d16-x01-y03"]
 analyses["IdentifiedParticle"][3122]["xi"   ][189. ] =["/DELPHI_2001_I526164/d16-x01-y04"]
 # other
-analyses["IdentifiedParticle"][3122]["Other"][29.0 ] = ["/MARKII_1985_I209198/d03-x01-y01"]
+analyses["IdentifiedParticle"][3122]["Other"][29.0 ] = ["/MARKII_1985_I209198/d03-x01-y01","/HRS_1986_I17781/d02-x01-y01"]
 analyses["IdentifiedParticle"][3122]["Other"][34.8 ] = ["/TASSO_1989_I266893/d04-x01-y01","/TASSO_1989_I266893/d05-x01-y01",
                                                         "/TASSO_1989_I266893/d06-x01-y01","/TASSO_1989_I266893/d07-x01-y01",
                                                         "/TASSO_1989_I266893/d15-x01-y01","/TASSO_1989_I266893/d15-x01-y02",
@@ -2570,6 +2570,7 @@ analyses["Multiplicity"][2212][165.0] = ["/PDG_HADRON_MULTIPLICITIES/d38-x01-y04
 analyses["Multiplicity"][3122][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d39-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y01",
                                          "/ARGUS_1988_I251097/d02-x01-y01","/CLEO_1985_I205668/d17-x01-y01",
                                          "/BELLE_2017_I1606201/d16-x01-y01"]
+analyses["Multiplicity"][3122][29.  ] = ["/HRS_1986_I17781/d03-x01-y01"]
 analyses["Multiplicity"][3122][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d39-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y02"]
 analyses["Multiplicity"][3122][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d39-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y03",
                                          "/DELPHI_1996_S3430090/d40-x01-y02","/ALEPH_1996_S3486095/d44-x01-y11","/DELPHI_1993_I360638/d02-x01-y01",
