@@ -15,4 +15,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_I513476
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_S4328825
 # delphi event shapes for a wide energy range
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
+# DELPHI particle spectra in WW
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2001_I526164
 

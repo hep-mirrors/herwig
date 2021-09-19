@@ -109,6 +109,16 @@ if __name__ == "__main__":
                       dest="decay",
                       default=False,
                       help="Don\'t include decay analyses")
+    parser.add_option("--with-WW",
+                      action='store_true' ,
+                      dest="WW",
+                      default=False,
+                      help="Include WW analyses")
+    parser.add_option("--without-WW",
+                      action='store_false',
+                      dest="WW",
+                      default=False,
+                      help="Don\'t include WW analyses")
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
     ## Check args
@@ -141,6 +151,9 @@ if(opts.decay) :
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0","Xicp",
                   "Omegac0","Xim","JPsi","Psi2S","Psi2S-All","Psi3770"]
+# WW production
+if(opts.WW) :
+    yodafiles+=["183-WW","189-WW"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -201,11 +214,18 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
+           "526164" in aopath or
            "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
            "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
            "BABAR_2014_I1286317" in aopath or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
+            if "526164" in aopath :
+                if ("d01" in aopath or "d02" in aopath or "d16" in aopath) :
+                    if "WW" in f : continue
+                else :
+                    if "WW" not in f : continue
+            
             if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
@@ -291,6 +311,7 @@ for hpath,hsets in inhistos.items():
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
         hpath.find("1422780")>0 or hpath.find("132410" )>0 or
+        ("526164" in hpath and ("d01" in hpath or "d02" in hpath or "d03" in hpath) ) or
         "OPAL_2000_I513476"   in hpath or
         "JADE_1979_I142874"   in hpath or
         "CLEO_1985_I205668"   in hpath or
@@ -1318,8 +1339,33 @@ useOne("/BABAR_2014_I1286317/d06-x03-y01", "U1")
 useOne("/BABAR_2014_I1286317/d04-x01-y01", "10.6")
 useOne("/BABAR_2014_I1286317/d05-x01-y01", "10.6")
 useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
-    
-    
+
+for ix in range(0,2) :
+    if ix==0 : en="189"
+    else     : en="183"
+    for iy in range(1,3) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(5+2*ix,iy), en)
+    useOne("/DELPHI_2001_I526164/d%02d-x01-y01"%(6+2*ix), en)
+    for iloc in range(2,5,2) :
+        useOne("/DELPHI_2001_I526164/d16-x01-y%02d"%(iloc-ix), en)
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(9 +ix,iy), en)
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(11+ix,iy), en)
+for ix in range(13,16) :
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(ix,iy), "189")        
+merge("/DELPHI_2001_I526164/d01-x01-y01")
+for ix in range(1,6) :
+    merge("/DELPHI_2001_I526164/d02-x01-y0%s"%ix)
+for ix in range(1,7) :
+    useOne("/DELPHI_2001_I526164/d04-x01-y0%s"%ix,"189")
+# weird histo, select bins by hand
+if "/DELPHI_2001_I526164/d03-x01-y01" in inhistos:
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[0])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[1])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[2])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[3])
+
 # normalize where we have sum histos
 for i in range(1,5) :
     hname="/BABAR_2007_I746745/d0%s-x01-y01" %i
