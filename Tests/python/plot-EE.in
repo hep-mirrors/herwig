@@ -1915,6 +1915,7 @@ analyses["MultiplicityFlavour"][3122][5][91.2]=["/SLD_1999_S3743934/d24-x07-y04"
 # x_E
 analyses["IdentifiedParticle"][22  ]["x" ][14.0]=["/CELLO_1983_I191415/d01-x01-y01","/JADE_1985_I213948/d03-x01-y01"]
 analyses["IdentifiedParticle"][22  ]["x" ][22.0]=["/CELLO_1983_I191415/d02-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][22.5]=["/JADE_1985_I213948/d02-x01-y01"]
 analyses["IdentifiedParticle"][22  ]["x" ][29.0]=["/TPC_1985_I205868/d01-x01-y01" ]
 analyses["IdentifiedParticle"][22  ]["x" ][34.0]=["/CELLO_1983_I191415/d03-x01-y01"]
 analyses["IdentifiedParticle"][22  ]["x" ][34.4]=["/JADE_1985_I213948/d01-x01-y01"]
@@ -1963,11 +1964,10 @@ analyses["IdentifiedParticle"][211 ]["p" ][10.0 ] = ["/ARGUS_1989_I276860/d05-x0
 analyses["IdentifiedParticle"][211 ]["p" ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y01","/BABAR_2013_I1238276/d02-x01-y01",
                                                      "/CLEO_1985_I205668/d01-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][12.0 ] = ["/TASSO_1980_I153656/d02-x01-y01"]
-analyses["IdentifiedParticle"][211 ]["p" ][14.0 ] = ["/TASSO_1983_I181470/d19-x01-y01","/JADE_1985_I213948/d06-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][14.0 ] = ["/TASSO_1983_I181470/d19-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][22.0 ] = ["/TASSO_1983_I181470/d25-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][30.0 ] = ["/TASSO_1980_I153656/d05-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][34.0 ] = ["/TASSO_1983_I181470/d13-x01-y01"]
-analyses["IdentifiedParticle"][211 ]["p" ][34.4 ] = ["/JADE_1985_I213948/d04-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][91.2 ] = ["/DELPHI_1998_I473409/d18-x01-y01","/OPAL_1994_S2927284/d01-x01-y01"]
 # xi
 analyses["IdentifiedParticle"][211 ]["xi"][58.0 ] = ["/TOPAZ_1995_I381900/d02-x01-y01"]
@@ -1982,11 +1982,13 @@ analyses["IdentifiedParticle"][211 ]["Ratio"][91.2 ] = ["/DELPHI_1998_I473409/d0
 # x
 analyses["IdentifiedParticle"][111 ]["x" ][10.0]=["/ARGUS_1990_I278933/d03-x01-y01","/ARGUS_1990_I278933/d03-x01-y02",
                                                   "/CLEO_1985_I205668/d04-x01-y01"]
-analyses["IdentifiedParticle"][111 ]["x" ][14.0]=["/TASSO_1982_I168232/d02-x03-y03","/CELLO_1983_I191415/d04-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][14.0]=["/TASSO_1982_I168232/d02-x03-y03","/CELLO_1983_I191415/d04-x01-y01","/JADE_1985_I213948/d06-x01-y01"]
 analyses["IdentifiedParticle"][111 ]["x" ][22.0]=["/CELLO_1983_I191415/d05-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][22.5]=["/JADE_1985_I213948/d05-x01-y01"]
 analyses["IdentifiedParticle"][111 ]["x" ][29.0]=["/TPC_1985_I205868/d02-x01-y01" ]
 analyses["IdentifiedParticle"][111 ]["x" ][34.0]=["/TASSO_1982_I168232/d03-x03-y03","/TASSO_1986_I230950/d02-x01-y01",
                                                   "/CELLO_1983_I191415/d06-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][34.4 ] = ["/JADE_1985_I213948/d04-x01-y01"]
 analyses["IdentifiedParticle"][111 ]["x" ][35.0]=["/CELLO_1989_I276764/d03-x01-y01","/CELLO_1989_I276764/d04-x01-y01",
                                                   "/JADE_1990_I282847/d03-x01-y01"]
 analyses["IdentifiedParticle"][111 ]["x" ][44.0]=["/TASSO_1989_I267755/d13-x01-y01","/JADE_1990_I282847/d04-x01-y01"]
@@ -2193,7 +2195,7 @@ analyses["IdentifiedParticle"][411 ]["x"    ][91.2 ] = ["/DELPHI_1993_I356732/d0
 analyses["IdentifiedParticle"][423 ]["x"    ][10.47] = ["/ARGUS_1991_I315059/d04-x01-y01"]
 analyses["IdentifiedParticle"][423 ]["x"    ][10.5]=["/CLEO_2004_S5809304/d07-x01-y01","/CLEO_2004_S5809304/d08-x01-y01",
                                                      "/BELLE_2005_I686014/d03-x01-y05"]
-analyses["IdentifiedParticle"][423 ]["x"    ][91.2]=["/JADE_1984_I221004/d01-x01-y01"]
+analyses["IdentifiedParticle"][423 ]["x"    ][34.4]=["/JADE_1984_I221004/d01-x01-y01"]
 # D* +/-
 analyses["IdentifiedParticle"][413 ]["x"    ][29.0 ] = ["/TPC_1986_I217416/d01-x01-y01","/TPC_1986_I217416/d01-x01-y02",
                                                         "/HRS_1988_I23360/d01-x01-y01","/HRS_1988_I23360/d01-x01-y02",
