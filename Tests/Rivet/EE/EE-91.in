@@ -152,6 +152,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1991_I314407
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1994_I374698
 # DELPHI jade jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1990_I297698
+# OPAL charm hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I356732
 ##################################################
 # unvalidated 
 ##################################################

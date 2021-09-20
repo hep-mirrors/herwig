@@ -1,4 +1,4 @@
-# -*- ThePEG-repository -*-
+## -*- ThePEG-repository -*-
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
@@ -43,3 +43,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I215848
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I246184
 # HRS Lambda spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I17781
+# HRS phi and D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I213242
+# HRS f_2, f_0 and K_2 spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18688
+# HRS rho, K*0, K*+ spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1989_I276948
