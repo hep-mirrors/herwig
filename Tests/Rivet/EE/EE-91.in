@@ -154,6 +154,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1994_I374698
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1990_I297698
 # OPAL charm hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I356732
+# L3 event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1992_I334954
+# DELPHI events shapes vs thrust
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I522656
 ##################################################
 # unvalidated 
 ##################################################
