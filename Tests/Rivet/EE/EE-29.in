@@ -51,3 +51,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18688
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1989_I276948
 # MARK II EEC
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I250899
+# MARK II charged spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416
+
