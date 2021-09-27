@@ -22,7 +22,7 @@
 #include "ThePEG/Utilities/UtilityBase.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Utilities/Throw.h"
-
+#include "Herwig/Utilities/EnumParticles.h"
 #include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
@@ -580,7 +580,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   return parton;
 }
 
-void HwRemDecayer::setRemMasses() const {
+void HwRemDecayer::setRemMasses(PPair diquarks) const {
   // get the masses of the remnants
   Energy mrem[2];
   Lorentz5Momentum ptotal,pnew[2];
@@ -592,15 +592,12 @@ void HwRemDecayer::setRemMasses() const {
     tRemPPtr rem = theprocessed[0] ? theprocessed[0] : theprocessed[1];
     Lorentz5Momentum deltap(rem->momentum());
     // find the diquark and momentum we still need in the energy
-    tPPtr diquark;
+    tPPtr diquark = theprocessed[0] ? diquarks.first : diquarks.second;
     vector<PPtr> progenitors;
     for(unsigned int ix=0;ix<rem->children().size();++ix) {
-      if(!DiquarkMatcher::Check(rem->children()[ix]->data())) {
-	progenitors.push_back(rem->children()[ix]);
-	deltap -= rem->children()[ix]->momentum();
-      }
-      else 
-	diquark = rem->children()[ix];
+     if(rem->children()[ix]==diquark) continue;
+     progenitors.push_back(rem->children()[ix]);
+     deltap -= rem->children()[ix]->momentum();
     }
     // now find the total momentum of the hadronic final-state to
     // reshuffle against
@@ -613,6 +610,8 @@ void HwRemDecayer::setRemMasses() const {
       generator()->currentEvent()->primaryCollision()->incoming().first==hadron ?
       generator()->currentEvent()->primarySubProcess()->incoming().first :
       generator()->currentEvent()->primarySubProcess()->incoming().second;
+    hadron=rem->parents()[0];
+    while(hadron->id()==ParticleID::Remnant) hadron=hadron->parents()[0];
     tPPtr parent=hardin;
     vector<PPtr> tempprog;
     // find the outgoing particles emitted from the backward shower
@@ -1636,7 +1635,7 @@ void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
 				 theUsed.second);
     theMaps.second.push_back(make_pair(diquarks.second, tPPtr()));
   }
-  setRemMasses();
+  setRemMasses(diquarks);
   if(theRems.first) {
     fixColours(theMaps.first, theanti.first, colourDisrupt);
     if(theContent.first.hadron->id()==ParticleID::pomeron&&

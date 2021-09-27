@@ -1,6 +1,7 @@
-#! /usr/bin/env python
+#! @PYTHON@
 from __future__ import print_function
-import logging,sys, os, yoda, copy
+import logging,sys
+import os, yoda, copy
 
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -63,11 +64,7 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
-           "-Direct-mumu-189","-Direct-mumu-196","-Direct-mumu-206",
-           "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
-           "-Direct-Jets-198","-Single-Resolved-Jets-198","-Double-Resolved-Jets-198",
-           "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206",]
+yodafiles=["-mumu-3.5","-mumu-4.5","-mumu-5.5","-mumu-6.5","-mumu-7.5","-mumu-9.0","-mumu-12.5","-mumu-17.5","-mumu-30.0"]
 
 # Get histos
 inhistos  = {}
@@ -88,45 +85,37 @@ for f in yodafiles:
         if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
         # merge of different energy values
         if("L3_2004_I645127" in aopath) :
-            if(("d01" in aopath and "mu" in file) or
-               ("d02" in aopath and "tau" in file)) :
-                if not inhistos.has_key(aopath):
-                    inhistos[aopath] = {}
-                if not inhistos[aopath].has_key(sqrts):
-                    inhistos[aopath][sqrts] = ao
-                else:
-                    raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+            if aopath not in inhistos:
+                inhistos[aopath] = {}
+            if sqrts not in inhistos[aopath]:
+                inhistos[aopath][sqrts] = ao
+            else:
+                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
         else :
-            if(aopath in outhistos) :
-                outhistos[aopath] += ao
-            else :
-                outhistos[aopath] = ao
+            outhistos[aopath] = ao
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.items():
     if("L3_2004_I645127" in hpath ) :
-        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
-        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
-                                                hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
+        hist = list(hsets.values())[0]
+        if(type(hist)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hist.path(),
+                                                   hist.title())
+        elif(type(hist)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hist.path(),
+                                                   hist.title())
+            for i in range(0,hist.numBins) :
+                outhistos[hpath].addBin(hist.bins()[i].xMin(),
+                                        hist.bins()[i].xMax())
+        elif(type(hist)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hist.path(),
+                                                 hist.title())
+            for i in range(0,hist.numBins) :
+                outhistos[hpath].addBin(hist.bins()[i].xMin(),
+                                        hist.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
-
-merge("/L3_2004_I645127/d01-x01-y01")
-merge("/L3_2004_I645127/d01-x01-y02")
-merge("/L3_2004_I645127/d02-x01-y01")
-
+merge("/L3_2004_I645127:PROCESS=GG/d03-x01-y05")
 
 # Choose output file
 name = args[0]+".yoda"

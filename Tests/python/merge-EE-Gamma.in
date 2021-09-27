@@ -1,7 +1,6 @@
-#! /usr/bin/env python
+#! @PYTHON@
 from __future__ import print_function
-import logging,sys
-import os, yoda, copy
+import logging,sys, os, yoda, copy
 
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -14,16 +13,16 @@ def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
         for sqrts in sorted(sourcehistosbysqrts.keys()) :
             h=sourcehistosbysqrts[sqrts]
-            for i in range(0,h.numPoints) :
-                if sqrts==h.points[i].x :
-                    desthisto.addPoint(h.points[i])
+            for i in range(0,h.numPoints()) :
+                if sqrts==h.points()[i].x() :
+                    desthisto.addPoint(h.points()[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
         for sqrts, h in sorted(sourcehistosbysqrts.items()) :
-            for i in range(0,h.numBins) :
-                if(sqrts>=h.bins[i].xMin and \
-                   sqrts<=h.bins[i].xMax) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(sqrts>=h.bins()[i].xMin() and \
+                   sqrts<=h.bins()[i].xMax()) :
+                    desthisto.bins()[i] += h.bins()[i]
                     break
     else :
         logging.error("Unknown analysis object" + desthisto.path)
@@ -64,7 +63,11 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["-mumu-3.5","-mumu-4.5","-mumu-5.5","-mumu-6.5","-mumu-7.5","-mumu-9.0","-mumu-12.5","-mumu-17.5","-mumu-30.0"]
+yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
+           "-Direct-mumu-189","-Direct-mumu-196","-Direct-mumu-206",
+           "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
+           "-Direct-Jets-198","-Single-Resolved-Jets-198","-Double-Resolved-Jets-198",
+           "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206",]
 
 # Get histos
 inhistos  = {}
@@ -85,37 +88,46 @@ for f in yodafiles:
         if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
         # merge of different energy values
         if("L3_2004_I645127" in aopath) :
-            if aopath not in inhistos:
-                inhistos[aopath] = {}
-            if sqrts not in inhistos[aopath]:
-                inhistos[aopath][sqrts] = ao
-            else:
-                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+            if(("d01" in aopath and "mu" in file) or
+               ("d02" in aopath and "tau" in file)) :
+                if aopath not in inhistos :
+                    inhistos[aopath] = {}
+                if sqrts not in inhistos[aopath]:
+                    inhistos[aopath][sqrts] = ao
+                else:
+                    raise Exception("A set with sqrts = %s already exists" % ( sqrts))
         else :
-            outhistos[aopath] = ao
+            if(aopath in outhistos) :
+                outhistos[aopath] += ao
+            else :
+                outhistos[aopath] = ao
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.items():
     if("L3_2004_I645127" in hpath ) :
-        hist = list(hsets.values())[0]
-        if(type(hist)==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hist.path(),
-                                                   hist.title())
-        elif(type(hist)==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hist.path(),
-                                                   hist.title())
-            for i in range(0,hist.numBins) :
-                outhistos[hpath].addBin(hist.bins()[i].xMin(),
-                                        hist.bins()[i].xMax())
-        elif(type(hist)==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(hist.path(),
-                                                 hist.title())
-            for i in range(0,hist.numBins) :
-                outhistos[hpath].addBin(hist.bins()[i].xMin(),
-                                        hist.bins()[i].xMax())
+        histo = list(hsets.values())[0]
+        if(type(histo)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(histo.path(),
+                                                   histo.title())
+        elif(type(histo)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(histo.path(),
+                                                   histo.title())
+            for i in range(0,histo.numBins) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(histo.path(),
+                                                 histo.title())
+            for i in range(0,histo.numBins) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
-merge("/L3_2004_I645127:PROCESS=GG/d03-x01-y05")
+
+merge("/L3_2004_I645127/d01-x01-y01")
+merge("/L3_2004_I645127/d01-x01-y02")
+merge("/L3_2004_I645127/d02-x01-y01")
+
 
 # Choose output file
 name = args[0]+".yoda"
