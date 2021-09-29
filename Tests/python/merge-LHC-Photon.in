@@ -82,12 +82,12 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-files=["-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda",
-       "-8-DiPhoton-GammaGamma.yoda","-8-DiPhoton-GammaJet.yoda"]
-
-for i in [7,8,13] :
+files=["-GammaGamma-7.yoda"]
+for en in [7,8,13] :
+    files.append("-%s-DiPhoton-GammaGamma.yoda"%en)
+    files.append("-%s-DiPhoton-GammaJet.yoda"  %en)
     for j in range(1,5) :
-        files.append("-%s-PromptPhoton-%s.yoda" % (i,j))
+        files.append("-%s-PromptPhoton-%s.yoda" % (en,j))
 
 ## Get histos
 inhistos = {}

@@ -10,3 +10,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1724098
 # CMS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955
+# ATLAS event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1808726
