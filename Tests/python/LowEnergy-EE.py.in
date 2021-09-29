@@ -312,12 +312,13 @@ analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-
 analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
 analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01","d02-x01-y01"]
 # BB
-analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
+analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
+analyses["BB"]["BELLE_2021_I1859137" ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1999_I474676"   ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
-analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 # hyperons
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
