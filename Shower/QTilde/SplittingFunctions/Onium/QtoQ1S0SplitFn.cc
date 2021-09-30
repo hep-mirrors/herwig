@@ -6,13 +6,16 @@
 
 #include "QtoQ1S0SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 using namespace Herwig;
 
@@ -27,35 +30,53 @@ IBPtr QtoQ1S0SplitFn::fullclone() const {
 }
 
 void QtoQ1S0SplitFn::persistentOutput(PersistentOStream & os) const {
-  os << ounit(O1_,GeV*GeV2) << n_ << fixedAlphaS_;
+  os << params_ << ounit(O1_,GeV*GeV2) << oenum(state_) << n_ << fixedAlphaS_;
 }
 
 void QtoQ1S0SplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(O1_,GeV*GeV2) >> n_ >> fixedAlphaS_;
+  is >> params_ >> iunit(O1_,GeV*GeV2) >> ienum(state_) >> n_ >> fixedAlphaS_;
 }
 
+void QtoQ1S0SplitFn::doinit() {
+  Sudakov1to2FormFactor::doinit();
+  O1_ = params_->singletME<0>(state_,n_,0,0);
+}
 
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<QtoQ1S0SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQ1S0SplitFn("Herwig::QtoQ1S0SplitFn", "HwOniumShower.so");
+describeHerwigQtoQ1S0SplitFn("Herwig::QtoQ1S0SplitFn", "HwOniumShower.so HwOniumParameters.so");
 
 void QtoQ1S0SplitFn::Init() {
 
   static ClassDocumentation<QtoQ1S0SplitFn> documentation
     ("The QtoQ1S0SplitFn class implements the branching q-> q 1S0");
 
-  static Parameter<QtoQ1S0SplitFn,Energy3> interfaceO1
-    ("O1",
-     "The colour singlet excpetation value",
-     &QtoQ1S0SplitFn::O1_, GeV*GeV2, 0.573*GeV*GeV2, 0.0*GeV*GeV2, 10.0*GeV*GeV2,
-     false, false, Interface::limited);
+  static Reference<QtoQ1S0SplitFn,OniumParameters> interfaceParameters
+    ("Parameters",
+     "Quarkonium parameters",
+     &QtoQ1S0SplitFn::params_, false, false, true, false, false);
   
   static Parameter<QtoQ1S0SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
      &QtoQ1S0SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
      false, false, Interface::limited);
+  
+  static Switch<QtoQ1S0SplitFn,OniumState> interfaceState
+    ("State",
+     "The type of onium state",
+     &QtoQ1S0SplitFn::state_, ccbar, false, false);
+  static SwitchOption interfaceStateccbar
+    (interfaceState,
+     "ccbar",
+     "Charmonium state",
+     ccbar);
+  static SwitchOption interfaceStatebbbar
+    (interfaceState,
+     "bbbar",
+     "Bottomonium state",
+     bbbar);
   
   static Parameter<QtoQ1S0SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",

@@ -8,6 +8,7 @@
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/MatrixElement/Onium/OniumParameters.h"
 
 namespace Herwig {
 
@@ -26,7 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQ1S0SplitFn() : O1_(0.573*GeV*GeV2), n_(1), fixedAlphaS_(-1.)
+  QtoQ1S0SplitFn() : O1_(0.573*GeV*GeV2), state_(ccbar), n_(1), fixedAlphaS_(-1.)
   {}
 
 public:
@@ -38,7 +39,10 @@ public:
    */
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
+    // incoming and quark quark the same
     if(ids[0]!=ids[1]) return false;
+    // quark matches state specified
+    if(ids[0]->id()!=4+state_) return false;
     // construct the meson PDG code from quark ids and check it
     long idtest = ids[0]->id()*110+1 + (n_-1)*100000;
     if(ids[2]->id() != idtest) return false;
@@ -218,7 +222,19 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+  
+protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+  
 private:
 
   /**
@@ -230,9 +246,19 @@ private:
 private:
   
   /**
+   *  Access to the parameters for the quarkonium states
+   */
+  OniumParametersPtr params_;
+  
+  /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
   Energy3 O1_;
+
+  /**
+   *  Type of state
+   */
+  OniumState state_;
 
   /**
    *  Principal quantum number

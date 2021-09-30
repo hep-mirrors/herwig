@@ -131,7 +131,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
     ids.push_back(*it);
   // check splitting can handle this
   if(!s->checkColours(ids) || !s->accept(ids)) 
-    return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
+    return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles "+arg+"\n";
   // add to map
   addToMap(ids,s,final);
   return "";

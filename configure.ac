@@ -156,6 +156,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Makefile
 		MatrixElement/General/Makefile
 		MatrixElement/Lepton/Makefile
+		MatrixElement/Onium/Makefile
 		MatrixElement/Hadron/Makefile
 		MatrixElement/DIS/Makefile
 		MatrixElement/Powheg/Makefile

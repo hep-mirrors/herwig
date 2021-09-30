@@ -3,12 +3,83 @@
 #  Snippet to set up the parton shower to produce double heavy systems
 #  (bottomonium, charmonium, B_c and cc, bc bb diquarks)
 #
+# first the object with the parameters
+cd /Herwig
+create Herwig::OniumParameters OniumParameters HwOniumParameters.so
+do OniumParameters:SetWaveFunction ccbar 1S 0.560236
+do OniumParameters:SetWaveFunction ccbar 2S 0.334412
+do OniumParameters:SetWaveFunction bbbar 1S 5.06718
+do OniumParameters:SetWaveFunction bbbar 2S 2.59789
+do OniumParameters:SetWaveFunction bbbar 3S 2.00712
 cd /Herwig/Shower
 #
 # Set up Effectively 0 pT cut
 #
 cp  PTCutOff PTCutOff2
 set PTCutOff2:pTmin 0.001
+
+#
+#  Quarkonium
+#
+#
+#  Charmonium
+#
+# 1 1S0
+create Herwig::QtoQ1S0SplitFn ctoc11S0SplittingSudakov HwOniumShower.so
+set ctoc11S0SplittingSudakov:Alpha AlphaQCD
+set ctoc11S0SplittingSudakov:Parameters /Herwig/OniumParameters
+set ctoc11S0SplittingSudakov:Cutoff PTCutOff2
+set ctoc11S0SplittingSudakov:PDFmax 2.0
+set ctoc11S0SplittingSudakov:ColourStructure TripletTripletSinglet
+set ctoc11S0SplittingSudakov:AngularOrdered Yes
+set ctoc11S0SplittingSudakov:StrictAO Yes
+set ctoc11S0SplittingSudakov:InteractionType QCD
+set ctoc11S0SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting c->c,eta_c; ctoc11S0SplittingSudakov
+# 2 1S0
+cp ctoc11S0SplittingSudakov ctoc21S0SplittingSudakov
+set ctoc21S0SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting c->c,eta_c(2S); ctoc21S0SplittingSudakov
+# 1 3S1
+create Herwig::QtoQ3S1SplitFn ctoc13S1SplittingSudakov HwOniumShower.so
+set ctoc13S1SplittingSudakov:Alpha AlphaQCD
+set ctoc13S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set ctoc13S1SplittingSudakov:Cutoff PTCutOff2
+set ctoc13S1SplittingSudakov:PDFmax 2.0
+set ctoc13S1SplittingSudakov:ColourStructure TripletTripletSinglet
+set ctoc13S1SplittingSudakov:AngularOrdered Yes
+set ctoc13S1SplittingSudakov:StrictAO Yes
+set ctoc13S1SplittingSudakov:InteractionType QCD
+set ctoc13S1SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting c->c,Jpsi; ctoc13S1SplittingSudakov
+# 2 3S1
+cp ctoc13S1SplittingSudakov ctoc23S1SplittingSudakov
+set ctoc23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting c->c,psi(2S); ctoc23S1SplittingSudakov
+
+#
+#  Bottomonium
+#
+# 1 1S0
+cp ctoc11S0SplittingSudakov btob11S0SplittingSudakov
+set btob11S0SplittingSudakov:State bbbar
+do SplittingGenerator:AddFinalSplitting b->b,eta_b; btob11S0SplittingSudakov
+# 2 1S0
+cp btob11S0SplittingSudakov btob21S0SplittingSudakov
+set btob21S0SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting b->b,eta_b(2S); btob21S0SplittingSudakov
+# 1 3S1
+cp ctoc13S1SplittingSudakov btob13S1SplittingSudakov
+set btob13S1SplittingSudakov:State bbbar
+do SplittingGenerator:AddFinalSplitting b->b,Upsilon; btob13S1SplittingSudakov
+# 2 3S1
+cp btob13S1SplittingSudakov btob23S1SplittingSudakov
+set btob23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting b->b,Upsilon(2S); btob23S1SplittingSudakov
+# 3 3S1
+cp btob13S1SplittingSudakov btob33S1SplittingSudakov
+set btob33S1SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting b->b,Upsilon(3S); btob33S1SplittingSudakov
 
 
 #

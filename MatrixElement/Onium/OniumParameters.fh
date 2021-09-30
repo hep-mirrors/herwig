@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OniumParameters class.
+//
+#ifndef Herwig_OniumParameters_FH
+#define Herwig_OniumParameters_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class OniumParameters;
+
+ThePEG_DECLARE_POINTERS(Herwig::OniumParameters,OniumParametersPtr);
+
+}
+
+#endif
