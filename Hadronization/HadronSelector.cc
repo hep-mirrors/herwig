@@ -498,7 +498,7 @@ void HadronSelector::doinit() {
   // construct the hadron tables
   constructHadronTable();
   // for debugging
-  dumpTable(table());
+  if (Debug::level>20) dumpTable(table());
 }
 
 void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2) {
