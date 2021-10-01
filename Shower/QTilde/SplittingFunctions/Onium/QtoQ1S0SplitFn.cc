@@ -39,7 +39,7 @@ void QtoQ1S0SplitFn::persistentInput(PersistentIStream & is, int) {
 
 void QtoQ1S0SplitFn::doinit() {
   Sudakov1to2FormFactor::doinit();
-  O1_ = params_->singletME<0>(state_,n_,0,0);
+  O1_ = params_->singletMEProduction<0>(state_,n_,0,0);
 }
 
 // The following static variable is needed for the type

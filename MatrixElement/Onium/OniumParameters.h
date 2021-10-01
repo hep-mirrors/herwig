@@ -35,17 +35,25 @@ public:
 		      R02_  (vector<vector<Energy3> >(3,vector<Energy3>())),
 		      Rp02_ (vector<vector<Energy5> >(3,vector<Energy5>())),
 		      Rpp02_(vector<vector<Energy7> >(3,vector<Energy7>())),
-		      O1_S_(vector<vector<vector<Energy3> > >(3,vector<vector<Energy3> >())),
-		      O1_P_(vector<vector<vector<Energy5> > >(3,vector<vector<Energy5> >())),
-		      O1_D_(vector<vector<vector<Energy7> > >(3,vector<vector<Energy7> >()))
+		      O1_S_prod_(vector<vector<vector<Energy3> > >(3,vector<vector<Energy3> >())),
+		      O1_P_prod_(vector<vector<vector<Energy5> > >(3,vector<vector<Energy5> >())),
+		      O1_D_prod_(vector<vector<vector<Energy7> > >(3,vector<vector<Energy7> >())),
+		      O1_S_dec_ (vector<vector<vector<Energy3> > >(3,vector<vector<Energy3> >())),
+		      O1_P_dec_ (vector<vector<vector<Energy5> > >(3,vector<vector<Energy5> >())),
+		      O1_D_dec_ (vector<vector<vector<Energy7> > >(3,vector<vector<Energy7> >()))
   {}
 
 public:
 
-  // Get the singlet matrix element
+  // Get the singlet matrix element for onium decay
   template <unsigned int L>
   ThePEG::Qty<std::ratio<0,1>, std::ratio<3+2*L,1>, std::ratio<0,1>> inline
-  singletME(OniumState type,unsigned int n, unsigned int S, unsigned int J);
+  singletMEDecay(OniumState type,unsigned int n, unsigned int S, unsigned int J);
+
+  // Get the singlet matrix element for onium production
+  template <unsigned int L>
+  ThePEG::Qty<std::ratio<0,1>, std::ratio<3+2*L,1>, std::ratio<0,1>> inline
+  singletMEProduction(OniumState type,unsigned int n, unsigned int S, unsigned int J);
 
 public:
 
@@ -145,61 +153,119 @@ private :
   //@}
   
   /**
-   *  Singlet matrix elements
+   *  Singlet matrix elements production
    */
   //@{
   /**
    * \f$|R(0)|^2\f$ for the \f$s\f$-wave states
    */
-  vector<vector<vector<Energy3> > > O1_S_;
+  vector<vector<vector<Energy3> > > O1_S_prod_;
   
   /**
    * \f$|R'(0)|^2\f$ for the \f$p\f$-wave states
    */
-  vector<vector<vector<Energy5 > > > O1_P_;
+  vector<vector<vector<Energy5 > > > O1_P_prod_;
   
   /**
    * \f$|R''(0)|^2\f$ for the \f$d\f$-wave states
    */
-  vector<vector<vector<Energy7> > > O1_D_;
+  vector<vector<vector<Energy7> > > O1_D_prod_;
+  //@}
+  
+  /**
+   *  Singlet matrix elements decay
+   */
+  //@{
+  /**
+   * \f$|R(0)|^2\f$ for the \f$s\f$-wave states
+   */
+  vector<vector<vector<Energy3> > > O1_S_dec_;
+  
+  /**
+   * \f$|R'(0)|^2\f$ for the \f$p\f$-wave states
+   */
+  vector<vector<vector<Energy5 > > > O1_P_dec_;
+  
+  /**
+   * \f$|R''(0)|^2\f$ for the \f$d\f$-wave states
+   */
+  vector<vector<vector<Energy7> > > O1_D_dec_;
   //@}
 };
 
-// Get the singlet matrix element
+// Get the singlet matrix element production
 // s-wave
 template <>
 ThePEG::Qty<std::ratio<0,1>, std::ratio<3,1>, std::ratio<0,1>>
-inline OniumParameters::singletME<0>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
-  assert(O1_S_[type].size()>=n);
+inline OniumParameters::singletMEProduction<0>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_S_prod_[type].size()>=n);
   assert(S==J && S<=1);
-  return O1_S_[type][n-1][J];
+  return O1_S_prod_[type][n-1][J];
 }
 // p-wave
 template <>
 ThePEG::Qty<std::ratio<0,1>, std::ratio<5,1>, std::ratio<0,1>>
-inline OniumParameters::singletME<1>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
-  assert(O1_P_[type].size()>=n);
+inline OniumParameters::singletMEProduction<1>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_P_prod_[type].size()>=n);
   assert(S<=1&&J<=2);
   if(S==0) {
     assert(J==1);
-    return O1_P_[type][n-1][0];
+    return O1_P_prod_[type][n-1][0];
   }
   else {
-    return O1_P_[type][n-1][J+1];
+    return O1_P_prod_[type][n-1][J+1];
   }
 }
 // d-wave
 template <>
 ThePEG::Qty<std::ratio<0,1>, std::ratio<7,1>, std::ratio<0,1>>
-inline OniumParameters::singletME<2>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
-  assert(O1_D_[type].size()>=n);
+inline OniumParameters::singletMEProduction<2>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_D_prod_[type].size()>=n);
   assert(S<=1&&J>0&&J<=3);
   if(S==0) {
     assert(J==2);
-    return O1_D_[type][n-1][0];
+    return O1_D_prod_[type][n-1][0];
   }
   else {
-    return O1_D_[type][n-1][J];
+    return O1_D_prod_[type][n-1][J];
+  }
+}
+  
+// Get the singlet matrix element decay
+// s-wave
+template <>
+ThePEG::Qty<std::ratio<0,1>, std::ratio<3,1>, std::ratio<0,1>>
+inline OniumParameters::singletMEDecay<0>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_S_dec_[type].size()>=n);
+  assert(S==J && S<=1);
+  return O1_S_dec_[type][n-1][J];
+}
+// p-wave
+template <>
+ThePEG::Qty<std::ratio<0,1>, std::ratio<5,1>, std::ratio<0,1>>
+inline OniumParameters::singletMEDecay<1>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_P_dec_[type].size()>=n);
+  assert(S<=1&&J<=2);
+  if(S==0) {
+    assert(J==1);
+    return O1_P_dec_[type][n-1][0];
+  }
+  else {
+    return O1_P_dec_[type][n-1][J+1];
+  }
+}
+// d-wave
+template <>
+ThePEG::Qty<std::ratio<0,1>, std::ratio<7,1>, std::ratio<0,1>>
+inline OniumParameters::singletMEDecay<2>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_D_dec_[type].size()>=n);
+  assert(S<=1&&J>0&&J<=3);
+  if(S==0) {
+    assert(J==2);
+    return O1_D_dec_[type][n-1][0];
+  }
+  else {
+    return O1_D_dec_[type][n-1][J];
   }
 }
 }

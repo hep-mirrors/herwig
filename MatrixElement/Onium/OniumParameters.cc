@@ -28,15 +28,19 @@ IBPtr OniumParameters::fullclone() const {
 void OniumParameters::persistentOutput(PersistentOStream & os) const {
   os << singletFromWaveFunction_ << ounit(R02_,GeV2*GeV)
      << ounit(Rp02_,GeV2*GeV2*GeV) << ounit(Rpp02_,GeV2*GeV2*GeV2*GeV)
-     << ounit(O1_S_,GeV2*GeV)
-     << ounit(O1_P_,GeV2*GeV2*GeV) << ounit(O1_D_,GeV2*GeV2*GeV2*GeV);
+     << ounit(O1_S_prod_,GeV2*GeV)
+     << ounit(O1_P_prod_,GeV2*GeV2*GeV) << ounit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
+     << ounit(O1_S_dec_,GeV2*GeV)
+     << ounit(O1_P_dec_,GeV2*GeV2*GeV) << ounit(O1_D_dec_,GeV2*GeV2*GeV2*GeV);
 }
 
 void OniumParameters::persistentInput(PersistentIStream & is, int) {
   is >> singletFromWaveFunction_ >> iunit(R02_,GeV2*GeV)
      >> iunit(Rp02_,GeV2*GeV2*GeV) >> iunit(Rpp02_,GeV2*GeV2*GeV2*GeV)
-     >> iunit(O1_S_,GeV2*GeV)
-     >> iunit(O1_P_,GeV2*GeV2*GeV) >> iunit(O1_D_,GeV2*GeV2*GeV2*GeV);
+     >> iunit(O1_S_prod_,GeV2*GeV)
+     >> iunit(O1_P_prod_,GeV2*GeV2*GeV) >> iunit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
+     >> iunit(O1_S_dec_,GeV2*GeV)
+     >> iunit(O1_P_dec_,GeV2*GeV2*GeV) >> iunit(O1_D_dec_,GeV2*GeV2*GeV2*GeV);
 }
 
 // The following static variable is needed for the type
@@ -101,11 +105,48 @@ void OniumParameters::doinit() {
   Interfaced::doinit();
   if ( ! singletFromWaveFunction_ )
     throw Exception() << "Only calculate of singlet elements ffrom wavefunction currently supported\n";
+  // s wave
   for(unsigned int type=0;type<R02_.size();++type) {
-    if(O1_S_[type].size()<R02_[type].size()) O1_S_[type].resize(R02_[type].size(),{ZERO,ZERO});
+    if(O1_S_prod_[type].size()<R02_[type].size()) O1_S_prod_[type].resize(R02_[type].size(),{ZERO,ZERO});
+    if(O1_S_dec_ [type].size()<R02_[type].size()) O1_S_dec_ [type].resize(R02_[type].size(),{ZERO,ZERO});
     for(unsigned int n=0;n<R02_[type].size();++n) {
-      O1_S_[type][n][0] = 4.5/Constants::pi*R02_[type][n];
-      O1_S_[type][n][1] = O1_S_[type][n][0];
+      Energy3 Odec = 1.5/Constants::pi*R02_[type][n];
+      O1_S_prod_[type][n][0] =    Odec;
+      O1_S_prod_[type][n][1] = 3.*Odec;
+      O1_S_dec_ [type][n][0] =    Odec;
+      O1_S_dec_ [type][n][1] =    Odec;
+    }
+  }
+  // p wave
+  for(unsigned int type=0;type<Rp02_.size();++type) {
+    if(O1_P_prod_[type].size()<Rp02_[type].size()) O1_P_prod_[type].resize(Rp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
+    if(O1_P_dec_ [type].size()<Rp02_[type].size()) O1_P_dec_ [type].resize(Rp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
+    for(unsigned int n=0;n<Rp02_[type].size();++n) {
+      Energy5 Odec = 4.5/Constants::pi*Rp02_[type][n];
+      O1_P_prod_[type][n][0] =    Odec;
+      O1_P_prod_[type][n][1] =    Odec;
+      O1_P_prod_[type][n][2] = 3.*Odec;
+      O1_P_prod_[type][n][3] = 5.*Odec;
+      O1_P_dec_ [type][n][0] =    Odec;
+      O1_P_dec_ [type][n][1] =    Odec;
+      O1_P_dec_ [type][n][2] =    Odec;
+      O1_P_dec_ [type][n][3] =    Odec;
+    }
+  }
+  // d wave
+  for(unsigned int type=0;type<Rpp02_.size();++type) {
+    if(O1_D_prod_[type].size()<Rpp02_[type].size()) O1_D_prod_[type].resize(Rpp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
+    if(O1_D_dec_ [type].size()<Rpp02_[type].size()) O1_D_dec_ [type].resize(Rpp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
+    for(unsigned int n=0;n<Rpp02_[type].size();++n) {
+      Energy7 Odec = 3.75/Constants::pi*Rpp02_[type][n];
+      O1_D_prod_[type][n][0] = 3.*Odec;
+      O1_D_prod_[type][n][1] = 3.*Odec;
+      O1_D_prod_[type][n][2] = 5.*Odec;
+      O1_D_prod_[type][n][3] = 7.*Odec;
+      O1_D_dec_ [type][n][0] =    Odec;
+      O1_D_dec_ [type][n][1] =    Odec;
+      O1_D_dec_ [type][n][2] =    Odec;
+      O1_D_dec_ [type][n][3] =    Odec;
     }
   }
 }
