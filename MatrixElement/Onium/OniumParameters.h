@@ -44,7 +44,7 @@ public:
 
   // Get the singlet matrix element
   template <unsigned int L>
-  ThePEG::Qty<std::ratio<0,1>, std::ratio<3+L,1>, std::ratio<0,1>> inline
+  ThePEG::Qty<std::ratio<0,1>, std::ratio<3+2*L,1>, std::ratio<0,1>> inline
   singletME(OniumState type,unsigned int n, unsigned int S, unsigned int J);
 
 public:
@@ -166,12 +166,41 @@ private :
 };
 
 // Get the singlet matrix element
+// s-wave
 template <>
 ThePEG::Qty<std::ratio<0,1>, std::ratio<3,1>, std::ratio<0,1>>
 inline OniumParameters::singletME<0>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
   assert(O1_S_[type].size()>=n);
-  assert(S==J);
+  assert(S==J && S<=1);
   return O1_S_[type][n-1][J];
+}
+// p-wave
+template <>
+ThePEG::Qty<std::ratio<0,1>, std::ratio<5,1>, std::ratio<0,1>>
+inline OniumParameters::singletME<1>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_P_[type].size()>=n);
+  assert(S<=1&&J<=2);
+  if(S==0) {
+    assert(J==1);
+    return O1_P_[type][n-1][0];
+  }
+  else {
+    return O1_P_[type][n-1][J+1];
+  }
+}
+// d-wave
+template <>
+ThePEG::Qty<std::ratio<0,1>, std::ratio<7,1>, std::ratio<0,1>>
+inline OniumParameters::singletME<2>(OniumState type, unsigned int n, unsigned int S, unsigned int J) {
+  assert(O1_D_[type].size()>=n);
+  assert(S<=1&&J>0&&J<=3);
+  if(S==0) {
+    assert(J==2);
+    return O1_D_[type][n-1][0];
+  }
+  else {
+    return O1_D_[type][n-1][J];
+  }
 }
 }
 
