@@ -8,5 +8,3 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 76.
 ##################################################
 # DELPHI event shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
-# L3 event shapes etc for a wide range of CMS energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683

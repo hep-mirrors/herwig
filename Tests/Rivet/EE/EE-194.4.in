@@ -1,0 +1,10 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 194.4
+##################################################
+# select the analyses
+##################################################
+# L3 event shapes etc for a wide range of CMS energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683

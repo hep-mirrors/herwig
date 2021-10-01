@@ -83,12 +83,12 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-    yodafiles=["-13-Z-e","-13-Z-mu","-Z-HighMass1-e","-Z-HighMass2-e",
+    yodafiles=["-13-Z-e","-13-Z-mu","-13-Z-nu","-Z-HighMass1-e","-Z-HighMass2-e",
                "-8-Z-Mass1-e" ,"-8-Z-Mass1-mu" ,"-8-Z-Mass2-e" ,"-8-Z-Mass2-mu" ,"-8-Z-Mass3-e" ,"-8-Z-Mass3-mu" ,"-8-Z-Mass4-e" ,"-8-Z-Mass4-mu" ,
                "-13-Z-Mass1-e","-13-Z-Mass1-mu","-13-Z-Mass2-e","-13-Z-Mass2-mu","-13-Z-Mass3-e","-13-Z-Mass3-mu","-13-Z-Mass4-e","-13-Z-Mass4-mu",
                "-W-e","-W-mu","-Z-e","-Z-mu","-Z-mu-Short","-Z-LowMass-e","-Z-LowMass-mu",
                "-Z-MedMass-e","-8-W-e","-8-W-mu",
-               "-WW-emu","-WW-ll","13-W-emu","-WZ","-ZZ-ll","-ZZ-lv","-13-ZZ-ll",
+               "-WW-emu","-WW-ll","-13-W-ll","-WZ","-ZZ-ll","-ZZ-lv","-13-ZZ-ll",
                "-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
                "-7-W-Jet-1-e","-7-W-Jet-2-e","-7-W-Jet-3-e","-7-Z-Jet-1-e","-7-Z-Jet-2-e","-7-Z-Jet-3-e",
                "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu"]
@@ -238,7 +238,6 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(file.find("-e")>=0 and ihist<=30) :
                     outhistos[aopath] = ao
-
             elif "ATLAS_2016_I1502620" in aopath :
                 newPath = aopath.split(":")[0]+"/"+aopath.split("/")[-1]
                 if newPath in outhistos :
@@ -251,6 +250,11 @@ if __name__ == "__main__":
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :
+                    outhistos[aopath] = ao
+            elif (aopath.find("CMS_2016_I1471281")>=0) :
+                if file.find("W")>0 and "d08" in aopath :
+                    outhistos[aopath] = ao
+                elif file.find("Z")>0 and "d09" in aopath :
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2015_I1351916")>=0) :
                 if(aopath.find("-y02")>=0) :

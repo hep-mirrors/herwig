@@ -29,7 +29,6 @@ set ShowerHandler:HardEmission POWHEG
 cd /Herwig/MatrixElements/
 # Neutral current DIS
 
-insert SubProcess:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNC
 ${process}
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000

@@ -2,5 +2,5 @@
 ##################################################
 # select the analyses
 ##################################################
-# ATLAS emu
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1734263
+# charm production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1490663
