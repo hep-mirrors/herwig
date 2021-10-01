@@ -3,14 +3,6 @@
 #  Snippet to set up the parton shower to produce double heavy systems
 #  (bottomonium, charmonium, B_c and cc, bc bb diquarks)
 #
-# first the object with the parameters
-cd /Herwig
-create Herwig::OniumParameters OniumParameters HwOniumParameters.so
-do OniumParameters:SetWaveFunction ccbar 1S 0.560236
-do OniumParameters:SetWaveFunction ccbar 2S 0.334412
-do OniumParameters:SetWaveFunction bbbar 1S 5.06718
-do OniumParameters:SetWaveFunction bbbar 2S 2.59789
-do OniumParameters:SetWaveFunction bbbar 3S 2.00712
 cd /Herwig/Shower
 #
 # Set up Effectively 0 pT cut

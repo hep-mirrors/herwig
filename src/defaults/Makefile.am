@@ -9,7 +9,7 @@ Decays.in DiffractiveParticles.in diquarks.in \
 Hadronization.in HerwigDefaults.in \
 lepton_decays.in leptons.in \
 masses.in MatrixElements.in meson_decays.in mesons.in Model.in BSM.in \
-Particles.in QEDRadiation.in quark_decays.in quarks.in \
+Particles.in Onium.in QEDRadiation.in quark_decays.in quarks.in \
 setup.gosam.in Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in \
 MatchboxDefaults.in DipoleShowerDefaults.in MatchboxLoopInduced.in Samplers.in \
 EvtGenDecayer.in EvtGenBDecays.in HerwigBDecays.in MatchboxMergingDefaults.in 

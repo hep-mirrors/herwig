@@ -1,0 +1,51 @@
+# -*- ThePEG-repository -*-
+#
+#  Set up the global parameters for quarkonium production
+#
+cd /Herwig
+create Herwig::OniumParameters OniumParameters HwOniumParameters.so
+#
+# all from 1904.11542 apart from s-wave ccbar and bbar calculated from e+e- partial width using PDG)
+#
+# ccbar
+do OniumParameters:SetWaveFunction ccbar 1S 0.560236
+do OniumParameters:SetWaveFunction ccbar 1P 0.1296
+do OniumParameters:SetWaveFunction ccbar 1D 0.0329
+do OniumParameters:SetWaveFunction ccbar 2S 0.334412
+do OniumParameters:SetWaveFunction ccbar 2P 0.1767
+do OniumParameters:SetWaveFunction ccbar 2D 0.06923
+do OniumParameters:SetWaveFunction ccbar 3S 0.5951
+do OniumParameters:SetWaveFunction ccbar 3P 0.2106
+do OniumParameters:SetWaveFunction ccbar 3D 0.1074
+do OniumParameters:SetWaveFunction ccbar 4S 0.5461
+do OniumParameters:SetWaveFunction ccbar 4P 0.2389
+do OniumParameters:SetWaveFunction ccbar 5S 0.5160
+# bbar
+do OniumParameters:SetWaveFunction bbbar 1S 5.06718
+do OniumParameters:SetWaveFunction bbbar 1P 1.6057
+do OniumParameters:SetWaveFunction bbbar 1D 0.8394
+do OniumParameters:SetWaveFunction bbbar 2S 2.59789
+do OniumParameters:SetWaveFunction bbbar 2P 1.8240
+do OniumParameters:SetWaveFunction bbbar 2D 1.5572
+do OniumParameters:SetWaveFunction bbbar 3S 2.00712
+do OniumParameters:SetWaveFunction bbbar 3P 1.9804
+do OniumParameters:SetWaveFunction bbbar 3D 2.2324
+do OniumParameters:SetWaveFunction bbbar 4S 1.9645
+do OniumParameters:SetWaveFunction bbbar 4P 2.1175
+do OniumParameters:SetWaveFunction bbbar 4D 2.8903
+do OniumParameters:SetWaveFunction bbbar 5S 1.7990
+do OniumParameters:SetWaveFunction bbbar 5P 2.2430
+do OniumParameters:SetWaveFunction bbbar 5D 3.5411
+do OniumParameters:SetWaveFunction bbbar 6S 1.6885
+do OniumParameters:SetWaveFunction bbbar 6P 2.3600
+do OniumParameters:SetWaveFunction bbbar 7S 1.6080
+# B_c
+do OniumParameters:SetWaveFunction bcbar 1S 1.9943
+do OniumParameters:SetWaveFunction bcbar 1P 0.3083
+do OniumParameters:SetWaveFunction bcbar 1D 0.0986
+do OniumParameters:SetWaveFunction bcbar 2S 1.1443
+do OniumParameters:SetWaveFunction bcbar 2P 0.3939
+do OniumParameters:SetWaveFunction bcbar 2D 0.1989
+do OniumParameters:SetWaveFunction bcbar 3S 0.9440
+do OniumParameters:SetWaveFunction bcbar 3P 0.4540
+do OniumParameters:SetWaveFunction bcbar 4S 0.8504

@@ -71,6 +71,7 @@ newdef /Herwig/ACDCSampler:Margin  1.1
 read Particles.in
 read QEDRadiation.in
 read Model.in
+read Onium.in
 read Partons.in
 read UnderlyingEvent.in
 read Shower.in
