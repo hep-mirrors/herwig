@@ -45,7 +45,7 @@ void GGEtaSplitFn::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<GGEtaSplitFn,Sudakov1to2FormFactor>
-describeHerwigGGEtaSplitFn("Herwig::GGEtaSplitFn", "HwOniumShower.so HwOniumParameters.so");
+describeHerwigGGEtaSplitFn("Herwig::GGEtaSplitFn", "HwOniumParameters.so HwOniumShower.so");
 
 void GGEtaSplitFn::Init() {
 

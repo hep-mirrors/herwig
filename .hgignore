@@ -75,7 +75,7 @@ Makefile\.in$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
 ^Tests/.cache$
-^Tests/Rivet/.*(EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
+^Tests/Rivet/.*(Onium|EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
@@ -94,6 +94,7 @@ Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
 Tests/python/mergeLowEnergy.py
+Tests/python/OniumSplitting.py
 Tests/python/plot-EE
 Tests/python/rivet_check
 PDF/SaSPhotonPDF.cc

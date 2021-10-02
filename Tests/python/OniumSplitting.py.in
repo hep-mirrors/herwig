@@ -1,0 +1,541 @@
+#! @PYTHON@
+from __future__ import print_function
+import yoda,os,math,subprocess,optparse
+from string import Template
+import numpy,matplotlib.pyplot as plt
+from scipy.integrate import quad as quad
+import datetime
+
+htmlTemplate=Template("""
+<html>
+<head>
+<title>Tests of Onium Splittings in the Parton Shower</title>
+<style>
+      html { font-family: sans-serif; }
+      img { border: 0; }
+      a { text-decoration: none; font-weight: bold; }
+    </style>
+            <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {inlineMath: [["$$","$$"]]}
+        });
+        </script>
+        <script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        </head>
+<body>
+<section id="OniumTests">
+<h1>Tests of Onium splittings in the Parton Shower</h1>
+${plots}
+</section>
+
+<footer style="clear:both; margin-top:3em; padding-top:3em">
+${time}
+</footer>
+
+</body>
+</html>""")
+plotTemplate=Template("""
+<div class="plot" id="plot_${id}" style="float:left; font-size:smaller; font-weight:bold;">
+  <a href="#MC_Simple_Onium-${id}">&#9875;</a> ${id}:<br/>
+  <a name="MC_Simple_Onium-${id}"><a href="${id}.pdf">
+    <img src="${id}.png">
+  </a></a>
+</div>""")
+# various test functions
+m1=0.
+m2=0.
+aS=0.
+R02=0.
+# q -> q 1S0
+def D_q_q_1S0(z) :
+    return 8./81./math.pi*aS**2*R02*(1.-z)**2*z*(48. + 8.*z**2 - 8.*z**3 + 3.*z**4)/(m1**3*(2. - z)**6)
+# q -> q 3S1
+def D_q_q_3S1(z) :
+    return 8./math.pi*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(27.*m1**3*(2.-z)**6)
+
+# analytic line
+def fragmentation(funct) :
+    x = []
+    y = []
+    xe=0.001
+    while xe<1. :
+        x.append(xe)
+        y.append(funct(x[-1]))
+        xe+=0.001
+    return (x,y)
+
+# latex for plots
+latexName = {"eta_c"  : "\\eta_c", "Jpsi"    : "J/\\psi",
+             "eta_b"  : "\\eta_b", "Upsilon" : "\\Upsilon"}
+plotNames = {"eta_c"  : "h_etac" , "Jpsi"    : "h_JPsi",
+             "eta_b"  : "h_etab" , "Upsilon" : "h_Upsilon"}
+# splitting tests
+testParameters={ "ctoceta_c"   : ["eta_c"  ,"ctoc11S0SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_1S0],
+                 "ctocJPsi"    : ["Jpsi"   ,"ctoc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_3S1],
+                 "btoceta_b"   : ["eta_b"  ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_1S0],
+                 "btocUpsilon" : ["Upsilon","btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_3S1],}
+# options
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("--generate-input-files", dest="infiles", default=False, action="store_true")
+op.add_option("--analyse", dest="analyse", default=False, action="store_true")
+opts, args = op.parse_args()
+# get template and write the file
+with open(os.path.join("Rivet/Templates/EE.in"), 'r') as f:
+    templateText = f.read()
+template = Template( templateText )
+# if we are generating the inputfiles
+if opts.infiles :
+    targets=""
+    # first find all the splittings
+    opts, args = op.parse_args()
+    splittings=[]
+    for fname in ["../src/defaults/Shower.in",
+                  "../src/snippets/OniumShower.in"] :
+        infile=open(fname)
+        line=infile.readline()
+        while line :
+            if "SplittingGenerator:AddFinalSplitting" in line:
+                splittings.append(line.replace("Add","Delete"))
+            line=infile.readline()
+        infile.close()
+    # now loop over the examples
+    for (key,val) in testParameters.items() :
+        # mass of the state
+        if val[3]=="ccbar" :
+            mO=2.*val[6]
+        elif val[3]=="bbbar" :
+            mO=2.*val[7]
+        else :
+            mO=val[6]+val[7]
+        # substs for the input file
+        parameters={"parameterFile" : """
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 100000.
+set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL
+set /Herwig/Generators/EventGenerator:EventHandler:DecayHandler NULL
+set /Herwig/Analysis/Basics:CheckQuark No
+set /Herwig/Particles/d:ConstituentMass 1e-10
+set /Herwig/Particles/u:ConstituentMass 1e-10
+set /Herwig/Particles/g:ConstituentMass 1e-9
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Simple_Onium""",
+                "process" : """
+insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+set /Herwig/MatrixElements/MEee2gZ2qq:MinimumFlavour %s
+set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour %s
+set /Herwig/Particles/b:ConstituentMass %s
+set /Herwig/Particles/c:ConstituentMass %s
+set /Herwig/Particles/b:NominalMass %s
+set /Herwig/Particles/c:NominalMass %s
+set /Herwig/Particles/%s:NominalMass %s""" %(val[2],val[2],val[7],val[6],val[7],val[6],val[0],mO),
+                "shower" : """
+read snippets/OniumShower.in
+set /Herwig/Shower/ShowerHandler:HardEmission 0
+do /Herwig/OniumParameters:SetWaveFunction %s %s %s
+set /Herwig/Shower/%s:FixedAlphaS %s
+set /Herwig/Shower/%s:EnhancementFactor %s
+cd /Herwig/Shower
+"""%(val[3],val[4],val[8],val[1],val[5],val[1],val[9])}
+        # delete other splittings
+        for sp in splittings :
+            if val[1] not in sp :
+                parameters["shower"] += sp
+        # write the input file
+        parameters["runname"]="Onium-%s"%key
+        with open(os.path.join("Rivet","Onium-%s.in"%key), 'w') as f:
+            f.write( template.substitute(parameters) )
+        targets += "Onium-%s.yoda " % key
+    print(targets)
+# if we are doing the analysis
+if opts.analyse :
+    os.mkdir("Rivet-Onium")
+    plots=""
+    # loop over the tests
+    for (key,val) in testParameters.items() :
+        # mass of the quarks
+        if val[3]=="ccbar" :
+            m1=val[6]
+            m2=val[6]
+        elif val[3]=="bbbar" :
+            m1=val[7]
+            m2=val[7]
+        else :
+            quit()
+        # other parameters
+        aS  = val[5]
+        R02 = val[8]
+        # make the comparison line
+        (x,y) = fragmentation(val[10])
+        plt.plot(x,y,label="analytic ",color="black")
+        if val[2] ==4   : q1 = "c"
+        elif val[2] ==5 : q1 = "b"
+        if val[3] != "bcbar" : q2 = q1
+        elif q1=="c"         : q2 = "b"
+        else                 : q2 = "c"
+        plt.title("Comparsion of fragmentation function for $%s\\to %s %s$" % (q1,q2,latexName[val[0]]))
+        aos   = yoda.read("Onium-%s.yoda" % key)
+        histo = aos["/MC_Simple_Onium/%s" % plotNames[val[0]]]
+        x  = []
+        dx = []
+        y1 = []
+        dy1= []
+        chisq = 0.
+        ndof  = 0
+        for bin in histo.bins() :
+            x  .append(bin.xMid()      )
+            dx .append(0.5*bin.xWidth())
+            y1 .append(bin.height()   )
+            dy1.append(bin.heightErr())
+            if(dy1[-1]>0.) :
+                fval = quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
+                chisq += ((fval-y1[-1])/dy1[-1])**2
+                ndof+=1.
+        chisq/=ndof
+        plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
+                     label="Hw Fixed $\\alpha_S$",color="red")
+        plt.xlabel("$z_{%s}$" % latexName[val[0]])
+        plt.ylabel("$D(z_{%s})$" % latexName[val[0]])
+        plt.legend(loc=2,title="$\\chi^2/N=%.2f$"%chisq)
+        plt.xlim([0.,1.])
+        plt.savefig("Rivet-Onium/%s.pdf" %key)
+        plt.savefig("Rivet-Onium/%s.png" %key)
+        plt.clf()
+        plots+=plotTemplate.substitute({"id" : key})
+    with open(os.path.join("Rivet-Onium","index.html"), 'w') as f:
+            f.write( htmlTemplate.substitute( {"plots" : plots,
+                                               "time"  :'<p>Generated at %s</p>' % datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")  }) )
+
+        
+# 
+
+#     
+#     if   i  < 14 :
+#         plt.title("Comparsion of fragmentation function for $b\\to c %s$" % latex[i])
+#     elif i  < 24 :
+#         plt.title("Comparsion of fragmentation function for $c\\to c %s$" % latex[i])
+#     elif i == 24 :
+#         plt.title("Comparsion of fragmentation function for $c\\to \\bar{c} %s$" % latex[i])
+#     else :
+#         plt.title("Comparsion of fragmentation function for $b\\to \\bar{c} %s$" % latex[i])
+#     # normal data
+#     if os.path.isfile(fname) :
+#         aos   = yoda.read("EE-%s.yoda" % name)
+#         histo = aos["/MC_Simple_Onium/h_%s" % name.replace("-noMixing","")]        
+#         x  = []
+#         dx = []
+#         y1 = []
+#         dy1= []
+#         chisq = 0.
+#         ndof  = 0
+#         for bin in histo.bins() :
+#             x  .append(bin.xMid()      )
+#             dx .append(0.5*bin.xWidth())
+#             y1 .append(bin.height()   )
+#             dy1.append(bin.heightErr())
+#             if(dy1[-1]>0.) :
+#                 val = quad(fn,bin.xMin(),bin.xMax(),args=params)[0]/bin.xWidth()
+#                 chisq += ((val-y1[-1])/dy1[-1])**2
+#                 ndof+=1.
+#         chisq/=ndof
+#         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
+#                      label="Hw Fixed $\\alpha_S$",color="red")
+#         print('Chisq for %s is %s' % (name,chisq))
+
+
+
+
+
+
+    
+
+# names = ["Bc","BcStar","Bc0","Bc2",
+#          "Bc1","Bc1prime","Bc1-noMixing","Bc1prime-noMixing",
+#          "Bc2p","Bc2pp","Bc2p-noMixing","Bc2pp-noMixing","BcStarp","Bc3",
+         
+#          "etac","JPsi","chic0","chic2","hc","chic1",
+#          "etac2","psi3770","psi2","psi3",
+#          "cc1","bc0","bc1"]
+# latex = ["B_c^-","B_c^{*-}","B_{c0}^{*-}","B_{c2}^{*-}",
+#          "B^-_{c1}","B^{\\prime-}_{c1}","B^-_{c1}","B^{\\prime-}_{c1}",
+#          "B^{\\prime-}_{c2}","B^{\\prime\\prime-}_{c2}",
+#          "B^{\\prime-}_{c2}","B^{\\prime\\prime-}_{c2}", "B_c^{*-}(3D)","B_{c3}^-",
+
+         
+#          "\\eta_c","J/\\psi","\\chi_{c0}","\\chi_{c2}","h_c","\\chi_{c1}","\\eta_{c2}","\\psi(3770)","\\psi_2(1D)","\\psi_3(1D)",
+         
+#          "(cc)_1","(bc)_0","(bc)_1"]
+
+# for i, name in enumerate(names):
+#     fname = "EE-%s.yoda" % name
+#     params=()
+#     if i==0 :
+#         fn=D_1S0
+#     elif i==1 :
+#         fn=D_3S1
+#     elif i==2 :
+#         fn=D_3P0
+#     elif i==3 :
+#         fn=D_3P2
+#     elif i==4 :
+#         fn=D_P1_mixed
+#         params=(sTheta, cTheta)
+#     elif i==5 :
+#         fn=D_P1_mixed
+#         params=(cTheta,-sTheta)
+#     elif i==6 :
+#         fn=D_3P1
+#     elif i==7 :
+#         fn=D_1P1
+#     elif i==8 :
+#         fn=D_D2_mixed
+#         params=(sTheta2, cTheta2)
+#     elif i==9 :
+#         fn=D_D2_mixed
+#         params=(cTheta2,-sTheta2)
+#     elif i==10 :
+#         fn=D_3D2
+#     elif i==11 :
+#         fn=D_1D2
+#     elif i==12 :
+#         fn=D_3D1
+#     elif i==13 :
+#         fn=D_3D3
+#     elif i==14 :
+#         fn=D_eta_c
+#     elif i==15 :
+#         fn=D_JPsi
+#     elif i==16 :
+#         fn=D_chic0
+#     elif i==17 :
+#         fn=D_chic2
+#     elif i==18 :
+#         fn=D_hc
+#     elif i==19 :
+#         fn=D_chic1
+#     elif i==20 :
+#         fn=D_etac2
+#     elif i==21 :
+#         fn=D_psi3770
+#     elif i==22 :
+#         fn=D_psi2
+#     elif i==23 :
+#         fn=D_psi3
+#     elif i==24 :
+#         fn=D_cc1
+#     elif i==25 :
+#         fn=D_bc0
+#     elif i==26 :
+#         fn=D_bc1
+#     # analytic line
+#     x = []
+#     y = []
+#     xe=0.001
+#     while xe<1. :
+#         x.append(xe)
+#         if i==4 or i==5 or i==8 or i==9:
+#             y.append(fn(x[-1],params[0],params[1]))
+#         else :
+#             y.append(fn(x[-1]))
+#         xe+=0.001
+#     plt.plot(x,y,label="analytic ",color="black")
+#     if   i  < 14 :
+#         plt.title("Comparsion of fragmentation function for $b\\to c %s$" % latex[i])
+#     elif i  < 24 :
+#         plt.title("Comparsion of fragmentation function for $c\\to c %s$" % latex[i])
+#     elif i == 24 :
+#         plt.title("Comparsion of fragmentation function for $c\\to \\bar{c} %s$" % latex[i])
+#     else :
+#         plt.title("Comparsion of fragmentation function for $b\\to \\bar{c} %s$" % latex[i])
+#     # normal data
+#     if os.path.isfile(fname) :
+#         aos   = yoda.read("EE-%s.yoda" % name)
+#         histo = aos["/MC_Simple_Onium/h_%s" % name.replace("-noMixing","")]        
+#         x  = []
+#         dx = []
+#         y1 = []
+#         dy1= []
+#         chisq = 0.
+#         ndof  = 0
+#         for bin in histo.bins() :
+#             x  .append(bin.xMid()      )
+#             dx .append(0.5*bin.xWidth())
+#             y1 .append(bin.height()   )
+#             dy1.append(bin.heightErr())
+#             if(dy1[-1]>0.) :
+#                 val = quad(fn,bin.xMin(),bin.xMax(),args=params)[0]/bin.xWidth()
+#                 chisq += ((val-y1[-1])/dy1[-1])**2
+#                 ndof+=1.
+#         chisq/=ndof
+#         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
+#                      label="Hw Fixed $\\alpha_S$",color="red")
+#         print('Chisq for %s is %s' % (name,chisq))
+#     # extra plot if enhanced version
+#     if os.path.isfile("EE-%s-enhance.yoda" % name) :
+#         aos   = yoda.read("EE-%s-enhance.yoda" % name)
+#         histo = aos["/MC_Simple_Onium/h_%s" % name.replace("-noMixing","")]
+#         x  = []
+#         dx = []
+#         y1 = []
+#         dy1= []
+#         chisq=0.
+#         ndof=0
+#         for ibin,bin in enumerate(histo.bins()) :
+#             x  .append(bin.xMid()      )
+#             dx .append(0.5*bin.xWidth())
+#             y1 .append(bin.height()   )
+#             dy1.append(bin.heightErr())
+#             if(dy1[-1]>0.) :
+#                 val = quad(fn,bin.xMin(),bin.xMax(),args=params)[0]/bin.xWidth()
+#                 chisq += ((val-y1[-1])/dy1[-1])**2
+#                 ndof+=1
+#         chisq/=ndof
+#         print('Chisq for %s is %s (enhanced)' % (name,chisq))
+#         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
+#                      label="Hw Fixed $\\alpha_S$ enhanced")
+#     plt.xlabel("$z_{%s}$" % latex[i])
+#     plt.ylabel("$D(z_{%s})$" % latex[i])
+#     plt.legend(loc=2)
+#     plt.xlim([0.,1.])
+#     plt.savefig("QtoQ_%s.pdf" %name)
+#     plt.clf()
+
+
+
+
+
+
+# # basic parameters
+# aS = 0.3
+# m2 = 4.2
+# m1 = 1.25
+# M  = m1+m2
+# a1 = m1/M
+# a2 = 1-a1
+# O1_S = 0.573
+# O1_P = 0.794
+# O1_D = 0.131
+# R02  = 0.41**3
+# cTheta = math.cos(25./180.*math.pi)
+# sTheta = math.sin(25./180.*math.pi)
+# cTheta2= math.cos(34.4/180.*math.pi)
+# sTheta2= math.sin(34.4/180.*math.pi) 
+
+# # analytic fragmentation functions
+
+# # B_c
+# def D_1S0(z) :
+#     W0 =  2.*(1.+z*a1)**2*(1.-z)
+#     W1 = -2.*(2.*z**2*a2**2-z**2*a2 -4.*z*a2**2+4.*z*a2 -3.*z+4.*a2-2.)*(1.-z*a2)
+#     W2 = -8.*(1.-z*a2)**2*a1*a2
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 4.*aS**2/81./M**3*O1_S/a1**2/(1.-a2*z)**2* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
+# # B_c*
+# def D_3S1(z) :
+#     W0 =  2.*((1.+z*a1)**2+2.*z**2)*(1.-z)
+#     W1 = -2.*(2.*z**2*a2**2 -3.*z**2*a2 +4.*z*a2**2 + 4.*z*a2 -9.*z - 4.*a2+6.)*(1.-z*a2)
+#     W2 = -24.*(1.-z*a2)**2*a1*a2
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 4.*aS**2/81./M**3*O1_S/a1**2/(1.-a2*z)**2* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
+
+# # B_c0
+# def D_3P0(z) :
+#     W0 =  ( 4.*a2 - 3. - 8*z*a2**2 + 10*z*a2 - 3*z + 4*z**2*a2**3 - 5*z**2*a2**2 + z**2*a2 )**2*(1.-z)/96./a2**2
+#     W1 =  ((-1 + z*a2)**2*(18 + 27*z - 12*a2 +   18*z*a2 + 30*z**2*a2 -   40*a2**2 -   152*z*a2**2 -   206*z**2*a2**2 -   9*z**3*a2**2 +   32*a2**3 +   176*z*a2**3 +   324*z**2*a2**3 +   58*z**3*a2**3 -   64*z*a2**4 -   184*z**2*a2**4 -   80*z**3*a2**4 +   32*z**2*a2**5 +   32*z**3*a2**5))/(96.*a2**2)
+#     W2 = (2*a2*(7.*a2-6.*z) -10.*a2-3. -2.*z*a2**2*(7.*a2-12.) -z**2*a2**2*(2.*a2-3.))*a1*(1.-z*a2)**3/(12.*a2)
+#     W3 = 2.*a1**2*a2*(1.-z*a2)**4/3.
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+# # B_c2
+# def D_3P2(z) :
+#     W0 =  (2 + 4*z + 9*z**2 +  10*z**3 + 5*z**4 -  8*z*a2 - 16*z**2*a2 -  28*z**3*a2 -  20*z**4*a2 +  12*z**2*a2**2 +  20*z**3*a2**2 +  24*z**4*a2**2 -  8*z**3*a2**3 -  8*z**4*a2**3 +  2*z**4*a2**4)*(1.-z)/24.   
+#     W1 = (-20 - 13*z + 8*z**2 +  30*z**3 + 16*a2 +  52*z*a2 - 30*z**2*a2 -  28*z**3*a2 -  32*z*a2**2 +  4*z**2*a2**2 -  7*z**3*a2**2 +  16*z**2*a2**3 +  4*z**3*a2**3)*(1.-z*a2)**2/24.
+#     W2 = ( -26*a2 + 34 + 26.*z*a2**2 + 18*z*a2 - 45*z + 8*z**2*a2**2 - 15*z**2*a2 )*a1*(1.-z*a2)**3/12.
+#     W3 = 10./3.*a1**2*a2*(1.-z*a2)**4
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+
+# def D_1P1(z) :
+#     W0 =  (1.-z)*(1 + z*(2 - 4*a2) +   z**4*(2 + a1**2)*   a2**2 +   z**2*(3 - 2*a1*a2) +   2*z**3*a2*   (-1 - 3*a2 + 2*a2**2))/32./a2**2
+#     W1 = ((-1 + z*a2)**2*   (-6 + 12*a2 - 8*a2**2 +  z**3*a2**2*  (13 - 38*a2 + 24*a2**2)   + 2*z**2*a2*  (5 + 17*a2 - 26*a2**2 + 4*a2**3) + z*  (9 - 38*a2 + 16*a2**2 + 16*a2**3)))/(32.*a2**2)
+#     W2 = (-1.+(6.-10.*z)*a2-(2.-4.*z+z**2)*a2**2+2.*z*(1.+z)*a2**3)*a1*(1.-z*a2)**3/4./a2
+#     W3 = 2.*a1**2*a2*(1.-z*a2)**4
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+
+# def D_3P1(z) :
+#     W0 = -((-1 + z)*(1 + 2*z + 3*z**2 -   4*z*a2 - 10*z**2*a2 -   2*z**3*a2 +   8*z**2*a2**2 +   6*z**3*a2**2 +   z**4*a2**2 -   4*z**3*a2**3 -   2*z**4*a2**3 +   z**4*a2**4))/a2**2/16.
+#     W1 = ((-1 + z*a2)**2*   (-6 + 9*z + 4*a2 -  10*z*a2 + 10*z**2*a2 +  6*z*a2**2 -  22*z**2*a2**2 +  z**3*a2**2 +  8*z**2*a2**3 -  2*z**3*a2**3 +  2*z**3*a2**4))/ (16.*a2**2)
+#     W2 = -(a1*(-1 + z*a2)**3*(-2 + 6*a2 - 11*z*a2 -   2*a2**2 + 6*z*a2**2 +   z**2*a2**2 + 2*z*a2**3))/a2/4.
+#     W3 = 2.*a1**2*a2*(-1 + z*a2)**4
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+
+# def D_P1_mixed(z,mix1,mix2) :
+#     W0 = -0.25*((-1 + z)*   (1 + z* (2 + 3*z +   a2*  (-3 +   z*  (-4 + a2 +   (-1 + a2)**2*  z)))))/ (a2**2*   (-1 + a2*z)**3)
+#     W1 = (6 - 9*z +   a2*   (-8 + 4*a2 + 24*z - 4*a2* (3 + 2*a2)*z + 2* (-5 + a2 +   2*a2**2*  (2 + a2))* z**2 + a2* (11 +   4*(-4 + a2)*  a2)*z**3))/(4.*a2**2*  (-1 + a2*z)**2)
+#     W2 = 2.*(-1 + a2)*  (-1 + 3*a2 +(-2 + a2)*a2*z)/a2
+#     deltaX = z*(1.-z)/(1.-a2*z)**2
+#     mixed=32.*aS**2/81.*O1_P/a1**4/M**5/math.sqrt(2.)* \
+#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
+#     mixedB=(-2*math.sqrt(2.)*aS**2*O1_P* (1 - z)**2*z* (6 -    6*    (3 - 4*a1 +       2*a1**2)*z +    (21 - 52*a1 +       52*a1**2 +       24*a1**3)*z**2    + 2*    (-6 + 15*a1 -       6*a1**2 +       14*a1**3)*a2*    z**3 -    (-3 + 8*a1 +       2*a1**2)*a2**2*    z**4))/(243.*a1**4*a2**2* M**5*(1 - a2*z)**6)
+#     return mix1**2*D_1P1(z)+mix2**2*D_3P1(z)+mix1*mix2*mixed
+
+
+# def D_3D2(x) :
+#     return aS**2*O1_D*(-1 + x)**2*x*(180 + 180*(-7 + 4*a1)* x + 5* (777 - 852*a1 +464*a1**2 -64*a1**3 +128*a1**4)*x**2 - 10* (693 - 1087*a1 +1126*a1**2 -624*a1**3 +112*a1**4 +128*a1**5)*x**3 + (7875 -15650*a1 +23295*a1**2 -22564*a1**3 +9112*a1**4 +128*a1**5 +2304*a1**6)*x**4+ 4* (-1470 +2005*a1 -4740*a1**2 +4613*a1**3 -2296*a1**4 +488*a1**5 +320*a1**6)*a2* x**5 + (2835 - 2050*a1 +12035*a1**2 -8332*a1**3 +5952*a1**4 -960*a1**5 +640*a1**6)* a2**2*x**6 + 2* (-405 + 40*a1 -2565*a1**2 +602*a1**3 -1000*a1**4 +320*a1**5)* a2**3*x**7 + 5* (21 + 10*a1 +205*a1**2 +52*a1**3 +84*a1**4)*a2**4* x**8)/(4860.*a1**6*a2**2*M**7*(-1 + a2*x)**10)
+
+# def D_1D2(x) :
+#     return (aS**2*O1_D*(-1 + x)**2*x*(60 - 60* (7 - 8*a1 +4*a1**2)*x + 5* (267 - 600*a1 +580*a1**2 -160*a1**3 +64*a1**4)*x**2 - 10* (255 - 825*a1 +1130*a1**2 -596*a1**3 +88*a1**4 +64*a1**5)*x**3 + (3225 -13050*a1 +22585*a1**2 -16872*a1**3 +5036*a1**4 -576*a1**5 +1152*a1**6)*x**4+ 4* (-690 + 2535*a1 -4200*a1**2 +2279*a1**3 -968*a1**4 +524*a1**5 +160*a1**6)*a2* x**5 + (1545 - 4890*a1 +8525*a1**2 -2176*a1**3 +3076*a1**4 -320*a1**5 +320*a1**6)* a2**2*x**6 - 2* (255 - 660*a1 +1475*a1**2 +174*a1**3 +740*a1**4 +120*a1**5)* a2**3*x**7 + 5* (15 - 30*a1 +107*a1**2 +56*a1**3 +80*a1**4)*a2**4* x**8))/(2430.*a1**6*a2**2*M**7*(-1 + a2*x)**10)
+
+# def D_D2_mixed(x,mix1,mix2) :
+#     return mix1**2*D_1D2(x)+mix2**2*D_3D2(x)+mix1*mix2*(aS**2*O1_D*(-1 + x)**2*x*(-12 + 12* (5 - 4*a1 +2*a1**2)*x - (129 - 198*a1 +156*a1**2 +64*a1**3)*x**2 + 4* (39 - 85*a1 +76*a1**2 -8*a1**3 +36*a1**4)*x**3 - 2* (57 - 156*a1 +133*a1**2 -130*a1**3 +198*a1**4 +48*a1**5)*x**4 - 4* (-12 + 27*a1 -4*a1**2 +51*a1**3 +2*a1**4 +14*a1**5)*a2* x**5 + (-9 + 16*a1 +11*a1**2 +62*a1**3 +4*a1**4)*a2**2* x**6))/(81.*math.sqrt(6.)*a1**6*a2**2*M**7*(-1 + a2*x)**8)
+
+# def D_3D1(x) :
+#     return (aS**2*O1_D*(1 - x)**2*x*(60*(1 + 4*a1)**2 - 60*(1 + 4*a1)*(7 + 36*a1 - 28*a1**2)*x + 5*(261 + 2652*a1 + 6128*a1**2 - 12576*a1**3 + 7360*a1**4)*x**2 + 10*(-237 - 2589*a1 - 8754*a1**2 + 27528*a1**3 - 28808*a1**4 + 11360*a1**5)*x**3 + (2775 + 31350*a1 + 156435*a1**2 - 648372*a1**3 + 909816*a1**4 - 613056*a1**5 + 183552*a1**6)*x**4 - 4*(540 + 6585*a1 + 49910*a1**2 - 166879*a1**3 + 201928*a1**4 - 115084*a1**5 + 28400*a1**6)*a2*x**5 + (1095 + 13830*a1 + 142935*a1**2 - 389916*a1**3 + 377696*a1**4 - 164320*a1**5 + 36800*a1**6)*a2**2*x**6 - 2*(165 + 2100*a1 + 27645*a1**2 - 58086*a1**3 + 42360*a1**4 - 15720*a1**5 + 3360*a1**6)*a2**3*x**7 + 5*(9 + 114*a1 + 1817*a1**2 - 2524*a1**3 + 1676*a1**4 - 672*a1**5 + 192*a1**6)*a2**4*x**8))/(24300.*(1 - a2)**6*a2**2*M**7*(1 - a2*x)**10)
+
+# def D_3D3(x) :
+#     return  4.*aS**2*O1_D*(1 - x)**2*x*(90 + 90*(-7 + 2*a1)*x + 5*(399 - 174*a1 + 200*a1**2)*x**2 + 10*(-378 + 193*a1 - 437*a1**2 + 70*a1**3)*x**3 +  (4725 - 2900*a1 + 8390*a1**2 - 1918*a1**3 + 2268*a1**4)*x**4 + 2*(-1995 + 1700*a1 - 4930*a1**2 + 1617*a1**3 - 2387*a1**4 + 350*a1**5)*x**5 +  (2205 - 2830*a1 + 7940*a1**2 - 5194*a1**3 + 4914*a1**4 - 930*a1**5 + 1000*a1**6)*x**6 -  2*(360 - 325*a1 + 1680*a1**2 - 749*a1**3 + 1540*a1**4 + 295*a1**5 + 90*a1**6)*a2*x**7 +  5*(21 - 14*a1 + 133*a1**2 - 56*a1**3 + 189*a1**4 - 18*a1**5 + 18*a1**6)*a2**2*x**8)/(6075.*a1**6*M**7*(1 - a2*x)**10)
+
+
+
+# def D_cc1(z) :
+#     return 4.*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(9.*m1**3*math.pi*(2.-z)**6)
+
+# def D_bc0(z) :
+#     return aS**2*a1*R02*(1 - z)**2*z*(6 - 18*(1 - 2*a1)*z + (21 - 74*a1 + 68*a1**2)*z**2 - 2*(1 - a1)*(6 - 19*a1 + 18*a1**2)*z**3 + 3*(1 - a1)**2*(1 - 2*a1 + 2*a1**2)*z**4)/(54.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
+
+# def D_bc1(z) :
+#     return aS**2*a1*R02*(1 - z)**2*z*(2 - 2*(3 - 2*a1)*z + 3*(3 - 2*a1 + 4*a1**2)*z**2 - 2*(1 - a1)*(4 - a1 + 2*a1**2)*z**3 + (1 - a1)**2*(3 - 2*a1 + 2*a1**2)*z**4)/(18.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
+
+# def D_chic0(z):
+#     return 16.*aS**2*O1_P*(1-z)**2*z*(192+384*z+528*z**2-1376*z**3 +1060*z**4-376*z**5+59*z**6)/(729.*m1**5*(2 - z)**8)
+
+# def D_chic2(z):
+#     return 128*aS**2*O1_P*(1 - z)**2*z*(48 - 192*z +   480*z**2 -   668*z**3 +   541*z**4 -   184*z**5 + 23*z**6)/(729.*m1**5*(2 - z)**8)
+
+# def D_hc(z) :
+#         return 16*aS**2*O1_P*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
+
+# def D_hc(z) :
+#         return 16*aS**2*O1_P*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
+    
+# def D_chic1(z) :
+#     return 64.*aS**2*O1_P*(1 - z)**2*z*(96 - 288*z +   496*z**2 -   408*z**3 +   202*z**4 -   54*z**5 + 7*z**6)/(243.*m1**5*(2 - z)**8)
+
+# def D_etac2(x) :
+#     return 16.*aS**2*O1_D*(1 - x)**2*x*(3840-15360*x+30720*x**2-37120*x**3+35328*x**4-29344*x**5+18344*x**6-5848*x**7+775*x**8)/(1215.*m1**7*(2 - x)**10)
+
+# def D_psi3770(x) :
+#     return 16*aS**2*O1_D*(1 - x)**2*x*(17280 - 103680*x + 321120*x**2 - 551840*x**3 + 546744*x**4 - 314752*x**5 + 112402*x**6 - 24594*x**7 + 2915*x**8)/(6075.*m1**7*(2 - x)**10)
+
+# def D_psi2(x) :
+#     return 32*aS**2*O1_D*(1 - x)**2*x*(2880 - 14400*x + 37360*x**2 - 58240*x**3 + 58604*x**4 - 38372*x**5 + 16517*x**6 - 4014*x**7 + 445*x**8)/(1215.*m1**7*(2 - x)**10)
+
+# def D_psi3(x):
+#     return 16*aS**2*O1_D*(1 - x)**2*x*(11520 - 69120*x + 231680*x**2 - 488960*x**3 + 675136*x**4 - 592288*x**5 + 309688*x**6 - 80736*x**7 + 8285*x**8)/(6075.*m1**7*(2 - x)**10)

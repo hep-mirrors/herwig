@@ -1,0 +1,20 @@
+Name: MC_Simple_Onium
+Summary: Simple analysis for quarkonium spectra for testing
+Status: VALIDATED
+Authors:
+ - Peter Richardson <peter.richardson@durham.ac.uk>
+References:
+ - 'Example: Eur.Phys.J. C76 (2016) no.7, 392'
+ - 'Example: DOI:10.1140/epjc/s10052-016-4184-8'
+ - 'Example: arXiv:1605.03814'
+RunInfo: e+ e- to hadrons
+Beams: [e+, e-]
+Description:
+  'Spectrra for quarkonium states in $e^+e^- collisions for testing.'
+ValidationInfo:
+  'Herwig 7 events vs analytic formulae'
+#ReleaseTests:
+# - $A my-hepmc-prefix :MODE=some_rivet_flag
+Keywords: []
+BibKey: 
+BibTeX: ''

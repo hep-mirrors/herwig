@@ -37,7 +37,7 @@ void QtoQPBarQQP0SplitFn::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<QtoQPBarQQP0SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQPBarQQP0SplitFn("Herwig::QtoQPBarQQP0SplitFn", "HwOniumShower.so HwOniumParameters.so");
+describeHerwigQtoQPBarQQP0SplitFn("Herwig::QtoQPBarQQP0SplitFn", "HwOniumParameters.so HwOniumShower.so");
 
 void QtoQPBarQQP0SplitFn::Init() {
 

@@ -143,6 +143,7 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	rm -rf $(subst .yoda,,$@)
 
 Rivet-%.run : Rivet/%.in
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses
 	$(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
@@ -150,6 +151,7 @@ Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 	$(HWRUN)       -c .cache/$(subst .run,,$<) $<
 
 Rivet-%.yoda : Rivet-%.run
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses
 	$(HWRUN) $<
 
 Rivet/%.in :
@@ -198,6 +200,9 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.in )
 
 
+Analyses/RivetHerwig.so: Analyses/*.cc
+	rivet-build Analyses/RivetHerwig.so Analyses/*.cc 
+
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
 
@@ -235,9 +240,17 @@ Rivet-LowEnergy-%.yoda:
 	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	$(HWRUN)  $(subst .yoda,.run,$@)
 
+Onium-%.yoda:
+	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	$(HWRUN)  $(subst .yoda,.run,$@)
+
 Rivet-LowEnergy-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); fi; OUTPUT=`python/LowEnergy.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); plots=`python/LowEnergy.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@) $$plots; if [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ] && [ -e LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@)  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; fi
+
+Rivet-Onium: Analyses/RivetHerwig.so
+	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	python/OniumSplitting.py --analyse
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

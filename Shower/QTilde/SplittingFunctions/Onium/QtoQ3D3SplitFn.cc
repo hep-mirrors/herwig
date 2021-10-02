@@ -45,7 +45,7 @@ void QtoQ3D3SplitFn::doinit() {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<QtoQ3D3SplitFn,Sudakov1to2FormFactor>
-describeHerwigQtoQ3D3SplitFn("Herwig::QtoQ3D3SplitFn", "HwOniumShower.so HwOniumParameters.so");
+describeHerwigQtoQ3D3SplitFn("Herwig::QtoQ3D3SplitFn", "HwOniumParameters.so HwOniumShower.so");
 
 void QtoQ3D3SplitFn::Init() {
 

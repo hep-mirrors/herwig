@@ -239,6 +239,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Makefile])
 AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_check        ])
 AC_CONFIG_FILES([Tests/python/LowEnergy.py       ],[chmod +x Tests/python/LowEnergy.py       ])
+AC_CONFIG_FILES([Tests/python/OniumSplitting.py   ],[chmod +x Tests/python/OniumSplitting.py  ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
 AC_CONFIG_FILES([Tests/python/merge-DIS          ],[chmod +x Tests/python/merge-DIS          ])  
 AC_CONFIG_FILES([Tests/python/merge-EE           ],[chmod +x Tests/python/merge-EE           ])  
