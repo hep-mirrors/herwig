@@ -123,7 +123,7 @@ void OniumParameters::doinit() {
     if(O1_P_dec_ [type].size()<Rp02_[type].size()) O1_P_dec_ [type].resize(Rp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
     for(unsigned int n=0;n<Rp02_[type].size();++n) {
       Energy5 Odec = 4.5/Constants::pi*Rp02_[type][n];
-      O1_P_prod_[type][n][0] =    Odec;
+      O1_P_prod_[type][n][0] = 3.*Odec;
       O1_P_prod_[type][n][1] =    Odec;
       O1_P_prod_[type][n][2] = 3.*Odec;
       O1_P_prod_[type][n][3] = 5.*Odec;
@@ -139,7 +139,7 @@ void OniumParameters::doinit() {
     if(O1_D_dec_ [type].size()<Rpp02_[type].size()) O1_D_dec_ [type].resize(Rpp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
     for(unsigned int n=0;n<Rpp02_[type].size();++n) {
       Energy7 Odec = 3.75/Constants::pi*Rpp02_[type][n];
-      O1_D_prod_[type][n][0] = 3.*Odec;
+      O1_D_prod_[type][n][0] = 5.*Odec;
       O1_D_prod_[type][n][1] = 3.*Odec;
       O1_D_prod_[type][n][2] = 5.*Odec;
       O1_D_prod_[type][n][3] = 7.*Odec;

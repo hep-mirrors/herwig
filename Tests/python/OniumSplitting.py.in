@@ -54,28 +54,75 @@ def D_q_q_1S0(z) :
 # q -> q 3S1
 def D_q_q_3S1(z) :
     return 8./math.pi*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(27.*m1**3*(2.-z)**6)
+# q -> q 3P0
+def D_q_q_3P0(z):
+     return 9./2./math.pi*R02*16.*aS**2*(1-z)**2*z*(192+384*z+528*z**2-1376*z**3 +1060*z**4-376*z**5+59*z**6)/(729.*m1**5*(2 - z)**8)
+# q -> q 3P1
+def D_q_q_3P1(z) :
+    return 9./2./math.pi*R02*64.*aS**2*(1 - z)**2*z*(96 - 288*z +   496*z**2 -   408*z**3 +   202*z**4 -   54*z**5 + 7*z**6)/(243.*m1**5*(2 - z)**8)
+# q -> q 3P2
+def D_q_q_3P2(z):
+    return 9./2./math.pi*R02*128*aS**2*(1 - z)**2*z*(48 - 192*z +   480*z**2 -   668*z**3 +   541*z**4 -   184*z**5 + 23*z**6)/(729.*m1**5*(2 - z)**8)
+# q -> q 1P1
+def D_q_q_1P1(z) :
+    return 9./2./math.pi*R02*16*aS**2*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
 
 # analytic line
-def fragmentation(funct) :
+def fragmentation(funct,scale) :
     x = []
     y = []
     xe=0.001
     while xe<1. :
         x.append(xe)
-        y.append(funct(x[-1]))
+        y.append(funct(x[-1])*scale)
         xe+=0.001
     return (x,y)
 
 # latex for plots
-latexName = {"eta_c"  : "\\eta_c", "Jpsi"    : "J/\\psi",
-             "eta_b"  : "\\eta_b", "Upsilon" : "\\Upsilon"}
-plotNames = {"eta_c"  : "h_etac" , "Jpsi"    : "h_JPsi",
-             "eta_b"  : "h_etab" , "Upsilon" : "h_Upsilon"}
+latexName = {441  : "\\eta_c", 443    : "J/\\psi", 100441 : "\\eta_c(2S)", 100443 : "\psi(2S)", 
+             551  : "\\eta_b", 553 : "\\Upsilon" , 100551 : "\\eta_b(2S)", 100553 : "\\Upsilon(2S)", 200553 : "\\Upsilon(3S)", 300553 : "\\Upsilon(4S)",
+             10443 : "h_c", 10441: "\\chi_{c0}", 20443: "\\chi_{c1}",  445: "\\chi_{c2}",
+             10553 : "h_b", 10551: "\\chi_{b0}", 20553: "\\chi_{b1}",  555: "\\chi_{b2}",
+             110553 : "h_b(2P)", 110551: "\\chi_{b0}(2P)", 120553: "\\chi_{b1}(2P)",  100555: "\\chi_{b2}(2P)",  }
+
+
+herwigName = {441 : "eta_c"  , 443 : "Jpsi"    , 100441 : "eta_c(2S)"    , 100443 : "psi(2S)", 
+              551 : "eta_b"  , 553 : "Upsilon" , 100551 : "eta_b(2S)"    , 100553 : "Upsilon(2S)", 200553 : "Upsilon(3S)", 300553 : "Upsilon(4S)",
+             10443 : "h_c", 10441: "chi_c0", 20443: "chi_c1",  445: "chi_c2",
+             10553 : "h_b", 10551: "chi_b0", 20553: "chi_b1",  555: "chi_b2",
+             110553 : "h_b(2P)", 110551: "chi_b0(2P)", 120553: "chi_b1(2P)",  100555: "chi_b2(2P)"}
+
+
 # splitting tests
-testParameters={ "ctoceta_c"   : ["eta_c"  ,"ctoc11S0SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_1S0],
-                 "ctocJPsi"    : ["Jpsi"   ,"ctoc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_3S1],
-                 "btoceta_b"   : ["eta_b"  ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_1S0],
-                 "btocUpsilon" : ["Upsilon","btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_3S1],}
+testParameters={ "ctocEta_c"   : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_1S0,10**4],
+                 "ctocJPsi"    : [443    ,"ctoc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_3S1,10**4],
+                 "ctocEta_c2S" : [100441 ,"ctoc21S0SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_1S0,10**4],
+                 "ctocPsi2S"   : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_3S1,10**4],
+
+                 "ctocH_c"     : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_1P1,10**4],
+                 "ctocChi_c0"  : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P0,10**4],
+                 "ctocChi_c1"  : [20443  ,"ctoc13P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P1,10**4],
+                 "ctocChi_c2"  : [  445  ,"ctoc13P2SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P2,10**4],
+                 
+                 "btocEta_b"     : [551     ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_1S0,10**5],
+                 "btocUpsilon"   : [553     ,"btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_3S1,10**5],
+                 "btocEta_b2S"   : [100551  ,"btob21S0SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_1S0,10**5],
+                 "btocUpsilon2S" : [100553  ,"btob23S1SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_3S1,10**5],
+                 "btocUpsilon3S" : [200553  ,"btob33S1SplittingSudakov",5,"bbbar","3S",0.19,1.5,4.9,2.2496,1000.,D_q_q_3S1,10**5],
+                 "btocUpsilon4S" : [300553  ,"btob43S1SplittingSudakov",5,"bbbar","4S",0.19,1.5,4.9,1.9645,1000.,D_q_q_3S1,10**5],
+                 
+                 "btocH_b"       : [10553     ,"btob11P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_1P1,10**6],
+                 "btocChi_b0"    : [10551     ,"btob13P0SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P0,10**6],
+                 "btocChi_b1"    : [20553     ,"btob13P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P1,10**6],
+                 "btocChi_b2"    : [  555     ,"btob13P2SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P2,10**6],
+                 
+                 "btocH_b2P"     : [110553    ,"btob21P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_1P1,10**6],
+                 "btocChi_b02P"  : [110551    ,"btob23P0SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P0,10**6],
+                 "btocChi_b12P"  : [120553    ,"btob23P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P1,10**6],
+                 "btocChi_b22P"  : [100555    ,"btob23P2SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P2,10**6],
+
+
+}
 # options
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("--generate-input-files", dest="infiles", default=False, action="store_true")
@@ -127,7 +174,7 @@ set /Herwig/Particles/b:ConstituentMass %s
 set /Herwig/Particles/c:ConstituentMass %s
 set /Herwig/Particles/b:NominalMass %s
 set /Herwig/Particles/c:NominalMass %s
-set /Herwig/Particles/%s:NominalMass %s""" %(val[2],val[2],val[7],val[6],val[7],val[6],val[0],mO),
+set /Herwig/Particles/%s:NominalMass %s""" %(val[2],val[2],val[7],val[6],val[7],val[6],herwigName[val[0]],mO),
                 "shower" : """
 read snippets/OniumShower.in
 set /Herwig/Shower/ShowerHandler:HardEmission 0
@@ -165,7 +212,7 @@ if opts.analyse :
         aS  = val[5]
         R02 = val[8]
         # make the comparison line
-        (x,y) = fragmentation(val[10])
+        (x,y) = fragmentation(val[10],val[11])
         plt.plot(x,y,label="analytic ",color="black")
         if val[2] ==4   : q1 = "c"
         elif val[2] ==5 : q1 = "b"
@@ -174,7 +221,7 @@ if opts.analyse :
         else                 : q2 = "c"
         plt.title("Comparsion of fragmentation function for $%s\\to %s %s$" % (q1,q2,latexName[val[0]]))
         aos   = yoda.read("Onium-%s.yoda" % key)
-        histo = aos["/MC_Simple_Onium/%s" % plotNames[val[0]]]
+        histo = aos["/MC_Simple_Onium/h_%s" % val[0]]
         x  = []
         dx = []
         y1 = []
@@ -184,17 +231,17 @@ if opts.analyse :
         for bin in histo.bins() :
             x  .append(bin.xMid()      )
             dx .append(0.5*bin.xWidth())
-            y1 .append(bin.height()   )
-            dy1.append(bin.heightErr())
+            y1 .append(bin.height()   *val[11])
+            dy1.append(bin.heightErr()*val[11])
             if(dy1[-1]>0.) :
-                fval = quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
+                fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
                 chisq += ((fval-y1[-1])/dy1[-1])**2
                 ndof+=1.
         chisq/=ndof
         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
                      label="Hw Fixed $\\alpha_S$",color="red")
         plt.xlabel("$z_{%s}$" % latexName[val[0]])
-        plt.ylabel("$D(z_{%s})$" % latexName[val[0]])
+        plt.ylabel("$D(z_{%s})\\times10^{%s}$" % (latexName[val[0]],int(math.log10(val[11]))))
         plt.legend(loc=2,title="$\\chi^2/N=%.2f$"%chisq)
         plt.xlim([0.,1.])
         plt.savefig("Rivet-Onium/%s.pdf" %key)
@@ -513,21 +560,6 @@ if opts.analyse :
 # def D_bc1(z) :
 #     return aS**2*a1*R02*(1 - z)**2*z*(2 - 2*(3 - 2*a1)*z + 3*(3 - 2*a1 + 4*a1**2)*z**2 - 2*(1 - a1)*(4 - a1 + 2*a1**2)*z**3 + (1 - a1)**2*(3 - 2*a1 + 2*a1**2)*z**4)/(18.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
 
-# def D_chic0(z):
-#     return 16.*aS**2*O1_P*(1-z)**2*z*(192+384*z+528*z**2-1376*z**3 +1060*z**4-376*z**5+59*z**6)/(729.*m1**5*(2 - z)**8)
-
-# def D_chic2(z):
-#     return 128*aS**2*O1_P*(1 - z)**2*z*(48 - 192*z +   480*z**2 -   668*z**3 +   541*z**4 -   184*z**5 + 23*z**6)/(729.*m1**5*(2 - z)**8)
-
-# def D_hc(z) :
-#         return 16*aS**2*O1_P*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
-
-# def D_hc(z) :
-#         return 16*aS**2*O1_P*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
-    
-# def D_chic1(z) :
-#     return 64.*aS**2*O1_P*(1 - z)**2*z*(96 - 288*z +   496*z**2 -   408*z**3 +   202*z**4 -   54*z**5 + 7*z**6)/(243.*m1**5*(2 - z)**8)
-
 # def D_etac2(x) :
 #     return 16.*aS**2*O1_D*(1 - x)**2*x*(3840-15360*x+30720*x**2-37120*x**3+35328*x**4-29344*x**5+18344*x**6-5848*x**7+775*x**8)/(1215.*m1**7*(2 - x)**10)
 
@@ -539,3 +571,17 @@ if opts.analyse :
 
 # def D_psi3(x):
 #     return 16*aS**2*O1_D*(1 - x)**2*x*(11520 - 69120*x + 231680*x**2 - 488960*x**3 + 675136*x**4 - 592288*x**5 + 309688*x**6 - 80736*x**7 + 8285*x**8)/(6075.*m1**7*(2 - x)**10)
+
+
+
+# setup eta_b2 10555 eta_b2 10.158 3.2E-5 0.00032 0 0 0 5 0 
+# setup Upsilon_1(1D) 30553 Upsilon_1(1D) 10.1551 3.56E-5 0.000356 0 0 0 3 0 
+# setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1611 2.8E-5 0.00028 0 0 0 5 0 
+# setup Upsilon_3(1D) 557 Upsilon_3(1D) 10.1651 2.55E-5 0.000255 0 0 0 7 0 
+# setup eta_b(3S) 200551 eta_b(3S) 10.337 0.0027 0.027 0 0 0 1 0 
+# setup chi_b0(3P) 210551 chi_b0(3P) 10.5007 0.00071 0.0071 0 0 0 1 0 
+# setup chi_b1(3P) 220553 chi_b1(3P) 10.516 6.6E-5 0.00066 0 0 0 3 0 
+# setup chi_b2(3P) 200555 chi_b2(3P) 10.5264 0.000146 0.00146 0 0 0 5 0 
+
+# setup psi(3770) 30443 psi(3770) 3.7711 0.023 0.1305 0 0 0 3 0 
+# setup chi_c2(2P) 100445 chi_c2(2P) 3.929 0.029 0.24 0 0 0 5 0 

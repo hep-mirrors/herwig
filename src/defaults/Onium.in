@@ -30,7 +30,7 @@ do OniumParameters:SetWaveFunction bbbar 2D 1.5572
 do OniumParameters:SetWaveFunction bbbar 3S 2.00712
 do OniumParameters:SetWaveFunction bbbar 3P 1.9804
 do OniumParameters:SetWaveFunction bbbar 3D 2.2324
-do OniumParameters:SetWaveFunction bbbar 4S 1.9645
+do OniumParameters:SetWaveFunction bbbar 4S 1.2863
 do OniumParameters:SetWaveFunction bbbar 4P 2.1175
 do OniumParameters:SetWaveFunction bbbar 4D 2.8903
 do OniumParameters:SetWaveFunction bbbar 5S 1.7990
