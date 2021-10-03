@@ -46,6 +46,9 @@ plotTemplate=Template("""
 # various test functions
 m1=0.
 m2=0.
+M=0
+a1=0
+a2=0
 aS=0.
 R02=0.
 # q -> q 1S0
@@ -66,6 +69,41 @@ def D_q_q_3P2(z):
 # q -> q 1P1
 def D_q_q_1P1(z) :
     return 9./2./math.pi*R02*16*aS**2*(1 - z)**2*z*(64 - 128*z +   176*z**2 -   160*z**3 +   140*z**4 - 56*z**5+9*z**6)/(81.*m1**5*(2-z)**8)
+# q -> q' 1S0
+def D_q_qp_1S0(z) :
+    W0 =  2.*(1.+z*a1)**2*(1.-z)
+    W1 = -2.*(2.*z**2*a2**2-z**2*a2 -4.*z*a2**2+4.*z*a2 -3.*z+4.*a2-2.)*(1.-z*a2)
+    W2 = -8.*(1.-z*a2)**2*a1*a2
+    deltaX = z*(1.-z)/(1.-a2*z)**2
+    return 2.*aS**2/27./M**3*R02/math.pi/a1**2/(1.-a2*z)**2* \
+        (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
+# q -> q' 3S1
+def D_q_qp_3S1(z) :
+    W0 =  2.*((1.+z*a1)**2+2.*z**2)*(1.-z)
+    W1 = -2.*(2.*z**2*a2**2 -3.*z**2*a2 +4.*z*a2**2 + 4.*z*a2 -9.*z - 4.*a2+6.)*(1.-z*a2)
+    W2 = -24.*(1.-z*a2)**2*a1*a2
+    deltaX = z*(1.-z)/(1.-a2*z)**2
+    return 2.*aS**2/27./math.pi/M**3*R02/a1**2/(1.-a2*z)**2* \
+         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
+# q ->q' 3P0
+def D_q_qp_3P0(z) :
+    W0 =  ( 4.*a2 - 3. - 8*z*a2**2 + 10*z*a2 - 3*z + 4*z**2*a2**3 - 5*z**2*a2**2 + z**2*a2 )**2*(1.-z)/96./a2**2
+    W1 =  ((-1 + z*a2)**2*(18 + 27*z - 12*a2 +   18*z*a2 + 30*z**2*a2 -   40*a2**2 -   152*z*a2**2 -   206*z**2*a2**2 -   9*z**3*a2**2 +   32*a2**3 +   176*z*a2**3 +   324*z**2*a2**3 +   58*z**3*a2**3 -   64*z*a2**4 -   184*z**2*a2**4 -   80*z**3*a2**4 +   32*z**2*a2**5 +   32*z**3*a2**5))/(96.*a2**2)
+    W2 = (2*a2*(7.*a2-6.*z) -10.*a2-3. -2.*z*a2**2*(7.*a2-12.) -z**2*a2**2*(2.*a2-3.))*a1*(1.-z*a2)**3/(12.*a2)
+    W3 = 2.*a1**2*a2*(1.-z*a2)**4/3.
+    deltaX = z*(1.-z)/(1.-a2*z)**2
+    return 32.*aS**2/9./math.pi*R02/a1**4/(1.-a2*z)**4/M**5* \
+        (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+# q ->q' 3P2
+def D_q_qp_3P2(z) :
+    W0 =  (2 + 4*z + 9*z**2 +  10*z**3 + 5*z**4 -  8*z*a2 - 16*z**2*a2 -  28*z**3*a2 -  20*z**4*a2 +  12*z**2*a2**2 +  20*z**3*a2**2 +  24*z**4*a2**2 -  8*z**3*a2**3 -  8*z**4*a2**3 +  2*z**4*a2**4)*(1.-z)/24.   
+    W1 = (-20 - 13*z + 8*z**2 +  30*z**3 + 16*a2 +  52*z*a2 - 30*z**2*a2 -  28*z**3*a2 -  32*z*a2**2 +  4*z**2*a2**2 -  7*z**3*a2**2 +  16*z**2*a2**3 +  4*z**3*a2**3)*(1.-z*a2)**2/24.
+    W2 = ( -26*a2 + 34 + 26.*z*a2**2 + 18*z*a2 - 45*z + 8*z**2*a2**2 - 15*z**2*a2 )*a1*(1.-z*a2)**3/12.
+    W3 = 10./3.*a1**2*a2*(1.-z*a2)**4
+    deltaX = z*(1.-z)/(1.-a2*z)**2
+    return 32.*aS**2/9./math.pi*R02/a1**4/(1.-a2*z)**4/M**5* \
+        (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
+
 
 # analytic line
 def fragmentation(funct,scale) :
@@ -83,45 +121,50 @@ latexName = {441  : "\\eta_c", 443    : "J/\\psi", 100441 : "\\eta_c(2S)", 10044
              551  : "\\eta_b", 553 : "\\Upsilon" , 100551 : "\\eta_b(2S)", 100553 : "\\Upsilon(2S)", 200553 : "\\Upsilon(3S)", 300553 : "\\Upsilon(4S)",
              10443 : "h_c", 10441: "\\chi_{c0}", 20443: "\\chi_{c1}",  445: "\\chi_{c2}",
              10553 : "h_b", 10551: "\\chi_{b0}", 20553: "\\chi_{b1}",  555: "\\chi_{b2}",
-             110553 : "h_b(2P)", 110551: "\\chi_{b0}(2P)", 120553: "\\chi_{b1}(2P)",  100555: "\\chi_{b2}(2P)",  }
+             110553 : "h_b(2P)", 110551: "\\chi_{b0}(2P)", 120553: "\\chi_{b1}(2P)",  100555: "\\chi_{b2}(2P)",
+             541 : "B_c^+", 543 : "B_c^{*+}", 10541 : "B_{c0}^{*+}", 545 : "B_{c2}^{*+}" }
 
 
 herwigName = {441 : "eta_c"  , 443 : "Jpsi"    , 100441 : "eta_c(2S)"    , 100443 : "psi(2S)", 
               551 : "eta_b"  , 553 : "Upsilon" , 100551 : "eta_b(2S)"    , 100553 : "Upsilon(2S)", 200553 : "Upsilon(3S)", 300553 : "Upsilon(4S)",
-             10443 : "h_c", 10441: "chi_c0", 20443: "chi_c1",  445: "chi_c2",
-             10553 : "h_b", 10551: "chi_b0", 20553: "chi_b1",  555: "chi_b2",
-             110553 : "h_b(2P)", 110551: "chi_b0(2P)", 120553: "chi_b1(2P)",  100555: "chi_b2(2P)"}
+              10443 : "h_c", 10441: "chi_c0", 20443: "chi_c1",  445: "chi_c2",
+              10553 : "h_b", 10551: "chi_b0", 20553: "chi_b1",  555: "chi_b2",
+              110553 : "h_b(2P)", 110551: "chi_b0(2P)", 120553: "chi_b1(2P)",  100555: "chi_b2(2P)",
+              541 : "B_c+", 543 : "B_c*+", 10541 : "B*_c0+", 545 : "B_c2+" }
 
 
 # splitting tests
-testParameters={ "ctocEta_c"   : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_1S0,10**4],
-                 "ctocJPsi"    : [443    ,"ctoc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_3S1,10**4],
-                 "ctocEta_c2S" : [100441 ,"ctoc21S0SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_1S0,10**4],
-                 "ctocPsi2S"   : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_3S1,10**4],
+testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_1S0,10**4],
+                 "ctocJPsi"      : [443    ,"ctoc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,100.,D_q_q_3S1,10**4],
+                 "ctocEta_c2S"   : [100441 ,"ctoc21S0SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_1S0,10**4],
+                 "ctocPsi2S"     : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,100.,D_q_q_3S1,10**4],
 
-                 "ctocH_c"     : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_1P1,10**4],
-                 "ctocChi_c0"  : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P0,10**4],
-                 "ctocChi_c1"  : [20443  ,"ctoc13P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P1,10**4],
-                 "ctocChi_c2"  : [  445  ,"ctoc13P2SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P2,10**4],
+                 "ctocH_c"       : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_1P1,10**4],
+                 "ctocChi_c0"    : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P0,10**4],
+                 "ctocChi_c1"    : [20443  ,"ctoc13P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P1,10**4],
+                 "ctocChi_c2"    : [  445  ,"ctoc13P2SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,100.,D_q_q_3P2,10**4],
                  
-                 "btocEta_b"     : [551     ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_1S0,10**5],
-                 "btocUpsilon"   : [553     ,"btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_3S1,10**5],
-                 "btocEta_b2S"   : [100551  ,"btob21S0SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_1S0,10**5],
-                 "btocUpsilon2S" : [100553  ,"btob23S1SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_3S1,10**5],
-                 "btocUpsilon3S" : [200553  ,"btob33S1SplittingSudakov",5,"bbbar","3S",0.19,1.5,4.9,2.2496,1000.,D_q_q_3S1,10**5],
-                 "btocUpsilon4S" : [300553  ,"btob43S1SplittingSudakov",5,"bbbar","4S",0.19,1.5,4.9,1.9645,1000.,D_q_q_3S1,10**5],
+                 "btobEta_b"     : [551     ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_1S0,10**5],
+                 "btobUpsilon"   : [553     ,"btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,1000.,D_q_q_3S1,10**5],
+                 "btobEta_b2S"   : [100551  ,"btob21S0SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_1S0,10**5],
+                 "btobUpsilon2S" : [100553  ,"btob23S1SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,1000.,D_q_q_3S1,10**5],
+                 "btobUpsilon3S" : [200553  ,"btob33S1SplittingSudakov",5,"bbbar","3S",0.19,1.5,4.9,2.2496,1000.,D_q_q_3S1,10**5],
+                 "btobUpsilon4S" : [300553  ,"btob43S1SplittingSudakov",5,"bbbar","4S",0.19,1.5,4.9,1.9645,1000.,D_q_q_3S1,10**5],
                  
-                 "btocH_b"       : [10553     ,"btob11P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_1P1,10**6],
-                 "btocChi_b0"    : [10551     ,"btob13P0SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P0,10**6],
-                 "btocChi_b1"    : [20553     ,"btob13P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P1,10**6],
-                 "btocChi_b2"    : [  555     ,"btob13P2SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P2,10**6],
+                 "btobH_b"       : [10553   ,"btob11P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_1P1,10**6],
+                 "btobChi_b0"    : [10551   ,"btob13P0SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P0,10**6],
+                 "btobChi_b1"    : [20553   ,"btob13P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P1,10**6],
+                 "btobChi_b2"    : [  555   ,"btob13P2SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P2,10**6],
                  
-                 "btocH_b2P"     : [110553    ,"btob21P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_1P1,10**6],
-                 "btocChi_b02P"  : [110551    ,"btob23P0SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P0,10**6],
-                 "btocChi_b12P"  : [120553    ,"btob23P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P1,10**6],
-                 "btocChi_b22P"  : [100555    ,"btob23P2SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P2,10**6],
-
-
+                 "btobH_b2P"     : [110553  ,"btob21P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_1P1,10**6],
+                 "btobChi_b02P"  : [110551  ,"btob23P0SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P0,10**6],
+                 "btobChi_b12P"  : [120553  ,"btob23P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P1,10**6],
+                 "btobChi_b22P"  : [100555  ,"btob23P2SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,10000.,D_q_q_3P2,10**6],
+                 
+                 "btocB_c"       : [541     ,"btoc11S0SplittingSudakov",5,"bcbar","1S",0.26,1.5,4.9,1.9943,100.,D_q_qp_1S0,10**3],
+                 "btocB_cStar"   : [543     ,"btoc13S1SplittingSudakov",5,"bcbar","1S",0.26,1.5,4.9,1.9943,100.,D_q_qp_3S1,10**3],
+                 "btocB_c0"      : [10541   ,"btoc13P0SplittingSudakov",5,"bcbar","1P",0.26,1.5,4.9,0.3083,100.,D_q_qp_3P0,10**4],
+                 "btocB_c2"      : [545     ,"btoc13P2SplittingSudakov",5,"bcbar","1P",0.26,1.5,4.9,0.3083,100.,D_q_qp_3P2,10**4],
 }
 # options
 op = optparse.OptionParser(usage=__doc__)
@@ -206,8 +249,12 @@ if opts.analyse :
         elif val[3]=="bbbar" :
             m1=val[7]
             m2=val[7]
-        else :
-            quit()
+        elif val[3]=="bcbar" :
+            m1=val[6]
+            m2=val[7]
+        M  = m1+m2
+        a1 = m1/M
+        a2 = 1-a1
         # other parameters
         aS  = val[5]
         R02 = val[8]
@@ -236,6 +283,7 @@ if opts.analyse :
             if(dy1[-1]>0.) :
                 fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
                 chisq += ((fval-y1[-1])/dy1[-1])**2
+                # print(bin.xMid(),fval,y1[-1],dy1[-1], ((fval-y1[-1])/dy1[-1])**2,chisq,ndof)
                 ndof+=1.
         chisq/=ndof
         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
@@ -469,41 +517,6 @@ if opts.analyse :
 
 # # analytic fragmentation functions
 
-# # B_c
-# def D_1S0(z) :
-#     W0 =  2.*(1.+z*a1)**2*(1.-z)
-#     W1 = -2.*(2.*z**2*a2**2-z**2*a2 -4.*z*a2**2+4.*z*a2 -3.*z+4.*a2-2.)*(1.-z*a2)
-#     W2 = -8.*(1.-z*a2)**2*a1*a2
-#     deltaX = z*(1.-z)/(1.-a2*z)**2
-#     return 4.*aS**2/81./M**3*O1_S/a1**2/(1.-a2*z)**2* \
-#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
-# # B_c*
-# def D_3S1(z) :
-#     W0 =  2.*((1.+z*a1)**2+2.*z**2)*(1.-z)
-#     W1 = -2.*(2.*z**2*a2**2 -3.*z**2*a2 +4.*z*a2**2 + 4.*z*a2 -9.*z - 4.*a2+6.)*(1.-z*a2)
-#     W2 = -24.*(1.-z*a2)**2*a1*a2
-#     deltaX = z*(1.-z)/(1.-a2*z)**2
-#     return 4.*aS**2/81./M**3*O1_S/a1**2/(1.-a2*z)**2* \
-#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.)
-
-# # B_c0
-# def D_3P0(z) :
-#     W0 =  ( 4.*a2 - 3. - 8*z*a2**2 + 10*z*a2 - 3*z + 4*z**2*a2**3 - 5*z**2*a2**2 + z**2*a2 )**2*(1.-z)/96./a2**2
-#     W1 =  ((-1 + z*a2)**2*(18 + 27*z - 12*a2 +   18*z*a2 + 30*z**2*a2 -   40*a2**2 -   152*z*a2**2 -   206*z**2*a2**2 -   9*z**3*a2**2 +   32*a2**3 +   176*z*a2**3 +   324*z**2*a2**3 +   58*z**3*a2**3 -   64*z*a2**4 -   184*z**2*a2**4 -   80*z**3*a2**4 +   32*z**2*a2**5 +   32*z**3*a2**5))/(96.*a2**2)
-#     W2 = (2*a2*(7.*a2-6.*z) -10.*a2-3. -2.*z*a2**2*(7.*a2-12.) -z**2*a2**2*(2.*a2-3.))*a1*(1.-z*a2)**3/(12.*a2)
-#     W3 = 2.*a1**2*a2*(1.-z*a2)**4/3.
-#     deltaX = z*(1.-z)/(1.-a2*z)**2
-#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
-#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
-# # B_c2
-# def D_3P2(z) :
-#     W0 =  (2 + 4*z + 9*z**2 +  10*z**3 + 5*z**4 -  8*z*a2 - 16*z**2*a2 -  28*z**3*a2 -  20*z**4*a2 +  12*z**2*a2**2 +  20*z**3*a2**2 +  24*z**4*a2**2 -  8*z**3*a2**3 -  8*z**4*a2**3 +  2*z**4*a2**4)*(1.-z)/24.   
-#     W1 = (-20 - 13*z + 8*z**2 +  30*z**3 + 16*a2 +  52*z*a2 - 30*z**2*a2 -  28*z**3*a2 -  32*z*a2**2 +  4*z**2*a2**2 -  7*z**3*a2**2 +  16*z**2*a2**3 +  4*z**3*a2**3)*(1.-z*a2)**2/24.
-#     W2 = ( -26*a2 + 34 + 26.*z*a2**2 + 18*z*a2 - 45*z + 8*z**2*a2**2 - 15*z**2*a2 )*a1*(1.-z*a2)**3/12.
-#     W3 = 10./3.*a1**2*a2*(1.-z*a2)**4
-#     deltaX = z*(1.-z)/(1.-a2*z)**2
-#     return 64.*aS**2/81.*O1_P/a1**4/(1.-a2*z)**4/M**5* \
-#         (W0*deltaX+W1*deltaX**2/2.+W2*deltaX**3/3.+W3*deltaX**4/4.)
 
 # def D_1P1(z) :
 #     W0 =  (1.-z)*(1 + z*(2 - 4*a2) +   z**4*(2 + a1**2)*   a2**2 +   z**2*(3 - 2*a1*a2) +   2*z**3*a2*   (-1 - 3*a2 + 2*a2**2))/32./a2**2

@@ -163,6 +163,86 @@ do SplittingGenerator:AddFinalSplitting b->b,chi_b2(2P); btob23P2SplittingSudako
 
 
 #
+#  B_c
+#
+# 1 1S0
+create Herwig::QtoQP1S0SplitFn btoc11S0SplittingSudakov HwOniumShower.so
+set btoc11S0SplittingSudakov:Alpha AlphaQCD
+set btoc11S0SplittingSudakov:Parameters /Herwig/OniumParameters
+set btoc11S0SplittingSudakov:Cutoff PTCutOff2
+set btoc11S0SplittingSudakov:PDFmax 2.0
+set btoc11S0SplittingSudakov:ColourStructure TripletTripletSinglet
+set btoc11S0SplittingSudakov:AngularOrdered Yes
+set btoc11S0SplittingSudakov:StrictAO Yes
+set btoc11S0SplittingSudakov:InteractionType QCD
+set btoc11S0SplittingSudakov:State bcbar
+do SplittingGenerator:AddFinalSplitting b->c,B_c-; btoc11S0SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->b,B_c+; btoc11S0SplittingSudakov
+# 1 3S1
+create Herwig::QtoQP3S1SplitFn btoc13S1SplittingSudakov HwOniumShower.so
+set btoc13S1SplittingSudakov:Alpha AlphaQCD
+set btoc13S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set btoc13S1SplittingSudakov:Cutoff PTCutOff2
+set btoc13S1SplittingSudakov:PDFmax 2.0
+set btoc13S1SplittingSudakov:ColourStructure TripletTripletSinglet
+set btoc13S1SplittingSudakov:AngularOrdered Yes
+set btoc13S1SplittingSudakov:StrictAO Yes
+set btoc13S1SplittingSudakov:InteractionType QCD
+set btoc13S1SplittingSudakov:State bcbar
+do SplittingGenerator:AddFinalSplitting b->c,B_c*-; btoc13S1SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->b,B_c*+; btoc13S1SplittingSudakov
+# # 1 1P1
+# create Herwig::QtoQ1P1SplitFn btoc11P1SplittingSudakov HwOniumShower.so
+# set btoc11P1SplittingSudakov:Alpha AlphaQCD
+# set btoc11P1SplittingSudakov:Parameters /Herwig/OniumParameters
+# set btoc11P1SplittingSudakov:Cutoff PTCutOff2
+# set btoc11P1SplittingSudakov:PDFmax 2.0
+# set btoc11P1SplittingSudakov:ColourStructure TripletTripletSinglet
+# set btoc11P1SplittingSudakov:AngularOrdered Yes
+# set btoc11P1SplittingSudakov:StrictAO Yes
+# set btoc11P1SplittingSudakov:InteractionType QCD
+# set btoc11P1SplittingSudakov:State bcbar
+# do SplittingGenerator:AddFinalSplitting c->c,h_c; btoc11P1SplittingSudakov
+# 1 3P0
+create Herwig::QtoQP3P0SplitFn btoc13P0SplittingSudakov HwOniumShower.so
+set btoc13P0SplittingSudakov:Alpha AlphaQCD
+set btoc13P0SplittingSudakov:Parameters /Herwig/OniumParameters
+set btoc13P0SplittingSudakov:Cutoff PTCutOff2
+set btoc13P0SplittingSudakov:PDFmax 2.0
+set btoc13P0SplittingSudakov:ColourStructure TripletTripletSinglet
+set btoc13P0SplittingSudakov:AngularOrdered Yes
+set btoc13P0SplittingSudakov:StrictAO Yes
+set btoc13P0SplittingSudakov:InteractionType QCD
+set btoc13P0SplittingSudakov:State bcbar
+do SplittingGenerator:AddFinalSplitting b->c,B*_c0-; btoc13P0SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->b,B*_c0+; btoc13P0SplittingSudakov
+# # 1 3P1
+# create Herwig::QtoQ3P1SplitFn btoc13P1SplittingSudakov HwOniumShower.so
+# set btoc13P1SplittingSudakov:Alpha AlphaQCD
+# set btoc13P1SplittingSudakov:Parameters /Herwig/OniumParameters
+# set btoc13P1SplittingSudakov:Cutoff PTCutOff2
+# set btoc13P1SplittingSudakov:PDFmax 2.0
+# set btoc13P1SplittingSudakov:ColourStructure TripletTripletSinglet
+# set btoc13P1SplittingSudakov:AngularOrdered Yes
+# set btoc13P1SplittingSudakov:StrictAO Yes
+# set btoc13P1SplittingSudakov:InteractionType QCD
+# set btoc13P1SplittingSudakov:State bcbar
+# do SplittingGenerator:AddFinalSplitting c->c,chi_c1; btoc13P1SplittingSudakov
+# 1 3P2
+create Herwig::QtoQP3P2SplitFn btoc13P2SplittingSudakov HwOniumShower.so
+set btoc13P2SplittingSudakov:Alpha AlphaQCD
+set btoc13P2SplittingSudakov:Parameters /Herwig/OniumParameters
+set btoc13P2SplittingSudakov:Cutoff PTCutOff2
+set btoc13P2SplittingSudakov:PDFmax 2.0
+set btoc13P2SplittingSudakov:ColourStructure TripletTripletSinglet
+set btoc13P2SplittingSudakov:AngularOrdered Yes
+set btoc13P2SplittingSudakov:StrictAO Yes
+set btoc13P2SplittingSudakov:InteractionType QCD
+set btoc13P2SplittingSudakov:State bcbar
+do SplittingGenerator:AddFinalSplitting b->c,B_c2-; btoc13P2SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->b,B_c2+; btoc13P2SplittingSudakov
+
+#
 #  Diquarks
 #
 
