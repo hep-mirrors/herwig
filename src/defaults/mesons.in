@@ -790,7 +790,7 @@ newdef kappa+:WidthUpCut 1.236
 
 # new ccbar states 1D2
 create ThePEG::ParticleData psi_2
-setup psi_2 20445 psi_2 3.8237 0.0003 0.003 0 0  05 0
+setup psi_2 20445 psi_2 3.8237 0.0003 0.003 0 0 0 5 0
 # new ccbar states 1D3
 create ThePEG::ParticleData psi_3
 setup psi_3 447   psi_3 3.84271 0.0028 0.028 0 0 0 7 0

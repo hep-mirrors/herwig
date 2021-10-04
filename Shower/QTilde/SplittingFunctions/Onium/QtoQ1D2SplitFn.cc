@@ -96,7 +96,7 @@ void QtoQ1D2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   double upper = integOverP(zLimits().second,ids,pdfopt);
   Energy m = ids[0]->mass();
   double aS2 = fixedAlphaS_ < 0 ? sqr(alpha()->overestimateValue()) : sqr(fixedAlphaS_);
-  Energy2 pre =  2./27.*aS2*O1_/m/sqr(m*m);
+  Energy2 pre =  4./135.*aS2*O1_/m/sqr(m*m);
   Energy2 c = (upper - lower) * colourFactor() * pre * enhance * detune;
   double r = UseRandom::rnd();
   assert(iopt<=2);
