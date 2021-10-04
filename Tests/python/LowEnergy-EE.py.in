@@ -103,6 +103,7 @@ analyses['EtaGamma']["CMD2_1995_I406880" ] = ["d01-x01-y04"]
 analyses['EtaGamma']["BABAR_2006_I716277"] = ["d01-x01-y01"]
 # 3 pion
 analyses["3Pi"]["BABAR_2004_I656680"     ] = ["d01-x01-y01"]
+analyses["3Pi"]["BABAR_2021_I1937349"    ] = ["d01-x01-y01"]
 analyses["3Pi"]["BESIII_2019_I1773081"   ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2002_I582183"       ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2003_I619011"       ] = ["d01-x01-y01"]
