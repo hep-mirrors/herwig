@@ -40,9 +40,9 @@ void QtoQPP1SplitFn::persistentInput(PersistentIStream & is, int) {
 void QtoQPP1SplitFn::doinit() {
   Sudakov1to2FormFactor::doinit();
   O1_ = params_->singletMEProduction<1>(state_,n_,0,1);
-  double theta = params_->singletTripletMixing(n_,1);
-  sTheta_ = sin(theta/180.*Constants::pi);
-  cTheta_ = cos(theta/180.*Constants::pi);
+  double theta = state_==bcbar ? params_->singletTripletMixing(n_,1) : 0.;
+  sTheta_ = sin(theta);
+  cTheta_ = cos(theta);
 }
 
 // The following static variable is needed for the type
@@ -80,6 +80,11 @@ void QtoQPP1SplitFn::Init() {
      "bbbar",
      "Bottomonium state",
      bbbar);
+  static SwitchOption interfaceStatebcbar
+    (interfaceState,
+     "bcbar",
+     "B_c state",
+     bcbar);
   
   static Parameter<QtoQPP1SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",

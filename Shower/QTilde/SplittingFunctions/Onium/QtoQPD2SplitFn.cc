@@ -40,9 +40,9 @@ void QtoQPD2SplitFn::persistentInput(PersistentIStream & is, int) {
 void QtoQPD2SplitFn::doinit() {
   Sudakov1to2FormFactor::doinit();
   O1_ = params_->singletMEProduction<2>(state_,n_,0,2);
-  double theta = params_->singletTripletMixing(n_,2);
-  sTheta_ = sin(theta/180.*Constants::pi);
-  cTheta_ = cos(theta/180.*Constants::pi);
+  double theta = state_==bcbar ? params_->singletTripletMixing(n_,2) : 0.;
+  sTheta_ = sin(theta);
+  cTheta_ = cos(theta);
 }
 
 
@@ -81,6 +81,11 @@ void QtoQPD2SplitFn::Init() {
      "bbbar",
      "Bottomonium state",
      bbbar);
+  static SwitchOption interfaceStatebcbar
+    (interfaceState,
+     "bcbar",
+     "B_c state",
+     bcbar);
   
   static Parameter<QtoQPD2SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
@@ -101,7 +106,7 @@ void QtoQPD2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   Energy M = ids[0]->mass()+ids[1]->mass();
   double a2 = ids[1]->mass()/M;
   double aS2 = fixedAlphaS_ < 0 ? sqr(alpha()->overestimateValue()) : sqr(fixedAlphaS_);
-  Energy2 pre =  2./135.*aS2*O1_/pow(a2,4)/M/sqr(M*M);
+  Energy2 pre =  8./135.*aS2*O1_/pow(a2,4)/M/sqr(M*M);
   Energy2 c = (upper - lower) * colourFactor() * pre * enhance * detune;
   double r = UseRandom::rnd();
   assert(iopt<=2);
