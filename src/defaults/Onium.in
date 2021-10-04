@@ -49,3 +49,6 @@ do OniumParameters:SetWaveFunction bcbar 2D 0.1989
 do OniumParameters:SetWaveFunction bcbar 3S 0.9440
 do OniumParameters:SetWaveFunction bcbar 3P 0.4540
 do OniumParameters:SetWaveFunction bcbar 4S 0.8504
+# and the mixing
+do OniumParameters:SetSingletTripletMixing 1P 25.0
+do OniumParameters:SetSingletTripletMixing 1D 34.4

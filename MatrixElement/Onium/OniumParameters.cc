@@ -58,6 +58,11 @@ void OniumParameters::Init() {
      "Set the value of the wavefunction, or its deriviatives at the origin",
      &OniumParameters::setWaveFunction, false);
 
+  static Command<OniumParameters> interfaceSetSingletTripletMixing
+    ("SetSingletTripletMixing",
+     "Set the value of the singlet/triplet mixing for B_c states",
+     &OniumParameters::setSingletTripletMixing, false);
+
 }
 
 string OniumParameters::setWaveFunction(string arg) {
@@ -97,6 +102,32 @@ string OniumParameters::setWaveFunction(string arg) {
   }
   else
     return "Error: Invalid string for wave function l value " + stype;
+  // success
+  return "";
+}
+
+  
+string OniumParameters::setSingletTripletMixing(string arg) {
+  // get the principal quantum number and orbital AM quantum numbers
+  string stype = StringUtils::car(arg);
+  arg         = StringUtils::cdr(arg);
+  if(stype.size()!=2)
+    return "Error: Invalid string for mixing level " + stype;
+  unsigned int n = stoi(stype);
+  if(n>singletTripletMixing_.size()) {
+    singletTripletMixing_.resize(n,vector<double>({0.,0.}));
+  }
+  // get the value
+  double value = stof(arg);
+  // now get the l value and set the wavefunction
+  if(stype[1]=='S')
+    return "No mixing for s-wave states";
+  else if(stype[1]=='P')
+    singletTripletMixing_[n-1][0] = value/180.*Constants::pi;
+  else if(stype[1]=='D')
+    singletTripletMixing_[n-1][1] = value/180.*Constants::pi;
+  else
+    return "Error: Invalid string for mixing l value " + stype;
   // success
   return "";
 }

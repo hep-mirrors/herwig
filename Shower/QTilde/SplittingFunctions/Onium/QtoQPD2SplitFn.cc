@@ -6,13 +6,16 @@
 
 #include "QtoQPD2SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 using namespace Herwig;
 
@@ -27,17 +30,19 @@ IBPtr QtoQPD2SplitFn::fullclone() const {
 }
 
 void QtoQPD2SplitFn::persistentOutput(PersistentOStream & os) const {
-  os << ounit(O1_,GeV*sqr(GeV*GeV2)) << n_ << theta_ << sTheta_ << cTheta_ << fixedAlphaS_;
+  os << params_ << ounit(O1_,GeV*sqr(GeV*GeV2)) << oenum(state_) << n_ << sTheta_ << cTheta_ << fixedAlphaS_;
 }
 
 void QtoQPD2SplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(O1_,GeV*sqr(GeV*GeV2)) >> n_ >> theta_ >> sTheta_ >> cTheta_ >> fixedAlphaS_;
+  is >> params_ >> iunit(O1_,GeV*sqr(GeV*GeV2)) >> ienum(state_) >> n_ >> sTheta_ >> cTheta_ >> fixedAlphaS_;
 }
 
 void QtoQPD2SplitFn::doinit() {
   Sudakov1to2FormFactor::doinit();
-  sTheta_ = sin(theta_/180.*Constants::pi);
-  cTheta_ = cos(theta_/180.*Constants::pi);
+  O1_ = params_->singletMEProduction<2>(state_,n_,0,2);
+  double theta = params_->singletTripletMixing(n_,2);
+  sTheta_ = sin(theta/180.*Constants::pi);
+  cTheta_ = cos(theta/180.*Constants::pi);
 }
 
 
@@ -51,11 +56,10 @@ void QtoQPD2SplitFn::Init() {
   static ClassDocumentation<QtoQPD2SplitFn> documentation
     ("The QtoQPD2SplitFn class implements the branching q-> q' D2");
 
-  static Parameter<QtoQPD2SplitFn,Energy7> interfaceO1
-    ("O1",
-     "The colour singlet excpetation value",
-     &QtoQPD2SplitFn::O1_, GeV*GeV2*GeV2*GeV2, 0.131*GeV*GeV2*GeV2*GeV2, 0.0*GeV*GeV2*GeV2*GeV2, 10.0*GeV*GeV2*GeV2*GeV2,
-     false, false, Interface::limited);
+  static Reference<QtoQPD2SplitFn,OniumParameters> interfaceParameters
+    ("Parameters",
+     "Quarkonium parameters",
+     &QtoQPD2SplitFn::params_, false, false, true, false, false);
   
   static Parameter<QtoQPD2SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
@@ -63,16 +67,25 @@ void QtoQPD2SplitFn::Init() {
      &QtoQPD2SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
      false, false, Interface::limited);
   
+  static Switch<QtoQPD2SplitFn,OniumState> interfaceState
+    ("State",
+     "The type of onium state",
+     &QtoQPD2SplitFn::state_, ccbar, false, false);
+  static SwitchOption interfaceStateccbar
+    (interfaceState,
+     "ccbar",
+     "Charmonium state",
+     ccbar);
+  static SwitchOption interfaceStatebbbar
+    (interfaceState,
+     "bbbar",
+     "Bottomonium state",
+     bbbar);
+  
   static Parameter<QtoQPD2SplitFn,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
      "The principle quantum number of the states",
      &QtoQPD2SplitFn::n_, 1, 1, 10,
-     false, false, Interface::limited);
-
-  static Parameter<QtoQPD2SplitFn,double> interfaceTheta
-    ("Theta",
-     "Mixing angle between the 1D2 and 3D2 states (in degrees)",
-     &QtoQPD2SplitFn::theta_, 34.4, 0., 360.,
      false, false, Interface::limited);
 
 }
@@ -88,7 +101,7 @@ void QtoQPD2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   Energy M = ids[0]->mass()+ids[1]->mass();
   double a2 = ids[1]->mass()/M;
   double aS2 = fixedAlphaS_ < 0 ? sqr(alpha()->overestimateValue()) : sqr(fixedAlphaS_);
-  Energy2 pre =  4./27.*aS2*O1_/pow(a2,4)/M/sqr(M*M);
+  Energy2 pre =  2./135.*aS2*O1_/pow(a2,4)/M/sqr(M*M);
   Energy2 c = (upper - lower) * colourFactor() * pre * enhance * detune;
   double r = UseRandom::rnd();
   assert(iopt<=2);

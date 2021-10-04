@@ -29,7 +29,7 @@ public:
    * The default constructor.
    */
   QtoQPD2SplitFn() : O1_(0.131*GeV*pow<3,1>(GeV2)), state_(bcbar), n_(1), theta_(34.4),
-		     sTheta_(0.564967), cTheta_(0.825113),fixedAlphaS_(-1.)
+		     sTheta_(0.564967), cTheta_(0.825113), fixedAlphaS_(-1.)
   {}
 
   /**

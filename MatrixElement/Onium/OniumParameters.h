@@ -55,12 +55,25 @@ public:
   ThePEG::Qty<std::ratio<0,1>, std::ratio<3+2*L,1>, std::ratio<0,1>> inline
   singletMEProduction(OniumState type,unsigned int n, unsigned int S, unsigned int J);
 
+  // Get the singlet-triplet mxing for \f$B_c\f$ states
+  double singletTripletMixing(unsigned int n, unsigned int l) {
+    if(n>singletTripletMixing_.size()) return 0.;
+    else if(l>singletTripletMixing_[n-1].size()) return 0.;
+    else
+      return singletTripletMixing_[n-1][l-1];
+  }
+  
 public:
 
   /**
    *   Set the values of the wavefunction at the origin
    */
   string setWaveFunction(string arg);
+  
+  /**
+   *   Set the values of the wavefunction at the origin
+   */
+  string setSingletTripletMixing(string arg);
 
 public:
 
@@ -191,6 +204,11 @@ private :
    */
   vector<vector<vector<Energy7> > > O1_D_dec_;
   //@}
+
+  /**
+   *   Mixing for \f$B_c\f$ states
+   */
+  vector<vector<double> > singletTripletMixing_;
 };
 
 // Get the singlet matrix element production
