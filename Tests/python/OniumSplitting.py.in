@@ -200,15 +200,24 @@ def D_q_qp_1D2(x) :
 def D_q_qp_D2(x) :
     return mix1**2*D_q_qp_1D2(x)+mix2**2*D_q_qp_3D2(x)+mix1*mix2*(aS**2*5.*R02/math.pi*(-1 + x)**2*x*(-12 + 12* (5 - 4*a1 +2*a1**2)*x - (129 - 198*a1 +156*a1**2 +64*a1**3)*x**2 + 4* (39 - 85*a1 +76*a1**2 -8*a1**3 +36*a1**4)*x**3 - 2* (57 - 156*a1 +133*a1**2 -130*a1**3 +198*a1**4 +48*a1**5)*x**4 - 4* (-12 + 27*a1 -4*a1**2 +51*a1**3 +2*a1**4 +14*a1**5)*a2* x**5 + (-9 + 16*a1 +11*a1**2 +62*a1**3 +4*a1**4)*a2**2* x**6))/(54.*math.sqrt(6.)*a1**6*a2**2*M**7*(-1 + a2*x)**8)
 
+def D_cc1(z) :
+    return 4.*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(9.*m1**3*math.pi*(2.-z)**6)
+
+def D_bc0(z) :
+    return aS**2*a1*R02*(1 - z)**2*z*(6 - 18*(1 - 2*a1)*z + (21 - 74*a1 + 68*a1**2)*z**2 - 2*(1 - a1)*(6 - 19*a1 + 18*a1**2)*z**3 + 3*(1 - a1)**2*(1 - 2*a1 + 2*a1**2)*z**4)/(54.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
+
+def D_bc1(z) :
+    return aS**2*a1*R02*(1 - z)**2*z*(2 - 2*(3 - 2*a1)*z + 3*(3 - 2*a1 + 4*a1**2)*z**2 - 2*(1 - a1)*(4 - a1 + 2*a1**2)*z**3 + (1 - a1)**2*(3 - 2*a1 + 2*a1**2)*z**4)/(18.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
+
 # analytic line
-def fragmentation(funct,scale) :
+def fragmentation(funct,scale,step) :
     x = []
     y = []
-    xe=0.001
+    xe=step
     while xe<1. :
         x.append(xe)
         y.append(funct(x[-1])*scale)
-        xe+=0.001
+        xe+=step
     return (x,y)
 
 # latex for plots
@@ -228,7 +237,8 @@ latexName = {441  : "\\eta_c", 443    : "J/\\psi", 100441 : "\\eta_c(2S)", 10044
              
              541 : "B_c^+", 543 : "B_c^{*+}", 10541 : "B_{c0}^{*+}", 545 : "B_{c2}^{*+}",
              100541 : "B_c(2S)^+", 100543 : "B_c(2S)^{*+}", 10543 : "B_{c1}^+", 20543 : "B_{c1}^{\\prime+}",
-             30543 : "B_c(1D)^{*+}", 547 : "B_{c3}(1D)^{*+}", 20545 : "B_{c2}(H)^{+}", 10545 : "B_{c2}(L)^+" }
+             30543 : "B_c(1D)^{*+}", 547 : "B_{c3}(1D)^{*+}", 20545 : "B_{c2}(H)^{+}", 10545 : "B_{c2}(L)^+",
+              4403 : "(cc)_1", 5503 : "(bb)_1", 5401 : "(bc)_0", 5403 : "(bc)_1"  }
 
 
 herwigName = {441 : "eta_c"  , 443 : "Jpsi"    , 100441 : "eta_c(2S)"    , 100443 : "psi(2S)", 
@@ -242,7 +252,9 @@ herwigName = {441 : "eta_c"  , 443 : "Jpsi"    , 100441 : "eta_c(2S)"    , 10044
               
               541 : "B_c+", 543 : "B_c*+", 10541 : "B*_c0+", 545 : "B_c2+", 10543 : "B_c1+", 20543 : "B'_c1+",
               100541 : "B_c(2S)+", 100543 : "B_c(2S)*+",
-              30543 : "B_c(1D)*+", 547 : "B_c3(1D)*+", 20545 : "B_c2(H)+", 10545 : "B_c2(L)+" }
+              30543 : "B_c(1D)*+", 547 : "B_c3(1D)*+", 20545 : "B_c2(H)+", 10545 : "B_c2(L)+",
+
+              4403 : "cc_1", 5503 : "bb_1", 5401 : "bc_0", 5403 : "bc_1" }
 
 
 # splitting tests
@@ -252,9 +264,9 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "ctocPsi2S"     : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_q_q_3S1,10**4],
 
                  "gtogEta_c"     : [441    ,"gtogcc11S0SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e2    ,D_g_g_1S0,10**4],
-                 "gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e2    ,D_g_g_3S1,10**4],
+                 #"gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e4    ,D_g_g_3S1,10**6],
                  "gtogEta_c2S"   : [100441 ,"gtogcc21S0SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_1S0,10**4],
-                 #"gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_3S1,10**4],
+                 #"gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e4    ,D_g_g_3S1,10**6],
 
                  "ctocH_c"       : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_1P1,10**4],
                  "ctocChi_c0"    : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_3P0,10**4],
@@ -313,11 +325,17 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "btocB_c3D2"    : [20545   ,"btoc1D2SplittingSudakov" ,5,"bcbar","1D",0.26,1.5,4.9,0.0986,5000.,D_q_qp_3D2,10**5,90.],
                  "btocB_c1D2mix" : [10545   ,"btoc1D2SplittingSudakov" ,5,"bcbar","1D",0.26,1.5,4.9,0.0986,5000.,D_q_qp_D2 ,10**5,34.4],
                  "btocB_c3D2mix" : [20545   ,"btoc1D2SplittingSudakov" ,5,"bcbar","1D",0.26,1.5,4.9,0.0986,5000.,D_q_qp_D2 ,10**5,34.4],
+
+                 "ctocbarcc1"    : [4403    ,"QtoQcc1SplittingSudakov" ,4,"cc"   ,"1S",0.26,1.5,4.9,0.07 ,1e3,D_cc1,1e5],
+                 "btobbarbb1"    : [5503    ,"QtoQbb1SplittingSudakov" ,5,"bb"   ,"1S",0.26,1.5,4.9,0.633,1e3,D_cc1,1e5],
+                 "btocbarbc0"    : [5401    ,"QtoQbc0SplittingSudakov" ,5,"bc"   ,"1S",0.26,1.5,4.9,0.25 ,5e2,D_bc0,1e5],
+                 "btocbarbc1"    : [5403    ,"QtoQbc1SplittingSudakov" ,5,"bc"   ,"1S",0.26,1.5,4.9,0.25 ,5e2,D_bc1,1e5],
 }
 # options
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("--generate-input-files", dest="infiles", default=False, action="store_true")
 op.add_option("--analyse", dest="analyse", default=False, action="store_true")
+op.add_option("--fast", dest="fast", default=False, action="store_true")
 opts, args = op.parse_args()
 # get template and write the file
 with open(os.path.join("Rivet/Templates/EE.in"), 'r') as f:
@@ -341,9 +359,9 @@ if opts.infiles :
     # now loop over the examples
     for (key,val) in testParameters.items() :
         # mass of the state
-        if val[3]=="ccbar" :
+        if val[3]=="ccbar" or val[3]=="cc" :
             mO=2.*val[6]
-        elif val[3]=="bbbar" :
+        elif val[3]=="bbbar" or val[3]=="bb" :
             mO=2.*val[7]
         else :
             mO=val[6]+val[7]
@@ -408,13 +426,13 @@ if opts.analyse :
     # loop over the tests
     for (key,val) in testParameters.items() :
         # mass of the quarks
-        if val[3]=="ccbar" :
+        if val[3]=="ccbar" or val[3]=="cc":
             m1=val[6]
             m2=val[6]
-        elif val[3]=="bbbar" :
+        elif val[3]=="bbbar"  or val[3]=="bb":
             m1=val[7]
             m2=val[7]
-        elif val[3]=="bcbar" :
+        elif val[3]=="bcbar"  or val[3]=="bc":
             m1=val[6]
             m2=val[7]
         M  = m1+m2
@@ -434,7 +452,9 @@ if opts.analyse :
             mix1=0
             mix2=0
         # make the comparison line
-        (x,y) = fragmentation(val[10],val[11])
+        step=0.001
+        if(opts.fast) : step=0.01
+        (x,y) = fragmentation(val[10],val[11],step)
         plt.plot(x,y,label="analytic ",color="black")
         if(val[2]==21) :
             q1="g"
@@ -442,12 +462,15 @@ if opts.analyse :
         else :
             if val[2] ==4   : q1 = "c"
             elif val[2] ==5 : q1 = "b"
-            if val[3] != "bcbar" : q2 = q1
-            elif q1=="c"         : q2 = "b"
-            else                 : q2 = "c"
+            if val[3] != "bcbar" and val[3] !="bc" : q2 = q1
+            elif q1=="c"                           : q2 = "b"
+            else                                   : q2 = "c"
         lName=latexName[val[0]]
         if q1=="b" and q2=="c" : lName=lName.replace("+","-")
-        title="Comparsion of fragmentation function for $%s\\to %s %s$" % (q1,q2,lName)
+        if len(val[3])==2 :
+           title="Comparsion of fragmentation function for $%s\\to \\bar{%s} %s$" % (q1,q2,lName)
+        else :
+           title="Comparsion of fragmentation function for $%s\\to %s %s$" % (q1,q2,lName)
         if len(val) == 13 :
             title+=" ($\\theta=%.1f^0$)" % val[12]
         plt.title(title)
@@ -465,7 +488,10 @@ if opts.analyse :
             y1 .append(bin.height()   *val[11])
             dy1.append(bin.heightErr()*val[11])
             if(dy1[-1]>0.) :
-                fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
+                if(opts.fast) :
+                    fval = val[11]*val[10](bin.xMid())
+                else :
+                    fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
                 chisq += ((fval-y1[-1])/dy1[-1])**2
                 ndof+=1.
         if(ndof!=0) : chisq/=ndof
@@ -483,187 +509,6 @@ if opts.analyse :
             f.write( htmlTemplate.substitute( {"plots" : plots,
                                                "time"  :'<p>Generated at %s</p>' % datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")  }) )
 
-        
-# 
-
-#     elif i == 24 :
-#         plt.title("Comparsion of fragmentation function for $c\\to \\bar{c} %s$" % latex[i])
-#     else :
-#         plt.title("Comparsion of fragmentation function for $b\\to \\bar{c} %s$" % latex[i])
-    
-
-#          "cc1","bc0","bc1"]
-
-#          "(cc)_1","(bc)_0","(bc)_1"]
-
-# for i, name in enumerate(names):
-#     fname = "EE-%s.yoda" % name
-#     params=()
-#     if i==0 :
-#         fn=D_1S0
-#     elif i==1 :
-#         fn=D_3S1
-#     elif i==2 :
-#         fn=D_3P0
-#     elif i==3 :
-#         fn=D_3P2
-#     elif i==4 :
-#         fn=D_P1_mixed
-#         params=(sTheta, cTheta)
-#     elif i==5 :
-#         fn=D_P1_mixed
-#         params=(cTheta,-sTheta)
-#     elif i==6 :
-#         fn=D_3P1
-#     elif i==7 :
-#         fn=D_1P1
-#     elif i==8 :
-#         fn=D_D2_mixed
-#         params=(sTheta2, cTheta2)
-#     elif i==9 :
-#         fn=D_D2_mixed
-#         params=(cTheta2,-sTheta2)
-#     elif i==10 :
-#         fn=D_3D2
-#     elif i==11 :
-#         fn=D_1D2
-#     elif i==12 :
-#         fn=D_3D1
-#     elif i==13 :
-#         fn=D_3D3
-#     elif i==14 :
-#         fn=D_eta_c
-#     elif i==15 :
-#         fn=D_JPsi
-#     elif i==16 :
-#         fn=D_chic0
-#     elif i==17 :
-#         fn=D_chic2
-#     elif i==18 :
-#         fn=D_hc
-#     elif i==19 :
-#         fn=D_chic1
-#     elif i==20 :
-#         fn=D_etac2
-#     elif i==21 :
-#         fn=D_psi3770
-#     elif i==22 :
-#         fn=D_psi2
-#     elif i==23 :
-#         fn=D_psi3
-#     elif i==24 :
-#         fn=D_cc1
-#     elif i==25 :
-#         fn=D_bc0
-#     elif i==26 :
-#         fn=D_bc1
-#     # analytic line
-#     x = []
-#     y = []
-#     xe=0.001
-#     while xe<1. :
-#         x.append(xe)
-#         if i==4 or i==5 or i==8 or i==9:
-#             y.append(fn(x[-1],params[0],params[1]))
-#         else :
-#             y.append(fn(x[-1]))
-#         xe+=0.001
-#     plt.plot(x,y,label="analytic ",color="black")
-#     if   i  < 14 :
-#         plt.title("Comparsion of fragmentation function for $b\\to c %s$" % latex[i])
-#     elif i  < 24 :
-#         plt.title("Comparsion of fragmentation function for $c\\to c %s$" % latex[i])
-#     elif i == 24 :
-#         plt.title("Comparsion of fragmentation function for $c\\to \\bar{c} %s$" % latex[i])
-#     else :
-#         plt.title("Comparsion of fragmentation function for $b\\to \\bar{c} %s$" % latex[i])
-#     # normal data
-#     if os.path.isfile(fname) :
-#         aos   = yoda.read("EE-%s.yoda" % name)
-#         histo = aos["/MC_Simple_Onium/h_%s" % name.replace("-noMixing","")]        
-#         x  = []
-#         dx = []
-#         y1 = []
-#         dy1= []
-#         chisq = 0.
-#         ndof  = 0
-#         for bin in histo.bins() :
-#             x  .append(bin.xMid()      )
-#             dx .append(0.5*bin.xWidth())
-#             y1 .append(bin.height()   )
-#             dy1.append(bin.heightErr())
-#             if(dy1[-1]>0.) :
-#                 val = quad(fn,bin.xMin(),bin.xMax(),args=params)[0]/bin.xWidth()
-#                 chisq += ((val-y1[-1])/dy1[-1])**2
-#                 ndof+=1.
-#         chisq/=ndof
-#         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
-#                      label="Hw Fixed $\\alpha_S$",color="red")
-#         print('Chisq for %s is %s' % (name,chisq))
-#     # extra plot if enhanced version
-#     if os.path.isfile("EE-%s-enhance.yoda" % name) :
-#         aos   = yoda.read("EE-%s-enhance.yoda" % name)
-#         histo = aos["/MC_Simple_Onium/h_%s" % name.replace("-noMixing","")]
-#         x  = []
-#         dx = []
-#         y1 = []
-#         dy1= []
-#         chisq=0.
-#         ndof=0
-#         for ibin,bin in enumerate(histo.bins()) :
-#             x  .append(bin.xMid()      )
-#             dx .append(0.5*bin.xWidth())
-#             y1 .append(bin.height()   )
-#             dy1.append(bin.heightErr())
-#             if(dy1[-1]>0.) :
-#                 val = quad(fn,bin.xMin(),bin.xMax(),args=params)[0]/bin.xWidth()
-#                 chisq += ((val-y1[-1])/dy1[-1])**2
-#                 ndof+=1
-#         chisq/=ndof
-#         print('Chisq for %s is %s (enhanced)' % (name,chisq))
-#         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
-#                      label="Hw Fixed $\\alpha_S$ enhanced")
-#     plt.xlabel("$z_{%s}$" % latex[i])
-#     plt.ylabel("$D(z_{%s})$" % latex[i])
-#     plt.legend(loc=2)
-#     plt.xlim([0.,1.])
-#     plt.savefig("QtoQ_%s.pdf" %name)
-#     plt.clf()
-
-
-
-
-
-
-# # basic parameters
-# aS = 0.3
-# m2 = 4.2
-# m1 = 1.25
-# M  = m1+m2
-# a1 = m1/M
-# a2 = 1-a1
-# O1_S = 0.573
-# O1_P = 0.794
-# O1_D = 0.131
-# R02  = 0.41**3
-# cTheta = math.cos(25./180.*math.pi)
-# sTheta = math.sin(25./180.*math.pi)
-# cTheta2= math.cos(34.4/180.*math.pi)
-# sTheta2= math.sin(34.4/180.*math.pi) 
-
-# # analytic fragmentation functions
-
-
-
-
-# def D_cc1(z) :
-#     return 4.*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(9.*m1**3*math.pi*(2.-z)**6)
-
-# def D_bc0(z) :
-#     return aS**2*a1*R02*(1 - z)**2*z*(6 - 18*(1 - 2*a1)*z + (21 - 74*a1 + 68*a1**2)*z**2 - 2*(1 - a1)*(6 - 19*a1 + 18*a1**2)*z**3 + 3*(1 - a1)**2*(1 - 2*a1 + 2*a1**2)*z**4)/(54.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
-
-# def D_bc1(z) :
-#     return aS**2*a1*R02*(1 - z)**2*z*(2 - 2*(3 - 2*a1)*z + 3*(3 - 2*a1 + 4*a1**2)*z**2 - 2*(1 - a1)*(4 - a1 + 2*a1**2)*z**3 + (1 - a1)**2*(3 - 2*a1 + 2*a1**2)*z**4)/(18.*m1**3*math.pi*(1 - (1 - a1)*z)**6)
 
 # setup chi_b0(3P) 210551 chi_b0(3P) 10.5007 0.00071 0.0071 0 0 0 1 0 
 # setup chi_b1(3P) 220553 chi_b1(3P) 10.516 6.6E-5 0.00066 0 0 0 3 0 

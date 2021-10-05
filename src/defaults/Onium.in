@@ -52,3 +52,10 @@ do OniumParameters:SetWaveFunction bcbar 4S 0.8504
 # and the mixing
 do OniumParameters:SetSingletTripletMixing 1P 25.0
 do OniumParameters:SetSingletTripletMixing 1D 34.4
+# diquarks (naive scale 1/8 of onium value hep-ph/9305315 page 3 below eqn 2)
+# cc
+do OniumParameters:SetWaveFunction cc 1S 0.07
+# bb
+do OniumParameters:SetWaveFunction bb 1S 0.633
+# bc
+do OniumParameters:SetWaveFunction bc 1S 0.250

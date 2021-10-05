@@ -27,14 +27,11 @@ namespace Rivet {
       vector<long> states ={441,10441,100441,443,10443,20443,100443,30443,445,100445,20445,447,
 			    551,10551,100551,110551,200551,210551,553,10553,20553,100553,30553,110553,
 			    120553,130553,200553,210553,220553,300553,555,10555,20555,100555,120555,200555,557,100557,
-			    541,10541,543,10543,20543,545,10545,20545,547,100541,100543,30543};
+			    541,10541,543,10543,20543,545,10545,20545,547,100541,100543,30543,
+			    4403,5503,5401,5403};
       for( long pid : states ) {
 	book(_h[pid],"h_"+to_string(pid),100,0.,1.);
       }
-      // book(_h_cc1     , "h_cc1"     , 100, 0.0, 1.0);
-      // book(_h_bc0     , "h_bc0"     , 100, 0.0, 1.0);
-      // book(_h_bc1     , "h_bc1"     , 100, 0.0, 1.0);
-      
     }
 
 
@@ -44,12 +41,6 @@ namespace Rivet {
 	map<long,Histo1DPtr>::const_iterator loc = _h.find(p.abspid());
 	if(loc!=_h.end())
 	 loc->second->fill(2.*p.momentum().E()/sqrtS());
-      // 	else if(p.abspid()==4403) 
-      // 	  _h_cc1->fill(2.*p.momentum().E()/sqrtS());
-      // 	else if(p.abspid()==5401) 
-      // 	  _h_bc0->fill(2.*p.momentum().E()/sqrtS());
-      // 	else if(p.abspid()==5403) 
-      // 	  _h_bc1->fill(2.*p.momentum().E()/sqrtS());
       }
     }
 
@@ -67,8 +58,6 @@ namespace Rivet {
     /// @name Histograms
     ///@{
     map<long,Histo1DPtr> _h;
-    // Histo1DPtr _h_cc1,_h_bc0,_h_bc1;
-  
     ///@}
 
 

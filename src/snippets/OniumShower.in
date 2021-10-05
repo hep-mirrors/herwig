@@ -416,7 +416,6 @@ do SplittingGenerator:AddFinalSplitting b->c,B_c3(1D)*-; btoc13D3SplittingSudako
 do SplittingGenerator:AddFinalSplitting c->b,B_c3(1D)*+; btoc13D3SplittingSudakov
 
 
-
 #
 #  Diquarks
 #
@@ -432,6 +431,8 @@ set QtoQcc1SplittingSudakov:ColourStructure Epsilon
 set QtoQcc1SplittingSudakov:AngularOrdered Yes
 set QtoQcc1SplittingSudakov:StrictAO Yes
 set QtoQcc1SplittingSudakov:InteractionType QCD
+set QtoQcc1SplittingSudakov:State cc
+set QtoQcc1SplittingSudakov:Parameters /Herwig/OniumParameters
 do SplittingGenerator:AddFinalSplitting c->cbar,cc_1; QtoQcc1SplittingSudakov
 #
 # bb_1
@@ -444,6 +445,8 @@ set QtoQbb1SplittingSudakov:ColourStructure Epsilon
 set QtoQbb1SplittingSudakov:AngularOrdered Yes
 set QtoQbb1SplittingSudakov:StrictAO Yes
 set QtoQbb1SplittingSudakov:InteractionType QCD
+set QtoQbb1SplittingSudakov:State bb
+set QtoQbb1SplittingSudakov:Parameters /Herwig/OniumParameters
 do SplittingGenerator:AddFinalSplitting b->bbar,bb_1; QtoQbb1SplittingSudakov
 #
 # bc_0
@@ -456,6 +459,7 @@ set QtoQbc0SplittingSudakov:ColourStructure Epsilon
 set QtoQbc0SplittingSudakov:AngularOrdered Yes
 set QtoQbc0SplittingSudakov:StrictAO Yes
 set QtoQbc0SplittingSudakov:InteractionType QCD
+set QtoQbc0SplittingSudakov:Parameters /Herwig/OniumParameters
 do SplittingGenerator:AddFinalSplitting c->bbar,bc_0; QtoQbc0SplittingSudakov
 do SplittingGenerator:AddFinalSplitting b->cbar,bc_0; QtoQbc0SplittingSudakov
 #
@@ -469,5 +473,7 @@ set QtoQbc1SplittingSudakov:ColourStructure Epsilon
 set QtoQbc1SplittingSudakov:AngularOrdered Yes
 set QtoQbc1SplittingSudakov:StrictAO Yes
 set QtoQbc1SplittingSudakov:InteractionType QCD
+set QtoQbc1SplittingSudakov:State bc
+set QtoQbc1SplittingSudakov:Parameters /Herwig/OniumParameters
 do SplittingGenerator:AddFinalSplitting c->bbar,bc_1; QtoQbc1SplittingSudakov
 do SplittingGenerator:AddFinalSplitting b->cbar,bc_1; QtoQbc1SplittingSudakov

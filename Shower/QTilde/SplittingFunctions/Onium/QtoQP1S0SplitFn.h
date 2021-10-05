@@ -50,8 +50,7 @@ public:
     else {
       if(id1!=5||id2!=4||state_!=2) return false;
     }
-    long idtest = id1*100+id2*10+1;
-    idtest += (n_-1)*100000;
+    long idtest = id1*100+id2*10+1 + (n_-1)*100000;
     if(abs(ids[2]->id()) != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;

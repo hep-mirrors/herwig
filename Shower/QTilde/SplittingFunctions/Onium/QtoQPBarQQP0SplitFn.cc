@@ -6,7 +6,9 @@
 
 #include "QtoQPBarQQP0SplitFn.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -27,11 +29,16 @@ IBPtr QtoQPBarQQP0SplitFn::fullclone() const {
 }
 
 void QtoQPBarQQP0SplitFn::persistentOutput(PersistentOStream & os) const {
-  os << ounit(R02_,GeV*GeV2) << fixedAlphaS_;
+  os << params_ << ounit(R02_,GeV*GeV2) << n_ << fixedAlphaS_;
 }
 
 void QtoQPBarQQP0SplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(R02_,GeV*GeV2) >> fixedAlphaS_;
+  is >> params_ >> iunit(R02_,GeV*GeV2) >> n_ >> fixedAlphaS_;
+}
+
+void QtoQPBarQQP0SplitFn::doinit() {
+  Sudakov1to2FormFactor::doinit();
+  R02_ = params_->radialWaveFunctionSquared(bc,n_);
 }
 
 // The following static variable is needed for the type
@@ -44,16 +51,21 @@ void QtoQPBarQQP0SplitFn::Init() {
   static ClassDocumentation<QtoQPBarQQP0SplitFn> documentation
     ("The QtoQPBarQQP0SplitFn class implements the splitting function for q -> qbar' (qq')_0");
 
-  static Parameter<QtoQPBarQQP0SplitFn,Energy3> interfaceR02
-    ("R0Squared",
-     "The radial wavefunction at the origin squared",
-     &QtoQPBarQQP0SplitFn::R02_, GeV*GeV2, pow<3,1>(0.41*GeV), 0.0*GeV*GeV2, 10.0*GeV*GeV2,
-     false, false, Interface::limited);
+  static Reference<QtoQPBarQQP0SplitFn,OniumParameters> interfaceParameters
+    ("Parameters",
+     "Quarkonium parameters",
+     &QtoQPBarQQP0SplitFn::params_, false, false, true, false, false);
   
   static Parameter<QtoQPBarQQP0SplitFn,double> interfacefixedAlphaS_
     ("FixedAlphaS",
      "Fixed value of alpha_S to use, if negative running alpha_S is used.",
      &QtoQPBarQQP0SplitFn::fixedAlphaS_, -1.0, -10.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<QtoQPBarQQP0SplitFn,unsigned int> interfacePrincipalQuantumNumber
+    ("PrincipalQuantumNumber",
+     "The principle quantum number of the states",
+     &QtoQPBarQQP0SplitFn::n_, 1, 1, 10,
      false, false, Interface::limited);
 
 }

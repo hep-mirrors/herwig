@@ -250,7 +250,7 @@ Rivet-LowEnergy-%:
 
 Rivet-Onium: Analyses/RivetHerwig.so
 	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	python/OniumSplitting.py --analyse
+	python/OniumSplitting.py --fast --analyse
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

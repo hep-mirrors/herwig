@@ -16,7 +16,7 @@ using namespace ThePEG;
 /**
  *  Enum to define the type of onium state
  */
-enum OniumState {ccbar=0,bbbar=1,bcbar=2};
+enum OniumState {ccbar=0,bbbar=1,bcbar=2,cc=3,bb=4,bc=5};
   
 /**
  * The OniumParameters class stores the parameters for quarkonium production
@@ -32,15 +32,15 @@ public:
    * The default constructor.
    */
   OniumParameters() : singletFromWaveFunction_(true),
-		      R02_  (vector<vector<Energy3> >(3,vector<Energy3>())),
-		      Rp02_ (vector<vector<Energy5> >(3,vector<Energy5>())),
-		      Rpp02_(vector<vector<Energy7> >(3,vector<Energy7>())),
-		      O1_S_prod_(vector<vector<vector<Energy3> > >(3,vector<vector<Energy3> >())),
-		      O1_P_prod_(vector<vector<vector<Energy5> > >(3,vector<vector<Energy5> >())),
-		      O1_D_prod_(vector<vector<vector<Energy7> > >(3,vector<vector<Energy7> >())),
-		      O1_S_dec_ (vector<vector<vector<Energy3> > >(3,vector<vector<Energy3> >())),
-		      O1_P_dec_ (vector<vector<vector<Energy5> > >(3,vector<vector<Energy5> >())),
-		      O1_D_dec_ (vector<vector<vector<Energy7> > >(3,vector<vector<Energy7> >()))
+		      R02_  (vector<vector<Energy3> >(6,vector<Energy3>())),
+		      Rp02_ (vector<vector<Energy5> >(6,vector<Energy5>())),
+		      Rpp02_(vector<vector<Energy7> >(6,vector<Energy7>())),
+		      O1_S_prod_(vector<vector<vector<Energy3> > >(6,vector<vector<Energy3> >())),
+		      O1_P_prod_(vector<vector<vector<Energy5> > >(6,vector<vector<Energy5> >())),
+		      O1_D_prod_(vector<vector<vector<Energy7> > >(6,vector<vector<Energy7> >())),
+		      O1_S_dec_ (vector<vector<vector<Energy3> > >(6,vector<vector<Energy3> >())),
+		      O1_P_dec_ (vector<vector<vector<Energy5> > >(6,vector<vector<Energy5> >())),
+		      O1_D_dec_ (vector<vector<vector<Energy7> > >(6,vector<vector<Energy7> >()))
   {}
 
 public:
@@ -55,6 +55,24 @@ public:
   ThePEG::Qty<std::ratio<0,1>, std::ratio<3+2*L,1>, std::ratio<0,1>> inline
   singletMEProduction(OniumState type,unsigned int n, unsigned int S, unsigned int J);
 
+  // Get \f$|R(0)|^2\f$ for s-wave states
+  Energy3 radialWaveFunctionSquared(OniumState type,unsigned int n) {
+    assert(R02_[type].size()>=n);
+    return R02_[type][n-1];
+  }
+
+  // Get \f$|R'(0)|^2\f$ for s-wave states
+  Energy5 firstDerivativeRadialWaveFunctionSquared(OniumState type,unsigned int n) {
+    assert(Rp02_[type].size()>=n);
+    return Rp02_[type][n-1];
+  }
+
+  // Get \f$|R''(0)|^2\f$ for s-wave states
+  Energy7 secondDerivativeRadialWaveFunctionSquared(OniumState type,unsigned int n) {
+    assert(Rpp02_[type].size()>=n);
+    return Rpp02_[type][n-1];
+  }
+
   // Get the singlet-triplet mxing for \f$B_c\f$ states
   double singletTripletMixing(unsigned int n, unsigned int l) {
     if(n>singletTripletMixing_.size()) return 0.;
@@ -62,7 +80,7 @@ public:
     else
       return singletTripletMixing_[n-1][l-1];
   }
-  
+
 public:
 
   /**

@@ -77,6 +77,12 @@ string OniumParameters::setWaveFunction(string arg) {
     type=bbbar;
   else if(stype=="bcbar")
     type=bcbar;
+  else if(stype=="cc")
+    type=cc;
+  else if(stype=="bb")
+    type=bb;
+  else if(stype=="bc")
+    type=bc;
   else
     return "Error: Invalid string for wave function type " + stype;
   // get the principal quantum number and orbital AM quantum numbers

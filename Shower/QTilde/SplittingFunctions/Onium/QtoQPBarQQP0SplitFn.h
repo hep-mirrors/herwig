@@ -8,6 +8,7 @@
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/MatrixElement/Onium/OniumParameters.h"
 
 namespace Herwig {
 
@@ -26,7 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQPBarQQP0SplitFn() : R02_(pow<3,1>(0.41*GeV)), fixedAlphaS_(-1.)
+  QtoQPBarQQP0SplitFn() : R02_(pow<3,1>(0.41*GeV)), n_(1), fixedAlphaS_(-1.)
   {}
 
 public:
@@ -41,7 +42,9 @@ public:
     // construct the meson PDG code from quark ids and check it
     long id1=ids[0]->id();
     long id2=abs(ids[1]->id());
-    long idtest = id1>id2 ? id1*1000+id2*100+1 : id2*1000+id1*100+1;
+    if(id1<id2) swap(id1,id2);
+    if(id1!=5||id2!=4) return false;
+    long idtest = id1*1000+id2*100+1 + (n_-1)*100000;
     if(abs(ids[2]->id()) != idtest) return false;
     // charge conservation
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
@@ -218,6 +221,19 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+  
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -229,9 +245,19 @@ private:
 private:
   
   /**
+   *  Access to the parameters for the quarkonium states
+   */
+  OniumParametersPtr params_;
+  
+  /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
   Energy3 R02_;
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int n_;
 
   /**
    *  Overestimate of the splitting function
