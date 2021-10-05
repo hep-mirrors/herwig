@@ -1,32 +1,35 @@
 // -*- C++ -*-
-#ifndef Herwig_GGPsiSplitFn_H
-#define Herwig_GGPsiSplitFn_H
+#ifndef Herwig_GtoG3S1SplitFn_H
+#define Herwig_GtoG3S1SplitFn_H
 //
-// This is the declaration of the GGPsiSplitFn class.
+// This is the declaration of the GtoG3S1SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/MatrixElement/Onium/OniumParameters.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The documentation of the GGPsiSplitFn class implements the colour singlet spliting function for \f$g\to g J\Psi,\Upsilon\f$
+ * The documentation of the GtoG3S1SplitFn class implements the colour singlet spliting function for \f$g\to g J\Psi,\Upsilon\f$
  *
- * @see \ref GGPsiSplitFnInterfaces "The interfaces"
- * defined for GGPsiSplitFn.
+ * @see \ref GtoG3S1SplitFnInterfaces "The interfaces"
+ * defined for GtoG3S1SplitFn.
  */
-class GGPsiSplitFn: public Sudakov1to2FormFactor {
+class GtoG3S1SplitFn: public Sudakov1to2FormFactor {
 
 public:
 
   /**
    * The default constructor.
    */
-  GGPsiSplitFn();
+  GtoG3S1SplitFn() : O1_(0.573*GeV*GeV2), state_(ccbar), n_(1),
+		     m_(1.2*GeV), fixedAlphaS_(-1.), maxP_(1e6)
+  {}
   
 public:
   
@@ -40,6 +43,13 @@ public:
     for(unsigned int ix=0;ix<2;++ix) {
       if(ids[ix]->id()!=ParticleID::g) return false;
     }
+    // check onium state
+    int iq=4+state_;
+    long idtest = iq*110+3 + (n_-1)*100000;
+    if(ids[2]->id() != idtest) return false;
+    // charge conservation
+    if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
+    // looks OK
     return true;
   }
 
@@ -222,8 +232,13 @@ public:
 protected:
 
   double alphaSVetoRatio(Energy2 pt2, double factor) const {
-    factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-    return pow(alpha()->ratio(pt2, factor),3);
+    if(fixedAlphaS_<0.) {
+      factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+      return pow(alpha()->ratio(pt2, factor),3);
+    }
+    else {
+      return 1.;
+    }
   }
 
   /**
@@ -301,9 +316,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GGPsiSplitFn & operator=(const GGPsiSplitFn &) = delete;
+  GtoG3S1SplitFn & operator=(const GtoG3S1SplitFn &) = delete;
 
 private:
+  
+  /**
+   *  Access to the parameters for the quarkonium states
+   */
+  OniumParametersPtr params_;
 
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
@@ -311,14 +331,24 @@ private:
   Energy3 O1_;
 
   /**
+   *  Type of state
+   */
+  OniumState state_;
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int n_;
+
+  /**
    *  The quark mass
    */
   Energy m_;
 
   /**
-   *  Option for the quark mass
+   *  Fixed value of \f$\alpha_S\f$
    */
-  unsigned int massOpt_;
+  double fixedAlphaS_;
 
   /**
    *  Maximum value for the overestimate
@@ -334,4 +364,4 @@ private:
 
 }
 
-#endif /* Herwig_GGPsiSplitFn_H */
+#endif /* Herwig_GtoG3S1SplitFn_H */

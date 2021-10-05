@@ -33,6 +33,22 @@ do SplittingGenerator:AddFinalSplitting g->g,eta_c; gtogcc11S0SplittingSudakov
 cp gtogcc11S0SplittingSudakov gtogcc21S0SplittingSudakov
 set gtogcc21S0SplittingSudakov:PrincipalQuantumNumber 2
 do SplittingGenerator:AddFinalSplitting g->g,eta_c(2S); gtogcc21S0SplittingSudakov
+# 1 3S1
+create Herwig::GtoG3S1SplitFn gtogcc13S1SplittingSudakov HwOniumShower.so
+set gtogcc13S1SplittingSudakov:Alpha AlphaQCD
+set gtogcc13S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtogcc13S1SplittingSudakov:Cutoff PTCutOff2
+set gtogcc13S1SplittingSudakov:PDFmax 2.0
+set gtogcc13S1SplittingSudakov:ColourStructure OctetOctetSinglet
+set gtogcc13S1SplittingSudakov:AngularOrdered Yes
+set gtogcc13S1SplittingSudakov:StrictAO Yes
+set gtogcc13S1SplittingSudakov:InteractionType QCD
+set gtogcc13S1SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->g,Jpsi; gtogcc13S1SplittingSudakov
+# 2 3S1
+cp gtogcc13S1SplittingSudakov gtogcc23S1SplittingSudakov
+set gtogcc23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->g,psi(2S); gtogcc23S1SplittingSudakov
 #
 #  quark initiated
 #
@@ -169,6 +185,25 @@ do SplittingGenerator:AddFinalSplitting g->g,eta_b(2S); gtogbb21S0SplittingSudak
 cp gtogbb11S0SplittingSudakov gtogbb31S0SplittingSudakov
 set gtogbb31S0SplittingSudakov:PrincipalQuantumNumber 3
 do SplittingGenerator:AddFinalSplitting g->g,eta_b(3S); gtogbb31S0SplittingSudakov
+# 1 3S1
+cp gtogcc13S1SplittingSudakov gtogbb13S1SplittingSudakov
+set gtogbb13S1SplittingSudakov:State bbbar
+do SplittingGenerator:AddFinalSplitting g->g,Upsilon; gtogbb13S1SplittingSudakov
+# 2 3S1
+cp gtogbb13S1SplittingSudakov gtogbb23S1SplittingSudakov
+set gtogbb23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->g,Upsilon(2S); gtogbb23S1SplittingSudakov
+# 3 3S1
+cp gtogbb13S1SplittingSudakov gtogbb33S1SplittingSudakov
+set gtogbb33S1SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting g->g,Upsilon(3S); gtogbb33S1SplittingSudakov
+# 4 3S1
+cp gtogbb13S1SplittingSudakov gtogbb43S1SplittingSudakov
+set gtogbb43S1SplittingSudakov:PrincipalQuantumNumber 4
+do SplittingGenerator:AddFinalSplitting g->g,Upsilon(4S); gtogbb43S1SplittingSudakov
+#
+#  quark initiated
+#
 # 1 1S0
 cp ctoc11S0SplittingSudakov btob11S0SplittingSudakov
 set btob11S0SplittingSudakov:State bbbar
