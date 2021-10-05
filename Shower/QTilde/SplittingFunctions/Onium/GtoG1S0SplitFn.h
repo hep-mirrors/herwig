@@ -1,33 +1,35 @@
 // -*- C++ -*-
-#ifndef Herwig_GGEtaSplitFn_H
-#define Herwig_GGEtaSplitFn_H
+#ifndef Herwig_GtoG1S0SplitFn_H
+#define Herwig_GtoG1S0SplitFn_H
 //
-// This is the declaration of the GGEtaSplitFn class.
+// This is the declaration of the GtoG1S0SplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/MatrixElement/Onium/OniumParameters.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The GGEtaSplitFn class implements the colour singlet splitting function for \f$g\to g \eta_{c,b}\f$.
+ * The GtoG1S0SplitFn class implements the colour singlet splitting function for \f$g\to g \eta_{c,b}\f$.
  *
- * @see \ref GGEtaSplitFnInterfaces "The interfaces"
- * defined for GGEtaSplitFn.
+ * @see \ref GtoG1S0SplitFnInterfaces "The interfaces"
+ * defined for GtoG1S0SplitFn.
  */
-class GGEtaSplitFn: public Sudakov1to2FormFactor {
+class GtoG1S0SplitFn: public Sudakov1to2FormFactor {
 
 public:
   
   /**
    * The default constructor.
    */
-  GGEtaSplitFn();
-
+  GtoG1S0SplitFn() : O1_(0.573*GeV*GeV2), state_(ccbar), n_(1), m_(1.2*GeV), fixedAlphaS_(-1.)
+  {}
+    
 public:
 
   /**
@@ -40,6 +42,13 @@ public:
     for(unsigned int ix=0;ix<2;++ix) {
       if(ids[ix]->id()!=ParticleID::g) return false;
     }
+    // check onium state
+    int iq=4+state_;
+    long idtest = iq*110+1 + (n_-1)*100000;
+    if(ids[2]->id() != idtest) return false;
+    // charge conservation
+    if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
+    // looks OK
     return true;
   }
 
@@ -193,8 +202,13 @@ public:
 protected:
 
   double alphaSVetoRatio(Energy2 pt2, double factor) const {
-    factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-    return sqr(alpha()->ratio(pt2, factor));
+    if(fixedAlphaS_<0.) {
+      factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+      return sqr(alpha()->ratio(pt2, factor));
+    }
+    else {
+      return 1.;
+    }
   }
 
 public:
@@ -255,9 +269,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GGEtaSplitFn & operator=(const GGEtaSplitFn &) = delete;
+  GtoG1S0SplitFn & operator=(const GtoG1S0SplitFn &) = delete;
 
 private:
+  
+  /**
+   *  Access to the parameters for the quarkonium states
+   */
+  OniumParametersPtr params_;
 
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
@@ -265,17 +284,27 @@ private:
   Energy3 O1_;
 
   /**
+   *  Type of state
+   */
+  OniumState state_;
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int n_;
+
+  /**
    *  The quark mass
    */
   Energy m_;
 
   /**
-   *  Option for the quark mass
+   *  Fixed value of \f$\alpha_S\f$
    */
-  unsigned int massOpt_;
+  double fixedAlphaS_;
   
 };
 
 }
 
-#endif /* Herwig_GGEtaSplitFn_H */
+#endif /* Herwig_GtoG1S0SplitFn_H */

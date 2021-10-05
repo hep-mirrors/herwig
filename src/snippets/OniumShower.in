@@ -16,6 +16,26 @@ set PTCutOff2:pTmin 0.001
 #
 #  Charmonium
 #
+# gluon initiated
+# 1 1S0
+create Herwig::GtoG1S0SplitFn gtogcc11S0SplittingSudakov HwOniumShower.so
+set gtogcc11S0SplittingSudakov:Alpha AlphaQCD
+set gtogcc11S0SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtogcc11S0SplittingSudakov:Cutoff PTCutOff2
+set gtogcc11S0SplittingSudakov:PDFmax 2.0
+set gtogcc11S0SplittingSudakov:ColourStructure OctetOctetSinglet
+set gtogcc11S0SplittingSudakov:AngularOrdered Yes
+set gtogcc11S0SplittingSudakov:StrictAO Yes
+set gtogcc11S0SplittingSudakov:InteractionType QCD
+set gtogcc11S0SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->g,eta_c; gtogcc11S0SplittingSudakov
+# 2 2S0
+cp gtogcc11S0SplittingSudakov gtogcc21S0SplittingSudakov
+set gtogcc21S0SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->g,eta_c(2S); gtogcc21S0SplittingSudakov
+#
+#  quark initiated
+#
 # 1 1S0
 create Herwig::QtoQ1S0SplitFn ctoc11S0SplittingSudakov HwOniumShower.so
 set ctoc11S0SplittingSudakov:Alpha AlphaQCD
@@ -136,6 +156,19 @@ do SplittingGenerator:AddFinalSplitting c->c,psi_3; ctoc13D3SplittingSudakov
 #
 #  Bottomonium
 #
+# gluon initiated
+# 1 1S0
+cp gtogcc11S0SplittingSudakov gtogbb11S0SplittingSudakov
+set gtogbb11S0SplittingSudakov:State bbbar
+do SplittingGenerator:AddFinalSplitting g->g,eta_b; gtogbb11S0SplittingSudakov
+# 2 2S0
+cp gtogbb11S0SplittingSudakov gtogbb21S0SplittingSudakov
+set gtogbb21S0SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->g,eta_b(2S); gtogbb21S0SplittingSudakov
+# 3 2S0
+cp gtogbb11S0SplittingSudakov gtogbb31S0SplittingSudakov
+set gtogbb31S0SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting g->g,eta_b(3S); gtogbb31S0SplittingSudakov
 # 1 1S0
 cp ctoc11S0SplittingSudakov btob11S0SplittingSudakov
 set btob11S0SplittingSudakov:State bbbar

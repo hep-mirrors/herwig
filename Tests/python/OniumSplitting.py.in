@@ -56,6 +56,8 @@ mix2=0.
 # q -> q 1S0
 def D_q_q_1S0(z) :
     return 8./81./math.pi*aS**2*R02*(1.-z)**2*z*(48. + 8.*z**2 - 8.*z**3 + 3.*z**4)/(m1**3*(2. - z)**6)
+def D_g_g_1S0(z) :
+    return aS**2/24./math.pi*R02/m1**3*(3.*z-2.*z**2+2.*(1.-z)*numpy.log(1.-z))
 # q -> q 3S1
 def D_q_q_3S1(z) :
     return 8./math.pi*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(27.*m1**3*(2.-z)**6)
@@ -212,6 +214,11 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "ctocEta_c2S"   : [100441 ,"ctoc21S0SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_q_q_1S0,10**4],
                  "ctocPsi2S"     : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_q_q_3S1,10**4],
 
+                 "gtogEta_c"     : [441    ,"gtogcc11S0SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e2    ,D_g_g_1S0,10**4],
+                 #"gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",4,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e2    ,D_g_g_3S1,10**4],
+                 "gtogEta_c2S"   : [100441 ,"gtogcc21S0SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_1S0,10**4],
+                 #"gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_3S1,10**4],
+
                  "ctocH_c"       : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_1P1,10**4],
                  "ctocChi_c0"    : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_3P0,10**4],
                  "ctocChi_c1"    : [20443  ,"ctoc13P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_3P1,10**4],
@@ -220,7 +227,6 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "ctocPsi_2"     : [20445  ,"ctoc13D2SplittingSudakov",4,"ccbar","1D",0.26,1.5,4.9,0.0329,5e3    ,D_q_q_3D2,10**5],
                  "ctocPsi_3"     : [  447  ,"ctoc13D3SplittingSudakov",4,"ccbar","1D",0.26,1.5,4.9,0.0329,5e3    ,D_q_q_3D3,10**5],
 
-                 
                  "btobEta_b"     : [551     ,"btob11S0SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_q_q_1S0,10**5],
                  "btobUpsilon"   : [553     ,"btob13S1SplittingSudakov",5,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_q_q_3S1,10**5],
                  "btobEta_b2S"   : [100551  ,"btob21S0SplittingSudakov",5,"bbbar","2S",0.19,1.5,4.9,2.8974,5e3   ,D_q_q_1S0,10**5],
@@ -228,6 +234,14 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "btobEta_b3S"   : [200551  ,"btob31S0SplittingSudakov",5,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_q_q_1S0,10**5],
                  "btobUpsilon3S" : [200553  ,"btob33S1SplittingSudakov",5,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_q_q_3S1,10**5],
                  "btobUpsilon4S" : [300553  ,"btob43S1SplittingSudakov",5,"bbbar","4S",0.19,1.5,4.9,1.9645,5e3   ,D_q_q_3S1,10**5],
+    
+                 "gtogEta_b"     : [551     ,"gtogbb11S0SplittingSudakov",21,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_g_g_1S0,10**5],
+                 # "gtogUpsilon"   : [553     ,"gtogbb13S1SplittingSudakov",21,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_g_g_3S1,10**5],
+                 "gtogEta_b2S"   : [100551  ,"gtogbb21S0SplittingSudakov",21,"bbbar","2S",0.19,1.5,4.9,2.8974,5e3   ,D_g_g_1S0,10**5],
+                 # "gtogUpsilon2S" : [100553  ,"gtogbb23S1SplittingSudakov",21,"bbbar","2S",0.19,1.5,4.9,2.8974,5e3   ,D_g_g_3S1,10**5],
+                 "gtogEta_b3S"   : [200551  ,"gtogbb31S0SplittingSudakov",21,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_g_g_1S0,10**5],
+                 # "gtogUpsilon3S" : [200553  ,"gtogbb33S1SplittingSudakov",21,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_g_g_3S1,10**5],
+                 # "gtogUpsilon4S" : [300553  ,"gtogbb43S1SplittingSudakov",21,"bbbar","4S",0.19,1.5,4.9,1.9645,5e3   ,D_g_g_3S1,10**5],
                  
                  "btobH_b"       : [10553   ,"btob11P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_1P1,10**6],
                  "btobChi_b0"    : [10551   ,"btob13P0SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P0,10**6],
@@ -296,9 +310,22 @@ if opts.infiles :
             mO=2.*val[7]
         else :
             mO=val[6]+val[7]
+        # process
+        if val[2] < 6 :
+            proc = """
+insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+set /Herwig/MatrixElements/MEee2gZ2qq:MinimumFlavour %s
+set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour %s
+""" % ( val[2],val[2])
+        elif val[2]==21 : 
+            proc ="""
+create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM
+insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2Higgs2SM
+set /Herwig/MatrixElements/MEee2Higgs2SM:Allowed Gluon
+"""
         # substs for the input file
         parameters={"parameterFile" : """
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 100000.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10000.
 set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL
 set /Herwig/Generators/EventGenerator:EventHandler:DecayHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark No
@@ -307,14 +334,12 @@ set /Herwig/Particles/u:ConstituentMass 1e-10
 set /Herwig/Particles/g:ConstituentMass 1e-9
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Simple_Onium""",
                 "process" : """
-insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
-set /Herwig/MatrixElements/MEee2gZ2qq:MinimumFlavour %s
-set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour %s
+%s
 set /Herwig/Particles/b:ConstituentMass %s
 set /Herwig/Particles/c:ConstituentMass %s
 set /Herwig/Particles/b:NominalMass %s
 set /Herwig/Particles/c:NominalMass %s
-set /Herwig/Particles/%s:NominalMass %s""" %(val[2],val[2],val[7],val[6],val[7],val[6],herwigName[val[0]],mO),
+set /Herwig/Particles/%s:NominalMass %s\n""" %(proc,val[7],val[6],val[7],val[6],herwigName[val[0]],mO),
                 "shower" : """
 read snippets/OniumShower.in
 set /Herwig/Shower/ShowerHandler:HardEmission 0
@@ -323,6 +348,7 @@ set /Herwig/Shower/%s:FixedAlphaS %s
 set /Herwig/Shower/%s:EnhancementFactor %s
 cd /Herwig/Shower
 """%(val[3],val[4],val[8],val[1],val[5],val[1],val[9])}
+        # mixing if needed
         if len(val) == 13 :
             parameters["shower"] += "do /Herwig/OniumParameters:SetSingletTripletMixing %s %s\n" % (val[4],val[12])
         hName=herwigName[val[0]]
@@ -373,11 +399,15 @@ if opts.analyse :
         # make the comparison line
         (x,y) = fragmentation(val[10],val[11])
         plt.plot(x,y,label="analytic ",color="black")
-        if val[2] ==4   : q1 = "c"
-        elif val[2] ==5 : q1 = "b"
-        if val[3] != "bcbar" : q2 = q1
-        elif q1=="c"         : q2 = "b"
-        else                 : q2 = "c"
+        if(val[2]==21) :
+            q1="g"
+            q2="g"
+        else :
+            if val[2] ==4   : q1 = "c"
+            elif val[2] ==5 : q1 = "b"
+            if val[3] != "bcbar" : q2 = q1
+            elif q1=="c"         : q2 = "b"
+            else                 : q2 = "c"
         lName=latexName[val[0]]
         if q1=="b" and q2=="c" : lName=lName.replace("+","-")
         title="Comparsion of fragmentation function for $%s\\to %s %s$" % (q1,q2,lName)
