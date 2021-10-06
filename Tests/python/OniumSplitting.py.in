@@ -232,6 +232,7 @@ latexName = {441  : "\\eta_c", 443    : "J/\\psi", 100441 : "\\eta_c(2S)", 10044
              10553 : "h_b", 10551: "\\chi_{b0}", 20553: "\\chi_{b1}",  555: "\\chi_{b2}",
              
              110553 : "h_b(2P)", 110551: "\\chi_{b0}(2P)", 120553: "\\chi_{b1}(2P)",  100555: "\\chi_{b2}(2P)",
+             210553 : "h_b(3P)", 210551: "\\chi_{b0}(3P)", 220553: "\\chi_{b1}(3P)",  200555: "\\chi_{b2}(3P)",
 
              10555 : "\\eta_{b2}", 30553 : "\\Upsilon_1(1D)", 20555 : "\\Upsilon_2(1D)", 557 : "\\Upsilon_3(1D)",
              
@@ -248,6 +249,7 @@ herwigName = {441 : "eta_c"  , 443 : "Jpsi"    , 100441 : "eta_c(2S)"    , 10044
               551 : "eta_b"  , 553 : "Upsilon" , 100551 : "eta_b(2S)"    , 100553 : "Upsilon(2S)", 200551 : "eta_b(3S)", 200553 : "Upsilon(3S)", 300553 : "Upsilon(4S)",
               10553 : "h_b", 10551: "chi_b0", 20553: "chi_b1",  555: "chi_b2",
               110553 : "h_b(2P)", 110551: "chi_b0(2P)", 120553: "chi_b1(2P)",  100555: "chi_b2(2P)",
+              210553 : "h_b(3P)", 210551: "chi_b0(3P)", 220553: "chi_b1(3P)",  200555: "chi_b2(3P)",
               10555 : "eta_b2", 30553 : "Upsilon_1(1D)", 20555 : "Upsilon_2(1D)", 557 : "Upsilon_3(1D)",
               
               541 : "B_c+", 543 : "B_c*+", 10541 : "B*_c0+", 545 : "B_c2+", 10543 : "B_c1+", 20543 : "B'_c1+",
@@ -264,9 +266,9 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "ctocPsi2S"     : [100443 ,"ctoc23S1SplittingSudakov",4,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_q_q_3S1,10**4],
 
                  "gtogEta_c"     : [441    ,"gtogcc11S0SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e2    ,D_g_g_1S0,10**4],
-                 #"gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e4    ,D_g_g_3S1,10**6],
+                 "gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e4    ,D_g_g_3S1,10**6],
                  "gtogEta_c2S"   : [100441 ,"gtogcc21S0SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_1S0,10**4],
-                 #"gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e4    ,D_g_g_3S1,10**6],
+                 "gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e4    ,D_g_g_3S1,10**6],
 
                  "ctocH_c"       : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_1P1,10**4],
                  "ctocChi_c0"    : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_3P0,10**4],
@@ -285,12 +287,12 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "btobUpsilon4S" : [300553  ,"btob43S1SplittingSudakov",5,"bbbar","4S",0.19,1.5,4.9,1.9645,5e3   ,D_q_q_3S1,10**5],
     
                  "gtogEta_b"     : [551     ,"gtogbb11S0SplittingSudakov",21,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_g_g_1S0,10**5],
-                 # "gtogUpsilon"   : [553     ,"gtogbb13S1SplittingSudakov",21,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e3   ,D_g_g_3S1,10**5],
+                 "gtogUpsilon"   : [553     ,"gtogbb13S1SplittingSudakov",21,"bbbar","1S",0.19,1.5,4.9,1.8**3,5e5   ,D_g_g_3S1,10**7],
                  "gtogEta_b2S"   : [100551  ,"gtogbb21S0SplittingSudakov",21,"bbbar","2S",0.19,1.5,4.9,2.8974,5e3   ,D_g_g_1S0,10**5],
-                 # "gtogUpsilon2S" : [100553  ,"gtogbb23S1SplittingSudakov",21,"bbbar","2S",0.19,1.5,4.9,2.8974,5e3   ,D_g_g_3S1,10**5],
+                 "gtogUpsilon2S" : [100553  ,"gtogbb23S1SplittingSudakov",21,"bbbar","2S",0.19,1.5,4.9,2.8974,5e5   ,D_g_g_3S1,10**7],
                  "gtogEta_b3S"   : [200551  ,"gtogbb31S0SplittingSudakov",21,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_g_g_1S0,10**5],
-                 # "gtogUpsilon3S" : [200553  ,"gtogbb33S1SplittingSudakov",21,"bbbar","3S",0.19,1.5,4.9,2.2496,5e3   ,D_g_g_3S1,10**5],
-                 # "gtogUpsilon4S" : [300553  ,"gtogbb43S1SplittingSudakov",21,"bbbar","4S",0.19,1.5,4.9,1.9645,5e3   ,D_g_g_3S1,10**5],
+                 "gtogUpsilon3S" : [200553  ,"gtogbb33S1SplittingSudakov",21,"bbbar","3S",0.19,1.5,4.9,2.2496,5e5   ,D_g_g_3S1,10**7],
+                 "gtogUpsilon4S" : [300553  ,"gtogbb43S1SplittingSudakov",21,"bbbar","4S",0.19,1.5,4.9,1.9645,5e5   ,D_g_g_3S1,10**7],
                  
                  "btobH_b"       : [10553   ,"btob11P1SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_1P1,10**6],
                  "btobChi_b0"    : [10551   ,"btob13P0SplittingSudakov",5,"bbbar","1P",0.19,1.5,4.9,1.6057,10000.,D_q_q_3P0,10**6],
@@ -301,6 +303,10 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "btobChi_b02P"  : [110551  ,"btob23P0SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,5e4   ,D_q_q_3P0,10**6],
                  "btobChi_b12P"  : [120553  ,"btob23P1SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,5e4   ,D_q_q_3P1,10**6],
                  "btobChi_b22P"  : [100555  ,"btob23P2SplittingSudakov",5,"bbbar","2P",0.19,1.5,4.9,1.8240,5e4   ,D_q_q_3P2,10**6],
+                 
+                 "btobChi_b03P"  : [210551  ,"btob33P0SplittingSudakov",5,"bbbar","3P",0.19,1.5,4.9,1.9804,5e4   ,D_q_q_3P0,10**6],
+                 "btobChi_b13P"  : [220553  ,"btob33P1SplittingSudakov",5,"bbbar","3P",0.19,1.5,4.9,1.9804,5e4   ,D_q_q_3P1,10**6],
+                 "btobChi_b23P"  : [200555  ,"btob33P2SplittingSudakov",5,"bbbar","3P",0.19,1.5,4.9,1.9804,5e4   ,D_q_q_3P2,10**6],
                  
                  "btobEta_b2"    : [10555  ,"btob11D2SplittingSudakov",5,"bbbar","1D",0.26,1.5,4.9,0.8394,5.e5   ,D_q_q_1D2,10**7],
                  "btobUpsilon_1" : [30553  ,"btob13D1SplittingSudakov",5,"bbbar","1D",0.26,1.5,4.9,0.8394,1.e6   ,D_q_q_3D1,10**7],
@@ -508,7 +514,6 @@ if opts.analyse :
     with open(os.path.join("Rivet-Onium","index.html"), 'w') as f:
             f.write( htmlTemplate.substitute( {"plots" : plots,
                                                "time"  :'<p>Generated at %s</p>' % datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")  }) )
-
 
 # setup chi_b0(3P) 210551 chi_b0(3P) 10.5007 0.00071 0.0071 0 0 0 1 0 
 # setup chi_b1(3P) 220553 chi_b1(3P) 10.516 6.6E-5 0.00066 0 0 0 3 0 

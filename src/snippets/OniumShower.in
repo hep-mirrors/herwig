@@ -268,6 +268,21 @@ cp ctoc13P2SplittingSudakov btob23P2SplittingSudakov
 set btob23P2SplittingSudakov:State bbbar
 set btob23P2SplittingSudakov:PrincipalQuantumNumber 2
 do SplittingGenerator:AddFinalSplitting b->b,chi_b2(2P); btob23P2SplittingSudakov
+# 3 3P0
+cp ctoc13P0SplittingSudakov btob33P0SplittingSudakov
+set btob33P0SplittingSudakov:State bbbar
+set btob33P0SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting b->b,chi_b0(3P); btob33P0SplittingSudakov
+# 3 3P1
+cp ctoc13P1SplittingSudakov btob33P1SplittingSudakov
+set btob33P1SplittingSudakov:State bbbar
+set btob33P1SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting b->b,chi_b1(3P); btob33P1SplittingSudakov
+# 3 3P2
+cp ctoc13P2SplittingSudakov btob33P2SplittingSudakov
+set btob33P2SplittingSudakov:State bbbar
+set btob33P2SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting b->b,chi_b2(3P); btob33P2SplittingSudakov
 # 1 1D1
 create Herwig::QtoQ1D2SplitFn btob11D2SplittingSudakov HwOniumShower.so
 set btob11D2SplittingSudakov:Alpha AlphaQCD
