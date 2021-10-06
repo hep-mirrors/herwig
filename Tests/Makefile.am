@@ -248,7 +248,7 @@ Rivet-LowEnergy-Photon-%:
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	plots=`python/R.py --perturbative --non-perturbative --plots`; python/mergeLowEnergy.py R $$plots; rivet-mkhtml -o Rivet-R LowEnergy-EE-Perturbative-R.yoda:"Pert" LowEnergy-EE-NonPerturbative-R.yoda:"Non-Pert" $$plots
+	plots=`python/R.py --perturbative --non-perturbative --plots`; python/mergeLowEnergy.py R $$plots; rivet-mkhtml -o Rivet-R LowEnergy-Perturbative-R.yoda:"Pert" LowEnergy-NonPerturbative-R.yoda:"Non-Pert" $$plots
 
 Rivet-DIS : Rivet-DIS/done
 	touch $@

@@ -147,9 +147,10 @@ analyses["EtaPhi"]["BABAR_2006_I731865"  ] = ["d01-x01-y02"]
 analyses["EtaPhi"]["BELLE_2009_I823878"  ] = ["d01-x01-y01"]
 analyses["EtaPhi"]["BESIII_2021_I1857930"] = ["d01-x01-y01"]
 # Eta Omega
+analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
+analyses["EtaOmega"]["BABAR_2021_I1938254"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01"]
 analyses["EtaOmega"]["BESIII_2020_I1817739" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
-analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
 analyses["EtaOmega"]["SND_2019_I1726419" ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["EtaOmega"]["CMD3_2017_I1606078"] = ["d01-x01-y01","d01-x01-y02"]
 analyses["EtaOmega"]["BESII_2008_I801210"] = ["d01-x01-y03"]
@@ -268,6 +269,7 @@ analyses['6m']["BESIII_2020_I1788734"] = ["d01-x01-y01"]
 analyses['6m']["BABAR_2021_I1844422" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                           "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
 analyses['6m']["BESIII_2020_I1837725" ] = ["d01-x01-y01"]
+analyses["6m"]["BABAR_2021_I1938254"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01","d05-x01-y01"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 # DD
@@ -312,6 +314,7 @@ analyses["DD"]["BABAR_2010_I864027"       ] = ["d01-x01-y01","d01-x01-y02","d01-
 analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d02-x01-y01"]
 analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
 analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2021_I1867196"     ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # BB
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
