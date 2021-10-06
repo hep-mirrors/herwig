@@ -14,6 +14,7 @@
 #include "ClusterFinder.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/StandardMatchers.h>
@@ -39,11 +40,13 @@ IBPtr ClusterFinder::fullclone() const {
   return new_ptr(*this);
 }
 void ClusterFinder::persistentOutput(PersistentOStream & os) const {
-  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_;
+  os << heavyDiquarks_ << diQuarkSelection_
+     << diQuarkOnShell_ << hadronSelector_;
 }
 
 void ClusterFinder::persistentInput(PersistentIStream & is, int) {
-  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_;
+  is >> heavyDiquarks_ >> diQuarkSelection_
+     >> diQuarkOnShell_ >> hadronSelector_;
 }
 
 void ClusterFinder::Init() {
@@ -100,6 +103,12 @@ void ClusterFinder::Init() {
      "No",
      "Leave off-shell",
      false);
+  
+  static Reference<ClusterFinder,HadronSelector>
+    interfaceHadronSelector("HadronSelector",
+			    "A reference to the HadronSelector object",
+			    &Herwig::ClusterFinder::hadronSelector_,
+			    false, false, true, false);
 
 }
 
@@ -401,10 +410,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     tcPDPtr temp2  = vec[1]->dataPtr();
     if(!other) other = vec[2];
 
-    long rndSpin;
-    if(temp1->id() == temp2->id()) rndSpin = 3;
-    else rndSpin = UseRandom::rnd() > 0.5 ? 1 : 3;
-    tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2,rndSpin);
+    tcPDPtr dataDiquark  = hadronSelector_->makeDiquark(temp1,temp2);
 
     if(!dataDiquark)
       throw Exception() << "Could not make a diquark from"

@@ -37,4 +37,4 @@ ${ANALYSES}
 set EventGenerator:MaxErrors 10000
 set EventGenerator:EventHandler:StatLevel Full
 set EventGenerator:EventHandler:CascadeHandler NULL
-saverun Rivet-LowEnergy-EE-NonPerturbative-${ECMS} EventGenerator
+saverun Rivet-LowEnergy-${name}-NonPerturbative-${ECMS} EventGenerator

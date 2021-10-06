@@ -22,9 +22,13 @@ ScalarScalarScalarDecayer.h  \
 SemiLeptonicScalarDecayer.h  \
 ScalarMesonFactorizedDecayer.h \
 ScalarVectorVectorDecayer.h  \
-DtoKPiPiCLEO.h \
 DtoKPiPiE691.h \
-DtoKPiPiMarkIII.h 
+FOCUSDptoKmPipPip.h \
+DtoKPiPiMarkIII.h \
+WeakDalitzDecay.h\
+CLEODptoKmPipPip.h\
+CLEOD0toKmPipPi0.h\
+CLEOD0toK0PipPim.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -41,6 +45,10 @@ ScalarScalarScalarDecayer.cc \
 SemiLeptonicScalarDecayer.cc \
 ScalarMesonFactorizedDecayer.cc \
 ScalarVectorVectorDecayer.cc \
-DtoKPiPiCLEO.cc \
 DtoKPiPiE691.cc\
-DtoKPiPiMarkIII.cc
+FOCUSDptoKmPipPip.cc\
+DtoKPiPiMarkIII.cc \
+WeakDalitzDecay.cc\
+CLEODptoKmPipPip.cc\
+CLEOD0toKmPipPi0.cc\
+CLEOD0toK0PipPim.cc

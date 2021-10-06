@@ -21,3 +21,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1995_I392704
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I371613
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I371611
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2005_I668268
+# Lambda_c -> Xi* K+ -> Xi- pi_ K+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I781294

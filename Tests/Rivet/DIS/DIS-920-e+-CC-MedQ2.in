@@ -11,4 +11,3 @@ set /Herwig/Cuts/ChargedCurrentCut:MinQ2 40.
 set /Herwig/Cuts/Cuts:MHatMin 0.
 # HERA F2
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HERA_2015_I1377206
-

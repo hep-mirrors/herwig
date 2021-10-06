@@ -10,3 +10,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DASP_1979_I132045
+# MARK II charged spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416

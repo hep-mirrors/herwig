@@ -180,8 +180,16 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
   }
   // the different options for different spin types
   int bid = abs(meson->id());
+  // light-quark vector stater
+  if(bid==413 || bid==423 || bid==433 ||
+     bid==513 || bid==523 || bid==533) {
+    meson->spinInfo()->rhoMatrix()(0,0) = 0.5*(1.-pol);
+    meson->spinInfo()->rhoMatrix()(1,1) = 0.5;
+    meson->spinInfo()->rhoMatrix()(2,2) = 0.5*(1.+pol);
+  }
   // light-quark spin 1/2+ -> spin 0 heavy meson
-  if(bid==10313 || bid==10323 || bid==10333 || bid==10413 || bid==10423  || bid==10433
+  else if(bid==10313 || bid==10323 || bid==10333 || bid==10413 || bid==10423
+                || bid==10433 || bid==20413 || bid==20423 || bid==20433
                 || bid==10513 || bid==10523 || bid==10533) {
     // Falk-Peskin "no-win" theorem for non-excited heavy mesons:
     // no polarization information would be find in the non-excited meson

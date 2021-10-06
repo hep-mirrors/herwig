@@ -96,7 +96,7 @@ void BtoSGammaDecayer::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<BtoSGammaDecayer,PartonicDecayerBase>
-describeHerwigBtoSGammaDecayer("Herwig::BtoSGammaDecayer", "HwPartonicDecay.so");
+describeHerwigBtoSGammaDecayer("Herwig::BtoSGammaDecayer", "HwShower.so HwPartonicDecay.so");
 
 void BtoSGammaDecayer::Init() {
 

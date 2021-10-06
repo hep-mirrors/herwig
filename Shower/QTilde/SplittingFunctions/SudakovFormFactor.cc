@@ -348,7 +348,6 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const do
   return ratio/maxpdf ;
 }
 
-
 bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
   double ratio=alphaSVetoRatio(pt2,1.);
   return UseRandom::rnd() > ratio;

@@ -27,7 +27,9 @@ BtoSGammaFlatEnergy.h \
 BtoSGammaKagan.h \
 HQETFormFactor.h \
 CzyzNucleonFormFactor.h \
-KornerKurodaFormFactor.h
+KornerKurodaFormFactor.h \
+KPiIThreeHalfFOCUSKMatrix.h \
+KPiIHalfFOCUSKMatrix.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -49,4 +51,6 @@ BtoSGammaFlatEnergy.cc \
 BtoSGammaKagan.cc \
 HQETFormFactor.cc \
 CzyzNucleonFormFactor.cc \
-KornerKurodaFormFactor.cc
+KornerKurodaFormFactor.cc \
+KPiIThreeHalfFOCUSKMatrix.cc \
+KPiIHalfFOCUSKMatrix.cc

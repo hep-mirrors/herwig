@@ -10,3 +10,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
 # OPAL from gluon paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
+# L3 event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2008_I825820

@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> psi(2S)
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEPsi2S HwMELepton.so
+set /Herwig/MatrixElements/MEPsi2S:VectorMeson /Herwig/Particles/psi(2S)
+set /Herwig/MatrixElements/MEPsi2S:Coupling  19.25684
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEPsi2S
+set EventGenerator:EventHandler:LuminosityFunction:Energy 3.686097
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+# jpsi, chi_{0,1,2} charged mults
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1800404

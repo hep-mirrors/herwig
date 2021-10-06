@@ -12,6 +12,7 @@ library HwFormFactors.so
 library HwSMDecay.so
 library HwVMDecay.so
 library HwTMDecay.so
+library HwHMDecay.so
 library HwMamboDecay.so
 library HwPerturbativeDecay.so
 library HwBaryonDecay.so
@@ -5974,12 +5975,12 @@ newdef PVectorVP:OutgoingVector 6 22
 newdef PVectorVP:OutgoingPScalar 6 211
 newdef PVectorVP:Coupling 6 0.195
 newdef PVectorVP:MaxWeight 6 1.58726
-newdef PVectorVP:Incoming 7 20433
+newdef PVectorVP:Incoming 7 10433
 newdef PVectorVP:OutgoingVector 7 413
 newdef PVectorVP:OutgoingPScalar 7 311
 newdef PVectorVP:Coupling 7 0.161
 newdef PVectorVP:MaxWeight 7 2.09271
-newdef PVectorVP:Incoming 8 20433
+newdef PVectorVP:Incoming 8 10433
 newdef PVectorVP:OutgoingVector 8 423
 newdef PVectorVP:OutgoingPScalar 8 321
 newdef PVectorVP:Coupling 8 0.161
@@ -6174,12 +6175,12 @@ newdef PVectorVP:OutgoingVector 46 513
 newdef PVectorVP:OutgoingPScalar 46 111
 newdef PVectorVP:Coupling 46 0.314
 newdef PVectorVP:MaxWeight 46 1.59793
-newdef PVectorVP:Incoming 47 10433
+newdef PVectorVP:Incoming 47 20433
 newdef PVectorVP:OutgoingVector 47 433
 newdef PVectorVP:OutgoingPScalar 47 111
 newdef PVectorVP:Coupling 47 0.022
 newdef PVectorVP:MaxWeight 47 1.6163
-newdef PVectorVP:Incoming 48 10433
+newdef PVectorVP:Incoming 48 20433
 newdef PVectorVP:OutgoingVector 48 22
 newdef PVectorVP:OutgoingPScalar 48 431
 newdef PVectorVP:Coupling 48 0.0587
@@ -11619,7 +11620,11 @@ newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter
 newdef  QDecayME0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
 newdef  QDecayME0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
-newdef  QDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
+newdef  QDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer
+newdef  QDecayME0:PartnerFinder      /Herwig/Shower/PartnerFinder
+newdef  QDecayME0:SplittingGenerator /Herwig/Shower/SplittingGenerator
+newdef  QDecayME0:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+newdef  QDecayME0:Shower Yes
 newdef  QDecayME0:Exclusive 1 
 newdef  QDecayME0:Intermediates 0 
 newdef  QDecayME0:Partonic_Tries 100 
@@ -11632,6 +11637,10 @@ newdef  QDecayME130:ClusterFinder /Herwig/Hadronization/ClusterFinder
 newdef  QDecayME130:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME130:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  QDecayME130:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
+newdef  QDecayME130:PartnerFinder      /Herwig/Shower/PartnerFinder
+newdef  QDecayME130:SplittingGenerator /Herwig/Shower/SplittingGenerator
+newdef  QDecayME130:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+newdef  QDecayME130:Shower Yes
 newdef  QDecayME130:Exclusive 1 
 newdef  QDecayME130:Intermediates 0 
 newdef  QDecayME130:Partonic_Tries 100 
@@ -15329,7 +15338,7 @@ newdef BottomBaryonVectorCurrent:ID 14 443
 newdef BottomBaryonVectorCurrent:Decay_Constant 14 1.223
 newdef BottomBaryonVectorCurrent:ID 15 100443
 newdef BottomBaryonVectorCurrent:Decay_Constant 15 1.08
-newdef BottomBaryonVectorCurrent:ID 16 10433
+newdef BottomBaryonVectorCurrent:ID 16 20433
 newdef BottomBaryonVectorCurrent:Decay_Constant 16 0.397
 newdef BottomBaryonVectorCurrent:Quark 0  2
 newdef BottomBaryonVectorCurrent:AntiQuark 0  -1
@@ -16877,7 +16886,7 @@ newdef Tau1VectorCurrent:ID 14 443
 newdef Tau1VectorCurrent:Decay_Constant 14 1.223
 newdef Tau1VectorCurrent:ID 15 100443
 newdef Tau1VectorCurrent:Decay_Constant 15 1.08
-newdef Tau1VectorCurrent:ID 16 10433
+newdef Tau1VectorCurrent:ID 16 20433
 newdef Tau1VectorCurrent:Decay_Constant 16 0.397
 newdef Tau1VectorCurrent:Quark 0  2
 newdef Tau1VectorCurrent:AntiQuark 0  -1
@@ -17509,7 +17518,7 @@ newdef WSBHadronicVectorCurrent:ID 14 443
 newdef WSBHadronicVectorCurrent:Decay_Constant 14 1.223
 newdef WSBHadronicVectorCurrent:ID 15 100443
 newdef WSBHadronicVectorCurrent:Decay_Constant 15 1.08
-newdef WSBHadronicVectorCurrent:ID 16 10433
+newdef WSBHadronicVectorCurrent:ID 16 20433
 newdef WSBHadronicVectorCurrent:Decay_Constant 16 0.397
 newdef WSBHadronicVectorCurrent:Quark 0  2
 newdef WSBHadronicVectorCurrent:AntiQuark 0  -1
@@ -21363,7 +21372,7 @@ newdef BcHadronicVectorCurrent:ID 14 443
 newdef BcHadronicVectorCurrent:Decay_Constant 14 1.256
 newdef BcHadronicVectorCurrent:ID 15 100443
 newdef BcHadronicVectorCurrent:Decay_Constant 15 1.08
-newdef BcHadronicVectorCurrent:ID 16 10433
+newdef BcHadronicVectorCurrent:ID 16 20433
 newdef BcHadronicVectorCurrent:Decay_Constant 16 0.397
 newdef BcHadronicVectorCurrent:Quark 0  2
 newdef BcHadronicVectorCurrent:AntiQuark 0  -1
@@ -23601,100 +23610,112 @@ newdef HQETFormFactor:R2         0.836
 newdef HQET:FormFactor HQETFormFactor 
 
 #
-create Herwig::DtoKPiPiCLEO  DKPiPiCLEO
-newdef DKPiPiCLEO:Iteration 10
-newdef DKPiPiCLEO:Ntry 500
-newdef DKPiPiCLEO:Points 10000
-newdef DKPiPiCLEO:GenerateIntermediates 1 
-newdef DKPiPiCLEO:LocalParameters 1
-newdef DKPiPiCLEO:OmegaMass 782.57
-newdef DKPiPiCLEO:f980Mass 977
-newdef DKPiPiCLEO:f_2Mass 1275.4
-newdef DKPiPiCLEO:f1370Mass 1310
-newdef DKPiPiCLEO:K_01430Mass 1412
-newdef DKPiPiCLEO:K_21430Mass 1425.6
-newdef DKPiPiCLEO:Kstar1680Mass 1717
-newdef DKPiPiCLEO:rho1700Mass 1700
-newdef DKPiPiCLEO:Kstar0892Mass 896.1
-newdef DKPiPiCLEO:KstarPlus892AMass 891.5
-newdef DKPiPiCLEO:KstarPlus892BMass 891.66
-newdef DKPiPiCLEO:RhoPlusMass 770
-newdef DKPiPiCLEO:Rho0Mass 769.3
-newdef DKPiPiCLEO:OmegaWidth 8.44
-newdef DKPiPiCLEO:f980Width 50
-newdef DKPiPiCLEO:f_2Width 185.1
-newdef DKPiPiCLEO:f1370Width 272
-newdef DKPiPiCLEO:K_01430Width 294
-newdef DKPiPiCLEO:K_21430Width 98.5
-newdef DKPiPiCLEO:Kstar1680Width 322
-newdef DKPiPiCLEO:rho1700Width 240
-newdef DKPiPiCLEO:Kstar0892Width 50.5
-newdef DKPiPiCLEO:KstarPlus892AWidth 50
-newdef DKPiPiCLEO:KstarPlus892BWidth 50.8
-newdef DKPiPiCLEO:RhoPlusWidth 150.7
-newdef DKPiPiCLEO:Rho0Width 150.2
-newdef DKPiPiCLEO:gPi 0.09
-newdef DKPiPiCLEO:gK 0.02
-newdef DKPiPiCLEO:f0Option 0
-newdef DKPiPiCLEO:ChargedNonResonantAmplitude 1.75
-newdef DKPiPiCLEO:ChargedNonResonantPhase 31.2
-newdef DKPiPiCLEO:ChargedRhoAmplitude 1
-newdef DKPiPiCLEO:ChargedRhoPhase 0
-newdef DKPiPiCLEO:ChargedKStarMinusAmplitude 0.44
-newdef DKPiPiCLEO:ChargedKStarMinusPhase 163
-newdef DKPiPiCLEO:ChargedKStar0Amplitude 0.39
-newdef DKPiPiCLEO:ChargedKStar0Phase -0.2
-newdef DKPiPiCLEO:ChargedK_0MinusAmplitude 0.77
-newdef DKPiPiCLEO:ChargedK_0MinusPhase 55.5
-newdef DKPiPiCLEO:ChargedK_00Amplitude 0.85
-newdef DKPiPiCLEO:ChargedK_00Phase 166
-newdef DKPiPiCLEO:ChargedRho1700Amplitude 2.5
-newdef DKPiPiCLEO:ChargedRho1700Phase 171
-newdef DKPiPiCLEO:ChargedK1680MinusAmplitude 2.5
-newdef DKPiPiCLEO:ChargedK1680MinusPhase 103
-newdef DKPiPiCLEO:NeutralKStarPlusAmplitude 0.11
-newdef DKPiPiCLEO:NeutralKStarPlusPhase 321
-newdef DKPiPiCLEO:NeutralRhoAmplitude 1
-newdef DKPiPiCLEO:NeutralRhoPhase 0
-newdef DKPiPiCLEO:NeutralOmegaAmplitude 0.037
-newdef DKPiPiCLEO:NeutralOmegaPhase 114
-newdef DKPiPiCLEO:NeutralKStarMinusAmplitude 1.56
-newdef DKPiPiCLEO:NeutralKStarMinusPhase 150
-newdef DKPiPiCLEO:Neutralf980Amplitude 0.34
-newdef DKPiPiCLEO:Neutralf980Phase 188
-newdef DKPiPiCLEO:Neutralf2Amplitude 0.7
-newdef DKPiPiCLEO:Neutralf2Phase 308
-newdef DKPiPiCLEO:Neutralf1370Amplitude 1.8
-newdef DKPiPiCLEO:Neutralf1370Phase 85
-newdef DKPiPiCLEO:NeutralKK_0MinusAmplitude 2
-newdef DKPiPiCLEO:NeutralKK_0MinusPhase 3
-newdef DKPiPiCLEO:NeutralKK_2MinusAmplitude 1
-newdef DKPiPiCLEO:NeutralKK_2MinusPhase 335
-newdef DKPiPiCLEO:NeutralK1680MinusAmplitude 5.6
-newdef DKPiPiCLEO:NeutralK1680MinusPhase 174
-newdef DKPiPiCLEO:NeutralNonResonantAmplitude 1.1
-newdef DKPiPiCLEO:NeutralNonResonantPhase 340
-newdef DKPiPiCLEO:DRadius 5
-newdef DKPiPiCLEO:ResonanceRadius 1.5
-insert DKPiPiCLEO:MaximumWeights 0 1.42657e+10
-insert DKPiPiCLEO:MaximumWeights 1 3.21105e+10
-insert DKPiPiCLEO:Weights 0 0.28797
-insert DKPiPiCLEO:Weights 1 0.137184
-insert DKPiPiCLEO:Weights 2 0.0809083
-insert DKPiPiCLEO:Weights 3 0.0900742
-insert DKPiPiCLEO:Weights 4 0.168189
-insert DKPiPiCLEO:Weights 5 0.085995
-insert DKPiPiCLEO:Weights 6 0.149679
-insert DKPiPiCLEO:Weights 7 0.0309423
-insert DKPiPiCLEO:Weights 8 0.144479
-insert DKPiPiCLEO:Weights 9 0.0612441
-insert DKPiPiCLEO:Weights 10 0.317923
-insert DKPiPiCLEO:Weights 11 0.0289859
-insert DKPiPiCLEO:Weights 12 0.107982
-insert DKPiPiCLEO:Weights 13 0.11297
-insert DKPiPiCLEO:Weights 14 0.0684044
-insert DKPiPiCLEO:Weights 15 0.0555692
-insert DKPiPiCLEO:Weights 16 0.0714999
+create Herwig::CLEOD0toKmPipPi0 D0KmPipPi0CLEO
+newdef D0KmPipPi0CLEO:Iteration 10
+newdef D0KmPipPi0CLEO:Ntry 500
+newdef D0KmPipPi0CLEO:Points 100000
+newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
+newdef D0KmPipPi0CLEO:DRadius 5
+newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
+newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
+insert D0KmPipPi0CLEO:Weights 0 0.279469
+insert D0KmPipPi0CLEO:Weights 1 0.14109
+insert D0KmPipPi0CLEO:Weights 2 0.0801408
+insert D0KmPipPi0CLEO:Weights 3 0.093447
+insert D0KmPipPi0CLEO:Weights 4 0.166967
+insert D0KmPipPi0CLEO:Weights 5 0.0844772
+insert D0KmPipPi0CLEO:Weights 6 0.154409
+newdef D0KmPipPi0CLEO:K_01430Mass 1412
+newdef D0KmPipPi0CLEO:K_01430Width 294
+newdef D0KmPipPi0CLEO:Kstar1680Mass 1717
+newdef D0KmPipPi0CLEO:Kstar1680Width 322
+newdef D0KmPipPi0CLEO:rho1700Mass 1700
+newdef D0KmPipPi0CLEO:rho1700Width 240
+newdef D0KmPipPi0CLEO:Kstar0892Mass 896.1
+newdef D0KmPipPi0CLEO:Kstar0892Width 50.5
+newdef D0KmPipPi0CLEO:KstarPlus892Mass 891.5
+newdef D0KmPipPi0CLEO:KstarPlus892Width 50
+newdef D0KmPipPi0CLEO:RhoMass 770
+newdef D0KmPipPi0CLEO:RhoWidth 150.7
+newdef D0KmPipPi0CLEO:NonResonantAmplitude 1.75
+newdef D0KmPipPi0CLEO:NonResonantPhase 31.2
+newdef D0KmPipPi0CLEO:RhoAmplitude 1
+newdef D0KmPipPi0CLEO:RhoPhase 0
+newdef D0KmPipPi0CLEO:KStarMinusAmplitude 0.44
+newdef D0KmPipPi0CLEO:KStarMinusPhase 163
+newdef D0KmPipPi0CLEO:KStar0Amplitude 0.39
+newdef D0KmPipPi0CLEO:KStar0Phase -0.2
+newdef D0KmPipPi0CLEO:K_0MinusAmplitude 0.77
+newdef D0KmPipPi0CLEO:K_0MinusPhase 55.5
+newdef D0KmPipPi0CLEO:K_00Amplitude 0.85
+newdef D0KmPipPi0CLEO:K_00Phase 166
+newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
+newdef D0KmPipPi0CLEO:Rho1700Phase 171
+newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
+newdef D0KmPipPi0CLEO:K1680MinusPhase 103
+
+#
+create Herwig::CLEOD0toK0PipPim D0K0PipPimCLEO
+newdef D0K0PipPimCLEO:Iteration 10
+newdef D0K0PipPimCLEO:Ntry 500
+newdef D0K0PipPimCLEO:Points 100000
+newdef D0K0PipPimCLEO:GenerateIntermediates 1 
+newdef D0K0PipPimCLEO:DRadius 5
+newdef D0K0PipPimCLEO:ResonanceRadius 1.5
+newdef D0K0PipPimCLEO:MaximumWeight 4.0e+10
+insert D0K0PipPimCLEO:Weights 0 0.0315344
+insert D0K0PipPimCLEO:Weights 1 0.143317
+insert D0K0PipPimCLEO:Weights 2 0.0614656
+insert D0K0PipPimCLEO:Weights 3 0.316689
+insert D0K0PipPimCLEO:Weights 4 0.0334101
+insert D0K0PipPimCLEO:Weights 5 0.108971
+insert D0K0PipPimCLEO:Weights 6 0.112036
+insert D0K0PipPimCLEO:Weights 7 0.070267
+insert D0K0PipPimCLEO:Weights 8 0.0527859
+insert D0K0PipPimCLEO:Weights 9 0.0695232
+newdef D0K0PipPimCLEO:RhoMass 769.3
+newdef D0K0PipPimCLEO:RhoWidth 150.2
+newdef D0K0PipPimCLEO:OmegaMass 782.57
+newdef D0K0PipPimCLEO:OmegaWidth 8.44
+newdef D0K0PipPimCLEO:f980Mass 977
+newdef D0K0PipPimCLEO:f980Width 50
+newdef D0K0PipPimCLEO:gPi 0.09
+newdef D0K0PipPimCLEO:gK 0.02
+newdef D0K0PipPimCLEO:f0Option 1
+newdef D0K0PipPimCLEO:f_2Mass 1275.4
+newdef D0K0PipPimCLEO:f_2Width 185.1
+newdef D0K0PipPimCLEO:f1370Mass 1310
+newdef D0K0PipPimCLEO:f1370Width 272
+newdef D0K0PipPimCLEO:KstarMass 891.66
+newdef D0K0PipPimCLEO:KstarWidth 50.8
+newdef D0K0PipPimCLEO:K_01430Mass 1412
+newdef D0K0PipPimCLEO:K_01430Width 294
+newdef D0K0PipPimCLEO:K_21430Mass 1425.6
+newdef D0K0PipPimCLEO:K_21430Width 98.5
+newdef D0K0PipPimCLEO:Kstar1680Mass 1717
+newdef D0K0PipPimCLEO:Kstar1680Width 322
+newdef D0K0PipPimCLEO:KStarPlusAmplitude 0.11
+newdef D0K0PipPimCLEO:KStarPlusPhase 321
+newdef D0K0PipPimCLEO:RhoAmplitude 1
+newdef D0K0PipPimCLEO:RhoPhase 0
+newdef D0K0PipPimCLEO:OmegaAmplitude 0.037
+newdef D0K0PipPimCLEO:OmegaPhase 114
+newdef D0K0PipPimCLEO:KStarMinusAmplitude 1.56
+newdef D0K0PipPimCLEO:KStarMinusPhase 150
+newdef D0K0PipPimCLEO:f980Amplitude 0.34
+newdef D0K0PipPimCLEO:f980Phase 188
+newdef D0K0PipPimCLEO:f2Amplitude 0.7
+newdef D0K0PipPimCLEO:f2Phase 308
+newdef D0K0PipPimCLEO:f1370Amplitude 1.8
+newdef D0K0PipPimCLEO:f1370Phase 85
+newdef D0K0PipPimCLEO:KK_0MinusAmplitude 2
+newdef D0K0PipPimCLEO:KK_0MinusPhase 3
+newdef D0K0PipPimCLEO:KK_2MinusAmplitude 1
+newdef D0K0PipPimCLEO:KK_2MinusPhase 335
+newdef D0K0PipPimCLEO:K1680MinusAmplitude 5.6
+newdef D0K0PipPimCLEO:K1680MinusPhase 174
+newdef D0K0PipPimCLEO:NonResonantAmplitude 1.1
+newdef D0K0PipPimCLEO:NonResonantPhase 340
 
 #
 create Herwig::DtoKPiPiE691  DKPiPiE691
@@ -23843,5 +23864,11 @@ newdef RadiativeHyperon:Iteration 1
 newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
+
+create Herwig::HQETStrongDecayer HQETMeson
+newdef HQETMeson:Initialize 1
+
+create Herwig::HQETRadiativeDecayer HQETMesonEM
+newdef HQETMesonEM:Initialize 1
 
 @LOAD_EVTGEN_DECAYER@

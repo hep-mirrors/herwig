@@ -136,7 +136,11 @@ def collider_lumi(energy):
 def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
     result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
     if process is not None:
-        result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
+        if me=="MEgg2ff" :
+            result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
+        else :
+            result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
+        
     return result
 
 def particlegroup(factory,name,*particles):
@@ -194,7 +198,6 @@ del cand_collider
 if "EHS" in name : collider="SPS"
 assert collider
 have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
-print (collider)
 thefactory="Factory"
 
 parameters = { 
@@ -290,8 +293,7 @@ if simulation=="" :
         elif("Double-Resolved" in name) :
             templateName="EE-Gamma-Double-Resolved.in"
         else :
-            print ("Unknown type of EE-Gamma event ",name)
-            quit()
+            templateName="EE.in"
     elif collider=="GammaGamma" :
         templateName="GammaGamma.in"
     elif collider != "BFactory" :
@@ -383,8 +385,11 @@ elif(collider=="EE") :
         if "gg" in parameterName :
             process = StringBuilder("create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n")
             process+=insert_ME("MEee2Higgs2SM","Gluon","Allowed")
+        elif "LL" in parameterName :
+            process = StringBuilder(insert_ME("MEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Charged\n"
         else :
-            process = StringBuilder(insert_ME("MEee2gZ2qq"))
+            process  = StringBuilder(insert_ME("MEee2gZ2qq"))
             try :
                 ecms = float(parameterName)
                 if(ecms<=3.75) :
@@ -448,6 +453,24 @@ elif(collider=="EE-Gamma") :
                 process = StringBuilder(insert_ME("MEQCD2to2"))
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
+        elif("pi0" in parameterName) :
+            process = StringBuilder(insert_ME("MEff2ffPseudoScalar"))
+            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar2"
+            process+= insert_ME("MEff2ffPseudoScalar2")
+            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar3"
+            process+= insert_ME("MEff2ffPseudoScalar3")
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Min 0.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Max 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Min 0.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Max 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Max 1e10"
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Min 1.  "
+            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Max 1e10"
         else :
             print ("process not supported for Gamma Gamma processes at EE")
             quit()
@@ -458,7 +481,7 @@ elif(collider=="GammaGamma") :
     if(simulation=="") :
         if("mumu" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff"))
-            process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
+            process +="set /Herwig/MatrixElements/gg2ffAmp:Process Muon\n"
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         else :
             print ("process not supported for Gamma Gamma processes at EE")
@@ -2015,7 +2038,6 @@ if numberOfAddedProcesses == 0 and (simulation =="Merging" or simulation =="Matc
     sys.exit(1)
 
 # get template and write the file
-
 with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
     templateText = f.read()
 

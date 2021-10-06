@@ -720,7 +720,7 @@ decaymode Lambda_b0->e-,nu_ebar,c=ud_0; 0.0291 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_b0->mu-,nu_mubar,c=ud_0; 0.0291 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_b0->Lambda_c+,tau-,nu_taubar; 0.0191 1 /Herwig/Decays/BaryonHeavy1
 decaymode Lambda_b0->Lambda_c+,D_s-; 0.014 1 /Herwig/Decays/BottomBaryonScalar
-decaymode Lambda_b0->Lambda_c+,D_s1-; 0.0136 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Lambda_c+,D'_s1-; 0.0136 1 /Herwig/Decays/BottomBaryonVector
 decaymode Lambda_b0->Lambda_c+,rho-; 0.0135 1 /Herwig/Decays/BottomBaryonVector
 decaymode Lambda_b0->s=ubar,c=ud_0; 0.0134 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_b0->tau-,nu_taubar,c=ud_0; 0.01288 1 /Herwig/Decays/WeakPartonic100
@@ -774,7 +774,7 @@ decaymode Lambda_bbar0->mu+,nu_mu,cbar=ud_0bar; 0.0291 1 /Herwig/Decays/WeakPart
 decaymode Lambda_bbar0->e+,nu_e,cbar=ud_0bar; 0.0291 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_bbar0->Lambdabar_c-,tau+,nu_tau; 0.0191 1 /Herwig/Decays/BaryonHeavy1
 decaymode Lambda_bbar0->Lambdabar_c-,D_s+; 0.014 1 /Herwig/Decays/BottomBaryonScalar
-decaymode Lambda_bbar0->Lambdabar_c-,D_s1+; 0.0136 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Lambdabar_c-,D'_s1+; 0.0136 1 /Herwig/Decays/BottomBaryonVector
 decaymode Lambda_bbar0->Lambdabar_c-,rho+; 0.0135 1 /Herwig/Decays/BottomBaryonVector
 decaymode Lambda_bbar0->sbar=u,cbar=ud_0bar; 0.0134 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_bbar0->tau+,nu_tau,cbar=ud_0bar; 0.01288 1 /Herwig/Decays/WeakPartonic100

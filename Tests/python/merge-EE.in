@@ -109,6 +109,16 @@ if __name__ == "__main__":
                       dest="decay",
                       default=False,
                       help="Don\'t include decay analyses")
+    parser.add_option("--with-WW",
+                      action='store_true' ,
+                      dest="WW",
+                      default=False,
+                      help="Include WW analyses")
+    parser.add_option("--without-WW",
+                      action='store_false',
+                      dest="WW",
+                      default=False,
+                      help="Don\'t include WW analyses")
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
     ## Check args
@@ -121,13 +131,13 @@ if __name__ == "__main__":
 yodafiles=["130","130.1","133","136","136.1","177","192",
            "194.4","196","202","205","206","206.2","207","91" ,"91-nopi" ,\
            "161","161.3","182.8","183","197","35" ,"36.2","172","172.3",\
-           "188.6","189","200","200.2","44","14","14.8","21.5","22","25","10",\
+           "188.6","189","200","200.2","44","14","14.8","21.5","22","22.5","25","10",\
            "12.8","26.8","48.0","93.0",\
-           "12","13","17","27.6","27.7","29","30.2","30.3","34.5",\
-           "30.7","30.8","30","31.2","31.3","31.6","34","34.8","42.1","43.5","43.6","50","52","53.3",\
+           "12","13","17","27.6","27.7","29","30.2","30.3","30.5","34.5",\
+           "30.7","30.8","30","31.2","31.3","31.6","34","34.8","41.5","42.1","43.5","43.6","50","52","53.3",\
            "55","55.3","56","57","58","59.5","60.8","60","61.4","7.7",
            "9.4","45","65.4","66","75.7","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
-           "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
+           "5.8","6.2","6.5","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
            "4.41","5.0","5.2","4.5","8.8","9.27","9.46","9.51","10.52","10.52-sym","10.54","10.58",
            "10.6","10.45","10.47"]
 # add gg if needed
@@ -140,7 +150,10 @@ if(opts.decay) :
     yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0","Xicp",
-                  "Omegac0","Xim","JPsi","Psi2S","Psi3770"]
+                  "Omegac0","Xim","JPsi","Psi2S","Psi2S-All","Psi3770"]
+# WW production
+if(opts.WW) :
+    yodafiles+=["183-WW","189-WW"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -201,11 +214,19 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
+           "195333" in aopath or
+           "526164" in aopath or "178416" in aopath or
            "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
            "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
            "BABAR_2014_I1286317" in aopath or
            ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
+            if "526164" in aopath :
+                if ("d01" in aopath or "d02" in aopath or "d16" in aopath) :
+                    if "WW" in f : continue
+                else :
+                    if "WW" not in f : continue
+            
             if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
@@ -225,6 +246,9 @@ for f in yodafiles:
             else :
                 if(aopath.find("y03")<0) :
                     outhistos[aopath] = ao
+        elif("MARKI_1975_I100733" in aopath) :
+            if "d03" in aopath : 
+                outhistos[aopath] = ao
         elif(aopath.find("A2_2017_I1486671")>=0) :
             if("Eta" in file) :
                 if "d01" in aopath : outhistos[aopath] = ao
@@ -288,6 +312,8 @@ for hpath,hsets in inhistos.items():
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
         hpath.find("1422780")>0 or hpath.find("132410" )>0 or
+        ("526164" in hpath and ("d01" in hpath or "d02" in hpath or "d03" in hpath) ) or
+        ("195333" in hpath and "d04" in hpath) or
         "OPAL_2000_I513476"   in hpath or
         "JADE_1979_I142874"   in hpath or
         "CLEO_1985_I205668"   in hpath or
@@ -319,18 +345,10 @@ for hpath,hsets in inhistos.items():
             sys.exit(1)
 
 # tasso
-useOne("/TASSO_1990_S2148048/d06-x01-y01","14")
-useOne("/TASSO_1990_S2148048/d07-x01-y01","14")
-useOne("/TASSO_1990_S2148048/d08-x01-y01","14")
-useOne("/TASSO_1990_S2148048/d06-x01-y02","22")
-useOne("/TASSO_1990_S2148048/d07-x01-y02","22")
-useOne("/TASSO_1990_S2148048/d08-x01-y02","22")
-useOne("/TASSO_1990_S2148048/d06-x01-y03","35")
-useOne("/TASSO_1990_S2148048/d07-x01-y03","35")
-useOne("/TASSO_1990_S2148048/d08-x01-y03","35")
-useOne("/TASSO_1990_S2148048/d06-x01-y04","44")
-useOne("/TASSO_1990_S2148048/d07-x01-y04","44")
-useOne("/TASSO_1990_S2148048/d08-x01-y04","44")
+eTemp=["14","22","35","44"]
+for ih in range(2,9) :
+    for iy in range(0,4) :
+        useOne("/TASSO_1990_S2148048/d0%s-x01-y0%s" % (ih,iy+1),eTemp[iy])
 # jade
 useOne("/JADE_1998_S3612880/d02-x01-y01","44")
 useOne("/JADE_1998_S3612880/d03-x01-y01","44")
@@ -1216,13 +1234,13 @@ for i in range(2,4) :
 merge("/TASSO_1980_I143691/d01-x01-y01")
 useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
 useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
-if("/TASSO_1980_I143691/d03-x01-y01" in inhistos and
-   "17." in inhistos["/TASSO_1980_I143691/d03-x01-y01"] and
-   "22." in inhistos["/TASSO_1980_I143691/d03-x01-y01"]) :
-    average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
-    average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
-useOne("/TASSO_1980_I143691/d04-x01-y01","30.2")
-useOne("/TASSO_1980_I143691/d07-x01-y01","30.2")
+for ih in [3,6] :
+    if(("/TASSO_1980_I143691/d0%s-x01-y01"%ih) in inhistos and
+       17. in inhistos["/TASSO_1980_I143691/d0%s-x01-y01"%ih] and
+       22. in inhistos["/TASSO_1980_I143691/d0%s-x01-y01"%ih]) :
+        average("/TASSO_1980_I143691/d0%s-x01-y01"%ih,"17.","22.")
+useOne("/TASSO_1980_I143691/d04-x01-y01","30.3")
+useOne("/TASSO_1980_I143691/d07-x01-y01","30.3")
       
 useOne("/TASSO_1990_I284251/d01-x01-y01","42.6")
 useOne("/TASSO_1990_I284251/d01-x01-y02","35.")
@@ -1314,21 +1332,48 @@ useOne("/BABAR_2014_I1286317/d06-x03-y01", "U1")
 useOne("/BABAR_2014_I1286317/d04-x01-y01", "10.6")
 useOne("/BABAR_2014_I1286317/d05-x01-y01", "10.6")
 useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
-    
-    
+
+for ix in range(0,2) :
+    if ix==0 : en="189"
+    else     : en="183"
+    for iy in range(1,3) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(5+2*ix,iy), en)
+    useOne("/DELPHI_2001_I526164/d%02d-x01-y01"%(6+2*ix), en)
+    for iloc in range(2,5,2) :
+        useOne("/DELPHI_2001_I526164/d16-x01-y%02d"%(iloc-ix), en)
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(9 +ix,iy), en)
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(11+ix,iy), en)
+for ix in range(13,16) :
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(ix,iy), "189")        
+merge("/DELPHI_2001_I526164/d01-x01-y01")
+for ix in range(1,6) :
+    merge("/DELPHI_2001_I526164/d02-x01-y0%s"%ix)
+for ix in range(1,7) :
+    useOne("/DELPHI_2001_I526164/d04-x01-y0%s"%ix,"189")
+# weird histo, select bins by hand
+if "/DELPHI_2001_I526164/d03-x01-y01" in inhistos:
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[0])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[1])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[2])
+    outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[3])
+
+useOne("/MARKII_1982_I178416/d01-x01-y01","5.2")
+useOne("/MARKII_1982_I178416/d01-x01-y02","6.5")
+useOne("/MARKII_1982_I178416/d01-x01-y03","29.0")
+
+for ih in [3,5,6,7,8,9,10,11,12,13,14] :
+    eTemp=["14","22","34"]
+    for iy in range(0,3) :
+        useOne("/TASSO_1984_I195333/d%02d-x01-y%02d" %(ih,iy+1) , eTemp[iy])
+for iy in range(1,12) :
+    merge("/TASSO_1984_I195333/d04-x01-y%02d"%iy)
 # normalize where we have sum histos
-if("/BABAR_2007_I746745/d01-x01-y01" in outhistos and
-   outhistos["/BABAR_2007_I746745/d01-x01-y01"].effNumEntries()!=0.) :
-    outhistos["/BABAR_2007_I746745/d01-x01-y01"].normalize()
-if("/BABAR_2007_I722622/d03-x01-y01" in outhistos and
-   outhistos["/BABAR_2007_I722622/d03-x01-y01"].effNumEntries()!=0.) :
-    outhistos["/BABAR_2007_I722622/d03-x01-y01"].normalize()
-if("/BABAR_2007_I722622/d03-x01-y02" in outhistos and
-   outhistos["/BABAR_2007_I722622/d03-x01-y02"].effNumEntries()!=0.) :
-    outhistos["/BABAR_2007_I722622/d03-x01-y02"].normalize()
-if("/BABAR_2007_I722622/d04-x01-y01" in outhistos and
-   outhistos["/BABAR_2007_I722622/d04-x01-y01"].effNumEntries()!=0.) :
-    outhistos["/BABAR_2007_I722622/d04-x01-y01"].normalize()
+for i in range(1,5) :
+    hname="/BABAR_2007_I746745/d0%s-x01-y01" %i
+    if(hname in outhistos and outhistos[hname].effNumEntries()!=0.) :
+        outhistos[hname].normalize()
 
 # Choose output file
 name = args[0]+".yoda"

@@ -201,7 +201,8 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
-  if(ShowerHandler::currentHandler()->showerVariations().empty() &&
+  if(!ShowerHandler::currentHandlerIsSet() ||
+     ShowerHandler::currentHandler()->showerVariations().empty() &&
      enhancementFactor_==1.) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
@@ -306,7 +307,8 @@ generateNextSpaceBranching(const Energy startingQ,
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
   // no shower variations
-  if(ShowerHandler::currentHandler()->showerVariations().empty()) {
+  if(!ShowerHandler::currentHandlerIsSet() ||
+     ShowerHandler::currentHandler()->showerVariations().empty()) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
@@ -646,7 +648,8 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
 					 ShoKinPtr kinematics,
 					 const RhoDMatrix & rho) {
   // no correlations, return flat phi
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
+  if(ShowerHandler::currentHandlerIsSet() &&
+     ! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double  z = kinematics->z();
@@ -661,7 +664,8 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
-  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()&&
+  bool softAllowed = (!ShowerHandler::currentHandlerIsSet() ||
+		      dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()) &&
     (canBeSoft[0] || canBeSoft[1]);
   if(softAllowed) {
     // find the partner for the soft correlations
@@ -753,10 +757,8 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
     if(xi_min>xi_max) swap(xi_min,xi_max);
     if(xi_min>xi_ij) softAllowed = false;
     Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
-    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
-      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
-    }
-    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
+    if(!ShowerHandler::currentHandlerIsSet() ||
+       dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
       double A = (pipj*Ek[0]- Ej*pik)/Ej/sqr(Ej);
       double B = -sqrt(sqr(pipj)*(sqr(Ek[1])+sqr(Ek[2])))/Ej/sqr(Ej);
       double C = pjk[0]/sqr(Ej);
@@ -765,12 +767,16 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
       aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + max(Ej*(A+B*cos(minima.first -phi1))/(C+D*cos(minima.first -phi0)),
 								    Ej*(A+B*cos(minima.second-phi1))/(C+D*cos(minima.second-phi0))));
     }
+    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
+      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
+    }
     else
       assert(false);
   }
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
-  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
+  if(!ShowerHandler::currentHandlerIsSet() ||
+     dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // calculate the weights
     wgts = generatePhiForward(z,t,ids,rho);
   }
@@ -806,11 +812,12 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
       Energy  Eg  = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
       if(pipj*Eg>pik*Ej) {
-	if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
-	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
-	}
-	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
+	if(!ShowerHandler::currentHandlerIsSet() ||
+		dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
 	  aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
+	}
+	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
+	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
 	}
 	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
 	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 

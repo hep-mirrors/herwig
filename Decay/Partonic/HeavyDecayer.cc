@@ -60,7 +60,7 @@ void HeavyDecayer::Init() {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<HeavyDecayer,PartonicDecayerBase>
-describeHerwigHeavyDecayer("Herwig::HeavyDecayer", "HwPartonicDecay.so");
+describeHerwigHeavyDecayer("Herwig::HeavyDecayer", "HwShower.so HwPartonicDecay.so");
 
 bool HeavyDecayer::accept(tcPDPtr parent, const tPDVector & children) const { 
   long id = parent->id();

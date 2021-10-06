@@ -20,7 +20,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the DtoKPiPiE691 class.
+ * The DtoKPiPiE691 class implements the model of E691 (Phys. Rev.  D48 (1993) 56)
+ * for D -> K pi pi Dalitz decays.
  *
  * @see \ref DtoKPiPiE691Interfaces "The interfaces"
  * defined for DtoKPiPiE691.

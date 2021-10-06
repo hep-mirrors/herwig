@@ -1,36 +1,34 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEGammaGamma2ff_H
-#define HERWIG_MEGammaGamma2ff_H
+#ifndef Herwig_MEGammaGamma2X_H
+#define Herwig_MEGammaGamma2X_H
 //
-// This is the declaration of the MEGammaGamma2ff class.
+// This is the declaration of the MEGammaGamma2X class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "GammaGammaAmplitude.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEGammaGamma2ff class provides the matrix elements for
- * \f$\gamma\gamma\to f \bar{f}\f$.
+ * The MEGammaGamma2X class implements the matrix element for $\gamma\gamma\to X$ processes using
+ * the GammaGammaAmplitude
  *
- * @see \ref MEGammaGamma2ffInterfaces "The interfaces"
- * defined for MEGammaGamma2ff.
+ * @see \ref MEGammaGamma2XInterfaces "The interfaces"
+ * defined for MEGammaGamma2X.
  */
-class MEGammaGamma2ff: public HwMEBase {
+class MEGammaGamma2X: public HwMEBase {
 
 public:
-
+  
   /**
    * The default constructor.
    */
-  MEGammaGamma2ff();
+  MEGammaGamma2X() {}
+
+public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -38,13 +36,17 @@ public:
    * Return the order in \f$\alpha_S\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaS() const;
+  virtual unsigned int orderInAlphaS() const {
+    return amp_->orderInAlphaS();    
+  }
 
   /**
    * Return the order in \f$\alpha_{EW}\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaEW() const;
+  virtual unsigned int orderInAlphaEW() const {
+    return amp_->orderInAlphaS();
+  }
 
   /**
    * The matrix element for the kinematical configuration
@@ -59,6 +61,39 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
+
+  /**
+   * Set the typed and momenta of the incoming and outgoing partons to
+   * be used in subsequent calls to me() and colourGeometries()
+   * according to the associated XComb object. If the function is
+   * overridden in a sub class the new function must call the base
+   * class one first.
+   */
+  virtual void setKinematics();
+
+  /**
+   * The number of internal degrees of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const {
+    return amp_->nDim(0);
+  }
+
+  /**
+   * Generate internal degrees of freedom given nDim() uniform
+   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
+   * generator, the dSigHatDR should be a smooth function of these
+   * numbers, although this is not strictly necessary.
+   * @param r a pointer to the first of nDim() consecutive random numbers.
+   * @return true if the generation succeeded, otherwise false.
+   */
+  virtual bool generateKinematics(const double * r);
+
+  /**
+   * Return the matrix element squared differential in the variables
+   * given by the last call to generateKinematics().
+   */
+  virtual CrossSection dSigHatDR() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -84,12 +119,8 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   //@}
+
 
 public:
 
@@ -119,44 +150,19 @@ public:
 
 protected:
 
-  /**
-   * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
-   * @param p1   The wavefunctions for the first  incoming photon
-   * @param p2   The wavefunctions for the second incoming photon
-   * @param f    The wavefunction  for the outgoing fermion
-   * @param fbar The wavefunction  for the outgoing antifermion
-   * @param calc Whether or not to calculate the matrix element
-   */
-  double helicityME(vector<VectorWaveFunction> &p1,vector<VectorWaveFunction> &p2,
-		    vector<SpinorBarWaveFunction> & f,
-		    vector<SpinorWaveFunction> & fbar, bool calc) const;
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -165,27 +171,17 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaGamma2ff & operator=(const MEGammaGamma2ff &) = delete;
+  MEGammaGamma2X & operator=(const MEGammaGamma2X &) = delete;
 
 private:
+
+  /**
+   *  Pointer to the amplitude for the \f$\gamma\gamma$ process
+   */
+  GammaGammaAmpPtr amp_;
   
-  /**
-   *  Which processes to include
-   */
-  int process_;
-
-  /**
-   *  Pointer to the photon vertex
-   */
-  AbstractFFVVertexPtr vertex_;
-
-  /**
-   *  Matrix element
-   */
-  mutable ProductionMatrixElement me_;
-
 };
 
 }
 
-#endif /* HERWIG_MEGammaGamma2ff_H */
+#endif /* Herwig_MEGammaGamma2X_H */

@@ -1,4 +1,5 @@
-# @PYTHON@
+#! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import glob,subprocess,os,optparse
 
@@ -68,13 +69,23 @@ for idir in glob.glob("Rivet/*") :
             line=file.readline()
             
 # low energy herwig analysis
-p = subprocess.Popen(["./python/LowEnergy.py","--list","--process","All"],stdout=subprocess.PIPE)
-lowEnergy = p.communicate()[0]
-hw_low_energy_analyses=lowEnergy.strip().split()
+hw_low_energy_analyses=[]
+for executable in ["LowEnergy-EE","LowEnergy-Photon"] :
+    p = subprocess.Popen(["./python/%s.py"%executable,"--list","--process","All"],stdout=subprocess.PIPE)
+    lowEnergy = p.communicate()[0]
+    if not isinstance(lowEnergy, bytes) :
+        lowEnergy = lowEnergy.encode("UTF-8")
+    else :
+        lowEnergy = lowEnergy.decode("utf-8")
+    hw_low_energy_analyses+=lowEnergy.strip().split()
 # R analyses
 p = subprocess.Popen(["./python/R.py","--list"],stdout=subprocess.PIPE)
 Rlist = p.communicate()[0]
-hw_R_analyses=Rlist.strip().split()
+if not isinstance(Rlist, bytes) :
+    Rlist = Rlist.encode("UTF-8")
+else :
+    Rlist = Rlist.decode("utf-8")
+hw_low_energy_analyses += Rlist.strip().split()
 
 anatohepmc = open("anatohepmc.txt",'w')
 hepmctoana = open("hepmctoana.txt",'w')
@@ -91,8 +102,7 @@ for analysis in sorted(analyses.keys()) :
         if(analysis in not_in_rivet) :
             not_in_rivet.remove(analysis)
     # we have it low energy or R or skipping
-    elif (analysis in hw_low_energy_analyses or analysis in skip or
-          analysis in hw_R_analyses ) :
+    elif (analysis in hw_low_energy_analyses or analysis in skip) :
         if(analysis in not_in_rivet) :
             not_in_rivet.remove(analysis)
         continue

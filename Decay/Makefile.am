@@ -1,4 +1,4 @@
-SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
+SUBDIRS = FormFactors Tau Baryon VectorMeson HeavyMeson Perturbative \
 	  WeakCurrents ScalarMeson TensorMeson Partonic General Radiation
 
 if HAVE_EVTGEN
@@ -78,12 +78,18 @@ libHwFormFactor_la_SOURCES = \
 FormFactors/BaryonFormFactor.cc \
 FormFactors/ScalarFormFactor.cc \
 FormFactors/BtoSGammaHadronicMass.cc \
+FormFactors/KMatrix.cc \
+FormFactors/ScalarAmplitude.cc \
 FormFactors/BaryonFormFactor.fh \
 FormFactors/BaryonFormFactor.h \
 FormFactors/ScalarFormFactor.fh \
 FormFactors/ScalarFormFactor.h \
 FormFactors/BtoSGammaHadronicMass.h \
-FormFactors/BtoSGammaHadronicMass.fh
+FormFactors/BtoSGammaHadronicMass.fh \
+FormFactors/KMatrix.h \
+FormFactors/KMatrix.fh \
+FormFactors/ScalarAmplitude.h \
+FormFactors/ScalarAmplitude.fh
 
 pkglib_LTLIBRARIES += HwFormFactors.la
 
@@ -171,6 +177,19 @@ $(AM_CPPFLAGS) -I$(srcdir)/WeakCurrents
 
 nodist_HwWeakCurrents_la_SOURCES = \
 WeakCurrents/WeakCurrents__all.cc
+
+##################
+
+pkglib_LTLIBRARIES += HwHMDecay.la
+
+HwHMDecay_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 11:0:0
+
+HwHMDecay_la_CPPFLAGS = \
+$(AM_CPPFLAGS) -I$(srcdir)/HeavyMeson
+
+nodist_HwHMDecay_la_SOURCES = \
+HeavyMeson/HMDecayer__all.cc
 
 ##################
 

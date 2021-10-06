@@ -22,12 +22,39 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig/Hadronization/CluHadConfig.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
 PartonicDecayerBase::PartonicDecayerBase() : _exclusive(true), 
-					     _partontries(100), _inter(false)
+					     _partontries(100), _inter(false),
+					     _shower(false)
 {}
+
+void PartonicDecayerBase::doinit() {
+  HwDecayerBase::doinit();
+  if(_shower) {
+    if(!_partnerFinder) {
+      throw InitException() << "PartonicDecayerBase::doinit() " << fullName()
+			    << " must have the PartonFinder set if"
+			    << " showers are being performecd in partonic decays"
+			    << Exception::runerror;
+    }
+    if(!_splittingGenerator) {
+      throw InitException() << "PartonicDecayerBase::doinit() " << fullName()
+			    << " must have the SplittingGenerator set if"
+			    << " showers are being performecd in partonic decays"
+			    << Exception::runerror;
+    }
+    if(!_reconstructor) {
+      throw InitException() << "PartonicDecayerBase::doinit() " << fullName()
+			    << " must have the KinematicsReconstructor set if"
+			    << " showers are being performecd in partonic decays"
+			    << Exception::runerror;
+    }
+
+  }
+}
 
 ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 					  const Particle & p) const {
@@ -54,15 +81,20 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
     ParticleVector partons=decay(p,products);
     // must add partons are children so reshuffling vs leptons will work
     for(unsigned int ix=0;ix<partons.size();++ix) ptemp->addChild(partons[ix]);
-    // split the gluons
     PVector currentlist = partons;
+    // perform the shower if needed
+    if(_shower) {
+      currentlist = shower(p, partons);
+      if(currentlist.empty()) continue;
+    }
+    // split the gluons
     _partonSplitter->split(currentlist);
     // form the clusters
     ClusterVector clusters = _clusterFinder->formClusters(currentlist);
     _clusterFinder->reduceToTwoComponents(clusters);
     tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
     bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
-    // abandon child here so alwasy done
+    // abandon child here so always done
     for(unsigned int ix=0;ix<partons.size();++ix) ptemp->abandonChild(partons[ix]);
     // try again if can't reshuffle
     if(!lightOK) continue;
@@ -97,19 +129,19 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 void PartonicDecayerBase::persistentOutput(PersistentOStream & os) const {
   os << _partonSplitter << _clusterFinder << _clusterFissioner
     << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
-    << _inter;
+     << _inter << _shower << _splittingGenerator << _partnerFinder << _reconstructor;
 }
 
 void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
   is >> _partonSplitter >> _clusterFinder >> _clusterFissioner
     >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
-    >> _inter;
+     >> _inter >> _shower >> _splittingGenerator >> _partnerFinder >> _reconstructor;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<PartonicDecayerBase,HwDecayerBase>
-describeHerwigPartonicDecayerBase("Herwig::PartonicDecayerBase", "HwPartonicDecay.so");
+describeHerwigPartonicDecayerBase("Herwig::PartonicDecayerBase", "HwShower.so HwPartonicDecay.so");
 
 void PartonicDecayerBase::Init() {
 
@@ -184,6 +216,36 @@ void PartonicDecayerBase::Init() {
      "Number of attempts to generator the hadronisation of the decay",
      &PartonicDecayerBase::_partontries, 100, 1, 1000,
      false, false, Interface::limited);
+  
+  static Switch<PartonicDecayerBase,bool> interfaceShower
+    ("Shower",
+     "Whether or not to perform the parton shower before the hadronization",
+     &PartonicDecayerBase::_shower, false, false, false);
+  static SwitchOption interfaceShowerYes
+    (interfaceShower,
+     "Yes",
+     "Perform the shower",
+     true);
+  static SwitchOption interfaceShowerNo
+    (interfaceShower,
+     "No",
+     "Don't perform the shower",
+     false);
+
+  static Reference<PartonicDecayerBase,PartnerFinder> interfacePartnerFinder
+    ("PartnerFinder",
+     "The parton finder",
+     &PartonicDecayerBase::_partnerFinder, false, false, true, true, false);
+
+  static Reference<PartonicDecayerBase,SplittingGenerator> interfaceSplittingGenerator
+    ("SplittingGenerator",
+     "The splitting generator",
+     &PartonicDecayerBase::_splittingGenerator, false, false, true, true, false);
+  
+  static Reference<PartonicDecayerBase,KinematicsReconstructor> interfaceKinematicsReconstructor
+    ("KinematicsReconstructor",
+     "The kinematics reconstructor",
+     &PartonicDecayerBase::_reconstructor, false, false, true, true, false);
 
 }
 
@@ -235,8 +297,128 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
 	 << _clusterDecayer->name() << " \n";
   output << "newdef  " << name() << ":Exclusive " <<  _exclusive<< " \n";
   output << "newdef  " << name() << ":Intermediates " << _inter << " \n";
+  output << "newdef  " << name() << ":Shower " << _shower << " \n";
+  if(_splittingGenerator)
+    output << "newdef  " << name() << ":SplittingGenerator " << _splittingGenerator->fullName() << " \n";
+  if(_partnerFinder)
+    output << "newdef  " << name() << ":PartonFinder " << _partnerFinder->fullName() << " \n";
+  if(_reconstructor)
+    output << "newdef  " << name() << ":KinematicsReconstructor " << _reconstructor->fullName() << " \n";
+  output << "newdef  " << name() << ":Shower " << _shower << " \n";
   output << "newdef  " << name() << ":Partonic_Tries " << _partontries << " \n";
   // footer for MySQL
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+PVector PartonicDecayerBase::shower(const Particle & parent,
+				 ParticleVector & partons) const {
+  try {
+    // set up the shower
+    // create the shower particles
+    ShowerParticleVector particles;
+    for(auto p : partons) {
+      particles.push_back(new_ptr(ShowerParticle(*p,2,true)));
+    }
+    // set up the partners and evolution scales
+    _partnerFinder->setInitialEvolutionScales(particles,true,ShowerInteraction::QCD);
+    // do the shower
+    PVector output;
+    for(tShowerParticlePtr p : particles) {
+      p->initializeFinalState();
+      timeLikeShower(p,Branching(),true,output);
+    }
+    // check if in CMF frame
+    Boost beta_cm = parent.momentum().findBoostToCM();
+    bool gottaBoost(false);
+    LorentzRotation trans = LorentzRotation();
+    if(beta_cm.mag() > 1e-12) {
+      gottaBoost = true;
+      trans.boost(beta_cm);
+    }
+    bool radiated(false);
+    vector<JetKinStruct> jetKinematics;
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      JetKinStruct tempJetKin;      
+      tempJetKin.parent = particles[ix];
+      if(gottaBoost) {
+	_reconstructor->deepTransform(tempJetKin.parent,trans);
+      }
+      tempJetKin.p = particles[ix]->momentum();
+      radiated |= _reconstructor->reconstructTimeLikeJet(particles[ix],particles[ix]);
+      tempJetKin.q = particles[ix]->momentum();
+      jetKinematics.push_back(tempJetKin);
+    }
+    // find the rescaling factor
+    double k = 0.0;
+    if(radiated) {
+      k = _reconstructor->solveKfactor(parent.mass(), jetKinematics);
+      // perform the rescaling and boosts
+      for(const JetKinStruct & jet : jetKinematics) {
+	LorentzRotation Trafo = _reconstructor->solveBoost(k, jet.q, jet.p);
+	_reconstructor->deepTransform(jet.parent,Trafo);
+      }
+    }
+    if(gottaBoost) {
+      LorentzRotation rinv = trans.inverse();
+      for(const JetKinStruct & jet : jetKinematics) {
+	_reconstructor->deepTransform(jet.parent,rinv);
+      }
+    }
+    // add shower particles as children
+    for(unsigned int ix=0;ix<partons.size();++ix)
+      partons[ix]->addChild(particles[ix]);
+    // return final-state of shower
+    return output;
+  }
+  catch (KinematicsReconstructionVeto & ) {
+    return PVector();
+  }
+}
+
+bool PartonicDecayerBase::timeLikeShower(tShowerParticlePtr particle,
+					 Branching fb, bool first, PVector & output) const {
+  // generate the emission
+  if(!fb.kinematics) {
+    fb=_splittingGenerator->chooseForwardBranching(*particle,1.,ShowerInteraction::QCD);
+    if(fb.kinematics) fb.hard = false;
+  }
+  // no emission, return
+  if(!fb.kinematics) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    output.push_back(particle);
+    return false;
+  }
+  Branching fc[2] = {Branching(),Branching()};
+  // has emitted
+  // Assign the shower kinematics to the emitting particle.
+  particle->showerKinematics(fb.kinematics);
+  // create the children
+  ShowerParticleVector children;
+  children.reserve(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    children.push_back(new_ptr(ShowerParticle(fb.ids[ix+1],true)));
+    children[ix]->set5Momentum(Lorentz5Momentum(fb.ids[ix+1]->mass()));
+  }
+  // update the children
+  particle->showerKinematics()->updateChildren(particle, children,fb.type);
+  // select branchings for children
+  fc[0] = _splittingGenerator->chooseForwardBranching(*children[0],1.,ShowerInteraction::QCD);
+  fc[1] = _splittingGenerator->chooseForwardBranching(*children[1],1.,ShowerInteraction::QCD);
+  // shower the children
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(fc[ix].kinematics) {
+      timeLikeShower(children[ix],fc[ix],false,output);
+    }
+    else {
+      output.push_back(children[ix]);
+    }
+    if(children[ix]->spinInfo()) children[ix]->spinInfo()->develop();
+  }
+  particle->showerKinematics()->updateParent(particle, children,1,fb.type);
+  // branching has happened
+  if(first&&!children.empty())
+    particle->showerKinematics()->resetChildren(particle,children);
+  if(particle->spinInfo()) particle->spinInfo()->develop();
+  return true;
 }

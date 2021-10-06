@@ -1,0 +1,13 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 30.5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+# tasso event shapes at various energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333

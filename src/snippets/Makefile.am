@@ -35,7 +35,8 @@ EvolutionScheme-pT.in  \
 EvolutionScheme-Q2.in \
 FixedTarget.in \
 FixedTarget-PP.in \
-OniumShower.in
+OniumShower.in \
+H7Hadrons.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

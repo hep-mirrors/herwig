@@ -79,7 +79,8 @@ Makefile\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
-Tests/python/LowEnergy.py
+Tests/python/LowEnergy-EE.py
+Tests/python/LowEnergy-Photon.py
 Tests/python/R.py
 Tests/python/make_input_files.py
 Tests/python/merge-DIS
@@ -101,7 +102,9 @@ PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig$
+MatrixElement/Matchbox/External/GoSam/gosam2herwig.py
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
+Sampling/herwig-mergegrids.py
 ^Utilities/Statistics/herwig-combinedistributions$
 ^Utilities/Statistics/herwig-combineruns$
 ^Utilities/Statistics/herwig-makedistributions$

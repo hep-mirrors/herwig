@@ -10,5 +10,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKI_1976_I109792
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKI_1975_I100733
 # LENA thrust and mult
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397

@@ -1,4 +1,4 @@
-# -*- ThePEG-repository -*-
+## -*- ThePEG-repository -*-
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
@@ -27,3 +27,30 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1991_I316132
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I250823
 # MARK II omega spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1987_I247900
+# MARK II eta spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I261194
+# MARK II xi- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1987_I234976
+# MARK II  D*+ spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I177606
+# MARK II K0 and K+/- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I207785
+# MARK II Lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I209198
+# HRS hadron spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I215848
+# MARK II event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I246184
+# HRS Lambda spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I17781
+# HRS phi and D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I213242
+# HRS f_2, f_0 and K_2 spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18688
+# HRS rho, K*0, K*+ spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1989_I276948
+# MARK II EEC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I250899
+# MARK II charged spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416
+

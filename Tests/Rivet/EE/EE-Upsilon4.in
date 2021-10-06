@@ -51,7 +51,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
 # BABAR D0 -> K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
-# BES-III D0 -> pi semi-leptonic
+# BES-III D0/+ -> pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 # BES-III D+ -> eta semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
@@ -83,3 +83,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
 # BELLE charm hadron producion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
+# BELLE B+ -> pi+pi- l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
+# BELLE B0 -> D*- tau+ nu_tau D* polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
+# BELLE B -> D* tau+ nu_tau  tau polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
+# BESIII D_s^+ K^0 e^+ nu_e
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549

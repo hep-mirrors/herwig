@@ -17,12 +17,12 @@ namespace Herwig {
     /**
      *   Enum for the total isospin of the system
      */
-    enum IsoSpin { IUnknown, IZero, IHalf, IOne};
+    enum IsoSpin { IUnknown, IZero, IHalf, IOne, IThreeHalf};
     
     /**
      *   Third component
      */
-    enum I3     { I3Unknown, I3MinusOne, I3MinusHalf, I3Zero, I3Half, I3One};
+    enum I3     { I3Unknown, I3MinusOne, I3MinusThreeHalf, I3MinusHalf, I3Zero, I3Half, I3One, I3ThreeHalf};
   }
   namespace Strangeness {
     /**

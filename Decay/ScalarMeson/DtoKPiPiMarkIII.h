@@ -112,9 +112,9 @@ protected:
    * @param wres The width         of the intermediate resonance
    */
   Complex amplitude(bool rho, Energy mD, 
-			   Energy mA , Energy mB , Energy mC ,
-			   Energy mAB, Energy mAC, Energy mBC,
-			   Energy mres, Energy wres) const;
+		    Energy mA , Energy mB , Energy mC ,
+		    Energy mAB, Energy mAC, Energy mBC,
+		    Energy mres, Energy wres) const;
 
 protected:
 
