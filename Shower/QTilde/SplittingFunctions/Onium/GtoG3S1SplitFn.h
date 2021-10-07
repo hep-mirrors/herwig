@@ -11,7 +11,6 @@
 #include "Herwig/MatrixElement/Onium/OniumParameters.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
 
 /**
@@ -28,7 +27,7 @@ public:
    * The default constructor.
    */
   GtoG3S1SplitFn() : O1_(0.573*GeV*GeV2), state_(ccbar), n_(1),
-		     m_(1.2*GeV), fixedAlphaS_(-1.), maxP_(1e6)
+		     m_(1.2*GeV), fixedAlphaS_(-1.)
   {}
   
 public:
@@ -97,7 +96,7 @@ public:
   double ratioP(const double z, const Energy2 t,
 		const IdList & , const bool, const RhoDMatrix &) const {
     double r = 4.*sqr(m_)/t;
-    double ratio  = I(z,r)/maxP_;
+    double ratio  = I(z,r)/maxP_*pow(y_,ny_);
     if(ratio>1.) cerr << "Overestimate violated " <<ratio << " " << z << " " << t/GeV2 << " " << y_ << "\n";
     return ratio;
   }
@@ -353,12 +352,17 @@ private:
   /**
    *  Maximum value for the overestimate
    */
-  double maxP_;
+  static const double maxP_;
 
   /**
    *  Auxillary y variable
    */
   double y_;
+
+  /**
+   *  Power for the samping of y
+   */
+  static const double ny_;
 
 };
 

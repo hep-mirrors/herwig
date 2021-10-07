@@ -201,8 +201,8 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
-  if(!ShowerHandler::currentHandlerIsSet() ||
-     ShowerHandler::currentHandler()->showerVariations().empty() &&
+  if((!ShowerHandler::currentHandlerIsSet() ||
+      ShowerHandler::currentHandler()->showerVariations().empty()) &&
      enhancementFactor_==1.) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.

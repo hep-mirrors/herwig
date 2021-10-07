@@ -19,6 +19,9 @@
 
 using namespace Herwig;
 
+const double GtoG3S1SplitFn::ny_ = 2.;
+const double GtoG3S1SplitFn::maxP_ = 1e4;
+
 IBPtr GtoG3S1SplitFn::clone() const {
   return new_ptr(*this);
 }
@@ -91,12 +94,16 @@ void GtoG3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
 			   double detune, 
 			   Energy2 &t_main, double &z_main) {
   unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor();
+  // z limits
   double lower = integOverP(zLimits().first ,ids,pdfopt);
   double upper = integOverP(zLimits().second,ids,pdfopt);
+  // y limits
+  double ymin = 1.5*pow(m_/sqrt(t1),2./3.);
+  double ylow = pow(ymin,1.-ny_)/(1.-ny_), yupp = 1./(1.-ny_);
+  // main function
   Energy2 pre = O1_/3.*5./1296./Constants::pi/m_;
   double aS3 = fixedAlphaS_ < 0 ? pow(alpha()->overestimateValue(),3) : pow(fixedAlphaS_,3);
-  Energy2 c = (upper - lower) * colourFactor() * pre * aS3 * enhance * detune;
-  double r = UseRandom::rnd();
+  Energy2 c = (upper - lower) * (yupp-ylow) *colourFactor() * pre * aS3 * enhance * detune;
   assert(iopt<=2);
   if(iopt==1) {
     c *= pdfMax();
@@ -105,9 +112,11 @@ void GtoG3S1SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   }
   else if(iopt==2) c*=-1.;
   // guess t
-  t_main = t1/(1.-t1/c*log(r));
+  t_main = t1/(1.-t1/c*log(UseRandom::rnd()));
   // guess z
   z_main = invIntegOverP(lower + UseRandom::rnd()*(upper - lower),ids,pdfopt);
   // guess y
-  y_ = UseRandom::rnd();
+  double rnd=UseRandom::rnd();
+  y_ = ylow+rnd*(yupp-ylow);
+  y_ = pow(y_*(1.-ny_),1./(1-ny_));
 }
