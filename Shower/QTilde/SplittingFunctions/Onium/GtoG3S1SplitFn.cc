@@ -20,7 +20,7 @@
 using namespace Herwig;
 
 const double GtoG3S1SplitFn::ny_ = 2.;
-const double GtoG3S1SplitFn::maxP_ = 1e4;
+const double GtoG3S1SplitFn::maxP_ = 5e4;
 
 IBPtr GtoG3S1SplitFn::clone() const {
   return new_ptr(*this);
