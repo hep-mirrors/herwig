@@ -1,0 +1,17 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10.58
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.9
+set /Herwig/Generators/EventGenerator:EventHandler:StatLevel Full
+set /Herwig/Partons/EEExtractor:FlatSHatY 1
+set /Herwig/ACDCSampler:Ntry 100000
+set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
+# set wavefunction to value from eta_c -> gamma gamma
+do /Herwig/OniumParameters:SetWaveFunction ccbar 1S 0.363269
+##################################################
+# select the analyses 
+##################################################
+# BABAR eta_c 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I845914

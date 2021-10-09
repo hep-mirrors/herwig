@@ -315,6 +315,14 @@ create Herwig::MEff2ffX MEff2ffPseudoScalar
 create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2P
 set MEff2ffPseudoScalar:Amplitude AmpGG2P
 
+# f f -> f f eta_c via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaC
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaC HwMEGammaGammaOnium.so
+set AmpGG2EtaC:Parameters /Herwig/OniumParameters
+set AmpGG2EtaC:State ccbar
+set AmpGG2EtaC:PrincipalQuantumNumber 1
+set MEff2ffEtaC:Amplitude AmpGG2EtaC
+
 ##########################################################
 # Gamma-Hadron matrix elements
 ##########################################################

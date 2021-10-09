@@ -1,32 +1,36 @@
 // -*- C++ -*-
-#ifndef Herwig_GammaGamma2PseudoScalarAmplitude_H
-#define Herwig_GammaGamma2PseudoScalarAmplitude_H
+#ifndef Herwig_GammaGamma2Onium1S0Amplitude_H
+#define Herwig_GammaGamma2Onium1S0Amplitude_H
 //
-// This is the declaration of the GammaGamma2PseudoScalarAmplitude class.
+// This is the declaration of the GammaGamma2Onium1S0Amplitude class.
 //
 
-#include "GammaGammaAmplitude.h"
+#include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
+#include "OniumParameters.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the GammaGamma2PseudoScalarAmplitude class.
+ * The GammaGamma2Onium1S0Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{1}S_0\f$ quarkonium
+ * states.
  *
- * @see \ref GammaGamma2PseudoScalarAmplitudeInterfaces "The interfaces"
- * defined for GammaGamma2PseudoScalarAmplitude.
+ * @see \ref GammaGamma2Onium1S0AmplitudeInterfaces "The interfaces"
+ * defined for GammaGamma2Onium1S0Amplitude.
  */
-class GammaGamma2PseudoScalarAmplitude: public GammaGammaAmplitude {
+class GammaGamma2Onium1S0Amplitude: public GammaGammaAmplitude {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  GammaGamma2PseudoScalarAmplitude() : F00_({0.274/GeV,0.274/GeV,0.344/GeV}),
-				       LambdaP2_({0.6*GeV2,0.6*GeV2,0.6*GeV2})
+  GammaGamma2Onium1S0Amplitude() : Lambda2_(sqr(3.0969*GeV))
   {}
+  //@}
 
 public:
 
@@ -115,13 +119,25 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2PseudoScalarAmplitude & operator=(const GammaGamma2PseudoScalarAmplitude &) = delete;
+  GammaGamma2Onium1S0Amplitude & operator=(const GammaGamma2Onium1S0Amplitude &) = delete;
 
 private:
 
@@ -130,18 +146,32 @@ private:
    */
   //@{
   /**
-   *    Form factors at $Q_1^2=Q_2^2=0$
+   *  Access to the parameters for the quarkonium states
    */
-  vector<InvEnergy> F00_;
+  OniumParametersPtr params_;
+  
+  /**
+   *  The \f$O_1\f$ colour-singlet coefficient
+   */
+  Energy3 O1_;
 
+  /**
+   *  Type of state
+   */
+  OniumState state_;
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int n_;
   /**
    * Pole mass squared parameter for the form factors
    */
-  vector<Energy2> LambdaP2_;
+  Energy2 Lambda2_;
   //@}
 
 };
 
 }
 
-#endif /* Herwig_GammaGamma2PseudoScalarAmplitude_H */
+#endif /* Herwig_GammaGamma2Onium1S0Amplitude_H */
