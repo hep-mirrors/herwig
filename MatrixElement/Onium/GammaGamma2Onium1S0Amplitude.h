@@ -7,6 +7,7 @@
 
 #include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
 #include "OniumParameters.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -28,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2Onium1S0Amplitude() : Lambda2_(sqr(3.0969*GeV))
+  GammaGamma2Onium1S0Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
   {}
   //@}
 
@@ -57,7 +58,7 @@ public:
    * element.
    */
   virtual int nDim(unsigned int) const {
-    return 0;
+    return mOpt_;
   }
 
   /**
@@ -75,6 +76,12 @@ public:
 		     const vector<Lorentz5Momentum> & momenta,
 		     const cPDVector & partons,
 		     DVector & dweights ) const; 
+
+  /**
+   * Generate the mass of the \f$\gamma\gamma\f$ system
+   */
+  virtual Energy generateW(double r, const tcPDVector & partons,
+			   Energy Wmax, Energy2 & jacW, Energy2 scale);
 
 public:
 
@@ -168,6 +175,16 @@ private:
    * Pole mass squared parameter for the form factors
    */
   Energy2 Lambda2_;
+
+  /**
+   *  Option for the mass generation
+   */
+  unsigned int mOpt_;
+
+  /**
+   *  The mass generator for the Higgs
+   */
+  GenericMassGeneratorPtr massGen_;
   //@}
 
 };

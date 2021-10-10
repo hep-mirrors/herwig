@@ -30,16 +30,21 @@ IBPtr GammaGamma2Onium1S0Amplitude::fullclone() const {
 }
 
 void GammaGamma2Onium1S0Amplitude::persistentOutput(PersistentOStream & os) const {
-  os << params_ << ounit(O1_,GeV*GeV2) << oenum(state_) << n_ << ounit(Lambda2_,GeV2);
+  os << params_ << ounit(O1_,GeV*GeV2) << oenum(state_) << n_ << ounit(Lambda2_,GeV2) << mOpt_ << massGen_;
 }
 
 void GammaGamma2Onium1S0Amplitude::persistentInput(PersistentIStream & is, int) {
-  is >> params_ >> iunit(O1_,GeV*GeV2) >> ienum(state_) >> n_ >> iunit(Lambda2_,GeV2);
+  is >> params_ >> iunit(O1_,GeV*GeV2) >> ienum(state_) >> n_ >> iunit(Lambda2_,GeV2) >> mOpt_ >> massGen_;
 }
 
 void GammaGamma2Onium1S0Amplitude::doinit() {
   GammaGammaAmplitude::doinit();
+  // get the non-perturbative ME
   O1_ = params_->singletMEProduction<0>(state_,n_,0,0);
+  // get the mass generator of the onium state
+  unsigned int iq = 4+state_;
+  tcPDPtr ps = getParticleData(long(iq*110+1 + (n_-1)*100000));
+  massGen_=dynamic_ptr_cast<GenericMassGeneratorPtr>(ps->massGenerator());
 }
 
 // The following static variable is needed for the type
@@ -85,6 +90,21 @@ void GammaGamma2Onium1S0Amplitude::Init() {
      &GammaGamma2Onium1S0Amplitude::Lambda2_, GeV2, sqr(3.0969*GeV), 0.0*GeV2, 20.0*GeV2,
      false, false, Interface::limited);
   
+  static Switch<GammaGamma2Onium1S0Amplitude,unsigned int> interfaceMassOption
+    ("MassOption",
+     "Option for the generation of the onium mass",
+     &GammaGamma2Onium1S0Amplitude::mOpt_, 0, false, false);
+  static SwitchOption interfaceMassOptionOnShell
+    (interfaceMassOption,
+     "OnShell",
+     "Generate the onium state on-shell",
+     0);
+  static SwitchOption interfaceMassOptionOffShell
+    (interfaceMassOption,
+     "OffShell",
+     "Generate an off-shell onium state using the nass generator",
+     1);
+
 }
 
 vector<DiagPtr> GammaGamma2Onium1S0Amplitude::getDiagrams(unsigned int iopt) const {
@@ -129,4 +149,13 @@ double GammaGamma2Onium1S0Amplitude::me2(const vector<VectorWaveFunction> & v1,
   double eQ = state_==ccbar ? 2./3. : -1./3.;
   double alpha = generator()->standardModel()->alphaEM();
   return 128.*output*O1_/pow<3,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+}
+
+Energy GammaGamma2Onium1S0Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {
+  Energy Wmin = partons.back()->massMin();
+  Wmax = min(Wmax,partons.back()->massMax());
+  double wgt(0.);
+  Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);
+  jacW = scale*wgt;
+  return output;
 }

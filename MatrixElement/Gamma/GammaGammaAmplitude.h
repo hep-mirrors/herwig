@@ -95,7 +95,7 @@ public:
   /**
    * Generate the mass of the \f$\gamma\gamma\f$ system
    */
-  virtual Energy generateW(double , const tcPDVector &,Energy ,Energy2 &) {
+  virtual Energy generateW(double , const tcPDVector &,Energy ,Energy2 &,Energy2) {
     assert(false);
   }
   //@}

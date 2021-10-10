@@ -320,6 +320,7 @@ create Herwig::MEff2ffX MEff2ffEtaC
 create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaC HwMEGammaGammaOnium.so
 set AmpGG2EtaC:Parameters /Herwig/OniumParameters
 set AmpGG2EtaC:State ccbar
+set AmpGG2EtaC:MassOption OffShell
 set AmpGG2EtaC:PrincipalQuantumNumber 1
 set MEff2ffEtaC:Amplitude AmpGG2EtaC
 

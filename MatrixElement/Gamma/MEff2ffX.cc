@@ -50,7 +50,7 @@ bool MEff2ffX::generateKinematics(const double * r) {
   }
   else {
     Energy2 jacW(ZERO);
-    W = amp_->generateW(r[4],tcPDVector(mePartonData().begin()+4,mePartonData().end()),rS-2.*m,jacW);
+    W = amp_->generateW(r[4],tcPDVector(mePartonData().begin()+4,mePartonData().end()),rS-2.*m,jacW,sHat());
     jacobian(jacW*jacobian()/sHat());
   }
   Energy2 m2=sqr(m), W2=sqr(W);
