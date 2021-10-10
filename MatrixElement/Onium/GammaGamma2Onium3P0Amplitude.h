@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_GammaGamma2Onium1S0Amplitude_H
-#define Herwig_GammaGamma2Onium1S0Amplitude_H
+#ifndef Herwig_GammaGamma2Onium3P0Amplitude_H
+#define Herwig_GammaGamma2Onium3P0Amplitude_H
 //
-// This is the declaration of the GammaGamma2Onium1S0Amplitude class.
+// This is the declaration of the GammaGamma2Onium3P0Amplitude class.
 //
 
 #include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
@@ -14,13 +14,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GammaGamma2Onium1S0Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{1}S_0\f$ quarkonium.
- * states.
+ * The GammaGamma2Onium3P0Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{3}P_0\f$ quarkonium.
  *
- * @see \ref GammaGamma2Onium1S0AmplitudeInterfaces "The interfaces"
- * defined for GammaGamma2Onium1S0Amplitude.
+ * @see \ref GammaGamma2Onium3P0AmplitudeInterfaces "The interfaces"
+ * defined for GammaGamma2Onium3P0Amplitude.
  */
-class GammaGamma2Onium1S0Amplitude: public GammaGammaAmplitude {
+class GammaGamma2Onium3P0Amplitude: public GammaGammaAmplitude {
 
 public:
 
@@ -29,7 +28,7 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2Onium1S0Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
+  GammaGamma2Onium3P0Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
   {}
   //@}
 
@@ -144,7 +143,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2Onium1S0Amplitude & operator=(const GammaGamma2Onium1S0Amplitude &) = delete;
+  GammaGamma2Onium3P0Amplitude & operator=(const GammaGamma2Onium3P0Amplitude &) = delete;
 
 private:
 
@@ -160,7 +159,7 @@ private:
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy3 O1_;
+  Energy5 O1_;
 
   /**
    *  Type of state
@@ -191,4 +190,4 @@ private:
 
 }
 
-#endif /* Herwig_GammaGamma2Onium1S0Amplitude_H */
+#endif /* Herwig_GammaGamma2Onium3P0Amplitude_H */

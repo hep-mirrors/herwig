@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_GammaGamma2Onium1S0Amplitude_H
-#define Herwig_GammaGamma2Onium1S0Amplitude_H
+#ifndef Herwig_GammaGamma2Onium1D2Amplitude_H
+#define Herwig_GammaGamma2Onium1D2Amplitude_H
 //
-// This is the declaration of the GammaGamma2Onium1S0Amplitude class.
+// This is the declaration of the GammaGamma2Onium1D2Amplitude class.
 //
 
 #include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
@@ -14,13 +14,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GammaGamma2Onium1S0Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{1}S_0\f$ quarkonium.
+ * The GammaGamma2Onium1D2Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{1}D_2\f$ quarkonium
  * states.
  *
- * @see \ref GammaGamma2Onium1S0AmplitudeInterfaces "The interfaces"
- * defined for GammaGamma2Onium1S0Amplitude.
+ * @see \ref GammaGamma2Onium1D2AmplitudeInterfaces "The interfaces"
+ * defined for GammaGamma2Onium1D2Amplitude.
  */
-class GammaGamma2Onium1S0Amplitude: public GammaGammaAmplitude {
+class GammaGamma2Onium1D2Amplitude: public GammaGammaAmplitude {
 
 public:
 
@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2Onium1S0Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
+  GammaGamma2Onium1D2Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
   {}
   //@}
 
@@ -144,7 +144,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2Onium1S0Amplitude & operator=(const GammaGamma2Onium1S0Amplitude &) = delete;
+  GammaGamma2Onium1D2Amplitude & operator=(const GammaGamma2Onium1D2Amplitude &) = delete;
 
 private:
 
@@ -160,7 +160,7 @@ private:
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy3 O1_;
+  Energy7 O1_;
 
   /**
    *  Type of state
@@ -186,9 +186,8 @@ private:
    */
   GenericMassGeneratorPtr massGen_;
   //@}
-
 };
 
 }
 
-#endif /* Herwig_GammaGamma2Onium1S0Amplitude_H */
+#endif /* Herwig_GammaGamma2Onium1D2Amplitude_H */
