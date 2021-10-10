@@ -457,11 +457,6 @@ if opts.analyse :
         else :
             mix1=0
             mix2=0
-        # make the comparison line
-        step=0.001
-        if(opts.fast) : step=0.01
-        (x,y) = fragmentation(val[10],val[11],step)
-        plt.plot(x,y,label="analytic ",color="black")
         if(val[2]==21) :
             q1="g"
             q2="g"
@@ -485,6 +480,7 @@ if opts.analyse :
         x  = []
         dx = []
         y1 = []
+        yan = []
         dy1= []
         chisq = 0.
         ndof  = 0
@@ -493,19 +489,30 @@ if opts.analyse :
             dx .append(0.5*bin.xWidth())
             y1 .append(bin.height()   *val[11])
             dy1.append(bin.heightErr()*val[11])
-            if(dy1[-1]>0.) :
-                if(opts.fast) :
-                    fval = val[11]*val[10](bin.xMid())
-                else :
-                    fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
+            if(opts.fast) :
+                fval = val[11]*val[10](bin.xMid())
+            else :
+                fval = val[11]*quad(val[10],bin.xMin(),bin.xMax())[0]/bin.xWidth()
+            yan.append(fval)
+            if(dy1[-1]>0. and x[-1]>0.01 and x[-1]<0.99) :
                 chisq += ((fval-y1[-1])/dy1[-1])**2
                 ndof+=1.
         if(ndof!=0) : chisq/=ndof
+        if(not opts.fast) :
+            (xan,yan) = fragmentation(val[10],val[11],step)
+            step=0.001
+        else :
+            xan=x
+        plt.plot(xan,yan,label="analytic ",color="black")
         plt.errorbar(x,y1,yerr=dy1,xerr=dx,linestyle="none",fmt="none",
                      label="Hw Fixed $\\alpha_S$",color="red")
         plt.xlabel("$z_{%s}$" % lName)
         plt.ylabel("$D(z_{%s})\\times10^{%s}$" % (lName,int(math.log10(val[11]))))
-        plt.legend(loc=2,title="$\\chi^2/N=%.2f$"%chisq)
+        if val[10]==D_g_g_3S1 :
+            loc = 1
+        else :
+            loc = 2        
+        plt.legend(loc=loc,title="$\\chi^2/N=%.2f$"%chisq)
         plt.xlim([0.,1.])
         plt.savefig("Rivet-Onium/%s.pdf" %key)
         plt.savefig("Rivet-Onium/%s.png" %key)

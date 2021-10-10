@@ -453,24 +453,26 @@ elif(collider=="EE-Gamma") :
                 process = StringBuilder(insert_ME("MEQCD2to2"))
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
-        elif("pi0" in parameterName) :
-            process = StringBuilder(insert_ME("MEff2ffPseudoScalar"))
-            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar2"
-            process+= insert_ME("MEff2ffPseudoScalar2")
-            process+="cp /Herwig/MatrixElements/MEff2ffPseudoScalar /Herwig/MatrixElements/MEff2ffPseudoScalar3"
-            process+= insert_ME("MEff2ffPseudoScalar3")
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Min 0.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_1Max 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Min 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar:Q2_2Max 1e10"
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Min 0.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_2Max 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Min 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar2:Q2_1Max 1e10"
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Min 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_2Max 1e10"
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Min 1.  "
-            process+="set /Herwig/MatrixElements/MEff2ffPseudoScalar3:Q2_1Max 1e10"
+        elif "pi0" in parameterName or "EtaC" in parameterName :
+            mename="PseudoScalar"
+            if "EtaC" in parameterName : mename="EtaC1S"
+            process = StringBuilder(insert_ME("MEff2ff%s" % mename) )
+            process+="cp /Herwig/MatrixElements/MEff2ff%s /Herwig/MatrixElements/MEff2ff%s2" % (mename,mename)
+            process+= insert_ME("MEff2ff%s2" % mename)
+            process+="cp /Herwig/MatrixElements/MEff2ff%s /Herwig/MatrixElements/MEff2ff%s3" % (mename,mename)
+            process+= insert_ME("MEff2ff%s3" % mename)
+            process+="set /Herwig/MatrixElements/MEff2ff%s:Q2_1Min 0.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s:Q2_1Max 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s:Q2_2Min 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s:Q2_2Max 1e10" % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s2:Q2_2Min 0.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s2:Q2_2Max 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s2:Q2_1Min 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s2:Q2_1Max 1e10" % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_2Min 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_2Max 1e10" % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Min 1.  " % mename
+            process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Max 1e10" % mename
         else :
             print ("process not supported for Gamma Gamma processes at EE")
             quit()
