@@ -1,0 +1,100 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the GtoG3S1OctetSplitFn class.
+//
+
+#include "GtoG3S1OctetSplitFn.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to1.h"
+#include "ThePEG/Utilities/EnumIO.h"
+
+using namespace Herwig;
+
+IBPtr GtoG3S1OctetSplitFn::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr GtoG3S1OctetSplitFn::fullclone() const {
+  return new_ptr(*this);
+}
+
+void GtoG3S1OctetSplitFn::doinit() {
+  SudakovFormFactor::doinit();
+  int iq=4+state_;
+  long pid = iq*110+3 + (n_-1)*100000;
+  O8_ = params_->octetMEProduction<0>(state_,1,1,pid);
+  m_ = getParticleData(4+state_)->mass();
+}
+
+void GtoG3S1OctetSplitFn::persistentOutput(PersistentOStream & os) const {
+  os << params_ << ounit(O8_,GeV*GeV2) << ounit(m_,GeV) << oenum(state_) << n_;
+}
+
+void GtoG3S1OctetSplitFn::persistentInput(PersistentIStream & is, int) {
+  is >> params_ >> iunit(O8_,GeV*GeV2) >> iunit(m_,GeV) >> ienum(state_) >> n_;
+}
+
+
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GtoG3S1OctetSplitFn,SudakovFormFactor>
+  describeHerwigGtoG3S1OctetSplitFn("Herwig::GtoG3S1OctetSplitFn",
+				    "HwOniumParameters.so HwOniumShower.so");
+
+void GtoG3S1OctetSplitFn::Init() {
+
+  static ClassDocumentation<GtoG3S1OctetSplitFn> documentation
+    ("The GtoG3S1OctetSplitFn class does the splitting g-> 3S1 in an octet state");
+
+  static Reference<GtoG3S1OctetSplitFn,OniumParameters> interfaceParameters
+    ("Parameters",
+     "Quarkonium parameters",
+     &GtoG3S1OctetSplitFn::params_, false, false, true, false, false);
+  
+  static Switch<GtoG3S1OctetSplitFn,OniumState> interfaceState
+    ("State",
+     "The type of onium state",
+     &GtoG3S1OctetSplitFn::state_, ccbar, false, false);
+  static SwitchOption interfaceStateccbar
+    (interfaceState,
+     "ccbar",
+     "Charmonium state",
+     ccbar);
+  static SwitchOption interfaceStatebbbar
+    (interfaceState,
+     "bbbar",
+     "Bottomonium state",
+     bbbar);
+  
+  static Parameter<GtoG3S1OctetSplitFn,unsigned int> interfacePrincipalQuantumNumber
+    ("PrincipalQuantumNumber",
+     "The principle quantum number of the states",
+     &GtoG3S1OctetSplitFn::n_, 1, 1, 10,
+     false, false, Interface::limited);
+}
+
+ShoKinPtr GtoG3S1OctetSplitFn::generateNextTimeBranching(const Energy ,
+							 const IdList &ids,
+							 const RhoDMatrix &,
+							 double , double ) {
+  int iq = (ids[1]->id()%1000)/100;
+  Energy mq = getParticleData(iq)->mass();
+  double prob = Constants::pi*alpha()->value(4.*sqr(mq))/24.*O8_/pow<3,1>(mq);
+  if(UseRandom::rnd()<=prob) {
+    return new_ptr(FS_QTildeShowerKinematics1to1(2.*ids[1]->mass(),this)); 
+  }
+  else {
+    return ShoKinPtr();
+  }
+}
+
