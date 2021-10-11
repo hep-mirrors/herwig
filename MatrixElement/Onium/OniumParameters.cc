@@ -31,7 +31,8 @@ void OniumParameters::persistentOutput(PersistentOStream & os) const {
      << ounit(O1_S_prod_,GeV2*GeV)
      << ounit(O1_P_prod_,GeV2*GeV2*GeV) << ounit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
      << ounit(O1_S_dec_,GeV2*GeV)
-     << ounit(O1_P_dec_,GeV2*GeV2*GeV) << ounit(O1_D_dec_,GeV2*GeV2*GeV2*GeV);
+     << ounit(O1_P_dec_,GeV2*GeV2*GeV) << ounit(O1_D_dec_,GeV2*GeV2*GeV2*GeV)
+     << ounit(O8_S_prod_,GeV2*GeV);
 }
 
 void OniumParameters::persistentInput(PersistentIStream & is, int) {
@@ -40,7 +41,8 @@ void OniumParameters::persistentInput(PersistentIStream & is, int) {
      >> iunit(O1_S_prod_,GeV2*GeV)
      >> iunit(O1_P_prod_,GeV2*GeV2*GeV) >> iunit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
      >> iunit(O1_S_dec_,GeV2*GeV)
-     >> iunit(O1_P_dec_,GeV2*GeV2*GeV) >> iunit(O1_D_dec_,GeV2*GeV2*GeV2*GeV);
+     >> iunit(O1_P_dec_,GeV2*GeV2*GeV) >> iunit(O1_D_dec_,GeV2*GeV2*GeV2*GeV)
+     >> iunit(O8_S_prod_,GeV2*GeV);
 }
 
 // The following static variable is needed for the type
@@ -62,6 +64,11 @@ void OniumParameters::Init() {
     ("SetSingletTripletMixing",
      "Set the value of the singlet/triplet mixing for B_c states",
      &OniumParameters::setSingletTripletMixing, false);
+  
+  static Command<OniumParameters> interfaceSetOctetProductionMatrixElement
+    ("SetOctetProductionMatrixElement",
+     "Set the matrix element for the production of an octet state",
+     &OniumParameters::setOctetProductionMatrixElement, false);
 
 }
 
@@ -186,4 +193,53 @@ void OniumParameters::doinit() {
       O1_D_dec_ [type][n][3] =    Odec;
     }
   }
+}
+
+string OniumParameters::setOctetProductionMatrixElement(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg         = StringUtils::cdr(arg);
+  // get the type of the wavefunction
+  OniumState type;
+  if(stype=="ccbar")
+    type=ccbar;
+  else if(stype=="bbbar")
+    type=bbbar;
+  else
+    return "Error: Invalid string for wave function type " + stype;
+  // get the orbital AM and spin quantum numbers
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  if(stype.size()!=3)
+    return "Error: Invalid string for spin and L quantum numbers " + stype;
+  unsigned int s = (stoi(stype)-1)/2;
+  unsigned int L=0;
+  if     (stype[1]=='S') L=0;
+  else if(stype[1]=='P') L=1;
+  else if(stype[1]=='D') L=2;
+  else 
+    return "Error: Invalid string for spin and L quantum numbers " + stype;
+  // get the pdg code and value
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  // get the pdg code
+  long pid = stoi(stype);
+  // get the value
+  double value = stof(arg);
+  // set the value
+  if(L==0) {
+    O8_S_prod_[type][s][pid] = value*GeV*GeV2;
+  }
+  else
+    return "Error: Invalid string for wave function l value " + stype;
+  // else if(stype[1]=='P') {
+  //   if(n>Rp02_[type].size()) Rp02_[type].resize(n,ZERO);
+  //   Rp02_[type][n-1] = value*GeV2*GeV2*GeV;
+  // }
+  // else if(stype[1]=='D') {
+  //   if(n>Rpp02_[type].size()) Rpp02_[type].resize(n,ZERO);
+  //   Rpp02_[type][n-1] = value*GeV2*GeV2*GeV2*GeV;
+  // }
+  // success
+  return "";
 }
