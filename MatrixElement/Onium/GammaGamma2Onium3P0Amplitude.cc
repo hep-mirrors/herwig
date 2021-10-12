@@ -146,7 +146,7 @@ double GammaGamma2Onium3P0Amplitude::me2(const vector<VectorWaveFunction> & v1,
   // coupling factors
   double eQ = state_==ccbar ? 2./3. : -1./3.;
   double alpha = generator()->standardModel()->alphaEM();
-  return 384./pow<3,1>(M)/scale*O1_*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+  return 384.*output/pow<3,1>(M)/scale*O1_*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
 }
 
 Energy GammaGamma2Onium3P0Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {

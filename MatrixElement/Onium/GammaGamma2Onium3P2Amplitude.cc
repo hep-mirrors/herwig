@@ -52,7 +52,8 @@ void GammaGamma2Onium3P2Amplitude::doinit() {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<GammaGamma2Onium3P2Amplitude,GammaGammaAmplitude>
-describeHerwigGammaGamma2Onium3P2Amplitude("Herwig::GammaGamma2Onium3P2Amplitude", "GammaGamma2Onium3P2Amplitude.so");
+describeHerwigGammaGamma2Onium3P2Amplitude("Herwig::GammaGamma2Onium3P2Amplitude",
+					   "HwOniumParameters.so HwMEGammaGammaOnium.so MEGammaGammaOnium.so");
 
 void GammaGamma2Onium3P2Amplitude::Init() {
 
@@ -157,7 +158,8 @@ double GammaGamma2Onium3P2Amplitude::me2(const vector<VectorWaveFunction> & v1,
       complex<Energy> d1 = v1[ih1].wave()*pG2;
       for(unsigned int ih2=0;ih2<v2.size();++ih2) {
 	complex<Energy> d2 = v2[ih2].wave()*pG1;
-	Complex amp = ( (dPreEps1+dPostEps1)*d2 -(vPre*v2[ih2].wave()+vPost*v2[ih2].wave())*d1 -v1v2)/sqr(M) + vEps1*v2[ih2].wave();
+	Complex d12 = v1[ih1].wave()*v2[ih2].wave();
+	Complex amp = ((dPreEps1+dPostEps1)*d2 -(vPre*v2[ih2].wave()+vPost*v2[ih2].wave())*d1-v1v2*d12)/sqr(M) + vEps1*v2[ih2].wave();
      	output += norm(amp);
       }
     }
