@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_GtoG3S1OctetSplitFn_H
-#define Herwig_GtoG3S1OctetSplitFn_H
+#ifndef Herwig_Gto3S1OctetSplitFn_H
+#define Herwig_Gto3S1OctetSplitFn_H
 //
-// This is the declaration of the GtoG3S1OctetSplitFn class.
+// This is the declaration of the Gto3S1OctetSplitFn class.
 //
 
 #include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
@@ -15,12 +15,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GtoG3S1OctetSplitFn class implements the \f$1\to1\f$ octet splitting \f$g\to J\Psi,\Upsilon\f$
+ * The Gto3S1OctetSplitFn class implements the \f$1\to1\f$ octet splitting \f$g\to J\Psi,\Upsilon\f$
  *
- * @see \ref GtoG3S1OctetSplitFnInterfaces "The interfaces"
- * defined for GtoG3S1OctetSplitFn.
+ * @see \ref Gto3S1OctetSplitFnInterfaces "The interfaces"
+ * defined for Gto3S1OctetSplitFn.
  */
-class GtoG3S1OctetSplitFn: public SudakovFormFactor {
+class Gto3S1OctetSplitFn: public SudakovFormFactor {
 
 public:
 
@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  GtoG3S1OctetSplitFn() : O8_(0.015*GeV2*GeV), state_(ccbar), n_(1),
+  Gto3S1OctetSplitFn() : O8_(0.015*GeV2*GeV), state_(ccbar), n_(1),
 			  m_(1.2*GeV)
   {}
   //@}
@@ -209,7 +209,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GtoG3S1OctetSplitFn & operator=(const GtoG3S1OctetSplitFn &) = delete;
+  Gto3S1OctetSplitFn & operator=(const Gto3S1OctetSplitFn &) = delete;
 
 private:
   
@@ -246,4 +246,4 @@ private:
 
 }
 
-#endif /* Herwig_GtoG3S1OctetSplitFn_H */
+#endif /* Herwig_Gto3S1OctetSplitFn_H */
