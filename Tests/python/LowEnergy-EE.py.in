@@ -325,15 +325,16 @@ analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1999_I474676"   ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
 # hyperons
+analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
                                           "d02-x01-y01","d02-x01-y02"]
-analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
-analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
 analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
-analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["LL"]["BESIII_2021_I1940960"] = ["d01-x01-y01"]
+analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :
