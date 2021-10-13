@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGGto3P2_H
-#define Herwig_MEGGto3P2_H
+#ifndef Herwig_MEGGto1D2_H
+#define Herwig_MEGGto1D2_H
 //
-// This is the declaration of the MEGGto3P2 class.
+// This is the declaration of the MEGGto1D2 class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -17,12 +17,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGGto3P2 class implements the colour singlet matrix element for \f$gg\to\^{3}P_2\f$ quarkonium.
+ * The MEGGto1D2 class implements the colour singlet matrix element for \f$gg\to\^{1}D_2\f$ quarkonium.
  *
- * @see \ref MEGGto3P2Interfaces "The interfaces"
- * defined for MEGGto3P2.
+ * @see \ref MEGGto1D2Interfaces "The interfaces"
+ * defined for MEGGto1D2.
  */
-class MEGGto3P2: public HwMEBase {
+class MEGGto1D2: public HwMEBase {
 
 public:
 
@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  MEGGto3P2() :  O1_(ZERO), state_(ccbar), n_(1)
+  MEGGto1D2() :  O1_(ZERO), state_(ccbar), n_(1)
   {}
   //@}
 
@@ -179,7 +179,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGGto3P2 & operator=(const MEGGto3P2 &) = delete;
+  MEGGto1D2 & operator=(const MEGGto1D2 &) = delete;
 
 private:
 
@@ -195,7 +195,7 @@ private:
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy5 O1_;
+  Energy7 O1_;
 
   /**
    *  Type of state
@@ -216,4 +216,4 @@ private:
 
 }
 
-#endif /* Herwig_MEGGto3P2_H */
+#endif /* Herwig_MEGGto1D2_H */
