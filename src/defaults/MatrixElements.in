@@ -277,6 +277,22 @@ set MEGammaGammaPowheg:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
 set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
 
 ##########################################################
+# Hadron Hadron onium matrix elements
+##########################################################
+
+# g g -> eta_c
+create Herwig::MEGGto1S0 MEgg2EtaC1S HwMEHadronOnium.so
+set MEgg2EtaC1S:Parameters /Herwig/OniumParameters
+set MEgg2EtaC1S:State ccbar
+set MEgg2EtaC1S:PrincipalQuantumNumber 1
+
+# g g -> eta_c(2S)
+create Herwig::MEGGto1S0 MEgg2EtaC2S HwMEHadronOnium.so
+set MEgg2EtaC2S:Parameters /Herwig/OniumParameters
+set MEgg2EtaC2S:State ccbar
+set MEgg2EtaC2S:PrincipalQuantumNumber 2
+
+##########################################################
 # DIS matrix elements
 ##########################################################
 

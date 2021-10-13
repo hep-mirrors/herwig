@@ -58,7 +58,7 @@ void GammaGamma2Onium3P2Amplitude::doinit() {
 // description system in ThePEG.
 DescribeClass<GammaGamma2Onium3P2Amplitude,GammaGammaAmplitude>
 describeHerwigGammaGamma2Onium3P2Amplitude("Herwig::GammaGamma2Onium3P2Amplitude",
-					   "HwOniumParameters.so HwMEGammaGammaOnium.so MEGammaGammaOnium.so");
+					   "HwOniumParameters.so HwMEGammaGamma.so HwMEGammaGammaOnium.so");
 
 void GammaGamma2Onium3P2Amplitude::Init() {
 
