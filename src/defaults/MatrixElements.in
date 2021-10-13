@@ -280,7 +280,7 @@ set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
 # Hadron Hadron onium matrix elements
 ##########################################################
 
-# g g -> eta_c
+# g g -> eta_c(1S)
 create Herwig::MEGGto1S0 MEgg2EtaC1S HwMEHadronOnium.so
 set MEgg2EtaC1S:Parameters /Herwig/OniumParameters
 set MEgg2EtaC1S:State ccbar
@@ -291,6 +291,48 @@ create Herwig::MEGGto1S0 MEgg2EtaC2S HwMEHadronOnium.so
 set MEgg2EtaC2S:Parameters /Herwig/OniumParameters
 set MEgg2EtaC2S:State ccbar
 set MEgg2EtaC2S:PrincipalQuantumNumber 2
+
+# g g -> chi_c0(1P)
+create Herwig::MEGGto3P0 MEgg2ChiC01P HwMEHadronOnium.so
+set MEgg2ChiC01P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC01P:State ccbar
+set MEgg2ChiC01P:PrincipalQuantumNumber 1
+
+# g g -> eta_b(1S)
+create Herwig::MEGGto1S0 MEgg2EtaB1S HwMEHadronOnium.so
+set MEgg2EtaB1S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB1S:State bbbar
+set MEgg2EtaB1S:PrincipalQuantumNumber 1
+
+# g g -> eta_b(2S)
+create Herwig::MEGGto1S0 MEgg2EtaB2S HwMEHadronOnium.so
+set MEgg2EtaB2S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB2S:State bbbar
+set MEgg2EtaB2S:PrincipalQuantumNumber 2
+
+# g g -> eta_b(3S)
+create Herwig::MEGGto1S0 MEgg2EtaB3S HwMEHadronOnium.so
+set MEgg2EtaB3S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB3S:State bbbar
+set MEgg2EtaB3S:PrincipalQuantumNumber 3
+
+# g g -> chi_b0(1P)
+create Herwig::MEGGto3P0 MEgg2ChiB01P HwMEHadronOnium.so
+set MEgg2ChiB01P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB01P:State bbbar
+set MEgg2ChiB01P:PrincipalQuantumNumber 1
+
+# g g -> chi_b0(2P)
+create Herwig::MEGGto3P0 MEgg2ChiB02P HwMEHadronOnium.so
+set MEgg2ChiB02P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB02P:State bbbar
+set MEgg2ChiB02P:PrincipalQuantumNumber 1
+
+# g g -> chi_b0(3P)
+create Herwig::MEGGto3P0 MEgg2ChiB03P HwMEHadronOnium.so
+set MEgg2ChiB03P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB03P:State bbbar
+set MEgg2ChiB03P:PrincipalQuantumNumber 1
 
 ##########################################################
 # DIS matrix elements

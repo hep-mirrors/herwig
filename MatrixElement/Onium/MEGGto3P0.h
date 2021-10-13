@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGGto1S0_H
-#define Herwig_MEGGto1S0_H
+#ifndef Herwig_MEGGto3P0_H
+#define Herwig_MEGGto3P0_H
 //
-// This is the declaration of the MEGGto1S0 class.
+// This is the declaration of the MEGGto3P0 class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -17,12 +17,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEGGto1S0 class.
+ * The MEGGto3P0 class implements the colour singlet matrix element for \f$gg\to\^{3}P_0\f$ quarkonium.
  *
- * @see \ref MEGGto1S0Interfaces "The interfaces"
- * defined for MEGGto1S0.
+ * @see \ref MEGGto3P0Interfaces "The interfaces"
+ * defined for MEGGto3P0.
  */
-class MEGGto1S0: public HwMEBase {
+class MEGGto3P0: public HwMEBase {
 
 public:
 
@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  MEGGto1S0() : O1_(ZERO), state_(ccbar), n_(1)
+  MEGGto3P0() :  O1_(ZERO), state_(ccbar), n_(1)
   {}
   //@}
 
@@ -179,7 +179,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGGto1S0 & operator=(const MEGGto1S0 &) = delete;
+  MEGGto3P0 & operator=(const MEGGto3P0 &) = delete;
 
 private:
 
@@ -195,7 +195,7 @@ private:
   /**
    *  The \f$O_1\f$ colour-singlet coefficient
    */
-  Energy3 O1_;
+  Energy5 O1_;
 
   /**
    *  Type of state
@@ -216,4 +216,4 @@ private:
 
 }
 
-#endif /* Herwig_MEGGto1S0_H */
+#endif /* Herwig_MEGGto3P0_H */

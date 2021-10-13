@@ -29,7 +29,8 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2Onium1D2Amplitude() : Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
+  GammaGamma2Onium1D2Amplitude() : O1_(ZERO), state_(ccbar), n_(1),
+				   Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
   {}
   //@}
 
