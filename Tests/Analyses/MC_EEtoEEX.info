@@ -1,0 +1,13 @@
+Name: MC_EEtoEEX
+Year: <Insert year of publication>
+Summary: MC analysis of $e^+e^-\to e^+e^- X$ via $\gamma\gamma$
+Status: VALIDATED
+Authors:
+ - Peter Richardson <peter.richardson@durham.ac.uk>
+RunInfo: e+e- > e+e- X via gamma gamma
+Beams: [e+, e-]
+Description:
+  'MC analysis of $e^+e^-\to e^+e^- X$ via $\gamma\gamma$'
+#ReleaseTests:
+# - $A my-hepmc-prefix :MODE=some_rivet_flag
+Keywords: []

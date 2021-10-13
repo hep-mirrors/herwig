@@ -143,14 +143,14 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	rm -rf $(subst .yoda,,$@)
 
 Rivet-%.run : Rivet/%.in
-	$(HWBUILD) -c .cache/$(subst .run,,$@) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
-	$(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
-	$(HWRUN)       -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
 
 Rivet-%.yoda : Rivet-%.run
-	$(HWRUN) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN) $<
 
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
@@ -200,6 +200,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-Direct-tautau-{189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-{pi0,EtaC}-10.58.in ) \
+                  $(shell echo Rivet/EE-Gamma-Onium-91.2.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
 
 
@@ -219,12 +220,13 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
-                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
-                      $(shell echo Rivet-EE-Gamma-{pi0,EtaC}-10.58.yoda ) \
-	              $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
+                     $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-{pi0,EtaC}-10.58.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-Onium-91.2.yoda ) \
+	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma
-	rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
 	touch $@
 
 Rivet-EE : Rivet-EE/done
@@ -242,8 +244,8 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 	touch $@
 
 Rivet-LowEnergy-%.yoda:
-	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	$(HWRUN)  $(subst .yoda,.run,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)  $(subst .yoda,.run,$@)
 
 
 Onium-%.yoda:

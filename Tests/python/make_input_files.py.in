@@ -476,6 +476,21 @@ elif(collider=="EE-Gamma") :
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_2Max 1e10" % mename
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Min 1.  " % mename
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Max 1e10" % mename
+        elif "Onium" in parameterName :
+            process = StringBuilder(insert_ME("MEff2ffEtaC1S") )
+            process+= insert_ME("MEff2ffEtaC2S" )
+            process+= insert_ME("MEff2ffChiC01P")
+            process+= insert_ME("MEff2ffChiC21P")
+            process+= insert_ME("MEff2ffChiC22P")
+            process+= insert_ME("MEff2ffEtaB1S" )
+            process+= insert_ME("MEff2ffEtaB2S" )
+            process+= insert_ME("MEff2ffChiB01P")
+            process+= insert_ME("MEff2ffChiB21P")
+            process+= insert_ME("MEff2ffChiB02P")
+            process+= insert_ME("MEff2ffChiB22P")
+            process+= insert_ME("MEff2ffChiB03P")
+            process+= insert_ME("MEff2ffChiB23P")
+            process+= insert_ME("MEff2ffEtaB21D")
         else :
             print ("process not supported for Gamma Gamma processes at EE")
             quit()
