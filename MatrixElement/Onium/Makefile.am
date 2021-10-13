@@ -2,7 +2,8 @@ pkglib_LTLIBRARIES = HwMEHadronOnium.la HwMEGammaGammaOnium.la HwOniumParameters
 
 HwMEHadronOnium_la_SOURCES = \
 MEGGto1S0.h MEGGto1S0.cc \
-MEGGto3P0.h MEGGto3P0.cc
+MEGGto3P0.h MEGGto3P0.cc \
+MEGGto3P2.h MEGGto3P2.cc
 HwMEHadronOnium_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
 HwMEGammaGammaOnium_la_SOURCES = \

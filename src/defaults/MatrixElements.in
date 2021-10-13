@@ -298,6 +298,18 @@ set MEgg2ChiC01P:Parameters /Herwig/OniumParameters
 set MEgg2ChiC01P:State ccbar
 set MEgg2ChiC01P:PrincipalQuantumNumber 1
 
+# g g -> chi_c2(1P)
+create Herwig::MEGGto3P2 MEgg2ChiC21P HwMEHadronOnium.so
+set MEgg2ChiC21P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC21P:State ccbar
+set MEgg2ChiC21P:PrincipalQuantumNumber 1
+
+# g g -> chi_c2(2P)
+create Herwig::MEGGto3P2 MEgg2ChiC22P HwMEHadronOnium.so
+set MEgg2ChiC22P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC22P:State ccbar
+set MEgg2ChiC22P:PrincipalQuantumNumber 2
+
 # g g -> eta_b(1S)
 create Herwig::MEGGto1S0 MEgg2EtaB1S HwMEHadronOnium.so
 set MEgg2EtaB1S:Parameters /Herwig/OniumParameters
@@ -326,13 +338,31 @@ set MEgg2ChiB01P:PrincipalQuantumNumber 1
 create Herwig::MEGGto3P0 MEgg2ChiB02P HwMEHadronOnium.so
 set MEgg2ChiB02P:Parameters /Herwig/OniumParameters
 set MEgg2ChiB02P:State bbbar
-set MEgg2ChiB02P:PrincipalQuantumNumber 1
+set MEgg2ChiB02P:PrincipalQuantumNumber 2
 
 # g g -> chi_b0(3P)
 create Herwig::MEGGto3P0 MEgg2ChiB03P HwMEHadronOnium.so
 set MEgg2ChiB03P:Parameters /Herwig/OniumParameters
 set MEgg2ChiB03P:State bbbar
-set MEgg2ChiB03P:PrincipalQuantumNumber 1
+set MEgg2ChiB03P:PrincipalQuantumNumber 3
+
+# g g -> chi_b0(1P)
+create Herwig::MEGGto3P2 MEgg2ChiB21P HwMEHadronOnium.so
+set MEgg2ChiB21P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB21P:State bbbar
+set MEgg2ChiB21P:PrincipalQuantumNumber 1
+
+# g g -> chi_b0(2P)
+create Herwig::MEGGto3P2 MEgg2ChiB22P HwMEHadronOnium.so
+set MEgg2ChiB22P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB22P:State bbbar
+set MEgg2ChiB22P:PrincipalQuantumNumber 2
+
+# g g -> chi_b0(3P)
+create Herwig::MEGGto3P2 MEgg2ChiB23P HwMEHadronOnium.so
+set MEgg2ChiB23P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB23P:State bbbar
+set MEgg2ChiB23P:PrincipalQuantumNumber 3
 
 ##########################################################
 # DIS matrix elements

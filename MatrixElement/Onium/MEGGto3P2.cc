@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEGGto3P0 class.
+// functions of the MEGGto3P2 class.
 //
 
-#include "MEGGto3P0.h"
+#include "MEGGto3P2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -23,13 +23,13 @@
 
 using namespace Herwig;
 
-void MEGGto3P0::doinit() {
+void MEGGto3P2::doinit() {
   HwMEBase::doinit();
   // get the non-perturbative ME
   O1_ = params_->singletMEProduction<1>(state_,n_,1,0);
   // get the mass generator of the onium state
   unsigned int iq = 4+state_;
-  long id = iq*110+10001 + (n_-1)*100000;
+  long id = iq*110+5 + (n_-1)*100000;
   tcPDPtr ps = getParticleData(id);
   if(!ps)
     throw Exception() << "No onium particle with id " << id
@@ -41,43 +41,43 @@ void MEGGto3P0::doinit() {
 		      << "in " << fullName();
 }
 
-IBPtr MEGGto3P0::clone() const {
+IBPtr MEGGto3P2::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MEGGto3P0::fullclone() const {
+IBPtr MEGGto3P2::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEGGto3P0::persistentOutput(PersistentOStream & os) const {
+void MEGGto3P2::persistentOutput(PersistentOStream & os) const {
   os << params_ << ounit(O1_,GeV*GeV2*GeV2) << oenum(state_) << n_ << massGen_;
 }
 
-void MEGGto3P0::persistentInput(PersistentIStream & is, int) {
+void MEGGto3P2::persistentInput(PersistentIStream & is, int) {
   is >> params_ >> iunit(O1_,GeV*GeV2*GeV2) >> ienum(state_) >> n_ >> massGen_;
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<MEGGto3P0,HwMEBase>
-describeHerwigMEGGto3P0("Herwig::MEGGto3P0",
+DescribeClass<MEGGto3P2,HwMEBase>
+describeHerwigMEGGto3P2("Herwig::MEGGto3P2",
 			"HwOniumParameters.so HwMEHadronOnium.so");
 
-void MEGGto3P0::Init() {
+void MEGGto3P2::Init() {
 
-  static ClassDocumentation<MEGGto3P0> documentation
-    ("The MEGGto3P0 class implements the colour singlet matrix element for g g -> 3P0");
+  static ClassDocumentation<MEGGto3P2> documentation
+    ("The MEGGto3P2 class implements the colour singlet matrix element for g g -> 3P2");
 
-  static Reference<MEGGto3P0,OniumParameters> interfaceParameters
+  static Reference<MEGGto3P2,OniumParameters> interfaceParameters
     ("Parameters",
      "Quarkonium parameters",
-     &MEGGto3P0::params_, false, false, true, false, false);
+     &MEGGto3P2::params_, false, false, true, false, false);
   
-  static Switch<MEGGto3P0,OniumState> interfaceState
+  static Switch<MEGGto3P2,OniumState> interfaceState
     ("State",
      "The type of onium state",
-     &MEGGto3P0::state_, ccbar, false, false);
+     &MEGGto3P2::state_, ccbar, false, false);
   static SwitchOption interfaceStateccbar
     (interfaceState,
      "ccbar",
@@ -89,45 +89,45 @@ void MEGGto3P0::Init() {
      "Bottomonium state",
      bbbar);
   
-  static Parameter<MEGGto3P0,unsigned int> interfacePrincipalQuantumNumber
+  static Parameter<MEGGto3P2,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
      "The principle quantum number of the states",
-     &MEGGto3P0::n_, 1, 1, 10,
+     &MEGGto3P2::n_, 1, 1, 10,
      false, false, Interface::limited);
 }
 
-void MEGGto3P0::getDiagrams() const {
+void MEGGto3P2::getDiagrams() const {
   // construct the meson PDG code from quark ids
   unsigned int iq = 4+state_;
-  tcPDPtr ps = getParticleData(long(iq*110+10001 + (n_-1)*100000));
+  tcPDPtr ps = getParticleData(long(iq*110+5 + (n_-1)*100000));
   tcPDPtr g = getParticleData(ParticleID::g);
   add(new_ptr((Tree2toNDiagram(3), g, g, 1, ps, -1)));
 }
 
-Energy2 MEGGto3P0::scale() const {
+Energy2 MEGGto3P2::scale() const {
   return sHat();
 }
 
-int MEGGto3P0::nDim() const {
+int MEGGto3P2::nDim() const {
   return 0;
 }
 
 Selector<MEBase::DiagramIndex>
-MEGGto3P0::diagrams(const DiagramVector & diags) const {
+MEGGto3P2::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) sel.insert(1.0, i);
   return sel;
 }
 
 Selector<const ColourLines *>
-MEGGto3P0::colourGeometries(tcDiagPtr) const {
+MEGGto3P2::colourGeometries(tcDiagPtr) const {
   static ColourLines cFlow("1 -2, 2 -1");
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &cFlow);
   return sel;
 }
 
-bool MEGGto3P0::generateKinematics(const double * ) {
+bool MEGGto3P2::generateKinematics(const double * ) {
   Lorentz5Momentum pout = meMomenta()[0] + meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
@@ -139,10 +139,10 @@ bool MEGGto3P0::generateKinematics(const double * ) {
   return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }
 
-CrossSection MEGGto3P0::dSigHatDR() const {
+CrossSection MEGGto3P2::dSigHatDR() const {
   return Constants::pi*sqr(hbarc)*me2()*jacobian()*massGen_->BreitWignerWeight(sqrt(sHat()));
 }
 
-double MEGGto3P0::me2() const {
-  return 8.*sqr(Constants::pi)*O1_/3./sqr(sHat())/sqrt(sHat())*sqr(standardModel()->alphaS(scale()));
+double MEGGto3P2::me2() const {
+  return 32./45.*sqr(Constants::pi)*O1_/sqr(sHat())/sqrt(sHat())*sqr(standardModel()->alphaS(scale()));
 }
