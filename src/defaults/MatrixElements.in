@@ -441,6 +441,15 @@ set AmpGG2ChiB23P:MassOption OffShell
 set AmpGG2ChiB23P:PrincipalQuantumNumber 3
 set MEff2ffChiB23P:Amplitude AmpGG2ChiB23P
 
+# f f -> f f eta_b2(1D) via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaB21D
+create Herwig::GammaGamma2Onium1D2Amplitude AmpGG2EtaB21D HwMEGammaGammaOnium.so
+set AmpGG2EtaB21D:Parameters /Herwig/OniumParameters
+set AmpGG2EtaB21D:State bbbar
+set AmpGG2EtaB21D:MassOption OffShell
+set AmpGG2EtaB21D:PrincipalQuantumNumber 1
+set MEff2ffEtaB21D:Amplitude AmpGG2EtaB21D
+
 ##########################################################
 # Gamma-Hadron matrix elements
 ##########################################################

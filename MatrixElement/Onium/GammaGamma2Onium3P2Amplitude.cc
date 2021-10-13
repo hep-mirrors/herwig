@@ -45,8 +45,13 @@ void GammaGamma2Onium3P2Amplitude::doinit() {
   O1_ = params_->singletMEProduction<1>(state_,n_,1,2);
   // get the mass generator of the onium state
   unsigned int iq = 4+state_;
-  tcPDPtr ps = getParticleData(long(iq*110+5 + (n_-1)*100000));
-  massGen_=dynamic_ptr_cast<GenericMassGeneratorPtr>(ps->massGenerator());
+  long id = iq*110+5 + (n_-1)*100000;
+  tcPDPtr ps = getParticleData(id);
+  if(!ps)
+    throw Exception() << "No onium particle with id " << id << " in " << fullName();
+  if(ps->massGenerator())
+    massGen_=dynamic_ptr_cast<GenericMassGeneratorPtr>(ps->massGenerator());
+  if(!massGen_) mOpt_=0;
 }
 
 // The following static variable is needed for the type
