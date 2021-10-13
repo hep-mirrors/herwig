@@ -91,7 +91,7 @@ void GammaGamma2Onium3P0Amplitude::Init() {
   static Parameter<GammaGamma2Onium3P0Amplitude,Energy2> interfaceLambda2
     ("Lambda2",
      "The value of Lambda^2 for the form-factor",
-     &GammaGamma2Onium3P0Amplitude::Lambda2_, GeV2, sqr(3.0969*GeV), 0.0*GeV2, 20.0*GeV2,
+     &GammaGamma2Onium3P0Amplitude::Lambda2_, GeV2, sqr(3.0969*GeV), 0.0*GeV2, 200.0*GeV2,
      false, false, Interface::limited);
   
   static Switch<GammaGamma2Onium3P0Amplitude,unsigned int> interfaceMassOption

@@ -461,6 +461,7 @@ set AmpGG2EtaB1S:Parameters /Herwig/OniumParameters
 set AmpGG2EtaB1S:State bbbar
 set AmpGG2EtaB1S:MassOption OffShell
 set AmpGG2EtaB1S:PrincipalQuantumNumber 1
+set AmpGG2EtaB1S:Lambda2 89.4916
 set MEff2ffEtaB1S:Amplitude AmpGG2EtaB1S
 
 # f f -> f f eta_b(2S) via 2 photon process
@@ -470,6 +471,7 @@ set AmpGG2EtaB2S:Parameters /Herwig/OniumParameters
 set AmpGG2EtaB2S:State bbbar
 set AmpGG2EtaB2S:MassOption OffShell
 set AmpGG2EtaB2S:PrincipalQuantumNumber 2
+set AmpGG2EtaB2S:Lambda2 89.4916
 set MEff2ffEtaB2S:Amplitude AmpGG2EtaB2S
 
 # f f -> f f eta_b(3S) via 2 photon process
@@ -479,6 +481,7 @@ set AmpGG2EtaB3S:Parameters /Herwig/OniumParameters
 set AmpGG2EtaB3S:State bbbar
 set AmpGG2EtaB3S:MassOption OffShell
 set AmpGG2EtaB3S:PrincipalQuantumNumber 3
+set AmpGG2EtaB3S:Lambda2 89.4916
 set MEff2ffEtaB3S:Amplitude AmpGG2EtaB3S
 
 # f f -> f f chi_b0(1P) via 2 photon process
@@ -488,6 +491,7 @@ set AmpGG2ChiB01P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB01P:State bbbar
 set AmpGG2ChiB01P:MassOption OffShell
 set AmpGG2ChiB01P:PrincipalQuantumNumber 1
+set AmpGG2ChiB01P:Lambda2 89.4916
 set MEff2ffChiB01P:Amplitude AmpGG2ChiB01P
 
 # f f -> f f chi_b2(1P) via 2 photon process
@@ -497,6 +501,7 @@ set AmpGG2ChiB21P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB21P:State bbbar
 set AmpGG2ChiB21P:MassOption OffShell
 set AmpGG2ChiB21P:PrincipalQuantumNumber 1
+set AmpGG2ChiB21P:Lambda2 89.4916
 set MEff2ffChiB21P:Amplitude AmpGG2ChiB21P
 
 # f f -> f f chi_b0(2P) via 2 photon process
@@ -506,6 +511,7 @@ set AmpGG2ChiB02P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB02P:State bbbar
 set AmpGG2ChiB02P:MassOption OffShell
 set AmpGG2ChiB02P:PrincipalQuantumNumber 2
+set AmpGG2ChiB02P:Lambda2 89.4916
 set MEff2ffChiB02P:Amplitude AmpGG2ChiB02P
 
 # f f -> f f chi_b2(2P) via 2 photon process
@@ -515,6 +521,7 @@ set AmpGG2ChiB22P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB22P:State bbbar
 set AmpGG2ChiB22P:MassOption OffShell
 set AmpGG2ChiB22P:PrincipalQuantumNumber 2
+set AmpGG2ChiB22P:Lambda2 89.4916
 set MEff2ffChiB22P:Amplitude AmpGG2ChiB22P
 
 # f f -> f f chi_b0(3P) via 2 photon process
@@ -524,6 +531,7 @@ set AmpGG2ChiB03P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB03P:State bbbar
 set AmpGG2ChiB03P:MassOption OffShell
 set AmpGG2ChiB03P:PrincipalQuantumNumber 3
+set AmpGG2ChiB03P:Lambda2 89.4916
 set MEff2ffChiB03P:Amplitude AmpGG2ChiB03P
 
 # f f -> f f chi_b2(3P) via 2 photon process
@@ -533,6 +541,7 @@ set AmpGG2ChiB23P:Parameters /Herwig/OniumParameters
 set AmpGG2ChiB23P:State bbbar
 set AmpGG2ChiB23P:MassOption OffShell
 set AmpGG2ChiB23P:PrincipalQuantumNumber 3
+set AmpGG2ChiB23P:Lambda2 89.4916
 set MEff2ffChiB23P:Amplitude AmpGG2ChiB23P
 
 # f f -> f f eta_b2(1D) via 2 photon process
@@ -542,6 +551,7 @@ set AmpGG2EtaB21D:Parameters /Herwig/OniumParameters
 set AmpGG2EtaB21D:State bbbar
 set AmpGG2EtaB21D:MassOption OffShell
 set AmpGG2EtaB21D:PrincipalQuantumNumber 1
+set AmpGG2EtaB21D:Lambda2 89.4916
 set MEff2ffEtaB21D:Amplitude AmpGG2EtaB21D
 
 ##########################################################
