@@ -56,7 +56,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # #######################################
-yodafiles=["-820-e--LowQ2"]
+yodafiles=["-820-e--LowQ2","-920-e--AllQ2","-920-e+-AllQ2"]
 for energy in [460,575,820,920] :
     for q2 in ["Low","Med","High"] :
         yodafiles.append("-%s-e+-%sQ2" % (energy,q2))
@@ -112,7 +112,8 @@ for f in yodafiles:
                tmpE[beam][energy][q2] = ao
            else:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
-        elif("2919893" in aopath or "I1217865" in aopath) :
+        elif("2919893" in aopath or "I1217865" in aopath or "I810112" in aopath or
+             "1353667" in aopath) :
             outhistos[aopath] = ao
         elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
             continue
