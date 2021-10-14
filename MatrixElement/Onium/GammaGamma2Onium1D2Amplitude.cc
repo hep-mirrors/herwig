@@ -134,40 +134,73 @@ vector<DiagPtr> GammaGamma2Onium1D2Amplitude::getDiagrams(unsigned int iopt) con
   return output;
 }
 
+ProductionMatrixElement GammaGamma2Onium1D2Amplitude::
+helicityAmplitude(const vector<VectorWaveFunction> & v1,
+		  const vector<VectorWaveFunction> & v2,
+		  const vector<TensorWaveFunction> & ten,
+		  const Energy & M, double & output) const {
+  Lorentz5Momentum pG1 = v1[0].momentum();
+  Lorentz5Momentum pG2 = v2[0].momentum();
+  ProductionMatrixElement me;
+  if(v1.size()==4&&v2.size()==4) {
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2);
+  }
+  else if(v1.size()==2&&v2.size()==2) {
+    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin2);
+  }
+  else
+    assert(false);
+  // compute the tensor term
+  Lorentz5Momentum pDiff = pG1-pG2;
+  vector<Complex> tamp(5);
+  for(unsigned int i=0;i<5;++i) {
+    tamp[i] = ten[i].wave().trace()+2./sqr(M)*(ten[i].wave().preDot(pDiff)*pDiff);
+  }
+  // calculate the matrix element
+  output = 0;
+  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
+    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+      unsigned int ih1 = 2*ih1A+ih1B;
+      auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
+      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+  	  unsigned int ih2 = 2*ih2A+ih2B;Complex vamp = (vOff*v2[ih2].wave())/sqr(M);
+	  for(unsigned int ix=0;ix<5;++ix) {
+	    Complex amp = vamp*tamp[ix];
+	    output += norm(amp);
+	    if(v1.size()==4) {
+	      me(ih1A,ih1B,ih2A,ih2B,ix) = amp;
+	    }
+	    else {
+	      me(2*ih1B,2*ih2B,ix) = amp;
+	    }
+	  }
+	}
+      }
+    }
+  }
+  return me;
+}
+
 double GammaGamma2Onium1D2Amplitude::me2(const vector<VectorWaveFunction> & v1,
 					 const vector<VectorWaveFunction> & v2,
 					 const Energy2 & t1, const Energy2 & t2,
 					 const Energy2 & scale, 
 					 const vector<Lorentz5Momentum> & momenta,
 					 const cPDVector & partons, DVector &  ) const {
-  // calculate the matrix element
-  double output(0.);
-  Lorentz5Momentum pG1 = v1[0].momentum();
-  Lorentz5Momentum pG2 = v2[0].momentum();
-  Lorentz5Momentum pDiff = pG1-pG2;
-  Energy rs = sqrt(scale);
   Energy M  = momenta.back().mass();
-  vector<Complex> tamp(5);
-  // wavefunction for the tensor meson
+  double output(0.);
+  vector<TensorWaveFunction> t3(5);
   for(unsigned int i=0;i<5;++i) {
     TensorWaveFunction ten(momenta.back(), partons.back(),i,outgoing);
-    tamp[i] = ten.wave().trace()+2./sqr(M)*(ten.wave().preDot(pDiff)*pDiff);
+    t3[i]=ten;
   }
-  // calculate the amplitudes
-  for(unsigned int ih1=0;ih1<v1.size();++ih1) {
-    auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
-    for(unsigned int ih2=0;ih2<v2.size();++ih2) {
-      Complex vamp = (vOff*v2[ih2].wave())/rs/M;
-      for(unsigned int ix=0;ix<5;++ix) {
-	Complex amp = vamp*tamp[ix];
-	output += norm(amp);
-      }
-    }
-  }
+  helicityAmplitude(v1,v2,t3,M,output);
   // coupling factors
   double eQ = state_==ccbar ? 2./3. : -1./3.;
   double alpha = generator()->standardModel()->alphaEM();
-  return 1536./5.*output*O1_/pow<7,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+  return 1536./5.*output*O1_/scale/pow<5,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
 }
 
 Energy GammaGamma2Onium1D2Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {
@@ -177,4 +210,13 @@ Energy GammaGamma2Onium1D2Amplitude::generateW(double r, const tcPDVector & part
   Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);
   jacW = scale*wgt;
   return output;
+}
+
+ProductionMatrixElement GammaGamma2Onium1D2Amplitude::me(const vector<VectorWaveFunction> & v1,
+							 const vector<VectorWaveFunction> & v2,
+							 tParticleVector & particles) const {
+  vector<TensorWaveFunction> t3;
+  TensorWaveFunction(t3,particles[0],outgoing,true,false);
+  double output(0);
+  return helicityAmplitude(v1,v2,t3,particles[0]->mass(),output);
 }

@@ -6,6 +6,7 @@
 //
 
 #include "GammaGammaAmplitude.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 
@@ -71,6 +72,17 @@ public:
 		     const vector<Lorentz5Momentum> & momenta,
 		     const cPDVector & partons,
 		     DVector & dweights ) const; 
+  
+  /**
+   * Matrix element for spin correlations
+   */
+  virtual ProductionMatrixElement me(const vector<VectorWaveFunction> & v1,
+				     const vector<VectorWaveFunction> & v2,
+				     tParticleVector & particles) const {
+    ScalarWaveFunction(particles[0],outgoing,true);
+    double output(0);
+    return helicityAmplitude(v1,v2,particles[0]->mass(),output);
+  }
 
 public:
 
@@ -115,6 +127,15 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /**
+   *  Calculation of the helicity amplitudes for the process
+   */
+  ProductionMatrixElement helicityAmplitude(const vector<VectorWaveFunction> & v1,
+					    const vector<VectorWaveFunction> & v2,
+					    const Energy & M, double & output) const;
+  
 private:
 
   /**

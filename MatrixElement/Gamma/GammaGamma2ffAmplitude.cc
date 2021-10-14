@@ -141,13 +141,68 @@ vector<DiagPtr> GammaGamma2ffAmplitude::getDiagrams(unsigned int iopt) const {
       output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 2,lm, 3,lp,-1)));
       // interchange							              
       output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 3,lm, 2,lp,-2)));
- // first t-channel
+      // first t-channel
       output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 2,lm, 3,lp,-1)));
       // interchange							              
       output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 3,lm, 2,lp,-2)));
     }
   }
   return output;
+}
+
+ProductionMatrixElement
+GammaGamma2ffAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v1,
+					  const vector<VectorWaveFunction> & v2,
+					  const vector<SpinorBarWaveFunction> & f,
+					  const vector<SpinorWaveFunction>    & fbar,
+					  double & output, DVector & dweight) const {
+  dweight = {0.,0.};
+  ProductionMatrixElement me;
+  if(v1.size()==4&&v2.size()==4) {
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1Half);
+  }
+  else if(v1.size()==2&&v2.size()==2) {
+    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
+  }
+  else
+    assert(false);
+  Complex diag[2];
+  Energy2 mt(ZERO);
+  SpinorWaveFunction inters;
+  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
+    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+      unsigned int ih1 = 2*ih1A+ih1B;
+      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+	  unsigned int ih2 = 2*ih2A+ih2B;
+	  for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	      // first t-channel diagram
+	      inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
+					fbar[ohel2],v2[ih2]);
+	      diag[0]=vertex_->evaluate(mt,inters,f[ohel1],v1[ih1]);
+	      //second t-channel diagram
+	      inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
+					fbar[ohel2],v1[ih1]);
+	      diag[1]=vertex_->evaluate(mt,inters,f[ohel1],v2[ih2]);
+	      dweight[0] += norm(diag[0]);
+	      dweight[1] += norm(diag[1]);
+	      Complex amp = diag[0]+diag[1];
+	      output += norm(amp);
+	      if(v1.size()==4) {
+		me(ih1A,ih1B,ih2A,ih2B,ohel1,ohel2) = amp;
+	      }
+	      else {
+		me(2*ih1B,2*ih2B,ohel1,ohel2) = amp;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+  return me;
 }
 
 double GammaGamma2ffAmplitude::me2(const vector<VectorWaveFunction> & v1,
@@ -167,30 +222,7 @@ double GammaGamma2ffAmplitude::me2(const vector<VectorWaveFunction> & v1,
   }
   // calculate the matrix element
   double output(0.);
-  sumdiag={0.,0.};
-  Complex diag[2];
-  Energy2 mt(ZERO);
-  SpinorWaveFunction inters;
-  for(unsigned int ihel1=0;ihel1<v1.size();++ihel1) { 
-    for(unsigned int ihel2=0;ihel2<v2.size();++ihel2) {
-      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
-      	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	  // first t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
-				    fbar[ohel2],v2[ihel2]);
-	  diag[0]=vertex_->evaluate(mt,inters,f[ohel1],v1[ihel1]);
-	  //second t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
-				    fbar[ohel2],v1[ihel1]);
-	  diag[1]=vertex_->evaluate(mt,inters,f[ohel1],v2[ihel2]);
-	  sumdiag[0] += norm(diag[0]);
-	  sumdiag[1] += norm(diag[1]);
-	  diag[0] += diag[1];
-	  output += norm(diag[0]);
-      	}
-      }
-    }
-  }
+  helicityAmplitude(v1,v2,f,fbar,output,sumdiag);
   // colour factors if needed
   if(partons[0]->coloured()) output *= 3.;
   // // code to test vs the analytic result
@@ -234,21 +266,6 @@ GammaGamma2ffAmplitude::colourGeometries(unsigned int iopt, const cPDVector & pa
   return sel;
 }
 
-
-// #include "MEGammaGamma2ff.h"
-// #include "ThePEG/Utilities/DescribeClass.h"
-// #include "ThePEG/Interface/ClassDocumentation.h"
-// #include "ThePEG/Persistency/PersistentOStream.h"
-// #include "ThePEG/Persistency/PersistentIStream.h"
-// #include "ThePEG/PDT/EnumParticles.h"
-// #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-// #include "ThePEG/Interface/Switch.h"
-// #include "Herwig/Models/StandardModel/StandardModel.h"
-// #include "ThePEG/Handlers/StandardXComb.h"
-// #include "Herwig/MatrixElement/HardVertex.h"
-
-// using namespace Herwig;
-
 // MEGammaGamma2ff::MEGammaGamma2ff()  {
 //   massOption(vector<unsigned int>(2,1));
 // }
@@ -257,38 +274,17 @@ GammaGamma2ffAmplitude::colourGeometries(unsigned int iopt, const cPDVector & pa
 //   return 2.*sHat()*tHat()*uHat()/(sqr(sHat())+sqr(tHat())+sqr(uHat()));
 // }
 
-
-
-
-// void MEGammaGamma2ff::constructVertex(tSubProPtr sub) {
-//   // extract the particles in the hard process
-//   ParticleVector hard;
-//   hard.push_back(sub->incoming().first);
-//   hard.push_back(sub->incoming().second);
-//   hard.push_back(sub->outgoing()[0]);
-//   hard.push_back(sub->outgoing()[1]);
-//   // order of particles
-//   unsigned int order[4]={0,1,2,3};
-//   // identify the process and calculate matrix element
-//   vector<VectorWaveFunction> v1,v2;
-//   if(hard[order[2]]->id()<0) swap(order[2],order[3]);
-//   vector<SpinorWaveFunction> fbar;
-//   vector<SpinorBarWaveFunction>  f;
-//   VectorWaveFunction   (v1  ,hard[order[0]],incoming,false,true);
-//   VectorWaveFunction   (v2  ,hard[order[1]],incoming,false,true);
-//   SpinorBarWaveFunction(f   ,hard[order[2]],outgoing,true );
-//   SpinorWaveFunction   (fbar,hard[order[3]],outgoing,true );
-//   v1[1]=v1[2];
-//   v2[1]=v2[2];
-//   helicityME(v1,v2,f,fbar,true);
-//   // construct the vertex
-//   HardVertexPtr hardvertex=new_ptr(HardVertex());
-//   // set the matrix element for the vertex
-//   hardvertex->ME(me_);
-//   // set the pointers and to and from the vertex
-//   for(unsigned int ix=0;ix<4;++ix)
-//     hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
-// }
+ProductionMatrixElement GammaGamma2ffAmplitude::me(const vector<VectorWaveFunction> & v1,
+						   const vector<VectorWaveFunction> & v2,
+						   tParticleVector & particles) const {
+  vector<SpinorWaveFunction> fbar;
+  vector<SpinorBarWaveFunction>  f;
+  SpinorBarWaveFunction(f   ,particles[0],outgoing,true );
+  SpinorWaveFunction   (fbar,particles[1],outgoing,true );
+  DVector dwgt;
+  double output(0);
+  return helicityAmplitude(v1,v2,f,fbar,output,dwgt);
+}
 
 Energy GammaGamma2ffAmplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2) {
   Energy Wmin = 2.*partons[0]->constituentMass();

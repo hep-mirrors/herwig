@@ -16,6 +16,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -117,6 +118,38 @@ MEGammaGamma2X::diagrams(const DiagramVector & diags) const {
       assert(false);
   }
   return sel;
+}
+
+void MEGammaGamma2X::constructVertex(tSubProPtr sub) {
+  using namespace ThePEG::Helicity;
+  // extract the particles in the hard process
+  tParticleVector hard;
+  hard.reserve(sub->outgoing().size()+2);
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  for(unsigned int ix=0;ix<sub->outgoing().size();++ix)
+    hard.push_back(sub->outgoing()[ix]);
+  // calculate the photon currents (removing null 0 state)
+  vector<VectorWaveFunction> p1,p2;
+  VectorWaveFunction   (p1,hard[0],incoming,false,true );
+  p1[1]=p1[2];p1.resize(2);
+  VectorWaveFunction   (p2,hard[1],incoming,false,true );
+  p2[1]=p2[2];p2.resize(2);
+  tParticleVector pTemp(hard.begin()+2,hard.end());
+  ProductionMatrixElement me = amp_->me(p1,p2,pTemp);
+  // // for(auto part : hard ) cerr << *part << "\n";
+  // // for(unsigned int ih1=0;ih1<2;++ih1)
+  // //   for(unsigned int ih2=0;ih2<2;++ih2)
+  // // 	  for(unsigned int ih5=0;ih5<hard.back()->dataPtr()->iSpin();++ih5)
+  // // 	    cerr << ih1 << " " << ih2 << " " << ih5 << " " << me(ih1,ih2,ih5) << "\n";
+  // construct the vertex
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<hard.size();++ix) {
+    hard[ix]->spinInfo()->productionVertex(hardvertex);
+  }
 }
 
 

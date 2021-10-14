@@ -18,6 +18,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -199,8 +200,8 @@ bool MEff2ffX::generateKinematics(const double * r) {
 
 double MEff2ffX::me2() const {
   // calculate the leptonic currents
-  vector<VectorWaveFunction> current1 =  firstCurrent();
-  vector<VectorWaveFunction> current2 = secondCurrent();
+  vector<VectorWaveFunction> current1 =  firstCurrent(mePartonData()[0],meMomenta()[0],meMomenta()[2]);
+  vector<VectorWaveFunction> current2 = secondCurrent(mePartonData()[1],meMomenta()[1],meMomenta()[3]);
   DVector save;
   double output = amp_->me2(current1,current2,t1_,t2_,sHat(),
 			    vector<Lorentz5Momentum>(meMomenta().begin()+4,meMomenta().end()),
@@ -322,14 +323,16 @@ void MEff2ffX::Init() {
 
 }
 
-vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
+vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
+						  const Lorentz5Momentum & pin,
+						  const Lorentz5Momentum & pout) const {
   // form factors
-  Energy m = mePartonData()[0]->mass();
+  Energy m = inPart->mass();
   double F1(0.),F2(0.);
-  if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
+  if(abs(inPart->id())==ParticleID::eminus) {
     F1 = 1.;
   }
-  else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
+  else if(abs(inPart->id())==ParticleID::pplus) {
     //defining the form factors F1 and F2 from Ginzburg
     Energy2 q02 = 0.71*GeV2;
     double Ge = 1/sqr(1-t1_/q02);
@@ -339,16 +342,16 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
     F2 = (Gm - Ge)/(1 + tau);
   }
   // calculation of the current
-  Lorentz5Momentum pGamma = meMomenta()[0]-meMomenta()[2];
+  Lorentz5Momentum pGamma = pin-pout;
   double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi1_);
-  Energy Ea = meMomenta()[0].t();
+  Energy Ea = pin.t();
   // full current, safe in small x limit
   vector<LorentzPolarizationVector> current(4);
   if(currentMode_==0) {
     double mr2 = sqr(m/Ea);
-    double x = meMomenta()[2].t()/Ea;
+    double x = pout.t()/Ea;
     double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
     double fact1 = (F1+F2)*2.*Ea*sqrt(x)*sHalf1_/sqrt(bb1)/t1_*UnitRemoval::E*ee;
     double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t1_*UnitRemoval::E*ee;
@@ -383,9 +386,9 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
   }
   // approximate modes
   else if(currentMode_<=2) {
-    Lorentz5Momentum p = meMomenta()[0];
+    Lorentz5Momentum p = pin;
     Lorentz5Momentum n(ZERO,ZERO,-Ea,Ea);
-    double z = (n*meMomenta()[2])/(n*p);
+    double z = (n*pout)/(n*p);
     Energy2 pT2 = -z*t1_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
@@ -427,19 +430,19 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
     assert(false);
   }
   // test code
-  // SpinorWaveFunction    ein (meMomenta()[0],mePartonData()[0],incoming);
-  // SpinorBarWaveFunction eout(meMomenta()[2],mePartonData()[2],outgoing);
+  // SpinorWaveFunction    ein (pin,inPart,incoming);
+  // SpinorBarWaveFunction eout(pout,inPart,outgoing);
   // vector<SpinorWaveFunction>    fin;
   // vector<SpinorBarWaveFunction> fout;
   // for(unsigned int ix=0;ix<2;++ix) {
   //   ein .reset(ix); fin .push_back(ein );
   //   eout.reset(ix); fout.push_back(eout);
   // }
-  // cerr << "testing +z dirn " << mePartonData()[0]->PDGName() << " " << currentMode_ << " " << F1 << " " << F2 << "\n";
+  // cerr << "testing +z dirn " << inPart->PDGName() << " " << currentMode_ << " " << F1 << " " << F2 << "\n";
   // for(unsigned int ih1=0;ih1<2;++ih1) {
   //   for(unsigned int ih2=0;ih2<2;++ih2) {
   //     LorentzPolarizationVector test  = (F1+F2)*ee/t1_*UnitRemoval::E2*fin[ih1].wave().vectorCurrent(fout[ih2].wave());
-  //     test -= F2*(meMomenta()[0]+meMomenta()[2])/2./m*ee/t1_*UnitRemoval::E2*fin[ih1].wave().scalar(fout[ih2].wave());
+  //     test -= F2*(pin+pout)/2./m*ee/t1_*UnitRemoval::E2*fin[ih1].wave().scalar(fout[ih2].wave());
   //     test -= test.t()*pGamma/pGamma.t();
   //     cerr << "testing in current\n"
   //   	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
@@ -460,14 +463,16 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent() const {
   return output;
 }
 
-vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
+vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
+						   const Lorentz5Momentum & pin,
+						   const Lorentz5Momentum & pout) const {
   // form factors
-  Energy m = mePartonData()[0]->mass();
+  Energy m = inPart->mass();
   double F1(0.),F2(0.);
-  if(abs(mePartonData()[0]->id())==ParticleID::eminus) {
+  if(abs(inPart->id())==ParticleID::eminus) {
     F1 = 1.;
   }
-  else if(abs(mePartonData()[0]->id())==ParticleID::pplus) {
+  else if(abs(inPart->id())==ParticleID::pplus) {
     //defining the form factors F1 and F2 from Ginzburg
     Energy2 q02 = 0.71*GeV2;
     double Ge = 1/sqr(1-t2_/q02);
@@ -477,16 +482,16 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
     F2 = (Gm - Ge)/(1 + tau);
   }
   // calculation of the current
-  Lorentz5Momentum pGamma = meMomenta()[1]-meMomenta()[3];
+  Lorentz5Momentum pGamma = pin-pout;
   double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi2_);
-  Energy Ea = meMomenta()[1].t();
+  Energy Ea = pin.t();
   vector<LorentzPolarizationVector> current(4);
   // full result stable for small pT and x->1
   if(currentMode_==0) {    
     double mr2 = sqr(m/Ea);
-    double x = meMomenta()[3].t()/Ea;
+    double x = pout.t()/Ea;
     double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
     double fact1 = (F1+F2)*2.*Ea*sqrt(x)*cHalf2_/sqrt(bb1)/t2_*UnitRemoval::E*ee;
     double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t2_*UnitRemoval::E*ee;
@@ -520,9 +525,9 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
   }
   // approximate modes
   else if(currentMode_<=2) {
-    Lorentz5Momentum p = meMomenta()[1];
+    Lorentz5Momentum p = pin;
     Lorentz5Momentum n(ZERO,ZERO,Ea,Ea);
-    double z = (n*meMomenta()[3])/(n*p);
+    double z = (n*pout)/(n*p);
     Energy2 pT2 = -z*t2_-sqr(1-z)*sqr(m);
     if(pT2<ZERO) pT2=ZERO;
     Energy pT = sqrt(pT2);
@@ -563,19 +568,19 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
     assert(false);
   }
   // test code
-  // SpinorWaveFunction    ein (meMomenta()[1],mePartonData()[1],incoming);
-  // SpinorBarWaveFunction eout(meMomenta()[3],mePartonData()[3],outgoing);
+  // SpinorWaveFunction    ein (pin,inPart,incoming);
+  // SpinorBarWaveFunction eout(pout,inPart,outgoing);
   // vector<SpinorWaveFunction>    fin;
   // vector<SpinorBarWaveFunction> fout;
   // for(unsigned int ix=0;ix<2;++ix) {
   //   ein .reset(ix); fin .push_back(ein );
   //   eout.reset(ix); fout.push_back(eout);
   // }
-  // cerr << "testing -z dirn " << mePartonData()[1]->PDGName() << " " << currentMode_ << " " << F1 << " " << F2 << "\n";
+  // cerr << "testing -z dirn " << inPart->PDGName() << " " << currentMode_ << " " << F1 << " " << F2 << "\n";
   // for(unsigned int ih1=0;ih1<2;++ih1) {
   //   for(unsigned int ih2=0;ih2<2;++ih2) {
   //     LorentzPolarizationVector test  = (F1+F2)*ee/t2_*UnitRemoval::E2*fin[ih1].wave().vectorCurrent(fout[ih2].wave());
-  //     test -= F2*(meMomenta()[1]+meMomenta()[3])/2./m*ee/t2_*UnitRemoval::E2*fin[ih1].wave().scalar(fout[ih2].wave());
+  //     test -= F2*(pin+pout)/2./m*ee/t2_*UnitRemoval::E2*fin[ih1].wave().scalar(fout[ih2].wave());
   //     test -= test.t()*pGamma/pGamma.t();
   //     cerr << "testing in current\n"
   //   	   << ih1 << " " << ih2 << " " << test.x() << " " << test.y() << " " << test.z() << " " << test.t() << "\n"
@@ -596,54 +601,44 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent() const {
   return output;
 }
 
-
-
-
-
-// Energy2 MEff2ffPseudoScalar::scale() const {
-//   return sHat();
-// }
-
-
-
-// Selector<MEBase::DiagramIndex>
-// MEff2ffPseudoScalar::diagrams(const DiagramVector & diags) const {
-//   Selector<DiagramIndex> sel;
-//   for ( DiagramIndex i = 0; i < diags.size(); ++i )
-//     sel.insert(1.0, i);
-//   return sel;
-// }
-
-
-
-
-// void MEff2ffPseudoScalar::constructVertex(tSubProPtr ) {
-// //   // extract the particles in the hard process
-// //   ParticleVector hard;
-// //   hard.push_back(sub->incoming().first);
-// //   hard.push_back(sub->incoming().second);
-// //   hard.push_back(sub->outgoing()[0]);
-// //   hard.push_back(sub->outgoing()[1]);
-// //   hard.push_back(sub->outgoing()[2]);
-// //   // ensure right order
-// //   if(hard[0]->id()<0) swap(hard[0],hard[1]);
-// //   if(hard[3]->id()==ParticleID::h0) swap(hard[2],hard[3]);
-// //   if(hard[4]->id()==ParticleID::h0) swap(hard[2],hard[4]);
-// //   if(hard[3]->id()<0) swap(hard[3],hard[4]);
-// //   vector<SpinorWaveFunction>    fin,aout;
-// //   vector<SpinorBarWaveFunction> ain,fout;
-// //   SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
-// //   SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
-// //   ScalarWaveFunction(        hard[2],outgoing,true,true);
-// //   SpinorBarWaveFunction(fout,hard[3],outgoing,true ,true);
-// //   SpinorWaveFunction(   aout,hard[4],outgoing,true ,true);
-// //   helicityME(fin,ain,fout,aout,true);
-// //   // construct the vertex
-// //   HardVertexPtr hardvertex=new_ptr(HardVertex());
-// //   // set the matrix element for the vertex
-// //   hardvertex->ME(_me);
-// //   // set the pointers and to and from the vertex
-// //   for(unsigned int ix=0;ix<5;++ix) {
-// //     hard[ix]->spinInfo()->productionVertex(hardvertex);
-// //   }
-// }
+void MEff2ffX::constructVertex(tSubProPtr sub) {
+  // extract the particles in the hard process
+  tParticleVector hard;
+  hard.reserve(sub->outgoing().size()+2);
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  for(unsigned int ix=0;ix<sub->outgoing().size();++ix)
+    hard.push_back(sub->outgoing()[ix]);
+  // calculate the fermionic currents
+  vector<VectorWaveFunction> current1 =  firstCurrent(hard[0]->dataPtr(),hard[0]->momentum(),hard[2]->momentum());
+  vector<VectorWaveFunction> current2 = secondCurrent(hard[1]->dataPtr(),hard[1]->momentum(),hard[3]->momentum());
+  // wavefunctionns for the fermions
+  vector<SpinorWaveFunction>    f1,f2;
+  vector<SpinorBarWaveFunction> a1,a2;
+  if(hard[0]->id()>0) {
+    SpinorWaveFunction   (f1,hard[0],incoming,false,true);
+    SpinorBarWaveFunction(a1,hard[2],outgoing,true,true);
+  }
+  else {
+    SpinorWaveFunction   (f1,hard[2],outgoing,true,true);
+    SpinorBarWaveFunction(a1,hard[0],incoming,false,true);
+  }
+  if(hard[1]->id()>0) {
+    SpinorWaveFunction   (f2,hard[1],incoming,false,true);
+    SpinorBarWaveFunction(a2,hard[3],outgoing,true,true);
+  }
+  else {
+    SpinorWaveFunction   (f2,hard[3],outgoing,true,true);
+    SpinorBarWaveFunction(a2,hard[1],incoming,false,true);
+  }
+  tParticleVector pTemp(hard.begin()+4,hard.end());
+  ProductionMatrixElement me = amp_->me(current1,current2,pTemp);
+  // construct the vertex
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<hard.size();++ix) {
+    hard[ix]->spinInfo()->productionVertex(hardvertex);
+  }
+}

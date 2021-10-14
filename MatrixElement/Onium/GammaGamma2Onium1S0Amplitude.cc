@@ -132,29 +132,42 @@ vector<DiagPtr> GammaGamma2Onium1S0Amplitude::getDiagrams(unsigned int iopt) con
   return output;
 }
 
-double GammaGamma2Onium1S0Amplitude::me2(const vector<VectorWaveFunction> & v1,
-					 const vector<VectorWaveFunction> & v2,
-					 const Energy2 & t1, const Energy2 & t2,
-					 const Energy2 & scale, 
-					 const vector<Lorentz5Momentum> & momenta,
-					 const cPDVector & , DVector &  ) const {
+ProductionMatrixElement GammaGamma2Onium1S0Amplitude::
+helicityAmplitude(const vector<VectorWaveFunction> & v1,
+		  const vector<VectorWaveFunction> & v2,
+		  const Energy & M, double & output) const {
+  ProductionMatrixElement me;
+  if(v1.size()==4&&v2.size()==4) {
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
+  }
+  else if(v1.size()==2&&v2.size()==2) {
+    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0);
+  }
+  else
+    assert(false);
   // calculate the matrix element
-  double output(0.);
+  output = 0;
   Lorentz5Momentum pG1 = v1[0].momentum();
   Lorentz5Momentum pG2 = v2[0].momentum();
-  Energy rs = sqrt(scale);
-  Energy M  = momenta.back().mass();
-  for(unsigned int ih1=0;ih1<v1.size();++ih1) {
-    auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
-    for(unsigned int ih2=0;ih2<v2.size();++ih2) {
-      Complex amp = (vOff*v2[ih2].wave())/rs/M;
-      output += norm(amp);
+  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
+    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+      auto vOff = Helicity::epsilon(v1[2*ih1A+ih1B].wave(),pG1,pG2);
+      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+  	  Complex amp = (vOff*v2[2*ih2A+ih2B].wave())/sqr(M);
+  	  output += norm(amp); 
+  	  if(v1.size()==4) {
+  	    me(ih1A,ih1B,ih2A,ih2B,0) = amp;
+  	  }
+  	  else {
+  	    me(2*ih1B,2*ih2B,0) = amp;
+  	  }
+  	}
+      }
     }
   }
-  // coupling factors
-  double eQ = state_==ccbar ? 2./3. : -1./3.;
-  double alpha = generator()->standardModel()->alphaEM();
-  return 128.*output*O1_/pow<3,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+  return me;
 }
 
 Energy GammaGamma2Onium1S0Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {

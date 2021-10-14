@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef ThePEG_GammaGammaAmplitude_H
-#define ThePEG_GammaGammaAmplitude_H
+#ifndef Herwig_GammaGammaAmplitude_H
+#define Herwig_GammaGammaAmplitude_H
 //
 // This is the declaration of the GammaGammaAmplitude class.
 //
@@ -9,6 +9,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "GammaGammaAmplitude.fh"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
   
@@ -69,6 +70,13 @@ public:
 		     const vector<Lorentz5Momentum> & momenta,
 		     const cPDVector & partons,
 		     DVector & dweights) const = 0;
+  
+  /**
+   *  The matrix element for spin correlations
+   */
+  virtual ProductionMatrixElement me(const vector<VectorWaveFunction> & v1,
+				     const vector<VectorWaveFunction> & v2,
+				     tParticleVector & particles) const = 0;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -122,4 +130,4 @@ private:
 
 }
 
-#endif /* ThePEG_GammaGammaAmplitude_H */
+#endif /* Herwig_GammaGammaAmplitude_H */

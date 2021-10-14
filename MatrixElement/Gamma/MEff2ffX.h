@@ -121,6 +121,11 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 protected:
@@ -132,12 +137,16 @@ protected:
   /**
    *  Calculation of the current in the positive direction
    */
-  vector<VectorWaveFunction> firstCurrent() const;
-
+  vector<VectorWaveFunction> firstCurrent(tcPDPtr inPart,
+					  const Lorentz5Momentum & pin,
+					  const Lorentz5Momentum & pout) const;
+  
   /**
    *  Calculation of the current in the negative direction
    */
-  vector<VectorWaveFunction> secondCurrent() const;
+  vector<VectorWaveFunction> secondCurrent(tcPDPtr inPart,
+					   const Lorentz5Momentum & pin,
+					   const Lorentz5Momentum & pout) const;
   //@}
 
 

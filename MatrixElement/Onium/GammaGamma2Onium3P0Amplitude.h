@@ -8,6 +8,7 @@
 #include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
 #include "OniumParameters.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 
@@ -74,8 +75,27 @@ public:
 		     const Energy2 & t1, const Energy2 & t2,
 		     const Energy2 & scale, 
 		     const vector<Lorentz5Momentum> & momenta,
-		     const cPDVector & partons,
-		     DVector & dweights ) const; 
+		     const cPDVector & , DVector & ) const {
+    // calculate the matrix element
+    Energy M  = momenta.back().mass();
+    double output(0.);
+    helicityAmplitude(v1,v2,M,output);
+    // coupling factors
+    double eQ = state_==ccbar ? 2./3. : -1./3.;
+    double alpha = generator()->standardModel()->alphaEM();
+    return 384.*output/pow<3,1>(M)/scale*O1_*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+  }
+
+  /**
+   * Matrix element for spin correlations
+   */
+  virtual ProductionMatrixElement me(const vector<VectorWaveFunction> & v1,
+				     const vector<VectorWaveFunction> & v2,
+				     tParticleVector & particles) const {
+    ScalarWaveFunction(particles[0],outgoing,true);
+    double output(0);
+    return helicityAmplitude(v1,v2,particles[0]->mass(),output);
+  }
 
   /**
    * Generate the mass of the \f$\gamma\gamma\f$ system
@@ -137,6 +157,15 @@ protected:
    */
   virtual void doinit();
   //@}
+
+protected:
+
+  /**
+   *  Calculation of the helicity amplitudes for the process
+   */
+  ProductionMatrixElement helicityAmplitude(const vector<VectorWaveFunction> & v1,
+					    const vector<VectorWaveFunction> & v2,
+					    const Energy & M, double & output) const;
 
 private:
 

@@ -14,7 +14,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
@@ -102,6 +101,59 @@ vector<DiagPtr> GammaGamma2PiPiAmplitude::getDiagrams(unsigned int iopt) const {
   return output;
 }
 
+ProductionMatrixElement
+GammaGamma2PiPiAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v1,
+					    const vector<VectorWaveFunction> & v2,
+					    const vector<Lorentz5Momentum> & out,
+					    double & output,
+					    DVector & dweight) const {
+  dweight = {0.,0.};
+  ProductionMatrixElement me;
+  if(v1.size()==4&&v2.size()==4) {
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin0);
+  }
+  else if(v1.size()==2&&v2.size()==2) {
+    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0);
+  }
+  else
+    assert(false);
+  // calculate the matrix element
+  Energy2 off = -0.5*v1[0].momentum().m2(); 
+  Energy2 d1  = off+v1[0].momentum()*out[0], d2 = off+v1[0].momentum()*out[1];
+  Complex diag[2];
+  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
+    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+      unsigned int ih1 = 2*ih1A+ih1B;
+      complex<Energy> a1 = out[0]*v1[ih1].wave();
+      complex<Energy> a2 = out[1]*v1[ih1].wave();
+      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+	  unsigned int ih2 = 2*ih2A+ih2B;
+	  complex<Energy> b1 = out[0]*v2[ih2].wave();
+	  complex<Energy> b2 = out[1]*v2[ih2].wave();
+	  // t-channel diagram
+	  diag[0] = a1*b2/d1;
+	  // u-channel diagram
+	  diag[1] = a2*b1/d2;
+	  dweight[0] += norm(diag[0]);
+	  dweight[1] += norm(diag[1]);
+	  Complex amp = v1[ih1].wave()*v2[ih2].wave()-diag[0]-diag[1];
+	  output += norm(amp);
+	  if(v1.size()==4) {
+	    me(ih1A,ih1B,ih2A,ih2B,0,0) = amp;
+	  }
+	  else {
+	    me(2*ih1B,2*ih2B,0,0) = amp;
+	  }
+	}
+      }
+    }
+  }
+  return me;
+}
+
+
 double GammaGamma2PiPiAmplitude::me2(const vector<VectorWaveFunction> & v1,
 				     const vector<VectorWaveFunction> & v2,
 				     const Energy2 &, const Energy2 &,
@@ -109,40 +161,15 @@ double GammaGamma2PiPiAmplitude::me2(const vector<VectorWaveFunction> & v1,
 				     const vector<Lorentz5Momentum> & out,
 				     const cPDVector &,
 				     DVector & dweights ) const {
-  // scale (external photons so scale in couplings is 0)
-  Energy2 mt(0.*GeV2);
-  double output(0.),sumdiag[2]={0.,0.};
-  Complex diag[2];
-  Energy2 off = -0.5*v1[0].momentum().m2(); 
-  Energy2 d1  = off+v1[0].momentum()*out[0], d2 = off+v1[0].momentum()*out[1];
-  for(unsigned int ihel1=0;ihel1<v1.size();++ihel1) {
-    complex<Energy> a1 = out[0]*v1[ihel1].wave();
-    complex<Energy> a2 = out[1]*v1[ihel1].wave();
-    for(unsigned int ihel2=0;ihel2<v2.size();++ihel2) {
-      complex<Energy> b1 = out[0]*v2[ihel2].wave();
-      complex<Energy> b2 = out[1]*v2[ihel2].wave();
-      // t-channel diagram
-      diag[0] = a1*b2/d1;
-      // u-channel diagram
-      diag[1] = a2*b1/d2;
-      sumdiag[0] += norm(diag[0]);
-      sumdiag[1] += norm(diag[1]);
-      Complex amp = v1[ihel1].wave()*v2[ihel2].wave()-diag[0]-diag[1];
-      output += norm(amp);
-    }
-  }
-  // diagrams
-  dweights.push_back(sumdiag[0]);
-  dweights.push_back(sumdiag[1]);
+  // matrix element
+  double output(0.);
+  helicityAmplitude(v1,v2,out,output,dweights);
+  // prefactors
   double alpha = generator()->standardModel()->alphaEM();
   return output*sqr(alpha*4.*Constants::pi);
 }
 
 Energy GammaGamma2PiPiAmplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW) {
-  // Energy Wmin = 2.*partons[0]->constituentMass();
-  // Energy W = Wmin+r*(Wmax-Wmin);
-  // jacW = 2.*W*(Wmax-Wmin);
-  // return W;
   Energy Wmin = 2.*partons[0]->constituentMass();
   Energy W = Wmin*pow(Wmax/Wmin,r);
   jacW = 2.*sqr(W)*log(Wmax/Wmin);

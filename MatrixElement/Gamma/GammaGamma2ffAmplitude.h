@@ -70,6 +70,13 @@ public:
 		     const vector<Lorentz5Momentum> & momenta,
 		     const cPDVector & partons,
 		     DVector & dweights) const;
+  
+  /**
+   * Matrix element for spin correlations
+   */
+  virtual ProductionMatrixElement me(const vector<VectorWaveFunction> & v1,
+				     const vector<VectorWaveFunction> & v2,
+				     tParticleVector & particles) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -141,6 +148,17 @@ protected:
    */
   virtual void doinit();
   //@}
+
+protected:
+
+  /**
+   *  Calculation of the helicity amplitudes for the process
+   */
+  ProductionMatrixElement helicityAmplitude(const vector<VectorWaveFunction> & v1,
+					    const vector<VectorWaveFunction> & v2,
+					    const vector<SpinorBarWaveFunction> & f,
+					    const vector<SpinorWaveFunction>    & fbar,
+					    double & output, DVector & dweights) const;
 
 private:
 

@@ -14,7 +14,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
@@ -81,29 +80,59 @@ vector<DiagPtr> GammaGamma2PseudoScalarAmplitude::getDiagrams(unsigned int iopt)
   return output;
 }
 
+ProductionMatrixElement GammaGamma2PseudoScalarAmplitude::
+helicityAmplitude(const vector<VectorWaveFunction> & v1,
+		  const vector<VectorWaveFunction> & v2,
+		  const Energy & M, double & output) const {
+  ProductionMatrixElement me;
+  if(v1.size()==4&&v2.size()==4) {
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
+  }
+  else if(v1.size()==2&&v2.size()==2) {
+    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0);
+  }
+  else
+    assert(false);
+  // calculate the matrix element
+  output = 0;
+  Lorentz5Momentum pG1 = v1[0].momentum();
+  Lorentz5Momentum pG2 = v2[0].momentum();
+  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
+    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+      auto vOff = Helicity::epsilon(v1[2*ih1A+ih1B].wave(),pG1,pG2);
+      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+  	  Complex amp = (vOff*v2[2*ih2A+ih2B].wave())/sqr(M);
+  	  output += norm(amp); 
+  	  if(v1.size()==4) {
+  	    me(ih1A,ih1B,ih2A,ih2B,0) = amp;
+  	  }
+  	  else {
+  	    me(2*ih1B,2*ih2B,0) = amp;
+  	  }
+  	}
+      }
+    }
+  }
+  return me;
+}
+
 double GammaGamma2PseudoScalarAmplitude::me2(const vector<VectorWaveFunction> & v1,
 					     const vector<VectorWaveFunction> & v2,
 					     const Energy2 & t1, const Energy2 & t2,
 					     const Energy2 & scale, 
-					     const vector<Lorentz5Momentum> &,
+					     const vector<Lorentz5Momentum> & momenta,
 					     const cPDVector & partons,
 					     DVector &  ) const {
+  Energy M  = momenta.back().mass();
+  // calculate the matrix element
+  double output(0.);
+  helicityAmplitude(v1,v2,M,output);
   // form factor
   int iloc = partons[0]->id()/100 -1;
   InvEnergy form = F00_[iloc]/(1.-t1/LambdaP2_[iloc])/(1.-t2/LambdaP2_[iloc]);
-  // calculate the matrix element
-  double output(0.);
-  Lorentz5Momentum pG1 = v1[0].momentum();
-  Lorentz5Momentum pG2 = v2[0].momentum();
-  Energy rs = sqrt(scale);
-  for(unsigned int ih1=0;ih1<v1.size();++ih1) {
-    auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
-    for(unsigned int ih2=0;ih2<v2.size();++ih2) {
-      Complex amp = form*(vOff*v2[ih2].wave())/rs;
-      output += norm(amp);
-    }
-  }
   // coupling factors
   double alpha = generator()->standardModel()->alphaEM();
-  return 0.25*output*sqr(alpha*4.*Constants::pi);
+  return 0.25*pow<4,1>(M)/scale*sqr(form)*output*sqr(alpha*4.*Constants::pi);
 }
