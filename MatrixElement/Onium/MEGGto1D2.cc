@@ -101,7 +101,7 @@ void MEGGto1D2::getDiagrams() const {
   unsigned int iq = 4+state_;
   tcPDPtr ps = getParticleData(long(iq*110+10005 + (n_-1)*100000));
   tcPDPtr g = getParticleData(ParticleID::g);
-  add(new_ptr((Tree2toNDiagram(3), g, g, 1, ps, -1)));
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, -1)));
 }
 
 Energy2 MEGGto1D2::scale() const {
