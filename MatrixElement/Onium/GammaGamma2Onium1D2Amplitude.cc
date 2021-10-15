@@ -165,7 +165,8 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
       auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
       for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
   	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
-  	  unsigned int ih2 = 2*ih2A+ih2B;Complex vamp = (vOff*v2[ih2].wave())/sqr(M);
+  	  unsigned int ih2 = 2*ih2A+ih2B;
+	  Complex vamp = (vOff*v2[ih2].wave())/sqr(M);
 	  for(unsigned int ix=0;ix<5;++ix) {
 	    Complex amp = vamp*tamp[ix];
 	    output += norm(amp);

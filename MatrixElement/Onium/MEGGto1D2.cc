@@ -20,6 +20,9 @@
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "ThePEG/Helicity/epsilon.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 using namespace Herwig;
 
@@ -145,4 +148,50 @@ CrossSection MEGGto1D2::dSigHatDR() const {
 
 double MEGGto1D2::me2() const {
   return 64./45.*sqr(Constants::pi)*O1_/pow<7,2>(sHat())*sqr(standardModel()->alphaS(scale()));
+}
+
+void MEGGto1D2::constructVertex(tSubProPtr sub) {
+  using namespace ThePEG::Helicity;
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  // gluon wave functions (remove zero longitudinal polarization
+  vector<VectorWaveFunction> g1,g2;
+  VectorWaveFunction (g1,hard[0],incoming,false,true,true);
+  g1[1] = g1[2];
+  VectorWaveFunction (g2,hard[1],incoming,false,true,true);
+  g2[1] = g2[2];
+  // 1D2 wavefunction
+  vector<TensorWaveFunction> twave;
+  TensorWaveFunction(twave,hard[2],outgoing,true,false);
+  // matrix element
+  ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2);
+
+  Lorentz5Momentum pDiff = hard[0]->momentum()-hard[1]->momentum();
+  Energy M = hard[2]->mass();
+  vector<Complex> tamp(5);
+  for(unsigned int i=0;i<5;++i) {
+    tamp[i] = twave[i].wave().trace()+2./sqr(M)*(twave[i].wave().preDot(pDiff)*pDiff);
+  }
+  // for(unsigned int ih1=0;ih1<2;++ih1) {
+  //   auto vOff = epsilon(g1[ih1].wave(),hard[0]->momentum(),hard[1]->momentum());
+  //   for(unsigned int ih2=0;ih2<2;++ih2) {
+  //     Complex vamp = (vOff*g2[ih2].wave())/sqr(M);
+  //     for(unsigned int ih3=0;ih3<5;++ih3) {
+  // 	me(2*ih1,2*ih2,ih3) = tamp[ih3]*vamp*Complex(0,1)*sqrt(1.5);
+  // 	if(norm(me(2*ih1,2*ih2,ih3))>1e-10) cerr << "testing me " << ih1 << " " << ih2 << " " << ih3 << " " << me(2*ih1,2*ih2,ih3) << "\n";
+  //     }
+  //   }
+  // }
+  me(0,0,2) = -1.;
+  me(2,2,2) =  1.;
+  // construct the vertex
+  HardVertexPtr hardvertex = new_ptr(HardVertex());
+  // // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int i = 0; i < 3; ++i)
+    hard[i]->spinInfo()->productionVertex(hardvertex);
 }
