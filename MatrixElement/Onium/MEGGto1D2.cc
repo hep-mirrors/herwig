@@ -181,7 +181,6 @@ void MEGGto1D2::constructVertex(tSubProPtr sub) {
   //     Complex vamp = (vOff*g2[ih2].wave())/sqr(M);
   //     for(unsigned int ih3=0;ih3<5;++ih3) {
   // 	me(2*ih1,2*ih2,ih3) = tamp[ih3]*vamp*Complex(0,1)*sqrt(1.5);
-  // 	if(norm(me(2*ih1,2*ih2,ih3))>1e-10) cerr << "testing me " << ih1 << " " << ih2 << " " << ih3 << " " << me(2*ih1,2*ih2,ih3) << "\n";
   //     }
   //   }
   // }

@@ -20,6 +20,8 @@
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 using namespace Herwig;
 
@@ -145,4 +147,62 @@ CrossSection MEGGto3P2::dSigHatDR() const {
 
 double MEGGto3P2::me2() const {
   return 32./45.*sqr(Constants::pi)*O1_/sqr(sHat())/sqrt(sHat())*sqr(standardModel()->alphaS(scale()));
+}
+
+void MEGGto3P2::constructVertex(tSubProPtr sub) {
+  using namespace ThePEG::Helicity;
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  // gluon wave functions (remove zero longitudinal polarization
+  vector<VectorWaveFunction> g1,g2;
+  VectorWaveFunction (g1,hard[0],incoming,false,true,true);
+  g1[1] = g1[2];
+  VectorWaveFunction (g2,hard[1],incoming,false,true,true);
+  g2[1] = g2[2];
+  // 1D2 wavefunction
+  vector<TensorWaveFunction> twave;
+  TensorWaveFunction(twave,hard[2],outgoing,true,false);
+  // matrix element
+  ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2);
+  if(hard[2]->momentum().z()>ZERO) {
+    me(0,2,0) =  1.;
+    me(2,0,4) =  1.;
+  }
+  else {
+    me(0,2,4) =  1.;
+    me(2,0,0) =  1.;
+  }
+  // Lorentz5Momentum pDiff = hard[0]->momentum()-hard[1]->momentum();
+  // Energy M = hard[2]->mass();
+  // for(unsigned int ih3=0;ih3<5;++ih3) {
+  //   auto vPre  = twave[ih3].wave().preDot (pDiff);
+  //   auto vPost = twave[ih3].wave().postDot(pDiff);
+  //   complex<Energy2> g1g2=vPre*pDiff;
+  //   for(unsigned int ih1=0;ih1<2;++ih1) {
+  //     auto vEps1 = twave[ih3].wave().preDot(g1[ih1].wave())+twave[ih3].wave().postDot(g1[ih1].wave());
+  //     complex<Energy> dPreEps1  = vPre*g1[ih1].wave();
+  //     complex<Energy> dPostEps1 = vPost*g1[ih1].wave();
+  //     complex<Energy> d1 = g1[ih1].wave()*hard[1]->momentum();
+  //     for(unsigned int ih2=0;ih2<2;++ih2) {
+  // 	complex<Energy> d2 = g2[ih2].wave()*hard[0]->momentum();
+  // 	Complex d12 = g1[ih1].wave()*g2[ih2].wave();
+  // 	Complex amp = 0.5*(((dPreEps1+dPostEps1)*d2 -(vPre*g2[ih2].wave()+vPost*g2[ih2].wave())*d1-g1g2*d12)/sqr(M) + vEps1*g2[ih2].wave());
+  // 	if(norm(amp)>1e-10) {
+  // 	  Complex diff = amp-me(2*ih1,2*ih2,ih3);
+  // 	  if(abs(diff)>1e-10)
+  // 	    cerr << "testing me " << ih1 << " " << ih2 << " " << ih3 << " " << diff << "\n";
+  // 	}
+  //     }
+  //   }
+  // }
+  // construct the vertex
+  HardVertexPtr hardvertex = new_ptr(HardVertex());
+  // // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int i = 0; i < 3; ++i)
+    hard[i]->spinInfo()->productionVertex(hardvertex);
 }

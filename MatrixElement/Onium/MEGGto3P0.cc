@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -145,4 +146,38 @@ CrossSection MEGGto3P0::dSigHatDR() const {
 
 double MEGGto3P0::me2() const {
   return 8.*sqr(Constants::pi)*O1_/3./sqr(sHat())/sqrt(sHat())*sqr(standardModel()->alphaS(scale()));
+}
+
+void MEGGto3P0::constructVertex(tSubProPtr sub) {
+  using namespace ThePEG::Helicity;
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  // gluon wave functions (remove zero longitudinal polarization
+  vector<VectorWaveFunction> g1,g2;
+  VectorWaveFunction (g1,hard[0],incoming,false,true,true);
+  g1[1] = g1[2];
+  VectorWaveFunction (g2,hard[1],incoming,false,true,true);
+  g2[1] = g2[2];
+  // 1S0 wavefunction
+  ScalarWaveFunction out(hard[2],outgoing,true);
+  // matrix element
+  ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin0);
+  // for(unsigned int ih1=0;ih1<2;++ih1) {
+  //   complex<Energy> d1 = g1[ih1].wave()*hard[1]->momentum();
+  //   for(unsigned int ih2=0;ih2<2;++ih2) {
+  //     me(2*ih1,2*ih2,0) = g1[ih1].wave()*g2[ih2].wave()  -2./sqr(hard[2]->mass())*d1*(g2[ih2].wave()*hard[0]->momentum());
+  //   }
+  // }
+  me(0,0,0) =  1.;
+  me(2,2,0) = -1.;
+  // construct the vertex
+  HardVertexPtr hardvertex = new_ptr(HardVertex());
+  // // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int i = 0; i < 3; ++i)
+    hard[i]->spinInfo()->productionVertex(hardvertex);
 }
