@@ -497,8 +497,6 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   // identify the process and calculate the matrix element
   if(hard[0]->id() == ParticleID::g && hard[1]->id() == ParticleID::g) {
     vector<VectorWaveFunction> g1,g2;
-    vector<SpinorBarWaveFunction> q;
-    vector<SpinorWaveFunction> qbar;
     VectorWaveFunction (g1,hard[0],incoming,false,true,true);
     VectorWaveFunction (g2,hard[1],incoming,false,true,true);
     ScalarWaveFunction hout(hard[2],outgoing,true);
