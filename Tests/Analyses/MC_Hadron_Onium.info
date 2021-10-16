@@ -1,0 +1,8 @@
+Name: MC_Hadron_Onium
+Summary: Simple MC analysis of quarkonium production in hadronic collisions
+Status: VALIDATED
+Authors:
+ - Peter Richardson <peter.richardson@durhama.ac.uk>
+Description:
+  'Simple Monte Carlo analysis of quarkonium production in hadronic collisions, just plots the $p_\perp$ and rapidity of the various states.'
+Keywords: []

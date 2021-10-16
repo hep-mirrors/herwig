@@ -426,8 +426,8 @@ cd /Herwig/Shower
     print(targets)
 # if we are doing the analysis
 if opts.analyse :
-    if not os.path.isdir("Rivet-Onium"):
-        os.mkdir("Rivet-Onium")
+    if not os.path.isdir("Onium-Splitting"):
+        os.mkdir("Onium-Splitting")
     plots=""
     # loop over the tests
     for (key,val) in testParameters.items() :
@@ -514,11 +514,11 @@ if opts.analyse :
             loc = 2        
         plt.legend(loc=loc,title="$\\chi^2/N=%.2f$"%chisq)
         plt.xlim([0.,1.])
-        plt.savefig("Rivet-Onium/%s.pdf" %key)
-        plt.savefig("Rivet-Onium/%s.png" %key)
+        plt.savefig("Onium-Splitting/%s.pdf" %key)
+        plt.savefig("Onium-Splitting/%s.png" %key)
         plt.clf()
         plots+=plotTemplate.substitute({"id" : key})
-    with open(os.path.join("Rivet-Onium","index.html"), 'w') as f:
+    with open(os.path.join("Onium-Splitting","index.html"), 'w') as f:
             f.write( htmlTemplate.substitute( {"plots" : plots,
                                                "time"  :'<p>Generated at %s</p>' % datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")  }) )
 

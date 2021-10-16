@@ -96,6 +96,7 @@ Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
 Tests/python/mergeLowEnergy.py
 Tests/python/OniumSplitting.py
+Tests/python/OniumSigma.py
 Tests/python/plot-EE
 Tests/python/rivet_check
 PDF/SaSPhotonPDF.cc

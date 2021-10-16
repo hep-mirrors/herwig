@@ -261,9 +261,13 @@ Rivet-LowEnergy-Photon-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots; if [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ] && [ -e LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@)  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; fi
 
-Rivet-Onium: Analyses/RivetHerwig.so
+Onium-Splitting: Analyses/RivetHerwig.so
 	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSplitting.py --fast --analyse
+
+Onium-Sigma: Analyses/RivetHerwig.so
+	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSigma.py --fast --analyse
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
