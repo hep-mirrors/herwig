@@ -522,8 +522,4 @@ if opts.analyse :
             f.write( htmlTemplate.substitute( {"plots" : plots,
                                                "time"  :'<p>Generated at %s</p>' % datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")  }) )
 
-# setup chi_b0(3P) 210551 chi_b0(3P) 10.5007 0.00071 0.0071 0 0 0 1 0 
-# setup chi_b1(3P) 220553 chi_b1(3P) 10.516 6.6E-5 0.00066 0 0 0 3 0 
-# setup chi_b2(3P) 200555 chi_b2(3P) 10.5264 0.000146 0.00146 0 0 0 5 0 
-
 # setup chi_c2(2P) 100445 chi_c2(2P) 3.929 0.029 0.24 0 0 0 5 0 

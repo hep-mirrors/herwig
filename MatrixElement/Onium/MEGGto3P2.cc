@@ -28,7 +28,7 @@ using namespace Herwig;
 void MEGGto3P2::doinit() {
   HwMEBase::doinit();
   // get the non-perturbative ME
-  O1_ = params_->singletMEProduction<1>(state_,n_,1,0);
+  O1_ = params_->singletMEProduction<1>(state_,n_,1,2);
   // get the mass generator of the onium state
   unsigned int iq = 4+state_;
   long id = iq*110+5 + (n_-1)*100000;
