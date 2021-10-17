@@ -217,7 +217,7 @@ protected:
    * @param iopt The rescaling option
    */
   void rescalingOption(unsigned int iopt) {
-    rescaleOption_=iopt;
+    rescaleOption_= iopt;
   }
 
   /**

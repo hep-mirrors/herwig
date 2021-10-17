@@ -1,15 +1,11 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGGto1S0_H
-#define Herwig_MEGGto1S0_H
+#ifndef Herwig_MEPPto1S0Jet_H
+#define Herwig_MEPPto1S0Jet_H
 //
-// This is the declaration of the MEGGto1S0 class.
+// This is the declaration of the MEPPto1S0Jet class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig/PDT/GenericMassGenerator.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "OniumParameters.h"
 
 namespace Herwig {
@@ -17,24 +13,22 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGGto1S0 class implements the colour singlet matrix element for
- * \f$gg\to \^{1}S_0\f$.
+ * The MEPPto1S0Jet class implements the colour singlet processes for
+ * \f$gq\to \^{1}S_0 q\f$, \f$q\bar{q}\to \^{1}S_0 g\f$ and
+ * \f$gg\to \^{1}S_0 g\f$.
  *
- * @see \ref MEGGto1S0Interfaces "The interfaces"
- * defined for MEGGto1S0.
+ * @see \ref MEPPto1S0JetInterfaces "The interfaces"
+ * defined for MEPPto1S0Jet.
  */
-class MEGGto1S0: public HwMEBase {
+class MEPPto1S0Jet: public HwMEBase {
 
 public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
+  
   /**
    * The default constructor.
    */
-  MEGGto1S0() : O1_(ZERO), state_(ccbar), n_(1)
+  MEPPto1S0Jet(): O1_(ZERO), state_(ccbar), n_(1), process_(0), mOpt_(0)
   {}
-  //@}
 
 public:
 
@@ -45,7 +39,7 @@ public:
    * element is given.
    */
   virtual unsigned int orderInAlphaS() const {
-    return 2;
+    return 3;
   }
 
   /**
@@ -71,28 +65,6 @@ public:
   virtual Energy2 scale() const;
 
   /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
-
-  /**
-   * Return the matrix element squared differential in the variables
-   * given by the last call to generateKinematics().
-   */
-  virtual CrossSection dSigHatDR() const;
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -116,11 +88,6 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   //@}
 
 
@@ -185,14 +152,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGGto1S0 & operator=(const MEGGto1S0 &) = delete;
+  MEPPto1S0Jet & operator=(const MEPPto1S0Jet &) = delete;
 
 private:
-
-  /**
-   *   Parameters for the form-factors
-   */
-  //@{
+  
   /**
    *  Access to the parameters for the quarkonium states
    */
@@ -214,12 +177,16 @@ private:
   unsigned int n_;
 
   /**
-   *  The mass generator for the Higgs
+   *  Which processes to generate
    */
-  GenericMassGeneratorPtr massGen_;
-  //@}
+  unsigned int process_;
+
+  /**
+   *  Option for the onium mass
+   */
+  unsigned int mOpt_;
 };
 
 }
 
-#endif /* Herwig_MEGGto1S0_H */
+#endif /* Herwig_MEPPto1S0Jet_H */
