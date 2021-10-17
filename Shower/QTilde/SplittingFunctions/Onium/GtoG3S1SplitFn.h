@@ -142,16 +142,17 @@ public:
   generatePhiForward(const double z, const Energy2 t, const IdList &,
 		     const RhoDMatrix & rho) {
     assert(rho.iSpin()==PDT::Spin1);
-    double r = sqr(m_)/(t-4.*sqr(m_));
-    double on  = 0.5*(1.-2.*z*(1.-z)) - 4.*z*(1.-2.*z)*r + 16.*sqr(z*r);
-    double off = z*(1.-z) + 4.*z*(1.-2.*z)*r - 16.*sqr(z*r);
-    double max = on+ 2.*abs(rho(0,2))*off;
-    vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*on/max));
-    output.push_back(make_pair(-2, rho(0,2)*off/max));
-    output.push_back(make_pair( 2, rho(2,0)*off/max));
-    return output;
+    // double r = sqr(m_)/(t-4.*sqr(m_));
+    // double on  = 0.5*(1.-2.*z*(1.-z)) - 4.*z*(1.-2.*z)*r + 16.*sqr(z*r);
+    // double off = z*(1.-z) + 4.*z*(1.-2.*z)*r - 16.*sqr(z*r);
+    // double max = on+ 2.*abs(rho(0,2))*off;
+    // vector<pair<int, Complex> > output;
+    // output.reserve(3);
+    // output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*on/max));
+    // output.push_back(make_pair(-2, rho(0,2)*off/max));
+    // output.push_back(make_pair( 2, rho(2,0)*off/max));
+    // return output;
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
   }
 
   /**
@@ -167,15 +168,15 @@ public:
 		      const RhoDMatrix & rho) {
     assert(false);
     assert(rho.iSpin()==PDT::Spin1);
-    double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
-    double off  = (1.-z)/z;
-    double max  = 2.*abs(rho(0,2))*off+diag;
-    vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
-    output.push_back(make_pair( 2,-rho(0,2)           * off/max));
-    output.push_back(make_pair(-2,-rho(2,0)           * off/max));
-    return output;
+    // double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
+    // double off  = (1.-z)/z;
+    // double max  = 2.*abs(rho(0,2))*off+diag;
+    // vector<pair<int, Complex> > output;
+    // output.reserve(3);
+    // output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
+    // output.push_back(make_pair( 2,-rho(0,2)           * off/max));
+    // output.push_back(make_pair(-2,-rho(2,0)           * off/max));
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
   }
   
   
@@ -189,14 +190,20 @@ public:
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
 			   const IdList &, const double phi, bool) {
     // calculate the kernal
-    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
-    Complex ii(0.,1.);
-    double r  = sqr(m_)/(t-4.*sqr(m_));
-    Complex phase = exp(2.*ii*phi);
-    (*kernal)(0,0,0) =  z*(1.+4.*r);
-    (*kernal)(2,2,0) = -(*kernal)(0,0,0) ;
-    (*kernal)(0,2,0) = -(1.-z-4.*z*r)/phase;
-    (*kernal)(2,0,0) = -conj((*kernal)(0,2,0));
+    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
+    // Complex ii(0.,1.);
+    // double r  = sqr(m_)/(t-4.*sqr(m_));
+    // Complex phase = exp(2.*ii*phi);
+    // (*kernal)(0,0,0) =  z*(1.+4.*r);
+    // (*kernal)(2,2,0) = -(*kernal)(0,0,0) ;
+    // (*kernal)(0,2,0) = -(1.-z-4.*z*r)/phase;
+    // (*kernal)(2,0,0) = -conj((*kernal)(0,2,0));
+    (*kernal)(0,0,0) =  1.;
+    (*kernal)(2,2,0) =  1.;
+    (*kernal)(0,0,1) =  1.;
+    (*kernal)(2,2,1) =  1.;
+    (*kernal)(0,0,2) =  1.;
+    (*kernal)(2,2,2) =  1.;
     return kernal;
   }
   //@}
