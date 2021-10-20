@@ -5,7 +5,8 @@ MEGGto1S0.h MEGGto1S0.cc MEPPto1S0Jet.h MEPPto1S0Jet.cc \
 MEGGto3P0.h MEGGto3P0.cc \
 MEGGto3P2.h MEGGto3P2.cc \
 MEGGto1D2.h MEGGto1D2.cc \
-MEPPto3S1Jet.h MEPPto3S1Jet.cc 
+MEPPto3S1Jet.h MEPPto3S1Jet.cc \
+MEPPto1P1Jet.h MEPPto1P1Jet.cc 
 HwMEHadronOnium_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
 HwMEGammaGammaOnium_la_SOURCES = \
