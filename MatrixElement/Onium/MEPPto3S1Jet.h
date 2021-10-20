@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEPPto1S0Jet_H
-#define Herwig_MEPPto1S0Jet_H
+#ifndef Herwig_MEPPto3S1Jet_H
+#define Herwig_MEPPto3S1Jet_H
 //
-// This is the declaration of the MEPPto1S0Jet class.
+// This is the declaration of the MEPPto3S1Jet class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -13,21 +13,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEPPto1S0Jet class implements the colour singlet processes for
- * \f$gq\to \^{1}S_0 q\f$, \f$q\bar{q}\to \^{1}S_0 g\f$ and
- * \f$gg\to \^{1}S_0 g\f$.
+ * The MEPPto3S1Jet class implements the colour singlet processes for
+ * \f$gg\to \^{3}S_1 g\f$.
  *
- * @see \ref MEPPto1S0JetInterfaces "The interfaces"
- * defined for MEPPto1S0Jet.
+ * @see \ref MEPPto3S1JetInterfaces "The interfaces"
+ * defined for MEPPto3S1Jet.
  */
-class MEPPto1S0Jet: public HwMEBase {
+class MEPPto3S1Jet: public HwMEBase {
 
 public:
   
   /**
    * The default constructor.
    */
-  MEPPto1S0Jet() : O1_(ZERO), state_(ccbar), n_(1), process_(0), mOpt_(0)
+  MEPPto3S1Jet(): O1_(ZERO), state_(ccbar), n_(1), mOpt_(0)
   {}
 
 public:
@@ -157,7 +156,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPPto1S0Jet & operator=(const MEPPto1S0Jet &) = delete;
+  MEPPto3S1Jet & operator=(const MEPPto3S1Jet &) = delete;
 
 private:
   
@@ -182,11 +181,6 @@ private:
   unsigned int n_;
 
   /**
-   *  Which processes to generate
-   */
-  unsigned int process_;
-
-  /**
    *  Option for the onium mass
    */
   unsigned int mOpt_;
@@ -194,4 +188,4 @@ private:
 
 }
 
-#endif /* Herwig_MEPPto1S0Jet_H */
+#endif /* Herwig_MEPPto3S1Jet_H */

@@ -62,7 +62,7 @@ describeHerwigMEPPto1S0Jet("Herwig::MEPPto1S0Jet",
 void MEPPto1S0Jet::Init() {
 
   static ClassDocumentation<MEPPto1S0Jet> documentation
-    ("The MEPPto1S0Jet class implements to q qbar -> 1S0 g, g q to 1S0 q"
+    ("The MEPPto1S0Jet class implements the q qbar -> 1S0 g, g q to 1S0 q"
      " and g g to 1S0 g processes");
 
   static Reference<MEPPto1S0Jet,OniumParameters> interfaceParameters
