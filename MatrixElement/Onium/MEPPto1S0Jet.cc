@@ -119,7 +119,7 @@ void MEPPto1S0Jet::Init() {
     (interfaceProcess,
      "GGto1S0G",
      "The g g -> 1S0 g process",
-     3);
+     4);
 
   static Switch<MEPPto1S0Jet,unsigned int> interfaceMassOption
     ("MassOption",
@@ -155,10 +155,12 @@ void MEPPto1S0Jet::getDiagrams() const {
       add(new_ptr((Tree2toNDiagram(2), q, qb, 1, g, 3, ps, 3, g, -3)));
   }
   // g g -> 1S0 g (s,t,u 4-point)
-  add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, ps, 3, g , -4)));
-  add(new_ptr((Tree2toNDiagram(3), g, g, g, 1, ps, 2, g , -5)));
-  add(new_ptr((Tree2toNDiagram(3), g, g, g, 2, ps, 1, g , -6)));
-  add(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, 1, g , -7)));
+  if(process_ == 0 || process_ == 4) {
+    add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, ps, 3, g , -4)));
+    add(new_ptr((Tree2toNDiagram(3), g, g, g, 1, ps, 2, g , -5)));
+    add(new_ptr((Tree2toNDiagram(3), g, g, g, 2, ps, 1, g , -6)));
+    add(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, 1, g , -7)));
+  }
 }
 
 Selector<MEBase::DiagramIndex>
