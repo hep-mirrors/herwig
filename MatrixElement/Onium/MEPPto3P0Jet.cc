@@ -293,39 +293,6 @@ double MEPPto3P0Jet::me2() const {
       // 	   << (output-test)/(output+test) << " " << output/test << "\n";
     }
     else if(mePartonData()[1]->id()<0) {
-      // helicity amplitude version of ME
-      // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-      // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[1],incoming);
-      // SpinorWaveFunction      q4w(meMomenta()[3],mePartonData()[3],outgoing);
-      // vector<VectorWaveFunction> g1;
-      // vector<SpinorBarWaveFunction> q2;
-      // vector<SpinorWaveFunction> q4;
-      // for(unsigned int ix=0;ix<2;++ix) {
-      // 	g1w.reset(2*ix);
-      // 	g1.push_back(g1w);
-      // 	q2w.reset(ix);
-      // 	q2.push_back(q2w);
-      // 	q4w.reset(ix);
-      // 	q4.push_back(q4w);
-      // }
-      // double total(0.);
-      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-      // double phi = meMomenta()[2].phi();
-      // me(0,0,0,0) =-sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
-      // me(0,1,0,1) = exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
-      // me(2,0,0,0) =-exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
-      // me(2,1,0,1) = sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
-      // for(unsigned int ih2=0;ih2<2;++ih2) {
-      //   for(unsigned int ih4=0;ih4<2;++ih4) {
-      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-      // 	  for(unsigned int ih1=0;ih1<2;++ih1) {
-      // 	    Complex amp =-((tHat()-M2)*(fCurrent*g1[ih1].wave())+2.*(meMomenta()[2]*g1[ih1].wave())*(fCurrent*meMomenta()[2]))/M2/M;
-      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-      // 						     << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
-      // 	    total+= norm(amp);
-      //     }
-      //   }
-      // }
       // spin sum version
       double total = -4.*tHat()*(sqr(sHat())+sqr(uHat()))/pow<6,1>(M);
       // final factors
@@ -339,39 +306,6 @@ double MEPPto3P0Jet::me2() const {
     }
     // g q -> 3P0 q
     else if(mePartonData()[1]->id()<6) {
-      // helicity amplitude version of ME
-      // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-      // SpinorWaveFunction      q2w(meMomenta()[1],mePartonData()[1],incoming);
-      // SpinorBarWaveFunction   q4w(meMomenta()[3],mePartonData()[3],outgoing);
-      // vector<VectorWaveFunction> g1;
-      // vector<SpinorWaveFunction> q2;
-      // vector<SpinorBarWaveFunction> q4;
-      // for(unsigned int ix=0;ix<2;++ix) {
-      //   g1w.reset(2*ix);
-      //   g1.push_back(g1w);
-      //   q2w.reset(ix);
-      //   q2.push_back(q2w);
-      //   q4w.reset(ix);
-      //   q4.push_back(q4w);
-      // }
-      // double total(0.);
-      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-      // double phi = meMomenta()[2].phi();
-      // me(0,0,0,0) = sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
-      // me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
-      // me(2,0,0,0) = exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
-      // me(2,1,0,1) =-sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
-      // for(unsigned int ih2=0;ih2<2;++ih2) {
-      //   for(unsigned int ih4=0;ih4<2;++ih4) {
-      //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-      //     for(unsigned int ih1=0;ih1<2;++ih1) {
-      // 	    Complex amp = ((tHat()-M2)*(fCurrent*g1[ih1].wave())+2.*(meMomenta()[2]*g1[ih1].wave())*(fCurrent*meMomenta()[2]))/M2/M;
-      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-      // 						     << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
-      // 	    total+= norm(amp);
-      //     }
-      //   }
-      // }
       // spin sum version
       double total = -4.*tHat()*(sqr(sHat())+sqr(uHat()))/pow<6,1>(M);
       // final factors
@@ -387,40 +321,6 @@ double MEPPto3P0Jet::me2() const {
   }
   // q qbar -> 3P0 g
   else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
-    // helicity amplitude version of ME
-    // SpinorWaveFunction      q1w(meMomenta()[0],mePartonData()[1],incoming);
-    // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[0],incoming);
-    // VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
-    // vector<SpinorWaveFunction> q1;
-    // vector<SpinorBarWaveFunction> q2;
-    // vector<VectorWaveFunction> g4;
-    // for(unsigned int ix=0;ix<2;++ix) {
-    //   g4w.reset(2*ix,vector_phase);
-    //   g4.push_back(g4w);
-    //   q1w.reset(ix);
-    //   q1.push_back(q1w);
-    //   q2w.reset(ix);
-    //   q2.push_back(q2w);
-    // }
-    // double total(0.);
-    // ProductionMatrixElement me(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
-    // double phi = meMomenta()[2].phi();
-    // me(0,1,0,0) = -sqrt(2.*sHat())*tHat()/M2/M;
-    // me(0,1,0,2) = -exp(Complex(0.,-2.*phi))*sqrt(2.*sHat())*uHat()/M2/M;
-    // me(1,0,0,0) =  exp(Complex(0., 2.*phi))*sqrt(2.*sHat())*uHat()/M2/M;
-    // me(1,0,0,2) =  sqrt(2.*sHat())*tHat()/M2/M;
-    // for(unsigned int ih1=0;ih1<2;++ih1) {
-    //   for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-    // 	for(unsigned int ih4=0;ih4<2;++ih4) {
-    // 	  Complex amp = ((sHat()-M2)*(fCurrent*g4[ih4].wave())-2.*(meMomenta()[2]*g4[ih4].wave())*(fCurrent*meMomenta()[3]))/M2/M;
-    // 	  if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
-    // 	    cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-    // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4) << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
-    // 	  total+= norm(amp);
-    //     }
-    //   }
-    // }
     // spin sum version
     double total = 4.*sHat()*(sqr(tHat())+sqr(uHat()))/pow<3,1>(M2);
     // final factors
@@ -528,18 +428,6 @@ void MEPPto3P0Jet::constructVertex(tSubProPtr sub) {
 	me(2,0,0,0) = -exp(Complex(0.,-phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
 	me(2,1,0,1) =  exp(Complex(0.,-phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
       }
-      // Helicity code version
-      // for(unsigned int ih2=0;ih2<2;++ih2) {
-      //   for(unsigned int ih4=0;ih4<2;++ih4) {
-      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-      // 	  for(unsigned int ih1=0;ih1<2;++ih1) {
-      // 	    Complex amp =-((th-M2)*(fCurrent*g1[ih1].wave())+2.*(hard[2]->momentum()*g1[ih1].wave())*(fCurrent*hard[2]->momentum()))/M2/M;
-      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-      // 						      << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-      // 						      << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-      // 	  }
-      // 	}
-      // }
     }
     // g q -> 3P0 q
     else if(hard[1]->id()<6) {
@@ -564,18 +452,6 @@ void MEPPto3P0Jet::constructVertex(tSubProPtr sub) {
 	me(2,0,0,0) =  exp(Complex(0.,-phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
 	me(2,1,0,1) = -exp(Complex(0.,-phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
       }
-      // Helicity code version
-      // for(unsigned int ih2=0;ih2<2;++ih2) {
-      // 	 for(unsigned int ih4=0;ih4<2;++ih4) {
-      // 	   LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-      //     for(unsigned int ih1=0;ih1<2;++ih1) {
-      // 	     Complex amp = ((th-M2)*(fCurrent*g1[ih1].wave())+2.*(hard[2]->momentum()*g1[ih1].wave())*(fCurrent*hard[2]->momentum()))/M2/M;
-      // 	     if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-      // 						       << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-      // 						       << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-      //     }
-      //   }
-      // }
     }
     else
       assert(false);
@@ -602,19 +478,6 @@ void MEPPto3P0Jet::constructVertex(tSubProPtr sub) {
       me(1,0,0,0) = -sqrt(2.*sh)*uh/M2/M;
       me(1,0,0,2) = -double(sqrt(2.*sh)*th/M2/M)*exp(Complex(0.,-2.*phi));
     }
-    // Helicity code version
-    // for(unsigned int ih1=0;ih1<2;++ih1) {
-    //   for(unsigned int ih2=0;ih2<2;++ih2) {
-    // 	LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-    // 	for(unsigned int ih4=0;ih4<2;++ih4) {
-    // 	  Complex amp = ((sh-M2)*(fCurrent*g4[ih4].wave())-2.*(hard[2]->momentum()*g4[ih4].wave())*(fCurrent*hard[3]->momentum()))/M2/M;
-    // 	  if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
-    // 	    cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-    // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4)
-    // 		 << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
-    // 	}
-    //   }
-    // }
   }
   else
     assert(false);
