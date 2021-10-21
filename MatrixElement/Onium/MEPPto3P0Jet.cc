@@ -292,147 +292,145 @@ double MEPPto3P0Jet::me2() const {
       // cerr << "testing matrix element " << output << " " << test << " "
       // 	   << (output-test)/(output+test) << " " << output/test << "\n";
     }
-    //   else if(mePartonData()[1]->id()<0) {
-    //     // helicity amplitude version of ME
-    //     // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-    //     // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[1],incoming);
-    //     // SpinorWaveFunction      q4w(meMomenta()[3],mePartonData()[3],outgoing);
-    //     // vector<VectorWaveFunction> g1;
-    //     // vector<SpinorBarWaveFunction> q2;
-    //     // vector<SpinorWaveFunction> q4;
-    //     // for(unsigned int ix=0;ix<2;++ix) {
-    //     //   g1w.reset(2*ix);
-    //     //   g1.push_back(g1w);
-    //     //   q2w.reset(ix);
-    //     //   q2.push_back(q2w);
-    //     //   q4w.reset(ix);
-    //     //   q4.push_back(q4w);
-    //     // }
-    //     // double total(0.);
-    //     // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-    //     // double phi = meMomenta()[2].phi();
-    //     // me(0,0,0,0) = sHat()/M2;
-    //     // me(0,1,0,1) = -exp(Complex(0.,-2.*phi))*uHat()/M2;
-    //     // me(2,1,0,1) = sHat()/M2;
-    //     // me(2,0,0,0) = -exp(Complex(0., 2.*phi))*uHat()/M2;
-    //     // complex<InvEnergy3> fact = sqrt(-2/tHat())/M2*Complex(0.,1.);
-    //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-    //     //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-    //     //     auto eps = fact*Helicity::epsilon(fCurrent,meMomenta()[2],meMomenta()[0]);
-    //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-    //     // 	    Complex amp = eps*g1[ih1].wave();
-    //     // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-    //     // 						     << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
-    //     // 	    total+= norm(amp);
-    //     //     }
-    //     //   }
-    //     // }
-    //     // spin sum version
-    //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-    //     // final factors
-    //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-    //     // analytic test
-    //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-    //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-    //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-    //   }
-    //   // g q -> 3P0 q
-    //   else if(mePartonData()[1]->id()<6) {
-    //     // helicity amplitude version of ME
-    //     // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-    //     // SpinorWaveFunction      q2w(meMomenta()[1],mePartonData()[1],incoming);
-    //     // SpinorBarWaveFunction   q4w(meMomenta()[3],mePartonData()[3],outgoing);
-    //     // vector<VectorWaveFunction> g1;
-    //     // vector<SpinorWaveFunction> q2;
-    //     // vector<SpinorBarWaveFunction> q4;
-    //     // for(unsigned int ix=0;ix<2;++ix) {
-    //     //   g1w.reset(2*ix);
-    //     //   g1.push_back(g1w);
-    //     //   q2w.reset(ix);
-    //     //   q2.push_back(q2w);
-    //     //   q4w.reset(ix);
-    //     //   q4.push_back(q4w);
-    //     // }
-    //     // double total(0.);
-    //     // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-    //     // double phi = meMomenta()[2].phi();
-    //     // me(0,0,0,0) = sHat()/M2;
-    //     // me(0,1,0,1) = -exp(Complex(0.,-2.*phi))*uHat()/M2;
-    //     // me(2,1,0,1) = sHat()/M2;
-    //     // me(2,0,0,0) = -exp(Complex(0., 2.*phi))*uHat()/M2;
-    //     // complex<InvEnergy3> fact = sqrt(-2/tHat())/M2*Complex(0.,1.);
-    //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-    //     //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-    //     //     auto eps = fact*Helicity::epsilon(fCurrent,meMomenta()[2],meMomenta()[0]);
-    //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-    //     // 	Complex amp = eps*g1[ih1].wave();
-    //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-    //     // 					 << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
-    //     // 	total+= norm(amp);
-    //     //     }
-    //     //   }
-    //     // }
-    //     // spin sum version
-    //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-    //     // final factors
-    //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-    //     // analytic test
-    //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-    //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-    //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-    //   }
+    else if(mePartonData()[1]->id()<0) {
+      // helicity amplitude version of ME
+      // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
+      // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[1],incoming);
+      // SpinorWaveFunction      q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      // vector<VectorWaveFunction> g1;
+      // vector<SpinorBarWaveFunction> q2;
+      // vector<SpinorWaveFunction> q4;
+      // for(unsigned int ix=0;ix<2;++ix) {
+      // 	g1w.reset(2*ix);
+      // 	g1.push_back(g1w);
+      // 	q2w.reset(ix);
+      // 	q2.push_back(q2w);
+      // 	q4w.reset(ix);
+      // 	q4.push_back(q4w);
+      // }
+      // double total(0.);
+      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      // double phi = meMomenta()[2].phi();
+      // me(0,0,0,0) =-sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
+      // me(0,1,0,1) = exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
+      // me(2,0,0,0) =-exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
+      // me(2,1,0,1) = sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+      // 	  for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	    Complex amp =-((tHat()-M2)*(fCurrent*g1[ih1].wave())+2.*(meMomenta()[2]*g1[ih1].wave())*(fCurrent*meMomenta()[2]))/M2/M;
+      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
+      // 						     << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
+      // 	    total+= norm(amp);
+      //     }
+      //   }
+      // }
+      // spin sum version
+      double total = -4.*tHat()*(sqr(sHat())+sqr(uHat()))/pow<6,1>(M);
+      // final factors
+      output = 64.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))*sqr(tHat()-3.*sqr(M))/(81.*sqr(tHat())*pow<4,1>(tHat()-M2))*total;
+      // analytic test
+      // Energy5 R02 = params_->firstDerivativeRadialWaveFunctionSquared(state_,n_);
+      // double test = -16.*Constants::pi*sqr(sHat())*
+      // 	8.*Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))
+      // 	/9./M/M2/sqr(sHat())/tHat()/pow<4,1>(tHat()-M2)*sqr(tHat()-3.*sqr(M));
+      // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+    }
+    // g q -> 3P0 q
+    else if(mePartonData()[1]->id()<6) {
+      // helicity amplitude version of ME
+      // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
+      // SpinorWaveFunction      q2w(meMomenta()[1],mePartonData()[1],incoming);
+      // SpinorBarWaveFunction   q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      // vector<VectorWaveFunction> g1;
+      // vector<SpinorWaveFunction> q2;
+      // vector<SpinorBarWaveFunction> q4;
+      // for(unsigned int ix=0;ix<2;++ix) {
+      //   g1w.reset(2*ix);
+      //   g1.push_back(g1w);
+      //   q2w.reset(ix);
+      //   q2.push_back(q2w);
+      //   q4w.reset(ix);
+      //   q4.push_back(q4w);
+      // }
+      // double total(0.);
+      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      // double phi = meMomenta()[2].phi();
+      // me(0,0,0,0) = sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
+      // me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
+      // me(2,0,0,0) = exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-tHat())*uHat()/M2/M;
+      // me(2,1,0,1) =-sqrt(2.)*sHat()*sqrt(-tHat())/M2/M;
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
+      //     for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	    Complex amp = ((tHat()-M2)*(fCurrent*g1[ih1].wave())+2.*(meMomenta()[2]*g1[ih1].wave())*(fCurrent*meMomenta()[2]))/M2/M;
+      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10) cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
+      // 						     << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4) << "\n";
+      // 	    total+= norm(amp);
+      //     }
+      //   }
+      // }
+      // spin sum version
+      double total = -4.*tHat()*(sqr(sHat())+sqr(uHat()))/pow<6,1>(M);
+      // final factors
+      output = 64.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))*sqr(tHat()-3.*sqr(M))/(81.*sqr(tHat())*pow<4,1>(tHat()-M2))*total;
+      // analytic test
+      // Energy5 R02 = params_->firstDerivativeRadialWaveFunctionSquared(state_,n_);
+      // double test = -16.*Constants::pi*sqr(sHat())*
+      // 	8.*Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))
+      // 	/9./M/M2/sqr(sHat())/tHat()/pow<4,1>(tHat()-M2)*sqr(tHat()-3.*sqr(M));
+      // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+    }
     else assert(false);
   }
-  // // q qbar -> 3P0 g
-  // else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
-  //   // helicity amplitude version of ME
-  //   // SpinorWaveFunction      q1w(meMomenta()[0],mePartonData()[1],incoming);
-  //   // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[0],incoming);
-  //   // VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
-  //   // vector<SpinorWaveFunction> q1;
-  //   // vector<SpinorBarWaveFunction> q2;
-  //   // vector<VectorWaveFunction> g4;
-  //   // for(unsigned int ix=0;ix<2;++ix) {
-  //   //   g4w.reset(2*ix,vector_phase);
-  //   //   g4.push_back(g4w);
-  //   //   q1w.reset(ix);
-  //   //   q1.push_back(q1w);
-  //   //   q2w.reset(ix);
-  //   //   q2.push_back(q2w);
-  //   // }
-  //   // double total(0.);
-  //   // ProductionMatrixElement me(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
-  //   // double phi = meMomenta()[2].phi();
-  //   // me(0,1,0,0) = -tHat()/M2;
-  //   // me(0,1,0,2) =  exp(Complex(0.,-2.*phi))*uHat()/M2;
-  //   // me(1,0,0,0) =  exp(Complex(0., 2.*phi))*uHat()/M2;
-  //   // me(1,0,0,2) = -tHat()/M2;
-  //   // complex<InvEnergy3> fact = sqrt(2./sHat())/M2*Complex(0.,1.);
-  //   // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //   //     LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-  //   //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,meMomenta()[2],meMomenta()[3]);
-  //   // 	for(unsigned int ih4=0;ih4<2;++ih4) {
-  //   // 	  Complex amp = eps*g4[ih4].wave();
-  //   // 	  if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
-  //   // 	    cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
-  //   // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4) << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
-  //   // 	  total+= norm(amp);
-  //   //     }
-  //   //   }
-  //   // }
-  //   // spin sum version
-  //   double total = 2.*(sqr(tHat())+sqr(uHat()))/pow<4,1>(M);
-  //   // final factors
-  //   output = 256.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(81.*sHat()*sqr(sHat()-M2))*total;
-  //   // analytic test
-  //   // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-  //   // double test = 256.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*
-  //   //   R02*(sqr(tHat())+sqr(uHat()))/(27.*M*sHat()*sqr(sHat()-M2));
-  //   // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-  // }
+  // q qbar -> 3P0 g
+  else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
+    // helicity amplitude version of ME
+    // SpinorWaveFunction      q1w(meMomenta()[0],mePartonData()[1],incoming);
+    // SpinorBarWaveFunction   q2w(meMomenta()[1],mePartonData()[0],incoming);
+    // VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
+    // vector<SpinorWaveFunction> q1;
+    // vector<SpinorBarWaveFunction> q2;
+    // vector<VectorWaveFunction> g4;
+    // for(unsigned int ix=0;ix<2;++ix) {
+    //   g4w.reset(2*ix,vector_phase);
+    //   g4.push_back(g4w);
+    //   q1w.reset(ix);
+    //   q1.push_back(q1w);
+    //   q2w.reset(ix);
+    //   q2.push_back(q2w);
+    // }
+    // double total(0.);
+    // ProductionMatrixElement me(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
+    // double phi = meMomenta()[2].phi();
+    // me(0,1,0,0) = -sqrt(2.*sHat())*tHat()/M2/M;
+    // me(0,1,0,2) = -exp(Complex(0.,-2.*phi))*sqrt(2.*sHat())*uHat()/M2/M;
+    // me(1,0,0,0) =  exp(Complex(0., 2.*phi))*sqrt(2.*sHat())*uHat()/M2/M;
+    // me(1,0,0,2) =  sqrt(2.*sHat())*tHat()/M2/M;
+    // for(unsigned int ih1=0;ih1<2;++ih1) {
+    //   for(unsigned int ih2=0;ih2<2;++ih2) {
+    //     LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+    // 	for(unsigned int ih4=0;ih4<2;++ih4) {
+    // 	  Complex amp = ((sHat()-M2)*(fCurrent*g4[ih4].wave())-2.*(meMomenta()[2]*g4[ih4].wave())*(fCurrent*meMomenta()[3]))/M2/M;
+    // 	  if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
+    // 	    cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih4 << " "
+    // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4) << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
+    // 	  total+= norm(amp);
+    //     }
+    //   }
+    // }
+    // spin sum version
+    double total = 4.*sHat()*(sqr(tHat())+sqr(uHat()))/pow<3,1>(M2);
+    // final factors
+    output = 512.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))*sqr(sHat()-3.*M2)/(243.*sqr(sHat())*pow<4,1>(sHat()-M2))*total;
+    // analytic test
+    // Energy5 R02 = params_->firstDerivativeRadialWaveFunctionSquared(state_,n_);
+    // double test = 16.*Constants::pi*8./3.*8.*Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(tHat())+sqr(uHat()))
+    //   	/9./M/M2/sHat()/pow<4,1>(sHat()-M2)*sqr(sHat()-3.*sqr(M));
+    //   cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+  }
   else
     assert(false);
   return output;
@@ -507,123 +505,117 @@ void MEPPto3P0Jet::constructVertex(tSubProPtr sub) {
       // 	cerr << "testing spin correlations " << test << " " << me.average() << " "
       // 	     << abs(test-aver)/(test+aver) << "\n";
     }
-    //   // g qbar -> 3P0 qbar
-    //   else if(hard[1]->id()<0) {
-    //     vector<VectorWaveFunction>    g1;
-    //     vector<SpinorBarWaveFunction> q2;
-    //     vector<SpinorWaveFunction>    q4;
-    //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-    //     SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-    //     SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
-    //     g1[1]=g1[2];
-    //     // matrix element
-    //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-    //     if(!swapped) {
-    //     	me(0,0,0,0) = sh/M2;
-    //     	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-    //     	me(2,1,0,1) = sh/M2;
-    //     	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-    //     }
-    //     else {
-    //     	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-    //     	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-    //     	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-    //     	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-    //     }
-    //     // Helicity code version
-    //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-    //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-    //     //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-    //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-    //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-    //     // 	Complex amp = eps*g1[ih1].wave();
-    //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-    //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-    //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-    //     //     }
-    //     //   }
-    //     // }
-    //   }
-    //   // g q -> 3P0 q
-    //   else if(hard[1]->id()<6) {
-    //     vector<VectorWaveFunction> g1;
-    //     vector<SpinorWaveFunction> q2;
-    //     vector<SpinorBarWaveFunction> q4;
-    //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-    //     SpinorWaveFunction(   q2,hard[1],incoming,false,true);
-    //     SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
-    //     g1[1]=g1[2];
-    //     // matrix element
-    //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-    //     if(!swapped) {
-    // 	me(0,0,0,0) = sh/M2;
-    // 	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-    // 	me(2,1,0,1) = sh/M2;
-    // 	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-    //     }
-    //     else {
-    // 	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-    // 	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-    // 	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-    // 	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-    //     }
-    //     // Helicity code version
-    //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-    //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-    //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-    //     //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-    //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-    //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-    //     // 	Complex amp = eps*g1[ih1].wave();
-    //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-    //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-    //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-    //     //     }
-    //     //   }
-    //     // }
-    //   }
+    // g qbar -> 3P0 qbar
+    else if(hard[1]->id()<0) {
+      vector<VectorWaveFunction>    g1;
+      vector<SpinorBarWaveFunction> q2;
+      vector<SpinorWaveFunction>    q4;
+      VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+      SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
+      g1[1]=g1[2];
+      // matrix element
+      me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      if(!swapped) {
+	me(0,0,0,0) =-sqrt(2.)*sh*sqrt(-th)/M2/M;
+	me(0,1,0,1) = exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,1,0,1) = sqrt(2.)*sh*sqrt(-th)/M2/M;
+      }
+      else {
+	me(0,0,0,0) = -exp(Complex(0., phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
+	me(0,1,0,1) =  exp(Complex(0., phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,0,0,0) = -exp(Complex(0.,-phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,1,0,1) =  exp(Complex(0.,-phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
+      }
+      // Helicity code version
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+      // 	  for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	    Complex amp =-((th-M2)*(fCurrent*g1[ih1].wave())+2.*(hard[2]->momentum()*g1[ih1].wave())*(fCurrent*hard[2]->momentum()))/M2/M;
+      // 	    if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+      // 						      << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
+      // 						      << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
+      // 	  }
+      // 	}
+      // }
+    }
+    // g q -> 3P0 q
+    else if(hard[1]->id()<6) {
+      vector<VectorWaveFunction> g1;
+      vector<SpinorWaveFunction> q2;
+      vector<SpinorBarWaveFunction> q4;
+      VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      SpinorWaveFunction(   q2,hard[1],incoming,false,true);
+      SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
+      g1[1]=g1[2];
+      // matrix element
+      me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      if(!swapped) {
+	me(0,0,0,0) = sqrt(2.)*sh*sqrt(-th)/M2/M;
+	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,0,0,0) = exp(Complex(0., 2.*phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,1,0,1) =-sqrt(2.)*sh*sqrt(-th)/M2/M;
+      }
+      else {
+	me(0,0,0,0) =  exp(Complex(0., phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
+	me(0,1,0,1) = -exp(Complex(0., phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,0,0,0) =  exp(Complex(0.,-phi))*sqrt(2)*sqrt(-th)*uh/M2/M;
+	me(2,1,0,1) = -exp(Complex(0.,-phi))*sqrt(2.)*sh*sqrt(-th)/M2/M;
+      }
+      // Helicity code version
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      // 	 for(unsigned int ih4=0;ih4<2;++ih4) {
+      // 	   LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
+      //     for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	     Complex amp = ((th-M2)*(fCurrent*g1[ih1].wave())+2.*(hard[2]->momentum()*g1[ih1].wave())*(fCurrent*hard[2]->momentum()))/M2/M;
+      // 	     if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+      // 						       << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
+      // 						       << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
+      //     }
+      //   }
+      // }
+    }
     else
       assert(false);
   }
-  // else if(hard[0]->id()==-hard[1]->id()) {
-  //   vector<SpinorWaveFunction>    q1;
-  //   vector<SpinorBarWaveFunction> q2;
-  //   vector<VectorWaveFunction>    g4;
-  //   SpinorWaveFunction(   q1,hard[0],incoming,false,true);
-  //   SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-  //   VectorWaveFunction(   g4,hard[3],outgoing,true,true,true,vector_phase);
-  //   g4[1]=g4[2];
-  //   // matrix element
-  //   me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
-  //   if(!swapped) {
-  //     me(0,1,0,0) = -th/M2;
-  //     me(0,1,0,2) =  exp(Complex(0.,-2.*phi))*uh/M2;
-  //     me(1,0,0,0) =  exp(Complex(0., 2.*phi))*uh/M2;
-  //     me(1,0,0,2) = -th/M2;
-  //   }
-  //   else {
-  //     me(0,1,0,0) =  exp(Complex(0., 2.*phi))*th/M2;
-  //     me(0,1,0,2) = -uh/M2;
-  //     me(1,0,0,0) = -uh/M2;
-  //     me(1,0,0,2) =  exp(Complex(0.,-2.*phi))*th/M2;
-  //   }
-  //   // Helicity code version
-  //   // complex<InvEnergy3> fact = sqrt(2./sh)/M2*Complex(0.,1.);
-  //   // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //   // 	LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-  //   // 	LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[3]->momentum());
-  //   // 	for(unsigned int ih4=0;ih4<2;++ih4) {
-  //   // 	  Complex amp = eps*g4[ih4].wave();
-  //   // 	  //if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
-  //   // 	    cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-  //   // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4)
-  //   // 		 << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
-  //   // 	}
-  //   //   }
-  //   // }
-  // }
+  else if(hard[0]->id()==-hard[1]->id()) {
+    vector<SpinorWaveFunction>    q1;
+    vector<SpinorBarWaveFunction> q2;
+    vector<VectorWaveFunction>    g4;
+    SpinorWaveFunction(   q1,hard[0],incoming,false,true);
+    SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+    VectorWaveFunction(   g4,hard[3],outgoing,true,true,true,vector_phase);
+    g4[1]=g4[2];
+    // matrix element
+    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
+    if(!swapped) {
+      me(0,1,0,0) = -sqrt(2.*sh)*th/M2/M;
+      me(0,1,0,2) = -exp(Complex(0.,-2.*phi))*sqrt(2.*sh)*uh/M2/M;
+      me(1,0,0,0) =  exp(Complex(0., 2.*phi))*sqrt(2.*sh)*uh/M2/M;
+      me(1,0,0,2) =  sqrt(2.*sh)*th/M2/M;
+    }
+    else {
+      me(0,1,0,0) = -double(sqrt(2.*sh)*th/M2/M)*exp(Complex(0., 2.*phi));
+      me(0,1,0,2) =  sqrt(2.*sh)*uh/M2/M;
+      me(1,0,0,0) = -sqrt(2.*sh)*uh/M2/M;
+      me(1,0,0,2) = -double(sqrt(2.*sh)*th/M2/M)*exp(Complex(0.,-2.*phi));
+    }
+    // Helicity code version
+    // for(unsigned int ih1=0;ih1<2;++ih1) {
+    //   for(unsigned int ih2=0;ih2<2;++ih2) {
+    // 	LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+    // 	for(unsigned int ih4=0;ih4<2;++ih4) {
+    // 	  Complex amp = ((sh-M2)*(fCurrent*g4[ih4].wave())-2.*(hard[2]->momentum()*g4[ih4].wave())*(fCurrent*hard[3]->momentum()))/M2/M;
+    // 	  if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
+    // 	    cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+    // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4)
+    // 		 << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
+    // 	}
+    //   }
+    // }
+  }
   else
     assert(false);
   // construct the vertex
