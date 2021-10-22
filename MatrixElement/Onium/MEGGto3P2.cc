@@ -162,7 +162,7 @@ void MEGGto3P2::constructVertex(tSubProPtr sub) {
   g1[1] = g1[2];
   VectorWaveFunction (g2,hard[1],incoming,false,true,true);
   g2[1] = g2[2];
-  // 1D2 wavefunction
+  // 3P2 wavefunction
   vector<TensorWaveFunction> twave;
   TensorWaveFunction(twave,hard[2],outgoing,true,false);
   // matrix element
