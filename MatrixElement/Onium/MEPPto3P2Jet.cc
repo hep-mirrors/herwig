@@ -164,13 +164,61 @@ void MEPPto3P2Jet::getDiagrams() const {
 
 Selector<MEBase::DiagramIndex>
 MEPPto3P2Jet::diagrams(const DiagramVector & diags) const {
+  Energy M=meMomenta()[3].mass();
+  Energy2 M2(sqr(M));
   Selector<DiagramIndex> sel;
+  DVector save(4);
+  if(mePartonData()[1]->id()==ParticleID::g &&
+     mePartonData()[1]->id()==ParticleID::g ) {
+    save[0]=16*M2*(3*M2*sHat()*sqr(tHat()-uHat())+12*sqr(M2)*tHat()*uHat()+2*sqr(sHat())*tHat()*uHat())/(3.*pow<4,1>(M2-sHat())*sHat());
+    save[1]=16*M2*(2*sqr(sHat())*tHat()*sqr(sHat()+tHat())*(2*sqr(sHat())+2*sHat()*tHat()+sqr(tHat()))
+		   +pow<4,1>(M2)*(3*pow<3,1>(sHat())+20*sqr(sHat())*tHat()+29*sHat()*sqr(tHat())+14*pow<3,1>(tHat()))
+		   -pow<3,1>(M2)*(9*pow<4,1>(sHat())+59*pow<3,1>(sHat())*tHat()+97*sqr(sHat())*sqr(tHat())+55*sHat()*pow<3,1>(tHat())+4*pow<4,1>(tHat()))
+		   -M2*sHat()*(sHat()+tHat())*(3*pow<4,1>(sHat())+24*pow<3,1>(sHat())*tHat()+59*sqr(sHat())*sqr(tHat())+38*sHat()*pow<3,1>(tHat())+8*pow<4,1>(tHat()))
+		   +sqr(M2)*(9*pow<5,1>(sHat())+74*pow<4,1>(sHat())*tHat()+163*pow<3,1>(sHat())*sqr(tHat())
+			     +132*sqr(sHat())*pow<3,1>(tHat())+34*sHat()*pow<4,1>(tHat())+2*pow<5,1>(tHat())))
+      /(3.*sqr(M2-sHat())*sHat()*pow<4,1>(M2-uHat())*uHat());
+    save[2]=16*M2*(2*sqr(sHat())*uHat()*sqr(sHat()+uHat())*(2*sqr(sHat())+2*sHat()*uHat()+sqr(uHat()))
+		   +pow<4,1>(M2)*(3*pow<3,1>(sHat())+20*sqr(sHat())*uHat()+29*sHat()*sqr(uHat())+14*pow<3,1>(uHat()))
+		   -pow<3,1>(M2)*(9*pow<4,1>(sHat())+59*pow<3,1>(sHat())*uHat()+97*sqr(sHat())*sqr(uHat())+55*sHat()*pow<3,1>(uHat())+4*pow<4,1>(uHat()))
+		   -M2*sHat()*(sHat()+uHat())*(3*pow<4,1>(sHat())+24*pow<3,1>(sHat())*uHat()+59*sqr(sHat())*sqr(uHat())+38*sHat()*pow<3,1>(uHat())+8*pow<4,1>(uHat()))
+		   +sqr(M2)*(9*pow<5,1>(sHat())+74*pow<4,1>(sHat())*uHat()+163*pow<3,1>(sHat())*sqr(uHat())
+			     +132*sqr(sHat())*pow<3,1>(uHat())+34*sHat()*pow<4,1>(uHat())+2*pow<5,1>(uHat())))
+      /(3.*sqr(M2-sHat())*sHat()*pow<4,1>(M2-tHat())*tHat());
+    save[3]=16*M2*(4*sqr(sHat())*pow<5,1>(tHat())*pow<5,1>(uHat())+6*pow<9,1>(M2)*sHat()*(4*sqr(tHat())+9*tHat()*uHat()+4*sqr(uHat()))
+		   -pow<10,1>(M2)*(21*sqr(tHat())+46*tHat()*uHat()+21*sqr(uHat()))
+		   -pow<8,1>(M2)*(72*pow<4,1>(tHat())+311*pow<3,1>(tHat())*uHat()
+				  +440*sqr(tHat())*sqr(uHat())+311*tHat()*pow<3,1>(uHat())+72*pow<4,1>(uHat()))
+		   +pow<7,1>(M2)*sHat()*(153*pow<4,1>(tHat())+649*pow<3,1>(tHat())*uHat()
+					 +962*sqr(tHat())*sqr(uHat())+649*tHat()*pow<3,1>(uHat())+153*pow<4,1>(uHat()))
+		   +2*M2*sHat()*sqr(tHat())*sqr(uHat())*(3*pow<6,1>(tHat())+6*pow<5,1>(tHat())*uHat()+16*pow<4,1>(tHat())*sqr(uHat())
+							 +14*pow<3,1>(tHat())*pow<3,1>(uHat())+16*sqr(tHat())*pow<4,1>(uHat())
+							 +6*tHat()*pow<5,1>(uHat())+3*pow<6,1>(uHat()))
+		   +pow<6,1>(M2)*(45*pow<6,1>(tHat())+308*pow<5,1>(tHat())*uHat()+808*pow<4,1>(tHat())*sqr(uHat())
+				  +1174*pow<3,1>(tHat())*pow<3,1>(uHat())+808*sqr(tHat())*pow<4,1>(uHat())
+				  +308*tHat()*pow<5,1>(uHat())+45*pow<6,1>(uHat()))
+		   +pow<5,1>(M2)*sHat()*(135*pow<6,1>(tHat())+819*pow<5,1>(tHat())*uHat()+1941*pow<4,1>(tHat())*sqr(uHat())
+					 +2444*pow<3,1>(tHat())*pow<3,1>(uHat())+1941*sqr(tHat())*pow<4,1>(uHat())+819*tHat()*pow<5,1>(uHat())+135*pow<6,1>(uHat()))
+		   +pow<3,1>(M2)*sHat()*(12*pow<8,1>(tHat())+120*pow<7,1>(tHat())*uHat()+419*pow<6,1>(tHat())*sqr(uHat())
+					 +805*pow<5,1>(tHat())*pow<3,1>(uHat())+938*pow<4,1>(tHat())*pow<4,1>(uHat())
+					 +805*pow<3,1>(tHat())*pow<5,1>(uHat())+419*sqr(tHat())*pow<6,1>(uHat())
+					 +120*tHat()*pow<7,1>(uHat())+12*pow<8,1>(uHat()))
+		   +sqr(M2)*tHat()*uHat()*(18*pow<8,1>(tHat())+84*pow<7,1>(tHat())*uHat()+229*pow<6,1>(tHat())*sqr(uHat())
+					   +396*pow<5,1>(tHat())*pow<3,1>(uHat())+490*pow<4,1>(tHat())*pow<4,1>(uHat())
+					   +396*pow<3,1>(tHat())*pow<5,1>(uHat())+229*sqr(tHat())*pow<6,1>(uHat())
+					   +84*tHat()*pow<7,1>(uHat())+18*pow<8,1>(uHat()))
+		   +pow<4,1>(M2)*(48*pow<8,1>(tHat())+355*pow<7,1>(tHat())*uHat()+1211*pow<6,1>(tHat())*sqr(uHat())
+				  +2262*pow<5,1>(tHat())*pow<3,1>(uHat())+2778*pow<4,1>(tHat())*pow<4,1>(uHat())
+				  +2262*pow<3,1>(tHat())*pow<5,1>(uHat())+1211*sqr(tHat())*pow<6,1>(uHat())
+				  +355*tHat()*pow<7,1>(uHat())+48*pow<8,1>(uHat())))
+      /(3.*pow<4,1>(M2-sHat())*sHat()*pow<4,1>(M2-tHat())*pow<4,1>(M2-uHat()));
+  }
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
     if ( diags[i]->id() == -1 ||
   	 diags[i]->id() == -2 ||
   	 diags[i]->id() == -3 ) sel.insert(1.0, i);
     else
-      sel.insert(meInfo()[abs(diags[i]->id())-4],i);
+      sel.insert(save[abs(diags[i]->id())-4],i);
   return sel;
 }
 
@@ -229,69 +277,22 @@ double MEPPto3P2Jet::me2() const {
   if(mePartonData()[0]->id()==ParticleID::g) {
     // g qbar -> 3P2 qbar
     if(mePartonData()[1]->id()==ParticleID::g) {
-      // // weights for the different diagrams
-      // DVector save(4,0.);
-      // save[0] = (8*sqr(sHat()-3*M2)*tHat()*uHat())/pow<4,1>(tHat() + uHat());
-      // save[1] = (4*tHat()*sqr(uHat()-3*M2)*
-      // 		 (pow<4,1>(M2) + pow<4,1>(sHat()) +pow<4,1>(tHat()) - 
-      // 		  2*(pow<3,1>(M2) + pow<3,1>(sHat()) - pow<3,1>(tHat()))*uHat() + 
-      // 		  (sqr(M2) + sqr(sHat()) + sqr(tHat()))*sqr(uHat())))/
-      // 	(pow<4,1>(M2 - uHat())*uHat()*sqr(tHat() + uHat()));
-      // save[2] = (4*sqr(-3*M2 + tHat())*uHat()*
-      // 		 (pow<4,1>(M2) + pow<4,1>(sHat()) - 2*pow<3,1>(M2)*tHat() - 
-      // 		  2*pow<3,1>(sHat())*tHat() + sqr(M2)*sqr(tHat()) + 
-      // 		  sqr(sHat())*sqr(tHat()) + sqr(uHat())*sqr(tHat() + uHat())))/
-      // 	(pow<4,1>(M2 - tHat())*tHat()*sqr(tHat() + uHat()));
-      // save[3]=tHat()*uHat()*(16*pow<10,1>(M2)-32*pow<9,1>(M2)*(tHat()+uHat())
-      // 			     +2*sHat()*sqr(tHat())*sqr(tHat()-uHat())*sqr(uHat())*pow<3,1>(tHat()+uHat())
-      // 			     +sqr(tHat())*sqr(uHat())*pow<4,1>(tHat()+uHat())*(sqr(tHat())+sqr(uHat()))
-      // 			     +2*pow<3,1>(sHat())*(tHat()+uHat())*(sqr(tHat())+sqr(uHat()))*
-      // 			     (sqr(tHat())-tHat()*uHat()+sqr(uHat()))*(sqr(tHat())+tHat()*uHat()+sqr(uHat()))
-      // 			     +4*pow<8,1>(M2)*(4*sqr(sHat())+5*sqr(tHat())+28*tHat()*uHat()+5*sqr(uHat()))
-      // 			     +pow<4,1>(sHat())*sqr(pow<3,1>(tHat())+pow<3,1>(uHat()))
-      // 			     +sqr(sHat())*(pow<8,1>(tHat())+2*pow<7,1>(tHat())*uHat()
-      // 					   +6*pow<6,1>(tHat())*sqr(uHat())+4*pow<5,1>(tHat())*pow<3,1>(uHat())
-      // 					   +14*pow<4,1>(tHat())*pow<4,1>(uHat())+4*pow<3,1>(tHat())*pow<5,1>(uHat())
-      // 					   +6*sqr(tHat())*pow<6,1>(uHat())+2*tHat()*pow<7,1>(uHat())+pow<8,1>(uHat()))
-      // 			     -4*pow<7,1>(M2)*(16*pow<3,1>(sHat())+26*sqr(sHat())*(tHat()+uHat())
-      // 					      +4*sHat()*(2*sqr(tHat())+tHat()*uHat()+2*sqr(uHat()))
-      // 					      +(tHat()+uHat())*(7*sqr(tHat())+22*tHat()*uHat()+7*sqr(uHat())))
-      // 			     +pow<6,1>(M2)*(64*pow<4,1>(sHat())+280*pow<3,1>(sHat())*(tHat()+uHat())
-      // 					    +2*sHat()*(tHat()+uHat())*(87*sqr(tHat())-40*tHat()*uHat()+87*sqr(uHat()))
-      // 					    +sqr(sHat())*(397*sqr(tHat())+482*tHat()*uHat()+397*sqr(uHat()))
-      // 					    +10*(9*pow<4,1>(tHat())+3*pow<3,1>(tHat())*uHat()
-      // 						 +28*sqr(tHat())*sqr(uHat())+3*tHat()*pow<3,1>(uHat())+9*pow<4,1>(uHat())))
-      // 			     -2*pow<5,1>(M2)*(72*pow<4,1>(sHat())*(tHat()+uHat())+3*sqr(sHat())*(tHat()+uHat())*(137*sqr(tHat())+62*tHat()*uHat()+137*sqr(uHat()))+pow<3,1>(sHat())*(317*sqr(tHat())+378*tHat()*uHat()+317*sqr(uHat()))+2*(tHat()+uHat())*(40*pow<4,1>(tHat())-21*pow<3,1>(tHat())*uHat()+66*sqr(tHat())*sqr(uHat())-21*tHat()*pow<3,1>(uHat())+40*pow<4,1>(uHat()))+sHat()*(213*pow<4,1>(tHat())+130*pow<3,1>(tHat())*uHat()+178*sqr(tHat())*sqr(uHat())+130*tHat()*pow<3,1>(uHat())+213*pow<4,1>(uHat())))
-      // 			     +pow<4,1>(M2)*(3*pow<4,1>(sHat())*(59*sqr(tHat())+54*tHat()*uHat()+59*sqr(uHat()))+4*pow<3,1>(sHat())*(tHat()+uHat())*(180*sqr(tHat())+91*tHat()*uHat()+180*sqr(uHat()))+2*sHat()*(tHat()+uHat())*(268*pow<4,1>(tHat())-47*pow<3,1>(tHat())*uHat()+282*sqr(tHat())*sqr(uHat())-47*tHat()*pow<3,1>(uHat())+268*pow<4,1>(uHat()))+sqr(sHat())*(981*pow<4,1>(tHat())+1496*pow<3,1>(tHat())*uHat()+2054*sqr(tHat())*sqr(uHat())+1496*tHat()*pow<3,1>(uHat())+981*pow<4,1>(uHat()))+2*(80*pow<6,1>(tHat())+111*pow<5,1>(tHat())*uHat()+30*pow<4,1>(tHat())*sqr(uHat())+138*pow<3,1>(tHat())*pow<3,1>(uHat())+30*sqr(tHat())*pow<4,1>(uHat())+111*tHat()*pow<5,1>(uHat())+80*pow<6,1>(uHat())))
-      // 			     +2*pow<3,1>(M2)*(-2*pow<4,1>(sHat())*(tHat()+uHat())*(31*sqr(tHat())-4*tHat()*uHat()+31*sqr(uHat()))-2*sqr(sHat())*(tHat()+uHat())*(157*pow<4,1>(tHat())+102*pow<3,1>(tHat())*uHat()+306*sqr(tHat())*sqr(uHat())+102*tHat()*pow<3,1>(uHat())+157*pow<4,1>(uHat()))-pow<3,1>(sHat())*(243*pow<4,1>(tHat())+336*pow<3,1>(tHat())*uHat()+514*sqr(tHat())*sqr(uHat())+336*tHat()*pow<3,1>(uHat())+243*pow<4,1>(uHat()))-3*(tHat()+uHat())*(14*pow<6,1>(tHat())+21*pow<5,1>(tHat())*uHat()+8*pow<4,1>(tHat())*sqr(uHat())+18*pow<3,1>(tHat())*pow<3,1>(uHat())+8*sqr(tHat())*pow<4,1>(uHat())+21*tHat()*pow<5,1>(uHat())+14*pow<6,1>(uHat()))-sHat()*(168*pow<6,1>(tHat())+209*pow<5,1>(tHat())*uHat()+150*pow<4,1>(tHat())*sqr(uHat())+186*pow<3,1>(tHat())*pow<3,1>(uHat())+150*sqr(tHat())*pow<4,1>(uHat())+209*tHat()*pow<5,1>(uHat())+168*pow<6,1>(uHat())))
-      // 			     +sqr(M2)*(18*pow<8,1>(tHat())+76*pow<7,1>(tHat())*uHat()+157*pow<6,1>(tHat())*sqr(uHat())+90*pow<5,1>(tHat())*pow<3,1>(uHat())+126*pow<4,1>(tHat())*pow<4,1>(uHat())+90*pow<3,1>(tHat())*pow<5,1>(uHat())+157*sqr(tHat())*pow<6,1>(uHat())+76*tHat()*pow<7,1>(uHat())+18*pow<8,1>(uHat())+18*pow<4,1>(sHat())*(sqr(tHat())+tHat()*uHat()+sqr(uHat()))*(3*sqr(tHat())-2*tHat()*uHat()+3*sqr(uHat()))+2*pow<3,1>(sHat())*(tHat()+uHat())*(91*pow<4,1>(tHat())+23*pow<3,1>(tHat())*uHat()+164*sqr(tHat())*sqr(uHat())+23*tHat()*pow<3,1>(uHat())+91*pow<4,1>(uHat()))+2*sHat()*(tHat()+uHat())*(45*pow<6,1>(tHat())+43*pow<5,1>(tHat())*uHat()+17*pow<4,1>(tHat())*sqr(uHat())+36*pow<3,1>(tHat())*pow<3,1>(uHat())+17*sqr(tHat())*pow<4,1>(uHat())+43*tHat()*pow<5,1>(uHat())+45*pow<6,1>(uHat()))+sqr(sHat())*(201*pow<6,1>(tHat())+350*pow<5,1>(tHat())*uHat()+620*pow<4,1>(tHat())*sqr(uHat())+742*pow<3,1>(tHat())*pow<3,1>(uHat())+620*sqr(tHat())*pow<4,1>(uHat())+350*tHat()*pow<5,1>(uHat())+201*pow<6,1>(uHat())))
-      // 			     +2*M2*(-(tHat()*uHat()*pow<3,1>(tHat()+uHat())*(3*tHat()+uHat())*(tHat()+3*uHat())*(sqr(tHat())-tHat()*uHat()+sqr(uHat())))-6*pow<4,1>(sHat())*(pow<5,1>(tHat())+pow<3,1>(tHat())*sqr(uHat())+sqr(tHat())*pow<3,1>(uHat())+pow<5,1>(uHat()))-sqr(sHat())*(tHat()+uHat())*(13*pow<6,1>(tHat())+13*pow<5,1>(tHat())*uHat()+30*pow<4,1>(tHat())*sqr(uHat())+36*pow<3,1>(tHat())*pow<3,1>(uHat())+30*sqr(tHat())*pow<4,1>(uHat())+13*tHat()*pow<5,1>(uHat())+13*pow<6,1>(uHat()))-pow<3,1>(sHat())*(16*pow<6,1>(tHat())+19*pow<5,1>(tHat())*uHat()+31*pow<4,1>(tHat())*sqr(uHat())+32*pow<3,1>(tHat())*pow<3,1>(uHat())+31*sqr(tHat())*pow<4,1>(uHat())+19*tHat()*pow<5,1>(uHat())+16*pow<6,1>(uHat()))-sHat()*(3*pow<8,1>(tHat())+9*pow<7,1>(tHat())*uHat()+19*pow<6,1>(tHat())*sqr(uHat())-5*pow<5,1>(tHat())*pow<3,1>(uHat())+12*pow<4,1>(tHat())*pow<4,1>(uHat())-5*pow<3,1>(tHat())*pow<5,1>(uHat())+19*sqr(tHat())*pow<6,1>(uHat())+9*tHat()*pow<7,1>(uHat())+3*pow<8,1>(uHat()))))/(pow<4,1>(M2-tHat())*pow<4,1>(M2-uHat())*pow<4,1>(tHat()+uHat()));
-      // meInfo(save);
-      // // matrix element
-      // output = 64./9.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/sHat()*
-      // 	(9*pow<4,1>(M2)*sqr(M2-tHat())*sqr(M2-uHat())*sqr(tHat()+uHat())*
-      // 	 sqr(sqr(tHat())+tHat()*uHat()+sqr(uHat())-M2*(tHat()+uHat()))
-      // 	 +pow<4,1>(sHat())*sqr(tHat()+uHat())*sqr(uHat()*(sHat()+uHat())*(sqr(sHat())+sHat()*uHat()+sqr(uHat()))
-      // 						  +sqr(M2)*(3*sqr(sHat())+6*sHat()*uHat()+sqr(uHat()))
-      // 						  -M2*(3*sHat()+uHat())*(sqr(sHat())+2*sHat()*uHat()+2*sqr(uHat())))
-      // 	 +sqr(M2-tHat())*pow<4,1>(tHat())*sqr(uHat()*(tHat()+uHat())*(sqr(tHat())+tHat()*uHat()+sqr(uHat()))
-      // 					      +sqr(M2)*(3*sqr(tHat())+6*tHat()*uHat()+sqr(uHat()))
-      // 					      -M2*(3*tHat()+uHat())*(sqr(tHat())+2*tHat()*uHat()+2*sqr(uHat())))
-      // 	 +sqr(M2-uHat())*pow<4,1>(uHat())*sqr(tHat()*(tHat()+uHat())*(sqr(tHat())+tHat()*uHat()+sqr(uHat()))
-      // 					      -M2*(tHat()+3*uHat())*(2*sqr(tHat())+2*tHat()*uHat()+sqr(uHat()))
-      // 					      +sqr(M2)*(sqr(tHat())+6*tHat()*uHat()+3*sqr(uHat()))))
-      // 	/(pow<4,1>(M2-tHat())*tHat()*pow<4,1>(M2-uHat())*uHat()*pow<4,1>(tHat()+uHat()));
-      // // test vs NPB 291 731
-      // // Energy5 R02 = params_->firstDerivativeRadialWaveFunctionSquared(state_,n_);
-      // // Energy6 Q(sHat()*tHat()*uHat());
-      // // Energy4 P(sHat()*tHat()+tHat()*uHat()+uHat()*sHat());
-      // // double test = 16.*Constants::pi*sqr(sHat())*
-      // // 	4.*Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02/M/M2/sqr(sHat())/Q/pow<4,1>(Q-M2*P)*
-      // // 	(9.*sqr(M2*sqr(P))*(pow<4,1>(M2)-2.*sqr(M2)*P+sqr(P)) -6*M2*pow<3,1>(P)*Q*(2.*pow<4,1>(M2)-5.*sqr(M2)*P+sqr(P))
-      // // 	 -sqr(P*Q)*(pow<4,1>(M2)+2.*sqr(M2)*P-sqr(P))+2.*M2*P*pow<3,1>(Q)*(sqr(M2)-P)+6.*pow<4,1>(M*Q));
-      // // cerr << "testing matrix element " << output << " " << test << " "
-      // // 	   << (output-test)/(output+test) << " " << output/test << "\n";
-      assert(false);
+      // matrix element
+      output = 8.*O1_*pow(Constants::pi*standardModel()->alphaS(scale()),3)/(15.*sqr(M2)*M)*
+	(16*M2*(12*pow<10,1>(M2)*pow<4,1>(tHat()+uHat())+2*sqr(tHat())*sqr(uHat())*sqr(tHat()+uHat())*pow<4,1>(sqr(tHat())+tHat()*uHat()+sqr(uHat()))-24*pow<9,1>(M2)*pow<3,1>(tHat()+uHat())*(3*sqr(tHat())+5*tHat()*uHat()+3*sqr(uHat()))+pow<8,1>(M2)*sqr(tHat()+uHat())*(204*pow<4,1>(tHat())+651*pow<3,1>(tHat())*uHat()+880*sqr(tHat())*sqr(uHat())+651*tHat()*pow<3,1>(uHat())+204*pow<4,1>(uHat()))-M2*tHat()*uHat()*(tHat()+uHat())*sqr(sqr(tHat())+tHat()*uHat()+sqr(uHat()))*(12*pow<6,1>(tHat())+48*pow<5,1>(tHat())*uHat()+43*pow<4,1>(tHat())*sqr(uHat())+6*pow<3,1>(tHat())*pow<3,1>(uHat())+43*sqr(tHat())*pow<4,1>(uHat())+48*tHat()*pow<5,1>(uHat())+12*pow<6,1>(uHat()))-pow<7,1>(M2)*(tHat()+uHat())*(360*pow<6,1>(tHat())+1635*pow<5,1>(tHat())*uHat()+3314*pow<4,1>(tHat())*sqr(uHat())+4114*pow<3,1>(tHat())*pow<3,1>(uHat())+3314*sqr(tHat())*pow<4,1>(uHat())+1635*tHat()*pow<5,1>(uHat())+360*pow<6,1>(uHat()))-pow<5,1>(M2)*(tHat()+uHat())*(360*pow<8,1>(tHat())+1914*pow<7,1>(tHat())*uHat()+4376*pow<6,1>(tHat())*sqr(uHat())+6271*pow<5,1>(tHat())*pow<3,1>(uHat())+6914*pow<4,1>(tHat())*pow<4,1>(uHat())+6271*pow<3,1>(tHat())*pow<5,1>(uHat())+4376*sqr(tHat())*pow<6,1>(uHat())+1914*tHat()*pow<7,1>(uHat())+360*pow<8,1>(uHat()))+pow<6,1>(M2)*(432*pow<8,1>(tHat())+2526*pow<7,1>(tHat())*uHat()+6652*pow<6,1>(tHat())*sqr(uHat())+10877*pow<5,1>(tHat())*pow<3,1>(uHat())+12640*pow<4,1>(tHat())*pow<4,1>(uHat())+10877*pow<3,1>(tHat())*pow<5,1>(uHat())+6652*sqr(tHat())*pow<6,1>(uHat())+2526*tHat()*pow<7,1>(uHat())+432*pow<8,1>(uHat()))-pow<3,1>(M2)*(tHat()+uHat())*(72*pow<10,1>(tHat())+543*pow<9,1>(tHat())*uHat()+1542*pow<8,1>(tHat())*sqr(uHat())+2336*pow<7,1>(tHat())*pow<3,1>(uHat())+2412*pow<6,1>(tHat())*pow<4,1>(uHat())+2266*pow<5,1>(tHat())*pow<5,1>(uHat())+2412*pow<4,1>(tHat())*pow<6,1>(uHat())+2336*pow<3,1>(tHat())*pow<7,1>(uHat())+1542*sqr(tHat())*pow<8,1>(uHat())+543*tHat()*pow<9,1>(uHat())+72*pow<10,1>(uHat()))+pow<4,1>(M2)*(204*pow<10,1>(tHat())+1455*pow<9,1>(tHat())*uHat()+4328*pow<8,1>(tHat())*sqr(uHat())+7504*pow<7,1>(tHat())*pow<3,1>(uHat())+9232*pow<6,1>(tHat())*pow<4,1>(uHat())+9614*pow<5,1>(tHat())*pow<5,1>(uHat())+9232*pow<4,1>(tHat())*pow<6,1>(uHat())+7504*pow<3,1>(tHat())*pow<7,1>(uHat())+4328*sqr(tHat())*pow<8,1>(uHat())+1455*tHat()*pow<9,1>(uHat())+204*pow<10,1>(uHat()))+sqr(M2)*(12*pow<12,1>(tHat())+144*pow<11,1>(tHat())*uHat()+616*pow<10,1>(tHat())*sqr(uHat())+1345*pow<9,1>(tHat())*pow<3,1>(uHat())+1824*pow<8,1>(tHat())*pow<4,1>(uHat())+1806*pow<7,1>(tHat())*pow<5,1>(uHat())+1688*pow<6,1>(tHat())*pow<6,1>(uHat())+1806*pow<5,1>(tHat())*pow<7,1>(uHat())+1824*pow<4,1>(tHat())*pow<8,1>(uHat())+1345*pow<3,1>(tHat())*pow<9,1>(uHat())+616*sqr(tHat())*pow<10,1>(uHat())+144*tHat()*pow<11,1>(uHat())+12*pow<12,1>(uHat()))))/(3.*sHat()*pow<4,1>(M2-tHat())*tHat()*pow<4,1>(M2-uHat())*uHat()*pow<4,1>(tHat()+uHat()));
+      // test vs NPB 291 731
+      // Energy5 R02 = params_->firstDerivativeRadialWaveFunctionSquared(state_,n_);
+      // Energy6 Q(sHat()*tHat()*uHat());
+      // Energy4 P(sHat()*tHat()+tHat()*uHat()+uHat()*sHat());
+      // Energy8 M8(pow<4,1>(M2));
+      // double test = 16.*Constants::pi*sqr(sHat())*
+      // 	4.*Constants::pi*R02*pow(standardModel()->alphaS(scale()),3)/(M*M2*sqr(sHat())*Q*pow<4,1>(Q-M2*P))*
+      // 	(12.*sqr(M2)*pow<4,1>(P)*(M8 - 2*sqr(M2)*P + sqr(P))
+      // 	 -3.*M2*P*sqr(P)*(8*M8 - sqr(M2)*P + 4*sqr(P))*Q
+      // 	 - 2*sqr(P*Q)*(7*M8 - 43*sqr(M2)*P - sqr(P))
+      // 	 + M2*P*Q*sqr(Q)*(16*sqr(M2) - 61*P) + 12*sqr(M2*sqr(Q)));
+      // cerr << "testing matrix element " << output << " " << test << " "
+      // 	   << (output-test)/(output+test) << " " << output/test << "\n";
     }
     // g qbar -> 3P2 qbar
     else if(mePartonData()[1]->id()<0) {
@@ -559,37 +560,44 @@ void MEPPto3P2Jet::constructVertex(tSubProPtr sub) {
   if(hard[0]->id()==ParticleID::g) {
     // g g -> 3P2 g
     if(hard[1]->id()==ParticleID::g) {
-      //     vector<VectorWaveFunction> g1,g2,g4;
-      //     VectorWaveFunction( g1,hard[0],incoming,false, true,true,vector_phase);
-      //     VectorWaveFunction( g2,hard[1],incoming,false, true,true,vector_phase);
-      //     VectorWaveFunction( g4,hard[3],outgoing,true , true,true,vector_phase);
-      //     ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2,PDT::Spin1);
-      //     Complex phase = exp(Complex(0.,phi));
-      //     Energy2 um(uh-M2),tm(th-M2),sm(sh-M2);
-      //     me(0,0,0,0)=(sqrt(2)*phase*sqr(sh)*(uh*(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))+sqr(M2)*(3*sqr(sh)+6*sh*uh+sqr(uh))-M2*(3*sh+uh)*(sqr(sh)+2*sh*uh+2*sqr(uh))))/(sm*sqr(tm)*sqrt(th*uh)*sqr(um));
-      //     me(0,0,0,2)=(3*sqrt(2)*sqr(M2)*(M2*sm+sqr(th)+th*uh+sqr(uh)))/(phase*sm*tm*sqrt(th*uh)*um);
-      //     me(0,2,0,0)=-((sqrt(2)*sqr(th)*(-(sm*uh*(sqr(th)+th*uh+sqr(uh)))+sqr(M2)*(3*sqr(th)+6*th*uh+sqr(uh))-M2*(3*th+uh)*(sqr(th)+2*th*uh+2*sqr(uh))))/(phase*sqr(sm)*(-M2+th)*sqrt(th*uh)*sqr(um)));
-      //     me(0,2,0,2)=(sqrt(2)*sqr(uh)*(-(sm*th*(sqr(th)+th*uh+sqr(uh)))-M2*(th+3*uh)*(2*sqr(th)+2*th*uh+sqr(uh))+sqr(M2)*(sqr(th)+6*th*uh+3*sqr(uh))))/(pow(phase,3)*sqr(sm)*sqr(tm)*sqrt(th*uh)*(-M2+uh));
-      //     me(2,0,0,0)=-((sqrt(2)*pow(phase,3)*sqr(uh)*(-(sm*th*(sqr(th)+th*uh+sqr(uh)))-M2*(th+3*uh)*(2*sqr(th)+2*th*uh+sqr(uh))+sqr(M2)*(sqr(th)+6*th*uh+3*sqr(uh))))/(sqr(sm)*sqr(tm)*sqrt(th*uh)*(-M2+uh)));
-      //     me(2,0,0,2)=(sqrt(2)*phase*sqr(th)*(-(sm*uh*(sqr(th)+th*uh+sqr(uh)))+sqr(M2)*(3*sqr(th)+6*th*uh+sqr(uh))-M2*(3*th+uh)*(sqr(th)+2*th*uh+2*sqr(uh))))/(sqr(sm)*(-M2+th)*sqrt(th*uh)*sqr(um));
-      //     me(2,2,0,0)=(-3*sqrt(2)*sqr(M2)*phase*(M2*sm+sqr(th)+th*uh+sqr(uh)))/(sm*tm*sqrt(th*uh)*um);
-      //     me(2,2,0,2)=-((sqrt(2)*sqr(sh)*(uh*(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))+sqr(M2)*(3*sqr(sh)+6*sh*uh+sqr(uh))-M2*(3*sh+uh)*(sqr(sh)+2*sh*uh+2*sqr(uh))))/(phase*sm*sqr(tm)*sqrt(th*uh)*sqr(um)));
-      //     // test the average result
-      //     // double aver = me.average();
-      //     // double test = 4.*(9*pow<4,1>(M2)*sqr(M2-th)*sqr(M2-uh)*sqr(th+uh)*
-      //     // 			sqr(sqr(th)+th*uh+sqr(uh)-M2*(th+uh))
-      //     // 			+pow<4,1>(sh)*sqr(th+uh)*sqr(uh*(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))
-      //     // 						     +sqr(M2)*(3*sqr(sh)+6*sh*uh+sqr(uh))
-      //     // 						     -M2*(3*sh+uh)*(sqr(sh)+2*sh*uh+2*sqr(uh)))
-      //     // 			+sqr(M2-th)*pow<4,1>(th)*sqr(uh*(th+uh)*(sqr(th)+th*uh+sqr(uh))
-      //     // 						     +sqr(M2)*(3*sqr(th)+6*th*uh+sqr(uh))
-      //     // 						     -M2*(3*th+uh)*(sqr(th)+2*th*uh+2*sqr(uh)))
-      //     // 			+sqr(M2-uh)*pow<4,1>(uh)*sqr(th*(th+uh)*(sqr(th)+th*uh+sqr(uh))
-      //     // 						     -M2*(th+3*uh)*(2*sqr(th)+2*th*uh+sqr(uh))
-      //     // 						     +sqr(M2)*(sqr(th)+6*th*uh+3*sqr(uh))))
-      //     // 	/(pow<4,1>(M2-th)*th*pow<4,1>(M2-uh)*uh*pow<4,1>(th+uh));
-      //     // 	cerr << "testing spin correlations " << test << " " << me.average() << " "
-      //     // 	     << abs(test-aver)/(test+aver) << "\n";
+      vector<VectorWaveFunction> g1,g2,g4;
+      VectorWaveFunction( g1,hard[0],incoming,false, true,true,vector_phase);
+      VectorWaveFunction( g2,hard[1],incoming,false, true,true,vector_phase);
+      VectorWaveFunction( g4,hard[3],outgoing,true , true,true,vector_phase);
+      ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2,PDT::Spin1);
+      Complex phase = exp(Complex(0.,phi));
+      Energy2 um(uh-M2),tm(th-M2),sm(sh-M2);
+      me(0,0,0,0)=(-4*pow<3,1>(M)*pow(phase,3)*(sqr(M2)*sm*sqr(th-uh)-pow<3,1>(M2)*th*uh+sm*(pow<4,1>(th)+pow<4,1>(uh))+M2*(2*pow<4,1>(th)+pow<3,1>(th)*uh-sqr(th)*sqr(uh)+th*pow<3,1>(uh)+2*pow<4,1>(uh))))/(sqrt(sh)*sm*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(0,0,1,0)=(2*M2*sqr(phase)*sh*(th-uh)*(-2*sqr(sh)-sh*uh-sqr(uh)+M2*(sh+uh)))/(sm*sqr(tm)*sqr(um));
+      me(0,0,2,0)=(-2*sqrt(2./3.)*M*phase*sh*sqrt(sh)*sqrt(th*uh)*(sqr(sh)+sh*uh+uh*(-M2+uh)))/(sm*sqr(tm)*sqr(um));
+      me(0,2,0,0)=(-4*pow<3,1>(M)*phase*(pow<3,1>(M2)*sqr(sh+th)-sh*sqr(th)*(sqr(sh)+sh*th+sqr(th))-sqr(M2)*(sh+th)*(sqr(sh)+2*sh*th+2*sqr(th))+M2*th*(pow<3,1>(sh)+2*sqr(sh)*th+3*sh*sqr(th)+pow<3,1>(th)))*sqr(uh))/(sqrt(sh)*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(0,2,0,2)=(-4*pow<3,1>(M)*sqr(sh)*sqrt(sh)*sqr(uh)*(M2*sm+sqr(th)+sqr(uh)))/(phase*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(0,2,1,0)=(2*M2*(pow<3,1>(M2)*(sh+th)*(4*sh+3*th)-2*sh*sqr(th)*(sqr(sh)+sh*th+sqr(th))+M2*th*(2*pow<3,1>(sh)+3*sqr(sh)*th+7*sh*sqr(th)+2*pow<3,1>(th))-sqr(M2)*(4*pow<3,1>(sh)+9*sqr(sh)*th+12*sh*sqr(th)+5*pow<3,1>(th)))*uh)/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,1,2)=(-2*M2*sh*uh*(sh*sqr(uh)*(-sh+uh)+sqr(M2)*(4*sqr(sh)+7*sh*uh+sqr(uh))-M2*(4*pow<3,1>(sh)+7*sqr(sh)*uh+8*sh*sqr(uh)+pow<3,1>(uh))))/(sqr(phase)*pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,2,0)=(-2*sqrt(2./3.)*M*sqrt(sh)*(-(sh*sqr(th)*(sqr(sh)+sh*th+sqr(th)))+pow<3,1>(M2)*(6*sqr(sh)+10*sh*th+3*sqr(th))+M2*th*(pow<3,1>(sh)+5*sh*sqr(th)+pow<3,1>(th))-sqr(M2)*(6*pow<3,1>(sh)+11*sqr(sh)*th+14*sh*sqr(th)+4*pow<3,1>(th)))*sqrt(th*uh))/(phase*pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,2,2)=(2*sqrt(2./3.)*M*sqrt(sh)*sqrt(th*uh)*(-(sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh)))+pow<3,1>(M2)*(6*sqr(sh)+10*sh*uh+3*sqr(uh))+M2*uh*(pow<3,1>(sh)+5*sh*sqr(uh)+pow<3,1>(uh))-sqr(M2)*(6*pow<3,1>(sh)+11*sqr(sh)*uh+14*sh*sqr(uh)+4*pow<3,1>(uh))))/(pow(phase,3)*pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,3,0)=(2*M2*sh*th*(sh*sqr(th)*(-sh+th)+sqr(M2)*(4*sqr(sh)+7*sh*th+sqr(th))-M2*(4*pow<3,1>(sh)+7*sqr(sh)*th+8*sh*sqr(th)+pow<3,1>(th))))/(sqr(phase)*pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,3,2)=(-2*M2*th*(pow<3,1>(M2)*(sh+uh)*(4*sh+3*uh)-2*sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh))+M2*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+7*sh*sqr(uh)+2*pow<3,1>(uh))-sqr(M2)*(4*pow<3,1>(sh)+9*sqr(sh)*uh+12*sh*sqr(uh)+5*pow<3,1>(uh))))/(pow(phase,4)*pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(0,2,4,0)=(4*pow<3,1>(M)*sqr(sh)*sqrt(sh)*sqr(th)*(M2*sm+sqr(th)+sqr(uh)))/(pow(phase,3)*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(0,2,4,2)=(4*pow<3,1>(M)*sqr(th)*(pow<3,1>(M2)*sqr(sh+uh)-sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh))-sqr(M2)*(sh+uh)*(sqr(sh)+2*sh*uh+2*sqr(uh))+M2*uh*(pow<3,1>(sh)+2*sqr(sh)*uh+3*sh*sqr(uh)+pow<3,1>(uh))))/(pow(phase,5)*sqrt(sh)*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(2,0,0,0)=(-4*pow<3,1>(M)*pow(phase,5)*sqr(th)*(pow<3,1>(M2)*sqr(sh+uh)-sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh))-sqr(M2)*(sh+uh)*(sqr(sh)+2*sh*uh+2*sqr(uh))+M2*uh*(pow<3,1>(sh)+2*sqr(sh)*uh+3*sh*sqr(uh)+pow<3,1>(uh))))/(sqrt(sh)*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(2,0,0,2)=(-4*pow<3,1>(M)*pow(phase,3)*sqr(sh)*sqrt(sh)*sqr(th)*(M2*sm+sqr(th)+sqr(uh)))/(pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(2,0,1,0)=(-2*M2*pow(phase,4)*th*(pow<3,1>(M2)*(sh+uh)*(4*sh+3*uh)-2*sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh))+M2*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+7*sh*sqr(uh)+2*pow<3,1>(uh))-sqr(M2)*(4*pow<3,1>(sh)+9*sqr(sh)*uh+12*sh*sqr(uh)+5*pow<3,1>(uh))))/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,1,2)=(2*M2*sqr(phase)*sh*th*(sh*sqr(th)*(-sh+th)+sqr(M2)*(4*sqr(sh)+7*sh*th+sqr(th))-M2*(4*pow<3,1>(sh)+7*sqr(sh)*th+8*sh*sqr(th)+pow<3,1>(th))))/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,2,0)=(-2*sqrt(2./3.)*M*pow(phase,3)*sqrt(sh)*sqrt(th*uh)*(-(sh*sqr(uh)*(sqr(sh)+sh*uh+sqr(uh)))+pow<3,1>(M2)*(6*sqr(sh)+10*sh*uh+3*sqr(uh))+M2*uh*(pow<3,1>(sh)+5*sh*sqr(uh)+pow<3,1>(uh))-sqr(M2)*(6*pow<3,1>(sh)+11*sqr(sh)*uh+14*sh*sqr(uh)+4*pow<3,1>(uh))))/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,2,2)=(2*sqrt(2./3.)*M*phase*sqrt(sh)*(-(sh*sqr(th)*(sqr(sh)+sh*th+sqr(th)))+pow<3,1>(M2)*(6*sqr(sh)+10*sh*th+3*sqr(th))+M2*th*(pow<3,1>(sh)+5*sh*sqr(th)+pow<3,1>(th))-sqr(M2)*(6*pow<3,1>(sh)+11*sqr(sh)*th+14*sh*sqr(th)+4*pow<3,1>(th)))*sqrt(th*uh))/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,3,0)=(-2*M2*sqr(phase)*sh*uh*(sh*sqr(uh)*(-sh+uh)+sqr(M2)*(4*sqr(sh)+7*sh*uh+sqr(uh))-M2*(4*pow<3,1>(sh)+7*sqr(sh)*uh+8*sh*sqr(uh)+pow<3,1>(uh))))/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,3,2)=(2*M2*(pow<3,1>(M2)*(sh+th)*(4*sh+3*th)-2*sh*sqr(th)*(sqr(sh)+sh*th+sqr(th))+M2*th*(2*pow<3,1>(sh)+3*sqr(sh)*th+7*sh*sqr(th)+2*pow<3,1>(th))-sqr(M2)*(4*pow<3,1>(sh)+9*sqr(sh)*th+12*sh*sqr(th)+5*pow<3,1>(th)))*uh)/(pow<3,1>(sm)*sqr(tm)*sqr(um));
+      me(2,0,4,0)=(4*pow<3,1>(M)*phase*sqr(sh)*sqrt(sh)*sqr(uh)*(M2*sm+sqr(th)+sqr(uh)))/(pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(2,0,4,2)=(4*pow<3,1>(M)*(pow<3,1>(M2)*sqr(sh+th)-sh*sqr(th)*(sqr(sh)+sh*th+sqr(th))-sqr(M2)*(sh+th)*(sqr(sh)+2*sh*th+2*sqr(th))+M2*th*(pow<3,1>(sh)+2*sqr(sh)*th+3*sh*sqr(th)+pow<3,1>(th)))*sqr(uh))/(phase*sqrt(sh)*pow<3,1>(sm)*sqr(tm)*sqrt(th*uh)*sqr(um));
+      me(2,2,2,2)=(2*sqrt(2./3.)*M*sh*sqrt(sh)*sqrt(th*uh)*(sqr(sh)+sh*uh+uh*(-M2+uh)))/(phase*sm*sqr(tm)*sqr(um));
+      me(2,2,3,2)=(2*M2*sh*(th-uh)*(-2*sqr(sh)-sh*uh-sqr(uh)+M2*(sh+uh)))/(sqr(phase)*sm*sqr(tm)*sqr(um));
+      me(2,2,4,2)=(4*pow<3,1>(M)*(sqr(M2)*sm*sqr(th-uh)-pow<3,1>(M2)*th*uh+sm*(pow<4,1>(th)+pow<4,1>(uh))+M2*(2*pow<4,1>(th)+pow<3,1>(th)*uh-sqr(th)*sqr(uh)+th*pow<3,1>(uh)+2*pow<4,1>(uh))))/(pow(phase,3)*sqrt(sh)*sm*sqr(tm)*sqrt(th*uh)*sqr(um));
+      // test the average result
+      // double aver = me.average();
+      // double test = (16*M2*(12*pow<10,1>(M2)*pow<4,1>(tHat()+uHat())+2*sqr(tHat())*sqr(uHat())*sqr(tHat()+uHat())*pow<4,1>(sqr(tHat())+tHat()*uHat()+sqr(uHat()))-24*pow<9,1>(M2)*pow<3,1>(tHat()+uHat())*(3*sqr(tHat())+5*tHat()*uHat()+3*sqr(uHat()))+pow<8,1>(M2)*sqr(tHat()+uHat())*(204*pow<4,1>(tHat())+651*pow<3,1>(tHat())*uHat()+880*sqr(tHat())*sqr(uHat())+651*tHat()*pow<3,1>(uHat())+204*pow<4,1>(uHat()))-M2*tHat()*uHat()*(tHat()+uHat())*sqr(sqr(tHat())+tHat()*uHat()+sqr(uHat()))*(12*pow<6,1>(tHat())+48*pow<5,1>(tHat())*uHat()+43*pow<4,1>(tHat())*sqr(uHat())+6*pow<3,1>(tHat())*pow<3,1>(uHat())+43*sqr(tHat())*pow<4,1>(uHat())+48*tHat()*pow<5,1>(uHat())+12*pow<6,1>(uHat()))-pow<7,1>(M2)*(tHat()+uHat())*(360*pow<6,1>(tHat())+1635*pow<5,1>(tHat())*uHat()+3314*pow<4,1>(tHat())*sqr(uHat())+4114*pow<3,1>(tHat())*pow<3,1>(uHat())+3314*sqr(tHat())*pow<4,1>(uHat())+1635*tHat()*pow<5,1>(uHat())+360*pow<6,1>(uHat()))-pow<5,1>(M2)*(tHat()+uHat())*(360*pow<8,1>(tHat())+1914*pow<7,1>(tHat())*uHat()+4376*pow<6,1>(tHat())*sqr(uHat())+6271*pow<5,1>(tHat())*pow<3,1>(uHat())+6914*pow<4,1>(tHat())*pow<4,1>(uHat())+6271*pow<3,1>(tHat())*pow<5,1>(uHat())+4376*sqr(tHat())*pow<6,1>(uHat())+1914*tHat()*pow<7,1>(uHat())+360*pow<8,1>(uHat()))+pow<6,1>(M2)*(432*pow<8,1>(tHat())+2526*pow<7,1>(tHat())*uHat()+6652*pow<6,1>(tHat())*sqr(uHat())+10877*pow<5,1>(tHat())*pow<3,1>(uHat())+12640*pow<4,1>(tHat())*pow<4,1>(uHat())+10877*pow<3,1>(tHat())*pow<5,1>(uHat())+6652*sqr(tHat())*pow<6,1>(uHat())+2526*tHat()*pow<7,1>(uHat())+432*pow<8,1>(uHat()))-pow<3,1>(M2)*(tHat()+uHat())*(72*pow<10,1>(tHat())+543*pow<9,1>(tHat())*uHat()+1542*pow<8,1>(tHat())*sqr(uHat())+2336*pow<7,1>(tHat())*pow<3,1>(uHat())+2412*pow<6,1>(tHat())*pow<4,1>(uHat())+2266*pow<5,1>(tHat())*pow<5,1>(uHat())+2412*pow<4,1>(tHat())*pow<6,1>(uHat())+2336*pow<3,1>(tHat())*pow<7,1>(uHat())+1542*sqr(tHat())*pow<8,1>(uHat())+543*tHat()*pow<9,1>(uHat())+72*pow<10,1>(uHat()))+pow<4,1>(M2)*(204*pow<10,1>(tHat())+1455*pow<9,1>(tHat())*uHat()+4328*pow<8,1>(tHat())*sqr(uHat())+7504*pow<7,1>(tHat())*pow<3,1>(uHat())+9232*pow<6,1>(tHat())*pow<4,1>(uHat())+9614*pow<5,1>(tHat())*pow<5,1>(uHat())+9232*pow<4,1>(tHat())*pow<6,1>(uHat())+7504*pow<3,1>(tHat())*pow<7,1>(uHat())+4328*sqr(tHat())*pow<8,1>(uHat())+1455*tHat()*pow<9,1>(uHat())+204*pow<10,1>(uHat()))+sqr(M2)*(12*pow<12,1>(tHat())+144*pow<11,1>(tHat())*uHat()+616*pow<10,1>(tHat())*sqr(uHat())+1345*pow<9,1>(tHat())*pow<3,1>(uHat())+1824*pow<8,1>(tHat())*pow<4,1>(uHat())+1806*pow<7,1>(tHat())*pow<5,1>(uHat())+1688*pow<6,1>(tHat())*pow<6,1>(uHat())+1806*pow<5,1>(tHat())*pow<7,1>(uHat())+1824*pow<4,1>(tHat())*pow<8,1>(uHat())+1345*pow<3,1>(tHat())*pow<9,1>(uHat())+616*sqr(tHat())*pow<10,1>(uHat())+144*tHat()*pow<11,1>(uHat())+12*pow<12,1>(uHat()))))/(3.*sHat()*pow<4,1>(M2-tHat())*tHat()*pow<4,1>(M2-uHat())*uHat()*pow<4,1>(tHat()+uHat()));
+      // cerr << "testing spin correlations " << test << " " << me.average() << " "
+      //      << abs(test-aver)/(test+aver) << "\n";
     }
     // g qbar -> 3P2 qbar
     else if(hard[1]->id()<0) {
@@ -603,7 +611,6 @@ void MEPPto3P2Jet::constructVertex(tSubProPtr sub) {
       // matrix element
       me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin2,PDT::Spin1Half);
       if(!swapped) {
-	cerr << "normal\n";
 	me(0,0,0,0)=(2.*sqrt(2)*sqr(phase)*sqrt(-th)*uh)/pow<3,1>(M);
 	me(0,0,1,0)=(2.*sqrt(2)*phase*sh*th*sqrt(-(uh/sh)))/sqr(M2);
 	me(0,0,2,0)=(2.*sh*sqrt(-th)*th)/(sqrt(3)*pow<5,1>(M));
@@ -622,7 +629,6 @@ void MEPPto3P2Jet::constructVertex(tSubProPtr sub) {
 	me(2,1,4,1)=(-2.*sqrt(2)*sqrt(-th)*uh)/(pow<3,1>(M)*sqr(phase));
       }
       else {
-	cerr << "swapped\n";
 	me(0,0,0,0)=(-2.*sqrt(2)*pow(phase,3)*sqrt(-tHat())*uHat())/pow<3,1>(M);
 	me(0,0,1,0)=(-2.*sqrt(2)*sqr(phase)*sqr(M2-sHat())*tHat()*sqrt(-(sHat()*uHat())))/(sqr(M2)*sqr(tHat()+uHat()));
 	me(0,0,2,0)=(2.*phase*sqr(M2-sHat())*sHat()*(-tHat())*sqrt(-tHat()))/(sqrt(3)*pow<5,1>(M)*sqr(tHat()+uHat()));
