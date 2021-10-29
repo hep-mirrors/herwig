@@ -424,22 +424,28 @@ void Hw7Selector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
     a.overallWeight /= a.wt;
     a.wt = wgt0;
     a.overallWeight *= a.wt;
-    // second perm
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    // second perm (for doubly heavy baryons make sure not to
+    //              include state with only spin 1 diquark)
+    if(!(it1>it2 && iq1>=4 && flav2>=4)) {
+      long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+      table()[make_pair(iq2,f3)].insert(a);
+      table()[make_pair(f3,iq2)].insert(a);
+    }
     // 3rd perm
-    f3 = CheckId::makeDiquarkID(iq2,flav2,1);
+    long f3 = CheckId::makeDiquarkID(iq2,flav2,1);
     table()[make_pair(iq1,f3)].insert(a);
     table()[make_pair(f3,iq1)].insert(a);
     // spin 1
     a.overallWeight /= a.wt;
     a.wt = wgt1;
     a.overallWeight *= a.wt;
-    // second perm
-    f3 = CheckId::makeDiquarkID(iq1,flav2,3);
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    // second perm (for doubly heavy baryons make sure not to
+    //              include state with only spin 0 diquark)
+    if(!(it1<it2 && iq1>=4 && flav2>=4)) {
+      f3 = CheckId::makeDiquarkID(iq1,flav2,3);
+      table()[make_pair(iq2,f3)].insert(a);
+      table()[make_pair(f3,iq2)].insert(a);
+    }
     // 3rd perm
     f3 = CheckId::makeDiquarkID(iq2,flav2,3);
     table()[make_pair(iq1,f3)].insert(a);
