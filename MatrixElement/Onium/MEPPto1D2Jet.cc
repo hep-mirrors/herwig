@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
@@ -157,21 +158,71 @@ void MEPPto1D2Jet::getDiagrams() const {
   // g g -> 1D2 g (s,t,u 4-point)
   if(process_ == 0 || process_ == 4) {
     add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, ps, 3, g , -4)));
-    add(new_ptr((Tree2toNDiagram(3), g, g, g, 1, ps, 2, g , -5)));
-    add(new_ptr((Tree2toNDiagram(3), g, g, g, 2, ps, 1, g , -6)));
-    add(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, 1, g , -7)));
+    add(new_ptr((Tree2toNDiagram(3), g, g, g, 1, ps, 2, g    , -5)));
+    add(new_ptr((Tree2toNDiagram(3), g, g, g, 2, ps, 1, g    , -6)));
+    add(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, 1, g       , -7)));
   }
 }
 
 Selector<MEBase::DiagramIndex>
 MEPPto1D2Jet::diagrams(const DiagramVector & diags) const {
+  Energy M=meMomenta()[3].mass();
+  Energy2 M2(sqr(M));
   Selector<DiagramIndex> sel;
+  DVector save(4);
+  if(mePartonData()[1]->id()==ParticleID::g &&
+     mePartonData()[1]->id()==ParticleID::g ) {
+    save[0] = 256*M2*tHat()*uHat()/(3.*sHat()*sqr(tHat()+uHat()));
+    save[1] = 256*M2*tHat()*(sqr(M2)*sqr(sHat())-2*M2*pow<3,1>(sHat())+2*pow<4,1>(sHat())
+			     +sqr(M2)*sHat()*tHat()-M2*sqr(sHat())*tHat()+2*pow<3,1>(sHat())*tHat()
+			     +sqr(M2)*sqr(tHat())-M2*sHat()*sqr(tHat())+sqr(sHat())*sqr(tHat()))
+      /(3.*sHat()*sqr(M2-uHat())*uHat()*sqr(tHat()+uHat()));
+    save[2] = 256*M2*uHat()*(sqr(M2)*sqr(sHat())-2*M2*pow<3,1>(sHat())+2*pow<4,1>(sHat())
+			     +sqr(M2)*sHat()*uHat()-M2*sqr(sHat())*uHat()+2*pow<3,1>(sHat())*uHat()
+			     +sqr(M2)*sqr(uHat())-M2*sHat()*sqr(uHat())+sqr(sHat())*sqr(uHat()))
+      /(3.*sHat()*sqr(M2-tHat())*tHat()*sqr(tHat()+uHat()));
+    save[3] = 128*M2*(3*pow<10,1>(M2)*sqr(tHat())-24*pow<9,1>(M2)*pow<3,1>(tHat())+81*pow<8,1>(M2)*pow<4,1>(tHat())
+		      -153*pow<7,1>(M2)*pow<5,1>(tHat())+180*pow<6,1>(M2)*pow<6,1>(tHat())-135*pow<5,1>(M2)*pow<7,1>(tHat())
+		      +60*pow<4,1>(M2)*pow<8,1>(tHat())-12*pow<3,1>(M2)*pow<9,1>(tHat())+8*pow<10,1>(M2)*tHat()*uHat()
+		      -66*pow<9,1>(M2)*sqr(tHat())*uHat()+250*pow<8,1>(M2)*pow<3,1>(tHat())*uHat()
+		      -540*pow<7,1>(M2)*pow<4,1>(tHat())*uHat()+731*pow<6,1>(M2)*pow<5,1>(tHat())*uHat()
+		      -650*pow<5,1>(M2)*pow<6,1>(tHat())*uHat()+375*pow<4,1>(M2)*pow<7,1>(tHat())*uHat()
+		      -126*pow<3,1>(M2)*pow<8,1>(tHat())*uHat()+18*sqr(M2)*pow<9,1>(tHat())*uHat()
+		      +3*pow<10,1>(M2)*sqr(uHat())-66*pow<9,1>(M2)*tHat()*sqr(uHat())+358*pow<8,1>(M2)*sqr(tHat())*sqr(uHat())
+		      -953*pow<7,1>(M2)*pow<3,1>(tHat())*sqr(uHat())+1439*pow<6,1>(M2)*pow<4,1>(tHat())*sqr(uHat())
+		      -1312*pow<5,1>(M2)*pow<5,1>(tHat())*sqr(uHat())+760*pow<4,1>(M2)*pow<6,1>(tHat())*sqr(uHat())
+		      -295*pow<3,1>(M2)*pow<7,1>(tHat())*sqr(uHat())+72*sqr(M2)*pow<8,1>(tHat())*sqr(uHat())
+		      -6*M2*pow<9,1>(tHat())*sqr(uHat())-24*pow<9,1>(M2)*pow<3,1>(uHat())
+		      +250*pow<8,1>(M2)*tHat()*pow<3,1>(uHat())-953*pow<7,1>(M2)*sqr(tHat())*pow<3,1>(uHat())
+		      +1930*pow<6,1>(M2)*pow<3,1>(tHat())*pow<3,1>(uHat())-2209*pow<5,1>(M2)*pow<4,1>(tHat())*pow<3,1>(uHat())
+		      +1479*pow<4,1>(M2)*pow<5,1>(tHat())*pow<3,1>(uHat())-626*pow<3,1>(M2)*pow<6,1>(tHat())*pow<3,1>(uHat())
+		      +161*sqr(M2)*pow<7,1>(tHat())*pow<3,1>(uHat())-6*M2*pow<8,1>(tHat())*pow<3,1>(uHat())
+		      +81*pow<8,1>(M2)*pow<4,1>(uHat())-540*pow<7,1>(M2)*tHat()*pow<4,1>(uHat())
+		      +1439*pow<6,1>(M2)*sqr(tHat())*pow<4,1>(uHat())-2209*pow<5,1>(M2)*pow<3,1>(tHat())*pow<4,1>(uHat())
+		      +1996*pow<4,1>(M2)*pow<4,1>(tHat())*pow<4,1>(uHat())-1115*pow<3,1>(M2)*pow<5,1>(tHat())*pow<4,1>(uHat())
+		      +352*sqr(M2)*pow<6,1>(tHat())*pow<4,1>(uHat())-4*M2*pow<7,1>(tHat())*pow<4,1>(uHat())
+		      -153*pow<7,1>(M2)*pow<5,1>(uHat())+731*pow<6,1>(M2)*tHat()*pow<5,1>(uHat())
+		      -1312*pow<5,1>(M2)*sqr(tHat())*pow<5,1>(uHat())+1479*pow<4,1>(M2)*pow<3,1>(tHat())*pow<5,1>(uHat())
+		      -1115*pow<3,1>(M2)*pow<4,1>(tHat())*pow<5,1>(uHat())+490*sqr(M2)*pow<5,1>(tHat())*pow<5,1>(uHat())
+		      -24*M2*pow<6,1>(tHat())*pow<5,1>(uHat())+4*pow<7,1>(tHat())*pow<5,1>(uHat())
+		      +180*pow<6,1>(M2)*pow<6,1>(uHat())-650*pow<5,1>(M2)*tHat()*pow<6,1>(uHat())
+		      +760*pow<4,1>(M2)*sqr(tHat())*pow<6,1>(uHat())-626*pow<3,1>(M2)*pow<3,1>(tHat())*pow<6,1>(uHat())
+		      +352*sqr(M2)*pow<4,1>(tHat())*pow<6,1>(uHat())-24*M2*pow<5,1>(tHat())*pow<6,1>(uHat())
+		      +8*pow<6,1>(tHat())*pow<6,1>(uHat())-135*pow<5,1>(M2)*pow<7,1>(uHat())
+		      +375*pow<4,1>(M2)*tHat()*pow<7,1>(uHat())-295*pow<3,1>(M2)*sqr(tHat())*pow<7,1>(uHat())
+		      +161*sqr(M2)*pow<3,1>(tHat())*pow<7,1>(uHat())-4*M2*pow<4,1>(tHat())*pow<7,1>(uHat())
+		      +4*pow<5,1>(tHat())*pow<7,1>(uHat())+60*pow<4,1>(M2)*pow<8,1>(uHat())
+		      -126*pow<3,1>(M2)*tHat()*pow<8,1>(uHat())+72*sqr(M2)*sqr(tHat())*pow<8,1>(uHat())
+		      -6*M2*pow<3,1>(tHat())*pow<8,1>(uHat())-12*pow<3,1>(M2)*pow<9,1>(uHat())
+		      +18*sqr(M2)*tHat()*pow<9,1>(uHat())-6*M2*sqr(tHat())*pow<9,1>(uHat()))
+      /(3.*sHat()*pow<4,1>(M2-tHat())*pow<4,1>(M2-uHat())*pow<4,1>(tHat()+uHat()));
+  }
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
     if ( diags[i]->id() == -1 ||
 	 diags[i]->id() == -2 ||
 	 diags[i]->id() == -3 ) sel.insert(1.0, i);
     else
-      sel.insert(meInfo()[abs(diags[i]->id())-4],i);
+      sel.insert(save[abs(diags[i]->id())-4],i);
   return sel;
 }
 
@@ -227,266 +278,327 @@ double MEPPto1D2Jet::me2() const {
   // mass of the 1D2 state
   Energy  M  = meMomenta()[2].mass();
   Energy2 M2 = sqr(meMomenta()[2].mass());
-  // if(mePartonData()[0]->id()==ParticleID::g) {
-  //   // g qbar -> 1D2 qbar
-  //   if(mePartonData()[1]->id()==ParticleID::g) {
-  //     // weights for the different diagrams
-  //     DVector save(4,0.);
-  //     save[0] = tHat()*uHat()/(2.*sqr(tHat()+uHat()));
-  //     save[1] = (tHat()*(sqr(M2)*(sqr(sHat()) +  sHat()*tHat() + sqr(tHat())) - 
-  // 			 M2*sHat()*(2*sqr(sHat()) + sHat()*tHat() + sqr(tHat())) + 
-  // 			 sqr(sHat())*(2*sqr(sHat()) + 2*sHat()*tHat() + sqr(tHat()))))/
-  // 	(2.*sqr(M2 - uHat())*uHat()*sqr(tHat()+uHat()));
-  //     save[2] = (uHat()*(sqr(M2)*(sqr(sHat()) + sHat()*uHat() + sqr(uHat())) - 
-  // 			 M2*sHat()*(2*sqr(sHat()) + sHat()*uHat() + sqr(uHat())) + 
-  // 			 sqr(sHat())*(2*sqr(sHat()) + 2*sHat()*uHat() + sqr(uHat()))))/
-  // 	(2.*sqr(M2 - tHat())*tHat()*sqr(tHat()+uHat()));
-  //     save[3] = (tHat()*uHat()*(pow<4,1>(M2) + sqr(tHat())*sqr(uHat()) - 
-  // 				2*pow<3,1>(M2)*(tHat() + uHat()) - 
-  // 				M2*tHat()*uHat()*(tHat() + uHat()) + 
-  // 				sqr(M2)*(sqr(tHat()) + 
-  // 					 3*tHat()*uHat() + sqr(uHat()))))/
-  // 	(sqr(M2 - tHat())*sqr(M2 - uHat())*sqr(tHat()+uHat()));
-  //     meInfo(save);
-  //     output = 64./3.*O1_*pow(Constants::pi*standardModel()->alphaS(scale()),3)/M*
-  // 	(sqr(-sqr(M2) + M2*sHat() + sqr(tHat()) + tHat()*uHat() + sqr(uHat()))*
-  // 	 (pow<4,1>(M2) + pow<4,1>(sHat()) + pow<4,1>(tHat()) + pow<4,1>(uHat())))/
-  // 	(4.*sHat()*tHat()*uHat()*sqr((M2-sHat())*(M2-tHat())*(M2-uHat())));
-  //     // test vs NPB 291 731
-  //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-  //     // Energy6 Q(sHat()*tHat()*uHat());
-  //     // Energy4 P(sHat()*tHat()+tHat()*uHat()+uHat()*sHat());
-  //     // double test = 16.*Constants::pi*sqr(sHat())*
-  //     // 	Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02/M/sqr(sHat())/Q/sqr(Q-M2*P)*sqr(P)*
-  //     // 	(pow<4,1>(M2)-2*sqr(M2)*P+sqr(P)+2.*M2*Q);
-  //     // cerr << "testing matrix element " << output << " " << test << " "
-  //     // 	   << (output-test)/(output+test) << " " << output/test << "\n";
-  //   }
-  //   else if(mePartonData()[1]->id()<0) {
-  //     // spin sum version
-  //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-  //     // final factors
-  //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-  //     // analytic test
-  //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-  //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-  //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-  //   }
-  //   // g q -> 1D2 q
-  //   else if(mePartonData()[1]->id()<6) {
-  //     // spin sum version
-  //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-  //     // final factors
-  //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-  //     // analytic test
-  //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-  //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-  //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-  //   }
-  //   else assert(false);
-  // }
-  // // q qbar -> 1D2 g
-  // else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
-  //   // spin sum version
-  //   double total = 2.*(sqr(tHat())+sqr(uHat()))/pow<4,1>(M);
-  //   // final factors
-  //   output = 256.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(81.*sHat()*sqr(sHat()-M2))*total;
-  //   // analytic test
-  //   // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-  //   // double test = 256.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*
-  //   //   R02*(sqr(tHat())+sqr(uHat()))/(27.*M*sHat()*sqr(sHat()-M2));
-  //   // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-  // }
-  // else
-  //   assert(false);
+  if(mePartonData()[0]->id()==ParticleID::g) {
+    // g g -> 1D2 g
+    if(mePartonData()[1]->id()==ParticleID::g) {
+      output = 4.*O1_*pow(Constants::pi*standardModel()->alphaS(scale()),3)
+	/(15.*pow<7,1>(M))/(3.*sHat()*pow<4,1>(M2-tHat())*tHat()*pow<4,1>(M2-uHat())*uHat()*pow<4,1>(tHat()+uHat()))*128*M2*
+	(2*sqr(tHat())*sqr(uHat())*sqr(tHat()+uHat())*pow<4,1>(sqr(tHat())+tHat()*uHat()+sqr(uHat()))
+	 +pow<10,1>(M2)*(sqr(tHat())+sqr(uHat()))*(2*sqr(tHat())+3*tHat()*uHat()+2*sqr(uHat()))
+	 -4*M2*tHat()*uHat()*pow<3,1>(tHat()+uHat())*sqr(sqr(tHat())+tHat()*uHat()+sqr(uHat()))*
+	 (pow<4,1>(tHat())+4*pow<3,1>(tHat())*uHat()-7*sqr(tHat())*sqr(uHat())
+	  +4*tHat()*pow<3,1>(uHat())+pow<4,1>(uHat()))-6*pow<9,1>(M2)*(tHat()+uHat())*
+	 (2*pow<4,1>(tHat())+2*pow<3,1>(tHat())*uHat()+7*sqr(tHat())*sqr(uHat())+2*tHat()*pow<3,1>(uHat())+2*pow<4,1>(uHat()))
+	 +pow<8,1>(M2)*(34*pow<6,1>(tHat())+91*pow<5,1>(tHat())*uHat()+260*pow<4,1>(tHat())*sqr(uHat())+330*pow<3,1>(tHat())*pow<3,1>(uHat())
+			+260*sqr(tHat())*pow<4,1>(uHat())+91*tHat()*pow<5,1>(uHat())+34*pow<6,1>(uHat()))-pow<7,1>(M2)*(tHat()+uHat())*
+	 (60*pow<6,1>(tHat())+155*pow<5,1>(tHat())*uHat()+561*pow<4,1>(tHat())*sqr(uHat())+574*pow<3,1>(tHat())*pow<3,1>(uHat())+561*sqr(tHat())*pow<4,1>(uHat())
+	  +155*tHat()*pow<5,1>(uHat())+60*pow<6,1>(uHat()))-pow<5,1>(M2)*(tHat()+uHat())*
+	 (60*pow<8,1>(tHat())+307*pow<7,1>(tHat())*uHat()+1241*pow<6,1>(tHat())*sqr(uHat())+2043*pow<5,1>(tHat())*pow<3,1>(uHat())+2340*pow<4,1>(tHat())*pow<4,1>(uHat())
+	  +2043*pow<3,1>(tHat())*pow<5,1>(uHat())+1241*sqr(tHat())*pow<6,1>(uHat())+307*tHat()*pow<7,1>(uHat())+60*pow<8,1>(uHat()))+pow<6,1>(M2)*
+	 (72*pow<8,1>(tHat())+340*pow<7,1>(tHat())*uHat()+1281*pow<6,1>(tHat())*sqr(uHat())+2425*pow<5,1>(tHat())*pow<3,1>(uHat())
+	  +2882*pow<4,1>(tHat())*pow<4,1>(uHat())+2425*pow<3,1>(tHat())*pow<5,1>(uHat())+1281*sqr(tHat())*pow<6,1>(uHat())+340*tHat()*pow<7,1>(uHat())
+	  +72*pow<8,1>(uHat()))+sqr(M2)*sqr(tHat()+uHat())*(2*pow<10,1>(tHat())+32*pow<9,1>(tHat())*uHat()+164*pow<8,1>(tHat())*sqr(uHat())+190*pow<7,1>(tHat())*pow<3,1>(uHat())
+							    +133*pow<6,1>(tHat())*pow<4,1>(uHat())-4*pow<5,1>(tHat())*pow<5,1>(uHat())+133*pow<4,1>(tHat())*pow<6,1>(uHat())
+							    +190*pow<3,1>(tHat())*pow<7,1>(uHat())+164*sqr(tHat())*pow<8,1>(uHat())+32*tHat()*pow<9,1>(uHat())+2*pow<10,1>(uHat()))
+	 -pow<3,1>(M2)*(tHat()+uHat())*(12*pow<10,1>(tHat())+118*pow<9,1>(tHat())*uHat()+582*pow<8,1>(tHat())*sqr(uHat())
+					+1033*pow<7,1>(tHat())*pow<3,1>(uHat())+1115*pow<6,1>(tHat())*pow<4,1>(uHat())
+					+934*pow<5,1>(tHat())*pow<5,1>(uHat())+1115*pow<4,1>(tHat())*pow<6,1>(uHat())
+					+1033*pow<3,1>(tHat())*pow<7,1>(uHat())+582*sqr(tHat())*pow<8,1>(uHat())+118*tHat()*pow<9,1>(uHat())+12*pow<10,1>(uHat()))
+	 +pow<4,1>(M2)*(34*pow<10,1>(tHat())+270*pow<9,1>(tHat())*uHat()+1277*pow<8,1>(tHat())*sqr(uHat())+2868*pow<7,1>(tHat())*pow<3,1>(uHat())
+			+3973*pow<6,1>(tHat())*pow<4,1>(uHat())+4220*pow<5,1>(tHat())*pow<5,1>(uHat())+3973*pow<4,1>(tHat())*pow<6,1>(uHat())
+			+2868*pow<3,1>(tHat())*pow<7,1>(uHat())+1277*sqr(tHat())*pow<8,1>(uHat())+270*tHat()*pow<9,1>(uHat())+34*pow<10,1>(uHat())));
+      // test vs PRD 45, 116
+      // Energy7 R02 = params_->secondDerivativeRadialWaveFunctionSquared(state_,n_);
+      // Energy6 Q(sHat()*tHat()*uHat());
+      // Energy4 P(sHat()*tHat()+tHat()*uHat()+uHat()*sHat());
+      // double test =-16.*Constants::pi*sqr(sHat())*
+      // 	40.*Constants::pi*pow(standardModel()->alphaS(scale()),3)*R02/pow<5,1>(M)/Q/sqr(sHat())/pow<4,1>(Q-M2*P)*
+      // 	(M2*sqr(P)*Q*(5*pow<6,1>(M2)-45*pow<3,1>(M2)*Q+48*sqr(Q)) -
+      // 	 2*pow<4,1>(P)*(pow<6,1>(M2)-pow<3,1>(M2)*Q+sqr(Q)) + 
+      // 	 pow<3,1>(M2)*P*sqr(Q)*(28*pow<3,1>(M2) - 31*Q)-
+      // 	 sqr(M2*P)*P*(13*pow<3,1>(M2)-18*Q)*Q + 4*M2*pow<5,1>(P)*(pow<3,1>(M2)+Q) - 
+      // 	 sqr(M2)*(2*pow<6,1>(P) - 33*pow<4,1>(Q)) - 2*pow<8,1>(M2)*sqr(Q)  + 43*pow<5,1>(M2)*pow<3,1>(Q));
+      // cerr << "testing matrix element " << output << " " << test << " "
+      // 	   << (output-test)/(output+test) << " " << output/test << "\n";
+    }
+    // g qbar -> 1D2 qbar
+     else if(mePartonData()[1]->id()<0) {
+       assert(false);
+       //     // spin sum version
+       //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
+       //     // final factors
+       //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
+       //     // analytic test
+       //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
+       //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
+       //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+     }
+    // g q -> 1D2 q
+     else if(mePartonData()[1]->id()<6) {
+       assert(false);
+       // spin sum version
+       //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
+       //     // final factors
+       //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
+       //     // analytic test
+       //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
+       //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
+       //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+     }
+     else assert(false);
+  }
+  // q qbar -> 1D2 g
+  else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
+    assert(false);
+    //   // spin sum version
+    //   double total = 2.*(sqr(tHat())+sqr(uHat()))/pow<4,1>(M);
+    //   // final factors
+    //   output = 256.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(81.*sHat()*sqr(sHat()-M2))*total;
+    //   // analytic test
+    //   // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
+    //   // double test = 256.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*
+    //   //   R02*(sqr(tHat())+sqr(uHat()))/(27.*M*sHat()*sqr(sHat()-M2));
+    //   // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+  }
+  else
+    assert(false);
   return output;
 }
 
 void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
-  // // extract the particles in the hard process
-  // ParticleVector hard;
-  // hard.reserve(4);
-  // hard.push_back(sub->incoming().first);
-  // hard.push_back(sub->incoming().second);
-  // hard.push_back(sub->outgoing()[0]);
-  // hard.push_back(sub->outgoing()[1]);
-  // // get them in the right order
-  // bool swapped(false);
-  // if(hard[0]->id()==-hard[1]->id()) {
-  //   if(hard[0]->id()<0) swapped = true;
-  // }
-  // else if(hard[0]->id()!=ParticleID::g) {
-  //   swapped=true;
-  // }
-  // if(swapped) {
-  //   swap(hard[0],hard[1]);
-  //   swap(hard[2],hard[3]);
-  // }
-  // // boost to partonic CMS
-  // Lorentz5Momentum pcms = hard[0]->momentum()+hard[1]->momentum();
-  // LorentzRotation boost(-pcms.boostVector());
-  // for(PPtr part : hard) part->transform(boost);
-  // // extract kinematic variables
-  // Energy  M  = hard[2]->mass();
-  // Energy2 M2 = sqr(M);
-  // double phi = hard[2]->momentum().phi();
-  // Energy2 sh = (hard[0]->momentum()+hard[1]->momentum()).m2();
-  // Energy2 th = (hard[0]->momentum()-hard[2]->momentum()).m2();
-  // Energy2 uh = (hard[0]->momentum()-hard[3]->momentum()).m2();
-  // // set basis states and compute the matrix element
-  // ProductionMatrixElement me;
-  // ScalarWaveFunction(      hard[2],outgoing,true);
-  // if(hard[0]->id()==ParticleID::g) {
-  //   // g g -> 1D2 g
-  //   if(hard[1]->id()==ParticleID::g) {
-  //     vector<VectorWaveFunction> g1,g2,g4;
-  //     VectorWaveFunction( g1,hard[0],incoming,false, true,true,vector_phase);
-  //     VectorWaveFunction( g2,hard[1],incoming,false, true,true,vector_phase);
-  //     VectorWaveFunction( g4,hard[3],outgoing,true , true,true,vector_phase);
-  //     ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin1);
-  //     Complex phase = exp(Complex(0.,phi));
-  //     me(0,0,0,0) =  phase;
-  //     me(0,0,0,2) = -sqr(M2)/(phase*sqr(sh));
-  //     me(0,2,0,0) = sqr(th)/(phase*sqr(sh));
-  //     me(0,2,0,2) = sqr(uh)/(pow(phase,3)*sqr(sh));
-  //     me(2,0,0,0) = (pow(phase,3)*sqr(uh))/sqr(sh);
-  //     me(2,0,0,2) = (phase*sqr(th))/sqr(sh);
-  //     me(2,2,0,0) = -((sqr(M2)*phase)/sqr(sh));
-  //     me(2,2,0,2) = 1./phase;
-  //     // test the average result
-  //     // double aver = me.average();
-  //     // double test = 2.*(pow<4,1>(M2)+pow<4,1>(sh)+pow<4,1>(th)+pow<4,1>(uh))/pow<4,1>(sh);
-  //     // cerr << "testing spin correlations " << test << " " << me.average() << " "
-  //     // 	   << abs(test-aver)/(test+aver) << "\n";
-  //   }
-  //   // g qbar -> 1D2 qbar
-  //   else if(hard[1]->id()<0) {
-  //     vector<VectorWaveFunction>    g1;
-  //     vector<SpinorBarWaveFunction> q2;
-  //     vector<SpinorWaveFunction>    q4;
-  //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-  //     SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-  //     SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
-  //     g1[1]=g1[2];
-  //     // matrix element
-  //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-  //     if(!swapped) {
-  //     	me(0,0,0,0) = sh/M2;
-  //     	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-  //     	me(2,1,0,1) = sh/M2;
-  //     	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-  //     }
-  //     else {
-  //     	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-  //     	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-  //     	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-  //     	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-  //     }
-  //     // Helicity code version
-  //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-  //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-  //     //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-  //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-  //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-  //     // 	Complex amp = eps*g1[ih1].wave();
-  //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-  //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-  //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-  //     //     }
-  //     //   }
-  //     // }
-  //   }
-  //   // g q -> 1D2 q
-  //   else if(hard[1]->id()<6) {
-  //     vector<VectorWaveFunction> g1;
-  //     vector<SpinorWaveFunction> q2;
-  //     vector<SpinorBarWaveFunction> q4;
-  //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-  //     SpinorWaveFunction(   q2,hard[1],incoming,false,true);
-  //     SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
-  //     g1[1]=g1[2];
-  //     // matrix element
-  //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-  //     if(!swapped) {
-  // 	me(0,0,0,0) = sh/M2;
-  // 	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-  // 	me(2,1,0,1) = sh/M2;
-  // 	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-  //     }
-  //     else {
-  // 	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-  // 	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-  // 	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-  // 	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-  //     }
-  //     // Helicity code version
-  //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-  //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-  //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-  //     //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-  //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-  //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-  //     // 	Complex amp = eps*g1[ih1].wave();
-  //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-  //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-  //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-  //     //     }
-  //     //   }
-  //     // }
-  //   }
-  //   else
-  //     assert(false);
-  // }
-  // else if(hard[0]->id()==-hard[1]->id()) {
-  //   vector<SpinorWaveFunction>    q1;
-  //   vector<SpinorBarWaveFunction> q2;
-  //   vector<VectorWaveFunction>    g4;
-  //   SpinorWaveFunction(   q1,hard[0],incoming,false,true);
-  //   SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-  //   VectorWaveFunction(   g4,hard[3],outgoing,true,true,true,vector_phase);
-  //   g4[1]=g4[2];
-  //   // matrix element
-  //   me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
-  //   if(!swapped) {
-  //     me(0,1,0,0) = -th/M2;
-  //     me(0,1,0,2) =  exp(Complex(0.,-2.*phi))*uh/M2;
-  //     me(1,0,0,0) =  exp(Complex(0., 2.*phi))*uh/M2;
-  //     me(1,0,0,2) = -th/M2;
-  //   }
-  //   else {
-  //     me(0,1,0,0) =  exp(Complex(0., 2.*phi))*th/M2;
-  //     me(0,1,0,2) = -uh/M2;
-  //     me(1,0,0,0) = -uh/M2;
-  //     me(1,0,0,2) =  exp(Complex(0.,-2.*phi))*th/M2;
-  //   }
-  //   // Helicity code version
-  //   // complex<InvEnergy3> fact = sqrt(2./sh)/M2*Complex(0.,1.);
-  //   // for(unsigned int ih1=0;ih1<2;++ih1) {
-  //   //   for(unsigned int ih2=0;ih2<2;++ih2) {
-  //   // 	LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-  //   // 	LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[3]->momentum());
-  //   // 	for(unsigned int ih4=0;ih4<2;++ih4) {
-  //   // 	  Complex amp = eps*g4[ih4].wave();
-  //   // 	  //if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
-  //   // 	    cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-  //   // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4)
-  //   // 		 << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
-  //   // 	}
-  //   //   }
-  //   // }
-  // }
-  // else
-  //   assert(false);
-  // // construct the vertex
-  // HardVertexPtr hardvertex = new_ptr(HardVertex());
-  // // // set the matrix element for the vertex
-  // hardvertex->ME(me);
-  // // set the pointers and to and from the vertex
-  // for(unsigned int i = 0; i < hard.size(); ++i)
-  //   hard[i]->spinInfo()->productionVertex(hardvertex);
-  // // boost back to lab
-  // boost = LorentzRotation(pcms.boostVector());
-  // for(PPtr part : hard)
-  //   part->transform(boost);
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.reserve(4);
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  hard.push_back(sub->outgoing()[1]);
+  // get them in the right order
+  bool swapped(false);
+  if(hard[0]->id()==-hard[1]->id()) {
+    if(hard[0]->id()<0) swapped = true;
+  }
+  else if(hard[0]->id()!=ParticleID::g) {
+    swapped=true;
+  }
+  if(swapped) {
+    swap(hard[0],hard[1]);
+    swap(hard[2],hard[3]);
+  }
+  // boost to partonic CMS
+  Lorentz5Momentum pcms = hard[0]->momentum()+hard[1]->momentum();
+  LorentzRotation boost(-pcms.boostVector());
+  for(PPtr part : hard) part->transform(boost);
+  // extract kinematic variables
+  Energy  M  = hard[2]->mass();
+  Energy2 M2 = sqr(M);
+  double phi = hard[2]->momentum().phi();
+  Energy2 sh = (hard[0]->momentum()+hard[1]->momentum()).m2();
+  Energy2 th = (hard[0]->momentum()-hard[2]->momentum()).m2();
+  Energy2 uh = (hard[0]->momentum()-hard[3]->momentum()).m2();
+  // set basis states and compute the matrix element
+  ProductionMatrixElement me;
+  vector<TensorWaveFunction> twave;
+  TensorWaveFunction(twave,hard[2],outgoing,true, false,true,tensor_phase);
+  if(hard[0]->id()==ParticleID::g) {
+    // g g -> 1D2 g
+    if(hard[1]->id()==ParticleID::g) {
+      vector<VectorWaveFunction> g1,g2,g4;
+      VectorWaveFunction( g1,hard[0],incoming,false, true,true,vector_phase);
+      VectorWaveFunction( g2,hard[1],incoming,false, true,true,vector_phase);
+      VectorWaveFunction( g4,hard[3],outgoing,true , true,true,vector_phase);
+      ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2,PDT::Spin1);
+      Complex phase = exp(Complex(0.,phi));
+      auto pre = 1./pow<3,1>((M2-sh)*(M2-th)*(M2-uh));
+      Energy10 f1 = pow<5,1>(th)+pow<4,1>(th)*uh+th*pow<4,1>(uh)+pow<5,1>(uh)
+	-pow<3,1>(M2)*(sqr(th)-th*uh+sqr(uh))+3*sqr(M2)*(pow<3,1>(th)+pow<3,1>(uh))
+	-M2*(3*pow<4,1>(th)+2*pow<3,1>(th)*uh-sqr(th)*sqr(uh)+2*th*pow<3,1>(uh)+3*pow<4,1>(uh));
+
+      
+      me(0,0,0,0)=Complex(pre*Complex(0,8)*sqrt(2)*pow<3,1>(M)*pow(phase,3)*sh*sqrt(sh)*sqrt(th*uh)*f1);
+      me(0,0,0,2)=Complex(pre*Complex(0,8)*sqrt(2)*pow<7,1>(M)*phase*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))));
+      me(0,0,1,0)=Complex(pre*Complex(0,-4)*sqrt(2)*M2*sqr(phase)*sh*(th-uh)*(pow<4,1>(M2)*sqr(sh+uh)-sqr(sh)*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))-pow<3,1>(M2)*(3*pow<3,1>(sh)+7*sqr(sh)*uh+6*sh*sqr(uh)+2*pow<3,1>(uh))+sqr(M2)*(4*pow<4,1>(sh)+12*pow<3,1>(sh)*uh+9*sqr(sh)*sqr(uh)+6*sh*pow<3,1>(uh)+pow<4,1>(uh))-M2*sh*(2*pow<4,1>(sh)+5*pow<3,1>(sh)*uh+7*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+2*pow<4,1>(uh))));
+      me(0,0,1,2)=Complex(pre*Complex(0,-4)*sqrt(2)*pow<3,1>(M2)*(th-uh)*(pow<3,1>(M2)*uh*(sh+uh)-2*sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+sh*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))+M2*(2*pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+pow<4,1>(uh))));
+      me(0,0,2,0)=Complex(pre*(Complex(0,8)*M*phase*sqr(sh)*sqrt(sh)*(pow<4,1>(M2)*(pow<3,1>(th)-2*sqr(th)*uh-2*th*sqr(uh)+pow<3,1>(uh))+sqr(th)*sqr(uh)*(pow<3,1>(th)+2*sqr(th)*uh+2*th*sqr(uh)+pow<3,1>(uh))+pow<3,1>(M2)*(-2*pow<4,1>(th)+7*pow<3,1>(th)*uh+7*th*pow<3,1>(uh)-2*pow<4,1>(uh))+M2*th*uh*(4*pow<4,1>(th)-3*pow<3,1>(th)*uh-8*sqr(th)*sqr(uh)-3*th*pow<3,1>(uh)+4*pow<4,1>(uh))+sqr(M2)*(pow<5,1>(th)-9*pow<4,1>(th)*uh+4*pow<3,1>(th)*sqr(uh)+4*sqr(th)*pow<3,1>(uh)-9*th*pow<4,1>(uh)+pow<5,1>(uh))))/(sqrt(3)*sqrt(th*uh)));
+      me(0,0,2,2)=Complex(pre*(Complex(0,8)*pow<5,1>(M)*(2*sqr(sh)*sqr(uh)*sqr(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+pow<4,1>(M2)*(3*pow<4,1>(sh)+5*pow<3,1>(sh)*uh+7*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+3*pow<4,1>(uh))-pow<3,1>(M2)*(3*pow<5,1>(sh)+4*pow<4,1>(sh)*uh+6*sqr(sh)*pow<3,1>(uh)-2*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+M2*sh*uh*(3*pow<5,1>(sh)+12*pow<4,1>(sh)*uh+19*pow<3,1>(sh)*sqr(uh)+10*sqr(sh)*pow<3,1>(uh)+3*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+sqr(M2)*(pow<6,1>(sh)-3*pow<5,1>(sh)*uh-20*pow<4,1>(sh)*sqr(uh)-20*pow<3,1>(sh)*pow<3,1>(uh)-5*sqr(sh)*pow<4,1>(uh)-6*sh*pow<5,1>(uh)+pow<6,1>(uh))))/(sqrt(3)*phase*sqrt(sh)*sqrt(th*uh)));
+      me(0,0,3,0)=Complex(pre*Complex(0,-4)*sqrt(2)*M2*sqr(sh)*(th-uh)*(pow<3,1>(M2)*uh*(sh+uh)-2*sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+sh*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))+M2*(2*pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+pow<4,1>(uh))));
+      me(0,0,3,2)=Complex(pre*(Complex(0,-4)*sqrt(2)*pow<3,1>(M2)*sh*(th-uh)*(pow<3,1>(M2)*(th+uh)-9*M2*th*uh*(th+uh)-sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*th*uh*(2*sqr(th)+3*th*uh+2*sqr(uh))))/sqr(phase));
+      me(0,0,4,0)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<3,1>(M)*sqr(sh)*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))))/phase);
+      me(0,0,4,2)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<5,1>(M)*sh*sqrt(sh)*th*uh*sqrt(th*uh)*(3*sqr(M2)+sqr(th)+th*uh+sqr(uh)-3*M2*(th+uh)))/pow(phase,3));
+      me(0,2,0,0)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<3,1>(M)*phase*sqrt(sh)*th*(-(sh*pow<4,1>(th))+pow<3,1>(M2)*th*(sh+th)-sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*th+5*sh*sqr(th)+2*pow<3,1>(th))+M2*(pow<4,1>(sh)+3*pow<3,1>(sh)*th+4*sqr(sh)*sqr(th)+5*sh*pow<3,1>(th)+pow<4,1>(th)))*sqrt(th*uh));
+      me(0,2,0,2)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<3,1>(M)*sh*sqrt(sh)*sqr(uh)*sqrt(th*uh)*(pow<3,1>(sh)+2*sqr(sh)*uh+M2*uh*(-M2+uh)+sh*uh*(-M2+2*uh)))/phase);
+      me(0,2,1,0)=Complex(pre*Complex(0,-4)*sqrt(2)*M2*th*(-(pow<4,1>(sh)*pow<3,1>(th))+sqr(sh)*pow<5,1>(th)+pow<5,1>(M2)*sqr(sh+th)-pow<4,1>(M2)*(4*pow<3,1>(sh)+11*sqr(sh)*th+11*sh*sqr(th)+4*pow<3,1>(th))-M2*sh*th*(2*pow<4,1>(sh)+4*pow<3,1>(sh)*th+6*sqr(sh)*sqr(th)+7*sh*pow<3,1>(th)-pow<4,1>(th))+pow<3,1>(M2)*(5*pow<4,1>(sh)+19*pow<3,1>(sh)*th+23*sqr(sh)*sqr(th)+18*sh*pow<3,1>(th)+5*pow<4,1>(th))-sqr(M2)*(2*pow<5,1>(sh)+8*pow<4,1>(sh)*th+13*pow<3,1>(sh)*sqr(th)+7*sqr(sh)*pow<3,1>(th)+10*sh*pow<4,1>(th)+2*pow<5,1>(th))));
+      me(0,2,1,2)=Complex(pre*(Complex(0,-4)*sqrt(2)*M2*sh*sqr(uh)*(pow<4,1>(M2)*(sh+uh)+sh*sqr(uh)*(sqr(sh)-sqr(uh))-pow<3,1>(M2)*(sqr(sh)-sh*uh+2*sqr(uh))-sqr(M2)*sh*(4*sqr(sh)+9*sh*uh+13*sqr(uh))+M2*(4*pow<4,1>(sh)+11*pow<3,1>(sh)*uh+14*sqr(sh)*sqr(uh)+12*sh*pow<3,1>(uh)+pow<4,1>(uh))))/sqr(phase));
+      me(0,2,2,0)=Complex(pre*(Complex(0,-8)*M*sqr(th)*(sqr(sh)*sqr(uh)*sqr(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+pow<4,1>(M2)*(3*pow<4,1>(sh)+7*pow<3,1>(sh)*uh+11*sqr(sh)*sqr(uh)+4*sh*pow<3,1>(uh)+3*pow<4,1>(uh))+M2*sh*uh*(4*pow<5,1>(sh)+12*pow<4,1>(sh)*uh+11*pow<3,1>(sh)*sqr(uh)-sqr(sh)*pow<3,1>(uh)-6*sh*pow<4,1>(uh)-2*pow<5,1>(uh))-pow<3,1>(M2)*(3*pow<5,1>(sh)+10*pow<4,1>(sh)*uh+15*pow<3,1>(sh)*sqr(uh)+24*sqr(sh)*pow<3,1>(uh)+7*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+sqr(M2)*(pow<6,1>(sh)-2*pow<4,1>(sh)*sqr(uh)+7*pow<3,1>(sh)*pow<3,1>(uh)+19*sqr(sh)*pow<4,1>(uh)+6*sh*pow<5,1>(uh)+pow<6,1>(uh))))/(sqrt(3)*phase*sqrt(sh)*sqrt(th*uh)));
+      me(0,2,2,2)=Complex(pre*(Complex(0,-8)*M*(sqr(sh)*sqr(th)*sqr(sh+th)*(sqr(sh)+sh*th+sqr(th))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*th+sh*sqr(th)+pow<3,1>(th))+pow<4,1>(M2)*(3*pow<4,1>(sh)+7*pow<3,1>(sh)*th+11*sqr(sh)*sqr(th)+4*sh*pow<3,1>(th)+3*pow<4,1>(th))+M2*sh*th*(4*pow<5,1>(sh)+12*pow<4,1>(sh)*th+11*pow<3,1>(sh)*sqr(th)-sqr(sh)*pow<3,1>(th)-6*sh*pow<4,1>(th)-2*pow<5,1>(th))-pow<3,1>(M2)*(3*pow<5,1>(sh)+10*pow<4,1>(sh)*th+15*pow<3,1>(sh)*sqr(th)+24*sqr(sh)*pow<3,1>(th)+7*sh*pow<4,1>(th)+3*pow<5,1>(th))+sqr(M2)*(pow<6,1>(sh)-2*pow<4,1>(sh)*sqr(th)+7*pow<3,1>(sh)*pow<3,1>(th)+19*sqr(sh)*pow<4,1>(th)+6*sh*pow<5,1>(th)+pow<6,1>(th)))*sqr(uh))/(sqrt(3)*pow(phase,3)*sqrt(sh)*sqrt(th*uh)));
+      me(0,2,3,0)=Complex(pre*(Complex(0,-4)*sqrt(2)*M2*sh*sqr(th)*(pow<4,1>(M2)*(sh+th)+sh*sqr(th)*(sqr(sh)-sqr(th))-pow<3,1>(M2)*(sqr(sh)-sh*th+2*sqr(th))-sqr(M2)*sh*(4*sqr(sh)+9*sh*th+13*sqr(th))+M2*(4*pow<4,1>(sh)+11*pow<3,1>(sh)*th+14*sqr(sh)*sqr(th)+12*sh*pow<3,1>(th)+pow<4,1>(th))))/sqr(phase));
+      me(0,2,3,2)=Complex(pre*(Complex(0,-4)*sqrt(2)*M2*uh*(-(pow<4,1>(sh)*pow<3,1>(uh))+sqr(sh)*pow<5,1>(uh)+pow<5,1>(M2)*sqr(sh+uh)-pow<4,1>(M2)*(4*pow<3,1>(sh)+11*sqr(sh)*uh+11*sh*sqr(uh)+4*pow<3,1>(uh))-M2*sh*uh*(2*pow<4,1>(sh)+4*pow<3,1>(sh)*uh+6*sqr(sh)*sqr(uh)+7*sh*pow<3,1>(uh)-pow<4,1>(uh))+pow<3,1>(M2)*(5*pow<4,1>(sh)+19*pow<3,1>(sh)*uh+23*sqr(sh)*sqr(uh)+18*sh*pow<3,1>(uh)+5*pow<4,1>(uh))-sqr(M2)*(2*pow<5,1>(sh)+8*pow<4,1>(sh)*uh+13*pow<3,1>(sh)*sqr(uh)+7*sqr(sh)*pow<3,1>(uh)+10*sh*pow<4,1>(uh)+2*pow<5,1>(uh))))/pow(phase,4));
+      me(0,2,4,0)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<3,1>(M)*sh*sqrt(sh)*sqr(th)*sqrt(th*uh)*(pow<3,1>(sh)+2*sqr(sh)*uh+M2*uh*(-M2+uh)+sh*uh*(-M2+2*uh)))/pow(phase,3));
+      me(0,2,4,2)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<3,1>(M)*sqrt(sh)*uh*sqrt(th*uh)*(-(sh*pow<4,1>(uh))+pow<3,1>(M2)*uh*(sh+uh)-sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+5*sh*sqr(uh)+2*pow<3,1>(uh))+M2*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+5*sh*pow<3,1>(uh)+pow<4,1>(uh))))/pow(phase,5));
+      me(2,0,0,0)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<3,1>(M)*pow(phase,5)*sqrt(sh)*uh*sqrt(th*uh)*(-(sh*pow<4,1>(uh))+pow<3,1>(M2)*uh*(sh+uh)-sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+5*sh*sqr(uh)+2*pow<3,1>(uh))+M2*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+5*sh*pow<3,1>(uh)+pow<4,1>(uh))));
+      me(2,0,0,2)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<3,1>(M)*pow(phase,3)*sh*sqrt(sh)*sqr(th)*sqrt(th*uh)*(pow<3,1>(sh)+2*sqr(sh)*uh+M2*uh*(-M2+uh)+sh*uh*(-M2+2*uh)));
+      me(2,0,1,0)=Complex(pre*Complex(0,4)*sqrt(2)*M2*pow(phase,4)*uh*(-(pow<4,1>(sh)*pow<3,1>(uh))+sqr(sh)*pow<5,1>(uh)+pow<5,1>(M2)*sqr(sh+uh)-pow<4,1>(M2)*(4*pow<3,1>(sh)+11*sqr(sh)*uh+11*sh*sqr(uh)+4*pow<3,1>(uh))-M2*sh*uh*(2*pow<4,1>(sh)+4*pow<3,1>(sh)*uh+6*sqr(sh)*sqr(uh)+7*sh*pow<3,1>(uh)-pow<4,1>(uh))+pow<3,1>(M2)*(5*pow<4,1>(sh)+19*pow<3,1>(sh)*uh+23*sqr(sh)*sqr(uh)+18*sh*pow<3,1>(uh)+5*pow<4,1>(uh))-sqr(M2)*(2*pow<5,1>(sh)+8*pow<4,1>(sh)*uh+13*pow<3,1>(sh)*sqr(uh)+7*sqr(sh)*pow<3,1>(uh)+10*sh*pow<4,1>(uh)+2*pow<5,1>(uh))));
+      me(2,0,1,2)=Complex(pre*Complex(0,4)*sqrt(2)*M2*sqr(phase)*sh*sqr(th)*(pow<4,1>(M2)*(sh+th)+sh*sqr(th)*(sqr(sh)-sqr(th))-pow<3,1>(M2)*(sqr(sh)-sh*th+2*sqr(th))-sqr(M2)*sh*(4*sqr(sh)+9*sh*th+13*sqr(th))+M2*(4*pow<4,1>(sh)+11*pow<3,1>(sh)*th+14*sqr(sh)*sqr(th)+12*sh*pow<3,1>(th)+pow<4,1>(th))));
+      me(2,0,2,0)=Complex(pre*(Complex(0,-8)*M*pow(phase,3)*(sqr(sh)*sqr(th)*sqr(sh+th)*(sqr(sh)+sh*th+sqr(th))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*th+sh*sqr(th)+pow<3,1>(th))+pow<4,1>(M2)*(3*pow<4,1>(sh)+7*pow<3,1>(sh)*th+11*sqr(sh)*sqr(th)+4*sh*pow<3,1>(th)+3*pow<4,1>(th))+M2*sh*th*(4*pow<5,1>(sh)+12*pow<4,1>(sh)*th+11*pow<3,1>(sh)*sqr(th)-sqr(sh)*pow<3,1>(th)-6*sh*pow<4,1>(th)-2*pow<5,1>(th))-pow<3,1>(M2)*(3*pow<5,1>(sh)+10*pow<4,1>(sh)*th+15*pow<3,1>(sh)*sqr(th)+24*sqr(sh)*pow<3,1>(th)+7*sh*pow<4,1>(th)+3*pow<5,1>(th))+sqr(M2)*(pow<6,1>(sh)-2*pow<4,1>(sh)*sqr(th)+7*pow<3,1>(sh)*pow<3,1>(th)+19*sqr(sh)*pow<4,1>(th)+6*sh*pow<5,1>(th)+pow<6,1>(th)))*sqr(uh))/(sqrt(3)*sqrt(sh)*sqrt(th*uh)));
+      me(2,0,2,2)=Complex(pre*(Complex(0,-8)*M*phase*sqr(th)*(sqr(sh)*sqr(uh)*sqr(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+pow<4,1>(M2)*(3*pow<4,1>(sh)+7*pow<3,1>(sh)*uh+11*sqr(sh)*sqr(uh)+4*sh*pow<3,1>(uh)+3*pow<4,1>(uh))+M2*sh*uh*(4*pow<5,1>(sh)+12*pow<4,1>(sh)*uh+11*pow<3,1>(sh)*sqr(uh)-sqr(sh)*pow<3,1>(uh)-6*sh*pow<4,1>(uh)-2*pow<5,1>(uh))-pow<3,1>(M2)*(3*pow<5,1>(sh)+10*pow<4,1>(sh)*uh+15*pow<3,1>(sh)*sqr(uh)+24*sqr(sh)*pow<3,1>(uh)+7*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+sqr(M2)*(pow<6,1>(sh)-2*pow<4,1>(sh)*sqr(uh)+7*pow<3,1>(sh)*pow<3,1>(uh)+19*sqr(sh)*pow<4,1>(uh)+6*sh*pow<5,1>(uh)+pow<6,1>(uh))))/(sqrt(3)*sqrt(sh)*sqrt(th*uh)));
+      me(2,0,3,0)=Complex(pre*Complex(0,4)*sqrt(2)*M2*sqr(phase)*sh*sqr(uh)*(pow<4,1>(M2)*(sh+uh)+sh*sqr(uh)*(sqr(sh)-sqr(uh))-pow<3,1>(M2)*(sqr(sh)-sh*uh+2*sqr(uh))-sqr(M2)*sh*(4*sqr(sh)+9*sh*uh+13*sqr(uh))+M2*(4*pow<4,1>(sh)+11*pow<3,1>(sh)*uh+14*sqr(sh)*sqr(uh)+12*sh*pow<3,1>(uh)+pow<4,1>(uh))));
+      me(2,0,3,2)=Complex(pre*Complex(0,4)*sqrt(2)*M2*th*(-(pow<4,1>(sh)*pow<3,1>(th))+sqr(sh)*pow<5,1>(th)+pow<5,1>(M2)*sqr(sh+th)-pow<4,1>(M2)*(4*pow<3,1>(sh)+11*sqr(sh)*th+11*sh*sqr(th)+4*pow<3,1>(th))-M2*sh*th*(2*pow<4,1>(sh)+4*pow<3,1>(sh)*th+6*sqr(sh)*sqr(th)+7*sh*pow<3,1>(th)-pow<4,1>(th))+pow<3,1>(M2)*(5*pow<4,1>(sh)+19*pow<3,1>(sh)*th+23*sqr(sh)*sqr(th)+18*sh*pow<3,1>(th)+5*pow<4,1>(th))-sqr(M2)*(2*pow<5,1>(sh)+8*pow<4,1>(sh)*th+13*pow<3,1>(sh)*sqr(th)+7*sqr(sh)*pow<3,1>(th)+10*sh*pow<4,1>(th)+2*pow<5,1>(th))));
+      me(2,0,4,0)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<3,1>(M)*phase*sh*sqrt(sh)*sqr(uh)*sqrt(th*uh)*(pow<3,1>(sh)+2*sqr(sh)*uh+M2*uh*(-M2+uh)+sh*uh*(-M2+2*uh)));
+      me(2,0,4,2)=Complex(pre*(Complex(0,-8)*sqrt(2)*pow<3,1>(M)*sqrt(sh)*th*(-(sh*pow<4,1>(th))+pow<3,1>(M2)*th*(sh+th)-sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*th+5*sh*sqr(th)+2*pow<3,1>(th))+M2*(pow<4,1>(sh)+3*pow<3,1>(sh)*th+4*sqr(sh)*sqr(th)+5*sh*pow<3,1>(th)+pow<4,1>(th)))*sqrt(th*uh))/phase);
+      me(2,2,0,0)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<5,1>(M)*pow(phase,3)*sh*sqrt(sh)*th*uh*sqrt(th*uh)*(3*sqr(M2)+sqr(th)+th*uh+sqr(uh)-3*M2*(th+uh)));
+      me(2,2,0,2)=Complex(pre*Complex(0,-8)*sqrt(2)*pow<3,1>(M)*phase*sqr(sh)*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))));
+      me(2,2,1,0)=Complex(pre*Complex(0,4)*sqrt(2)*pow<3,1>(M2)*sqr(phase)*sh*(th-uh)*(pow<3,1>(M2)*(th+uh)-9*M2*th*uh*(th+uh)-sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*th*uh*(2*sqr(th)+3*th*uh+2*sqr(uh))));
+      me(2,2,1,2)=Complex(pre*Complex(0,4)*sqrt(2)*M2*sqr(sh)*(th-uh)*(pow<3,1>(M2)*uh*(sh+uh)-2*sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+sh*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))+M2*(2*pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+pow<4,1>(uh))));
+      me(2,2,2,0)=Complex(pre*(Complex(0,8)*pow<5,1>(M)*phase*(2*sqr(sh)*sqr(uh)*sqr(sh+uh)*(sqr(sh)+sh*uh+sqr(uh))-pow<5,1>(M2)*(pow<3,1>(sh)+sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+pow<4,1>(M2)*(3*pow<4,1>(sh)+5*pow<3,1>(sh)*uh+7*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+3*pow<4,1>(uh))-pow<3,1>(M2)*(3*pow<5,1>(sh)+4*pow<4,1>(sh)*uh+6*sqr(sh)*pow<3,1>(uh)-2*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+M2*sh*uh*(3*pow<5,1>(sh)+12*pow<4,1>(sh)*uh+19*pow<3,1>(sh)*sqr(uh)+10*sqr(sh)*pow<3,1>(uh)+3*sh*pow<4,1>(uh)+3*pow<5,1>(uh))+sqr(M2)*(pow<6,1>(sh)-3*pow<5,1>(sh)*uh-20*pow<4,1>(sh)*sqr(uh)-20*pow<3,1>(sh)*pow<3,1>(uh)-5*sqr(sh)*pow<4,1>(uh)-6*sh*pow<5,1>(uh)+pow<6,1>(uh))))/(sqrt(3)*sqrt(sh)*sqrt(th*uh)));
+      me(2,2,2,2)=Complex(pre*(Complex(0,8)*M*sqr(sh)*sqrt(sh)*(pow<4,1>(M2)*(pow<3,1>(th)-2*sqr(th)*uh-2*th*sqr(uh)+pow<3,1>(uh))+sqr(th)*sqr(uh)*(pow<3,1>(th)+2*sqr(th)*uh+2*th*sqr(uh)+pow<3,1>(uh))+pow<3,1>(M2)*(-2*pow<4,1>(th)+7*pow<3,1>(th)*uh+7*th*pow<3,1>(uh)-2*pow<4,1>(uh))+M2*th*uh*(4*pow<4,1>(th)-3*pow<3,1>(th)*uh-8*sqr(th)*sqr(uh)-3*th*pow<3,1>(uh)+4*pow<4,1>(uh))+sqr(M2)*(pow<5,1>(th)-9*pow<4,1>(th)*uh+4*pow<3,1>(th)*sqr(uh)+4*sqr(th)*pow<3,1>(uh)-9*th*pow<4,1>(uh)+pow<5,1>(uh))))/(sqrt(3)*phase*sqrt(th*uh)));
+      me(2,2,3,0)=Complex(pre*Complex(0,4)*sqrt(2)*pow<3,1>(M2)*(th-uh)*(pow<3,1>(M2)*uh*(sh+uh)-2*sqr(M2)*(pow<3,1>(sh)+3*sqr(sh)*uh+sh*sqr(uh)+pow<3,1>(uh))+sh*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))+M2*(2*pow<4,1>(sh)+3*pow<3,1>(sh)*uh+4*sqr(sh)*sqr(uh)+pow<4,1>(uh))));
+      me(2,2,3,2)=Complex(pre*(Complex(0,4)*sqrt(2)*M2*sh*(th-uh)*(pow<4,1>(M2)*sqr(sh+uh)-sqr(sh)*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))-pow<3,1>(M2)*(3*pow<3,1>(sh)+7*sqr(sh)*uh+6*sh*sqr(uh)+2*pow<3,1>(uh))+sqr(M2)*(4*pow<4,1>(sh)+12*pow<3,1>(sh)*uh+9*sqr(sh)*sqr(uh)+6*sh*pow<3,1>(uh)+pow<4,1>(uh))-M2*sh*(2*pow<4,1>(sh)+5*pow<3,1>(sh)*uh+7*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+2*pow<4,1>(uh))))/sqr(phase));
+      me(2,2,4,0)=Complex(pre*(Complex(0,8)*sqrt(2)*pow<7,1>(M)*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))))/phase);
+      me(2,2,4,2)=Complex(pre*(Complex(0,8)*sqrt(2)*pow<3,1>(M)*sh*sqrt(sh)*sqrt(th*uh)*f1)/pow(phase,3));
+      // test the average result
+      // double aver = me.average();
+      // Energy6 Q(sh*th*uh);
+      // Energy4 P(sh*th+th*uh+uh*sh);
+      // double test =-128.*M2/3./Q/pow<4,1>(Q-M2*P)*
+      // 	(M2*sqr(P)*Q*(5*pow<6,1>(M2)-45*pow<3,1>(M2)*Q+48*sqr(Q)) -
+      // 	 2*pow<4,1>(P)*(pow<6,1>(M2)-pow<3,1>(M2)*Q+sqr(Q)) + 
+      // 	 pow<3,1>(M2)*P*sqr(Q)*(28*pow<3,1>(M2) - 31*Q)-
+      // 	 sqr(M2*P)*P*(13*pow<3,1>(M2)-18*Q)*Q + 4*M2*pow<5,1>(P)*(pow<3,1>(M2)+Q) - 
+      // 	 sqr(M2)*(2*pow<6,1>(P) - 33*pow<4,1>(Q)) - 2*pow<8,1>(M2)*sqr(Q)  + 43*pow<5,1>(M2)*pow<3,1>(Q));
+      // cerr << "testing spin correlations " << test << " " << me.average() << " "
+      // 	   << abs(test-aver)/(test+aver) << "\n";
+    }
+    // g qbar -> 1D2 qbar
+    else if(hard[1]->id()<0) {
+      assert(false);
+      //     vector<VectorWaveFunction>    g1;
+      //     vector<SpinorBarWaveFunction> q2;
+      //     vector<SpinorWaveFunction>    q4;
+      //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      //     SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+      //     SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
+      //     g1[1]=g1[2];
+      //     // matrix element
+      //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      //     if(!swapped) {
+      //     	me(0,0,0,0) = sh/M2;
+      //     	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
+      //     	me(2,1,0,1) = sh/M2;
+      //     	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
+      //     }
+      //     else {
+      //     	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
+      //     	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
+      //     	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
+      //     	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
+      //     }
+      //     // Helicity code version
+      //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
+      //     // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+      //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
+      //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
+      //     // 	Complex amp = eps*g1[ih1].wave();
+      //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+      //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
+      //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
+      //     //     }
+      //     //   }
+      //     // }
+    }
+    // g q -> 1D2 q
+    else if(hard[1]->id()<6) {
+      assert(false);
+      //     vector<VectorWaveFunction> g1;
+      //     vector<SpinorWaveFunction> q2;
+      //     vector<SpinorBarWaveFunction> q4;
+      //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      //     SpinorWaveFunction(   q2,hard[1],incoming,false,true);
+      //     SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
+      //     g1[1]=g1[2];
+      //     // matrix element
+      //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
+      //     if(!swapped) {
+      // 	me(0,0,0,0) = sh/M2;
+      // 	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
+      // 	me(2,1,0,1) = sh/M2;
+      // 	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
+      //     }
+      //     else {
+      // 	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
+      // 	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
+      // 	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
+      // 	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
+      //     }
+      //     // Helicity code version
+      //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
+      //     // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
+      //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
+      //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
+      //     // 	Complex amp = eps*g1[ih1].wave();
+      //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+      //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
+      //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
+      //     //     }
+      //     //   }
+      //     // }
+    }
+    else
+      assert(false);
+  }
+  else if(hard[0]->id()==-hard[1]->id()) {
+    assert(false);
+    //   vector<SpinorWaveFunction>    q1;
+    //   vector<SpinorBarWaveFunction> q2;
+    //   vector<VectorWaveFunction>    g4;
+    //   SpinorWaveFunction(   q1,hard[0],incoming,false,true);
+    //   SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+    //   VectorWaveFunction(   g4,hard[3],outgoing,true,true,true,vector_phase);
+    //   g4[1]=g4[2];
+    //   // matrix element
+    //   me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1);
+    //   if(!swapped) {
+    //     me(0,1,0,0) = -th/M2;
+    //     me(0,1,0,2) =  exp(Complex(0.,-2.*phi))*uh/M2;
+    //     me(1,0,0,0) =  exp(Complex(0., 2.*phi))*uh/M2;
+    //     me(1,0,0,2) = -th/M2;
+    //   }
+    //   else {
+    //     me(0,1,0,0) =  exp(Complex(0., 2.*phi))*th/M2;
+    //     me(0,1,0,2) = -uh/M2;
+    //     me(1,0,0,0) = -uh/M2;
+    //     me(1,0,0,2) =  exp(Complex(0.,-2.*phi))*th/M2;
+    //   }
+    //   // Helicity code version
+    //   // complex<InvEnergy3> fact = sqrt(2./sh)/M2*Complex(0.,1.);
+    //   // for(unsigned int ih1=0;ih1<2;++ih1) {
+    //   //   for(unsigned int ih2=0;ih2<2;++ih2) {
+    //   // 	LorentzPolarizationVectorE fCurrent = q1[ih1].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+    //   // 	LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[3]->momentum());
+    //   // 	for(unsigned int ih4=0;ih4<2;++ih4) {
+    //   // 	  Complex amp = eps*g4[ih4].wave();
+    //   // 	  //if(norm(me(ih1,ih2,0,2*ih4))>1e-10)
+    //   // 	    cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
+    //   // 		 << amp << " " << me(ih1,ih2,0,2*ih4) << " " << amp/me(ih1,ih2,0,2*ih4)
+    //   // 		 << " " << norm(amp/me(ih1,ih2,0,2*ih4)) << "\n";
+    //   // 	}
+    //   //   }
+    //   // }
+  }
+  else
+    assert(false);
+  // construct the vertex
+  HardVertexPtr hardvertex = new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  hardvertex->ME(me);
+  // set the pointers and to and from the vertex
+  for(unsigned int i = 0; i < hard.size(); ++i)
+    hard[i]->spinInfo()->productionVertex(hardvertex);
+  // boost back to lab
+  boost = LorentzRotation(pcms.boostVector());
+  for(PPtr part : hard)
+    part->transform(boost);
 }

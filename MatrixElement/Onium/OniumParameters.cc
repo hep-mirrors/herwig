@@ -182,7 +182,7 @@ void OniumParameters::doinit() {
     if(O1_D_prod_[type].size()<Rpp02_[type].size()) O1_D_prod_[type].resize(Rpp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
     if(O1_D_dec_ [type].size()<Rpp02_[type].size()) O1_D_dec_ [type].resize(Rpp02_[type].size(),{ZERO,ZERO,ZERO,ZERO});
     for(unsigned int n=0;n<Rpp02_[type].size();++n) {
-      Energy7 Odec = 3.75/Constants::pi*Rpp02_[type][n];
+      Energy7 Odec = 3.75*3./Constants::pi*Rpp02_[type][n];
       O1_D_prod_[type][n][0] = 5.*Odec;
       O1_D_prod_[type][n][1] = 3.*Odec;
       O1_D_prod_[type][n][2] = 5.*Odec;
