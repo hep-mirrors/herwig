@@ -162,13 +162,22 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
   for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
     for(unsigned int ih1B=0;ih1B<2;++ih1B) {
       unsigned int ih1 = 2*ih1A+ih1B;
-      auto vOff = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
+      auto vOff1 = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
       for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
   	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
   	  unsigned int ih2 = 2*ih2A+ih2B;
-	  Complex vamp = (vOff*v2[ih2].wave())/sqr(M);
+	  Complex vamp = (vOff1*v2[ih2].wave())/sqr(M);
+	  auto vOff2 = Helicity::epsilon(v2[ih2].wave(),pG1,pG2);
+	  auto vOff3 = Helicity::epsilon(pG1+pG2,v1[ih1].wave(),v2[ih2].wave());
 	  for(unsigned int ix=0;ix<5;++ix) {
 	    Complex amp = vamp*tamp[ix];
+	    Complex ampNew = (0.125*(ten[ix].wave().preDot (pDiff)*vOff3)+
+			      0.125*(ten[ix].wave().postDot(pDiff)*vOff3)+
+			      0.25*ten[ix].wave().preDot (v1[ih1].wave())*vOff2-
+			      0.25*ten[ix].wave().preDot (v2[ih2].wave())*vOff1+
+			      0.25*ten[ix].wave().postDot(v1[ih1].wave())*vOff2-
+			      0.25*ten[ix].wave().postDot(v2[ih2].wave())*vOff1)/sqr(M);
+	    amp +=ampNew;
 	    output += norm(amp);
 	    if(v1.size()==4) {
 	      me(ih1A,ih1B,ih2A,ih2B,ix) = amp;
@@ -201,7 +210,7 @@ double GammaGamma2Onium1D2Amplitude::me2(const vector<VectorWaveFunction> & v1,
   // coupling factors
   double eQ = state_==ccbar ? 2./3. : -1./3.;
   double alpha = generator()->standardModel()->alphaEM();
-  return 1536./5.*output*O1_/scale/pow<5,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
+  return 512./5.*output*O1_/scale/pow<5,1>(M)*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
 }
 
 Energy GammaGamma2Onium1D2Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {

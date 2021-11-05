@@ -147,7 +147,7 @@ CrossSection MEGGto1D2::dSigHatDR() const {
 }
 
 double MEGGto1D2::me2() const {
-  return 64./45.*sqr(Constants::pi)*O1_/pow<7,2>(sHat())*sqr(standardModel()->alphaS(scale()));
+  return 64./135.*sqr(Constants::pi)*O1_/pow<7,2>(sHat())*sqr(standardModel()->alphaS(scale()));
 }
 
 void MEGGto1D2::constructVertex(tSubProPtr sub) {

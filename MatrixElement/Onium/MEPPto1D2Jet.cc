@@ -413,7 +413,6 @@ void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
       Energy10 f1 = pow<5,1>(th)+pow<4,1>(th)*uh+th*pow<4,1>(uh)+pow<5,1>(uh)
 	-pow<3,1>(M2)*(sqr(th)-th*uh+sqr(uh))+3*sqr(M2)*(pow<3,1>(th)+pow<3,1>(uh))
 	-M2*(3*pow<4,1>(th)+2*pow<3,1>(th)*uh-sqr(th)*sqr(uh)+2*th*pow<3,1>(uh)+3*pow<4,1>(uh));
-
       
       me(0,0,0,0)=Complex(pre*Complex(0,8)*sqrt(2)*pow<3,1>(M)*pow(phase,3)*sh*sqrt(sh)*sqrt(th*uh)*f1);
       me(0,0,0,2)=Complex(pre*Complex(0,8)*sqrt(2)*pow<7,1>(M)*phase*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))));
@@ -455,6 +454,7 @@ void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
       me(2,2,3,2)=Complex(pre*(Complex(0,4)*sqrt(2)*M2*sh*(th-uh)*(pow<4,1>(M2)*sqr(sh+uh)-sqr(sh)*uh*(2*pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+pow<3,1>(uh))-pow<3,1>(M2)*(3*pow<3,1>(sh)+7*sqr(sh)*uh+6*sh*sqr(uh)+2*pow<3,1>(uh))+sqr(M2)*(4*pow<4,1>(sh)+12*pow<3,1>(sh)*uh+9*sqr(sh)*sqr(uh)+6*sh*pow<3,1>(uh)+pow<4,1>(uh))-M2*sh*(2*pow<4,1>(sh)+5*pow<3,1>(sh)*uh+7*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+2*pow<4,1>(uh))))/sqr(phase));
       me(2,2,4,0)=Complex(pre*(Complex(0,8)*sqrt(2)*pow<7,1>(M)*sqrt(sh)*sqrt(th*uh)*(pow<4,1>(sh)+3*pow<3,1>(sh)*uh+sqr(M2)*sqr(uh)+4*sqr(sh)*sqr(uh)+2*sh*pow<3,1>(uh)+pow<4,1>(uh)-M2*(pow<3,1>(sh)+3*sqr(sh)*uh+2*sh*sqr(uh)+2*pow<3,1>(uh))))/phase);
       me(2,2,4,2)=Complex(pre*(Complex(0,8)*sqrt(2)*pow<3,1>(M)*sh*sqrt(sh)*sqrt(th*uh)*f1)/pow(phase,3));
+
       // test the average result
       // double aver = me.average();
       // Energy6 Q(sh*th*uh);
