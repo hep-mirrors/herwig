@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEPPto3D2Jet_H
-#define Herwig_MEPPto3D2Jet_H
+#ifndef Herwig_MEPPto3D3Jet_H
+#define Herwig_MEPPto3D3Jet_H
 //
-// This is the declaration of the MEPPto3D2Jet class.
+// This is the declaration of the MEPPto3D3Jet class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -13,20 +13,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEPPto3D2Jet class implements the colour singlet processes for
- * \f$gg\to \^{3}D_2 g\f$.
+ * The MEPPto3D3Jet class implements the colour singlet processes for
+ * \f$gg\to \^{3}D_3 g\f$.
  *
- * @see \ref MEPPto3D2JetInterfaces "The interfaces"
- * defined for MEPPto3D2Jet.
+ * @see \ref MEPPto3D3JetInterfaces "The interfaces"
+ * defined for MEPPto3D3Jet.
  */
-class MEPPto3D2Jet: public HwMEBase {
+class MEPPto3D3Jet: public HwMEBase {
 
 public:
   
   /**
    * The default constructor.
    */
-  MEPPto3D2Jet(): O1_(ZERO), state_(ccbar), n_(1), mOpt_(0)
+  MEPPto3D3Jet(): O1_(ZERO), state_(ccbar), n_(1), mOpt_(0)
   {}
 
 public:
@@ -156,7 +156,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPPto3D2Jet & operator=(const MEPPto3D2Jet &) = delete;
+  MEPPto3D3Jet & operator=(const MEPPto3D3Jet &) = delete;
 
 private:
   
@@ -188,4 +188,4 @@ private:
 
 }
 
-#endif /* Herwig_MEPPto3D2Jet_H */
+#endif /* Herwig_MEPPto3D3Jet_H */
