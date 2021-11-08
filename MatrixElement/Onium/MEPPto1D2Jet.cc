@@ -322,30 +322,157 @@ double MEPPto1D2Jet::me2() const {
       // 	   << (output-test)/(output+test) << " " << output/test << "\n";
     }
     // g qbar -> 1D2 qbar
-     else if(mePartonData()[1]->id()<0) {
-       assert(false);
-       //     // spin sum version
-       //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-       //     // final factors
-       //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-       //     // analytic test
-       //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-       //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-       //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-     }
+    else if(mePartonData()[1]->id()<0) {
+      // helicity amplitude version of ME
+      // VectorWaveFunction    g1w(meMomenta()[0],mePartonData()[0],incoming);
+      // SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
+      // TensorWaveFunction    t3w(meMomenta()[2],mePartonData()[2],outgoing);
+      // SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      // vector<VectorWaveFunction> g1;
+      // vector<SpinorBarWaveFunction> q2;
+      // vector<TensorWaveFunction> t3;
+      // vector<SpinorWaveFunction> q4;
+      // for(unsigned int ix=0;ix<2;++ix) {
+      //   g1w.reset(2*ix);
+      //   g1.push_back(g1w);
+      //   q2w.reset(ix);
+      //   q2.push_back(q2w);
+      //   q4w.reset(ix);
+      //   q4.push_back(q4w);
+      // }
+      // for(unsigned int ix=0;ix<5;++ix) {
+      // 	t3w.reset(ix,tensor_phase);
+      // 	t3.push_back(t3w);
+      // }
+      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin2,PDT::Spin1Half);
+      // double phi = meMomenta()[2].phi();
+      // Complex phase = exp(Complex(0.,phi));
+      // Energy2 th(tHat()),uh(uHat()),sh(sHat()),sm(sHat()-M2),tm(tHat()-M2),um(uHat()-M2);
+      // me(0,0,0,0)=(Complex(0,-8)*sqrt(2)*M*sqr(phase)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+      // me(0,0,1,0)=(Complex(0,8)*sqrt(2)*phase*sh*sqrt(sh)*sqrt(-uh)*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+      // me(0,0,2,0)=(Complex(0,8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+      // me(0,0,3,0)=(Complex(0,-8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+      // me(0,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+      // me(0,1,0,1)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+      // me(0,1,1,1)=(Complex(0,-8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+      // me(0,1,2,1)=(Complex(0,-8)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(phase)*sqr(sm)*sqrt(-th)*sqr(tm));
+      // me(0,1,3,1)=(Complex(0,8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(pow(phase,3)*sqr(sm)*sqr(tm));
+      // me(0,1,4,1)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(pow(phase,4)*sqr(sm)*sqr(tm));
+      // me(2,0,0,0)=(Complex(0,8)*sqrt(2)*M*pow(phase,4)*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+      // me(2,0,1,0)=(Complex(0,-8)*sqrt(2)*pow(phase,3)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+      // me(2,0,2,0)=(Complex(0,-8)*sqr(phase)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+      // me(2,0,3,0)=(Complex(0,8)*sqrt(2)*phase*sh*uh*sqrt(-(uh/sh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+      // me(2,0,4,0)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+      // me(2,1,0,1)=(Complex(0,-8)*sqrt(2)*M*sqr(phase)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+      // me(2,1,1,1)=(Complex(0,8)*sqrt(2)*phase*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+      // me(2,1,2,1)=(Complex(0,8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+      // me(2,1,3,1)=(Complex(0,-8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+      // me(2,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+      // double totalB(0.);
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
+      //  	  for(unsigned int ih3=0;ih3<5;++ih3) {
+      // 	    auto vp1Pre = t3[ih3].wave().preDot(meMomenta()[0]);
+      // 	    complex<Energy2> d11 = vp1Pre*meMomenta()[0];
+      // 	    for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	      auto eSub1 = epsilon(meMomenta()[0],meMomenta()[2],g1[ih1].wave());
+      // 	      Complex amp = 32.*M*d11/sqr(tHat()-M2)*(fCurrent*eSub1)/tHat();
+      // 	      double test = norm(amp/me(2*ih1,ih2,ih3,ih4)-1.);
+      // 	      if(norm(me(2*ih1,ih2,ih3,ih4))>1e-10 && test>1e-10)
+      // 		cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih3 << " " << ih4 << " "
+      // 		     << amp << " " << me(2*ih1,ih2,ih3,ih4) << " " << test << "\n";
+      // 	      totalB+= norm(amp);
+      // 	    }
+      //     }
+      //   }
+      // }
+      // spin sum version
+      double total = -128.*(sqr(sHat())+sqr(uHat()))/3./M2/tHat();
+      // final factors
+      output = 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/(135.*sqr(tHat()-M2))*total;
+      // analytic test
+      // Energy7 R02 = params_->secondDerivativeRadialWaveFunctionSquared(state_,n_);
+      // double test = -2560.*sqr(Constants::pi)*R02*pow(standardModel()->alphaS(scale()),3)*
+      // 	(sqr(sHat())+sqr(uHat()))/(9.*pow<5,1>(M)*tHat()*sqr(tHat()-M2));
+      // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+    }
     // g q -> 1D2 q
-     else if(mePartonData()[1]->id()<6) {
-       assert(false);
-       // spin sum version
-       //     double total = 2.*(sqr(sHat())+sqr(uHat()))/pow<4,1>(M);
-       //     // final factors
-       //     output = -32.*O1_*pow<3,1>(M*Constants::pi*standardModel()->alphaS(scale()))/(27.*tHat()*sqr(tHat()-M2))*total;
-       //     // analytic test
-       //     // Energy3 R02 = params_->radialWaveFunctionSquared(state_,n_);
-       //     // double test = -32.*sqr(Constants::pi)*pow(standardModel()->alphaS(scale()),3)*R02*(sqr(sHat())+sqr(uHat()))/(9.*M*tHat()*sqr(tHat()-M2));
-       //     // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
-     }
-     else assert(false);
+    else if(mePartonData()[1]->id()<6) {
+      // helicity amplitude version of ME
+      // VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
+      // SpinorWaveFunction      q2w(meMomenta()[1],mePartonData()[1],incoming);
+      // TensorWaveFunction      t3w(meMomenta()[2],mePartonData()[2],outgoing);
+      // SpinorBarWaveFunction   q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      // vector<VectorWaveFunction> g1;
+      // vector<SpinorWaveFunction> q2;
+      // vector<TensorWaveFunction> t3;
+      // vector<SpinorBarWaveFunction> q4;
+      // for(unsigned int ix=0;ix<2;++ix) {
+      //   g1w.reset(2*ix);
+      //   g1.push_back(g1w);
+      //   q2w.reset(ix);
+      //   q2.push_back(q2w);
+      //   q4w.reset(ix);
+      //   q4.push_back(q4w);
+      // }
+      // for(unsigned int ix=0;ix<5;++ix) {
+      // 	t3w.reset(ix,tensor_phase);
+      // 	t3.push_back(t3w);
+      // }
+      // ProductionMatrixElement me(PDT::Spin1,PDT::Spin1Half,PDT::Spin2,PDT::Spin1Half);
+      // double phi = meMomenta()[2].phi();
+      // Complex phase = exp(Complex(0.,phi));
+      // me(0,0,0,0)=(Complex(0,8)*sqrt(2)*M*sqr(phase)*sqrt(-(pow<4,1>(sHat())*tHat()))*uHat())/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,0,1,0)=(Complex(0,-8)*sqrt(2)*phase*sHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,0,2,0)=(Complex(0,-8)*sHat()*(-2*M2*tHat()*(tHat()-2*uHat())*(tHat()+uHat())+sqr(tHat())*sqr(tHat()+uHat())+sqr(M2)*(sqr(tHat())-4*tHat()*uHat()+sqr(uHat()))))/(sqrt(3)*M*sqr(M2-tHat())*sqrt(-tHat())*sqr(tHat()+uHat()));
+      // me(0,0,3,0)=(Complex(0,8)*sqrt(2)*sHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(phase*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,0,4,0)=(Complex(0,8)*sqrt(2)*M*sqrt(-(pow<4,1>(sHat())*tHat()))*uHat())/(sqr(phase)*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,1,0,1)=(Complex(0,-8)*sqrt(2)*M*sHat()*sqrt(-tHat())*sqr(uHat()))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,1,1,1)=(Complex(0,8)*sqrt(2)*uHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(phase*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,1,2,1)=(Complex(0,8)*uHat()*(-2*M2*tHat()*(tHat()-2*uHat())*(tHat()+uHat())+sqr(tHat())*sqr(tHat()+uHat())+sqr(M2)*(sqr(tHat())-4*tHat()*uHat()+sqr(uHat()))))/(sqrt(3)*M*sqr(phase)*sqr(M2-tHat())*sqrt(-tHat())*sqr(tHat()+uHat()));
+      // me(0,1,3,1)=(Complex(0,-8)*sqrt(2)*uHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(pow(phase,3)*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(0,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sHat()*sqrt(-tHat())*sqr(uHat()))/(pow(phase,4)*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,0,0,0)=(Complex(0,-8)*sqrt(2)*M*pow(phase,4)*sHat()*sqrt(-tHat())*sqr(uHat()))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,0,1,0)=(Complex(0,8)*sqrt(2)*pow(phase,3)*uHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,0,2,0)=(Complex(0,8)*sqr(phase)*uHat()*(-2*M2*tHat()*(tHat()-2*uHat())*(tHat()+uHat())+sqr(tHat())*sqr(tHat()+uHat())+sqr(M2)*(sqr(tHat())-4*tHat()*uHat()+sqr(uHat()))))/(sqrt(3)*M*sqr(M2-tHat())*sqrt(-tHat())*sqr(tHat()+uHat()));
+      // me(2,0,3,0)=(Complex(0,-8)*sqrt(2)*phase*uHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sHat()*sqrt(-tHat())*sqr(uHat()))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,1,0,1)=(Complex(0,8)*sqrt(2)*M*sqr(phase)*sqrt(-(pow<4,1>(sHat())*tHat()))*uHat())/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,1,1,1)=(Complex(0,-8)*sqrt(2)*phase*sHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,1,2,1)=(Complex(0,-8)*sHat()*(-2*M2*tHat()*(tHat()-2*uHat())*(tHat()+uHat())+sqr(tHat())*sqr(tHat()+uHat())+sqr(M2)*(sqr(tHat())-4*tHat()*uHat()+sqr(uHat()))))/(sqrt(3)*M*sqr(M2-tHat())*sqrt(-tHat())*sqr(tHat()+uHat()));
+      // me(2,1,3,1)=(Complex(0,8)*sqrt(2)*sHat()*sqrt(-(sHat()*uHat()))*(M2*(-tHat()+uHat())+tHat()*(tHat()+uHat())))/(phase*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // me(2,1,4,1)=(Complex(0,8)*sqrt(2)*M*sqrt(-(pow<4,1>(sHat())*tHat()))*uHat())/(sqr(phase)*sqr(M2-tHat())*sqr(tHat()+uHat()));
+      // double total(0.);
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
+      //  	  for(unsigned int ih3=0;ih3<5;++ih3) {
+      // 	    auto vp1Pre = t3[ih3].wave().preDot(meMomenta()[0]);
+      // 	    complex<Energy2> d11 = vp1Pre*meMomenta()[0];
+      // 	    for(unsigned int ih1=0;ih1<2;++ih1) {
+      // 	      auto eSub1 = epsilon(meMomenta()[0],meMomenta()[2],g1[ih1].wave());
+      // 	      Complex amp = -32.*M*d11/sqr(tHat()-M2)*(fCurrent*eSub1)/tHat();
+      // 	      double test = norm(amp/me(2*ih1,ih2,ih3,ih4)-1.);
+      // 	      if(norm(me(2*ih1,ih2,ih3,ih4))>1e-10 && test>1e-10)
+      // 		cerr << "testing in hel loop A " << ih1 << " " << ih2 << " " << ih3 << " " << ih4 << " "
+      // 		     << amp << " " << me(2*ih1,ih2,ih3,ih4) << " " << test << "\n";
+      // 	      total+= norm(amp);
+      // 	    }
+      //     }
+      //   }
+      // }
+      // spin averaged version
+      double total = -128.*(sqr(sHat())+sqr(uHat()))/(3.*sqr(M)*tHat());
+      // final factors
+      output = 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/135./sqr(tHat()-M2)*total;
+      // analytic test
+      // Energy7 R02 = params_->secondDerivativeRadialWaveFunctionSquared(state_,n_);
+      // double test = -2560.*sqr(Constants::pi)*R02*pow(standardModel()->alphaS(scale()),3)*
+      // 	(sqr(sHat())+sqr(uHat()))/(9.*pow<5,1>(M)*tHat()*sqr(tHat()-M2));
+      // cerr << "testing matrix element " << output << " " << test << " " << (output-test)/(output+test) << " " << output/test << "\n";
+    }
+    else assert(false);
   }
   // q qbar -> 1D2 g
   else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
@@ -396,6 +523,8 @@ void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
   Energy2 sh = (hard[0]->momentum()+hard[1]->momentum()).m2();
   Energy2 th = (hard[0]->momentum()-hard[2]->momentum()).m2();
   Energy2 uh = (hard[0]->momentum()-hard[3]->momentum()).m2();
+  Energy2 um(uh-M2),tm(th-M2),sm(sh-M2);
+  Complex phase = exp(Complex(0.,phi));
   // set basis states and compute the matrix element
   ProductionMatrixElement me;
   vector<TensorWaveFunction> twave;
@@ -408,7 +537,6 @@ void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
       VectorWaveFunction( g2,hard[1],incoming,false, true,true,vector_phase);
       VectorWaveFunction( g4,hard[3],outgoing,true , true,true,vector_phase);
       ProductionMatrixElement me(PDT::Spin1,PDT::Spin1,PDT::Spin2,PDT::Spin1);
-      Complex phase = exp(Complex(0.,phi));
       auto pre = 1./pow<3,1>((M2-sh)*(M2-th)*(M2-uh));
       Energy10 f1 = pow<5,1>(th)+pow<4,1>(th)*uh+th*pow<4,1>(uh)+pow<5,1>(uh)
 	-pow<3,1>(M2)*(sqr(th)-th*uh+sqr(uh))+3*sqr(M2)*(pow<3,1>(th)+pow<3,1>(uh))
@@ -470,81 +598,152 @@ void MEPPto1D2Jet::constructVertex(tSubProPtr sub) {
     }
     // g qbar -> 1D2 qbar
     else if(hard[1]->id()<0) {
-      assert(false);
-      //     vector<VectorWaveFunction>    g1;
-      //     vector<SpinorBarWaveFunction> q2;
-      //     vector<SpinorWaveFunction>    q4;
-      //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-      //     SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-      //     SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
-      //     g1[1]=g1[2];
-      //     // matrix element
-      //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-      //     if(!swapped) {
-      //     	me(0,0,0,0) = sh/M2;
-      //     	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-      //     	me(2,1,0,1) = sh/M2;
-      //     	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-      //     }
-      //     else {
-      //     	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-      //     	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-      //     	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-      //     	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-      //     }
-      //     // Helicity code version
-      //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-      //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-      //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-      //     //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih2].dimensionedWave());
-      //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-      //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-      //     // 	Complex amp = eps*g1[ih1].wave();
-      //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-      //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-      //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-      //     //     }
-      //     //   }
-      //     // }
+      vector<VectorWaveFunction>    g1;
+      vector<SpinorBarWaveFunction> q2;
+      vector<SpinorWaveFunction>    q4;
+      VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+      SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
+      g1[1]=g1[2];
+      // matrix element
+      me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin2,PDT::Spin1Half);
+      if(!swapped) {
+	me(0,0,0,0)=(Complex(0,-8)*sqrt(2)*M*sqr(phase)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(0,0,1,0)=(Complex(0,8)*sqrt(2)*phase*sh*sqrt(sh)*sqrt(-uh)*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,0,2,0)=(Complex(0,8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,0,3,0)=(Complex(0,-8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(0,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+	me(0,1,0,1)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(0,1,1,1)=(Complex(0,-8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(0,1,2,1)=(Complex(0,-8)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(phase)*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,1,3,1)=(Complex(0,8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(pow(phase,3)*sqr(sm)*sqr(tm));
+	me(0,1,4,1)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(pow(phase,4)*sqr(sm)*sqr(tm));
+	me(2,0,0,0)=(Complex(0,8)*sqrt(2)*M*pow(phase,4)*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,0,1,0)=(Complex(0,-8)*sqrt(2)*pow(phase,3)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,0,2,0)=(Complex(0,-8)*sqr(phase)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,0,3,0)=(Complex(0,8)*sqrt(2)*phase*sh*uh*sqrt(-(uh/sh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,0,4,0)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,1,0,1)=(Complex(0,-8)*sqrt(2)*M*sqr(phase)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(2,1,1,1)=(Complex(0,8)*sqrt(2)*phase*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,1,2,1)=(Complex(0,8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,1,3,1)=(Complex(0,-8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(2,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+      }
+      else {
+	phase*=-1.;
+	me(0,0,0,0)=(Complex(0,8)*sqrt(2)*M*pow(phase,3)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(0,0,1,0)=(Complex(0,8)*sqrt(2)*sqr(phase)*sh*sqrt(-(sh/uh))*uh*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,0,2,0)=(Complex(0,-8)*phase*sh*(sqr(th)*sqr(sm)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,0,3,0)=(Complex(0,8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(0,0,4,0)=(Complex(0,8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(phase*sqr(sm)*sqr(tm));
+	me(0,1,0,1)=(Complex(0,-8)*sqrt(2)*M*pow(phase,3)*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(0,1,1,1)=(Complex(0,8)*sqrt(2)*sqr(phase)*sh*uh*sqrt(-(uh/sh))*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,1,2,1)=(Complex(0,8)*phase*uh*(sqr(th)*sqr(sm)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,1,3,1)=(Complex(0,-8)*sqrt(2)*sh*uh*sqrt(-(uh/sh))*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(phase*sqr(sm)*sqr(tm));
+	me(2,0,0,0)=(Complex(0,-8)*sqrt(2)*M*phase*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,0,1,0)=(Complex(0,8)*sqrt(2)*sh*uh*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,0,2,0)=(Complex(0,8)*uh*(sqr(th)*sqr(sm)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*phase*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,0,3,0)=(Complex(0,-8)*sqrt(2)*sh*uh*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(phase)*sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(pow(phase,3)*sqr(sm)*sqr(tm));
+	me(2,1,0,1)=(Complex(0,8)*sqrt(2)*M*phase*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(2,1,1,1)=(Complex(0,-8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,1,2,1)=(Complex(0,-8)*sh*(sqr(th)*sqr(sm)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*phase*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,1,3,1)=(Complex(0,8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(phase)*sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,1,4,1)=(Complex(0,8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(pow(phase,3)*sqr(sm)*sqr(tm));
+      }
+      // helicity version
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q4[ih4].dimensionedWave().vectorCurrent(q2[ih4].dimensionedWave());
+      //  	  for(unsigned int ih3=0;ih3<5;++ih3) {
+      // 	    auto vp1Pre = twave[ih3].wave().preDot(hard[0]->momentum());
+      //  	    complex<Energy2> d11 = vp1Pre*hard[0]->momentum();
+      //  	    for(unsigned int ih1=0;ih1<2;++ih1) {
+      //  	      auto eSub1 = epsilon(hard[0]->momentum(),hard[2]->momentum(),g1[ih1].wave());
+      //  	      Complex amp = 32.*M*d11/sqr(tHat()-M2)*(fCurrent*eSub1)/tHat();
+      //  	      double test = norm(amp/me(2*ih1,ih2,ih3,ih4)-1.);
+      //  	      if(norm(me(2*ih1,ih2,ih3,ih4))>1e-10 && test>1e-10)
+      //  		cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih3 << " " << ih4 << " "
+      //  		     << amp << " " << me(2*ih1,ih2,ih3,ih4) << " " << test << "\n";
+      //  	    }
+      // 	  }
+      // 	}
+      // }      
     }
     // g q -> 1D2 q
     else if(hard[1]->id()<6) {
-      assert(false);
-      //     vector<VectorWaveFunction> g1;
-      //     vector<SpinorWaveFunction> q2;
-      //     vector<SpinorBarWaveFunction> q4;
-      //     VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-      //     SpinorWaveFunction(   q2,hard[1],incoming,false,true);
-      //     SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
-      //     g1[1]=g1[2];
-      //     // matrix element
-      //     me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half);
-      //     if(!swapped) {
-      // 	me(0,0,0,0) = sh/M2;
-      // 	me(0,1,0,1) =-exp(Complex(0.,-2.*phi))*uh/M2;
-      // 	me(2,1,0,1) = sh/M2;
-      // 	me(2,0,0,0) =-exp(Complex(0., 2.*phi))*uh/M2;
-      //     }
-      //     else {
-      // 	me(0,0,0,0) = -exp(Complex(0., phi))*sh/M2;
-      // 	me(0,1,0,1) =  exp(Complex(0., phi))*uh/M2;
-      // 	me(2,1,0,1) = -exp(Complex(0.,-phi))*sh/M2;
-      // 	me(2,0,0,0) =  exp(Complex(0.,-phi))*uh/M2;
-      //     }
-      //     // Helicity code version
-      //     // complex<InvEnergy3> fact = sqrt(-2/th)/M2*Complex(0.,1.);
-      //     // for(unsigned int ih2=0;ih2<2;++ih2) {
-      //     //   for(unsigned int ih4=0;ih4<2;++ih4) {
-      //     //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
-      //     //     LorentzPolarizationVector eps = fact*Helicity::epsilon(fCurrent,hard[2]->momentum(),hard[0]->momentum());
-      //     //     for(unsigned int ih1=0;ih1<2;++ih1) {
-      //     // 	Complex amp = eps*g1[ih1].wave();
-      //     // 	if(norm(me(2*ih1,ih2,0,ih4))>1e-10)  cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih4 << " "
-      //     // 						  << amp << " " << me(2*ih1,ih2,0,ih4) << " " << amp/me(2*ih1,ih2,0,ih4)
-      //     // 						  << " " << norm(amp/me(2*ih1,ih2,0,ih4)) << "\n";
-      //     //     }
-      //     //   }
-      //     // }
+      vector<VectorWaveFunction> g1;
+      vector<SpinorWaveFunction> q2;
+      vector<SpinorBarWaveFunction> q4;
+      VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+      SpinorWaveFunction(   q2,hard[1],incoming,false,true);
+      SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
+      g1[1]=g1[2];
+      // matrix element
+      me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin2,PDT::Spin1Half);
+      if(!swapped) {
+	me(0,0,0,0)=(Complex(0,8)*sqrt(2)*M*sqr(phase)*sqrt(-(pow<4,1>(sh)*th))*uh)/(sqr(sm)*sqr(tm));
+	me(0,0,1,0)=(Complex(0,-8)*sqrt(2)*phase*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,0,2,0)=(Complex(0,-8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,0,3,0)=(Complex(0,8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(0,0,4,0)=(Complex(0,8)*sqrt(2)*M*sqrt(-(pow<4,1>(sh)*th))*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+	me(0,1,0,1)=(Complex(0,-8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(0,1,1,1)=(Complex(0,8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(0,1,2,1)=(Complex(0,8)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(phase)*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,1,3,1)=(Complex(0,-8)*sqrt(2)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(pow(phase,3)*sqr(sm)*sqr(tm));
+	me(0,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(pow(phase,4)*sqr(sm)*sqr(tm));
+	me(2,0,0,0)=(Complex(0,-8)*sqrt(2)*M*pow(phase,4)*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,0,1,0)=(Complex(0,8)*sqrt(2)*pow(phase,3)*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,0,2,0)=(Complex(0,8)*sqr(phase)*uh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,0,3,0)=(Complex(0,-8)*sqrt(2)*phase*uh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,1,0,1)=(Complex(0,8)*sqrt(2)*M*sqr(phase)*sqrt(-(pow<4,1>(sh)*th))*uh)/(sqr(sm)*sqr(tm));
+	me(2,1,1,1)=(Complex(0,-8)*sqrt(2)*phase*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(sqr(sm)*sqr(tm));
+	me(2,1,2,1)=(Complex(0,-8)*sh*(sqr(sm)*sqr(th)+2*M2*sm*th*(th-2*uh)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,1,3,1)=(Complex(0,8)*sqrt(2)*sh*sqrt(-(sh*uh))*(-(sm*th)+M2*(-th+uh)))/(phase*sqr(sm)*sqr(tm));
+	me(2,1,4,1)=(Complex(0,8)*sqrt(2)*M*sqrt(-(pow<4,1>(sh)*th))*uh)/(sqr(phase)*sqr(sm)*sqr(tm));
+      }
+      else {
+	phase *=-1.;me(0,0,0,0)=(Complex(0,-8)*sqrt(2)*M*pow(phase,3)*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(0,0,1,0)=(Complex(0,8)*sqrt(2)*sqr(phase)*sh*sqrt(sh)*sqrt(-uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,0,2,0)=(Complex(0,8)*phase*sh*(sqr(th)*sqr(sh-M2)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,0,3,0)=(Complex(0,-8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(0,0,4,0)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(phase*sqr(sm)*sqr(tm));
+	me(0,1,0,1)=(Complex(0,8)*sqrt(2)*M*pow(phase,3)*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(0,1,1,1)=(Complex(0,-8)*sqrt(2)*sqr(phase)*sh*uh*sqrt(-(uh/sh))*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,1,2,1)=(Complex(0,-8)*phase*uh*(sqr(th)*sqr(sh-M2)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(0,1,3,1)=(Complex(0,8)*sqrt(2)*sh*uh*sqrt(-(uh/sh))*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqr(tm));
+	me(0,1,4,1)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(phase*sqr(sm)*sqr(tm));
+	me(2,0,0,0)=(Complex(0,8)*sqrt(2)*M*phase*sh*sqrt(-th)*sqr(uh))/(sqr(sm)*sqr(tm));
+	me(2,0,1,0)=(Complex(0,-8)*sqrt(2)*sh*uh*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,0,2,0)=(Complex(0,-8)*uh*(sqr(th)*sqr(sh-M2)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*phase*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,0,3,0)=(Complex(0,8)*sqrt(2)*sh*uh*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(phase)*sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,0,4,0)=(Complex(0,8)*sqrt(2)*M*sh*sqrt(-th)*sqr(uh))/(pow(phase,3)*sqr(sm)*sqr(tm));
+	me(2,1,0,1)=(Complex(0,-8)*sqrt(2)*M*phase*sqr(sh)*sqrt(-th)*uh)/(sqr(sm)*sqr(tm));
+	me(2,1,1,1)=(Complex(0,8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,1,2,1)=(Complex(0,8)*sh*(sqr(th)*sqr(sh-M2)+sqr(M2)*(sqr(th)-4*th*uh+sqr(uh))+2*M2*th*(-sqr(th)+th*uh+2*sqr(uh))))/(sqrt(3)*M*phase*sqr(sm)*sqrt(-th)*sqr(tm));
+	me(2,1,3,1)=(Complex(0,-8)*sqrt(2)*sqr(sh)*sqrt(th*uh)*(M2*(-th+uh)+th*(th+uh)))/(sqr(phase)*sqr(sm)*sqrt(-(sh*th))*sqr(tm));
+	me(2,1,4,1)=(Complex(0,-8)*sqrt(2)*M*sqr(sh)*sqrt(-th)*uh)/(pow(phase,3)*sqr(sm)*sqr(tm));
+      }
+      // Helicity code version
+      // for(unsigned int ih2=0;ih2<2;++ih2) {
+      //   for(unsigned int ih4=0;ih4<2;++ih4) {
+      //     LorentzPolarizationVectorE fCurrent = q2[ih2].dimensionedWave().vectorCurrent(q4[ih4].dimensionedWave());
+      //  	  for(unsigned int ih3=0;ih3<5;++ih3) {
+      // 	    auto vp1Pre = twave[ih3].wave().preDot(hard[0]->momentum());
+      //  	    complex<Energy2> d11 = vp1Pre*hard[0]->momentum();
+      //  	    for(unsigned int ih1=0;ih1<2;++ih1) {
+      //  	      auto eSub1 = epsilon(hard[0]->momentum(),hard[2]->momentum(),g1[ih1].wave());
+      //  	      Complex amp = -32.*M*d11/sqr(tHat()-M2)*(fCurrent*eSub1)/tHat();
+      //  	      double test = norm(amp/me(2*ih1,ih2,ih3,ih4)-1.);
+      //  	      if(norm(me(2*ih1,ih2,ih3,ih4))>1e-10 && test>1e-10)
+      //  		cerr << "testing in hel loop B " << ih1 << " " << ih2 << " " << ih3 << " " << ih4 << " "
+      //  		     << amp << " " << me(2*ih1,ih2,ih3,ih4) << " " << test << "\n";
+      //  	    }
+      // 	  }
+      // 	}
+      // }
     }
     else
       assert(false);
