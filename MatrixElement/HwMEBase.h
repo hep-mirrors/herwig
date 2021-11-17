@@ -232,6 +232,13 @@ protected:
   const vector<Lorentz5Momentum> & rescaledMomenta() const {
     return rescaledMomenta_;
   }
+
+  /**
+   *  Set the momenta
+   */
+  void rescaledMomenta(const vector<Lorentz5Momentum> & in) {
+    rescaledMomenta_ = in;
+  }
   //@}
 
   /**
