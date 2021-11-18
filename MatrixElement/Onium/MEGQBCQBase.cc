@@ -25,7 +25,7 @@ using namespace Herwig;
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<MEGQBCQBase,HwMEBase>
-describeHerwigMEGQBCQBase("Herwig::MEGQBCQBase", "HwMEHadronOnium.so");
+describeHerwigMEGQBCQBase("Herwig::MEGQBCQBase", "HwOniumParameters.so HwMEHadronOnium.so");
 
 void MEGQBCQBase::Init() {
   
@@ -235,6 +235,8 @@ bool MEGQBCQBase::generateKinematics(const double * r) {
   pt = q*sqrt(1.0-sqr(cth));
   rescaled[2].setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));
   rescaled[3].setVect(Momentum3(-pt*sin(phi()), -pt*cos(phi()), -q*cth));
+  rescaled[2].rescaleEnergy();
+  rescaled[3].rescaleEnergy();
   rescaledMomenta(rescaled);
   return true;
 }
