@@ -8,6 +8,7 @@
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "OniumParameters.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 
@@ -109,6 +110,11 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
   
 protected:
@@ -125,6 +131,13 @@ protected:
    */
   OniumParametersPtr oniumParameters() {
     return params_;
+  }
+
+  /**
+   *  Set the matrix element
+   */
+  void setME(ProductionMatrixElement & me) const {
+    me_=me;
   }
 
 public:
@@ -206,6 +219,11 @@ private:
    *  Mass generator for the state
    */
   GenericMassGeneratorPtr massGen_;
+
+  /**
+   *  Matrix element for correlations
+   */
+  mutable ProductionMatrixElement me_;
 };
 
 }

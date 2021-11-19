@@ -158,7 +158,9 @@ double MEGQBC1S0Q::me2() const {
   // 		     -(1344+a1*(-2688+a1*(3059+96*a1*(-53+a1*(39+4*a1*(2+5*a1))))))*sqr(M2)*sqr(sh)+(1409+32*a1*(-79+3*a1*(11+8*a1*(-1+2*a1))))*M2*pow<3,1>(sh)-64*(6+a1*(-12+7*a1))*pow<4,1>(sh))*pow<5,1>(th)
   // 		   +16*(pow(a1,5)*(-8+39*a1+8*pow(a1,3))*pow<3,1>(M2)-2*sqr(a1)*(14+a1*(-48+47*a1+16*pow(a1,3)))*sqr(M2)*sh+(28+a1*(-56+a1*(39+8*a1*(-4+5*a1))))*M2*sqr(sh)
   // 			-16*sqr(-1+a1)*pow<3,1>(sh))*pow<6,1>(th)-64*(sqr(a1)*M2-sh)*(pow(a1,4)*M2-sqr(-1+a1)*sh)*pow<7,1>(th))/(4.*pow<4,1>(-(sqr(a1)*M2)+sh)*sqr(M2-th)*pow<4,1>(-(sqr(-1+a1)*M2)+uh));
-  // cerr << "testing me " << meSum << " "  << test << " " << (meSum-test)/(meSum+test) << " " << meSum/test << "\n"; 
+  // cerr << "testing me " << meSum << " "  << test << " " << (meSum-test)/(meSum+test) << " " << meSum/test << "\n";
+  // set matrix element
+  setME(me);
   // final factors
   return 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/(729.*sqr(a1*a2))*meSum;
 }
