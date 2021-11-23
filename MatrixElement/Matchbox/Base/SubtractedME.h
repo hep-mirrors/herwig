@@ -203,6 +203,14 @@ public:
    */
   bool loopSimSubtraction() const { return theLoopSimSubtraction; }
 
+  /**
+   * Return true, if this configuration of cross sections should not
+   * be included due to their relative magnitude. Arguments are head
+   * cross section and dependent cross section, including all
+   * reweights.
+   */
+  virtual bool discard(const CrossSection&, const CrossSection&) const { return false; }
+
   //@}
 
   /** @name Matrix element and dipole information */
