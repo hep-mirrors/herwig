@@ -292,8 +292,6 @@ decaymode Lambdabar0->nbar0,gamma; 0.001751 1 /Herwig/Decays/RadiativeHyperon
 decaymode Lambdabar0->pbar-,e+,nu_e; 0.000832 1 /Herwig/Decays/BaryonLight1
 decaymode Lambdabar0->pbar-,mu+,nu_mu; 0.000157 1 /Herwig/Decays/BaryonLight1
 #
-#
-#
 decaymode n0->p+,e-,nu_ebar; 1 1 /Herwig/Decays/BaryonLight1
 #
 decaymode nbar0->pbar-,e+,nu_e; 1 1 /Herwig/Decays/BaryonLight1

@@ -4,21 +4,18 @@
 # file containing the decays for the bosons
 #
 #
-#
 decaymode h0->b,bbar; 0.569369 1 /Herwig/Decays/Hff
 decaymode h0->W+,W-; 0.224 1 /Herwig/Decays/HWW
-decaymode h0->tau-,tau+; 0.0628 1 /Herwig/Decays/Hff
 decaymode h0->g,g; 0.085 1 /Herwig/Decays/HPP
-decaymode h0->c,cbar; 0.0264 1 /Herwig/Decays/Hff
+decaymode h0->tau-,tau+; 0.0628 1 /Herwig/Decays/Hff
 decaymode h0->Z0,Z0; 0.0279 1 /Herwig/Decays/HWW
-decaymode h0->Z0,gamma; 0.00159 1 /Herwig/Decays/HPP
+decaymode h0->c,cbar; 0.0264 1 /Herwig/Decays/Hff
 decaymode h0->gamma,gamma; 0.00229 1 /Herwig/Decays/HPP
+decaymode h0->Z0,gamma; 0.00159 1 /Herwig/Decays/HPP
 decaymode h0->s,sbar; 0.000433 1 /Herwig/Decays/Hff
 decaymode h0->mu-,mu+; 0.000218 1 /Herwig/Decays/Hff
 decaymode h0->t,tbar; 0 1 /Herwig/Decays/Hff
 #
-
-
 decaymode Z0->d,dbar; 0.153812 1 /Herwig/Decays/ZDecayer
 decaymode Z0->s,sbar; 0.153811 1 /Herwig/Decays/ZDecayer
 decaymode Z0->b,bbar; 0.152457 1 /Herwig/Decays/ZDecayer
@@ -31,7 +28,6 @@ decaymode Z0->e-,e+; 0.033621 1 /Herwig/Decays/ZDecayer
 decaymode Z0->mu-,mu+; 0.033621 1 /Herwig/Decays/ZDecayer
 decaymode Z0->tau-,tau+; 0.033546 1 /Herwig/Decays/ZDecayer
 #
-
 decaymode W+->dbar,u; 0.321586 1 /Herwig/Decays/WDecayer
 decaymode W+->sbar,c; 0.320957 1 /Herwig/Decays/WDecayer
 decaymode W+->mu+,nu_mu; 0.108059 1 /Herwig/Decays/WDecayer
