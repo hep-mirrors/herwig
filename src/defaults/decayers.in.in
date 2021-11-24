@@ -90,7 +90,6 @@ newdef Tau1MesonCurrent:AntiQuark 13  -3
 newdef Tau1MesonCurrent:Quark 14  4
 newdef Tau1MesonCurrent:AntiQuark 14  -3
 newdef Tau1Meson:WeakCurrent Tau1MesonCurrent 
-
 #
 create Herwig::TauDecayer  Tau2Pion
 newdef Tau2Pion:Iteration 10
@@ -128,18 +127,6 @@ newdef Tau2PionCurrent:AntiQuark 0  -1
 newdef Tau2PionCurrent:Quark 1  2
 newdef Tau2PionCurrent:AntiQuark 1  -1
 newdef Tau2Pion:WeakCurrent Tau2PionCurrent 
-
-create Herwig::TauDecayer  Tau2Kaon
-newdef Tau2Kaon:Ntry 500
-newdef Tau2Kaon:Points 10000
-newdef Tau2Kaon:GenerateIntermediates 1 
-insert Tau2Kaon:WeightLocation 0 0
-insert Tau2Kaon:MaximumWeight 0 0.014
-insert Tau2Kaon:Weights 0 0.505259
-insert Tau2Kaon:Weights 1 0.43015
-insert Tau2Kaon:Weights 2 0.064591
-newdef Tau2Kaon:WeakCurrent TwoKaonCzyzCurrent
-
 #
 create Herwig::TauDecayer  TauKEta
 newdef TauKEta:Iteration 10
@@ -240,9 +227,8 @@ newdef a13Pi:ZeroMax 19.144
 newdef a13Pi:OneMax 7.83592
 newdef a13Pi:TwoMax 6.64804
 newdef a13Pi:ThreeMax 6.66296
-
 #
-create Herwig::TauDecayer Tau4Pion
+create Herwig::TauDecayer  Tau4Pion
 newdef Tau4Pion:Iteration 10
 newdef Tau4Pion:Ntry 2000
 newdef Tau4Pion:Points 10000
@@ -702,7 +688,6 @@ newdef Tau4PionCurrent:AntiQuark 0  -1
 newdef Tau4PionCurrent:Quark 1  2
 newdef Tau4PionCurrent:AntiQuark 1  -1
 newdef Tau4Pion:WeakCurrent Tau4PionCurrent 
-
 #
 create Herwig::TauDecayer  Tau2MesonPhoton
 newdef Tau2MesonPhoton:Iteration 10
@@ -1099,7 +1084,6 @@ newdef VectorVP:OutgoingVector 72 113
 newdef VectorVP:OutgoingPScalar 72 331
 newdef VectorVP:Coupling 72 2.6e-07
 newdef VectorVP:MaxWeight 72 3.3628
-
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -1446,7 +1430,6 @@ newdef Vector2Meson:FirstOutgoing 63 130
 newdef Vector2Meson:SecondOutgoing 63 310
 newdef Vector2Meson:Coupling 63 0.918
 newdef Vector2Meson:MaxWeight 63 1.6008
-
 #
 create Herwig::TauDecayer  Tau3Pion
 newdef Tau3Pion:Iteration 10
@@ -1934,13 +1917,6 @@ insert TauEtaPiPi:Weights 5 0.22759
 insert TauEtaPiPi:Weights 6 0.0645809
 insert TauEtaPiPi:Weights 7 0.0373083
 insert TauEtaPiPi:Weights 8 0.0381665
-
-create Herwig::VectorMeson2BaryonsDecayer  Vector2Baryons
-newdef Vector2Baryons:Iteration 1
-newdef Vector2Baryons:Ntry 500
-newdef Vector2Baryons:Points 10000
-newdef Vector2Baryons:GenerateIntermediates 0 
-
 #
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
@@ -2157,7 +2133,6 @@ newdef Vector2Leptons:OutgoingFermion 41 3122
 newdef Vector2Leptons:OutgoingAntiFermion 41 -3122
 newdef Vector2Leptons:Coupling 41 0.0009565
 newdef Vector2Leptons:MaxWeight 41 1.59998
-
 #
 create Herwig::WeakPartonicDecayer  WeakPartonic0
 newdef  WeakPartonic0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -2169,7 +2144,6 @@ newdef  WeakPartonic0:Exclusive 1
 newdef  WeakPartonic0:Intermediates 0 
 newdef  WeakPartonic0:Partonic_Tries 100 
 newdef WeakPartonic0:MECode 0 
-
 #
 create Herwig::WeakPartonicDecayer  WeakPartonic100
 newdef  WeakPartonic100:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -2181,7 +2155,6 @@ newdef  WeakPartonic100:Exclusive 1
 newdef  WeakPartonic100:Intermediates 0 
 newdef  WeakPartonic100:Partonic_Tries 100 
 newdef WeakPartonic100:MECode 100 
-
 #
 create Herwig::VectorMesonPScalarFermionsDecayer  VectorVPff
 newdef VectorVPff:Iteration 5
@@ -2276,7 +2249,6 @@ newdef VectorVPff:IncludeVMD 7  2
 newdef VectorVPff:VMDID      7  113
 newdef VectorVPff:VMDmass    7  775.8
 newdef VectorVPff:VMDwidth   7  150.3
-
 #
 create Herwig::VectorMeson3PionDecayer  Vector3Pion
 newdef Vector3Pion:Iteration 5
@@ -2321,7 +2293,6 @@ newdef Vector3Pion:Rho1Width 1 0.1439
 newdef Vector3Pion:Rho2Width 1 0.31
 newdef Vector3Pion:Rho3Width 1 0.24
 newdef Vector3Pion:DefaultParameters 1 0
-
 #
 create Herwig::a1ThreePionCLEODecayer  a1CLEO
 newdef a1CLEO:Iteration 5
@@ -2399,7 +2370,6 @@ newdef a1CLEO:ZeroMax 13.0704
 newdef a1CLEO:OneMax 6.91104
 newdef a1CLEO:TwoMax 6.94654
 newdef a1CLEO:ThreeMax 6.40086
-
 #
 create Herwig::PScalarVectorVectorDecayer  PVV
 newdef PVV:Iteration 1
@@ -2456,7 +2426,6 @@ newdef PVV:FirstOutgoing  9 313
 newdef PVV:SecondOutgoing 9 -313
 newdef PVV:Coupling   9 0.0308
 newdef PVV:MaxWeight  9 5.22846
-
 #
 create Herwig::PScalarVectorFermionsDecayer  PVff
 newdef PVff:Iteration 1
@@ -2513,7 +2482,6 @@ newdef PVff:IncludeVMD 4  2
 newdef PVff:VMDID      4  113
 newdef PVff:VMDmass    4  775.8
 newdef PVff:VMDwidth   4  150.3
-
 #
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
@@ -2907,7 +2875,6 @@ newdef Etapipigamma:OmnesImag 98  -0.303462
 newdef Etapipigamma:OmnesEnergy 99  954.387
 newdef Etapipigamma:OmnesReal 99  -0.51781
 newdef Etapipigamma:OmnesImag 99  -0.310381
-
 #
 create Herwig::EtaPiGammaGammaDecayer  Etapigammagamma
 newdef Etapigammagamma:Iteration 1
@@ -2925,7 +2892,6 @@ newdef Etapigammagamma:Theta -0.349066
 newdef Etapigammagamma:EtaMax 2.36858
 newdef Etapigammagamma:EtaPrimeMax 0.00597214
 newdef Etapigammagamma:LocalParameters 1
-
 #
 create Herwig::EtaPiPiPiDecayer  Etapipipi
 newdef Etapipipi:Iteration 1
@@ -2980,7 +2946,6 @@ newdef Etapipipi:a 5 -0.105
 newdef Etapipipi:b 5 -0.065
 newdef Etapipipi:c 5 -0.004
 newdef Etapipipi:MaxWeight  5 1.42649
-
 #
 create Herwig::TensorMeson2PScalarDecayer  Tensor2PScalar
 newdef Tensor2PScalar:Iteration 1
@@ -3227,7 +3192,6 @@ newdef Tensor2PScalar:FirstOutgoing 47 421
 newdef Tensor2PScalar:SecondOutgoing 47 -421
 newdef Tensor2PScalar:Coupling 47 22.3
 newdef Tensor2PScalar:MaxWeight 47 1.61675
-
 #
 create Herwig::TensorMesonVectorPScalarDecayer  TensorVP
 newdef TensorVP:Iteration 1
@@ -3389,7 +3353,6 @@ newdef TensorVP:OutgoingVector 30 22
 newdef TensorVP:OutgoingScalar 30 10551
 newdef TensorVP:Coupling 30 1.11
 newdef TensorVP:MaxWeight 30 1.82265
-
 #
 create Herwig::TensorMesonVectorVectorDecayer  TVV
 newdef TVV:Iteration 1
@@ -3506,7 +3469,6 @@ newdef TVV:FirstOutgoing 21 223
 newdef TVV:SecondOutgoing 21 223
 newdef TVV:Coupling 21 0.00389
 newdef TVV:MaxWeight 21 10.2336
-
 #
 create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1
@@ -4364,7 +4326,6 @@ newdef ISGWFormFactor:Spectator 111 -1
 newdef ISGWFormFactor:InQuark 111 4
 newdef ISGWFormFactor:OutQuark 111 3
 newdef ISGW:FormFactor ISGWFormFactor 
-
 #
 create Herwig::SemiLeptonicScalarDecayer  ISGW2
 newdef ISGW2:Iteration 1
@@ -5892,9 +5853,8 @@ newdef ISGW2FormFactor:Spectator 197 -1
 newdef ISGW2FormFactor:InQuark 197 4
 newdef ISGW2FormFactor:OutQuark 197 3
 newdef ISGW2:FormFactor ISGW2FormFactor 
-
 #
-create Herwig::SMZDecayer  ZDecayer HwPerturbativeDecay.so
+create Herwig::SMZDecayer  ZDecayer
 newdef ZDecayer:AlphaS  /Herwig/Shower/AlphaQCD
 newdef ZDecayer:AlphaEM /Herwig/Shower/AlphaQED
 newdef ZDecayer:QuarkMax 0 3.
@@ -5913,27 +5873,6 @@ newdef ZDecayer:Ntry 500
 newdef ZDecayer:Points 10000
 newdef ZDecayer:GenerateIntermediates 0 
 newdef ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
-
-#
-create Herwig::SMWDecayer  WDecayer HwPerturbativeDecay.so
-newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
-newdef WDecayer:AlphaEM /Herwig/Shower/AlphaQED
-newdef WDecayer:QuarkMax 0 3.
-newdef WDecayer:QuarkMax 1 3.
-newdef WDecayer:QuarkMax 2 3.
-newdef WDecayer:QuarkMax 3 3.
-newdef WDecayer:QuarkMax 4 3.
-newdef WDecayer:QuarkMax 5 3.
-newdef WDecayer:LeptonMax 0 3.
-newdef WDecayer:LeptonMax 1 3.
-newdef WDecayer:LeptonMax 2 3.
-newdef WDecayer:Iteration 1
-newdef WDecayer:Ntry 500
-newdef WDecayer:Points 10000
-newdef WDecayer:GenerateIntermediates 0 
-newdef WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
 #
 create Herwig::PVectorMesonVectorPScalarDecayer  PVectorVP
 newdef PVectorVP:Iteration 1
@@ -6275,7 +6214,6 @@ newdef PVectorVP:OutgoingVector 66 523
 newdef PVectorVP:OutgoingPScalar 66 -321
 newdef PVectorVP:Coupling 66 0.0373
 newdef PVectorVP:MaxWeight 66 1.60358
-
 #
 create Herwig::PScalarLeptonNeutrinoDecayer  PScalarlnu
 newdef PScalarlnu:Iteration 1
@@ -6318,7 +6256,6 @@ newdef PScalarlnu:MaxWeightElectron 5 1.19578e-11
 newdef PScalarlnu:MaxWeightMuon 5 5.12844e-07
 newdef PScalarlnu:MaxWeightTau 5 0.000114138
 newdef PScalarlnu:DecayConstant 5 0.759
-
 #
 create Herwig::VectorMesonVectorVectorDecayer  VectorVV
 newdef VectorVV:Iteration 1
@@ -6345,7 +6282,6 @@ newdef VectorVV:Outgoing1 3 -213
 newdef VectorVV:Outgoing2 3 213
 newdef VectorVV:Coupling 3 9.59
 newdef VectorVV:MaxWeight 3 45.0477
-
 #
 create Herwig::ScalarMesonFactorizedDecayer  ISGW2Hadronic
 newdef ISGW2Hadronic:Iteration 1
@@ -11099,7 +11035,6 @@ insert ISGW2Hadronic:MaximumWeight 1683 4.93522e-06
 insert ISGW2Hadronic:MaximumWeight 1684 0.000655498
 insert ISGW2Hadronic:MaximumWeight 1685 4.05064e-06
 insert ISGW2Hadronic:MaximumWeight 1686 2.96856e-05
-
 #
 create Herwig::PScalar4FermionsDecayer  PScalar4f
 newdef PScalar4f:Iteration 1
@@ -11511,7 +11446,6 @@ newdef ScalarSS:FirstOutgoing 77 9010221
 newdef ScalarSS:SecondOutgoing 77 9010221
 newdef ScalarSS:Coupling 77 84
 newdef ScalarSS:MaxWeight 77 1.31568
-
 #
 create Herwig::PScalarPScalarVectorDecayer  PPVDecayer
 newdef PPVDecayer:Iteration 1
@@ -11613,7 +11547,6 @@ newdef PPVDecayer:OutgoingPScalar 18 111
 newdef PPVDecayer:OutgoingVector 18 20113
 newdef PPVDecayer:Coupling 18 1.147
 newdef PPVDecayer:MaxWeight 18 3.28207
-
 #
 create Herwig::QuarkoniumDecayer  QDecayME0
 newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -11629,7 +11562,6 @@ newdef  QDecayME0:Exclusive 1
 newdef  QDecayME0:Intermediates 0 
 newdef  QDecayME0:Partonic_Tries 100 
 newdef QDecayME0:MECode 0 
-
 #
 create Herwig::QuarkoniumDecayer  QDecayME130
 newdef  QDecayME130:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -11645,7 +11577,6 @@ newdef  QDecayME130:Exclusive 1
 newdef  QDecayME130:Intermediates 0 
 newdef  QDecayME130:Partonic_Tries 100 
 newdef QDecayME130:MECode 130 
-
 #
 create Herwig::VectorMesonVectorScalarDecayer  VVSDecayer
 newdef VVSDecayer:Iteration 1
@@ -11732,7 +11663,6 @@ newdef VVSDecayer:OutgoingVector 15 22
 newdef VVSDecayer:OutgoingScalar 15 9030221
 newdef VVSDecayer:Coupling 15 0.00114
 newdef VVSDecayer:MaxWeight 15 2.8072
-
 #
 create Herwig::VectorMesonPVectorPScalarDecayer  VAPDecayer
 newdef VAPDecayer:Iteration 1
@@ -11844,7 +11774,6 @@ newdef VAPDecayer:OutgoingPVector 20 10443
 newdef VAPDecayer:OutgoingPScalar 20 111
 newdef VAPDecayer:Coupling 20 0.0029
 newdef VAPDecayer:MaxWeight 20 1.86135
-
 #
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -11856,7 +11785,6 @@ newdef  HvyDecayME0:Exclusive 1
 newdef  HvyDecayME0:Intermediates 0 
 newdef  HvyDecayME0:Partonic_Tries 100 
 newdef HvyDecayME0:MECode 0 
-
 #
 create Herwig::HeavyDecayer  HvyDecayME100
 newdef  HvyDecayME100:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -11868,7 +11796,6 @@ newdef  HvyDecayME100:Exclusive 1
 newdef  HvyDecayME100:Intermediates 0 
 newdef  HvyDecayME100:Partonic_Tries 100 
 newdef HvyDecayME100:MECode 100 
-
 #
 create Herwig::ScalarMesonTensorScalarDecayer  STSDecayer
 newdef STSDecayer:Iteration 1
@@ -11890,7 +11817,6 @@ newdef STSDecayer:OutgoingTensor 2 315
 newdef STSDecayer:OutgoingScalar 2 -10311
 newdef STSDecayer:Coupling 2 0.0217
 newdef STSDecayer:MaxWeight 2 4.35748
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonLight1
 newdef BaryonLight1:Iteration 1
@@ -12117,7 +12043,6 @@ newdef BaryonLight1Form:Spectator2 11 2
 newdef BaryonLight1Form:InQuark 11 3
 newdef BaryonLight1Form:OutQuark 11 2
 newdef BaryonLight1:FormFactor BaryonLight1Form 
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy1
 newdef BaryonHeavy1:Iteration 1
@@ -12567,7 +12492,6 @@ newdef BaryonHeavy1Form:Spectator2 10 3
 newdef BaryonHeavy1Form:InQuark 10 5
 newdef BaryonHeavy1Form:OutQuark 10 4
 newdef BaryonHeavy1:FormFactor BaryonHeavy1Form 
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy2
 newdef BaryonHeavy2:Iteration 1
@@ -12739,7 +12663,6 @@ newdef BaryonHeavy2Form:Spectator2 12 3
 newdef BaryonHeavy2Form:InQuark 12 4
 newdef BaryonHeavy2Form:OutQuark 12 3
 newdef BaryonHeavy2:FormFactor BaryonHeavy2Form 
-
 #
 create Herwig::KornerKramerCharmDecayer  CharmBaryon1
 newdef CharmBaryon1:Iteration 1
@@ -13485,7 +13408,6 @@ newdef CharmBaryon1:Incoming 65 4332
 newdef CharmBaryon1:OutgoingB 65 3334
 newdef CharmBaryon1:OutgoingM 65 213
 newdef CharmBaryon1:MaxWeight 65 0.0643286
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy3
 newdef BaryonHeavy3:Iteration 1
@@ -13739,7 +13661,6 @@ newdef BaryonHeavy3Form:Spectator2 19 3
 newdef BaryonHeavy3Form:InQuark 19 4
 newdef BaryonHeavy3Form:OutQuark 19 3
 newdef BaryonHeavy3:FormFactor BaryonHeavy3Form
-
 #
 create Herwig::SemiLeptonicScalarDecayer  WSB
 newdef WSB:Iteration 1
@@ -14591,7 +14512,6 @@ newdef WSBFormFactor:Spectator 50 -1
 newdef WSBFormFactor:InQuark 50 5
 newdef WSBFormFactor:OutQuark 50 1
 newdef WSB:FormFactor WSBFormFactor 
-
 #
 create Herwig::BaryonFactorizedDecayer  BottomBaryonScalar
 newdef BottomBaryonScalar:Iteration 1
@@ -15058,7 +14978,6 @@ newdef BottomBaryonScalarForm:Spectator2 19 3
 newdef BottomBaryonScalarForm:InQuark 19 4
 newdef BottomBaryonScalarForm:OutQuark 19 3
 newdef BottomBaryonScalar:FormFactor BottomBaryonScalarForm 
-
 #
 create Herwig::BaryonFactorizedDecayer  BottomBaryonVector
 newdef BottomBaryonVector:Iteration 1
@@ -15592,7 +15511,6 @@ newdef BottomBaryonVectorForm:Spectator2 19 3
 newdef BottomBaryonVectorForm:InQuark 19 4
 newdef BottomBaryonVectorForm:OutQuark 19 3
 newdef BottomBaryonVector:FormFactor BottomBaryonVectorForm 
-
 #
 create Herwig::StrongHeavyBaryonDecayer  HeavyStrong
 newdef HeavyStrong:Iteration 1
@@ -15931,7 +15849,6 @@ newdef HeavyStrong:OutgoingB 63 5324
 newdef HeavyStrong:OutgoingM 63 -211
 newdef HeavyStrong:ModeType 63 2
 newdef HeavyStrong:MaxWeight 63 0.0153888
-
 #
 create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3StrongRoper
 newdef SU3StrongRoper:Iteration 1
@@ -16008,7 +15925,6 @@ insert SU3StrongRoper:MaxWeight 46 1.59995
 insert SU3StrongRoper:MaxWeight 47 10.3094
 insert SU3StrongRoper:MaxWeight 48 5.47674
 insert SU3StrongRoper:MaxWeight 49 0.210177
-
 #
 create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong2
 newdef SU3Strong2:Iteration 1
@@ -16087,7 +16003,6 @@ insert SU3Strong2:MaxWeight 48 47.7349
 insert SU3Strong2:MaxWeight 49 49.0244
 insert SU3Strong2:MaxWeight 50 23.5405
 insert SU3Strong2:MaxWeight 51 2.21665
-
 #
 create Herwig::SU3BaryonDecupletOctetScalarDecayer  SU3Decuplet
 newdef SU3Decuplet:Iteration 1
@@ -16146,7 +16061,6 @@ insert SU3Decuplet:MaxWeight 27 0.356554
 insert SU3Decuplet:MaxWeight 28 4.8
 insert SU3Decuplet:MaxWeight 29 4.8
 insert SU3Decuplet:MaxWeight 30 1.72199
-
 #
 create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3RoperDecuplet
 newdef SU3RoperDecuplet:Iteration 1
@@ -16216,7 +16130,6 @@ insert SU3RoperDecuplet:MaxWeight 38 2.73002
 insert SU3RoperDecuplet:MaxWeight 39 2.48197
 insert SU3RoperDecuplet:MaxWeight 40 1.43915
 insert SU3RoperDecuplet:MaxWeight 41 4.43562
-
 #
 create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong3
 newdef SU3Strong3:Iteration 1
@@ -16295,7 +16208,6 @@ insert SU3Strong3:MaxWeight 48 446.415
 insert SU3Strong3:MaxWeight 49 464.428
 insert SU3Strong3:MaxWeight 50 18.3862
 insert SU3Strong3:MaxWeight 51 0.0191169
-
 #
 create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3OctetDecuplet2
 newdef SU3OctetDecuplet2:Iteration 1
@@ -16367,7 +16279,6 @@ insert SU3OctetDecuplet2:MaxWeight 40 0.0186567
 insert SU3OctetDecuplet2:MaxWeight 41 0.0109833
 insert SU3OctetDecuplet2:MaxWeight 42 0.341691
 insert SU3OctetDecuplet2:MaxWeight 43 5.03293e-05
-
 #
 create Herwig::SU3BaryonSingletOctetScalarDecayer  SU3SingletOctet1
 newdef SU3SingletOctet1:Iteration 1
@@ -16391,7 +16302,6 @@ insert SU3SingletOctet1:MaxWeight 1 1.65601
 insert SU3SingletOctet1:MaxWeight 2 1.44904
 insert SU3SingletOctet1:MaxWeight 3 10.9271
 insert SU3SingletOctet1:MaxWeight 4 10.791
-
 #
 create Herwig::SU3BaryonSingletOctetScalarDecayer  SU3SingletOctet2
 newdef SU3SingletOctet2:Iteration 1
@@ -16416,7 +16326,6 @@ insert SU3SingletOctet2:MaxWeight 2 1.63557
 insert SU3SingletOctet2:MaxWeight 3 0.00132433
 insert SU3SingletOctet2:MaxWeight 4 0.93801
 insert SU3SingletOctet2:MaxWeight 5 0.80882
-
 #
 create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong4
 newdef SU3Strong4:Iteration 1
@@ -16493,7 +16402,6 @@ insert SU3Strong4:MaxWeight 46 187.091
 insert SU3Strong4:MaxWeight 47 77.3773
 insert SU3Strong4:MaxWeight 48 25.0159
 insert SU3Strong4:MaxWeight 49 5.49723
-
 #
 create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3OctetDecuplet3
 newdef SU3OctetDecuplet3:Iteration 1
@@ -16561,7 +16469,6 @@ insert SU3OctetDecuplet3:MaxWeight 36 1.97192
 insert SU3OctetDecuplet3:MaxWeight 37 1.84709
 insert SU3OctetDecuplet3:MaxWeight 38 1.3873e-08
 insert SU3OctetDecuplet3:MaxWeight 39 3.14856e-07
-
 #
 create Herwig::OmegaXiStarPionDecayer  OmegaXiStar
 newdef OmegaXiStar:Iteration 1
@@ -16576,7 +16483,6 @@ newdef OmegaXiStar:BS -1.008e-06
 newdef OmegaXiStar:MaximumWeight 0.00252403
 newdef OmegaXiStar:Incoming 3334
 newdef OmegaXiStar:Outgoing 3324
-
 #
 create Herwig::NonLeptonicOmegaDecayer  OmegaNL
 newdef OmegaNL:DStar -3.98e-07
@@ -16609,7 +16515,6 @@ newdef OmegaNL:Iteration 1
 newdef OmegaNL:Ntry 500
 newdef OmegaNL:Points 10000
 newdef OmegaNL:GenerateIntermediates 0 
-
 #
 create Herwig::NonLeptonicHyperonDecayer  HyperonNL
 newdef HyperonNL:MaxWeight 0 1.1
@@ -16658,7 +16563,6 @@ newdef HyperonNL:Iteration 1
 newdef HyperonNL:Ntry 500
 newdef HyperonNL:Points 10000
 newdef HyperonNL:GenerateIntermediates 0 
-
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3RoperGamma
 newdef SU3RoperGamma:Iteration 1
@@ -16694,7 +16598,6 @@ insert SU3RoperGamma:MaxWeight 6 0.0310247
 insert SU3RoperGamma:MaxWeight 7 0.024809
 insert SU3RoperGamma:MaxWeight 8 5.2804e-05
 insert SU3RoperGamma:MaxWeight 9 0.014572
-
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma2
 newdef SU3Gamma2:Iteration 1
@@ -16730,7 +16633,6 @@ insert SU3Gamma2:MaxWeight 6 0.0712376
 insert SU3Gamma2:MaxWeight 7 0.0130695
 insert SU3Gamma2:MaxWeight 8 0.36402
 insert SU3Gamma2:MaxWeight 9 0.0548153
-
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma3
 newdef SU3Gamma3:Iteration 1
@@ -16757,7 +16659,6 @@ newdef SU3Gamma3:ExcitedLambda 3122
 newdef SU3Gamma3:ExcitedXi0 3322
 newdef SU3Gamma3:ExcitedXi- 3312
 insert SU3Gamma3:MaxWeight 0 1.58351
-
 #
 create Herwig::SU3BaryonDecupletOctetPhotonDecayer  DecupletGamma
 newdef DecupletGamma:Iteration 1
@@ -16790,7 +16691,6 @@ insert DecupletGamma:MaxWeight 2 0.135728
 insert DecupletGamma:MaxWeight 3 0.137064
 insert DecupletGamma:MaxWeight 4 0.0331892
 insert DecupletGamma:MaxWeight 5 0.122578
-
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma4
 newdef SU3Gamma4:Iteration 1
@@ -16826,7 +16726,6 @@ insert SU3Gamma4:MaxWeight 6 0.0283485
 insert SU3Gamma4:MaxWeight 7 0.00715258
 insert SU3Gamma4:MaxWeight 8 0.0517918
 insert SU3Gamma4:MaxWeight 9 0.0120169
-
 #
 create Herwig::SU3BaryonSingletOctetPhotonDecayer  SU3Gamma5
 newdef SU3Gamma5:Iteration 1
@@ -16840,7 +16739,6 @@ newdef SU3Gamma5:Lambda 3122
 newdef SU3Gamma5:ExcitedLambda 3124
 insert SU3Gamma5:MaxWeight 0 1.60087
 insert SU3Gamma5:MaxWeight 1 2.20194
-
 #
 create Herwig::TauDecayer  Tau1Vector
 newdef Tau1Vector:Iteration 1
@@ -17258,7 +17156,6 @@ newdef BZVectorFormFactor:Spectator 8 -3
 newdef BZVectorFormFactor:InQuark 8 5
 newdef BZVectorFormFactor:OutQuark 8 3
 newdef BZVector:FormFactor BZVectorFormFactor 
-
 #
 create Herwig::SemiLeptonicScalarDecayer  BZScalar
 newdef BZScalar:Iteration 1
@@ -17411,7 +17308,6 @@ newdef BZScalarFormFactor:Spectator 6 2
 newdef BZScalarFormFactor:InQuark 6 -5
 newdef BZScalarFormFactor:OutQuark 6 -2
 newdef BZScalar:FormFactor BZScalarFormFactor 
-
 #
 create Herwig::ScalarMesonFactorizedDecayer  WSBHadronic
 newdef WSBHadronic:Iteration 1
@@ -19045,7 +18941,6 @@ insert WSBHadronic:MaximumWeight 357 0.000568379
 insert WSBHadronic:MaximumWeight 358 2.4122e-07
 insert WSBHadronic:MaximumWeight 359 0.000188805
 insert WSBHadronic:MaximumWeight 360 0.000117368
-
 #
 create Herwig::SemiLeptonicScalarDecayer  Melikhov
 newdef Melikhov:Iteration 1
@@ -19123,7 +19018,6 @@ newdef MelikhovFormFactor:Spectator 7 1
 newdef MelikhovFormFactor:InQuark 7 5
 newdef MelikhovFormFactor:OutQuark 7 1
 newdef Melikhov:FormFactor MelikhovFormFactor 
-
 #
 create Herwig::SemiLeptonicScalarDecayer  MelikhovStech
 newdef MelikhovStech:Iteration 1
@@ -20793,7 +20687,6 @@ newdef MelikhovStechFormFactor:Spectator 41 -3
 newdef MelikhovStechFormFactor:InQuark 41 5
 newdef MelikhovStechFormFactor:OutQuark 41 3
 newdef MelikhovStech:FormFactor MelikhovStechFormFactor 
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonLight2
 newdef BaryonLight2:Iteration 1
@@ -20930,7 +20823,6 @@ newdef BaryonLight2Form:Spectator2 11 2
 newdef BaryonLight2Form:InQuark 11 3
 newdef BaryonLight2Form:OutQuark 11 2
 newdef BaryonLight2:FormFactor BaryonLight2Form 
-
 #
 create Herwig::SemiLeptonicScalarDecayer  KiselevBc
 newdef KiselevBc:Iteration 1
@@ -21261,7 +21153,6 @@ newdef KiselevBcFormFactor:Spectator 15 -4
 newdef KiselevBcFormFactor:InQuark 15 5
 newdef KiselevBcFormFactor:OutQuark 15 4
 newdef KiselevBc:FormFactor KiselevBcFormFactor 
-
 #
 create Herwig::ScalarMesonFactorizedDecayer  BcHadronic
 newdef BcHadronic:Iteration 1
@@ -21977,7 +21868,6 @@ insert BcHadronic:MaximumWeight 135 0.000286851
 insert BcHadronic:MaximumWeight 136 4.44615e-05
 insert BcHadronic:MaximumWeight 137 0.000366705
 insert BcHadronic:MaximumWeight 138 0.000226844
-
 #
 create Herwig::SemiLeptonicBaryonDecayer  ExcitedLambda
 newdef ExcitedLambda:Iteration 1
@@ -22017,7 +21907,6 @@ newdef ExcitedLambdaForm:Spectator2 1 2
 newdef ExcitedLambdaForm:InQuark 1 5
 newdef ExcitedLambdaForm:OutQuark 1 4
 newdef ExcitedLambda:FormFactor ExcitedLambdaForm 
-
 #
 create Herwig::RadiativeHeavyBaryonDecayer  HeavyGamma
 newdef HeavyGamma:Iteration 1
@@ -22168,7 +22057,6 @@ newdef HeavyGamma:Incoming 23 5334
 newdef HeavyGamma:OutgoingB 23 5332
 newdef HeavyGamma:ModeType 23 1
 newdef HeavyGamma:MaxWeight 23 1.67242
-
 #
 create Herwig::ScalarVectorVectorDecayer  SVV
 newdef SVV:Iteration 1
@@ -22235,7 +22123,6 @@ newdef SVV:FirstOutgoing  11 223
 newdef SVV:SecondOutgoing 11 223
 newdef SVV:Coupling   11 0.0093
 newdef SVV:MaxWeight  11 11.5
-
 #
 create Herwig::a1SimpleDecayer  a1Simple
 newdef a1Simple:Iteration 5
@@ -22274,10 +22161,8 @@ newdef a1Simple:ThreeChargedWeights 2 0.141309
 newdef a1Simple:ThreeChargedWeights 3 0.134317
 newdef a1Simple:ThreeChargedWeights 4 0.139732
 newdef a1Simple:ThreeChargedWeights 5 0.138687
-
 #
 create Herwig::MamboDecayer  Mambo
-
 #
 create Herwig::TauDecayer  Tau5Pion
 newdef Tau5Pion:Iteration 10
@@ -22357,7 +22242,6 @@ newdef Tau5PionCurrent:AntiQuark 1  -1
 newdef Tau5PionCurrent:Quark 2  2
 newdef Tau5PionCurrent:AntiQuark 2  -1
 newdef Tau5Pion:WeakCurrent Tau5PionCurrent 
-
 #
 create Herwig::OniumToOniumPiPiDecayer  OniumPiPi
 newdef OniumPiPi:Iteration 1
@@ -22441,7 +22325,6 @@ newdef OniumPiPi:MaxWeight 10 3.04451
 newdef OniumPiPi:MaxWeight 11 3.08418
 newdef OniumPiPi:MaxWeight 12 2.60132
 newdef OniumPiPi:MaxWeight 13 3.2421
-
 #
 create Herwig::TauDecayer  Tau2K1Pi
 newdef Tau2K1Pi:Iteration 10
@@ -23044,168 +22927,6 @@ newdef Tau2K1PiCurrent:AntiQuark 4  -1
 newdef Tau2K1PiCurrent:Quark 5  2
 newdef Tau2K1PiCurrent:AntiQuark 5  -1
 newdef Tau2K1Pi:WeakCurrent Tau2K1PiCurrent 
-
-create Herwig::TauDecayer  Tau1K2Pi
-newdef Tau1K2Pi:Iteration 10
-newdef Tau1K2Pi:Ntry 500
-newdef Tau1K2Pi:Points 1000000
-newdef Tau1K2Pi:GenerateIntermediates 1 
-insert Tau1K2Pi:WeightLocation 0 0
-insert Tau1K2Pi:WeightLocation 1 30
-insert Tau1K2Pi:WeightLocation 2 60
-insert Tau1K2Pi:MaximumWeight 0 0.0273874
-insert Tau1K2Pi:MaximumWeight 1 0.0811559
-insert Tau1K2Pi:MaximumWeight 2 0.0860745
-insert Tau1K2Pi:Weights 0 0.0982712
-insert Tau1K2Pi:Weights 1 0.0985845
-insert Tau1K2Pi:Weights 2 0.0754198
-insert Tau1K2Pi:Weights 3 0.0751768
-insert Tau1K2Pi:Weights 4 0.00576148
-insert Tau1K2Pi:Weights 5 0.0054422
-insert Tau1K2Pi:Weights 6 0.0030416
-insert Tau1K2Pi:Weights 7 0.00282067
-insert Tau1K2Pi:Weights 8 0.00292896
-insert Tau1K2Pi:Weights 9 0.00333228
-insert Tau1K2Pi:Weights 10 0.0354826
-insert Tau1K2Pi:Weights 11 0.0362049
-insert Tau1K2Pi:Weights 12 0.0288883
-insert Tau1K2Pi:Weights 13 0.0290415
-insert Tau1K2Pi:Weights 14 0.0706914
-insert Tau1K2Pi:Weights 15 0.070505
-insert Tau1K2Pi:Weights 16 0.0273647
-insert Tau1K2Pi:Weights 17 0.0276436
-insert Tau1K2Pi:Weights 18 0.0318761
-insert Tau1K2Pi:Weights 19 0.0313382
-insert Tau1K2Pi:Weights 20 0.0386597
-insert Tau1K2Pi:Weights 21 0.0385886
-insert Tau1K2Pi:Weights 22 0.0334508
-insert Tau1K2Pi:Weights 23 0.0337579
-insert Tau1K2Pi:Weights 24 0.0256563
-insert Tau1K2Pi:Weights 25 0.0256098
-insert Tau1K2Pi:Weights 26 0.0105038
-insert Tau1K2Pi:Weights 27 0.0103908
-insert Tau1K2Pi:Weights 28 0.0116108
-insert Tau1K2Pi:Weights 29 0.0119557
-insert Tau1K2Pi:Weights 30 0.0643114
-insert Tau1K2Pi:Weights 31 0.135241
-insert Tau1K2Pi:Weights 32 0.0462792
-insert Tau1K2Pi:Weights 33 0.132393
-insert Tau1K2Pi:Weights 34 0.00228711
-insert Tau1K2Pi:Weights 35 0.00712326
-insert Tau1K2Pi:Weights 36 0.00250683
-insert Tau1K2Pi:Weights 37 0.00711817
-insert Tau1K2Pi:Weights 38 0.00214168
-insert Tau1K2Pi:Weights 39 0.00734524
-insert Tau1K2Pi:Weights 40 0.056539
-insert Tau1K2Pi:Weights 41 0.0371129
-insert Tau1K2Pi:Weights 42 0.0419097
-insert Tau1K2Pi:Weights 43 0.024564
-insert Tau1K2Pi:Weights 44 0.0387979
-insert Tau1K2Pi:Weights 45 0.0235521
-insert Tau1K2Pi:Weights 46 0.0389098
-insert Tau1K2Pi:Weights 47 0.023459
-insert Tau1K2Pi:Weights 48 0.0389241
-insert Tau1K2Pi:Weights 49 0.0234025
-insert Tau1K2Pi:Weights 50 0.0564586
-insert Tau1K2Pi:Weights 51 0.0414258
-insert Tau1K2Pi:Weights 52 0.0424572
-insert Tau1K2Pi:Weights 53 0.0306962
-insert Tau1K2Pi:Weights 54 0.014456
-insert Tau1K2Pi:Weights 55 0.0105052
-insert Tau1K2Pi:Weights 56 0.0143489
-insert Tau1K2Pi:Weights 57 0.0105307
-insert Tau1K2Pi:Weights 58 0.0143897
-insert Tau1K2Pi:Weights 59 0.0108141
-insert Tau1K2Pi:Weights 60 0.0689819
-insert Tau1K2Pi:Weights 61 0.061703
-insert Tau1K2Pi:Weights 62 0.0616514
-insert Tau1K2Pi:Weights 63 0.0386958
-insert Tau1K2Pi:Weights 64 0.0453983
-insert Tau1K2Pi:Weights 65 0.045033
-insert Tau1K2Pi:Weights 66 0.00234914
-insert Tau1K2Pi:Weights 67 0.0017299
-insert Tau1K2Pi:Weights 68 0.00225587
-insert Tau1K2Pi:Weights 69 0.00149289
-insert Tau1K2Pi:Weights 70 0.00146865
-insert Tau1K2Pi:Weights 71 0.00133644
-insert Tau1K2Pi:Weights 72 0.00127344
-insert Tau1K2Pi:Weights 73 0.00154511
-insert Tau1K2Pi:Weights 74 0.0013302
-insert Tau1K2Pi:Weights 75 0.0491598
-insert Tau1K2Pi:Weights 76 0.0264942
-insert Tau1K2Pi:Weights 77 0.0264046
-insert Tau1K2Pi:Weights 78 0.0288977
-insert Tau1K2Pi:Weights 79 0.0179427
-insert Tau1K2Pi:Weights 80 0.017631
-insert Tau1K2Pi:Weights 81 0.0417104
-insert Tau1K2Pi:Weights 82 0.0358827
-insert Tau1K2Pi:Weights 83 0.0414594
-insert Tau1K2Pi:Weights 84 0.0165004
-insert Tau1K2Pi:Weights 85 0.0267491
-insert Tau1K2Pi:Weights 86 0.0163126
-insert Tau1K2Pi:Weights 87 0.0191507
-insert Tau1K2Pi:Weights 88 0.026621
-insert Tau1K2Pi:Weights 89 0.0189324
-insert Tau1K2Pi:Weights 90 0.0464448
-insert Tau1K2Pi:Weights 91 0.0292149
-insert Tau1K2Pi:Weights 92 0.0286853
-insert Tau1K2Pi:Weights 93 0.0277957
-insert Tau1K2Pi:Weights 94 0.0201043
-insert Tau1K2Pi:Weights 95 0.0201356
-insert Tau1K2Pi:Weights 96 0.0138683
-insert Tau1K2Pi:Weights 97 0.0116343
-insert Tau1K2Pi:Weights 98 0.0140018
-insert Tau1K2Pi:Weights 99 0.00576547
-insert Tau1K2Pi:Weights 100 0.00879157
-insert Tau1K2Pi:Weights 101 0.00565538
-insert Tau1K2Pi:Weights 102 0.00658881
-insert Tau1K2Pi:Weights 103 0.00871664
-insert Tau1K2Pi:Weights 104 0.00650336
-create Herwig::OneKaonTwoPionCurrent Tau1K2PiCurrent HwWeakCurrents.so
-newdef Tau1K2PiCurrent:AxialRhoWeight 0 1
-newdef Tau1K2PiCurrent:AxialRhoWeight 1 -0.145
-newdef Tau1K2PiCurrent:AxialRhoWeight 2 0
-newdef Tau1K2PiCurrent:AxialKStarWeight 0 1
-newdef Tau1K2PiCurrent:AxialKStarWeight 1 -0.135
-newdef Tau1K2PiCurrent:AxialKStarWeight 2 0
-newdef Tau1K2PiCurrent:VectorKStarWeight 0 1
-newdef Tau1K2PiCurrent:VectorKStarWeight 1 -0.25
-newdef Tau1K2PiCurrent:VectorKStarWeight 2 -0.038
-newdef Tau1K2PiCurrent:FPi 92.4189
-newdef Tau1K2PiCurrent:K1Masses 0 1.27
-newdef Tau1K2PiCurrent:K1Masses 1 1.402
-newdef Tau1K2PiCurrent:K1Widths 0 0.09
-newdef Tau1K2PiCurrent:K1Widths 1 0.174
-newdef Tau1K2PiCurrent:RhoAxialMasses 0 0.773
-newdef Tau1K2PiCurrent:RhoAxialMasses 1 1.37
-newdef Tau1K2PiCurrent:RhoAxialMasses 2 1.75
-newdef Tau1K2PiCurrent:RhoAxialWidths 0 0.145
-newdef Tau1K2PiCurrent:RhoAxialWidths 1 0.51
-newdef Tau1K2PiCurrent:RhoAxialWidths 2 0.12
-newdef Tau1K2PiCurrent:KstarAxialMasses 0 0.892
-newdef Tau1K2PiCurrent:KstarAxialMasses 1 1.412
-newdef Tau1K2PiCurrent:KstarAxialMasses 2 1.714
-newdef Tau1K2PiCurrent:KstarAxialWidths 0 0.05
-newdef Tau1K2PiCurrent:KstarAxialWidths 1 0.227
-newdef Tau1K2PiCurrent:KstarAxialWidths 2 0.323
-newdef Tau1K2PiCurrent:KstarVectorMasses 0 0.892
-newdef Tau1K2PiCurrent:KstarVectorMasses 1 1.412
-newdef Tau1K2PiCurrent:KstarVectorMasses 2 1.714
-newdef Tau1K2PiCurrent:KstarVectorWidths 0 0.05
-newdef Tau1K2PiCurrent:KstarVectorWidths 1 0.227
-newdef Tau1K2PiCurrent:KstarVectorWidths 2 0.323
-newdef Tau1K2PiCurrent:K1WeightKStarPi 0 0.33
-newdef Tau1K2PiCurrent:K1WeightKStarPi 1 1
-newdef Tau1K2PiCurrent:K1WeightRhoK 0 1
-newdef Tau1K2PiCurrent:K1WeightRhoK 1 0
-newdef Tau1K2PiCurrent:Quark 0  2
-newdef Tau1K2PiCurrent:AntiQuark 0  -3
-newdef Tau1K2PiCurrent:Quark 1  2
-newdef Tau1K2PiCurrent:AntiQuark 1  -3
-newdef Tau1K2PiCurrent:Quark 2  2
-newdef Tau1K2PiCurrent:AntiQuark 2  -3
-newdef Tau1K2Pi:WeakCurrent Tau1K2PiCurrent
-
 #
 create Herwig::TauDecayer  TauKPi
 newdef TauKPi:Iteration 5
@@ -23254,7 +22975,6 @@ newdef TauKPiCurrent:AntiQuark 0  -3
 newdef TauKPiCurrent:Quark 1  2
 newdef TauKPiCurrent:AntiQuark 1  -3
 newdef TauKPi:WeakCurrent TauKPiCurrent 
-
 #
 create Herwig::BtoSGammaDecayer  BtosgammaKagan
 newdef  BtosgammaKagan:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -23484,7 +23204,6 @@ newdef BtosgammaMass:Spectrum 97 7.49463e-06
 newdef BtosgammaMass:Spectrum 98 8.75571e-06 
 newdef BtosgammaMass:Spectrum 99 1.04156e-05 
 newdef BtosgammaKagan:HadronicMass BtosgammaMass 
-
 #
 create Herwig::SMTopDecayer  Top
 newdef Top:AlphaS  /Herwig/Shower/AlphaQCD
@@ -23503,7 +23222,6 @@ newdef Top:Ntry 500
 newdef Top:Points 10000
 newdef Top:GenerateIntermediates 1 
 newdef Top:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
 #
 create Herwig::SMHiggsFermionsDecayer  Hff
 newdef Hff:NLO Yes
@@ -23523,7 +23241,6 @@ newdef Hff:GenerateIntermediates 0
 newdef Hff:AlphaS  /Herwig/Shower/AlphaQCD
 newdef Hff:AlphaEM /Herwig/Shower/AlphaQED
 newdef Hff:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
 #
 create Herwig::SMHiggsWWDecayer  HWW
 newdef HWW:WMaximum 0 19.5935
@@ -23535,21 +23252,6 @@ newdef HWW:Ntry 2000
 newdef HWW:Points 10000
 newdef HWW:GenerateIntermediates 0
 newdef HWW:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
-#
-create Herwig::SMHiggsGGHiggsPPDecayer  HPP
-newdef HPP:MaxWeights 0 0.624291
-newdef HPP:MaxWeights 1 1.17718
-newdef HPP:MaxWeights 2 1.15963
-newdef HPP:SMHGGVertex /Herwig/Vertices/HGGVertex
-newdef HPP:SMHPPVertex /Herwig/Vertices/HPPVertex
-newdef HPP:SMHZPVertex /Herwig/Vertices/HZPVertex
-newdef HPP:Iteration 10
-newdef HPP:Ntry 500
-newdef HPP:Points 10000
-newdef HPP:AlphaS  /Herwig/Shower/AlphaQCD
-newdef HPP:GenerateIntermediates 0
-
 #
 create Herwig::SemiLeptonicScalarDecayer  HQET
 newdef HQET:Iteration 1
@@ -23608,52 +23310,6 @@ newdef HQETFormFactor:Rho2Vector 1.179
 newdef HQETFormFactor:R1         1.417
 newdef HQETFormFactor:R2         0.836
 newdef HQET:FormFactor HQETFormFactor 
-
-#
-create Herwig::CLEOD0toKmPipPi0 D0KmPipPi0CLEO
-newdef D0KmPipPi0CLEO:Iteration 10
-newdef D0KmPipPi0CLEO:Ntry 500
-newdef D0KmPipPi0CLEO:Points 100000
-newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
-newdef D0KmPipPi0CLEO:DRadius 5
-newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
-newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
-insert D0KmPipPi0CLEO:Weights 0 0.279469
-insert D0KmPipPi0CLEO:Weights 1 0.14109
-insert D0KmPipPi0CLEO:Weights 2 0.0801408
-insert D0KmPipPi0CLEO:Weights 3 0.093447
-insert D0KmPipPi0CLEO:Weights 4 0.166967
-insert D0KmPipPi0CLEO:Weights 5 0.0844772
-insert D0KmPipPi0CLEO:Weights 6 0.154409
-newdef D0KmPipPi0CLEO:K_01430Mass 1412
-newdef D0KmPipPi0CLEO:K_01430Width 294
-newdef D0KmPipPi0CLEO:Kstar1680Mass 1717
-newdef D0KmPipPi0CLEO:Kstar1680Width 322
-newdef D0KmPipPi0CLEO:rho1700Mass 1700
-newdef D0KmPipPi0CLEO:rho1700Width 240
-newdef D0KmPipPi0CLEO:Kstar0892Mass 896.1
-newdef D0KmPipPi0CLEO:Kstar0892Width 50.5
-newdef D0KmPipPi0CLEO:KstarPlus892Mass 891.5
-newdef D0KmPipPi0CLEO:KstarPlus892Width 50
-newdef D0KmPipPi0CLEO:RhoMass 770
-newdef D0KmPipPi0CLEO:RhoWidth 150.7
-newdef D0KmPipPi0CLEO:NonResonantAmplitude 1.75
-newdef D0KmPipPi0CLEO:NonResonantPhase 31.2
-newdef D0KmPipPi0CLEO:RhoAmplitude 1
-newdef D0KmPipPi0CLEO:RhoPhase 0
-newdef D0KmPipPi0CLEO:KStarMinusAmplitude 0.44
-newdef D0KmPipPi0CLEO:KStarMinusPhase 163
-newdef D0KmPipPi0CLEO:KStar0Amplitude 0.39
-newdef D0KmPipPi0CLEO:KStar0Phase -0.2
-newdef D0KmPipPi0CLEO:K_0MinusAmplitude 0.77
-newdef D0KmPipPi0CLEO:K_0MinusPhase 55.5
-newdef D0KmPipPi0CLEO:K_00Amplitude 0.85
-newdef D0KmPipPi0CLEO:K_00Phase 166
-newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
-newdef D0KmPipPi0CLEO:Rho1700Phase 171
-newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
-newdef D0KmPipPi0CLEO:K1680MinusPhase 103
-
 #
 create Herwig::CLEOD0toK0PipPim D0K0PipPimCLEO
 newdef D0K0PipPimCLEO:Iteration 10
@@ -23716,7 +23372,6 @@ newdef D0K0PipPimCLEO:K1680MinusAmplitude 5.6
 newdef D0K0PipPimCLEO:K1680MinusPhase 174
 newdef D0K0PipPimCLEO:NonResonantAmplitude 1.1
 newdef D0K0PipPimCLEO:NonResonantPhase 340
-
 #
 create Herwig::DtoKPiPiE691  DKPiPiE691
 newdef DKPiPiE691:Iteration 10
@@ -23772,7 +23427,6 @@ insert DKPiPiE691:Weights 7 0.217755
 insert DKPiPiE691:Weights 8 0.556044
 insert DKPiPiE691:Weights 9 0.453208
 insert DKPiPiE691:Weights 10 0.546792
-
 #
 create Herwig::DtoKPiPiMarkIII  DtoKPiPiMarkIII
 newdef DtoKPiPiMarkIII:Iteration 10
@@ -23827,7 +23481,6 @@ insert DtoKPiPiMarkIII:Weights 5 0.576273
 insert DtoKPiPiMarkIII:Weights 6 0.423727
 insert DtoKPiPiMarkIII:Weights 7 0.497905
 insert DtoKPiPiMarkIII:Weights 8 0.502095
-
 #
 create Herwig::RadiativeHyperonDecayer  RadiativeHyperon
 newdef RadiativeHyperon:MaxWeight 0 0.0245809
@@ -23864,11 +23517,264 @@ newdef RadiativeHyperon:Iteration 1
 newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
-
+#
 create Herwig::HQETStrongDecayer HQETMeson
 newdef HQETMeson:Initialize 1
-
+#
 create Herwig::HQETRadiativeDecayer HQETMesonEM
 newdef HQETMesonEM:Initialize 1
+#
+create Herwig::SMWDecayer  WDecayer
+newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
+newdef WDecayer:AlphaEM /Herwig/Shower/AlphaQED
+newdef WDecayer:QuarkMax 0 3.
+newdef WDecayer:QuarkMax 1 3.
+newdef WDecayer:QuarkMax 2 3.
+newdef WDecayer:QuarkMax 3 3.
+newdef WDecayer:QuarkMax 4 3.
+newdef WDecayer:QuarkMax 5 3.
+newdef WDecayer:LeptonMax 0 3.
+newdef WDecayer:LeptonMax 1 3.
+newdef WDecayer:LeptonMax 2 3.
+newdef WDecayer:Iteration 1
+newdef WDecayer:Ntry 500
+newdef WDecayer:Points 10000
+newdef WDecayer:GenerateIntermediates 0 
+newdef WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
+#
+create Herwig::SMHiggsGGHiggsPPDecayer  HPP
+newdef HPP:MaxWeights 0 0.624291
+newdef HPP:MaxWeights 1 1.17718
+newdef HPP:MaxWeights 2 1.15963
+newdef HPP:SMHGGVertex /Herwig/Vertices/HGGVertex
+newdef HPP:SMHPPVertex /Herwig/Vertices/HPPVertex
+newdef HPP:SMHZPVertex /Herwig/Vertices/HZPVertex
+newdef HPP:Iteration 10
+newdef HPP:Ntry 500
+newdef HPP:Points 10000
+newdef HPP:AlphaS  /Herwig/Shower/AlphaQCD
+newdef HPP:GenerateIntermediates 0
+#
+create Herwig::TauDecayer  Tau2Kaon
+newdef Tau2Kaon:Ntry 500
+newdef Tau2Kaon:Points 10000
+newdef Tau2Kaon:GenerateIntermediates 1 
+insert Tau2Kaon:WeightLocation 0 0
+insert Tau2Kaon:MaximumWeight 0 0.014
+insert Tau2Kaon:Weights 0 0.505259
+insert Tau2Kaon:Weights 1 0.43015
+insert Tau2Kaon:Weights 2 0.064591
+newdef Tau2Kaon:WeakCurrent TwoKaonCzyzCurrent
+#
+create Herwig::TauDecayer  Tau1K2Pi
+newdef Tau1K2Pi:Iteration 10
+newdef Tau1K2Pi:Ntry 500
+newdef Tau1K2Pi:Points 1000000
+newdef Tau1K2Pi:GenerateIntermediates 1 
+insert Tau1K2Pi:WeightLocation 0 0
+insert Tau1K2Pi:WeightLocation 1 30
+insert Tau1K2Pi:WeightLocation 2 60
+insert Tau1K2Pi:MaximumWeight 0 0.0273874
+insert Tau1K2Pi:MaximumWeight 1 0.0811559
+insert Tau1K2Pi:MaximumWeight 2 0.0860745
+insert Tau1K2Pi:Weights 0 0.0982712
+insert Tau1K2Pi:Weights 1 0.0985845
+insert Tau1K2Pi:Weights 2 0.0754198
+insert Tau1K2Pi:Weights 3 0.0751768
+insert Tau1K2Pi:Weights 4 0.00576148
+insert Tau1K2Pi:Weights 5 0.0054422
+insert Tau1K2Pi:Weights 6 0.0030416
+insert Tau1K2Pi:Weights 7 0.00282067
+insert Tau1K2Pi:Weights 8 0.00292896
+insert Tau1K2Pi:Weights 9 0.00333228
+insert Tau1K2Pi:Weights 10 0.0354826
+insert Tau1K2Pi:Weights 11 0.0362049
+insert Tau1K2Pi:Weights 12 0.0288883
+insert Tau1K2Pi:Weights 13 0.0290415
+insert Tau1K2Pi:Weights 14 0.0706914
+insert Tau1K2Pi:Weights 15 0.070505
+insert Tau1K2Pi:Weights 16 0.0273647
+insert Tau1K2Pi:Weights 17 0.0276436
+insert Tau1K2Pi:Weights 18 0.0318761
+insert Tau1K2Pi:Weights 19 0.0313382
+insert Tau1K2Pi:Weights 20 0.0386597
+insert Tau1K2Pi:Weights 21 0.0385886
+insert Tau1K2Pi:Weights 22 0.0334508
+insert Tau1K2Pi:Weights 23 0.0337579
+insert Tau1K2Pi:Weights 24 0.0256563
+insert Tau1K2Pi:Weights 25 0.0256098
+insert Tau1K2Pi:Weights 26 0.0105038
+insert Tau1K2Pi:Weights 27 0.0103908
+insert Tau1K2Pi:Weights 28 0.0116108
+insert Tau1K2Pi:Weights 29 0.0119557
+insert Tau1K2Pi:Weights 30 0.0643114
+insert Tau1K2Pi:Weights 31 0.135241
+insert Tau1K2Pi:Weights 32 0.0462792
+insert Tau1K2Pi:Weights 33 0.132393
+insert Tau1K2Pi:Weights 34 0.00228711
+insert Tau1K2Pi:Weights 35 0.00712326
+insert Tau1K2Pi:Weights 36 0.00250683
+insert Tau1K2Pi:Weights 37 0.00711817
+insert Tau1K2Pi:Weights 38 0.00214168
+insert Tau1K2Pi:Weights 39 0.00734524
+insert Tau1K2Pi:Weights 40 0.056539
+insert Tau1K2Pi:Weights 41 0.0371129
+insert Tau1K2Pi:Weights 42 0.0419097
+insert Tau1K2Pi:Weights 43 0.024564
+insert Tau1K2Pi:Weights 44 0.0387979
+insert Tau1K2Pi:Weights 45 0.0235521
+insert Tau1K2Pi:Weights 46 0.0389098
+insert Tau1K2Pi:Weights 47 0.023459
+insert Tau1K2Pi:Weights 48 0.0389241
+insert Tau1K2Pi:Weights 49 0.0234025
+insert Tau1K2Pi:Weights 50 0.0564586
+insert Tau1K2Pi:Weights 51 0.0414258
+insert Tau1K2Pi:Weights 52 0.0424572
+insert Tau1K2Pi:Weights 53 0.0306962
+insert Tau1K2Pi:Weights 54 0.014456
+insert Tau1K2Pi:Weights 55 0.0105052
+insert Tau1K2Pi:Weights 56 0.0143489
+insert Tau1K2Pi:Weights 57 0.0105307
+insert Tau1K2Pi:Weights 58 0.0143897
+insert Tau1K2Pi:Weights 59 0.0108141
+insert Tau1K2Pi:Weights 60 0.0689819
+insert Tau1K2Pi:Weights 61 0.061703
+insert Tau1K2Pi:Weights 62 0.0616514
+insert Tau1K2Pi:Weights 63 0.0386958
+insert Tau1K2Pi:Weights 64 0.0453983
+insert Tau1K2Pi:Weights 65 0.045033
+insert Tau1K2Pi:Weights 66 0.00234914
+insert Tau1K2Pi:Weights 67 0.0017299
+insert Tau1K2Pi:Weights 68 0.00225587
+insert Tau1K2Pi:Weights 69 0.00149289
+insert Tau1K2Pi:Weights 70 0.00146865
+insert Tau1K2Pi:Weights 71 0.00133644
+insert Tau1K2Pi:Weights 72 0.00127344
+insert Tau1K2Pi:Weights 73 0.00154511
+insert Tau1K2Pi:Weights 74 0.0013302
+insert Tau1K2Pi:Weights 75 0.0491598
+insert Tau1K2Pi:Weights 76 0.0264942
+insert Tau1K2Pi:Weights 77 0.0264046
+insert Tau1K2Pi:Weights 78 0.0288977
+insert Tau1K2Pi:Weights 79 0.0179427
+insert Tau1K2Pi:Weights 80 0.017631
+insert Tau1K2Pi:Weights 81 0.0417104
+insert Tau1K2Pi:Weights 82 0.0358827
+insert Tau1K2Pi:Weights 83 0.0414594
+insert Tau1K2Pi:Weights 84 0.0165004
+insert Tau1K2Pi:Weights 85 0.0267491
+insert Tau1K2Pi:Weights 86 0.0163126
+insert Tau1K2Pi:Weights 87 0.0191507
+insert Tau1K2Pi:Weights 88 0.026621
+insert Tau1K2Pi:Weights 89 0.0189324
+insert Tau1K2Pi:Weights 90 0.0464448
+insert Tau1K2Pi:Weights 91 0.0292149
+insert Tau1K2Pi:Weights 92 0.0286853
+insert Tau1K2Pi:Weights 93 0.0277957
+insert Tau1K2Pi:Weights 94 0.0201043
+insert Tau1K2Pi:Weights 95 0.0201356
+insert Tau1K2Pi:Weights 96 0.0138683
+insert Tau1K2Pi:Weights 97 0.0116343
+insert Tau1K2Pi:Weights 98 0.0140018
+insert Tau1K2Pi:Weights 99 0.00576547
+insert Tau1K2Pi:Weights 100 0.00879157
+insert Tau1K2Pi:Weights 101 0.00565538
+insert Tau1K2Pi:Weights 102 0.00658881
+insert Tau1K2Pi:Weights 103 0.00871664
+insert Tau1K2Pi:Weights 104 0.00650336
+create Herwig::OneKaonTwoPionCurrent Tau1K2PiCurrent HwWeakCurrents.so
+newdef Tau1K2PiCurrent:AxialRhoWeight 0 1
+newdef Tau1K2PiCurrent:AxialRhoWeight 1 -0.145
+newdef Tau1K2PiCurrent:AxialRhoWeight 2 0
+newdef Tau1K2PiCurrent:AxialKStarWeight 0 1
+newdef Tau1K2PiCurrent:AxialKStarWeight 1 -0.135
+newdef Tau1K2PiCurrent:AxialKStarWeight 2 0
+newdef Tau1K2PiCurrent:VectorKStarWeight 0 1
+newdef Tau1K2PiCurrent:VectorKStarWeight 1 -0.25
+newdef Tau1K2PiCurrent:VectorKStarWeight 2 -0.038
+newdef Tau1K2PiCurrent:FPi 92.4189
+newdef Tau1K2PiCurrent:K1Masses 0 1.27
+newdef Tau1K2PiCurrent:K1Masses 1 1.402
+newdef Tau1K2PiCurrent:K1Widths 0 0.09
+newdef Tau1K2PiCurrent:K1Widths 1 0.174
+newdef Tau1K2PiCurrent:RhoAxialMasses 0 0.773
+newdef Tau1K2PiCurrent:RhoAxialMasses 1 1.37
+newdef Tau1K2PiCurrent:RhoAxialMasses 2 1.75
+newdef Tau1K2PiCurrent:RhoAxialWidths 0 0.145
+newdef Tau1K2PiCurrent:RhoAxialWidths 1 0.51
+newdef Tau1K2PiCurrent:RhoAxialWidths 2 0.12
+newdef Tau1K2PiCurrent:KstarAxialMasses 0 0.892
+newdef Tau1K2PiCurrent:KstarAxialMasses 1 1.412
+newdef Tau1K2PiCurrent:KstarAxialMasses 2 1.714
+newdef Tau1K2PiCurrent:KstarAxialWidths 0 0.05
+newdef Tau1K2PiCurrent:KstarAxialWidths 1 0.227
+newdef Tau1K2PiCurrent:KstarAxialWidths 2 0.323
+newdef Tau1K2PiCurrent:KstarVectorMasses 0 0.892
+newdef Tau1K2PiCurrent:KstarVectorMasses 1 1.412
+newdef Tau1K2PiCurrent:KstarVectorMasses 2 1.714
+newdef Tau1K2PiCurrent:KstarVectorWidths 0 0.05
+newdef Tau1K2PiCurrent:KstarVectorWidths 1 0.227
+newdef Tau1K2PiCurrent:KstarVectorWidths 2 0.323
+newdef Tau1K2PiCurrent:K1WeightKStarPi 0 0.33
+newdef Tau1K2PiCurrent:K1WeightKStarPi 1 1
+newdef Tau1K2PiCurrent:K1WeightRhoK 0 1
+newdef Tau1K2PiCurrent:K1WeightRhoK 1 0
+newdef Tau1K2PiCurrent:Quark 0  2
+newdef Tau1K2PiCurrent:AntiQuark 0  -3
+newdef Tau1K2PiCurrent:Quark 1  2
+newdef Tau1K2PiCurrent:AntiQuark 1  -3
+newdef Tau1K2PiCurrent:Quark 2  2
+newdef Tau1K2PiCurrent:AntiQuark 2  -3
+newdef Tau1K2Pi:WeakCurrent Tau1K2PiCurrent
+#
+create Herwig::VectorMeson2BaryonsDecayer  Vector2Baryons
+newdef Vector2Baryons:Iteration 1
+newdef Vector2Baryons:Ntry 500
+newdef Vector2Baryons:Points 10000
+newdef Vector2Baryons:GenerateIntermediates 0 
+#
+create Herwig::CLEOD0toKmPipPi0  D0KmPipPi0CLEO
+newdef D0KmPipPi0CLEO:Iteration 10
+newdef D0KmPipPi0CLEO:Ntry 500
+newdef D0KmPipPi0CLEO:Points 100000
+newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
+newdef D0KmPipPi0CLEO:DRadius 5
+newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
+newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
+insert D0KmPipPi0CLEO:Weights 0 0.279469
+insert D0KmPipPi0CLEO:Weights 1 0.14109
+insert D0KmPipPi0CLEO:Weights 2 0.0801408
+insert D0KmPipPi0CLEO:Weights 3 0.093447
+insert D0KmPipPi0CLEO:Weights 4 0.166967
+insert D0KmPipPi0CLEO:Weights 5 0.0844772
+insert D0KmPipPi0CLEO:Weights 6 0.154409
+newdef D0KmPipPi0CLEO:K_01430Mass 1412
+newdef D0KmPipPi0CLEO:K_01430Width 294
+newdef D0KmPipPi0CLEO:Kstar1680Mass 1717
+newdef D0KmPipPi0CLEO:Kstar1680Width 322
+newdef D0KmPipPi0CLEO:rho1700Mass 1700
+newdef D0KmPipPi0CLEO:rho1700Width 240
+newdef D0KmPipPi0CLEO:Kstar0892Mass 896.1
+newdef D0KmPipPi0CLEO:Kstar0892Width 50.5
+newdef D0KmPipPi0CLEO:KstarPlus892Mass 891.5
+newdef D0KmPipPi0CLEO:KstarPlus892Width 50
+newdef D0KmPipPi0CLEO:RhoMass 770
+newdef D0KmPipPi0CLEO:RhoWidth 150.7
+newdef D0KmPipPi0CLEO:NonResonantAmplitude 1.75
+newdef D0KmPipPi0CLEO:NonResonantPhase 31.2
+newdef D0KmPipPi0CLEO:RhoAmplitude 1
+newdef D0KmPipPi0CLEO:RhoPhase 0
+newdef D0KmPipPi0CLEO:KStarMinusAmplitude 0.44
+newdef D0KmPipPi0CLEO:KStarMinusPhase 163
+newdef D0KmPipPi0CLEO:KStar0Amplitude 0.39
+newdef D0KmPipPi0CLEO:KStar0Phase -0.2
+newdef D0KmPipPi0CLEO:K_0MinusAmplitude 0.77
+newdef D0KmPipPi0CLEO:K_0MinusPhase 55.5
+newdef D0KmPipPi0CLEO:K_00Amplitude 0.85
+newdef D0KmPipPi0CLEO:K_00Phase 166
+newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
+newdef D0KmPipPi0CLEO:Rho1700Phase 171
+newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
+newdef D0KmPipPi0CLEO:K1680MinusPhase 103
 
 @LOAD_EVTGEN_DECAYER@
