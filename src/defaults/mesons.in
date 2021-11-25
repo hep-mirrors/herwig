@@ -615,6 +615,11 @@ makeanti K'- K'+
 create ThePEG::ParticleData K'bar0
 setup K'bar0 -100311 K'bar0 1.46 0.26 0.26 0 0 0 1 0 
 makeanti K'bar0 K'0
+create ThePEG::ParticleData B_c(2S)+
+setup B_c(2S)+ 100541 B_c(2S)+ 6.8712 6.5E-5 0.00065 0  3 0 1 0
+create ThePEG::ParticleData B_c(2S)-
+setup B_c(2S)- -100541 B_c(2S)- 6.8712 6.5E-5 0.00065 0 -3 0 1 0
+makeanti B_c(2S)- B_c(2S)+
 #
 # the 2^3S_1 multiplet
 #
@@ -794,12 +799,6 @@ setup psi_2 20445 psi_2 3.8237 0.0003 0.003 0 0 0 5 0
 # new ccbar states 1D3
 create ThePEG::ParticleData psi_3
 setup psi_3 447   psi_3 3.84271 0.0028 0.028 0 0 0 7 0
-# new Bc state 2 1S0
-create ThePEG::ParticleData B_c(2S)+
-setup B_c(2S)+  100541 B_c(2S)+ 6.8712 0.000065 0.00065 0  3 0 1 0
-create ThePEG::ParticleData B_c(2S)-
-setup B_c(2S)- -100541 B_c(2S)- 6.8712 0.000065 0.00065 0 -3 0 1 0
-makeanti B_c(2S)- B_c(2S)+
 # new Bc state 2 3S1
 create ThePEG::ParticleData B_c(2S)*+
 setup B_c(2S)*+  100543 B_c(2S)*+ 6.8752 0.000072 0.00072 0  3 0 3 0
