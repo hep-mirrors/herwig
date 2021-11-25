@@ -1918,6 +1918,65 @@ insert TauEtaPiPi:Weights 6 0.0645809
 insert TauEtaPiPi:Weights 7 0.0373083
 insert TauEtaPiPi:Weights 8 0.0381665
 #
+create Herwig::HQETStrongDecayer HQETMeson
+newdef HQETMeson:Iteration 10
+newdef HQETMeson:Ntry 500
+newdef HQETMeson:Points 10000
+newdef HQETMeson:GenerateIntermediates 0 
+newdef HQETMeson:fPi    130.2
+newdef HQETMeson:g      0.565208
+newdef HQETMeson:h      0.823903
+newdef HQETMeson:f      -0.46529
+newdef HQETMeson:Lambda 1
+newdef HQETMeson:psiL   0
+newdef HQETMeson:psiS   -0.0470218
+newdef HQETMeson:MaxWeight 0 1.31498
+newdef HQETMeson:MaxWeight 1 1.30639
+newdef HQETMeson:MaxWeight 2 1.32655
+newdef HQETMeson:MaxWeight 3 0.00419757
+newdef HQETMeson:MaxWeight 4 1.57478
+newdef HQETMeson:MaxWeight 5 3.20894
+newdef HQETMeson:MaxWeight 6 3.10594
+newdef HQETMeson:MaxWeight 7 1.59408
+newdef HQETMeson:MaxWeight 8 2.41412
+newdef HQETMeson:MaxWeight 9 2.40804
+newdef HQETMeson:MaxWeight 10 1.329
+newdef HQETMeson:MaxWeight 11 2.2431
+newdef HQETMeson:MaxWeight 12 2.80669
+newdef HQETMeson:MaxWeight 13 1.19846
+newdef HQETMeson:MaxWeight 14 1.74953
+newdef HQETMeson:MaxWeight 15 1.30836
+newdef HQETMeson:MaxWeight 16 5.36399
+newdef HQETMeson:MaxWeight 17 4.33456
+newdef HQETMeson:MaxWeight 18 5.43304
+newdef HQETMeson:MaxWeight 19 4.51354
+newdef HQETMeson:MaxWeight 20 1.57101
+newdef HQETMeson:MaxWeight 21 1.42377
+newdef HQETMeson:MaxWeight 22 8.1916
+newdef HQETMeson:MaxWeight 23 8.25275
+newdef HQETMeson:MaxWeight 24 8.16649
+newdef HQETMeson:MaxWeight 25 8.31916
+newdef HQETMeson:MaxWeight 26 1503.2
+newdef HQETMeson:MaxWeight 27 5.47496
+newdef HQETMeson:MaxWeight 28 4.22668
+newdef HQETMeson:MaxWeight 29 5.09938
+newdef HQETMeson:MaxWeight 30 4.19614
+newdef HQETMeson:MaxWeight 31 1974.31
+#
+create Herwig::HQETRadiativeDecayer HQETMesonEM
+newdef HQETMesonEM:Iteration 10
+newdef HQETMesonEM:Ntry 500
+newdef HQETMesonEM:Points 10000
+newdef HQETMesonEM:GenerateIntermediates 0 
+newdef HQETMesonEM:Ch     -1.05845
+newdef HQETMesonEM:Lambda 1
+newdef HQETMesonEM:MaxWeight 0 13.2433
+newdef HQETMesonEM:MaxWeight 1 2.73716
+newdef HQETMesonEM:MaxWeight 2 0.530229
+newdef HQETMesonEM:MaxWeight 3 3.34656
+newdef HQETMesonEM:MaxWeight 4 3.55541
+newdef HQETMesonEM:MaxWeight 5 5.55942
+#
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500
@@ -22163,6 +22222,7 @@ newdef a1Simple:ThreeChargedWeights 4 0.139732
 newdef a1Simple:ThreeChargedWeights 5 0.138687
 #
 create Herwig::MamboDecayer  Mambo
+
 #
 create Herwig::TauDecayer  Tau5Pion
 newdef Tau5Pion:Iteration 10
@@ -23518,12 +23578,6 @@ newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
 #
-create Herwig::HQETStrongDecayer HQETMeson
-newdef HQETMeson:Initialize 1
-#
-create Herwig::HQETRadiativeDecayer HQETMesonEM
-newdef HQETMesonEM:Initialize 1
-#
 create Herwig::SMWDecayer  WDecayer
 newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
 newdef WDecayer:AlphaEM /Herwig/Shower/AlphaQED
@@ -23776,5 +23830,5 @@ newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
 newdef D0KmPipPi0CLEO:Rho1700Phase 171
 newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
 newdef D0KmPipPi0CLEO:K1680MinusPhase 103
-
+#
 @LOAD_EVTGEN_DECAYER@
