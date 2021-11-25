@@ -615,6 +615,11 @@ makeanti K'- K'+
 create ThePEG::ParticleData K'bar0
 setup K'bar0 -100311 K'bar0 1.46 0.26 0.26 0 0 0 1 0 
 makeanti K'bar0 K'0
+create ThePEG::ParticleData B_c(2S)+
+setup B_c(2S)+ 100541 B_c(2S)+ 6.8712 6.5E-5 0.00065 0  3 0 1 0
+create ThePEG::ParticleData B_c(2S)-
+setup B_c(2S)- -100541 B_c(2S)- 6.8712 6.5E-5 0.00065 0 -3 0 1 0
+makeanti B_c(2S)- B_c(2S)+
 #
 # the 2^3S_1 multiplet
 #
@@ -786,3 +791,41 @@ setup kappa+ 9000321 kappa+ 0.841 0.618 0.7215 0 3 0 1 0
 makeanti kappa+ kappa-
 newdef kappa+:WidthLoCut 0.207
 newdef kappa+:WidthUpCut 1.236
+
+
+# new ccbar states 1D2
+create ThePEG::ParticleData psi_2
+setup psi_2 20445 psi_2 3.8237 0.0003 0.003 0 0 0 5 0
+# new ccbar states 1D3
+create ThePEG::ParticleData psi_3
+setup psi_3 447   psi_3 3.84271 0.0028 0.028 0 0 0 7 0
+# new Bc state 2 3S1
+create ThePEG::ParticleData B_c(2S)*+
+setup B_c(2S)*+  100543 B_c(2S)*+ 6.8752 0.000072 0.00072 0  3 0 3 0
+create ThePEG::ParticleData B_c(2S)*-
+setup B_c(2S)*- -100543 B_c(2S)*- 6.8752 0.000072 0.00072 0 -3 0 3 0
+makeanti B_c(2S)*- B_c(2S)*+
+# new Bc state 1 1D2 (lighter mixing state)
+create ThePEG::ParticleData B_c2(L)+
+setup B_c2(L)+  10545 B_c2(L)+ 7.036 0.000083 0.00083 0  3 0 5 0
+create ThePEG::ParticleData B_c2(L)-
+setup B_c2(L)- -10545 B_c2(L)- 7.036 0.000083 0.00083 0 -3 0 5 0
+makeanti B_c2(L)- B_c2(L)+
+# new Bc state 1 3D2 (heavier mixing state)
+create ThePEG::ParticleData B_c2(H)+
+setup B_c2(H)+  20545 B_c2(H)+ 7.041 0.000093 0.00093 0  3 0 5 0
+create ThePEG::ParticleData B_c2(H)-
+setup B_c2(H)- -20545 B_c2(H)- 7.041 0.000093 0.00093 0 -3 0 5 0
+makeanti B_c2(H)- B_c2(H)+
+# new Bc state 1 3D1
+create ThePEG::ParticleData B_c(1D)*+
+setup B_c(1D)*+  30543 B_c(1D)*+ 7.028 0.0001 0.001 0  3 0 3 0
+create ThePEG::ParticleData B_c(1D)*-
+setup B_c(1D)*- -30543 B_c(1D)*- 7.028 0.0001 0.001 0 -3 0 3 0
+makeanti B_c(1D)*- B_c(1D)*+
+# new Bc state 1 3D3
+create ThePEG::ParticleData B_c3(1D)*+
+setup B_c3(1D)*+  547 B_c3(1D)*+ 7.045 0.0001 0.001 0  3 0 7 0
+create ThePEG::ParticleData B_c3(1D)*-
+setup B_c3(1D)*- -547 B_c3(1D)*- 7.045 0.0001 0.001 0 -3 0 7 0
+makeanti B_c3(1D)*- B_c3(1D)*+
