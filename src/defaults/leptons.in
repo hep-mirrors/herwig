@@ -14,9 +14,9 @@ create ThePEG::PolarizedBeamParticleData e+
 setup e+ -11 e+ 0.00051099892 0.  0 0 3 0 2 1 
 makeanti e+ e-
 create ThePEG::ParticleData tau+
-setup tau+ -15 tau+ 1.77699 2.2652617380324E-12 0 0.08711 3 0 2 0 
+setup tau+ -15 tau+ 1.77686 2.2673440193037E-12 0 0.08703 3 0 2 0 
 create ThePEG::ParticleData tau-
-setup tau- 15 tau- 1.77699 2.2652617380324E-12 0 0.08711 -3 0 2 0 
+setup tau- 15 tau- 1.77686 2.2673440193037E-12 0 0.08703 -3 0 2 0 
 makeanti tau- tau+
 create ThePEG::BeamParticleData nu_e
 setup nu_e 12 nu_e 0 0.  0 0 0 0 2 1 
