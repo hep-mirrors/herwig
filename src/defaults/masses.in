@@ -1947,3 +1947,11 @@ newdef TopMass:WidthOption 0
 newdef /Herwig/Particles/t:Mass_generator TopMass
 newdef /Herwig/Particles/tbar:Mass_generator TopMass
 #
+create Herwig::GenericMassGenerator  psi_3_1Dmass
+newdef psi_3_1Dmass:Particle /Herwig/Particles/psi_3(1D)
+newdef psi_3_1Dmass:BreitWignerShape 0
+newdef psi_3_1Dmass:MaximumWeight 0.93689
+newdef psi_3_1Dmass:NGenerate 100
+newdef psi_3_1Dmass:WidthOption 0
+newdef /Herwig/Particles/psi_3(1D):Mass_generator psi_3_1Dmass
+#

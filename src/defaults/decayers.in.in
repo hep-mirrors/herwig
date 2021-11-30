@@ -23620,6 +23620,15 @@ insert Tau2Kaon:Weights 1 0.43015
 insert Tau2Kaon:Weights 2 0.064591
 newdef Tau2Kaon:WeakCurrent TwoKaonCzyzCurrent
 #
+create Herwig::Spin3Meson2PScalarDecayer  Spin3PP
+newdef Spin3PP:Iteration 1
+newdef Spin3PP:Ntry 500
+newdef Spin3PP:Points 10000
+newdef Spin3PP:GenerateIntermediates 0 
+set Spin3PP:DatabaseOutput 1
+do Spin3PP:SetUpDecayMode 447 411 -411 6.01096 1.59891
+do Spin3PP:SetUpDecayMode 447 421 -421 6.01096 1.6008
+#
 create Herwig::TauDecayer  Tau1K2Pi
 newdef Tau1K2Pi:Iteration 10
 newdef Tau1K2Pi:Ntry 500
