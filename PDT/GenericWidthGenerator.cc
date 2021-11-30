@@ -845,14 +845,14 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   case  6: gam = 0.125/q2*m02;
     break;
     // T -> PP
-  case  7: gam = pcm2*pcm2/60./q2/m02;
+  case  7: gam = sqr(pcm2)/60./q2/m02;
     break;
     // T -> VP
-  case  8: gam = pcm2*pcm2/40./m02/m02;
+  case  8: gam = sqr(pcm2)/40./m02/m02;
     break;
     // T -> VV
   case  9: gam = 1./30./q2/q2/m02*
-      (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
+      (3.*q2*(8.*sqr(pcm2)+5.*(m12*m22+pcm2*(m12+m22)))
        -5.*(m12-m22)*(m12-m22)*pcm2);
     break;
     // P -> PV
@@ -863,6 +863,9 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     break;
     // S -> VV
   case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
+    break;
+    // T3 -> PP
+  case 13: gam = 16.*sqr(pcm2)*pcm2/35./q2/sqr(m02);
     break;
     // unknown
   default:
