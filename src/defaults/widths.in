@@ -64482,3 +64482,32 @@ insert TopWidth:NumberofEntries 7 400
 newdef /Herwig/Particles/t:Width_generator TopWidth
 newdef /Herwig/Particles/tbar:Width_generator TopWidth
 #
+create Herwig::GenericWidthGenerator  psi_3_1DWidth
+newdef psi_3_1DWidth:Particle /Herwig/Particles/psi_3(1D)
+newdef psi_3_1DWidth:Prefactor 1
+newdef psi_3_1DWidth:BRNormalize 1
+newdef psi_3_1DWidth:BRMinimum 0.01
+newdef psi_3_1DWidth:Points 50
+newdef psi_3_1DWidth:InterpolationOrder 1
+
+insert psi_3_1DWidth:MEtype 0 1
+insert psi_3_1DWidth:MEtype 1 1
+insert psi_3_1DWidth:MEcode 0 13
+insert psi_3_1DWidth:MEcode 1 13
+insert psi_3_1DWidth:MEcoupling 0 88.7905
+insert psi_3_1DWidth:MEcoupling 1 88.7381
+insert psi_3_1DWidth:ModeOn 0 1
+insert psi_3_1DWidth:ModeOn 1 1
+insert psi_3_1DWidth:MinimumMasses 0 3.73932
+insert psi_3_1DWidth:MinimumMasses 1 3.72968
+insert psi_3_1DWidth:MEmass1 0 1.86966
+insert psi_3_1DWidth:MEmass1 1 1.86484
+insert psi_3_1DWidth:MEmass2 0 1.86966
+insert psi_3_1DWidth:MEmass2 1 1.86484
+insert psi_3_1DWidth:DecayModes 0 psi_3(1D)->D+,D-; 
+insert psi_3_1DWidth:DecayModes 1 psi_3(1D)->D0,Dbar0; 
+insert psi_3_1DWidth:NumberofEntries 0 0
+insert psi_3_1DWidth:NumberofEntries 1 0
+
+newdef /Herwig/Particles/psi_3(1D):Width_generator psi_3_1DWidth
+#
