@@ -138,7 +138,7 @@ void HQETStrongDecayer::Init() {
   static Parameter<HQETStrongDecayer,double> interfacef
     ("f",
      "The coupling for D*_0 and D'_1 decays",
-     &HQETStrongDecayer::f_, 0.465464, 0.0, 1.0,
+     &HQETStrongDecayer::f_, -0.465464, -1.0, 1.0,
      false, false, Interface::limited);
 
   static ParVector<HQETStrongDecayer,double> interfaceMaxWeight
