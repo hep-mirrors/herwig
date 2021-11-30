@@ -51,9 +51,9 @@ decaymode tau+->phi,K+,nu_taubar; 4.4E-5 1 /Herwig/Decays/DecayME0
 decaymode tau+->pi+,pi+,pi+,pi-,pi-,pi0,nu_taubar; 3.8E-5 1 /Herwig/Decays/Mambo
 decaymode tau+->phi,pi+,nu_taubar; 3.4E-5 1 /Herwig/Decays/Mambo
 decaymode tau+->eta,pi+,pi0,pi0,nu_taubar; 2.9E-5 1 /Herwig/Decays/Mambo
-decaymode tau+->K_L0,K_L0,pi+,pi0,nu_taubar; 1.4E-5 1 /Herwig/Decays/a1Simple
+decaymode tau+->K_L0,K_L0,pi+,pi0,nu_taubar; 1.4E-5 1 /Herwig/Decays/Mambo
 decaymode tau+->pi+,pi+,pi-,pi0,pi0,pi0,nu_taubar; 1.4E-5 1 /Herwig/Decays/Mambo
-decaymode tau+->K_S0,K_S0,pi+,pi0,nu_taubar; 1.4E-5 1 /Herwig/Decays/DecayME0
+decaymode tau+->K_S0,K_S0,pi+,pi0,nu_taubar; 1.4E-5 1 /Herwig/Decays/Mambo
 decaymode tau+->K+,pi+,pi+,pi-,pi-,nu_taubar; 1.0E-6 1 /Herwig/Decays/Mambo
 decaymode tau+->K+,pi+,pi+,pi-,pi-,pi0,nu_taubar; 1.0E-6 1 /Herwig/Decays/Mambo
 #
@@ -101,7 +101,7 @@ decaymode tau-->pi-,pi-,pi-,pi+,pi+,pi0,nu_tau; 3.8E-5 1 /Herwig/Decays/Mambo
 decaymode tau-->phi,pi-,nu_tau; 3.4E-5 1 /Herwig/Decays/Mambo
 decaymode tau-->eta,pi-,pi0,pi0,nu_tau; 2.9E-5 1 /Herwig/Decays/Mambo
 decaymode tau-->pi-,pi-,pi+,pi0,pi0,pi0,nu_tau; 1.4E-5 1 /Herwig/Decays/Mambo
-decaymode tau-->K_L0,K_L0,pi-,pi0,nu_tau; 1.4E-5 1 /Herwig/Decays/a1Simple
-decaymode tau-->K_S0,K_S0,pi-,pi0,nu_tau; 1.4E-5 1 /Herwig/Decays/DecayME0
+decaymode tau-->K_L0,K_L0,pi-,pi0,nu_tau; 1.4E-5 1 /Herwig/Decays/Mambo
+decaymode tau-->K_S0,K_S0,pi-,pi0,nu_tau; 1.4E-5 1 /Herwig/Decays/Mambo
 decaymode tau-->K-,pi-,pi-,pi+,pi+,nu_tau; 1.0E-6 1 /Herwig/Decays/Mambo
 decaymode tau-->K-,pi-,pi-,pi+,pi+,pi0,nu_tau; 1.0E-6 1 /Herwig/Decays/Mambo
