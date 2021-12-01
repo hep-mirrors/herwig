@@ -102,27 +102,27 @@ void ElectroWeakReweighter::doinit() {
   // testing output
   cerr << "aEM\n";
   for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.1) {
-    cerr << scale/GeV << " " 
+    cerr << scale/GeV << " "
   	 << EWCouplings_->aEM(scale) << "\n";
   }
   cerr << "aS\n";
   for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
-    cerr << scale/GeV << " " 
+    cerr << scale/GeV << " "
   	 << EWCouplings_->aS(scale) << "\n";
   }
   cerr << "y_t\n";
   for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
-    cerr << scale/GeV << " " 
+    cerr << scale/GeV << " "
   	 << EWCouplings_->y_t(scale) << "\n";
   }
   cerr << "lambda\n";
   for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
-    cerr << scale/GeV << " " 
+    cerr << scale/GeV << " "
   	 << EWCouplings_->lambda(scale) << "\n";
   }
   cerr << "vev\n";
   for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
-    cerr << scale/GeV << " " 
+    cerr << scale/GeV << " "
   	 << EWCouplings_->vev(scale)/GeV << "\n";
   }
   collinearSudakov_->makePlots();
@@ -157,7 +157,7 @@ void axpy_prod_local(const boost::numeric::ublas::matrix<complex<InvEnergy2> >  
   for(unsigned int ix=0;ix<A.size1();++ix) {
     C(ix) = ZERO;
       for(unsigned int iz=0;iz<A.size2();++iz) {
-	C(ix) += A(ix,iz)*B(iz);
+	C(ix) += Complex(A(ix,iz)*B(iz));
       }
   }
 }
@@ -358,13 +358,13 @@ void ElectroWeakReweighter::testEvolution(Energy2 s,Energy2 t, Energy2 u) const 
     EWProcess::Process process = (EWProcess::Process)i;
     cerr << "process " << process << "\n";
     // result for all EW and QCD SCET contributions:
-    boost::numeric::ublas::matrix<complex<InvEnergy2> > highMatch_val 
+    boost::numeric::ublas::matrix<complex<InvEnergy2> > highMatch_val
       = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,true,true);
     boost::numeric::ublas::matrix<Complex> highRunning_val
       = softSudakov_->highEnergyRunning(highScale,ewScale,s,t,u,process,0);
-    boost::numeric::ublas::matrix<Complex> ewMatch_val = 
+    boost::numeric::ublas::matrix<Complex> ewMatch_val =
       ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,true,0);
-    boost::numeric::ublas::matrix<Complex> lowRunning_val = 
+    boost::numeric::ublas::matrix<Complex> lowRunning_val =
       softSudakov_->lowEnergyRunning(ewScale,lowScale,s,t,u,process,0);
     boost::numeric::ublas::matrix<Complex> collinearHighRunning_val =
       collinearSudakov_->highEnergyRunning(highScale,ewScale,s,process,false);
@@ -372,7 +372,7 @@ void ElectroWeakReweighter::testEvolution(Energy2 s,Energy2 t, Energy2 u) const 
       collinearSudakov_->electroWeakMatching(ewScale,s,process,true);
     boost::numeric::ublas::matrix<Complex> collinearLowRunning_val =
       collinearSudakov_->lowEnergyRunning(ewScale,lowScale,s,process);
-    boost::numeric::ublas::matrix<Complex> lowMatchTemp_val = 
+    boost::numeric::ublas::matrix<Complex> lowMatchTemp_val =
       boost::numeric::ublas::zero_matrix<Complex>(ewMatch_val.size1(),ewMatch_val.size2());
     for (unsigned int ii=0; ii<ewMatch_val.size1(); ++ii) {
       for (unsigned int jj=0; jj<ewMatch_val.size2(); ++jj) {
@@ -613,7 +613,7 @@ double ElectroWeakReweighter::reweightqqbargg() const {
   return EW/born;
 }
 
-boost::numeric::ublas::matrix<complex<InvEnergy2> > 
+boost::numeric::ublas::matrix<complex<InvEnergy2> >
 ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
 				       Energy2 t, Energy2 u, bool born,
 				       unsigned int iswap) const {
@@ -627,7 +627,7 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
   // MATCHING CONTRIBUTIONS
   // high energy matching
   matrix<complex<InvEnergy2> > highMatch_val;
-  if(iswap==0) 
+  if(iswap==0)
     highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,!born,false);
   else if(iswap==1)
     highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,t,s,u,process,!born,false);
@@ -636,7 +636,7 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
   else
     assert(false);
   // low energy matching
-  matrix<Complex> 
+  matrix<Complex>
     ewMatch_val = ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,!born,iswap);
   matrix<Complex> collinearEWMatch_val =
     collinearSudakov_->electroWeakMatching(ewScale,s,process,!born);
@@ -659,7 +659,7 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
     collinearHighRunning_val = collinearSudakov_->highEnergyRunning(highScale,ewScale,s,process,false);
     collinearLowRunning_val = collinearSudakov_->lowEnergyRunning(ewScale,lowScale,s,process);
   };
-  matrix<Complex> lowMatchTemp_val = 
+  matrix<Complex> lowMatchTemp_val =
     zero_matrix<Complex>(ewMatch_val.size1(),ewMatch_val.size2());
   for (unsigned int ii=0; ii<ewMatch_val.size1(); ++ii) {
     for (unsigned int jj=0; jj<ewMatch_val.size2(); ++jj) {
@@ -1232,16 +1232,16 @@ double ElectroWeakReweighter::reweightqqbarqqbarS() const {
 	    ioff = q2->id()%2==0 ? 1 : 3;
 	  }
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
-	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornLLLLWeights(6*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWLLLLWeights(6*ix+ioff,0));
 	  }
 	}
 	// LR
 	else {
 	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
-	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornLLRRWeights(2*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWLLRRWeights(2*ix+ioff,0));
 	  }
 	}
       }
@@ -1249,14 +1249,14 @@ double ElectroWeakReweighter::reweightqqbarqqbarS() const {
 	if(iq2==0) {
 	  unsigned int ioff=q2->id()%2==0 ? 0 : 1;
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
-	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornRRLLWeights(2*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWRRLLWeights(2*ix+ioff,0));
 	  }
 	}
 	else {
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
-	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+	    Cborn[ix] = Complex(amp*bornRRRRWeights(ix,0));
+	    CEW  [ix] = Complex(amp*  EWRRRRWeights(ix,0));
 	  }
 	}
       }
@@ -1284,8 +1284,8 @@ double ElectroWeakReweighter::reweightqqbarqqbarS() const {
       vector<Complex> Cborn(2),CEW(2);
       unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
       for(unsigned int ix=0;ix<2;++ix) {
-	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
-	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+	Cborn[ix] = Complex(amp*borntChannelWeights(2*ix+ioff,0));
+	CEW  [ix] = Complex(amp*EWtChannelWeights(2*ix+ioff,0));
       }
       // square
       for(unsigned int ix=0;ix<2;++ix) {
@@ -1341,7 +1341,7 @@ double ElectroWeakReweighter::reweightqqbarqqbarT() const {
     bornLLLLWeights,bornLLRRWeights,bornRRLLWeights,bornRRRRWeights,
     EWLLLLWeights,EWLLRRWeights,EWRRLLWeights,EWRRRRWeights;
   // LL
-  if( q1->id()    == ParticleID::b || 
+  if( q1->id()    == ParticleID::b ||
       q1bar->id() == ParticleID::bbar ) {
     bornLLLLWeights = evaluateRunning(EWProcess::QtQtQQ,s,t,u,true ,1);
     EWLLLLWeights   = evaluateRunning(EWProcess::QtQtQQ,s,t,u,false,1);
@@ -1439,8 +1439,8 @@ double ElectroWeakReweighter::reweightqqbarqqbarT() const {
 	if(iq2==0) {
 	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
-	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornLLRRWeights(2*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWLLRRWeights(2*ix+ioff,0));
 	  }
 	}
 	// LL LL
@@ -1453,8 +1453,8 @@ double ElectroWeakReweighter::reweightqqbarqqbarT() const {
 	    ioff = abs(q1bar->id())%2==0 ? 1 : 3;
 	  }
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
-	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornLLLLWeights(6*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWLLLLWeights(6*ix+ioff,0));
  	  }
 	}
       }
@@ -1462,16 +1462,16 @@ double ElectroWeakReweighter::reweightqqbarqqbarT() const {
 	// RR RR
 	if(iq2==0) {
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
-	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+	    Cborn[ix] = Complex(amp*bornRRRRWeights(ix,0));
+	    CEW  [ix] = Complex(amp*  EWRRRRWeights(ix,0));
 	  }
 	}
 	// RR LL
 	else {
 	  unsigned int ioff=abs(q1bar->id())%2==0 ? 0 : 1;
 	  for(unsigned int ix=0;ix<2;++ix) {
-	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
-	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+	    Cborn[ix] = Complex(amp*bornRRLLWeights(2*ix+ioff,0));
+	    CEW  [ix] = Complex(amp*  EWRRLLWeights(2*ix+ioff,0));
 	  }
 	}
       }
@@ -1665,16 +1665,16 @@ double ElectroWeakReweighter::reweightqqqq() const {
  	    ioff = q2->id()%2==0 ? 1 : 3;
  	  }
  	  for(unsigned int ix=0;ix<2;++ix) {
- 	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
- 	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+ 	    Cborn[ix] = Complex(amp*bornLLLLWeights(6*ix+ioff,0));
+ 	    CEW  [ix] = Complex(amp*EWLLLLWeights(6*ix+ioff,0));
  	  }
  	}
  	// LR
  	else {
  	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
  	  for(unsigned int ix=0;ix<2;++ix) {
- 	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
- 	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+ 	    Cborn[ix] = Complex(amp*bornLLRRWeights(2*ix+ioff,0));
+ 	    CEW  [ix] = Complex(amp*  EWLLRRWeights(2*ix+ioff,0));
  	  }
  	}
       }
@@ -1682,14 +1682,14 @@ double ElectroWeakReweighter::reweightqqqq() const {
   	if(iq2==0) {
   	  unsigned int ioff=q2->id()%2==0 ? 0 : 1;
   	  for(unsigned int ix=0;ix<2;++ix) {
-  	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
-  	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+  	    Cborn[ix] = Complex(amp*bornRRLLWeights(2*ix+ioff,0));
+  	    CEW  [ix] = Complex(amp*  EWRRLLWeights(2*ix+ioff,0));
   	  }
   	}
   	else {
   	  for(unsigned int ix=0;ix<2;++ix) {
-  	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
-  	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+  	    Cborn[ix] = Complex(amp*bornRRRRWeights(ix,0));
+  	    CEW  [ix] = Complex(amp*  EWRRRRWeights(ix,0));
   	  }
   	}
       }
@@ -1723,8 +1723,8 @@ double ElectroWeakReweighter::reweightqqqq() const {
       vector<Complex> Cborn(2),CEW(2);
       unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
       for(unsigned int ix=0;ix<2;++ix) {
-  	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
-   	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+  	Cborn[ix] = Complex(amp*borntChannelWeights(2*ix+ioff,0));
+   	CEW  [ix] = Complex(amp*EWtChannelWeights(2*ix+ioff,0));
       }
       // square
       for(unsigned int ix=0;ix<2;++ix) {
@@ -1917,16 +1917,16 @@ double ElectroWeakReweighter::reweightqbarqbarqbarqbar() const {
  	    ioff = abs(qbar2->id())%2==0 ? 1 : 3;
  	  }
  	  for(unsigned int ix=0;ix<2;++ix) {
- 	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
- 	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+ 	    Cborn[ix] = Complex(amp*bornLLLLWeights(6*ix+ioff,0));
+ 	    CEW  [ix] = Complex(amp*  EWLLLLWeights(6*ix+ioff,0));
  	  }
  	}
  	// LR
  	else {
  	  unsigned int ioff =  abs(qbar1->id())%2==0 ? 0 : 1;
  	  for(unsigned int ix=0;ix<2;++ix) {
- 	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
- 	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+ 	    Cborn[ix] = Complex(amp*bornLLRRWeights(2*ix+ioff,0));
+ 	    CEW  [ix] = Complex(amp*  EWLLRRWeights(2*ix+ioff,0));
  	  }
  	}
       }
@@ -1934,14 +1934,14 @@ double ElectroWeakReweighter::reweightqbarqbarqbarqbar() const {
   	if(iq2==1) {
   	  unsigned int ioff=abs(qbar2->id())%2==0 ? 0 : 1;
   	  for(unsigned int ix=0;ix<2;++ix) {
-  	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
-  	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+  	    Cborn[ix] = Complex(amp*bornRRLLWeights(2*ix+ioff,0));
+  	    CEW  [ix] = Complex(amp*  EWRRLLWeights(2*ix+ioff,0));
   	  }
   	}
   	else {
   	  for(unsigned int ix=0;ix<2;++ix) {
-  	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
-  	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+  	    Cborn[ix] = Complex(amp*bornRRRRWeights(ix,0));
+  	    CEW  [ix] = Complex(amp*  EWRRRRWeights(ix,0));
   	  }
   	}
       }
@@ -1975,8 +1975,8 @@ double ElectroWeakReweighter::reweightqbarqbarqbarqbar() const {
       vector<Complex> Cborn(2),CEW(2);
       unsigned int ioff =  abs(qbar1->id())%2==0 ? 0 : 1;
       for(unsigned int ix=0;ix<2;++ix) {
-  	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
-   	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+  	Cborn[ix] = Complex(amp*borntChannelWeights(2*ix+ioff,0));
+   	CEW  [ix] = Complex(amp*EWtChannelWeights(2*ix+ioff,0));
       }
       // square
       for(unsigned int ix=0;ix<2;++ix) {
