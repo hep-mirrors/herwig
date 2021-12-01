@@ -1,0 +1,16 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.4426*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.4426*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.885
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(5S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 0.001
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+# CLEO phi spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
+# D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
