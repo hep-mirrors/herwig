@@ -719,371 +719,82 @@ newdef VectorVP:Iteration 1
 newdef VectorVP:Ntry 1000
 newdef VectorVP:Points 10000
 newdef VectorVP:GenerateIntermediates 0 
-newdef VectorVP:Incoming 0 113
-newdef VectorVP:OutgoingVector 0 22
-newdef VectorVP:OutgoingPScalar 0 111
-newdef VectorVP:Coupling 0 0.0002527
-newdef VectorVP:MaxWeight 0 1.60721
-newdef VectorVP:Incoming 1 213
-newdef VectorVP:OutgoingVector 1 22
-newdef VectorVP:OutgoingPScalar 1 211
-newdef VectorVP:Coupling 1 0.000221
-newdef VectorVP:MaxWeight 1 1.62841
-newdef VectorVP:Incoming 2 113
-newdef VectorVP:OutgoingVector 2 22
-newdef VectorVP:OutgoingPScalar 2 221
-newdef VectorVP:Coupling 2 0.000492
-newdef VectorVP:MaxWeight 2 1.6601
-newdef VectorVP:Incoming 3 223
-newdef VectorVP:OutgoingVector 3 22
-newdef VectorVP:OutgoingPScalar 3 111
-newdef VectorVP:Coupling 3 0.000727947
-newdef VectorVP:MaxWeight 3 1.6066
-newdef VectorVP:Incoming 4 223
-newdef VectorVP:OutgoingVector 4 22
-newdef VectorVP:OutgoingPScalar 4 221
-newdef VectorVP:Coupling 4 0.000143
-newdef VectorVP:MaxWeight 4 1.61151
-newdef VectorVP:Incoming 5 333
-newdef VectorVP:OutgoingVector 5 22
-newdef VectorVP:OutgoingPScalar 5 111
-newdef VectorVP:Coupling 5 3.97e-05
-newdef VectorVP:MaxWeight 5 1.57772
-newdef VectorVP:Incoming 6 333
-newdef VectorVP:OutgoingVector 6 22
-newdef VectorVP:OutgoingPScalar 6 221
-newdef VectorVP:Coupling 6 0.000212
-newdef VectorVP:MaxWeight 6 1.59018
-newdef VectorVP:Incoming 7 333
-newdef VectorVP:OutgoingVector 7 22
-newdef VectorVP:OutgoingPScalar 7 331
-newdef VectorVP:Coupling 7 0.000219
-newdef VectorVP:MaxWeight 7 1.75157
-newdef VectorVP:Incoming 8 333
-newdef VectorVP:OutgoingVector 8 223
-newdef VectorVP:OutgoingPScalar 8 111
-newdef VectorVP:Coupling 8 4.17e-05
-newdef VectorVP:MaxWeight 8 1.82785
-newdef VectorVP:Incoming 9 100333
-newdef VectorVP:OutgoingVector 9 323
-newdef VectorVP:OutgoingPScalar 9 -321
-newdef VectorVP:Coupling 9 0.003934
-newdef VectorVP:MaxWeight 9 4.69434
-newdef VectorVP:Incoming 10 100333
-newdef VectorVP:OutgoingVector 10 313
-newdef VectorVP:OutgoingPScalar 10 -311
-newdef VectorVP:Coupling 10 0.004011
-newdef VectorVP:MaxWeight 10 4.43694
-newdef VectorVP:Incoming 11 313
-newdef VectorVP:OutgoingVector 11 22
-newdef VectorVP:OutgoingPScalar 11 311
-newdef VectorVP:Coupling 11 0.000384
-newdef VectorVP:MaxWeight 11 1.60146
-newdef VectorVP:Incoming 12 323
-newdef VectorVP:OutgoingVector 12 22
-newdef VectorVP:OutgoingPScalar 12 321
-newdef VectorVP:Coupling 12 0.000253
-newdef VectorVP:MaxWeight 12 1.59626
-newdef VectorVP:Incoming 13 423
-newdef VectorVP:OutgoingVector 13 22
-newdef VectorVP:OutgoingPScalar 13 421
-newdef VectorVP:Coupling 13 0.000616
-newdef VectorVP:MaxWeight 13 1.60404
-newdef VectorVP:Incoming 14 413
-newdef VectorVP:OutgoingVector 14 22
-newdef VectorVP:OutgoingPScalar 14 411
-newdef VectorVP:Coupling 14 0.000152
-newdef VectorVP:MaxWeight 14 1.5979
-newdef VectorVP:Incoming 15 433
-newdef VectorVP:OutgoingVector 15 22
-newdef VectorVP:OutgoingPScalar 15 431
-newdef VectorVP:Coupling 15 0.000764
-newdef VectorVP:MaxWeight 15 1.60184
-newdef VectorVP:Incoming 16 533
-newdef VectorVP:OutgoingVector 16 22
-newdef VectorVP:OutgoingPScalar 16 531
-newdef VectorVP:Coupling 16 0.000248
-newdef VectorVP:MaxWeight 16 1.59746
-newdef VectorVP:Incoming 17 543
-newdef VectorVP:OutgoingVector 17 22
-newdef VectorVP:OutgoingPScalar 17 541
-newdef VectorVP:Coupling 17 0.000266
-newdef VectorVP:MaxWeight 17 1.59608
-newdef VectorVP:Incoming 18 523
-newdef VectorVP:OutgoingVector 18 22
-newdef VectorVP:OutgoingPScalar 18 521
-newdef VectorVP:Coupling 18 0.000553
-newdef VectorVP:MaxWeight 18 1.59875
-newdef VectorVP:Incoming 19 513
-newdef VectorVP:OutgoingVector 19 22
-newdef VectorVP:OutgoingPScalar 19 511
-newdef VectorVP:Coupling 19 0.00031
-newdef VectorVP:MaxWeight 19 1.59075
-newdef VectorVP:Incoming 20 30113
-newdef VectorVP:OutgoingVector 20 113
-newdef VectorVP:OutgoingPScalar 20 221
-newdef VectorVP:Coupling 20 0.002663
-newdef VectorVP:MaxWeight 20 3.81111
-newdef VectorVP:Incoming 21 30213
-newdef VectorVP:OutgoingVector 21 213
-newdef VectorVP:OutgoingPScalar 21 221
-newdef VectorVP:Coupling 21 0.002663
-newdef VectorVP:MaxWeight 21 3.83583
-newdef VectorVP:Incoming 22 30113
-newdef VectorVP:OutgoingVector 22 323
-newdef VectorVP:OutgoingPScalar 22 -321
-newdef VectorVP:Coupling 22 0.000894
-newdef VectorVP:MaxWeight 22 4.7074
-newdef VectorVP:Incoming 23 30113
-newdef VectorVP:OutgoingVector 23 313
-newdef VectorVP:OutgoingPScalar 23 -311
-newdef VectorVP:Coupling 23 0.000908
-newdef VectorVP:MaxWeight 23 4.7438
-newdef VectorVP:Incoming 24 30213
-newdef VectorVP:OutgoingVector 24 323
-newdef VectorVP:OutgoingPScalar 24 -311
-newdef VectorVP:Coupling 24 0.001265
-newdef VectorVP:MaxWeight 24 4.62484
-newdef VectorVP:Incoming 25 30213
-newdef VectorVP:OutgoingVector 25 -313
-newdef VectorVP:OutgoingPScalar 25 321
-newdef VectorVP:Coupling 25 0.001273
-newdef VectorVP:MaxWeight 25 4.88974
-newdef VectorVP:Incoming 26 30223
-newdef VectorVP:OutgoingVector 26 213
-newdef VectorVP:OutgoingPScalar 26 -211
-newdef VectorVP:Coupling 26 0.002996
-newdef VectorVP:MaxWeight 26 3.32873
-newdef VectorVP:Incoming 27 30223
-newdef VectorVP:OutgoingVector 27 113
-newdef VectorVP:OutgoingPScalar 27 111
-newdef VectorVP:Coupling 27 0.002996
-newdef VectorVP:MaxWeight 27 3.33537
-newdef VectorVP:Incoming 28 100223
-newdef VectorVP:OutgoingVector 28 213
-newdef VectorVP:OutgoingPScalar 28 -211
-newdef VectorVP:Coupling 28 0.004507
-newdef VectorVP:MaxWeight 28 3.88723
-newdef VectorVP:Incoming 29 100223
-newdef VectorVP:OutgoingVector 29 113
-newdef VectorVP:OutgoingPScalar 29 111
-newdef VectorVP:Coupling 29 0.004507
-newdef VectorVP:MaxWeight 29 3.71504
-newdef VectorVP:Incoming 30 30313
-newdef VectorVP:OutgoingVector 30 323
-newdef VectorVP:OutgoingPScalar 30 -211
-newdef VectorVP:Coupling 30 0.00336
-newdef VectorVP:MaxWeight 30 3.81291
-newdef VectorVP:Incoming 31 30313
-newdef VectorVP:OutgoingVector 31 313
-newdef VectorVP:OutgoingPScalar 31 111
-newdef VectorVP:Coupling 31 0.00238
-newdef VectorVP:MaxWeight 31 3.50939
-newdef VectorVP:Incoming 32 30323
-newdef VectorVP:OutgoingVector 32 313
-newdef VectorVP:OutgoingPScalar 32 211
-newdef VectorVP:Coupling 32 0.00336
-newdef VectorVP:MaxWeight 32 3.33937
-newdef VectorVP:Incoming 33 30323
-newdef VectorVP:OutgoingVector 33 323
-newdef VectorVP:OutgoingPScalar 33 111
-newdef VectorVP:Coupling 33 0.00238
-newdef VectorVP:MaxWeight 33 3.17369
-newdef VectorVP:Incoming 34 30313
-newdef VectorVP:OutgoingVector 34 -213
-newdef VectorVP:OutgoingPScalar 34 321
-newdef VectorVP:Coupling 34 0.004159
-newdef VectorVP:MaxWeight 34 2.90637
-newdef VectorVP:Incoming 35 30313
-newdef VectorVP:OutgoingVector 35 113
-newdef VectorVP:OutgoingPScalar 35 311
-newdef VectorVP:Coupling 35 0.002939
-newdef VectorVP:MaxWeight 35 2.94708
-newdef VectorVP:Incoming 36 30323
-newdef VectorVP:OutgoingVector 36 213
-newdef VectorVP:OutgoingPScalar 36 311
-newdef VectorVP:Coupling 36 0.004159
-newdef VectorVP:MaxWeight 36 2.95133
-newdef VectorVP:Incoming 37 30323
-newdef VectorVP:OutgoingVector 37 113
-newdef VectorVP:OutgoingPScalar 37 321
-newdef VectorVP:Coupling 37 0.002939
-newdef VectorVP:MaxWeight 37 2.9179
-newdef VectorVP:Incoming 38 100313
-newdef VectorVP:OutgoingVector 38 323
-newdef VectorVP:OutgoingPScalar 38 -211
-newdef VectorVP:Coupling 38 0.009469
-newdef VectorVP:MaxWeight 38 5.36672
-newdef VectorVP:Incoming 39 100313
-newdef VectorVP:OutgoingVector 39 313
-newdef VectorVP:OutgoingPScalar 39 111
-newdef VectorVP:Coupling 39 0.006781
-newdef VectorVP:MaxWeight 39 5.47961
-newdef VectorVP:Incoming 40 100323
-newdef VectorVP:OutgoingVector 40 313
-newdef VectorVP:OutgoingPScalar 40 211
-newdef VectorVP:Coupling 40 0.009469
-newdef VectorVP:MaxWeight 40 5.37021
-newdef VectorVP:Incoming 41 100323
-newdef VectorVP:OutgoingVector 41 323
-newdef VectorVP:OutgoingPScalar 41 111
-newdef VectorVP:Coupling 41 0.006781
-newdef VectorVP:MaxWeight 41 5.34432
-newdef VectorVP:Incoming 42 443
-newdef VectorVP:OutgoingVector 42 22
-newdef VectorVP:OutgoingPScalar 42 441
-newdef VectorVP:Coupling 42 0.000149
-newdef VectorVP:MaxWeight 42 28.2694
-newdef VectorVP:Incoming 43 443
-newdef VectorVP:OutgoingVector 43 22
-newdef VectorVP:OutgoingPScalar 43 331
-newdef VectorVP:Coupling 43 2.5e-06
-newdef VectorVP:MaxWeight 43 1.64689
-newdef VectorVP:Incoming 44 443
-newdef VectorVP:OutgoingVector 44 213
-newdef VectorVP:OutgoingPScalar 44 -211
-newdef VectorVP:Coupling 44 2.74e-06
-newdef VectorVP:MaxWeight 44 3.14147
-newdef VectorVP:Incoming 45 443
-newdef VectorVP:OutgoingVector 45 113
-newdef VectorVP:OutgoingPScalar 45 111
-newdef VectorVP:Coupling 45 2.74e-06
-newdef VectorVP:MaxWeight 45 3.15398
-newdef VectorVP:Incoming 46 443
-newdef VectorVP:OutgoingVector 46 323
-newdef VectorVP:OutgoingPScalar 46 -321
-newdef VectorVP:Coupling 46 1.8e-06
-newdef VectorVP:MaxWeight 46 5.49223
-newdef VectorVP:Incoming 47 443
-newdef VectorVP:OutgoingVector 47 313
-newdef VectorVP:OutgoingPScalar 47 -311
-newdef VectorVP:Coupling 47 1.8e-06
-newdef VectorVP:MaxWeight 47 5.30256
-newdef VectorVP:Incoming 48 443
-newdef VectorVP:OutgoingVector 48 223
-newdef VectorVP:OutgoingPScalar 48 221
-newdef VectorVP:Coupling 48 1.54e-06
-newdef VectorVP:MaxWeight 48 5.62993
-newdef VectorVP:Incoming 49 443
-newdef VectorVP:OutgoingVector 49 22
-newdef VectorVP:OutgoingPScalar 49 221
-newdef VectorVP:Coupling 49 1.03e-06
-newdef VectorVP:MaxWeight 49 1.60784
-newdef VectorVP:Incoming 50 443
-newdef VectorVP:OutgoingVector 50 333
-newdef VectorVP:OutgoingPScalar 50 221
-newdef VectorVP:Coupling 50 1.1e-06
-newdef VectorVP:MaxWeight 50 5.27399
-newdef VectorVP:Incoming 51 443
-newdef VectorVP:OutgoingVector 51 333
-newdef VectorVP:OutgoingPScalar 51 331
-newdef VectorVP:Coupling 51 8.5e-07
-newdef VectorVP:MaxWeight 51 5.15443
-newdef VectorVP:Incoming 52 443
-newdef VectorVP:OutgoingVector 52 223
-newdef VectorVP:OutgoingPScalar 52 111
-newdef VectorVP:Coupling 52 7.3e-07
-newdef VectorVP:MaxWeight 52 5.67454
-newdef VectorVP:Incoming 53 443
-newdef VectorVP:OutgoingVector 53 113
-newdef VectorVP:OutgoingPScalar 53 221
-newdef VectorVP:Coupling 53 5.4e-07
-newdef VectorVP:MaxWeight 53 2.95976
-newdef VectorVP:Incoming 54 443
-newdef VectorVP:OutgoingVector 54 113
-newdef VectorVP:OutgoingPScalar 54 331
-newdef VectorVP:Coupling 54 4.5e-07
-newdef VectorVP:MaxWeight 54 2.58819
-newdef VectorVP:Incoming 55 443
-newdef VectorVP:OutgoingVector 55 223
-newdef VectorVP:OutgoingPScalar 55 331
-newdef VectorVP:Coupling 55 5.8e-07
-newdef VectorVP:MaxWeight 55 5.78299
-newdef VectorVP:Incoming 56 443
-newdef VectorVP:OutgoingVector 56 22
-newdef VectorVP:OutgoingPScalar 56 111
-newdef VectorVP:Coupling 56 1.77e-07
-newdef VectorVP:MaxWeight 56 1.59256
-newdef VectorVP:Incoming 57 100443
-newdef VectorVP:OutgoingVector 57 443
-newdef VectorVP:OutgoingPScalar 57 221
-newdef VectorVP:Coupling 57 0.00023
-newdef VectorVP:MaxWeight 57 1.66072
-newdef VectorVP:Incoming 58 100443
-newdef VectorVP:OutgoingVector 58 22
-newdef VectorVP:OutgoingPScalar 58 441
-newdef VectorVP:Coupling 58 1.14e-05
-newdef VectorVP:MaxWeight 58 3.23618
-newdef VectorVP:Incoming 59 100443
-newdef VectorVP:OutgoingVector 59 22
-newdef VectorVP:OutgoingPScalar 59 331
-newdef VectorVP:Coupling 59 6.2e-07
-newdef VectorVP:MaxWeight 59 1.63014
-newdef VectorVP:Incoming 60 100443
-newdef VectorVP:OutgoingVector 60 443
-newdef VectorVP:OutgoingPScalar 60 111
-newdef VectorVP:Coupling 60 1.06e-05
-newdef VectorVP:MaxWeight 60 1.6029
-newdef VectorVP:Incoming 61 30443
-newdef VectorVP:OutgoingVector 61 443
-newdef VectorVP:OutgoingPScalar 61 221
-newdef VectorVP:Coupling 61 0.000135
-newdef VectorVP:MaxWeight 61 1.61494
-newdef VectorVP:Incoming 62 30443
-newdef VectorVP:OutgoingVector 62 333
-newdef VectorVP:OutgoingPScalar 62 221
-newdef VectorVP:Coupling 62 7.6e-06
-newdef VectorVP:MaxWeight 62 5.31316
-newdef VectorVP:Incoming 63 100443
-newdef VectorVP:OutgoingVector 63 323
-newdef VectorVP:OutgoingPScalar 63 -321
-newdef VectorVP:Coupling 63 2.1e-07
-newdef VectorVP:MaxWeight 63 6.27385
-newdef VectorVP:Incoming 64 100443
-newdef VectorVP:OutgoingVector 64 313
-newdef VectorVP:OutgoingPScalar 64 -311
-newdef VectorVP:Coupling 64 5.4e-07
-newdef VectorVP:MaxWeight 64 6.24771
-newdef VectorVP:Incoming 65 100443
-newdef VectorVP:OutgoingVector 65 333
-newdef VectorVP:OutgoingPScalar 65 221
-newdef VectorVP:Coupling 65 2.9e-07
-newdef VectorVP:MaxWeight 65 5.36123
-newdef VectorVP:Incoming 66 100443
-newdef VectorVP:OutgoingVector 66 333
-newdef VectorVP:OutgoingPScalar 66 331
-newdef VectorVP:Coupling 66 3.3e-07
-newdef VectorVP:MaxWeight 66 5.16099
-newdef VectorVP:Incoming 67 100443
-newdef VectorVP:OutgoingVector 67 213
-newdef VectorVP:OutgoingPScalar 67 -211
-newdef VectorVP:Coupling 67 1.7e-07
-newdef VectorVP:MaxWeight 67 3.45613
-newdef VectorVP:Incoming 68 100443
-newdef VectorVP:OutgoingVector 68 113
-newdef VectorVP:OutgoingPScalar 68 111
-newdef VectorVP:Coupling 68 1.7e-07
-newdef VectorVP:MaxWeight 68 3.47115
-newdef VectorVP:Incoming 69 100443
-newdef VectorVP:OutgoingVector 69 223
-newdef VectorVP:OutgoingPScalar 69 331
-newdef VectorVP:Coupling 69 3.2e-07
-newdef VectorVP:MaxWeight 69 5.80649
-newdef VectorVP:Incoming 70 100443
-newdef VectorVP:OutgoingVector 70 113
-newdef VectorVP:OutgoingPScalar 70 221
-newdef VectorVP:Coupling 70 2.5e-07
-newdef VectorVP:MaxWeight 70 3.31378
-newdef VectorVP:Incoming 71 100443
-newdef VectorVP:OutgoingVector 71 223
-newdef VectorVP:OutgoingPScalar 71 111
-newdef VectorVP:Coupling 71 2.2e-07
-newdef VectorVP:MaxWeight 71 5.54156
-newdef VectorVP:Incoming 72 100443
-newdef VectorVP:OutgoingVector 72 113
-newdef VectorVP:OutgoingPScalar 72 331
-newdef VectorVP:Coupling 72 2.6e-07
-newdef VectorVP:MaxWeight 72 3.3628
+do VectorVP:SetUpDecayMode 113 22 111 0.0002527 1.60721
+do VectorVP:SetUpDecayMode 213 22 211 0.000221 1.62841
+do VectorVP:SetUpDecayMode 113 22 221 0.000492 1.6601
+do VectorVP:SetUpDecayMode 223 22 111 0.000727947 1.6066
+do VectorVP:SetUpDecayMode 223 22 221 0.000143 1.61151
+do VectorVP:SetUpDecayMode 333 22 111 3.97e-05 1.57772
+do VectorVP:SetUpDecayMode 333 22 221 0.000212 1.59018
+do VectorVP:SetUpDecayMode 333 22 331 0.000219 1.75157
+do VectorVP:SetUpDecayMode 333 223 111 4.17e-05 1.82785
+do VectorVP:SetUpDecayMode 100333 323 -321 0.003934 4.69434
+do VectorVP:SetUpDecayMode 100333 313 -311 0.004011 4.43694
+do VectorVP:SetUpDecayMode 313 22 311 0.000384 1.60146
+do VectorVP:SetUpDecayMode 323 22 321 0.000253 1.59626
+do VectorVP:SetUpDecayMode 423 22 421 0.000616 1.60404
+do VectorVP:SetUpDecayMode 413 22 411 0.000152 1.5979
+do VectorVP:SetUpDecayMode 433 22 431 0.000764 1.60184
+do VectorVP:SetUpDecayMode 533 22 531 0.000248 1.59746
+do VectorVP:SetUpDecayMode 543 22 541 0.000266 1.59608
+do VectorVP:SetUpDecayMode 523 22 521 0.000553 1.59875
+do VectorVP:SetUpDecayMode 513 22 511 0.00031 1.59075
+do VectorVP:SetUpDecayMode 30113 113 221 0.002663 3.81111
+do VectorVP:SetUpDecayMode 30213 213 221 0.002663 3.83583
+do VectorVP:SetUpDecayMode 30113 323 -321 0.000894 4.7074
+do VectorVP:SetUpDecayMode 30113 313 -311 0.000908 4.7438
+do VectorVP:SetUpDecayMode 30213 323 -311 0.001265 4.62484
+do VectorVP:SetUpDecayMode 30213 -313 321 0.001273 4.88974
+do VectorVP:SetUpDecayMode 30223 213 -211 0.002996 3.32873
+do VectorVP:SetUpDecayMode 30223 113 111 0.002996 3.33537
+do VectorVP:SetUpDecayMode 100223 213 -211 0.004507 3.88723
+do VectorVP:SetUpDecayMode 100223 113 111 0.004507 3.71504
+do VectorVP:SetUpDecayMode 30313 323 -211 0.00336 3.81291
+do VectorVP:SetUpDecayMode 30313 313 111 0.00238 3.50939
+do VectorVP:SetUpDecayMode 30323 313 211 0.00336 3.33937
+do VectorVP:SetUpDecayMode 30323 323 111 0.00238 3.17369
+do VectorVP:SetUpDecayMode 30313 -213 321 0.004159 2.90637
+do VectorVP:SetUpDecayMode 30313 113 311 0.002939 2.94708
+do VectorVP:SetUpDecayMode 30323 213 311 0.004159 2.95133
+do VectorVP:SetUpDecayMode 30323 113 321 0.002939 2.9179
+do VectorVP:SetUpDecayMode 100313 323 -211 0.009469 5.36672
+do VectorVP:SetUpDecayMode 100313 313 111 0.006781 5.47961
+do VectorVP:SetUpDecayMode 100323 313 211 0.009469 5.37021
+do VectorVP:SetUpDecayMode 100323 323 111 0.006781 5.34432
+do VectorVP:SetUpDecayMode 443 22 441 0.000149 28.2694
+do VectorVP:SetUpDecayMode 443 22 331 2.5e-06 1.64689
+do VectorVP:SetUpDecayMode 443 213 -211 2.74e-06 3.14147
+do VectorVP:SetUpDecayMode 443 113 111 2.74e-06 3.15398
+do VectorVP:SetUpDecayMode 443 323 -321 1.8e-06 5.49223
+do VectorVP:SetUpDecayMode 443 313 -311 1.8e-06 5.30256
+do VectorVP:SetUpDecayMode 443 223 221 1.54e-06 5.62993
+do VectorVP:SetUpDecayMode 443 22 221 1.03e-06 1.60784
+do VectorVP:SetUpDecayMode 443 333 221 1.1e-06 5.27399
+do VectorVP:SetUpDecayMode 443 333 331 8.5e-07 5.15443
+do VectorVP:SetUpDecayMode 443 223 111 7.3e-07 5.67454
+do VectorVP:SetUpDecayMode 443 113 221 5.4e-07 2.95976
+do VectorVP:SetUpDecayMode 443 113 331 4.5e-07 2.58819
+do VectorVP:SetUpDecayMode 443 223 331 5.8e-07 5.78299
+do VectorVP:SetUpDecayMode 443 22 111 1.77e-07 1.59256
+do VectorVP:SetUpDecayMode 100443 443 221 0.00023 1.66072
+do VectorVP:SetUpDecayMode 100443 22 441 1.14e-05 3.23618
+do VectorVP:SetUpDecayMode 100443 22 331 6.2e-07 1.63014
+do VectorVP:SetUpDecayMode 100443 443 111 1.06e-05 1.6029
+do VectorVP:SetUpDecayMode 30443 443 221 0.000135 1.61494
+do VectorVP:SetUpDecayMode 30443 333 221 7.6e-06 5.31316
+do VectorVP:SetUpDecayMode 100443 323 -321 2.1e-07 6.27385
+do VectorVP:SetUpDecayMode 100443 313 -311 5.4e-07 6.24771
+do VectorVP:SetUpDecayMode 100443 333 221 2.9e-07 5.36123
+do VectorVP:SetUpDecayMode 100443 333 331 3.3e-07 5.16099
+do VectorVP:SetUpDecayMode 100443 213 -211 1.7e-07 3.45613
+do VectorVP:SetUpDecayMode 100443 113 111 1.7e-07 3.47115
+do VectorVP:SetUpDecayMode 100443 223 331 3.2e-07 5.80649
+do VectorVP:SetUpDecayMode 100443 113 221 2.5e-07 3.31378
+do VectorVP:SetUpDecayMode 100443 223 111 2.2e-07 5.54156
+do VectorVP:SetUpDecayMode 100443 113 331 2.6e-07 3.3628
+do VectorVP:SetUpDecayMode 9000553 -533 531 0.000149 1.54526
+do VectorVP:SetUpDecayMode 9000553 -513 511 0.000195 1.55437
+do VectorVP:SetUpDecayMode 9000553 -523 521 0.000195 1.55739
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -1110,326 +821,72 @@ newdef Vector2Meson:Iteration 1
 newdef Vector2Meson:Ntry 500
 newdef Vector2Meson:Points 10000
 newdef Vector2Meson:GenerateIntermediates 0 
-newdef Vector2Meson:Incoming 0 113
-newdef Vector2Meson:FirstOutgoing 0 211
-newdef Vector2Meson:SecondOutgoing 0 -211
-newdef Vector2Meson:Coupling 0 6
-newdef Vector2Meson:MaxWeight 0 3.2
-newdef Vector2Meson:Incoming 1 213
-newdef Vector2Meson:FirstOutgoing 1 111
-newdef Vector2Meson:SecondOutgoing 1 211
-newdef Vector2Meson:Coupling 1 6
-newdef Vector2Meson:MaxWeight 1 3.2
-newdef Vector2Meson:Incoming 2 100113
-newdef Vector2Meson:FirstOutgoing 2 211
-newdef Vector2Meson:SecondOutgoing 2 -211
-newdef Vector2Meson:Coupling 2 2.082
-newdef Vector2Meson:MaxWeight 2 3.
-newdef Vector2Meson:Incoming 3 100213
-newdef Vector2Meson:FirstOutgoing 3 111
-newdef Vector2Meson:SecondOutgoing 3 211
-newdef Vector2Meson:Coupling 3 2.082
-newdef Vector2Meson:MaxWeight 3 1.60125
-newdef Vector2Meson:Incoming 4 30113
-newdef Vector2Meson:FirstOutgoing 4 211
-newdef Vector2Meson:SecondOutgoing 4 -211
-newdef Vector2Meson:Coupling 4 1.655
-newdef Vector2Meson:MaxWeight 4 1.60103
-newdef Vector2Meson:Incoming 5 30213
-newdef Vector2Meson:FirstOutgoing 5 111
-newdef Vector2Meson:SecondOutgoing 5 211
-newdef Vector2Meson:Coupling 5 1.655
-newdef Vector2Meson:MaxWeight 5 1.60314
-newdef Vector2Meson:Incoming 6 30113
-newdef Vector2Meson:FirstOutgoing 6 321
-newdef Vector2Meson:SecondOutgoing 6 -321
-newdef Vector2Meson:Coupling 6 0.194
-newdef Vector2Meson:MaxWeight 6 1.61146
-newdef Vector2Meson:Incoming 7 30113
-newdef Vector2Meson:FirstOutgoing 7 311
-newdef Vector2Meson:SecondOutgoing 7 -311
-newdef Vector2Meson:Coupling 7 0.194
-newdef Vector2Meson:MaxWeight 7 1.59231
-newdef Vector2Meson:Incoming 8 30213
-newdef Vector2Meson:FirstOutgoing 8 321
-newdef Vector2Meson:SecondOutgoing 8 -311
-newdef Vector2Meson:Coupling 8 0.274
-newdef Vector2Meson:MaxWeight 8 1.5977
-newdef Vector2Meson:Incoming 9 30113
-newdef Vector2Meson:FirstOutgoing 9 100211
-newdef Vector2Meson:SecondOutgoing 9 -211
-newdef Vector2Meson:Coupling 9 7.828
-newdef Vector2Meson:MaxWeight 9 3.96846
-newdef Vector2Meson:Incoming 10 30213
-newdef Vector2Meson:FirstOutgoing 10 100111
-newdef Vector2Meson:SecondOutgoing 10 211
-newdef Vector2Meson:Coupling 10 7.828
-newdef Vector2Meson:MaxWeight 10 3.96787
-newdef Vector2Meson:Incoming 11 30213
-newdef Vector2Meson:FirstOutgoing 11 111
-newdef Vector2Meson:SecondOutgoing 11 100211
-newdef Vector2Meson:Coupling 11 7.828
-newdef Vector2Meson:MaxWeight 11 4.01174
-newdef Vector2Meson:Incoming 12 100113
-newdef Vector2Meson:FirstOutgoing 12 100211
-newdef Vector2Meson:SecondOutgoing 12 -211
-newdef Vector2Meson:Coupling 12 17.9
-newdef Vector2Meson:MaxWeight 12 3.92182
-newdef Vector2Meson:Incoming 13 100213
-newdef Vector2Meson:FirstOutgoing 13 100111
-newdef Vector2Meson:SecondOutgoing 13 211
-newdef Vector2Meson:Coupling 13 17.9
-newdef Vector2Meson:MaxWeight 13 3.89871
-newdef Vector2Meson:Incoming 14 100213
-newdef Vector2Meson:FirstOutgoing 14 111
-newdef Vector2Meson:SecondOutgoing 14 100211
-newdef Vector2Meson:Coupling 14 17.9
-newdef Vector2Meson:MaxWeight 14 4.05484
-newdef Vector2Meson:Incoming 15 223
-newdef Vector2Meson:FirstOutgoing 15 211
-newdef Vector2Meson:SecondOutgoing 15 -211
-newdef Vector2Meson:Coupling 15 0.1847
-newdef Vector2Meson:MaxWeight 15 3.2
-newdef Vector2Meson:Incoming 16 313
-newdef Vector2Meson:FirstOutgoing 16 321
-newdef Vector2Meson:SecondOutgoing 16 -211
-newdef Vector2Meson:Coupling 16 4.57
-newdef Vector2Meson:MaxWeight 16 3.2
-newdef Vector2Meson:Incoming 17 313
-newdef Vector2Meson:FirstOutgoing 17 311
-newdef Vector2Meson:SecondOutgoing 17 111
-newdef Vector2Meson:Coupling 17 3.23
-newdef Vector2Meson:MaxWeight 17 3.2
-newdef Vector2Meson:Incoming 18 323
-newdef Vector2Meson:FirstOutgoing 18 311
-newdef Vector2Meson:SecondOutgoing 18 211
-newdef Vector2Meson:Coupling 18 4.57
-newdef Vector2Meson:MaxWeight 18 3.
-newdef Vector2Meson:Incoming 19 323
-newdef Vector2Meson:FirstOutgoing 19 321
-newdef Vector2Meson:SecondOutgoing 19 111
-newdef Vector2Meson:Coupling 19 3.23
-newdef Vector2Meson:MaxWeight 19 3.
-newdef Vector2Meson:Incoming 20 100313
-newdef Vector2Meson:FirstOutgoing 20 321
-newdef Vector2Meson:SecondOutgoing 20 -211
-newdef Vector2Meson:Coupling 20 1.296
-newdef Vector2Meson:MaxWeight 20 1.60116
-newdef Vector2Meson:Incoming 21 100313
-newdef Vector2Meson:FirstOutgoing 21 311
-newdef Vector2Meson:SecondOutgoing 21 111
-newdef Vector2Meson:Coupling 21 0.916
-newdef Vector2Meson:MaxWeight 21 1.59304
-newdef Vector2Meson:Incoming 22 100323
-newdef Vector2Meson:FirstOutgoing 22 311
-newdef Vector2Meson:SecondOutgoing 22 211
-newdef Vector2Meson:Coupling 22 1.296
-newdef Vector2Meson:MaxWeight 22 1.58997
-newdef Vector2Meson:Incoming 23 100323
-newdef Vector2Meson:FirstOutgoing 23 321
-newdef Vector2Meson:SecondOutgoing 23 111
-newdef Vector2Meson:Coupling 23 0.916
-newdef Vector2Meson:MaxWeight 23 1.60422
-newdef Vector2Meson:Incoming 24 30313
-newdef Vector2Meson:FirstOutgoing 24 321
-newdef Vector2Meson:SecondOutgoing 24 -211
-newdef Vector2Meson:Coupling 24 3.114
-newdef Vector2Meson:MaxWeight 24 1.59993
-newdef Vector2Meson:Incoming 25 30313
-newdef Vector2Meson:FirstOutgoing 25 311
-newdef Vector2Meson:SecondOutgoing 25 111
-newdef Vector2Meson:Coupling 25 2.201
-newdef Vector2Meson:MaxWeight 25 1.5941
-newdef Vector2Meson:Incoming 26 30323
-newdef Vector2Meson:FirstOutgoing 26 311
-newdef Vector2Meson:SecondOutgoing 26 211
-newdef Vector2Meson:Coupling 26 3.114
-newdef Vector2Meson:MaxWeight 26 1.59278
-newdef Vector2Meson:Incoming 27 30323
-newdef Vector2Meson:FirstOutgoing 27 321
-newdef Vector2Meson:SecondOutgoing 27 111
-newdef Vector2Meson:Coupling 27 2.201
-newdef Vector2Meson:MaxWeight 27 1.60125
-newdef Vector2Meson:Incoming 28 333
-newdef Vector2Meson:FirstOutgoing 28 321
-newdef Vector2Meson:SecondOutgoing 28 -321
-newdef Vector2Meson:Coupling 28 4.48
-newdef Vector2Meson:MaxWeight 28 3.2
-newdef Vector2Meson:Incoming 29 333
-newdef Vector2Meson:FirstOutgoing 29 311
-newdef Vector2Meson:SecondOutgoing 29 -311
-newdef Vector2Meson:Coupling 29 4.59
-newdef Vector2Meson:MaxWeight 29 3.2
-newdef Vector2Meson:Incoming 30 333
-newdef Vector2Meson:FirstOutgoing 30 211
-newdef Vector2Meson:SecondOutgoing 30 -211
-newdef Vector2Meson:Coupling 30 0.008986
-newdef Vector2Meson:MaxWeight 30 3.2
-newdef Vector2Meson:Incoming 31 100333
-newdef Vector2Meson:FirstOutgoing 31 321
-newdef Vector2Meson:SecondOutgoing 31 -321
-newdef Vector2Meson:Coupling 31 0.912
-newdef Vector2Meson:MaxWeight 31 1.60035
-newdef Vector2Meson:Incoming 32 100333
-newdef Vector2Meson:FirstOutgoing 32 311
-newdef Vector2Meson:SecondOutgoing 32 -311
-newdef Vector2Meson:Coupling 32 0.918
-newdef Vector2Meson:MaxWeight 32 0.0762376
-newdef Vector2Meson:Incoming 33 30443
-newdef Vector2Meson:FirstOutgoing 33 411
-newdef Vector2Meson:SecondOutgoing 33 -411
-newdef Vector2Meson:Coupling 33 12.83
-newdef Vector2Meson:MaxWeight 33 1.60934
-newdef Vector2Meson:Incoming 34 30443
-newdef Vector2Meson:FirstOutgoing 34 421
-newdef Vector2Meson:SecondOutgoing 34 -421
-newdef Vector2Meson:Coupling 34 12.83
-newdef Vector2Meson:MaxWeight 34 1.5897
-newdef Vector2Meson:Incoming 35 423
-newdef Vector2Meson:FirstOutgoing 35 421
-newdef Vector2Meson:SecondOutgoing 35 111
-newdef Vector2Meson:Coupling 35 6.309
-newdef Vector2Meson:MaxWeight 35 3.2
-newdef Vector2Meson:Incoming 36 413
-newdef Vector2Meson:FirstOutgoing 36 411
-newdef Vector2Meson:SecondOutgoing 36 111
-newdef Vector2Meson:Coupling 36 6.313
-newdef Vector2Meson:MaxWeight 36 3.2
-newdef Vector2Meson:Incoming 37 413
-newdef Vector2Meson:FirstOutgoing 37 421
-newdef Vector2Meson:SecondOutgoing 37 211
-newdef Vector2Meson:Coupling 37 8.938
-newdef Vector2Meson:MaxWeight 37 3.2
-newdef Vector2Meson:Incoming 38 433
-newdef Vector2Meson:FirstOutgoing 38 431
-newdef Vector2Meson:SecondOutgoing 38 111
-newdef Vector2Meson:Coupling 38 1.398
-newdef Vector2Meson:MaxWeight 38 3.2
-newdef Vector2Meson:Incoming 39 10323
-newdef Vector2Meson:FirstOutgoing 39 10321
-newdef Vector2Meson:SecondOutgoing 39 111
-newdef Vector2Meson:Coupling 39 14.45
-newdef Vector2Meson:MaxWeight 39 12.4
-newdef Vector2Meson:Incoming 40 10323
-newdef Vector2Meson:FirstOutgoing 40 10311
-newdef Vector2Meson:SecondOutgoing 40 211
-newdef Vector2Meson:Coupling 40 20.46
-newdef Vector2Meson:MaxWeight 40 12.4
-newdef Vector2Meson:Incoming 41 10313
-newdef Vector2Meson:FirstOutgoing 41 10311
-newdef Vector2Meson:SecondOutgoing 41 111
-newdef Vector2Meson:Coupling 41 14.27
-newdef Vector2Meson:MaxWeight 41 12.4
-newdef Vector2Meson:Incoming 42 10313
-newdef Vector2Meson:FirstOutgoing 42 10321
-newdef Vector2Meson:SecondOutgoing 42 -211
-newdef Vector2Meson:Coupling 42 20.43
-newdef Vector2Meson:MaxWeight 42 12.4
-newdef Vector2Meson:Incoming 43 10323
-newdef Vector2Meson:FirstOutgoing 43 321
-newdef Vector2Meson:SecondOutgoing 43 10221
-newdef Vector2Meson:Coupling 43 20
-newdef Vector2Meson:MaxWeight 43 0
-newdef Vector2Meson:Incoming 44 10313
-newdef Vector2Meson:FirstOutgoing 44 311
-newdef Vector2Meson:SecondOutgoing 44 10221
-newdef Vector2Meson:Coupling 44 20
-newdef Vector2Meson:MaxWeight 44 0
-newdef Vector2Meson:Incoming 45 20323
-newdef Vector2Meson:FirstOutgoing 45 321
-newdef Vector2Meson:SecondOutgoing 45 10221
-newdef Vector2Meson:Coupling 45 23.34
-newdef Vector2Meson:MaxWeight 45 0.0623979
-newdef Vector2Meson:Incoming 46 20313
-newdef Vector2Meson:FirstOutgoing 46 311
-newdef Vector2Meson:SecondOutgoing 46 10221
-newdef Vector2Meson:Coupling 46 23.34
-newdef Vector2Meson:MaxWeight 46 0.0596804
-newdef Vector2Meson:Incoming 47 300553
-newdef Vector2Meson:FirstOutgoing 47 521
-newdef Vector2Meson:SecondOutgoing 47 -521
-newdef Vector2Meson:Coupling 47 24.188
-newdef Vector2Meson:MaxWeight 47 1.62728
-newdef Vector2Meson:Incoming 48 300553
-newdef Vector2Meson:FirstOutgoing 48 511
-newdef Vector2Meson:SecondOutgoing 48 -511
-newdef Vector2Meson:Coupling 48 24.188
-newdef Vector2Meson:MaxWeight 48 1.57433
-newdef Vector2Meson:Incoming 49 443
-newdef Vector2Meson:FirstOutgoing 49 211
-newdef Vector2Meson:SecondOutgoing 49 -211
-newdef Vector2Meson:Coupling 49 0.002568
-newdef Vector2Meson:MaxWeight 49 3.
-newdef Vector2Meson:Incoming 50 443
-newdef Vector2Meson:FirstOutgoing 50 321
-newdef Vector2Meson:SecondOutgoing 50 -321
-newdef Vector2Meson:Coupling 50 0.001111
-newdef Vector2Meson:MaxWeight 50 3.00
-newdef Vector2Meson:Incoming 51 443
-newdef Vector2Meson:FirstOutgoing 51 311
-newdef Vector2Meson:SecondOutgoing 51 -311
-newdef Vector2Meson:Coupling 51 0.000873
-newdef Vector2Meson:MaxWeight 51 0.000227768
-newdef Vector2Meson:Incoming 52 100443
-newdef Vector2Meson:FirstOutgoing 52 211
-newdef Vector2Meson:SecondOutgoing 52 -211
-newdef Vector2Meson:Coupling 52 0.001055
-newdef Vector2Meson:MaxWeight 52 3.2
-newdef Vector2Meson:Incoming 53 100443
-newdef Vector2Meson:FirstOutgoing 53 321
-newdef Vector2Meson:SecondOutgoing 53 -321
-newdef Vector2Meson:Coupling 53 0.000905
-newdef Vector2Meson:MaxWeight 53 3.2
-newdef Vector2Meson:Incoming 54 100443
-newdef Vector2Meson:FirstOutgoing 54 311
-newdef Vector2Meson:SecondOutgoing 54 -311
-newdef Vector2Meson:Coupling 54 0.000905
-newdef Vector2Meson:MaxWeight 54 8.49446e-05
-newdef Vector2Meson:Incoming 55 20223
-newdef Vector2Meson:FirstOutgoing 55 9000111
-newdef Vector2Meson:SecondOutgoing 55 111
-newdef Vector2Meson:Coupling 55 4.169
-newdef Vector2Meson:MaxWeight 55 6.7
-newdef Vector2Meson:Incoming 56 20223
-newdef Vector2Meson:FirstOutgoing 56 9000211
-newdef Vector2Meson:SecondOutgoing 56 -211
-newdef Vector2Meson:Coupling 56 4.169
-newdef Vector2Meson:MaxWeight 56 5.5
-newdef Vector2Meson:Incoming 57 20333
-newdef Vector2Meson:FirstOutgoing 57 9000111
-newdef Vector2Meson:SecondOutgoing 57 111
-newdef Vector2Meson:Coupling 57 0.968
-newdef Vector2Meson:MaxWeight 57 4.30758
-newdef Vector2Meson:Incoming 58 20333
-newdef Vector2Meson:FirstOutgoing 58 9000211
-newdef Vector2Meson:SecondOutgoing 58 -211
-newdef Vector2Meson:Coupling 58 0.968
-newdef Vector2Meson:MaxWeight 58 4.32395
-newdef Vector2Meson:Incoming 59 0
-newdef Vector2Meson:FirstOutgoing 59 0
-newdef Vector2Meson:SecondOutgoing 59 0
-newdef Vector2Meson:Coupling 59 0
-newdef Vector2Meson:MaxWeight 59 0
-newdef Vector2Meson:Incoming 60 443
-newdef Vector2Meson:FirstOutgoing 60 130
-newdef Vector2Meson:SecondOutgoing 60 310
-newdef Vector2Meson:Coupling 60 0.000873
-newdef Vector2Meson:MaxWeight 60 3.00
-newdef Vector2Meson:Incoming 61 100443
-newdef Vector2Meson:FirstOutgoing 61 130
-newdef Vector2Meson:SecondOutgoing 61 310
-newdef Vector2Meson:Coupling 61 0.000905
-newdef Vector2Meson:MaxWeight 61 3.
-newdef Vector2Meson:Incoming 62 333
-newdef Vector2Meson:FirstOutgoing 62 130
-newdef Vector2Meson:SecondOutgoing 62 310
-newdef Vector2Meson:Coupling 62 4.59
-newdef Vector2Meson:MaxWeight 62 3.2
-newdef Vector2Meson:Incoming 63 100333
-newdef Vector2Meson:FirstOutgoing 63 130
-newdef Vector2Meson:SecondOutgoing 63 310
-newdef Vector2Meson:Coupling 63 0.918
-newdef Vector2Meson:MaxWeight 63 1.6008
+do Vector2Meson:SetUpDecayMode 113 211 -211 6 3.2
+do Vector2Meson:SetUpDecayMode 213 111 211 6 3.2
+do Vector2Meson:SetUpDecayMode 100113 211 -211 2.082 3.
+do Vector2Meson:SetUpDecayMode 100213 111 211 2.082 1.60125
+do Vector2Meson:SetUpDecayMode 30113 211 -211 1.655 1.60103
+do Vector2Meson:SetUpDecayMode 30213 111 211 1.655 1.60314
+do Vector2Meson:SetUpDecayMode 30113 321 -321 0.194 1.61146
+do Vector2Meson:SetUpDecayMode 30113 311 -311 0.194 1.59231
+do Vector2Meson:SetUpDecayMode 30213 321 -311 0.274 1.5977
+do Vector2Meson:SetUpDecayMode 30113 100211 -211 7.828 3.96846
+do Vector2Meson:SetUpDecayMode 30213 100111 211 7.828 3.96787
+do Vector2Meson:SetUpDecayMode 30213 111 100211 7.828 4.01174
+do Vector2Meson:SetUpDecayMode 100113 100211 -211 17.9 3.92182
+do Vector2Meson:SetUpDecayMode 100213 100111 211 17.9 3.89871
+do Vector2Meson:SetUpDecayMode 100213 111 100211 17.9 4.05484
+do Vector2Meson:SetUpDecayMode 223 211 -211 0.1847 3.2
+do Vector2Meson:SetUpDecayMode 313 321 -211 4.57 3.2
+do Vector2Meson:SetUpDecayMode 313 311 111 3.23 3.2
+do Vector2Meson:SetUpDecayMode 323 311 211 4.57 3.
+do Vector2Meson:SetUpDecayMode 323 321 111 3.23 3.
+do Vector2Meson:SetUpDecayMode 100313 321 -211 1.296 1.60116
+do Vector2Meson:SetUpDecayMode 100313 311 111 0.916 1.59304
+do Vector2Meson:SetUpDecayMode 100323 311 211 1.296 1.58997
+do Vector2Meson:SetUpDecayMode 100323 321 111 0.916 1.60422
+do Vector2Meson:SetUpDecayMode 30313 321 -211 3.114 1.59993
+do Vector2Meson:SetUpDecayMode 30313 311 111 2.201 1.5941
+do Vector2Meson:SetUpDecayMode 30323 311 211 3.114 1.59278
+do Vector2Meson:SetUpDecayMode 30323 321 111 2.201 1.60125
+do Vector2Meson:SetUpDecayMode 333 321 -321 4.48 3.2
+do Vector2Meson:SetUpDecayMode 333 311 -311 4.59 3.2
+do Vector2Meson:SetUpDecayMode 333 211 -211 0.008986 3.2
+do Vector2Meson:SetUpDecayMode 100333 321 -321 0.912 1.60035
+do Vector2Meson:SetUpDecayMode 100333 311 -311 0.918 0.0762376
+do Vector2Meson:SetUpDecayMode 30443 411 -411 12.83 1.60934
+do Vector2Meson:SetUpDecayMode 30443 421 -421 12.83 1.5897
+do Vector2Meson:SetUpDecayMode 423 421 111 6.309 3.2
+do Vector2Meson:SetUpDecayMode 413 411 111 6.313 3.2
+do Vector2Meson:SetUpDecayMode 413 421 211 8.938 3.2
+do Vector2Meson:SetUpDecayMode 433 431 111 1.398 3.2
+do Vector2Meson:SetUpDecayMode 10323 10321 111 14.45 12.4
+do Vector2Meson:SetUpDecayMode 10323 10311 211 20.46 12.4
+do Vector2Meson:SetUpDecayMode 10313 10311 111 14.27 12.4
+do Vector2Meson:SetUpDecayMode 10313 10321 -211 20.43 12.4
+do Vector2Meson:SetUpDecayMode 10323 321 10221 20 0
+do Vector2Meson:SetUpDecayMode 10313 311 10221 20 0
+do Vector2Meson:SetUpDecayMode 20323 321 10221 23.34 0.0623979
+do Vector2Meson:SetUpDecayMode 20313 311 10221 23.34 0.0596804
+do Vector2Meson:SetUpDecayMode 300553 521 -521 24.188 1.62728
+do Vector2Meson:SetUpDecayMode 300553 511 -511 24.188 1.57433
+do Vector2Meson:SetUpDecayMode 443 211 -211 0.002568 3.
+do Vector2Meson:SetUpDecayMode 443 321 -321 0.001111 3.00
+do Vector2Meson:SetUpDecayMode 443 311 -311 0.000873 0.000227768
+do Vector2Meson:SetUpDecayMode 100443 211 -211 0.001055 3.2
+do Vector2Meson:SetUpDecayMode 100443 321 -321 0.000905 3.2
+do Vector2Meson:SetUpDecayMode 100443 311 -311 0.000905 8.49446e-05
+do Vector2Meson:SetUpDecayMode 20223 9000111 111 4.169 6.7
+do Vector2Meson:SetUpDecayMode 20223 9000211 -211 4.169 5.5
+do Vector2Meson:SetUpDecayMode 20333 9000111 111 0.968 4.30758
+do Vector2Meson:SetUpDecayMode 20333 9000211 -211 0.968 4.32395
+do Vector2Meson:SetUpDecayMode 443 130 310 0.000873 3.00
+do Vector2Meson:SetUpDecayMode 100443 130 310 0.000905 3.
+do Vector2Meson:SetUpDecayMode 333 130 310 4.59 3.2
+do Vector2Meson:SetUpDecayMode 100333 130 310 0.918 1.6008
+do Vector2Meson:SetUpDecayMode 9000553 511 -511 1.33 1.60538
+do Vector2Meson:SetUpDecayMode 9000553 521 -521 1.33 1.60989
+do Vector2Meson:SetUpDecayMode 9000553 531 -531 0.75 1.57946
 #
 create Herwig::TauDecayer  Tau3Pion
 newdef Tau3Pion:Iteration 10
@@ -1982,216 +1439,37 @@ newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500
 newdef Vector2Leptons:Points 10000
 newdef Vector2Leptons:GenerateIntermediates 0 
-newdef Vector2Leptons:Incoming 0 113
-newdef Vector2Leptons:OutgoingFermion 0 11
-newdef Vector2Leptons:OutgoingAntiFermion 0 -11
-newdef Vector2Leptons:Coupling 0 0.018524
-newdef Vector2Leptons:MaxWeight 0 1.60839
-newdef Vector2Leptons:Incoming 1 113
-newdef Vector2Leptons:OutgoingFermion 1 13
-newdef Vector2Leptons:OutgoingAntiFermion 1 -13
-newdef Vector2Leptons:Coupling 1 0.018524
-newdef Vector2Leptons:MaxWeight 1 1.60498
-newdef Vector2Leptons:Incoming 2 223
-newdef Vector2Leptons:OutgoingFermion 2 11
-newdef Vector2Leptons:OutgoingAntiFermion 2 -11
-newdef Vector2Leptons:Coupling 2 0.005429
-newdef Vector2Leptons:MaxWeight 2 1.60161
-newdef Vector2Leptons:Incoming 3 223
-newdef Vector2Leptons:OutgoingFermion 3 13
-newdef Vector2Leptons:OutgoingAntiFermion 3 -13
-newdef Vector2Leptons:Coupling 3 0.005429
-newdef Vector2Leptons:MaxWeight 3 1.59833
-newdef Vector2Leptons:Incoming 4 333
-newdef Vector2Leptons:OutgoingFermion 4 11
-newdef Vector2Leptons:OutgoingAntiFermion 4 -11
-newdef Vector2Leptons:Coupling 4 0.006852
-newdef Vector2Leptons:MaxWeight 4 1.60556
-newdef Vector2Leptons:Incoming 5 333
-newdef Vector2Leptons:OutgoingFermion 5 13
-newdef Vector2Leptons:OutgoingAntiFermion 5 -13
-newdef Vector2Leptons:Coupling 5 0.006852
-newdef Vector2Leptons:MaxWeight 5 1.60986
-newdef Vector2Leptons:Incoming 6 30443
-newdef Vector2Leptons:OutgoingFermion 6 11
-newdef Vector2Leptons:OutgoingAntiFermion 6 -11
-newdef Vector2Leptons:Coupling 6 0.00159
-newdef Vector2Leptons:MaxWeight 6 1.5993
-newdef Vector2Leptons:Incoming 7 30443
-newdef Vector2Leptons:OutgoingFermion 7 13
-newdef Vector2Leptons:OutgoingAntiFermion 7 -13
-newdef Vector2Leptons:Coupling 7 0.001509
-newdef Vector2Leptons:MaxWeight 7 1.4405
-newdef Vector2Leptons:Incoming 8 30443
-newdef Vector2Leptons:OutgoingFermion 8 15
-newdef Vector2Leptons:OutgoingAntiFermion 8 -15
-newdef Vector2Leptons:Coupling 8 0.001509
-newdef Vector2Leptons:MaxWeight 8 1.53038
-newdef Vector2Leptons:Incoming 9 443
-newdef Vector2Leptons:OutgoingFermion 9 11
-newdef Vector2Leptons:OutgoingAntiFermion 9 -11
-newdef Vector2Leptons:Coupling 9 0.008215
-newdef Vector2Leptons:MaxWeight 9 1.60017
-newdef Vector2Leptons:Incoming 10 443
-newdef Vector2Leptons:OutgoingFermion 10 13
-newdef Vector2Leptons:OutgoingAntiFermion 10 -13
-newdef Vector2Leptons:Coupling 10 0.008215
-newdef Vector2Leptons:MaxWeight 10 1.60016
-newdef Vector2Leptons:Incoming 11 100443
-newdef Vector2Leptons:OutgoingFermion 11 11
-newdef Vector2Leptons:OutgoingAntiFermion 11 -11
-newdef Vector2Leptons:Coupling 11 0.005031
-newdef Vector2Leptons:MaxWeight 11 1.59862
-newdef Vector2Leptons:Incoming 12 100443
-newdef Vector2Leptons:OutgoingFermion 12 13
-newdef Vector2Leptons:OutgoingAntiFermion 12 -13
-newdef Vector2Leptons:Coupling 12 0.005031
-newdef Vector2Leptons:MaxWeight 12 1.6008
-newdef Vector2Leptons:Incoming 13 100443
-newdef Vector2Leptons:OutgoingFermion 13 15
-newdef Vector2Leptons:OutgoingAntiFermion 13 -15
-newdef Vector2Leptons:Coupling 13 0.005031
-newdef Vector2Leptons:MaxWeight 13 1.60219
-newdef Vector2Leptons:Incoming 14 553
-newdef Vector2Leptons:OutgoingFermion 14 11
-newdef Vector2Leptons:OutgoingAntiFermion 14 -11
-newdef Vector2Leptons:Coupling 14 0.002315
-newdef Vector2Leptons:MaxWeight 14 1.6003
-newdef Vector2Leptons:Incoming 15 553
-newdef Vector2Leptons:OutgoingFermion 15 13
-newdef Vector2Leptons:OutgoingAntiFermion 15 -13
-newdef Vector2Leptons:Coupling 15 0.002315
-newdef Vector2Leptons:MaxWeight 15 1.6003
-newdef Vector2Leptons:Incoming 16 553
-newdef Vector2Leptons:OutgoingFermion 16 15
-newdef Vector2Leptons:OutgoingAntiFermion 16 -15
-newdef Vector2Leptons:Coupling 16 0.002315
-newdef Vector2Leptons:MaxWeight 16 1.6006
-newdef Vector2Leptons:Incoming 17 100553
-newdef Vector2Leptons:OutgoingFermion 17 11
-newdef Vector2Leptons:OutgoingAntiFermion 17 -11
-newdef Vector2Leptons:Coupling 17 0.00152
-newdef Vector2Leptons:MaxWeight 17 1.60068
-newdef Vector2Leptons:Incoming 18 100553
-newdef Vector2Leptons:OutgoingFermion 18 13
-newdef Vector2Leptons:OutgoingAntiFermion 18 -13
-newdef Vector2Leptons:Coupling 18 0.00152
-newdef Vector2Leptons:MaxWeight 18 1.60068
-newdef Vector2Leptons:Incoming 19 100553
-newdef Vector2Leptons:OutgoingFermion 19 15
-newdef Vector2Leptons:OutgoingAntiFermion 19 -15
-newdef Vector2Leptons:Coupling 19 0.00152
-newdef Vector2Leptons:MaxWeight 19 1.60751
-newdef Vector2Leptons:Incoming 20 200553
-newdef Vector2Leptons:OutgoingFermion 20 11
-newdef Vector2Leptons:OutgoingAntiFermion 20 -11
-newdef Vector2Leptons:Coupling 20 0.00127
-newdef Vector2Leptons:MaxWeight 20 1.6002
-newdef Vector2Leptons:Incoming 21 200553
-newdef Vector2Leptons:OutgoingFermion 21 13
-newdef Vector2Leptons:OutgoingAntiFermion 21 -13
-newdef Vector2Leptons:Coupling 21 0.00127
-newdef Vector2Leptons:MaxWeight 21 1.6002
-newdef Vector2Leptons:Incoming 22 200553
-newdef Vector2Leptons:OutgoingFermion 22 15
-newdef Vector2Leptons:OutgoingAntiFermion 22 -15
-newdef Vector2Leptons:Coupling 22 0.00127
-newdef Vector2Leptons:MaxWeight 22 1.60626
-newdef Vector2Leptons:Incoming 23 300553
-newdef Vector2Leptons:OutgoingFermion 23 11
-newdef Vector2Leptons:OutgoingAntiFermion 23 -11
-newdef Vector2Leptons:Coupling 23 0.001081
-newdef Vector2Leptons:MaxWeight 23 1.59966
-newdef Vector2Leptons:Incoming 24 300553
-newdef Vector2Leptons:OutgoingFermion 24 13
-newdef Vector2Leptons:OutgoingAntiFermion 24 -13
-newdef Vector2Leptons:Coupling 24 0.001081
-newdef Vector2Leptons:MaxWeight 24 1.59966
-newdef Vector2Leptons:Incoming 25 300553
-newdef Vector2Leptons:OutgoingFermion 25 15
-newdef Vector2Leptons:OutgoingAntiFermion 25 -15
-newdef Vector2Leptons:Coupling 25 0.001081
-newdef Vector2Leptons:MaxWeight 25 1.59171
-newdef Vector2Leptons:Incoming 26 443
-newdef Vector2Leptons:OutgoingFermion 26 2212
-newdef Vector2Leptons:OutgoingAntiFermion 26 -2212
-newdef Vector2Leptons:Coupling 26 0.001619
-newdef Vector2Leptons:MaxWeight 26 1.60048
-newdef Vector2Leptons:Incoming 27 443
-newdef Vector2Leptons:OutgoingFermion 27 2112
-newdef Vector2Leptons:OutgoingAntiFermion 27 -2112
-newdef Vector2Leptons:Coupling 27 0.001619
-newdef Vector2Leptons:MaxWeight 27 1.59988
-newdef Vector2Leptons:Incoming 28 443
-newdef Vector2Leptons:OutgoingFermion 28 3112
-newdef Vector2Leptons:OutgoingAntiFermion 28 -3112
-newdef Vector2Leptons:Coupling 28 0.001342
-newdef Vector2Leptons:MaxWeight 28 1.5934
-newdef Vector2Leptons:Incoming 29 443
-newdef Vector2Leptons:OutgoingFermion 29 3212
-newdef Vector2Leptons:OutgoingAntiFermion 29 -3212
-newdef Vector2Leptons:Coupling 29 0.001342
-newdef Vector2Leptons:MaxWeight 29 1.60002
-newdef Vector2Leptons:Incoming 30 443
-newdef Vector2Leptons:OutgoingFermion 30 3222
-newdef Vector2Leptons:OutgoingAntiFermion 30 -3222
-newdef Vector2Leptons:Coupling 30 0.001342
-newdef Vector2Leptons:MaxWeight 30 1.60426
-newdef Vector2Leptons:Incoming 31 443
-newdef Vector2Leptons:OutgoingFermion 31 3322
-newdef Vector2Leptons:OutgoingAntiFermion 31 -3322
-newdef Vector2Leptons:Coupling 31 0.001196
-newdef Vector2Leptons:MaxWeight 31 1.60709
-newdef Vector2Leptons:Incoming 32 443
-newdef Vector2Leptons:OutgoingFermion 32 3312
-newdef Vector2Leptons:OutgoingAntiFermion 32 -3312
-newdef Vector2Leptons:Coupling 32 0.001196
-newdef Vector2Leptons:MaxWeight 32 1.59079
-newdef Vector2Leptons:Incoming 33 443
-newdef Vector2Leptons:OutgoingFermion 33 3122
-newdef Vector2Leptons:OutgoingAntiFermion 33 -3122
-newdef Vector2Leptons:Coupling 33 0.001416
-newdef Vector2Leptons:MaxWeight 33 1.60033
-newdef Vector2Leptons:Incoming 34 100443
-newdef Vector2Leptons:OutgoingFermion 34 2212
-newdef Vector2Leptons:OutgoingAntiFermion 34 -2212
-newdef Vector2Leptons:Coupling 34 0.0009692
-newdef Vector2Leptons:MaxWeight 34 1.59987
-newdef Vector2Leptons:Incoming 35 100443
-newdef Vector2Leptons:OutgoingFermion 35 2112
-newdef Vector2Leptons:OutgoingAntiFermion 35 -2112
-newdef Vector2Leptons:Coupling 35 0.0009692
-newdef Vector2Leptons:MaxWeight 35 1.5996
-newdef Vector2Leptons:Incoming 36 100443
-newdef Vector2Leptons:OutgoingFermion 36 3112
-newdef Vector2Leptons:OutgoingAntiFermion 36 -3112
-newdef Vector2Leptons:Coupling 36 0.0009273
-newdef Vector2Leptons:MaxWeight 36 1.5978
-newdef Vector2Leptons:Incoming 37 100443
-newdef Vector2Leptons:OutgoingFermion 37 3212
-newdef Vector2Leptons:OutgoingAntiFermion 37 -3212
-newdef Vector2Leptons:Coupling 37 0.0009273
-newdef Vector2Leptons:MaxWeight 37 1.60027
-newdef Vector2Leptons:Incoming 38 100443
-newdef Vector2Leptons:OutgoingFermion 38 3222
-newdef Vector2Leptons:OutgoingAntiFermion 38 -3222
-newdef Vector2Leptons:Coupling 38 0.0009273
-newdef Vector2Leptons:MaxWeight 38 1.60186
-newdef Vector2Leptons:Incoming 39 100443
-newdef Vector2Leptons:OutgoingFermion 39 3322
-newdef Vector2Leptons:OutgoingAntiFermion 39 -3322
-newdef Vector2Leptons:Coupling 39 0.0008862
-newdef Vector2Leptons:MaxWeight 39 1.6024
-newdef Vector2Leptons:Incoming 40 100443
-newdef Vector2Leptons:OutgoingFermion 40 3312
-newdef Vector2Leptons:OutgoingAntiFermion 40 -3312
-newdef Vector2Leptons:Coupling 40 0.0008862
-newdef Vector2Leptons:MaxWeight 40 1.59743
-newdef Vector2Leptons:Incoming 41 100443
-newdef Vector2Leptons:OutgoingFermion 41 3122
-newdef Vector2Leptons:OutgoingAntiFermion 41 -3122
-newdef Vector2Leptons:Coupling 41 0.0009565
-newdef Vector2Leptons:MaxWeight 41 1.59998
+do Vector2Leptons:SetUpDecayMode 113 11 -11 0.018524 1.60839
+do Vector2Leptons:SetUpDecayMode 113 13 -13 0.018524 1.60498
+do Vector2Leptons:SetUpDecayMode 223 11 -11 0.005429 1.60161
+do Vector2Leptons:SetUpDecayMode 223 13 -13 0.005429 1.59833
+do Vector2Leptons:SetUpDecayMode 333 11 -11 0.006852 1.60556
+do Vector2Leptons:SetUpDecayMode 333 13 -13 0.006852 1.60986
+do Vector2Leptons:SetUpDecayMode 30443 11 -11 0.00159 1.5993
+do Vector2Leptons:SetUpDecayMode 30443 13 -13 0.001509 1.4405
+do Vector2Leptons:SetUpDecayMode 30443 15 -15 0.001509 1.53038
+do Vector2Leptons:SetUpDecayMode 443 11 -11 0.008215 1.60017
+do Vector2Leptons:SetUpDecayMode 443 13 -13 0.008215 1.60016
+do Vector2Leptons:SetUpDecayMode 100443 11 -11 0.005031 1.59862
+do Vector2Leptons:SetUpDecayMode 100443 13 -13 0.005031 1.6008
+do Vector2Leptons:SetUpDecayMode 100443 15 -15 0.005031 1.60219
+do Vector2Leptons:SetUpDecayMode 553 11 -11 0.002315 1.6003
+do Vector2Leptons:SetUpDecayMode 553 13 -13 0.002315 1.6003
+do Vector2Leptons:SetUpDecayMode 553 15 -15 0.002315 1.6006
+do Vector2Leptons:SetUpDecayMode 100553 11 -11 0.00152 1.60068
+do Vector2Leptons:SetUpDecayMode 100553 13 -13 0.00152 1.60068
+do Vector2Leptons:SetUpDecayMode 100553 15 -15 0.00152 1.60751
+do Vector2Leptons:SetUpDecayMode 200553 11 -11 0.00127 1.6002
+do Vector2Leptons:SetUpDecayMode 200553 13 -13 0.00127 1.6002
+do Vector2Leptons:SetUpDecayMode 200553 15 -15 0.00127 1.60626
+do Vector2Leptons:SetUpDecayMode 300553 11 -11 0.001081 1.59966
+do Vector2Leptons:SetUpDecayMode 300553 13 -13 0.001081 1.59966
+do Vector2Leptons:SetUpDecayMode 300553 15 -15 0.001081 1.59171
+do Vector2Leptons:SetUpDecayMode 9000553 11 -11 0.001 1.56074
+do Vector2Leptons:SetUpDecayMode 9000553 13 -13 0.001 1.56074
+do Vector2Leptons:SetUpDecayMode 9000553 15 -15 0.001 1.55385
+do Vector2Leptons:SetUpDecayMode 443 3112 -3112 0.001342 1.5934
+do Vector2Leptons:SetUpDecayMode 100443 3112 -3112 0.0009273 1.5978
 #
 create Herwig::WeakPartonicDecayer  WeakPartonic0
 newdef  WeakPartonic0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -6320,27 +5598,14 @@ create Herwig::VectorMesonVectorVectorDecayer  VectorVV
 newdef VectorVV:Iteration 1
 newdef VectorVV:Ntry 1000
 newdef VectorVV:Points 10000
-newdef VectorVV:GenerateIntermediates 0 
-newdef VectorVV:Incoming 0 30213
-newdef VectorVV:Outgoing1 0 213
-newdef VectorVV:Outgoing2 0 113
-newdef VectorVV:Coupling 0 3.21
-newdef VectorVV:MaxWeight 0 35.
-newdef VectorVV:Incoming 1 30113
-newdef VectorVV:Outgoing1 1 -213
-newdef VectorVV:Outgoing2 1 213
-newdef VectorVV:Coupling 1 3.21
-newdef VectorVV:MaxWeight 1 35.
-newdef VectorVV:Incoming 2 100213
-newdef VectorVV:Outgoing1 2 213
-newdef VectorVV:Outgoing2 2 113
-newdef VectorVV:Coupling 2 9.59
-newdef VectorVV:MaxWeight 2 52.2482
-newdef VectorVV:Incoming 3 100113
-newdef VectorVV:Outgoing1 3 -213
-newdef VectorVV:Outgoing2 3 213
-newdef VectorVV:Coupling 3 9.59
-newdef VectorVV:MaxWeight 3 45.0477
+newdef VectorVV:GenerateIntermediates 0
+do VectorVV:SetUpDecayMode 30213 213 113 3.21 35.
+do VectorVV:SetUpDecayMode 30113 -213 213 3.21 35.
+do VectorVV:SetUpDecayMode 100213 213 113 9.59 52.2482
+do VectorVV:SetUpDecayMode 100113 -213 213 9.59 45.0477
+do VectorVV:SetUpDecayMode 9000553 533 -533 5.2 1.50168
+do VectorVV:SetUpDecayMode 9000553 513 -513 1.9 1.50069
+do VectorVV:SetUpDecayMode 9000553 523 -523 1.9 1.50134
 #
 create Herwig::ScalarMesonFactorizedDecayer  ISGW2Hadronic
 newdef ISGW2Hadronic:Iteration 1
