@@ -676,11 +676,6 @@ private:
    */
   bool theOpenZ;
 
-  /**
-   * Use the CMW prescription when generating the real emission probability
-   */
-  bool splittingCMW;
-  
 private:
 
   /**
