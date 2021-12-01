@@ -111,24 +111,41 @@ void Spin3Meson2PScalarDecayer::Init() {
 
     static Command<Spin3Meson2PScalarDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
-     "Set up the particles, coupling and max weight for a decay",
+     "Set up the particles, coupling(1/GeV^2) and max weight for a decay",
      &Spin3Meson2PScalarDecayer::setUpDecayMode, false);
 
 }
+
 string Spin3Meson2PScalarDecayer::setUpDecayMode(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
   // extract PDG code for the incoming particle
   long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin3)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 3";
   // and outgoing particles
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   pair<long,long> out;
   out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 0";
+  out.first = stoi(stype);
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 0";
   // get the coupling
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
@@ -145,7 +162,6 @@ string Spin3Meson2PScalarDecayer::setUpDecayMode(string arg) {
   // success
   return "";
 }
-
 
 void Spin3Meson2PScalarDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {

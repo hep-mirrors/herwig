@@ -167,48 +167,44 @@ private:
    */
   VectorMesonVectorVectorDecayer & operator=(const VectorMesonVectorVectorDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the coupling for the decay
    */
-  vector<double> _coupling;
+  vector<double> coupling_;
 
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * the PDG codes for the 1st outgoing particle
    */
-  vector<int> _outgoing1;
-
-  /**
-   * the PDG codes for the 2nd outgoing particle
-   */
-  vector<int> _outgoing2;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * maximum weight for a decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxweight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors[3];
-
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_[3];
 
 };
 
