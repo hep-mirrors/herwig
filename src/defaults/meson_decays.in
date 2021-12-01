@@ -1872,12 +1872,15 @@ decaymode chi_b2(3P)->Upsilon_1(2D),gamma; 0.0003 1 /Herwig/Decays/DecayME0
 # the 4^3S_1 multiplet
 #
 #
-decaymode Upsilon(4S)->B+,B-; 0.505812 1 /Herwig/Decays/Vector2Meson
-decaymode Upsilon(4S)->B0,Bbar0; 0.493811 1 /Herwig/Decays/Vector2Meson
-decaymode Upsilon(4S)->Upsilon(2S),pi+,pi-; 0.000129 1 /Herwig/Decays/OniumPiPi
-decaymode Upsilon(4S)->Upsilon,pi+,pi-; 9.0E-5 1 /Herwig/Decays/OniumPiPi
-decaymode Upsilon(4S)->Upsilon(2S),pi0,pi0; 6.5E-5 1 /Herwig/Decays/OniumPiPi
-decaymode Upsilon(4S)->Upsilon,pi0,pi0; 4.5E-5 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(4S)->B+,B-; 0.510004 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(4S)->B0,Bbar0; 0.487307 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(4S)->h_b,eta; 0.00218 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(4S)->Upsilon,eta; 0.000181 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(4S)->Upsilon,pi+,pi-; 8.2E-5 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(4S)->Upsilon(2S),pi+,pi-; 8.2E-5 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(4S)->Upsilon,pi0,pi0; 4.1E-5 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(4S)->Upsilon(2S),pi0,pi0; 4.1E-5 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(4S)->Upsilon,eta'; 3.4E-5 1 /Herwig/Decays/DecayME0
 decaymode Upsilon(4S)->e-,e+; 1.6E-5 1 /Herwig/Decays/Vector2Leptons
 decaymode Upsilon(4S)->mu-,mu+; 1.6E-5 1 /Herwig/Decays/Vector2Leptons
 decaymode Upsilon(4S)->tau-,tau+; 1.6E-5 1 /Herwig/Decays/Vector2Leptons
