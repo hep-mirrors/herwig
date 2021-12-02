@@ -20,7 +20,7 @@ setup eta' 331 eta' 0.95778 0.000203 0.00203 0 0 0 1 0
 create ThePEG::ParticleData eta_c
 setup eta_c 441 eta_c 2.9804 0.0255 0.255 0 0 0 1 0 
 create ThePEG::ParticleData eta_b
-setup eta_b 551 eta_b 9.397 0.0082 0.082 0 0 0 1 0 
+setup eta_b 551 eta_b 9.3987 0.01 0.1 0 0 0 1 0 
 create ThePEG::ParticleData K+
 setup K+ 321 K+ 0.493677 5.3144882844061E-17 0 3713 3 0 1 1 
 create ThePEG::ParticleData K0
@@ -195,7 +195,7 @@ setup h'_1 10333 h'_1 1.386 0.091 0.182 0 0 0 3 0
 create ThePEG::ParticleData h_c
 setup h_c 10443 h_c 3.52593 0.0009 0.009 0 0 0 3 0 
 create ThePEG::ParticleData h_b
-setup h_b 10553 h_b 9.873 8.94E-5 0.000894 0 0 0 3 0 
+setup h_b 10553 h_b 9.8993 8.94E-5 0.000894 0 0 0 3 0 
 create ThePEG::ParticleData K_1+
 setup K_1+ 10323 K_1+ 1.272 0.09 0.18 0 3 0 3 0 
 newdef K_1+:VariableRatio 1
@@ -551,7 +551,7 @@ makeanti B_c(1D)*- B_c(1D)*+
 create ThePEG::ParticleData psi_2(1D)
 setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.0003 0.003 0 0 0 5 0
 create ThePEG::ParticleData Upsilon_2(1D)
-setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1611 2.8E-5 0.00028 0 0 0 5 0 
+setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1637 2.8E-5 0.00028 0 0 0 5 0 
 create ThePEG::ParticleData K_2(1820)+
 setup K_2(1820)+ 20325 K_2(1820)+ 1.816 0.276 0.552 0 3 0 5 0 
 create ThePEG::ParticleData K_2(1820)0
@@ -628,7 +628,7 @@ setup eta(1475) 100331 eta(1475) 1.476 0.087 0.174 0 0 0 1 0
 create ThePEG::ParticleData eta_c(2S)
 setup eta_c(2S) 100441 eta_c(2S) 3.638 0.014 0.14 0 0 0 1 0 
 create ThePEG::ParticleData eta_b(2S)
-setup eta_b(2S) 100551 eta_b(2S) 9.996 0.0041 0.041 0 0 0 1 0 
+setup eta_b(2S) 100551 eta_b(2S) 9.999 0.0041 0.041 0 0 0 1 0 
 create ThePEG::ParticleData K'+
 setup K'+ 100321 K'+ 1.46 0.26 0.26 0 3 0 1 0 
 create ThePEG::ParticleData K'0
@@ -683,7 +683,7 @@ makeanti B_c(2S)*- B_c(2S)*+
 # the 2^1P_1 multiplet
 #
 create ThePEG::ParticleData h_b(2P)
-setup h_b(2P) 110553 h_b(2P) 10.258 8.0E-5 0.0008 0 0 0 3 0 
+setup h_b(2P) 110553 h_b(2P) 10.2598 8.0E-5 0.0008 0 0 0 3 0 
 #
 # the 2^3P_0 multiplet
 #
@@ -743,12 +743,12 @@ setup chi_b0(3P) 210551 chi_b0(3P) 10.5007 0.00071 0.0071 0 0 0 1 0
 # the 3^3P_1 multiplet
 #
 create ThePEG::ParticleData chi_b1(3P)
-setup chi_b1(3P) 220553 chi_b1(3P) 10.516 6.6E-5 0.00066 0 0 0 3 0 
+setup chi_b1(3P) 220553 chi_b1(3P) 10.5134 6.6E-5 0.00066 0 0 0 3 0 
 #
 # the 3^3P_2 multiplet
 #
 create ThePEG::ParticleData chi_b2(3P)
-setup chi_b2(3P) 200555 chi_b2(3P) 10.5264 0.000146 0.00146 0 0 0 5 0 
+setup chi_b2(3P) 200555 chi_b2(3P) 10.524 0.000146 0.00146 0 0 0 5 0 
 #
 # the 4^3S_1 multiplet
 #
