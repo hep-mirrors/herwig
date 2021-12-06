@@ -14,7 +14,8 @@ a1SimpleDecayer.h\
 a1ThreePionDecayer.h \
 PVectorMesonVectorPScalarDecayer.h \
 VectorMeson2FermionDecayer.h \
-VectorMeson2BaryonsDecayer.h \
+VectorMeson2SpinHalfBaryonsDecayer.h \
+VectorMeson2SpinThreeHalfBaryonsDecayer.h \
 VectorMeson2MesonDecayer.h \
 VectorMeson3PionDecayer.h \
 VectorMesonPScalarFermionsDecayer.h \
@@ -33,7 +34,8 @@ a1SimpleDecayer.cc                   \
 a1ThreePionDecayer.cc                \
 PVectorMesonVectorPScalarDecayer.cc  \
 VectorMeson2FermionDecayer.cc        \
-VectorMeson2BaryonsDecayer.cc        \
+VectorMeson2SpinHalfBaryonsDecayer.cc \
+VectorMeson2SpinThreeHalfBaryonsDecayer.cc \
 VectorMeson2MesonDecayer.cc          \
 VectorMeson3PionDecayer.cc           \
 VectorMesonPScalarFermionsDecayer.cc \

@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_VectorMeson2BaryonsDecayer_H
-#define Herwig_VectorMeson2BaryonsDecayer_H
+#ifndef Herwig_VectorMeson2SpinThreeHalfBaryonsDecayer_H
+#define Herwig_VectorMeson2SpinThreeHalfBaryonsDecayer_H
 //
-// This is the declaration of the VectorMeson2BaryonsDecayer class.
+// This is the declaration of the VectorMeson2SpinThreeHalfBaryonsDecayer class.
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
@@ -17,7 +17,7 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>VectorMeson2BaryonsDecayer</code> class is designed for the decay
+ *  The <code>VectorMeson2SpinThreeHalfBaryonsDecayer</code> class is designed for the decay
  *  of a vector meson to a baryon-antibaryon pair.
  *
  *  In this case the matrix element is taken to have the form
@@ -34,18 +34,18 @@ using namespace ThePEG;
  *  constructor.
  *
  * @see DecayIntegrator
- * @see \ref VectorMeson2BaryonsDecayerInterfaces "The interfaces"
- * defined for VectorMeson2BaryonsDecayer.
+ * @see \ref VectorMeson2SpinThreeHalfBaryonsDecayerInterfaces "The interfaces"
+ * defined for VectorMeson2SpinThreeHalfBaryonsDecayer.
  *
  */
-class VectorMeson2BaryonsDecayer: public DecayIntegrator {
+class VectorMeson2SpinThreeHalfBaryonsDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * The default constructor.
    */
-  VectorMeson2BaryonsDecayer() {}
+  VectorMeson2SpinThreeHalfBaryonsDecayer() {}
 
   /**
    * Which of the possible decays is required
@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VectorMeson2BaryonsDecayer & operator=(const VectorMeson2BaryonsDecayer &) = delete;
+  VectorMeson2SpinThreeHalfBaryonsDecayer & operator=(const VectorMeson2SpinThreeHalfBaryonsDecayer &) = delete;
 
 public:
 
@@ -223,4 +223,4 @@ private:
 
 }
 
-#endif /* Herwig_VectorMeson2BaryonsDecayer_H */
+#endif /* Herwig_VectorMeson2SpinThreeHalfBaryonsDecayer_H */

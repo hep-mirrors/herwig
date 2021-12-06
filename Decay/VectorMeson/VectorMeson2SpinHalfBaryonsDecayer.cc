@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the VectorMeson2BaryonsDecayer class.
+// functions of the VectorMeson2SpinHalfBaryonsDecayer class.
 //
 
-#include "VectorMeson2BaryonsDecayer.h"
+#include "VectorMeson2SpinHalfBaryonsDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Command.h"
@@ -22,7 +22,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void VectorMeson2BaryonsDecayer::doinitrun() {
+void VectorMeson2SpinHalfBaryonsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<incoming_.size();++ix) {
@@ -31,7 +31,7 @@ void VectorMeson2BaryonsDecayer::doinitrun() {
   }
 }
 
-void VectorMeson2BaryonsDecayer::doinit() {
+void VectorMeson2SpinHalfBaryonsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=gm_.size();
@@ -63,7 +63,7 @@ void VectorMeson2BaryonsDecayer::doinit() {
 //     maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,5.              ,7.              ,5.5              ,1.7             ,1.7             ,2.5              ,1.6              ,2.               ,2.               ,5.               ,5.               ,4.5              , 0.0012          ,2.0             ,15.             })
 // {}
 
-int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+int VectorMeson2SpinHalfBaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					   const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
@@ -93,67 +93,59 @@ int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-IBPtr VectorMeson2BaryonsDecayer::clone() const {
+IBPtr VectorMeson2SpinHalfBaryonsDecayer::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr VectorMeson2BaryonsDecayer::fullclone() const {
+IBPtr VectorMeson2SpinHalfBaryonsDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void VectorMeson2BaryonsDecayer::persistentOutput(PersistentOStream & os) const {
+void VectorMeson2SpinHalfBaryonsDecayer::persistentOutput(PersistentOStream & os) const {
   os << ge_ << gm_ << phi_ << incoming_ << outgoing_ << maxweight_;
 }
 
-void VectorMeson2BaryonsDecayer::persistentInput(PersistentIStream & is, int) {
+void VectorMeson2SpinHalfBaryonsDecayer::persistentInput(PersistentIStream & is, int) {
   is >> ge_ >> gm_ >> phi_ >> incoming_ >> outgoing_ >> maxweight_;
 }
 
 
-DescribeClass<VectorMeson2BaryonsDecayer,DecayIntegrator>
-describeHerwigVectorMeson2BaryonsDecayer("Herwig::VectorMeson2BaryonsDecayer", "HwVMDecay.so");
+DescribeClass<VectorMeson2SpinHalfBaryonsDecayer,DecayIntegrator>
+describeHerwigVectorMeson2SpinHalfBaryonsDecayer("Herwig::VectorMeson2SpinHalfBaryonsDecayer", "HwVMDecay.so");
 
-void VectorMeson2BaryonsDecayer::Init() {
+void VectorMeson2SpinHalfBaryonsDecayer::Init() {
 
-  static ClassDocumentation<VectorMeson2BaryonsDecayer> documentation
-    ("The VectorMeson2BaryonsDecayer class is designed for "
+  static ClassDocumentation<VectorMeson2SpinHalfBaryonsDecayer> documentation
+    ("The VectorMeson2SpinHalfBaryonsDecayer class is designed for "
      "the decay of vector mesons to baryons.");
   
-  static Command<VectorMeson2BaryonsDecayer> interfaceSetUpDecayMode
+  static Command<VectorMeson2SpinHalfBaryonsDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
      "Set up the particles (incoming, baryon, antibaryon), GE, GM, phase and max weight for a decay",
-     &VectorMeson2BaryonsDecayer::setUpDecayMode, false);
+     &VectorMeson2SpinHalfBaryonsDecayer::setUpDecayMode, false);
 }
 
-void VectorMeson2BaryonsDecayer::
+void VectorMeson2SpinHalfBaryonsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int iferm(0),ianti(1);
   if(outgoing_[imode()].first!=decay[iferm]->id()) swap(iferm,ianti);
   VectorWaveFunction::constructSpinInfo(vectors_,const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
   // outgoing fermion
-  if(decay[iferm]->dataPtr()->iSpin()==PDT::Spin1Half)
-    SpinorBarWaveFunction::
-      constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
-  else
-    RSSpinorBarWaveFunction::
-      constructSpinInfo(wave2bar_,decay[iferm],outgoing,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
   // outgoing antifermion
-  if(decay[ianti]->dataPtr()->iSpin()==PDT::Spin1Half)
-    SpinorWaveFunction::
-      constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
-  else
-    RSSpinorWaveFunction::
-      constructSpinInfo(wave2_,decay[ianti],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
 }
 
-double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
+double VectorMeson2SpinHalfBaryonsDecayer::me2(const int,const Particle & part,
 				       const tPDVector & outgoing,
 				       const vector<Lorentz5Momentum> & momenta,
 				       MEOption meopt) const {
   // initialze me
   if(!ME())
-    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,outgoing[0]->iSpin(),outgoing[0]->iSpin())));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
   if(outgoing_[imode()].first!=outgoing[iferm]->id()) swap(iferm,ianti);
@@ -163,121 +155,40 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
 					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
   }
-  // spin 1/2
-  if(outgoing[0]->iSpin()==PDT::Spin1Half && outgoing[1]->iSpin()==PDT::Spin1Half) {
-    wave_.resize(2);
-    wavebar_.resize(2);
-    for(unsigned int ix=0;ix<2;++ix) {
-      wavebar_[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
-      wave_   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
-    }
-    // coefficients
-    Complex GM = gm_[imode()];
-    Complex GE = ge_[imode()]*exp(Complex(0.,phi_[imode()]));
-    LorentzPolarizationVector c2 = -2.*outgoing[0]->mass()/(4.*sqr(outgoing[0]->mass())-sqr(part.mass()))*
-      (GM-GE)*(momenta[iferm]-momenta[ianti]);
-    // now compute the currents
-    LorentzPolarizationVector temp;
-    //double mesum(0.);
-    for(unsigned ix=0;ix<2;++ix) {
-      for(unsigned iy=0;iy<2;++iy) {
-	LorentzPolarizationVector temp = (GM*wave_[ix].vectorCurrent(wavebar_[iy])+c2*wave_[ix].scalar(wavebar_[iy]))/part.mass();
-	for(unsigned int iz=0;iz<3;++iz) {
-	  if(iferm>ianti) (*ME())(iz,ix,iy)=vectors_[iz].dot(temp);
-	  else            (*ME())(iz,iy,ix)=vectors_[iz].dot(temp);
-	  //mesum += norm(vectors_[iz].dot(temp));
-	}
+  wave_.resize(2);
+  wavebar_.resize(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    wavebar_[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
+    wave_   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
+  }
+  // coefficients
+  Complex GM = gm_[imode()];
+  Complex GE = ge_[imode()]*exp(Complex(0.,phi_[imode()]));
+  LorentzPolarizationVector c2 = -2.*outgoing[0]->mass()/(4.*sqr(outgoing[0]->mass())-sqr(part.mass()))*
+    (GM-GE)*(momenta[iferm]-momenta[ianti]);
+  // now compute the currents
+  LorentzPolarizationVector temp;
+  //double mesum(0.);
+  for(unsigned ix=0;ix<2;++ix) {
+    for(unsigned iy=0;iy<2;++iy) {
+      LorentzPolarizationVector temp = (GM*wave_[ix].vectorCurrent(wavebar_[iy])+c2*wave_[ix].scalar(wavebar_[iy]))/part.mass();
+      for(unsigned int iz=0;iz<3;++iz) {
+	if(iferm>ianti) (*ME())(iz,ix,iy)=vectors_[iz].dot(temp);
+	else            (*ME())(iz,iy,ix)=vectors_[iz].dot(temp);
+	//mesum += norm(vectors_[iz].dot(temp));
       }
     }
-    double me = ME()->contract(rho_).real();
-    // cerr << "testing decay " << part.PDGName() << " -> " << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << "\n";
-    // cerr << "testing ME " << mesum/3. << " " << me << " " << 4./3.*(norm(GM)+2.*sqr(outgoing[0]->mass()/part.mass())*norm(GE)) << "\n";
-    // cerr << "testing gamma " << mesum/3./8./Constants::pi*sqrt(sqr(part.mass())-4.*sqr(outgoing[0]->mass()))/MeV << "\n";
-    // return the answer
-    return me;
   }
-  // spin 3/2
-  else if(outgoing[0]->iSpin()==PDT::Spin3Half && outgoing[0]->iSpin()==PDT::Spin3Half) {
-    wave2_.resize(4);
-    wave2bar_.resize(4);
-    wave_.resize(4);
-    wavebar_.resize(4);
-    RSSpinorBarWaveFunction swave(momenta[iferm],outgoing[iferm],Helicity::outgoing);
-    RSSpinorWaveFunction    awave(momenta[ianti],outgoing[ianti],Helicity::outgoing);
-    LorentzPolarizationVector vtemp = part.momentum()/part.mass();
-    for(unsigned int ix=0;ix<4;++ix) {
-      swave.reset(ix);
-      awave.reset(ix);
-      wave2bar_[ix] = swave.dimensionedWf();
-      wavebar_ [ix] = wave2bar_[ix].dot(vtemp);
-      wave2_   [ix] = awave.dimensionedWf();
-      wave_    [ix] = wave2_[ix].dot(vtemp);
-    }
-    // coefficients
-    Complex GM = gm_[imode()];
-    Complex GE = ge_[imode()]*exp(Complex(0.,phi_[imode()]));
-    LorentzPolarizationVector c2 = -2.*outgoing[0]->mass()/(4.*sqr(outgoing[0]->mass())-sqr(part.mass()))*
-      (GM-GE)*(momenta[iferm]-momenta[ianti]);
-    // now compute the currents
-    for(unsigned ix=0;ix<4;++ix) {
-      for(unsigned iy=0;iy<4;++iy) {
-	// q(al)q(be) piece
-	LorentzPolarizationVector temp2 = (GM*wave_[ix].vectorCurrent(wavebar_[iy])+c2*wave_[ix].scalar(wavebar_[iy]))*
-	  2.*part.mass()/(4.*sqr(outgoing[0]->mass())-sqr(part.mass()));
-	// g(al)g(be) * GM-GE piece
-	LorentzPolarizationVector temp3 = wave2_[ix].generalScalar(wave2bar_[iy],1.,1.)*c2/part.mass();
-	// g(al)g(be) * gamma^mu
-	LorentzPolarizationVector temp1(GM/part.mass()*(wave2bar_[iy](0,3)*wave2_[ix](0,0) + wave2bar_[iy](0,2)*wave2_[ix](0,1) - 
-							wave2bar_[iy](0,1)*wave2_[ix](0,2) - wave2bar_[iy](0,0)*wave2_[ix](0,3) + 
-							wave2bar_[iy](1,3)*wave2_[ix](1,0) + wave2bar_[iy](1,2)*wave2_[ix](1,1) - 
-							wave2bar_[iy](1,1)*wave2_[ix](1,2) - wave2bar_[iy](1,0)*wave2_[ix](1,3) + 
-							wave2bar_[iy](2,3)*wave2_[ix](2,0) + wave2bar_[iy](2,2)*wave2_[ix](2,1) - 
-							wave2bar_[iy](2,1)*wave2_[ix](2,2) - wave2bar_[iy](2,0)*wave2_[ix](2,3) - 
-							wave2bar_[iy](3,3)*wave2_[ix](3,0) - wave2bar_[iy](3,2)*wave2_[ix](3,1) + 
-							wave2bar_[iy](3,1)*wave2_[ix](3,2) + wave2bar_[iy](3,0)*wave2_[ix](3,3)),
-					Complex(0,1)*GM/part.mass()*(wave2bar_[iy](0,3)*wave2_[ix](0,0) - wave2bar_[iy](0,2)*wave2_[ix](0,1) - 
-								     wave2bar_[iy](0,1)*wave2_[ix](0,2) + wave2bar_[iy](0,0)*wave2_[ix](0,3) + 
-								     wave2bar_[iy](1,3)*wave2_[ix](1,0) - wave2bar_[iy](1,2)*wave2_[ix](1,1) - 
-								     wave2bar_[iy](1,1)*wave2_[ix](1,2) + wave2bar_[iy](1,0)*wave2_[ix](1,3) + 
-								     wave2bar_[iy](2,3)*wave2_[ix](2,0) - wave2bar_[iy](2,2)*wave2_[ix](2,1) - 
-								     wave2bar_[iy](2,1)*wave2_[ix](2,2) + wave2bar_[iy](2,0)*wave2_[ix](2,3) - 
-								     wave2bar_[iy](3,3)*wave2_[ix](3,0) + wave2bar_[iy](3,2)*wave2_[ix](3,1) + 
-								     wave2bar_[iy](3,1)*wave2_[ix](3,2) - wave2bar_[iy](3,0)*wave2_[ix](3,3)),
-					GM/part.mass()*(wave2bar_[iy](0,2)*wave2_[ix](0,0) - wave2bar_[iy](0,3)*wave2_[ix](0,1) - 
-							wave2bar_[iy](0,0)*wave2_[ix](0,2) + wave2bar_[iy](0,1)*wave2_[ix](0,3) + 
-							wave2bar_[iy](1,2)*wave2_[ix](1,0) - wave2bar_[iy](1,3)*wave2_[ix](1,1) - 
-							wave2bar_[iy](1,0)*wave2_[ix](1,2) + wave2bar_[iy](1,1)*wave2_[ix](1,3) + 
-							wave2bar_[iy](2,2)*wave2_[ix](2,0) - wave2bar_[iy](2,3)*wave2_[ix](2,1) - 
-							wave2bar_[iy](2,0)*wave2_[ix](2,2) + wave2bar_[iy](2,1)*wave2_[ix](2,3) - 
-							wave2bar_[iy](3,2)*wave2_[ix](3,0) + wave2bar_[iy](3,3)*wave2_[ix](3,1) + 
-							wave2bar_[iy](3,0)*wave2_[ix](3,2) - wave2bar_[iy](3,1)*wave2_[ix](3,3)),
-					GM/part.mass()*(-wave2bar_[iy](0,2)*wave2_[ix](0,0) - wave2bar_[iy](0,3)*wave2_[ix](0,1) - 
-							wave2bar_[iy](0,0)*wave2_[ix](0,2) - wave2bar_[iy](0,1)*wave2_[ix](0,3) - 
-							wave2bar_[iy](1,2)*wave2_[ix](1,0) - wave2bar_[iy](1,3)*wave2_[ix](1,1) - 
-							wave2bar_[iy](1,0)*wave2_[ix](1,2) - wave2bar_[iy](1,1)*wave2_[ix](1,3) - 
-							wave2bar_[iy](2,2)*wave2_[ix](2,0) - wave2bar_[iy](2,3)*wave2_[ix](2,1) - 
-							wave2bar_[iy](2,0)*wave2_[ix](2,2) - wave2bar_[iy](2,1)*wave2_[ix](2,3) + 
-							wave2bar_[iy](3,2)*wave2_[ix](3,0) + wave2bar_[iy](3,3)*wave2_[ix](3,1) + 
-							wave2bar_[iy](3,0)*wave2_[ix](3,2) + wave2bar_[iy](3,1)*wave2_[ix](3,3)));
-	LorentzPolarizationVector temp = temp1+temp2+temp3;
-	for(unsigned int iz=0;iz<3;++iz) {
-	  if(iferm>ianti) (*ME())(iz,ix,iy)=vectors_[iz].dot(temp);
-	  else            (*ME())(iz,iy,ix)=vectors_[iz].dot(temp);
-	}
-      }
-    }
-    // double mesum = ME()->contract(RhoDMatrix(PDT::Spin1)).real();
-    // generator()->log() << "testing decay " << part.PDGName() << " -> " << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << "\n";
-    // generator()->log() << "testing ME " << mesum  << " " << me << " " << 1./3.*(40.*norm(GM)/9.+16.*sqr(outgoing[0]->mass()/part.mass())*norm(GE)) << "\n";
-    // return the answer
-    return ME()->contract(rho_).real();
-  }
-  else
-    assert(false);
+  double me = ME()->contract(rho_).real();
+  // cerr << "testing decay " << part.PDGName() << " -> " << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << "\n";
+  // cerr << "testing ME " << mesum/3. << " " << me << " " << 4./3.*(norm(GM)+2.*sqr(outgoing[0]->mass()/part.mass())*norm(GE)) << "\n";
+  // cerr << "testing gamma " << mesum/3./8./Constants::pi*sqrt(sqr(part.mass())-4.*sqr(outgoing[0]->mass()))/MeV << "\n";
+  // return the answer
+  return me;
 }
 
 // output the setup information for the particle database
-void VectorMeson2BaryonsDecayer::dataBaseOutput(ofstream & output,
+void VectorMeson2SpinHalfBaryonsDecayer::dataBaseOutput(ofstream & output,
 						bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
@@ -292,7 +203,7 @@ void VectorMeson2BaryonsDecayer::dataBaseOutput(ofstream & output,
 		    << fullName() << "\";" << endl;
 }
 
-string VectorMeson2BaryonsDecayer::setUpDecayMode(string arg) {
+string VectorMeson2SpinHalfBaryonsDecayer::setUpDecayMode(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
@@ -311,16 +222,16 @@ string VectorMeson2BaryonsDecayer::setUpDecayMode(string arg) {
   pData = getParticleData(out.first);
   if(!pData)
     return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
-  // if(pData->iSpin()!=PDT::Spin1Half)
-  //   return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1/2";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1/2";
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   out.second = stoi(stype);
   pData = getParticleData(out.second);
   if(!pData)
     return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
-  // if(pData->iSpin()!=PDT::Spin1Half)
-  //   return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1/2";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1/2";
   // get the couplings
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
