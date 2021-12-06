@@ -7,7 +7,7 @@
 #include "VectorMeson2BaryonsDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -35,8 +35,8 @@ void VectorMeson2BaryonsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=gm_.size();
-  if(isize!=incoming_.size()  || isize!=outgoingf_.size()||
-     isize!=outgoinga_.size() || isize!= maxweight_.size()||
+  if(isize!=incoming_.size()  || isize!=outgoing_.size()  ||
+     isize!= maxweight_.size()||
      isize!= phi_.size() || isize!= ge_.size())
     throw InitException() << "Inconsistent parameters in VectorMeson2"
 			   << "BaryonsDecayer::doiin() " << Exception::runerror;
@@ -44,8 +44,8 @@ void VectorMeson2BaryonsDecayer::doinit() {
   PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     tPDPtr    in  =  getParticleData(incoming_[ix]);
-    tPDVector out = {getParticleData(outgoingf_[ix]),
-		     getParticleData(outgoinga_[ix])};
+    tPDVector out = {getParticleData(outgoing_[ix].first),
+		     getParticleData(outgoing_[ix].second)};
     if(in&&out[0]&&out[1]) 
       mode = new_ptr(PhaseSpaceMode(in,out,maxweight_[ix]));
     else
@@ -54,15 +54,14 @@ void VectorMeson2BaryonsDecayer::doinit() {
   }
 }
 
-VectorMeson2BaryonsDecayer::VectorMeson2BaryonsDecayer()
-  : gm_       ({0.00163222616377,0.00158881446341,0.00163819673075,0.000944247071286,0.00141162244048 ,0.00150424724997 ,0.00093350341391,0.00107528142563,0.000860759359361,0.00103222902272,0.00098818310509,0.00119542938517 ,0.000941856299908,0.00108249234586 ,0.00102912698738 ,0.000561082932891,0.000526423800011,0.000500391020504,0.000678994938986,0.00102277134344,0.00288222568159}),
-    ge_       ({0.00135736265293,0.0015117595557 ,0.00136696938558,0.001988067505   ,0.000852659560453,0.000801719253474,0.00150640470181,0.00153402258271,0.0015323974485  ,0.              ,0.00084599445285,0.000621041230885,0.000599393812308,0.000327664954147,0.000664382626732,0.000260326162249,0.000362882855521,0.00025226758188 ,0.000397805035356,0.00233118573611,0.00194199600339}),
-    phi_      ({0.              ,0.              ,0.740           ,0.               ,0.               ,0.               ,0.              ,0.              ,0.               ,0.              ,0.              ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,-0.270          ,0.379           }),
-    incoming_ ({443             ,443             ,443             ,443              ,443              ,443              ,443             ,443             ,443              ,100443          ,100443          ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,443             ,100443          }),
-    outgoingf_({ 2212           , 2112           , 3122           , 3212            , 3312            , 3322            , 3114           , 3224           , 3214            , 2212           , 2112           , 3122            , 3212            , 3312            , 3322            , 3114            , 3224            , 3214            , 3314            , 3222           , 3222           }),
-    outgoinga_({-2212           ,-2112           ,-3122           ,-3212            ,-3312            ,-3322            ,-3114           ,-3224           ,-3214            ,-2212           ,-2112           ,-3122            ,-3212            ,-3312            ,-3322            ,-3114            ,-3224            ,-3214            ,-3314            ,-3222           ,-3222           }),
-    maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,5.              ,7.              ,5.5              ,1.7             ,1.7             ,2.5              ,1.6              ,2.               ,2.               ,5.               ,5.               ,4.5              , 0.0012          ,2.0             ,15.             })
-{}
+//   : gm_       ({0.00163222616377,0.00158881446341,0.00163819673075,0.000944247071286,0.00141162244048 ,0.00150424724997 ,0.00093350341391,0.00107528142563,0.000860759359361,0.00103222902272,0.00098818310509,0.00119542938517 ,0.000941856299908,0.00108249234586 ,0.00102912698738 ,0.000561082932891,0.000526423800011,0.000500391020504,0.000678994938986,0.00102277134344,0.00288222568159}),
+//     ge_       ({0.00135736265293,0.0015117595557 ,0.00136696938558,0.001988067505   ,0.000852659560453,0.000801719253474,0.00150640470181,0.00153402258271,0.0015323974485  ,0.              ,0.00084599445285,0.000621041230885,0.000599393812308,0.000327664954147,0.000664382626732,0.000260326162249,0.000362882855521,0.00025226758188 ,0.000397805035356,0.00233118573611,0.00194199600339}),
+//     phi_      ({0.              ,0.              ,0.740           ,0.               ,0.               ,0.               ,0.              ,0.              ,0.               ,0.              ,0.              ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,0.               ,-0.270          ,0.379           }),
+//     incoming_ ({443             ,443             ,443             ,443              ,443              ,443              ,443             ,443             ,443              ,100443          ,100443          ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,443             ,100443          }),
+//     outgoingf_({ 2212           , 2112           , 3122           , 3212            , 3312            , 3322            , 3114           , 3224           , 3214            , 2212           , 2112           , 3122            , 3212            , 3312            , 3322            , 3114            , 3224            , 3214            , 3314            , 3222           , 3222           }),
+//     outgoinga_({-2212           ,-2112           ,-3122           ,-3212            ,-3312            ,-3322            ,-3114           ,-3224           ,-3214            ,-2212           ,-2112           ,-3122            ,-3212            ,-3312            ,-3322            ,-3114            ,-3224            ,-3214            ,-3314            ,-3222           ,-3222           }),
+//     maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,5.              ,7.              ,5.5              ,1.7             ,1.7             ,2.5              ,1.6              ,2.               ,2.               ,5.               ,5.               ,4.5              , 0.0012          ,2.0             ,15.             })
+// {}
 
 int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					   const tPDVector & children) const {
@@ -78,12 +77,12 @@ int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   cc=false;
   do {
     if(incoming_[ix]==id   ) {
-      if((id1   ==outgoingf_[ix]&&id2   ==outgoinga_[ix])||
-	 (id2   ==outgoingf_[ix]&&id1   ==outgoinga_[ix])) imode=ix;
+      if((id1   ==outgoing_[ix].first&&id2   ==outgoing_[ix].second)||
+	 (id2   ==outgoing_[ix].first&&id1   ==outgoing_[ix].second)) imode=ix;
     }
     if(incoming_[ix]==idbar) {
-      if((id1bar==outgoingf_[ix]&&id2bar==outgoinga_[ix])||
-	 (id2bar==outgoingf_[ix]&&id1bar==outgoinga_[ix])) {
+      if((id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second)||
+	 (id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second)) {
 	imode=ix;
 	cc=true;
       }
@@ -103,11 +102,11 @@ IBPtr VectorMeson2BaryonsDecayer::fullclone() const {
 }
 
 void VectorMeson2BaryonsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << gm_ << ge_ << phi_ << incoming_ << outgoingf_ << outgoinga_ << maxweight_;
+  os << ge_ << gm_ << phi_ << incoming_ << outgoing_ << maxweight_;
 }
 
 void VectorMeson2BaryonsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> gm_ >> ge_ >> phi_ >> incoming_ >> outgoingf_ >> outgoinga_ >> maxweight_;
+  is >> ge_ >> gm_ >> phi_ >> incoming_ >> outgoing_ >> maxweight_;
 }
 
 
@@ -119,54 +118,17 @@ void VectorMeson2BaryonsDecayer::Init() {
   static ClassDocumentation<VectorMeson2BaryonsDecayer> documentation
     ("The VectorMeson2BaryonsDecayer class is designed for "
      "the decay of vector mesons to baryons.");
-
-  static ParVector<VectorMeson2BaryonsDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &VectorMeson2BaryonsDecayer::incoming_,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMeson2BaryonsDecayer,int> interfaceOutcoming1
-    ("OutgoingBaryons",
-     "The PDG code for the outgoing fermion",
-     &VectorMeson2BaryonsDecayer::outgoingf_,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMeson2BaryonsDecayer,int> interfaceOutcoming2
-    ("OutgoingAntiBaryons",
-     "The PDG code for the second outgoing anti-fermion",
-     &VectorMeson2BaryonsDecayer::outgoinga_,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMeson2BaryonsDecayer,double> interfaceGM
-    ("GM",
-     "The value of the GM form factor",
-     &VectorMeson2BaryonsDecayer::gm_, -1, 0., -1000., 1000.,
-     false, false, Interface::limited);
   
-  static ParVector<VectorMeson2BaryonsDecayer,double> interfaceGE
-    ("GE",
-     "The value of the GE form factor",
-     &VectorMeson2BaryonsDecayer::ge_, -1, 0., -1000., 1000.,
-     false, false, Interface::limited);
-  
-  static ParVector<VectorMeson2BaryonsDecayer,double> interfacePhi
-    ("Phi",
-     "The phase of the GE form factor",
-     &VectorMeson2BaryonsDecayer::phi_, -1, 0., -Constants::pi, Constants::pi,
-     false, false, Interface::limited);
-
-  static ParVector<VectorMeson2BaryonsDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &VectorMeson2BaryonsDecayer::maxweight_,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Command<VectorMeson2BaryonsDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, baryon, antibaryon), GE, GM, phase and max weight for a decay",
+     &VectorMeson2BaryonsDecayer::setUpDecayMode, false);
 }
 
 void VectorMeson2BaryonsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int iferm(0),ianti(1);
-  if(outgoingf_[imode()]!=decay[iferm]->id()) swap(iferm,ianti);
+  if(outgoing_[imode()].first!=decay[iferm]->id()) swap(iferm,ianti);
   VectorWaveFunction::constructSpinInfo(vectors_,const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
   // outgoing fermion
@@ -194,7 +156,7 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,outgoing[0]->iSpin(),outgoing[0]->iSpin())));
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
-  if(outgoingf_[imode()]!=outgoing[iferm]->id()) swap(iferm,ianti);
+  if(outgoing_[imode()].first!=outgoing[iferm]->id()) swap(iferm,ianti);
   // initialization
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(vectors_,rho_,
@@ -322,39 +284,62 @@ void VectorMeson2BaryonsDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
-    if(ix<initsize_) {
-      output << "newdef " << name() << ":Incoming " << ix << " "
-	     << incoming_[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingFermion " << ix << " "
-	     << outgoingf_[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingAntiFermion "  << ix << " "
-	     << outgoinga_[ix] << "\n";
-      output << "newdef " << name() << ":GM " << ix << " "
-	     << gm_[ix] << "\n";
-      output << "newdef " << name() << ":GE " << ix << " "
-	     << ge_[ix] << "\n";
-      output << "newdef " << name() << ":Phi " << ix << " "
-	     << phi_[ix] << "\n";
-      output << "newdef " << name() << ":MaxWeight " << ix << " "
-	     << maxweight_[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming " << ix << " "
-	     << incoming_[ix] << "\n";
-      output << "insert " << name() << ":OutgoingFermion "  << ix << " "
-	     << outgoingf_[ix] << "\n";
-      output << "insert " << name() << ":OutgoingAntiFermion "  << ix << " "
-	     << outgoinga_[ix] << "\n";
-      output << "insert " << name() << ":GM " << ix << " "
-	     << gm_[ix] << "\n";
-      output << "insert " << name() << ":GE " << ix << " "
-	     << ge_[ix] << "\n";
-      output << "insert " << name() << ":Phi " << ix << " "
-	     << phi_[ix] << "\n";
-      output << "insert " << name() << ":MaxWeight " << ix << " "
-	     << maxweight_[ix] << "\n";
-    }
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix].first << " " << outgoing_[ix].second << " "
+	   << gm_[ix] << " " << ge_[ix] << " " << phi_[ix] << " " << maxweight_[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+string VectorMeson2BaryonsDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  // if(pData->iSpin()!=PDT::Spin1Half)
+  //   return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1/2";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  // if(pData->iSpin()!=PDT::Spin1Half)
+  //   return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1/2";
+  // get the couplings
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  ge_.push_back(stof(stype));
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  gm_.push_back(stof(stype));
+  // and phase
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  phi_.push_back(stof(stype));
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  maxweight_.push_back(wgt);
+  // success
+  return "";
 }

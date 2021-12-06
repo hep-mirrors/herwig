@@ -45,8 +45,7 @@ public:
   /**
    * The default constructor.
    */
-  VectorMeson2BaryonsDecayer();
-
+  VectorMeson2BaryonsDecayer() {}
 
   /**
    * Which of the possible decays is required
@@ -152,6 +151,13 @@ private:
    */
   VectorMeson2BaryonsDecayer & operator=(const VectorMeson2BaryonsDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
@@ -177,22 +183,12 @@ private:
   /**
    * the PDG codes for the outgoing fermion
    */
-  vector<int> outgoingf_;
-
-  /**
-   * the PDG codes for the outgoing antifermion.
-   */
-  vector<int> outgoinga_;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * maximum weight for a decay
    */
   vector<double> maxweight_;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int initsize_;
 
   /**
    *  Spin density matrix

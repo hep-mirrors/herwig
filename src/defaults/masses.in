@@ -1963,3 +1963,12 @@ newdef /Herwig/Masses/Upsilon5Smass:NGenerate 100
 newdef /Herwig/Masses/Upsilon5Smass:WidthOption 0
 newdef /Herwig/Particles/Upsilon(5S):Mass_generator Upsilon5Smass
 #
+create Herwig::GenericMassGenerator  psi_2_1Dmass
+newdef psi_2_1Dmass:Particle /Herwig/Particles/psi_2(1D)
+newdef /Herwig/Masses/psi_2_1Dmass:BreitWignerShape 0
+newdef /Herwig/Masses/psi_2_1Dmass:MaximumWeight 0.968233
+newdef /Herwig/Masses/psi_2_1Dmass:NGenerate 100
+newdef /Herwig/Masses/psi_2_1Dmass:WidthOption 0
+newdef /Herwig/Particles/psi_2(1D):Mass_generator psi_2_1Dmass
+#
+#
