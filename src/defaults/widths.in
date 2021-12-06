@@ -65943,3 +65943,58 @@ insert Upsilon5SWidth:NumberofEntries 42 513
 insert Upsilon5SWidth:NumberofEntries 43 513
 newdef /Herwig/Particles/Upsilon(5S):Width_generator Upsilon5SWidth
 #
+create Herwig::GenericWidthGenerator  psi_2_1DWidth
+newdef psi_2_1DWidth:Particle /Herwig/Particles/psi_2(1D)
+newdef psi_2_1DWidth:Prefactor 1
+newdef psi_2_1DWidth:BRNormalize 1
+newdef psi_2_1DWidth:BRMinimum 0.01
+newdef psi_2_1DWidth:Points 50
+newdef psi_2_1DWidth:InterpolationOrder 1
+
+insert psi_2_1DWidth:MEtype 0 0
+insert psi_2_1DWidth:MEtype 1 0
+insert psi_2_1DWidth:MEtype 2 0
+insert psi_2_1DWidth:MEtype 3 0
+insert psi_2_1DWidth:MEtype 4 0
+insert psi_2_1DWidth:MEcode 0 0
+insert psi_2_1DWidth:MEcode 1 0
+insert psi_2_1DWidth:MEcode 2 0
+insert psi_2_1DWidth:MEcode 3 0
+insert psi_2_1DWidth:MEcode 4 0
+insert psi_2_1DWidth:MEcoupling 0 0.486
+insert psi_2_1DWidth:MEcoupling 1 0.1893
+insert psi_2_1DWidth:MEcoupling 2 0.122
+insert psi_2_1DWidth:MEcoupling 3 0.108
+insert psi_2_1DWidth:MEcoupling 4 0.0947
+insert psi_2_1DWidth:ModeOn 0 1
+insert psi_2_1DWidth:ModeOn 1 1
+insert psi_2_1DWidth:ModeOn 2 1
+insert psi_2_1DWidth:ModeOn 3 1
+insert psi_2_1DWidth:ModeOn 4 1
+insert psi_2_1DWidth:MinimumMasses 0 3.50176
+insert psi_2_1DWidth:MinimumMasses 1 3.37512
+insert psi_2_1DWidth:MinimumMasses 2 9.91051
+insert psi_2_1DWidth:MinimumMasses 3 0
+insert psi_2_1DWidth:MinimumMasses 4 3.36594
+insert psi_2_1DWidth:MEmass1 0 0
+insert psi_2_1DWidth:MEmass1 1 0
+insert psi_2_1DWidth:MEmass1 2 0
+insert psi_2_1DWidth:MEmass1 3 0
+insert psi_2_1DWidth:MEmass1 4 0
+insert psi_2_1DWidth:MEmass2 0 0
+insert psi_2_1DWidth:MEmass2 1 0
+insert psi_2_1DWidth:MEmass2 2 0
+insert psi_2_1DWidth:MEmass2 3 0
+insert psi_2_1DWidth:MEmass2 4 0
+insert psi_2_1DWidth:DecayModes 0 psi_2(1D)->chi_c1,gamma; 
+insert psi_2_1DWidth:DecayModes 1 psi_2(1D)->Jpsi,pi+,pi-; 
+insert psi_2_1DWidth:DecayModes 2 psi_2(1D)->chi_b2,gamma; 
+insert psi_2_1DWidth:DecayModes 3 psi_2(1D)->g,g,g; 
+insert psi_2_1DWidth:DecayModes 4 psi_2(1D)->Jpsi,pi0,pi0; 
+insert psi_2_1DWidth:NumberofEntries 0 0
+insert psi_2_1DWidth:NumberofEntries 1 0
+insert psi_2_1DWidth:NumberofEntries 2 0
+insert psi_2_1DWidth:NumberofEntries 3 0
+insert psi_2_1DWidth:NumberofEntries 4 0
+newdef /Herwig/Particles/psi_2(1D):Width_generator psi_2_1DWidth
+#

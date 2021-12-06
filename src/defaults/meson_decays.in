@@ -1306,6 +1306,12 @@ decaymode B_c(1D)*-->B_c*-,pi0,pi0; 0.016 1 /Herwig/Decays/DecayME0
 # the 1^3D_2 multiplet
 #
 #
+decaymode psi_2(1D)->chi_c1,gamma; 0.486 1 /Herwig/Decays/DecayME0
+decaymode psi_2(1D)->Jpsi,pi+,pi-; 0.1893 1 /Herwig/Decays/DecayME0
+decaymode psi_2(1D)->chi_b2,gamma; 0.122 1 /Herwig/Decays/DecayME0
+decaymode psi_2(1D)->g,g,g; 0.108 1 /Herwig/Decays/QDecayME130
+decaymode psi_2(1D)->Jpsi,pi0,pi0; 0.0947 1 /Herwig/Decays/DecayME0
+#
 decaymode Upsilon_2(1D)->chi_b0,gamma; 0.7781 1 /Herwig/Decays/TensorVP
 decaymode Upsilon_2(1D)->chi_b2,gamma; 0.203 1 /Herwig/Decays/DecayME0
 decaymode Upsilon_2(1D)->g,g,g; 0.009 1 /Herwig/Decays/QDecayME130
@@ -2020,9 +2026,3 @@ decaymode kappa-->K-,pi0; 0.333333 1 /Herwig/Decays/ScalarSS
 #
 decaymode kappa+->K0,pi+; 0.666667 1 /Herwig/Decays/ScalarSS
 decaymode kappa+->K+,pi0; 0.333333 1 /Herwig/Decays/ScalarSS
-
-# new ccbar states 1D2
-decaymode psi_2(1D)->gamma,chi_c1; 0.738 1 /Herwig/Decays/DecayME0
-decaymode psi_2(1D)->gamma,chi_c2; 0.207 1 /Herwig/Decays/DecayME0
-decaymode psi_2(1D)->Jpsi,pi+,pi-; 0.037 1 /Herwig/Decays/DecayME0
-decaymode psi_2(1D)->Jpsi,pi0,pi0; 0.018 1 /Herwig/Decays/DecayME0
