@@ -80,7 +80,7 @@ void SplittingFunction::Init() {
   static SwitchOption interfaceColourStructureEW
     (interfaceColourStructure,
      "EW",
-     "q -> q W/Z",
+     "q -> q W/Z, q -> q h0, V -> V' V'', V -> V H",
      EW);
 
   static Switch<SplittingFunction,ShowerInteraction>
