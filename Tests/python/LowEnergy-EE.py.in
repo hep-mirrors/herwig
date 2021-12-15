@@ -68,6 +68,7 @@ analyses['KK']["SND_2016_I1484677"   ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['KK']["BABAR_2020_I1769654" ] = ["d01-x01-y01"]
 analyses['KK']["BESIII_2021_I1866051"] = ["d01-x01-y01"]
 # proton-antiproton
+analyses['PPbar']["BESIII_2021_I1966612"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2015_I1358937"] = ["d01-x01-y05"]
@@ -269,6 +270,8 @@ analyses['6m']["BABAR_2021_I1844422" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y
 analyses['6m']["BESIII_2020_I1837725" ] = ["d01-x01-y01"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
+analyses['Baryon']["BESIII_2021_I1845443"  ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['Baryon']["BESIII_2021_I1859248"  ] = ["d01-x01-y01"]
 # DD
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -282,6 +285,7 @@ analyses["DD"]["BELLE_2008_I791660"       ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2013_I1225975"      ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2014_I1282602"      ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2015_I1324785"      ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2021_I1933191"     ] = ["d01-x01-y03"]
 analyses["DD"]["BESIII_2016_I1457597"     ] = ["d01-x01-y07"]
 analyses["DD"]["BESIII_2015_I1355215"     ] = ["d01-x01-y10"]
 analyses["DD"]["BESIII_2015_I1377204"     ] = ["d01-x01-y10"]
@@ -326,8 +330,14 @@ analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
 analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
+<<<<<<< local
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+=======
+analyses["LL"]["BESIII_2021_I1940960"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2021_I1900124"] = ["d01-x01-y01"]
+analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
+>>>>>>> graft
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :

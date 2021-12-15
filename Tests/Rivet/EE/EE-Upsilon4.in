@@ -91,3 +91,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
 # BESIII D_s^+ K^0 e^+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
+# BELLE Upsilon 4S -> Upsilon 1,2S pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301
