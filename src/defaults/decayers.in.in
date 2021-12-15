@@ -15857,52 +15857,17 @@ newdef OmegaNL:Points 10000
 newdef OmegaNL:GenerateIntermediates 0
 #
 create Herwig::NonLeptonicHyperonDecayer  HyperonNL
-newdef HyperonNL:MaxWeight 0 1.1
-newdef HyperonNL:IncomingBaryon 0 3122
-newdef HyperonNL:OutgoingBaryon 0 2212
-newdef HyperonNL:OutgoingMeson 0 -211
-newdef HyperonNL:CouplingA 0 3.25e-07
-newdef HyperonNL:CouplingB 0 -2.34e-06
-newdef HyperonNL:MaxWeight 1 0.58
-newdef HyperonNL:IncomingBaryon 1 3122
-newdef HyperonNL:OutgoingBaryon 1 2112
-newdef HyperonNL:OutgoingMeson 1 111
-newdef HyperonNL:CouplingA 1 -2.3e-07
-newdef HyperonNL:CouplingB 1 1.65e-06
-newdef HyperonNL:MaxWeight 2 1.5818
-newdef HyperonNL:IncomingBaryon 2 3312
-newdef HyperonNL:OutgoingBaryon 2 3122
-newdef HyperonNL:OutgoingMeson 2 -211
-newdef HyperonNL:CouplingA 2 -4.51e-07
-newdef HyperonNL:CouplingB 2 -1.48e-06
-newdef HyperonNL:MaxWeight 3 1.36822
-newdef HyperonNL:IncomingBaryon 3 3322
-newdef HyperonNL:OutgoingBaryon 3 3122
-newdef HyperonNL:OutgoingMeson 3 111
-newdef HyperonNL:CouplingA 3 3.19e-07
-newdef HyperonNL:CouplingB 3 1.05e-06
-newdef HyperonNL:MaxWeight 4 1.15
-newdef HyperonNL:IncomingBaryon 4 3222
-newdef HyperonNL:OutgoingBaryon 4 2212
-newdef HyperonNL:OutgoingMeson 4 111
-newdef HyperonNL:CouplingA 4 -2.93e-07
-newdef HyperonNL:CouplingB 4 -3.25e-06
-newdef HyperonNL:MaxWeight 5 1.59923
-newdef HyperonNL:IncomingBaryon 5 3112
-newdef HyperonNL:OutgoingBaryon 5 2112
-newdef HyperonNL:OutgoingMeson 5 -211
-newdef HyperonNL:CouplingA 5 4.27e-07
-newdef HyperonNL:CouplingB 5 1.52e-07
-newdef HyperonNL:MaxWeight 6 0.859131
-newdef HyperonNL:IncomingBaryon 6 3222
-newdef HyperonNL:OutgoingBaryon 6 2112
-newdef HyperonNL:OutgoingMeson 6 211
-newdef HyperonNL:CouplingA 6 1.3e-08
-newdef HyperonNL:CouplingB 6 -4.44e-06
 newdef HyperonNL:Iteration 1
 newdef HyperonNL:Ntry 500
 newdef HyperonNL:Points 10000
-newdef HyperonNL:GenerateIntermediates 0
+newdef HyperonNL:GenerateIntermediates 0 
+do HyperonNL:SetUpDecayMode 3122 2212 -211 3.25e-07 -2.34e-06 1.1
+do HyperonNL:SetUpDecayMode 3122 2112 111 -2.3e-07 1.65e-06 0.58
+do HyperonNL:SetUpDecayMode 3312 3122 -211 -4.51e-07 -1.48e-06 1.5818
+do HyperonNL:SetUpDecayMode 3322 3122 111 3.19e-07 1.05e-06 1.36822
+do HyperonNL:SetUpDecayMode 3222 2212 111 -2.93e-07 -3.25e-06 1.15
+do HyperonNL:SetUpDecayMode 3112 2112 -211 4.27e-07 1.52e-07 1.59923
+do HyperonNL:SetUpDecayMode 3222 2112 211 1.3e-08 -4.44e-06 0.859131
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3RoperGamma
 newdef SU3RoperGamma:Iteration 1
@@ -23123,7 +23088,7 @@ newdef Vector2BaryonsHalf:Points 10000
 newdef Vector2BaryonsHalf:GenerateIntermediates 0 
 do Vector2BaryonsHalf:SetUpDecayMode 443 2212 -2212 0.00135736265293 0.00163222616377 0. 1.6
 do Vector2BaryonsHalf:SetUpDecayMode 443 2112 -2112 0.0015117595557 0.00158881446341 0. 1.6 
-do Vector2BaryonsHalf:SetUpDecayMode 443 3122 -3122 0.00136696938558 0.00163819673075 0.740 2.1
+do Vector2BaryonsHalf:SetUpDecayMode 443 3122 -3122 0.00137881900413 0.00163561699791 0.740 2.1
 do Vector2BaryonsHalf:SetUpDecayMode 443 3212 -3212 0.001988067505 0.000944247071286 0. 1.5  
 do Vector2BaryonsHalf:SetUpDecayMode 443 3222 -3222 0.00233118573611 0.00102277134344 -0.270 2.0
 do Vector2BaryonsHalf:SetUpDecayMode 443 3312 -3312 0.000852659560453 0.00141162244048 0. 2.

@@ -132,42 +132,39 @@ protected:
    */
   NonLeptonicHyperonDecayer & operator=(const NonLeptonicHyperonDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * PDG code for the incoming baryon.
    */
-  vector<long> _incomingB;
+  vector<long> incoming_;
 
   /**
    * PDG code for the outgoing baryon.
    */
-  vector<long> _outgoingB;
-
-  /**
-   * PDG code for the outgoing meson
-   */
-  vector<long> _outgoingM;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * The \f$A\f$ coefficient.
    */
-  vector<double> _a;
+  vector<double> a_;
 
   /**
    * The \f$B\f$ coefficient.
    */
-  vector<double> _b;
+  vector<double> b_;
 
   /**
    * the maximum weights for the decays
    */
-  vector<double> _maxweight;
-
-  /**
-   *  initial size fo the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxweight_;
 };
 
 }

@@ -7,6 +7,8 @@
 #include "NonLeptonicHyperonDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -17,34 +19,34 @@ using namespace Herwig;
 void NonLeptonicHyperonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
   if(initialize()) {
-    _maxweight.clear();
+    maxweight_.clear();
     for(unsigned int ix=0;ix<numberModes();++ix)
-      _maxweight.push_back(mode(ix)->maxWeight());
+      maxweight_.push_back(mode(ix)->maxWeight());
   }
 }
 
 void NonLeptonicHyperonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
-  unsigned int isize(_incomingB.size());
-  if(isize!=_outgoingB.size()||isize!=_outgoingM.size()||isize!=_a.size()||
-     isize!=_b.size()        ||isize!=_maxweight.size())
+  unsigned int isize(incoming_.size());
+  if(isize!=outgoing_.size() || isize!=a_.size()||
+     isize!=b_.size()        || isize!=maxweight_.size())
     throw InitException() << "Inconsistent parameters in "
 			  << "NonLeptonicHyperonDecayer::doinit()" 
 			  << Exception::runerror;
   // set up the decay modes
-  for(unsigned int ix=0;ix<_incomingB.size();++ix) {
-    tPDPtr    in  =  getParticleData(_incomingB[ix]);
-    tPDVector out = {getParticleData(_outgoingB[ix]),
-    		     getParticleData(_outgoingM[ix])};
-    double wgtmax = _maxweight.size()>numberModes() ? 
-      _maxweight[numberModes()] : 1.;
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr    in  =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix].first ),
+    		     getParticleData(outgoing_[ix].second)};
+    double wgtmax = maxweight_.size()>numberModes() ? 
+      maxweight_[numberModes()] : 1.;
     PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(in,out,wgtmax)));
     addMode(mode);
     // test of the asummetries
     // Energy e1 = (sqr(in->mass())+sqr(out[0]->mass())-
     // 		 sqr(out[1]->mass()))/2./in->mass();
-    // double btemp = _b[ix]*sqrt((e1-out[0]->mass())/(e1+out[0]->mass()));
-    // double alpha = -2.*(_a[ix]*btemp)/(sqr(_a[ix])+sqr(btemp));
+    // double btemp = b_[ix]*sqrt((e1-out[0]->mass())/(e1+out[0]->mass()));
+    // double alpha = -2.*(a_[ix]*btemp)/(sqr(a_[ix])+sqr(btemp));
     // generator()->log() << "Asymmetry parameter for " << in->PDGName() << "->"
     // 		       << out[0]->PDGName() << "," << out[1]->PDGName()
     // 		       << " = " << alpha << "\n";
@@ -52,36 +54,6 @@ void NonLeptonicHyperonDecayer::doinit() {
 }
 
 NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer() {
-  // lambda -> p pi-
-  _incomingB.push_back(3122);_outgoingB.push_back(2212);_outgoingM.push_back(-211);
-  _a.push_back(3.25e-7);_b.push_back(-23.4e-7);
-  _maxweight.push_back(1.4);
-  // lambda -> n p0
-  _incomingB.push_back(3122);_outgoingB.push_back(2112);_outgoingM.push_back(111);
-  _a.push_back(-2.30e-7);_b.push_back(16.5e-7);
-  _maxweight.push_back(0.7);
-  // xi-    -> lambda pi-
-  _incomingB.push_back(3312);_outgoingB.push_back(3122);_outgoingM.push_back(-211);
-  _a.push_back(-4.51e-7);_b.push_back(-14.8e-7);
-  _maxweight.push_back(2.0);
-  // xi0    -> lambda pi0
-  _incomingB.push_back(3322);_outgoingB.push_back(3122);_outgoingM.push_back(111);
-  _a.push_back(3.19e-7);_b.push_back(10.5e-7);
-  _maxweight.push_back(2.0);
-  // sigma+ -> p pi0
-  _incomingB.push_back(3222);_outgoingB.push_back(2212);_outgoingM.push_back(111);
-  _a.push_back(-2.93e-7);_b.push_back(-32.5e-7);
-  _maxweight.push_back(1.2);
-  // sigma- -> n pi-
-  _incomingB.push_back(3112);_outgoingB.push_back(2112);_outgoingM.push_back(-211);
-  _a.push_back(4.27e-7);_b.push_back(1.52e-7);
-  _maxweight.push_back(2.);
-  // sigma+ -> n pi+
-  _incomingB.push_back(3222);_outgoingB.push_back(2112);_outgoingM.push_back(211);
-  _a.push_back(0.13e-7);_b.push_back(-44.4e-7);
-  _maxweight.push_back(1.1);
-  // initial size of the vectors
-  _initsize=_incomingB.size();
   // intermediates
   generateIntermediates(false);
 }
@@ -97,21 +69,21 @@ int NonLeptonicHyperonDecayer::modeNumber(bool & cc,tcPDPtr parent,
   int id2(children[1]->id());
   unsigned int ix(0);
   do {
-    if(id0==_incomingB[ix]) {
-      if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	 (id2==_outgoingB[ix]&&id1==_outgoingM[ix])) imode=ix;
+    if(id0==incoming_[ix]) {
+      if((id1==outgoing_[ix].first&&id2==outgoing_[ix].second)||
+	 (id2==outgoing_[ix].first&&id1==outgoing_[ix].second)) imode=ix;
     }
-    else if(id0==-_incomingB[ix]) {
-      if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	 (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])) imode=ix;
-      if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
-	  (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
-	 (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	  _outgoingM[ix]==223||_outgoingM[ix]==333)) imode=ix;
+    else if(id0==-incoming_[ix]) {
+      if((id1==-outgoing_[ix].first&&id2==-outgoing_[ix].second)||
+	 (id2==-outgoing_[ix].first&&id1==-outgoing_[ix].second)) imode=ix;
+      if(((id1==-outgoing_[ix].first&&id2==outgoing_[ix].second)||
+	  (id2==-outgoing_[ix].first&&id1==outgoing_[ix].second))&&
+	 (outgoing_[ix].second==111||outgoing_[ix].second==221||outgoing_[ix].second==331||
+	  outgoing_[ix].second==223||outgoing_[ix].second==333)) imode=ix;
     }
     ++ix;
   }
-  while(ix<_incomingB.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   // charge conjugate
   cc=id0<0;
   // return the answer
@@ -119,11 +91,11 @@ int NonLeptonicHyperonDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
 
 void NonLeptonicHyperonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incomingB << _outgoingB << _outgoingM << _a << _b << _maxweight << _initsize;
+  os << incoming_ << outgoing_ << a_ << b_ << maxweight_;
 }
 
 void NonLeptonicHyperonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incomingB >> _outgoingB >> _outgoingM >> _a >> _b >> _maxweight >> _initsize;
+  is >> incoming_ >> outgoing_ >> a_ >> b_ >> maxweight_;
 }
 
 // The following static variable is needed for the type
@@ -144,41 +116,28 @@ void NonLeptonicHyperonDecayer::Init() {
      "Phys.\\ Rev.\\  D {\\bf 59} (1999) 094025 [arXiv:hep-ph/9902351].\n"
      "%%CITATION = PHRVA,D59,094025;%%\n");
 
-  static ParVector<NonLeptonicHyperonDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &NonLeptonicHyperonDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+  static Command<NonLeptonicHyperonDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, outgoing baryon & meson, A and B couplings and max weight for a decay",
+     &NonLeptonicHyperonDecayer::setUpDecayMode, false);
 
-  static ParVector<NonLeptonicHyperonDecayer,long> interfaceIncomingBaryon
-    ("IncomingBaryon",
-     "The PDG code for the incoming baryon.",
-     &NonLeptonicHyperonDecayer::_incomingB,
-     0, 0, 0, 0, 1000000, false, false, true);
+  static Deleted<NonLeptonicHyperonDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<NonLeptonicHyperonDecayer,long> interfaceOutgoingBaryon
-    ("OutgoingBaryon",
-     "The PDG code for the outgoing baryon.",
-     &NonLeptonicHyperonDecayer::_outgoingB,
-     0, 0, 0, 0, 1000000, false, false, true);
+  static Deleted<NonLeptonicHyperonDecayer> interfaceIncomingBaryon
+    ("IncomingBaryon","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<NonLeptonicHyperonDecayer,long> interfaceOutgoingMeson
-    ("OutgoingMeson",
-     "The PDG code for the outgoing meson.",
-     &NonLeptonicHyperonDecayer::_outgoingM,
-     0, 0, 0, -1000000, 1000000, false, false, true);
+  static Deleted<NonLeptonicHyperonDecayer> interfaceOutgoingBaryon
+    ("OutgoingBaryon","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<NonLeptonicHyperonDecayer,double> interfaceA
-    ("CouplingA",
-     "The A coupling for the decay",
-     &NonLeptonicHyperonDecayer::_a,
-     0, 0, 0, -1e-5, 1e-5, false, false, true);
+  static Deleted<NonLeptonicHyperonDecayer> interfaceOutgoingMeson
+    ("OutgoingMeson","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<NonLeptonicHyperonDecayer,double> interfaceB
-    ("CouplingB",
-     "The B coupling for the decay",
-     &NonLeptonicHyperonDecayer::_b,
-     0, 0, 0, -1e-5, 1e-5, false, false, true);
+  static Deleted<NonLeptonicHyperonDecayer> interfaceA
+    ("CouplingA","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<NonLeptonicHyperonDecayer> interfaceB
+    ("CouplingB","The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 }
 
 // couplings for spin-1/2 to spin-1/2 spin-0
@@ -186,43 +145,68 @@ void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,
 						       Energy,Energy,Energy,
 						       Complex& A,Complex& B) const {
   useMe();
-  A=_a[imode];
-  B=_b[imode];
+  A=a_[imode];
+  B=b_[imode];
 }
 
 void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  for(unsigned int ix=0;ix<_incomingB.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-      output << "newdef " << name() << ":IncomingBaryon " << ix << " " 
-	     << _incomingB[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingBaryon " << ix << " " 
-	     << _outgoingB[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingMeson " << ix << " " 
-	     << _outgoingM[ix] << "\n";
-      output << "newdef " << name() << ":CouplingA " << ix << " " 
-	     << _a[ix] << "\n";
-      output << "newdef " << name() << ":CouplingB " << ix << " " 
-	     << _b[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-      output << "insert " << name() << ":IncomingBaryon " << ix << " " 
-	     << _incomingB[ix] << "\n";
-      output << "insert " << name() << ":OutgoingBaryon " << ix << " " 
-	     << _outgoingB[ix] << "\n";
-      output << "insert " << name() << ":OutgoingMeson " << ix << " " 
-	     << _outgoingM[ix] << "\n";
-      output << "insert " << name() << ":CouplingA " << ix << " " 
-	     << _a[ix] << "\n";
-      output << "insert " << name() << ":CouplingB " << ix << " " 
-	     << _b[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode "
+	   << incoming_[ix] << " " << outgoing_[ix].first << " " << outgoing_[ix].second
+	   << " " << a_[ix] << " " << b_[ix] << " " << maxweight_[ix] << "\n";
   }
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+string NonLeptonicHyperonDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1/2";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1/2";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 0";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  a_.push_back(g);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  g = stof(stype);
+  b_.push_back(g);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  maxweight_.push_back(wgt);
+  // success
+  return "";
 }
