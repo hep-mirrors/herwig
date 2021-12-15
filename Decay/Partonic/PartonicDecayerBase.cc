@@ -312,7 +312,7 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
 }
 
 PVector PartonicDecayerBase::shower(const Particle & parent,
-				 ParticleVector & partons) const {
+				    ParticleVector & partons) const {
   try {
     // set up the shower
     // create the shower particles
@@ -396,17 +396,18 @@ bool PartonicDecayerBase::timeLikeShower(tShowerParticlePtr particle,
   // create the children
   ShowerParticleVector children;
   children.reserve(2);
-  for(unsigned int ix=0;ix<2;++ix) {
+  for(unsigned int ix=0;ix<fb.ids.size()-1;++ix) {
     children.push_back(new_ptr(ShowerParticle(fb.ids[ix+1],true)));
     children[ix]->set5Momentum(Lorentz5Momentum(fb.ids[ix+1]->mass()));
   }
   // update the children
   particle->showerKinematics()->updateChildren(particle, children,fb.type);
   // select branchings for children
-  fc[0] = _splittingGenerator->chooseForwardBranching(*children[0],1.,ShowerInteraction::QCD);
-  fc[1] = _splittingGenerator->chooseForwardBranching(*children[1],1.,ShowerInteraction::QCD);
+  for(unsigned int ix=0;ix<children.size()-1;++ix) {
+    fc[ix] = _splittingGenerator->chooseForwardBranching(*children[ix],1.,ShowerInteraction::QCD);
+  }
   // shower the children
-  for(unsigned int ix=0;ix<2;++ix) {
+  for(unsigned int ix=0;ix<children.size();++ix) {
     if(fc[ix].kinematics) {
       timeLikeShower(children[ix],fc[ix],false,output);
     }
