@@ -15861,13 +15861,20 @@ newdef HyperonNL:Iteration 1
 newdef HyperonNL:Ntry 500
 newdef HyperonNL:Points 10000
 newdef HyperonNL:GenerateIntermediates 0 
-do HyperonNL:SetUpDecayMode 3122 2212 -211 3.25e-07 -2.34e-06 1.1
-do HyperonNL:SetUpDecayMode 3122 2112 111 -2.3e-07 1.65e-06 0.58
-do HyperonNL:SetUpDecayMode 3312 3122 -211 -4.51e-07 -1.48e-06 1.5818
-do HyperonNL:SetUpDecayMode 3322 3122 111 3.19e-07 1.05e-06 1.36822
-do HyperonNL:SetUpDecayMode 3222 2212 111 -2.93e-07 -3.25e-06 1.15
-do HyperonNL:SetUpDecayMode 3112 2112 -211 4.27e-07 1.52e-07 1.59923
-do HyperonNL:SetUpDecayMode 3222 2112 211 1.3e-08 -4.44e-06 0.859131
+do HyperonNL:SetUpDecayMode 3122 2212 -211 3.15441e-07 -2.56965e-06 1.02233
+do HyperonNL:SetUpDecayMode 3122 2112 111 -2.34823e-07 1.71077e-06 0.572769
+do HyperonNL:SetUpDecayMode 3222 2212 111 -2.6763e-07 -3.24965e-06 0.825223
+do HyperonNL:SetUpDecayMode 3222 2112 211 1.39742e-08 -4.2112e-06 0.773064
+do HyperonNL:SetUpDecayMode 3112 2112 -211 4.26814e-07 1.42866e-07 1.59759
+do HyperonNL:SetUpDecayMode 3322 3122 111 3.45387e-07 1.05341e-06 1.59532
+do HyperonNL:SetUpDecayMode 3312 3122 -211 -4.51957e-07 -1.5189e-06 1.59161
+do HyperonNL:SetUpDecayMode 4132 3312 211 -2.89373e-07 2.71227e-06 0.0167529
+do HyperonNL:SetUpDecayMode 4122 3122 211 3.56697e-07 1.91559e-06 0.0205336
+do HyperonNL:SetUpDecayMode 4122 3222 111 2.10027e-07 2.23662e-06 0.0197528
+do HyperonNL:SetUpDecayMode 4122 3212 211 2.95892e-07 2.18669e-06 0.0203823
+do HyperonNL:SetUpDecayMode 4122 2212 211 -8.18977e-08 1.99027e-06 0.025117
+
+
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3RoperGamma
 newdef SU3RoperGamma:Iteration 1
