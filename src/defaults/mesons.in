@@ -549,7 +549,7 @@ makeanti B_c(1D)*- B_c(1D)*+
 # the 1^3D_2 multiplet
 #
 create ThePEG::ParticleData psi_2(1D)
-setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.0003 0.003 0 0 0 5 0
+setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.00074 0.0074 0 0 0 5 0
 create ThePEG::ParticleData Upsilon_2(1D)
 setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1637 2.8E-5 0.00028 0 0 0 5 0 
 create ThePEG::ParticleData K_2(1820)+
@@ -626,7 +626,7 @@ newdef eta(1295):WidthUpCut 0.55
 create ThePEG::ParticleData eta(1475)
 setup eta(1475) 100331 eta(1475) 1.476 0.087 0.174 0 0 0 1 0 
 create ThePEG::ParticleData eta_c(2S)
-setup eta_c(2S) 100441 eta_c(2S) 3.638 0.014 0.14 0 0 0 1 0 
+setup eta_c(2S) 100441 eta_c(2S) 3.6375 0.0113 0.113 0 0 0 1 0 
 create ThePEG::ParticleData eta_b(2S)
 setup eta_b(2S) 100551 eta_b(2S) 9.999 0.0041 0.041 0 0 0 1 0 
 create ThePEG::ParticleData K'+

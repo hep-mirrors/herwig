@@ -334,17 +334,17 @@ decaymode Xibar+->Lambdabar0,mu+,nu_mu; 0.00035 1 /Herwig/Decays/BaryonLight1
 decaymode Xibar+->Sigmabar+,gamma; 0.000127 1 /Herwig/Decays/RadiativeHyperon
 decaymode Xibar+->Sigmabar0,e+,nu_e; 8.7E-5 1 /Herwig/Decays/BaryonLight1
 #
-decaymode Xi0->Lambda0,pi0; 0.995225 1 /Herwig/Decays/HyperonNL
+decaymode Xi0->Lambda0,pi0; 0.995246 1 /Herwig/Decays/HyperonNL
 decaymode Xi0->Sigma0,gamma; 0.00333 1 /Herwig/Decays/RadiativeHyperon
 decaymode Xi0->Lambda0,gamma; 0.00117 1 /Herwig/Decays/RadiativeHyperon
-decaymode Xi0->Sigma+,e-,nu_ebar; 0.00027 1 /Herwig/Decays/BaryonLight1
-decaymode Xi0->Sigma+,mu-,nu_mubar; 5.0E-6 1 /Herwig/Decays/BaryonLight1
+decaymode Xi0->Sigma+,e-,nu_ebar; 0.000252 1 /Herwig/Decays/BaryonLight1
+decaymode Xi0->Sigma+,mu-,nu_mubar; 2.0E-6 1 /Herwig/Decays/BaryonLight1
 #
-decaymode Xibar0->Lambdabar0,pi0; 0.995225 1 /Herwig/Decays/HyperonNL
+decaymode Xibar0->Lambdabar0,pi0; 0.995246 1 /Herwig/Decays/HyperonNL
 decaymode Xibar0->Sigmabar0,gamma; 0.00333 1 /Herwig/Decays/RadiativeHyperon
 decaymode Xibar0->Lambdabar0,gamma; 0.00117 1 /Herwig/Decays/RadiativeHyperon
-decaymode Xibar0->Sigmabar-,e+,nu_e; 0.00027 1 /Herwig/Decays/BaryonLight1
-decaymode Xibar0->Sigmabar-,mu+,nu_mu; 5.0E-6 1 /Herwig/Decays/BaryonLight1
+decaymode Xibar0->Sigmabar-,e+,nu_e; 0.000252 1 /Herwig/Decays/BaryonLight1
+decaymode Xibar0->Sigmabar-,mu+,nu_mu; 2.0E-6 1 /Herwig/Decays/BaryonLight1
 #
 decaymode Lambda_c+->u=dbar,s=ud_0; 0.244527 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_c+->s=dbar,u=ud_0; 0.109073 1 /Herwig/Decays/WeakPartonic100
@@ -370,9 +370,9 @@ decaymode Lambda_c+->p+,Kbar0,eta; 0.012 1 /Herwig/Decays/DecayME0
 decaymode Lambda_c+->Delta++,K*-; 0.011 1 /Herwig/Decays/CharmBaryon1
 decaymode Lambda_c+->d=dbar,u=ud_0; 0.0108 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_c+->Lambda0,pi+,eta; 0.0106 1 /Herwig/Decays/DecayME0
-decaymode Lambda_c+->Sigma0,pi+; 0.0104 1 /Herwig/Decays/CharmBaryon1
-decaymode Lambda_c+->Lambda0,pi+; 0.0101 1 /Herwig/Decays/CharmBaryon1
-decaymode Lambda_c+->Sigma+,pi0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma0,pi+; 0.0104 1 /Herwig/Decays/HyperonNL
+decaymode Lambda_c+->Lambda0,pi+; 0.0101 1 /Herwig/Decays/HyperonNL
+decaymode Lambda_c+->Sigma+,pi0; 0.01 1 /Herwig/Decays/HyperonNL
 decaymode Lambda_c+->s=sbar,u=ud_0; 0.00998 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_c+->Sigma+,eta'; 0.009 1 /Herwig/Decays/CharmBaryon1
 decaymode Lambda_c+->Delta++,K-; 0.0086 1 /Herwig/Decays/CharmBaryon1
@@ -442,9 +442,9 @@ decaymode Lambdabar_c-->pbar-,K0,eta; 0.012 1 /Herwig/Decays/DecayME0
 decaymode Lambdabar_c-->Deltabar--,K*+; 0.011 1 /Herwig/Decays/CharmBaryon1
 decaymode Lambdabar_c-->dbar=d,ubar=ud_0bar; 0.0108 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambdabar_c-->Lambdabar0,pi-,eta; 0.0106 1 /Herwig/Decays/DecayME0
-decaymode Lambdabar_c-->Sigmabar0,pi-; 0.0104 1 /Herwig/Decays/CharmBaryon1
-decaymode Lambdabar_c-->Lambdabar0,pi-; 0.0101 1 /Herwig/Decays/CharmBaryon1
-decaymode Lambdabar_c-->Sigmabar-,pi0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar0,pi-; 0.0104 1 /Herwig/Decays/HyperonNL
+decaymode Lambdabar_c-->Lambdabar0,pi-; 0.0101 1 /Herwig/Decays/HyperonNL
+decaymode Lambdabar_c-->Sigmabar-,pi0; 0.01 1 /Herwig/Decays/HyperonNL
 decaymode Lambdabar_c-->sbar=s,ubar=ud_0bar; 0.00998 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambdabar_c-->Sigmabar-,eta'; 0.009 1 /Herwig/Decays/CharmBaryon1
 decaymode Lambdabar_c-->Deltabar--,K+; 0.0086 1 /Herwig/Decays/CharmBaryon1
@@ -521,7 +521,7 @@ decaymode Xi_c0->e+,nu_e,pi0,Xi-; 0.016 1 /Herwig/Decays/Mambo
 decaymode Xi_c0->Sigma0,Kbar0; 0.012 1 /Herwig/Decays/CharmBaryon1
 decaymode Xi_c0->Lambda0,K*bar0; 0.011 1 /Herwig/Decays/CharmBaryon1
 decaymode Xi_c0->Sigma*0,K*bar0; 0.011 1 /Herwig/Decays/CharmBaryon1
-decaymode Xi_c0->Xi-,pi+; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi-,pi+; 0.01 1 /Herwig/Decays/HyperonNL
 decaymode Xi_c0->sbar=s,u=sd_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
 decaymode Xi_c0->dbar=d,u=sd_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
 decaymode Xi_c0->Xi*0,rho0; 0.0092 1 /Herwig/Decays/CharmBaryon1
@@ -566,7 +566,7 @@ decaymode Xi_cbar0->mu-,nu_mubar,pi0,Xibar+; 0.016 1 /Herwig/Decays/Mambo
 decaymode Xi_cbar0->Sigmabar0,K0; 0.012 1 /Herwig/Decays/CharmBaryon1
 decaymode Xi_cbar0->Sigma*bar0,K*0; 0.011 1 /Herwig/Decays/CharmBaryon1
 decaymode Xi_cbar0->Lambdabar0,K*0; 0.011 1 /Herwig/Decays/CharmBaryon1
-decaymode Xi_cbar0->Xibar+,pi-; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar+,pi-; 0.01 1 /Herwig/Decays/HyperonNL
 decaymode Xi_cbar0->d=dbar,ubar=sd_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
 decaymode Xi_cbar0->s=sbar,ubar=sd_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
 decaymode Xi_cbar0->Xi*bar0,rho0; 0.0092 1 /Herwig/Decays/CharmBaryon1
