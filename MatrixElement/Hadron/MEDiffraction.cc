@@ -569,7 +569,7 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
         costheta =1-2*UseRandom::rnd();
         sintheta = sqrt(1-sqr(costheta));
       }
-      while (UseRandom::rnd() > 1./costheta)
+      while (UseRandom::rnd() > 1./costheta);
 
       // Generate the momenta
       Lorentz5Momentum k1=Lorentz5Momentum(p*sintheta*cos(phi), p*sintheta*sin(phi), p*costheta, sqrt(sqr(m1)+psq));
