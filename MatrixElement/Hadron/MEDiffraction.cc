@@ -1020,7 +1020,7 @@ void MEDiffraction::Init() {
      "Smear the angle of the 1 to 2 decay in the rest frame of the decaying diffractive mass",
      &MEDiffraction::smearAngle, 0, false, false);
   static SwitchOption interfaceSmearAngle0
-   (interfaceSmeaAngle,"No","Decay along z axis (in rest frame)", 0);
+   (interfaceSmearAngle,"No","Decay along z axis (in rest frame)", 0);
   static SwitchOption interfaceSmearAngle1
    (interfaceSmearAngle,"Yes","Sample theta and phi (in rest frame)", 1);
 }
