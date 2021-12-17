@@ -554,7 +554,6 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
     Energy min = pIn.mass();
     // Check that the decay is kinematically possible
     if (min >= m1 + m2 && m1 >= ZERO && m2 >= ZERO){
-      do{}
       Energy2 M2 = sqr(min);
       // pstar squared
       const Energy2 psq = (M2-sqr(m1+m2))*(M2-sqr(m1-m2))/(4*M2);
@@ -562,9 +561,9 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
       assert(psq/GeV2 > 0);
       const Energy p(sqrt(psq));
       // Sample the angle
-      const double phi = UseRandom::rnd() * Constants::twopi;
-      const double costheta = 0.;
-      const double sintheta = 1.0;
+      double phi = UseRandom::rnd() * Constants::twopi;
+      double costheta = 0.;
+      double sintheta = 1.0;
       do {
         costheta =1-2*UseRandom::rnd();
         sintheta = sqrt(1-sqr(costheta));
