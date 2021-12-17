@@ -104,10 +104,11 @@ newdef f'_2mass:NGenerate 100
 newdef /Herwig/Particles/f'_2:Mass_generator f'_2mass
 #
 create Herwig::GenericMassGenerator  phimass
-newdef phimass:Particle /Herwig/Particles/phi 
-newdef phimass:BreitWignerShape 0
-newdef phimass:MaximumWeight 1.05846
-newdef phimass:NGenerate 100
+newdef phimass:Particle /Herwig/Particles/phi
+newdef /Herwig/Masses/phimass:BreitWignerShape 0
+newdef /Herwig/Masses/phimass:MaximumWeight 0.963591
+newdef /Herwig/Masses/phimass:NGenerate 100
+newdef /Herwig/Masses/phimass:WidthOption 0 
 
 newdef /Herwig/Particles/phi:Mass_generator phimass
 #
@@ -1970,5 +1971,4 @@ newdef /Herwig/Masses/psi_2_1Dmass:MaximumWeight 0.968233
 newdef /Herwig/Masses/psi_2_1Dmass:NGenerate 100
 newdef /Herwig/Masses/psi_2_1Dmass:WidthOption 0
 newdef /Herwig/Particles/psi_2(1D):Mass_generator psi_2_1Dmass
-#
 #

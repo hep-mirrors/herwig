@@ -1727,113 +1727,28 @@ create Herwig::PScalarVectorVectorDecayer  PVV
 newdef PVV:Iteration 1
 newdef PVV:Ntry 500
 newdef PVV:Points 10000
-newdef PVV:GenerateIntermediates 0
-newdef PVV:Incoming   0 331
-newdef PVV:FirstOutgoing  0 223
-newdef PVV:SecondOutgoing 0 22
-newdef PVV:Coupling   0 0.1412
-newdef PVV:MaxWeight  0 1.17937
-newdef PVV:Incoming   1 111
-newdef PVV:FirstOutgoing  1 22
-newdef PVV:SecondOutgoing 1 22
-newdef PVV:Coupling   1 0.0178
-newdef PVV:MaxWeight  1 1.08444
-newdef PVV:Incoming   2 221
-newdef PVV:FirstOutgoing  2 22
-newdef PVV:SecondOutgoing 2 22
-newdef PVV:Coupling   2 0.0176
-newdef PVV:MaxWeight  2 1.08656
-newdef PVV:Incoming   3 331
-newdef PVV:FirstOutgoing  3 22
-newdef PVV:SecondOutgoing 3 22
-newdef PVV:Coupling   3 0.0221
-newdef PVV:MaxWeight  3 1.09105
-newdef PVV:Incoming   4 441
-newdef PVV:FirstOutgoing  4 213
-newdef PVV:SecondOutgoing 4 -213
-newdef PVV:Coupling   4 0.0525
-newdef PVV:MaxWeight  4 2.6
-newdef PVV:Incoming   5 441
-newdef PVV:FirstOutgoing  5 113
-newdef PVV:SecondOutgoing 5 113
-newdef PVV:Coupling   5 0.0371
-newdef PVV:MaxWeight  5 2.63569
-newdef PVV:Incoming   6 441
-newdef PVV:FirstOutgoing  6 333
-newdef PVV:SecondOutgoing 6 333
-newdef PVV:Coupling   6 0.0267
-newdef PVV:MaxWeight  6 8.54466
-newdef PVV:Incoming   7 441
-newdef PVV:FirstOutgoing  7 22
-newdef PVV:SecondOutgoing 7 22
-newdef PVV:Coupling   7 0.00521
-newdef PVV:MaxWeight  7 1.10127
-newdef PVV:Incoming   8 441
-newdef PVV:FirstOutgoing  8 323
-newdef PVV:SecondOutgoing 8 -323
-newdef PVV:Coupling   8 0.0308
-newdef PVV:MaxWeight  8 5.0763
-newdef PVV:Incoming   9 441
-newdef PVV:FirstOutgoing  9 313
-newdef PVV:SecondOutgoing 9 -313
-newdef PVV:Coupling   9 0.0308
-newdef PVV:MaxWeight  9 5.22846
+newdef PVV:GenerateIntermediates 0 
+do PVV:SetUpDecayMode 331 223 22 0.1412 1.17937
+do PVV:SetUpDecayMode 111 22 22 0.0178 1.08444
+do PVV:SetUpDecayMode 221 22 22 0.0176 1.08656
+do PVV:SetUpDecayMode 331 22 22 0.0221 1.09105
+do PVV:SetUpDecayMode 441 213 -213 0.0525 2.6
+do PVV:SetUpDecayMode 441 113 113 0.0371 2.63569
+do PVV:SetUpDecayMode 441 333 333 0.0267 8.54466
+do PVV:SetUpDecayMode 441 22 22 0.00521 1.10127
+do PVV:SetUpDecayMode 441 323 -323 0.0308 5.0763
+do PVV:SetUpDecayMode 441 313 -313 0.0308 5.22846
 #
 create Herwig::PScalarVectorFermionsDecayer  PVff
 newdef PVff:Iteration 1
 newdef PVff:Ntry 500
 newdef PVff:Points 10000
 newdef PVff:GenerateIntermediates 0
-newdef PVff:Incoming   0  111
-newdef PVff:OutgoingVector  0  22
-newdef PVff:OutgoingFermion  0  11
-newdef PVff:OutgoingAntiFermion 0  -11
-newdef PVff:Coupling   0  7.61872e-06
-newdef PVff:MaxWeight  0  0.0267854
-newdef PVff:IncludeVMD 0  2
-newdef PVff:VMDID      0  113
-newdef PVff:VMDmass    0  775.8
-newdef PVff:VMDwidth   0  150.3
-newdef PVff:Incoming   1  221
-newdef PVff:OutgoingVector  1  22
-newdef PVff:OutgoingFermion  1  11
-newdef PVff:OutgoingAntiFermion 1  -11
-newdef PVff:Coupling   1  7.55416e-06
-newdef PVff:MaxWeight  1  2.77772
-newdef PVff:IncludeVMD 1  2
-newdef PVff:VMDID      1  113
-newdef PVff:VMDmass    1  775.8
-newdef PVff:VMDwidth   1  150.3
-newdef PVff:Incoming   2  221
-newdef PVff:OutgoingVector  2  22
-newdef PVff:OutgoingFermion  2  13
-newdef PVff:OutgoingAntiFermion 2  -13
-newdef PVff:Coupling   2  7.55416e-06
-newdef PVff:MaxWeight  2  2.03869
-newdef PVff:IncludeVMD 2  2
-newdef PVff:VMDID      2  113
-newdef PVff:VMDmass    2  775.8
-newdef PVff:VMDwidth   2  150.3
-newdef PVff:Incoming   3  331
-newdef PVff:OutgoingVector  3  22
-newdef PVff:OutgoingFermion  3  11
-newdef PVff:OutgoingAntiFermion 3  -11
-newdef PVff:Coupling   3  1.04e-05
-newdef PVff:MaxWeight  3  5.07081
-newdef PVff:IncludeVMD 3  2
-newdef PVff:VMDID      3  113
-newdef PVff:VMDmass    3  775.8
-newdef PVff:VMDwidth   3  150.3
-newdef PVff:Incoming   4  331
-newdef PVff:OutgoingVector  4  22
-newdef PVff:OutgoingFermion  4  13
-newdef PVff:OutgoingAntiFermion 4  -13
-newdef PVff:Coupling   4  1.04e-05
-newdef PVff:MaxWeight  4  3.00948
-newdef PVff:IncludeVMD 4  2
-newdef PVff:VMDID      4  113
-newdef PVff:VMDmass    4  775.8
-newdef PVff:VMDwidth   4  150.3
+do PVff:SetUpDecayMode 111 22 11 7.61872e-06 2 113 775.8 150.3 0.0267854
+do PVff:SetUpDecayMode 221 22 11 7.55416e-06 2 113 775.8 150.3 2.77772
+do PVff:SetUpDecayMode 221 22 13 7.55416e-06 2 113 775.8 150.3 2.03869
+do PVff:SetUpDecayMode 331 22 11 1.04e-05 2 113 775.8 150.3 5.07081
+do PVff:SetUpDecayMode 331 22 13 1.04e-05 2 113 775.8 150.3 3.00948
 #
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
@@ -15868,7 +15783,7 @@ do HyperonNL:SetUpDecayMode 3222 2112 211 1.39742e-08 -4.2112e-06 0.773064
 do HyperonNL:SetUpDecayMode 3112 2112 -211 4.26814e-07 1.42866e-07 1.59759
 do HyperonNL:SetUpDecayMode 3322 3122 111 3.45387e-07 1.05341e-06 1.59532
 do HyperonNL:SetUpDecayMode 3312 3122 -211 -4.51957e-07 -1.5189e-06 1.59161
-do HyperonNL:SetUpDecayMode 4132 3312 211 -2.89373e-07 2.71227e-06 0.0167529
+do HyperonNL:SetUpDecayMode 4132 3312 211 2.89666e-07 2.71413e-06 0.0167771
 do HyperonNL:SetUpDecayMode 4122 3122 211 3.56697e-07 1.91559e-06 0.0205336
 do HyperonNL:SetUpDecayMode 4122 3222 111 2.10027e-07 2.23662e-06 0.0197528
 do HyperonNL:SetUpDecayMode 4122 3212 211 2.95892e-07 2.18669e-06 0.0203823
@@ -15997,12 +15912,12 @@ newdef DecupletGamma:Sigma*- 3114
 newdef DecupletGamma:Omega 3334
 newdef DecupletGamma:Xi*0 3324
 newdef DecupletGamma:Xi*- 3314
-insert DecupletGamma:MaxWeight 0 1.35551
-insert DecupletGamma:MaxWeight 1 1.3398
-insert DecupletGamma:MaxWeight 2 0.135728
-insert DecupletGamma:MaxWeight 3 0.137064
-insert DecupletGamma:MaxWeight 4 0.0331892
-insert DecupletGamma:MaxWeight 5 0.122578
+insert DecupletGamma:MaxWeight 0 1.35718
+insert DecupletGamma:MaxWeight 1 1.34224
+insert DecupletGamma:MaxWeight 2 0.0314619
+insert DecupletGamma:MaxWeight 3 3.09183
+insert DecupletGamma:MaxWeight 4 0.00772277
+insert DecupletGamma:MaxWeight 5 0.122963
 #
 create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma4
 newdef SU3Gamma4:Iteration 1
@@ -22841,40 +22756,16 @@ insert DtoKPiPiMarkIII:Weights 7 0.497905
 insert DtoKPiPiMarkIII:Weights 8 0.502095
 #
 create Herwig::RadiativeHyperonDecayer  RadiativeHyperon
-newdef RadiativeHyperon:MaxWeight 0 0.0245809
-newdef RadiativeHyperon:IncomingBaryon 0 3222
-newdef RadiativeHyperon:OutgoingBaryon 0 2212
-newdef RadiativeHyperon:CouplingA 0 -1.81e-07
-newdef RadiativeHyperon:CouplingB 0 4.7e-08
-newdef RadiativeHyperon:MaxWeight 1 6.02591e-05
-newdef RadiativeHyperon:IncomingBaryon 1 3312
-newdef RadiativeHyperon:OutgoingBaryon 1 3112
-newdef RadiativeHyperon:CouplingA 1 8e-09
-newdef RadiativeHyperon:CouplingB 1 1.5e-08
-newdef RadiativeHyperon:MaxWeight 2 1.34599e-12
-newdef RadiativeHyperon:IncomingBaryon 2 3212
-newdef RadiativeHyperon:OutgoingBaryon 2 2112
-newdef RadiativeHyperon:CouplingA 2 -2e-09
-newdef RadiativeHyperon:CouplingB 2 -4.5e-08
-newdef RadiativeHyperon:MaxWeight 3 0.00237221
-newdef RadiativeHyperon:IncomingBaryon 3 3122
-newdef RadiativeHyperon:OutgoingBaryon 3 2112
-newdef RadiativeHyperon:CouplingA 3 -5.2e-08
-newdef RadiativeHyperon:CouplingB 3 -5e-09
-newdef RadiativeHyperon:MaxWeight 4 0.00175107
-newdef RadiativeHyperon:IncomingBaryon 4 3322
-newdef RadiativeHyperon:OutgoingBaryon 4 3212
-newdef RadiativeHyperon:CouplingA 4 5e-09
-newdef RadiativeHyperon:CouplingB 4 7e-08
-newdef RadiativeHyperon:MaxWeight 5 0.00171032
-newdef RadiativeHyperon:IncomingBaryon 5 3322
-newdef RadiativeHyperon:OutgoingBaryon 5 3122
-newdef RadiativeHyperon:CouplingA 5 -3.4e-08
-newdef RadiativeHyperon:CouplingB 5 -8e-09
 newdef RadiativeHyperon:Iteration 1
 newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
+do RadiativeHyperon:SetUpDecayMode 3222 2212 -1.81e-07 4.7e-08 0.0245809
+do RadiativeHyperon:SetUpDecayMode 3312 3112 8e-09 1.5e-08 6.02591e-05
+do RadiativeHyperon:SetUpDecayMode 3212 2112 -2e-09 -4.5e-08 1.34599e-12
+do RadiativeHyperon:SetUpDecayMode 3122 2112 -5.2e-08 -5e-09 0.00237221
+do RadiativeHyperon:SetUpDecayMode 3322 3212 5e-09 7e-08 0.00175107
+do RadiativeHyperon:SetUpDecayMode 3322 3122 -3.4e-08 -8e-09 0.00171032
 #
 create Herwig::SMWDecayer  WDecayer
 newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
