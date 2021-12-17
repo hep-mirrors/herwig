@@ -556,7 +556,7 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
     if (min >= m1 + m2 && m1 >= ZERO && m2 >= ZERO){
       Energy2 M2 = sqr(min);
       // pstar squared
-      const Energy2 psq = ((M2-sqr(m1+m2)*(M2-sqr(m1-m2))/(4*M2);
+      const Energy2 psq = (M2-sqr(m1+m2))*(M2-sqr(m1-m2))/(4*M2);
       // Shouldn't have to check (since the ), but no harm
       assert(psq/GeV2 > 0);
       const Energy p(sqrt(psq));
