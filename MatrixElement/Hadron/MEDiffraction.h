@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The MEDiffraction class provides a simple colour singlet exchange matrix element
- * to be used in the soft component of the multiple scattering model of the 
+ * to be used in the soft component of the multiple scattering model of the
  * underlying event
  *
  * @see \ref MEDiffractionInterfaces "The interfaces"
@@ -48,7 +48,7 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-  
+
   /**
    * Correction weight to reweight the cross section to the diffractive
    * cross section.
@@ -184,43 +184,46 @@ private:
 
   /* The matrix element squared */
   double theme2;
-  
+
   /* Use only delta as excited state */
-  bool deltaOnly; 
+  bool deltaOnly;
 
   /* use correction weight for diffraction compared to inelastic weights */
   bool correctionWeightSwitch;
 
+  /* allow for non-zero azimuthal and polar angles in the 1 to 2 decay */
+  bool smearAngle;
+
   /* manual set min mass */
   double thefixedM2min;
-  
+
   /* Direction of the excited proton */
-  unsigned int diffDirection; 
-  
+  unsigned int diffDirection;
+
   /* Number of clusters the dissociated proton decays into */
-  unsigned int dissociationDecay; 
-  
+  unsigned int dissociationDecay;
+
   /* The mass of the consitutent quark */
   Energy mq() const {return Energy(0.325*GeV);}
-  
+
   /* The mass of the constituent diquark */
   Energy mqq() const {return Energy(0.650*GeV);}
-  
+
   /* The proton-pomeron slope */
   double theprotonPomeronSlope;
-  
+
   /* The soft pomeron intercept */
   double thesoftPomeronIntercept;
-  
+
   /* The soft pomeron slope */
   double thesoftPomeronSlope;
- 
-  
+
+
   /**
    * Sample the diffractive mass squared M2 and the momentum transfer t
    */
   pair<pair<Energy2,Energy2>,Energy2> diffractiveMassAndMomentumTransfer() const;
-  
+
 
   /**
    * Random value for the diffractive mass squared M2 according to (M2/s0)^(-intercept)
@@ -231,49 +234,52 @@ private:
    * Random value for t according to exp(diffSlope*t)
    */
   Energy2 randomt(Energy2 M2) const;
-  
+
   /**
    * Random value for t according to exp(diffSlope*t) for double diffraction
    */
-  
+
   Energy2 doublediffrandomt(Energy2 M12, Energy2 M22) const;
-  
-  
+
+
   /**
    * Returns the momenta of the two-body decay of momentum pp
    */
-  pair<Lorentz5Momentum,Lorentz5Momentum> twoBodyDecayMomenta(Lorentz5Momentum pp) const;
+  //pair<Lorentz5Momentum,Lorentz5Momentum> twoBodyDecayMomenta(Lorentz5Momentum pp) const;
 
+  bool twoBodyDecayMomenta(const Lorentz5Momentum & p,
+         const Energy m1, const Energy m2,
+         Lorentz5Momentum & p1, Lorentz5Momentum & p2);
   /**
    * Returns the proton-pomeron slope
    */
-  InvEnergy2 protonPomeronSlope() const; 
-  
+  InvEnergy2 protonPomeronSlope() const;
+
   /**
    * Returns the soft pomeron intercept
-   */  
-  double softPomeronIntercept() const; 
- 
-  //M12 and M22 are masses squared of 
+   */
+  double softPomeronIntercept() const;
+
+  //M12 and M22 are masses squared of
   //outgoing particles
-  
+
   /**
    * Returns the minimal possible value of momentum transfer t given the center
    * of mass energy and diffractive masses
    */
   Energy2 tminfun(Energy2 s, Energy2 M12, Energy2 M22) const;
- 
+
   /**
    * Returns the maximal possible value of momentum transfer t given the center
    * of mass energy and diffractive masses
    */
-  Energy2 tmaxfun(Energy2 s , Energy2 M12, Energy2 M22) const; 
+  Energy2 tmaxfun(Energy2 s , Energy2 M12, Energy2 M22) const;
 
   /**
    * Returns the minimal possible value of diffractive mass
    */
   //lowest possible mass given the constituent masses of quark and diquark
-  Energy2 M2min() const;  
+  Energy2 M2min() const;
 
   /**
    * Returns the maximal possible value of diffractive mass
@@ -288,7 +294,7 @@ private:
   *  Allows for a fixed m2 value
   */
   Energy2 fixedM2min() const;
-   
+
 
   /* Kallen function */
   template<typename A, typename B, typename C>
@@ -296,8 +302,8 @@ private:
   {
     return a*a + b*b + c*c - 2.0*(a*b + b*c + c*a);
   }
-  
-  
+
+
 
   /**
    * The assignment operator is private and must never be called.
@@ -305,18 +311,18 @@ private:
    */
   MEDiffraction & operator=(const MEDiffraction &) = delete;
 
-  bool isInRunPhase; 
-  
- 
+  bool isInRunPhase;
+
+
   /* The proton mass */
   Energy theProtonMass;
 
   /**
-   * a MPIHandler to administer the creation of several (semihard) 
+   * a MPIHandler to administer the creation of several (semihard)
    * partonic interactions.
    */
   UEBasePtr MPIHandler_;
-  
+
 };
 
 }
