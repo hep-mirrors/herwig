@@ -1744,11 +1744,11 @@ newdef PVff:Iteration 1
 newdef PVff:Ntry 500
 newdef PVff:Points 10000
 newdef PVff:GenerateIntermediates 0
-do PVff:SetUpDecayMode 111 22 11 7.61872e-06 2 113 775.8 150.3 0.0267854
-do PVff:SetUpDecayMode 221 22 11 7.55416e-06 2 113 775.8 150.3 2.77772
-do PVff:SetUpDecayMode 221 22 13 7.55416e-06 2 113 775.8 150.3 2.03869
-do PVff:SetUpDecayMode 331 22 11 1.04e-05 2 113 775.8 150.3 5.07081
-do PVff:SetUpDecayMode 331 22 13 1.04e-05 2 113 775.8 150.3 3.00948
+do PVff:SetUpDecayMode 111 22 11 0.00761872 2 113 0.7758 0.1503 0.0270216
+do PVff:SetUpDecayMode 221 22 11 0.00755416 2 113 0.7758 0.1503 2.79096
+do PVff:SetUpDecayMode 221 22 13 0.00755416 2 113 0.7758 0.1503 2.03951
+do PVff:SetUpDecayMode 331 22 11 0.0104 2 113 0.7758 0.1503 5.23191
+do PVff:SetUpDecayMode 331 22 13 0.0104 2 113 0.7758 0.1503 3.03687
 #
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
@@ -10296,15 +10296,8 @@ newdef PScalar4f:Iteration 1
 newdef PScalar4f:Ntry 500
 newdef PScalar4f:Points 10000
 newdef PScalar4f:GenerateIntermediates 0
-newdef PScalar4f:Incoming   0 111
-newdef PScalar4f:Outgoing1  0 11
-newdef PScalar4f:Outgoing2  0 11
-newdef PScalar4f:Coupling   0 2.51591e-05
-newdef PScalar4f:MaxWeight  0 0.00026
-newdef PScalar4f:IncludeVMD 0 2
-newdef PScalar4f:VMDID      0 113
-newdef PScalar4f:VMDmass    0 775.8
-newdef PScalar4f:VMDwidth   0 150.3
+do PScalar4f:SetUpDecayMode 111 11 11 0.0251591 2 113 0.7758 0.1503 0.000287254
+do PScalar4f:SetUpDecayMode 221 11 11 0.0248 2 113 0.7758 0.1503 0.000268792
 #
 create Herwig::ScalarScalarScalarDecayer  ScalarSS
 newdef ScalarSS:Iteration 1

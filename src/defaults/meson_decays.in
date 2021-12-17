@@ -17,15 +17,17 @@ decaymode pi0->e-,e+,e-,e+; 3.3E-5 1 /Herwig/Decays/PScalar4f
 decaymode pi-->mu-,nu_mubar; 0.999877 1 /Herwig/Decays/PScalarlnu
 decaymode pi-->e-,nu_ebar; 0.000123 1 /Herwig/Decays/PScalarlnu
 #
-decaymode eta->gamma,gamma; 0.393818 1 /Herwig/Decays/PVV
-decaymode eta->pi0,pi0,pi0; 0.325114 1 /Herwig/Decays/Etapipipi
-decaymode eta->pi+,pi-,pi0; 0.22701 1 /Herwig/Decays/Etapipipi
-decaymode eta->pi+,pi-,gamma; 0.046902 1 /Herwig/Decays/Etapipigamma
-decaymode eta->e-,e+,gamma; 0.006 1 /Herwig/Decays/PVff
-decaymode eta->pi0,gamma,gamma; 0.00044 1 /Herwig/Decays/Etapigammagamma
-decaymode eta->pi+,pi-,e-,e+; 0.0004 1 /Herwig/Decays/Mambo
+decaymode eta->gamma,gamma; 0.394082 1 /Herwig/Decays/PVV
+decaymode eta->pi0,pi0,pi0; 0.326779 1 /Herwig/Decays/Etapipipi
+decaymode eta->pi+,pi-,pi0; 0.229175 1 /Herwig/Decays/Etapipipi
+decaymode eta->pi+,pi-,gamma; 0.0422 1 /Herwig/Decays/Etapipigamma
+decaymode eta->e-,e+,gamma; 0.0069 1 /Herwig/Decays/PVff
 decaymode eta->mu-,mu+,gamma; 0.00031 1 /Herwig/Decays/PVff
+decaymode eta->pi+,pi-,e-,e+; 0.000268 1 /Herwig/Decays/Mambo
+decaymode eta->pi0,gamma,gamma; 0.000256 1 /Herwig/Decays/Etapigammagamma
+decaymode eta->e-,e+,e-,e+; 2.4E-5 1 /Herwig/Decays/PScalar4f
 decaymode eta->mu-,mu+; 6.0E-6 1 /Herwig/Decays/DecayME0
+
 #
 decaymode eta'->pi+,pi-,eta; 0.444682 1 /Herwig/Decays/Etapipipi
 decaymode eta'->pi+,pi-,gamma; 0.29379 1 /Herwig/Decays/Etapipigamma
