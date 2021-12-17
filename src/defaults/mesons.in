@@ -14,7 +14,7 @@ create ThePEG::ParticleData pi-
 setup pi- -211 pi- 0.13957039 2.5283740149914E-17 0 7804.5 -3 0 1 1 
 makeanti pi- pi+
 create ThePEG::ParticleData eta
-setup eta 221 eta 0.54751 1.3E-6 1.3E-5 0 0 0 1 0 
+setup eta 221 eta 0.547862 1.31E-6 1.31E-5 0 0 0 1 0 
 create ThePEG::ParticleData eta'
 setup eta' 331 eta' 0.95778 0.000203 0.00203 0 0 0 1 0 
 create ThePEG::ParticleData eta_c

@@ -143,34 +143,34 @@ void PScalarVectorFermionsDecayer::Init() {
      &PScalarVectorFermionsDecayer::setUpDecayMode, false);
   
   static Deleted<PScalarVectorFermionsDecayer> interfaceIncoming
-    ("Incoming","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("Incoming","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceOutcomingV
-    ("OutgoingVector","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("OutgoingVector","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceOutcomingF
-    ("OutgoingFermion","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("OutgoingFermion","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceOutcomingA
-    ("OutgoingAntiFermion","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("OutgoingAntiFermion","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceCoupling
-    ("Coupling","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("Coupling","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceMaxWeight
-    ("MaxWeight","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("MaxWeight","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceIncludeVMD
-    ("IncludeVMD","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("IncludeVMD","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceVMDID
-    ("VMDID","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("VMDID","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceVMDmass
-    ("VMDmass","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("VMDmass","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
   static Deleted<PScalarVectorFermionsDecayer> interfaceVMDwidth
-    ("VMDwidth","The old methods of setting up a decay in PScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
+    ("VMDwidth","The old methods of setting up a decay in PScalarVectorFermionsDecayer have been deleted, please use SetUpDecayMode");
 
 }
 
@@ -351,7 +351,7 @@ void PScalarVectorFermionsDecayer::dataBaseOutput(ofstream & output,
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
 	   << outgoing_[ix].first  << " " << outgoing_[ix].second << " "
-	   << coupling_[ix]*GeV << includeVMD_[ix] << " "
+	   << coupling_[ix]*GeV << " " << includeVMD_[ix] << " "
 	   << VMDid_[ix] << " " << VMDmass_[ix]/GeV << " " << VMDwidth_[ix]/GeV << " "
 	   << maxweight_[ix] << "\n";
   }
