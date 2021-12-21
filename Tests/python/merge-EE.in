@@ -228,7 +228,8 @@ for f in yodafiles:
         elif("MARKI_1975_I100733" in aopath) :
             if "d03" in aopath : 
                 outhistos[aopath] = ao
-        elif(aopath.find("A2_2017_I1486671")>=0) :
+        elif("A2_2017_I1486671" in aopath or
+             "NA60_2016_I1452485" in aopath ) :
             if("Eta" in file) :
                 if "d01" in aopath : outhistos[aopath] = ao
             elif("Omega" in file) :
