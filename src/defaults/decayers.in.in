@@ -1513,14 +1513,15 @@ newdef VectorVPff:Iteration 5
 newdef VectorVPff:Ntry 500
 newdef VectorVPff:Points 10000
 newdef VectorVPff:GenerateIntermediates 0
-do VectorVPff:SetUpDecayMode 223 111 11  0.2179 2 113 0.7758 0.1503 3.99833 0
-do VectorVPff:SetUpDecayMode 223 111 13  0.2179 2 113 0.7758 0.1503 2.74763 0
-do VectorVPff:SetUpDecayMode 333 221 11  0.0643 2 113 0.7758 0.1503 3.91838 0
-do VectorVPff:SetUpDecayMode 333 221 13  0.0643 2 113 0.7758 0.1503 2.71386 0
-do VectorVPff:SetUpDecayMode 333 111 11  0.0120094 2 113 0.7758 0.1503 4.83171 0.21877
-do VectorVPff:SetUpDecayMode 333 111 13  0.0120094 2 113 0.7758 0.1503 3.16631 0.328022
-do VectorVPff:SetUpDecayMode 443 221 11  0.0643 2 443 3.0969 9.29e-05 2.13452 0
-do VectorVPff:SetUpDecayMode 443 221 13  0.0643 2 443 3.0969 9.29e-05 0.353704 0
+do VectorVPff:SetUpDecayMode 223 111 11  0.2179 2 113 0.7758 0.1503 5.2618 0.273309
+do VectorVPff:SetUpDecayMode 223 111 13  0.2179 2 113 0.7758 0.1503 26.8941 1
+do VectorVPff:SetUpDecayMode 333 221 11  0.0643 2 113 0.7758 0.1503 4.3391 0.215086
+do VectorVPff:SetUpDecayMode 333 221 13  0.0643 2 113 0.7758 0.1503 3.31309 0.375026
+do VectorVPff:SetUpDecayMode 333 111 11  0.0120094 2 113 0.7758 0.1503 4.83188 0.218805
+do VectorVPff:SetUpDecayMode 333 111 13  0.0120094 2 113 0.7758 0.1503 3.16628 0.327872
+do VectorVPff:SetUpDecayMode 443 221 11  0.0643 2 443 3.0969 9.29e-05 2.34926 0.189627
+do VectorVPff:SetUpDecayMode 443 221 13  0.0643 2 443 3.0969 9.29e-05 0.420516 0.200787
+
 #
 create Herwig::VectorMeson3PionDecayer  Vector3Pion
 newdef Vector3Pion:Iteration 5
@@ -1664,11 +1665,12 @@ newdef PVff:Iteration 1
 newdef PVff:Ntry 500
 newdef PVff:Points 10000
 newdef PVff:GenerateIntermediates 0
-do PVff:SetUpDecayMode 111 22 11 0.00761872 2 113 0.7758 0.1503 0.0270216
-do PVff:SetUpDecayMode 221 22 11 0.00755416 2 113 0.7758 0.1503 2.79096
-do PVff:SetUpDecayMode 221 22 13 0.00755416 2 113 0.7758 0.1503 2.03951
-do PVff:SetUpDecayMode 331 22 11 0.0104 2 113 0.7758 0.1503 5.23191
-do PVff:SetUpDecayMode 331 22 13 0.0104 2 113 0.7758 0.1503 3.03687
+do PVff:SetUpDecayMode 111 22 11 0.00761872 2 113 0.7758 0.1503 0.0270172
+do PVff:SetUpDecayMode 221 22 11 0.00755416 2 113 0.707 0 2.82505
+do PVff:SetUpDecayMode 221 22 13 0.00755416 2 113 0.707 0 2.19738
+do PVff:SetUpDecayMode 331 22 11 0.0104 2 113 0.7758 0.1503 5.19839
+do PVff:SetUpDecayMode 331 22 13 0.0104 2 113 0.7758 0.1503 3.01441
+
 #
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
