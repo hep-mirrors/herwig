@@ -293,7 +293,7 @@ particleNames = {
     315 : "$K^0_2,\\bar{K}^0_2$", 325 : "$K^\\pm_2$",
     411 : "$D^\\pm$", 421 : "$D^0,\\bar{D}^0$", 413: "$D^{*\\pm}$", 415 : "$D^\\pm_2$", 425 : "$D^0_2, \\bar{D}^0_2$", 423: "$D^{*0},\\bar{D}^{*0}$",
     10423: "$D^0_1,\\bar{D}_1^0$",10413: "$D^\\pm_1$",
-    431 : "$D_s^\\pm$", 435 : "$D^\\pm_{s2}$", 20433 : "$D^\\pm_{s1}$", 433 : "$D_s^{*\\pm}$", 10433 : "$D_{s1}(2536)^+$", 10431 : "$D_{s0}(2319)^+$",
+    431 : "$D_s^\\pm$", 435 : "$D^\\pm_{s2}$", 20433 : "$D_{s1}(2460)^\\pm$", 433 : "$D_s^{*\\pm}$", 10433 : "$D_{s1}(2536)^+$", 10431 : "$D_{s0}(2319)^+$",
 
     511 : "$B^0,\\bar{B}^0$", "511B" : "$B^0,\\bar{B}^0, B^\\pm$",
     521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
@@ -343,6 +343,8 @@ analyses["HadronDecays"][111] = { "Modes" : {"$\\pi^0\\to\\gamma e^+e^-$" : {} }
 analyses["HadronDecays"][111]["Modes"]["$\\pi^0\\to\\gamma e^+e^-$"]["MC"] = ["/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVf",
                                                                               "/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVfbar",
                                                                               "/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mff"]
+
+analyses["HadronDecays"][111]["Modes"]["$\\pi^0\\to\\gamma e^+e^-$"]["data"]=["/A2_2017_I1498079/d01-x01-y01"]
 # eta
 analyses["HadronDecays"][221] = { "Modes" : {"$\\eta\\to\\pi^0\\pi^0\\pi^0$"   : {},
                                              "$\\eta\\to\\pi^+\\pi^-\\pi^0$"   : {},
@@ -366,6 +368,7 @@ analyses["HadronDecays"][221]["Modes"]["$\\eta\\to\\gamma e^+e^-$"]["MC"  ] = ["
                                                                                "/MC_Meson_Meson_Leptons_Decay/h2_221p_22p_11_mVfbar",
                                                                                "/MC_Meson_Meson_Leptons_Decay/h2_221p_22p_11_mff"]
 analyses["HadronDecays"][221]["Modes"]["$\\eta\\to\\gamma e^+e^-$"]["data"] = ["/A2_2017_I1486671/d01-x01-y01"]
+analyses["HadronDecays"][221]["Modes"]["$\\eta\\to\\gamma \\mu^+\\mu^-$"]["data"  ] = ["/NA60_2016_I1452485/d01-x01-y01"]
 analyses["HadronDecays"][221]["Modes"]["$\\eta\\to\\gamma \\mu^+\\mu^-$"]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_221p_22p_13_mVf",
                                                                                      "/MC_Meson_Meson_Leptons_Decay/h2_221p_22p_13_mVfbar",
                                                                                      "/MC_Meson_Meson_Leptons_Decay/h2_221p_22p_13_mff"]
@@ -411,6 +414,7 @@ analyses["HadronDecays"][223]["Modes"]["$\\omega\\to e^+e^-\\pi^0$"]["MC"] = ["/
 analyses["HadronDecays"][223]["Modes"]["$\\omega\\to \\mu^+\\mu^-\\pi^0$"]["MC"] = ["/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mPf",
                                                                                     "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mPfbar",
                                                                                     "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mff"]
+analyses["HadronDecays"][223]["Modes"]["$\\omega\\to \\mu^+\\mu^-\\pi^0$"]["data"] = ["/NA60_2016_I1452485/d02-x01-y01"]
 analyses["HadronDecays"][223]["Modes"]["$\\omega\\to e^+e^-\\pi^0$"]["data"] = ["/A2_2017_I1486671/d02-x01-y01"]
 # phi
 analyses["HadronDecays"][333] = { "Modes" : {"$\\phi\\to\\pi^+\\pi^-\\pi^0$"   : {},
@@ -754,11 +758,14 @@ analyses["HadronDecays"][10433] = { "Modes" : { "$D^+_{s1}\\to D^{*+}K^0$"      
                                                 "$D^+_{s1}\\to D^{*0}K^+$"      : {}}}
 analyses["HadronDecays"][10433]["Modes"]["$D^+_{s1}\\to D^{*+}K^0$"]["data"]= ["/BABAR_2011_I892421/d01-x01-y01","/BABAR_2011_I892421/d02-x01-y01",
                                                                                "/BELLE_2008_I762013/d01-x01-y01","/BELLE_2008_I762013/d02-x01-y01",
-                                                                               "/BELLE_2008_I762013/d03-x01-y01"]
+                                                                               "/BELLE_2008_I762013/d03-x01-y01","/LHCB_2016_I1414195/d01-x01-y01"]
 analyses["HadronDecays"][10433]["Modes"]["$D^+_{s1}\\to D^{*0}K^+$"]["data"]= ["/CLEOII_1993_I352823/d04-x01-y01"]
 # D_s1(2460)
 analyses["HadronDecays"][20433] = { "Modes" : { "$D^{\\prime+}_{s1}\\to D^{*+}_s\pi^0$"      : {}}}
 analyses["HadronDecays"][20433]["Modes"]["$D^{\\prime+}_{s1}\\to D^{*+}_s\pi^0$"]["data"]= ["/BABAR_2006_I714447/d05-x01-y01"]
+# D_s2
+analyses["HadronDecays"][435] = { "Modes" : { "$D^+_{s2}\\to D^{*+}K^0$"      : {}}}
+analyses["HadronDecays"][435]["Modes"]["$D^+_{s2}\\to D^{*+}K^0$"]["data"]= ["/LHCB_2016_I1414195/d01-x01-y02"]
 # B0
 analyses["HadronDecays"][511]={ "Spectrum" : {},
                                 "Modes" : { "$B^0\\to\\pi^- e^+\\nu_e$"         : {},
@@ -1222,7 +1229,8 @@ analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to \\Upsilon(1S)\\pi^
                                                                                                        "/CLEOII_1998_I467642/d04-x01-y01","/CLEOII_1998_I467642/d04-x01-y02",
                                                                                                        "/CLEOII_1998_I467642/d05-x01-y01","/CLEOII_1998_I467642/d05-x01-y02",
                                                                                                        "/CLEOII_1998_I467642/d06-x01-y01","/CLEOII_1998_I467642/d06-x01-y02",
-                                                                                                       "/CLEOII_1994_I356001/d04-x01-y01","/CLEOII_1994_I356001/d04-x01-y02"]
+                                                                                                       "/CLEOII_1994_I356001/d04-x01-y01","/CLEOII_1994_I356001/d04-x01-y02",
+                                                                                                       "/BELLE_2017_I1610301/d01-x01-y01","/BELLE_2017_I1610301/d02-x01-y01"]
 analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to \\Upsilon(1S)\\pi^+\\pi^-$" ]["MC"  ] = ["/MC_Onium_PiPi_Decay/h_100553_553_mpippim",
                                                                                                        "/MC_Onium_PiPi_Decay/h_100553_553_hpippim"]
 # Upsilon 3S
@@ -1233,7 +1241,8 @@ analyses["HadronDecays"][200553] = {"Spectrum" : {}, "Mult" : {},
                                                 "$\\Upsilon(3S)\\to\\Upsilon(2S)\\pi^+\\pi^-$" : {}}}
 analyses["HadronDecays"][200553]["Modes"]["$\\Upsilon(3S)\\to\\Upsilon(1S)\\pi^0\\pi^0$"]["data"]=["/CLEOII_1994_I356001/d01-x01-y01"]
 analyses["HadronDecays"][200553]["Modes"]["$\\Upsilon(3S)\\to\\Upsilon(1S)\\pi^+\\pi^-$"]["data"]=["/CLEOII_1994_I356001/d02-x01-y01",
-                                                                                                   "/CLEOII_1994_I356001/d02-x01-y02"]
+                                                                                                   "/CLEOII_1994_I356001/d02-x01-y02",
+                                                                                                   "/BELLE_2017_I1610301/d01-x01-y02","/BELLE_2017_I1610301/d02-x01-y02"]
 analyses["HadronDecays"][200553]["Modes"]["$\\Upsilon(3S)\\to\\Upsilon(2S)\\pi^0\\pi^0$"]["data"]=["/CLEOII_1994_I356001/d01-x01-y02"]
 analyses["HadronDecays"][200553]["Modes"]["$\\Upsilon(3S)\\to\\Upsilon(2S)\\pi^+\\pi^-$"]["data"]=["/CLEOII_1994_I356001/d03-x01-y01",
                                                                                                    "/CLEOII_1994_I356001/d03-x01-y02"]
@@ -1261,10 +1270,12 @@ analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^0
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^+\\pi^-$"]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_553_hpippim",
                                                                                                  "/MC_Onium_PiPi_Decay/h_300553_553_mpippim"]
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^+\\pi^-$"]["data"]=["/BELLE_2009_I810744/d01-x01-y01",
-                                                                                                   "/BABAR_2006_I714448/d01-x01-y01"]
+                                                                                                   "/BABAR_2006_I714448/d01-x01-y01",
+                                                                                                   "/BELLE_2017_I1610301/d01-x01-y03","/BELLE_2017_I1610301/d02-x01-y03"]
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(2S)\\pi^0\\pi^0$"]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_100553_hpi0pi0",
                                                                                                  "/MC_Onium_PiPi_Decay/h_300553_100553_mpi0pi0"]
-analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(2S)\\pi^+\\pi^-$"]["data"]=["/BABAR_2006_I714448/d01-x01-y02"]
+analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(2S)\\pi^+\\pi^-$"]["data"]=["/BABAR_2006_I714448/d01-x01-y02",
+                                                                                                   "/BELLE_2017_I1610301/d01-x01-y04","/BELLE_2017_I1610301/d02-x01-y04"]
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(2S)\\pi^+\\pi^-$"]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_100553_hpippim",
                                                                                                  "/MC_Onium_PiPi_Decay/h_300553_100553_mpippim"]
 analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to J/\\psi\\pi^0\\pi^0$"     ]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_553_hpi0pi0",
@@ -2604,11 +2615,12 @@ analyses["Multiplicity"][315  ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d34-x01-y0
 analyses["Multiplicity"][515  ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d35-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d35-x01-y01"]
 
 analyses["Multiplicity"][10431][10. ] = ["/BABAR_2006_I714447/d01-x01-y01"]
-analyses["Multiplicity"][10433][10. ] = ["/BABAR_2006_I714447/d01-x01-y02","/BABAR_2006_I714447/d01-x01-y03",
-                                         "/BABAR_2006_I714447/d01-x01-y04","/BABAR_2006_I714447/d01-x01-y05",
-                                         "/ARGUS_1989_I282570/d01-x01-y01","/ARGUS_1989_I282570/d01-x01-y02"]
-analyses["Multiplicity"][20433][10. ] = ["/BABAR_2006_I714447/d01-x01-y06","/CLEOII_1993_I352823/d02-x01-y01",
+analyses["Multiplicity"][10433][10. ] = ["/BABAR_2006_I714447/d01-x01-y06",
+                                         "/ARGUS_1989_I282570/d01-x01-y01","/ARGUS_1989_I282570/d01-x01-y02",
+                                         "/CLEOII_1993_I352823/d02-x01-y01",
                                          "/CLEOII_1993_I352823/d02-x01-y02"]
+analyses["Multiplicity"][20433][10. ] = ["/BABAR_2006_I714447/d01-x01-y02","/BABAR_2006_I714447/d01-x01-y04","/BABAR_2006_I714447/d01-x01-y05",
+                                         "/BABAR_2006_I714447/d01-x01-y03"]
 analyses["Multiplicity"][20433][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d36-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d36-x01-y01"]
 
 analyses["Multiplicity"][435  ][10.58] = ["/ARGUS_1995_I397794/d01-x01-y01","/ARGUS_1995_I397794/d01-x02-y01"]
@@ -2726,7 +2738,7 @@ analyses["EventShapes"]["T"][85.1 ] = ["/L3_2004_I652683/d22-x01-y03"]
 analyses["EventShapes"]["T"][91.2 ] = ["/DELPHI_1996_S3430090/d11-x01-y01","/ALEPH_1996_S3486095/d03-x01-y01",
                                        "/OPAL_2004_S6132243/d01-x01-y01","/ALEPH_2004_S5765862/d54-x01-y01",
                                        "/L3_1992_I334954/d01-x01-y01","/DELPHI_2000_I522656/d06-x01-y01",
-                                         "/DELPHI_2000_I522656/d33-x01-y01","/DELPHI_2000_I522656/d33-x01-y02"]
+                                         "/DELPHI_2000_I522656/d33-x01-y01","/DELPHI_2000_I522656/d33-x01-y02","/SLD_1995_I378545/d02-x01-y01"]
 analyses["EventShapes"]["T"][130.1] = ["/L3_2004_I652683/d23-x01-y01"]
 analyses["EventShapes"]["T"][133.0] = ["/ALEPH_2004_S5765862/d55-x01-y01","/OPAL_2004_S6132243/d01-x01-y02",
                                        "/DELPHI_1999_I499183/d13-x01-y01"]
@@ -2892,7 +2904,7 @@ analyses["EventShapes"]["O"][66.0 ] = ["/DELPHI_2003_I620250/d06-x01-y02"]
 analyses["EventShapes"]["O"][76.0 ] = ["/DELPHI_2003_I620250/d06-x01-y03"]
 analyses["EventShapes"]["O"][91.2 ] = ["/ALEPH_2004_S5765862/d133-x01-y01","/DELPHI_1996_S3430090/d14-x01-y01",
                                        "/ALEPH_1996_S3486095/d08-x01-y01","/OPAL_2004_S6132243/d11-x01-y01",
-                                       "/L3_1992_I334954/d04-x01-y01","/DELPHI_2000_I522656/d07-x01-y01"]
+                                       "/L3_1992_I334954/d04-x01-y01","/DELPHI_2000_I522656/d07-x01-y01","/SLD_1995_I378545/d06-x01-y01"]
 analyses["EventShapes"]["O"][133.0] = ["/ALEPH_2004_S5765862/d134-x01-y01","/OPAL_2004_S6132243/d11-x01-y02",
                                        "/DELPHI_1999_I499183/d19-x01-y01"]
 analyses["EventShapes"]["O"][161.0] = ["/ALEPH_2004_S5765862/d135-x01-y01","/DELPHI_1999_I499183/d19-x01-y02",
@@ -2926,7 +2938,7 @@ analyses["EventShapes"]["BW"][76.0 ] = ["/DELPHI_2003_I620250/d13-x01-y03"]
 analyses["EventShapes"]["BW"][82.3 ] = ["/L3_2004_I652683/d37-x01-y02"]
 analyses["EventShapes"]["BW"][85.1 ] = ["/L3_2004_I652683/d37-x01-y03"]
 analyses["EventShapes"]["BW"][91.2 ] = ["/DELPHI_1996_S3430090/d23-x01-y01","/ALEPH_2004_S5765862/d78-x01-y01",
-                                        "/OPAL_2004_S6132243/d05-x01-y01","/DELPHI_2000_I522656/d12-x01-y01"]
+                                        "/OPAL_2004_S6132243/d05-x01-y01","/DELPHI_2000_I522656/d12-x01-y01","/SLD_1995_I378545/d05-x01-y01"]
 analyses["EventShapes"]["BW"][130.1] = ["/L3_2004_I652683/d38-x01-y01"]
 analyses["EventShapes"]["BW"][133.0] = ["/OPAL_2004_S6132243/d05-x01-y02","/ALEPH_2004_S5765862/d79-x01-y01",
                                         "/DELPHI_1999_I499183/d33-x01-y01"]
@@ -2979,7 +2991,7 @@ analyses["EventShapes"]["BT"][76.0 ] = ["/DELPHI_2003_I620250/d15-x01-y03"]
 analyses["EventShapes"]["BT"][82.3 ] = ["/L3_2004_I652683/d32-x01-y02"]
 analyses["EventShapes"]["BT"][85.1 ] = ["/L3_2004_I652683/d32-x01-y03"]
 analyses["EventShapes"]["BT"][91.2 ] = ["/DELPHI_1996_S3430090/d25-x01-y01","/OPAL_2004_S6132243/d04-x01-y01",
-                                        "/ALEPH_2004_S5765862/d70-x01-y01","/DELPHI_2000_I522656/d13-x01-y01"]
+                                        "/ALEPH_2004_S5765862/d70-x01-y01","/DELPHI_2000_I522656/d13-x01-y01","/SLD_1995_I378545/d04-x01-y01"]
 analyses["EventShapes"]["BT"][130.1] = ["/L3_2004_I652683/d33-x01-y01"]
 analyses["EventShapes"]["BT"][133.0] = ["/OPAL_2004_S6132243/d04-x01-y02","/ALEPH_2004_S5765862/d71-x01-y01",
                                         "/DELPHI_1999_I499183/d37-x01-y01"]
@@ -3030,7 +3042,7 @@ analyses["EventShapes"]["C"][66.0 ] = ["/DELPHI_2003_I620250/d17-x01-y02"]
 analyses["EventShapes"]["C"][76.0 ] = ["/DELPHI_2003_I620250/d17-x01-y03"]
 analyses["EventShapes"]["C"][91.2 ] = ["/DELPHI_1996_S3430090/d18-x01-y01","/ALEPH_1996_S3486095/d07-x01-y01",
                                        "/ALEPH_2004_S5765862/d86-x01-y01","/OPAL_2004_S6132243/d03-x01-y01",
-                                       "/L3_1992_I334954/d12-x01-y01","/DELPHI_2000_I522656/d08-x01-y01"]
+                                       "/L3_1992_I334954/d12-x01-y01","/DELPHI_2000_I522656/d08-x01-y01","/SLD_1995_I378545/d07-x01-y01"]
 analyses["EventShapes"]["C"][133.0] = ["/OPAL_2004_S6132243/d03-x01-y02","/ALEPH_2004_S5765862/d87-x01-y01",
                                        "/DELPHI_1999_I499183/d41-x01-y01"]
 analyses["EventShapes"]["C"][161.0] = ["/ALEPH_2004_S5765862/d88-x01-y01","/DELPHI_1999_I499183/d41-x01-y02",
@@ -3107,7 +3119,7 @@ analyses["EventShapes"]["HeavyJetMass"][82.3 ] = ["/L3_2004_I652683/d27-x01-y02"
 analyses["EventShapes"]["HeavyJetMass"][85.1 ] = ["/L3_2004_I652683/d27-x01-y03"]
 analyses["EventShapes"]["HeavyJetMass"][91.2 ] = ["/DELPHI_1996_S3430090/d20-x01-y01","/ALEPH_1996_S3486095/d06-x01-y01",
                                                   "/OPAL_2004_S6132243/d02-x01-y01","/ALEPH_2004_S5765862/d62-x01-y01",
-                                                  "/L3_1992_I334954/d14-x01-y01","/DELPHI_2000_I522656/d09-x01-y01"]
+                                                  "/L3_1992_I334954/d14-x01-y01","/DELPHI_2000_I522656/d09-x01-y01","/SLD_1995_I378545/d03-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][130.1] = ["/L3_2004_I652683/d28-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][133.0] = ["/OPAL_2004_S6132243/d02-x01-y02","/ALEPH_2004_S5765862/d63-x01-y01",
                                                   "/DELPHI_1999_I499183/d27-x01-y01"]
@@ -3383,7 +3395,8 @@ analyses["EventShapes"]["JCEF" ][91.2] = ["/DELPHI_2000_I522656/d05-x01-y01",
                                           "/DELPHI_2000_I522656/d29-x01-y01","/DELPHI_2000_I522656/d29-x01-y02",
                                           "/DELPHI_2000_I522656/d30-x01-y01","/DELPHI_2000_I522656/d30-x01-y02",
                                           "/DELPHI_2000_I522656/d31-x01-y01","/DELPHI_2000_I522656/d31-x01-y02",
-                                          "/DELPHI_2000_I522656/d32-x01-y01","/DELPHI_2000_I522656/d32-x01-y02"]
+                                          "/DELPHI_2000_I522656/d32-x01-y01","/DELPHI_2000_I522656/d32-x01-y02",
+                                          "/SLD_1995_I378545/d16-x01-y01"]
 # EEC
 analyses["EventShapes"]["EEC" ][7.7 ] = ["/PLUTO_1981_I156315/d01-x01-y01"]
 analyses["EventShapes"]["EEC" ][9.4 ] = ["/PLUTO_1981_I156315/d01-x01-y02"]
@@ -3406,7 +3419,8 @@ analyses["EventShapes"]["EEC" ][91.2] = ["/DELPHI_1996_S3430090/d33-x01-y01","/D
                                          "/DELPHI_2000_I522656/d21-x01-y01","/DELPHI_2000_I522656/d21-x01-y02",
                                          "/DELPHI_2000_I522656/d22-x01-y01","/DELPHI_2000_I522656/d22-x01-y02",
                                          "/DELPHI_2000_I522656/d23-x01-y01","/DELPHI_2000_I522656/d23-x01-y02",
-                                         "/DELPHI_2000_I522656/d24-x01-y01","/DELPHI_2000_I522656/d24-x01-y02"]
+                                         "/DELPHI_2000_I522656/d24-x01-y01","/DELPHI_2000_I522656/d24-x01-y02",
+                                         "/SLD_1995_I378545/d14-x01-y01"]
 analyses["EventShapes"]["EEC" ][59.5] = ["/TOPAZ_1989_I279575/d02-x01-y01","/TOPAZ_1989_I279575/d02-x01-y02"]
 # AEEC 
 analyses["EventShapes"]["AEEC"][8.65] = ["/PLUTO_1981_I156315/d04-x01-y01"]
@@ -3422,7 +3436,8 @@ analyses["EventShapes"]["AEEC"][91.2] = ["/DELPHI_1996_S3430090/d34-x01-y01","/D
                                          "/DELPHI_2000_I522656/d25-x01-y01","/DELPHI_2000_I522656/d25-x01-y02",
                                          "/DELPHI_2000_I522656/d26-x01-y01","/DELPHI_2000_I522656/d26-x01-y02",
                                          "/DELPHI_2000_I522656/d27-x01-y01","/DELPHI_2000_I522656/d27-x01-y02",
-                                         "/DELPHI_2000_I522656/d28-x01-y01","/DELPHI_2000_I522656/d28-x01-y02"]
+                                         "/DELPHI_2000_I522656/d28-x01-y01","/DELPHI_2000_I522656/d28-x01-y02",
+                                         "/SLD_1995_I378545/d15-x01-y01"]
 # sphericity based 
 analyses["EventShapes"]["S"][9.98 ] = ["/ARGUS_1986_I227324/d01-x01-y02"]
 analyses["EventShapes"]["S"][12.0 ] = ["/TASSO_1980_I153511/d01-x01-y01"]
