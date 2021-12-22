@@ -278,6 +278,13 @@ for f in yodafiles:
                 outhistos[aopath]=htemp2
             else :
                 outhistos[aopath]=htemp
+        elif "BELLE_2017_I1610301" in aopath :
+            if "Upsilon2" in file and "y01" in aopath:
+                outhistos[aopath] = ao
+            elif "Upsilon3" in file and "y02" in aopath:
+                outhistos[aopath] = ao
+            elif "Upsilon4" in file and ("y03" in aopath or "y04" in aopath) :
+                outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao
 
