@@ -1521,7 +1521,6 @@ do VectorVPff:SetUpDecayMode 333 111 11  0.0120094 2 113 0.7758 0.1503 4.83188 0
 do VectorVPff:SetUpDecayMode 333 111 13  0.0120094 2 113 0.7758 0.1503 3.16628 0.327872
 do VectorVPff:SetUpDecayMode 443 221 11  0.0643 2 443 3.0969 9.29e-05 2.34926 0.189627
 do VectorVPff:SetUpDecayMode 443 221 13  0.0643 2 443 3.0969 9.29e-05 0.420516 0.200787
-
 #
 create Herwig::VectorMeson3PionDecayer  Vector3Pion
 newdef Vector3Pion:Iteration 5
@@ -1670,7 +1669,6 @@ do PVff:SetUpDecayMode 221 22 11 0.00755416 2 113 0.707 0 2.82505
 do PVff:SetUpDecayMode 221 22 13 0.00755416 2 113 0.707 0 2.19738
 do PVff:SetUpDecayMode 331 22 11 0.0104 2 113 0.7758 0.1503 5.19839
 do PVff:SetUpDecayMode 331 22 13 0.0104 2 113 0.7758 0.1503 3.01441
-
 #
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
@@ -14749,32 +14747,32 @@ newdef HeavyStrong:OutgoingB 9 4232
 newdef HeavyStrong:OutgoingM 9 -211
 newdef HeavyStrong:ModeType 9 1
 newdef HeavyStrong:MaxWeight 9 1.68833
-newdef HeavyStrong:Incoming 10 14122
+newdef HeavyStrong:Incoming 10 101242
 newdef HeavyStrong:OutgoingB 10 4222
 newdef HeavyStrong:OutgoingM 10 -211
 newdef HeavyStrong:ModeType 10 0
 newdef HeavyStrong:MaxWeight 10 2.34015
-newdef HeavyStrong:Incoming 11 14122
+newdef HeavyStrong:Incoming 11 101242
 newdef HeavyStrong:OutgoingB 11 4212
 newdef HeavyStrong:OutgoingM 11 111
 newdef HeavyStrong:ModeType 11 0
 newdef HeavyStrong:MaxWeight 11 5.25433
-newdef HeavyStrong:Incoming 12 14122
+newdef HeavyStrong:Incoming 12 101242
 newdef HeavyStrong:OutgoingB 12 4112
 newdef HeavyStrong:OutgoingM 12 211
 newdef HeavyStrong:ModeType 12 0
 newdef HeavyStrong:MaxWeight 12 2.50106
-newdef HeavyStrong:Incoming 13 4124
+newdef HeavyStrong:Incoming 13 101244
 newdef HeavyStrong:OutgoingB 13 4222
 newdef HeavyStrong:OutgoingM 13 -211
 newdef HeavyStrong:ModeType 13 1
 newdef HeavyStrong:MaxWeight 13 11.5795
-newdef HeavyStrong:Incoming 14 4124
+newdef HeavyStrong:Incoming 14 101244
 newdef HeavyStrong:OutgoingB 14 4212
 newdef HeavyStrong:OutgoingM 14 111
 newdef HeavyStrong:ModeType 14 1
 newdef HeavyStrong:MaxWeight 14 13.7322
-newdef HeavyStrong:Incoming 15 4124
+newdef HeavyStrong:Incoming 15 101244
 newdef HeavyStrong:OutgoingB 15 4112
 newdef HeavyStrong:OutgoingM 15 211
 newdef HeavyStrong:ModeType 15 1
@@ -14829,192 +14827,192 @@ newdef HeavyStrong:OutgoingB 25 5232
 newdef HeavyStrong:OutgoingM 25 -211
 newdef HeavyStrong:ModeType 25 1
 newdef HeavyStrong:MaxWeight 25 1.59544
-newdef HeavyStrong:Incoming 26 15122
+newdef HeavyStrong:Incoming 26 101252
 newdef HeavyStrong:OutgoingB 26 5222
 newdef HeavyStrong:OutgoingM 26 -211
 newdef HeavyStrong:ModeType 26 0
 newdef HeavyStrong:MaxWeight 26 4.22387
-newdef HeavyStrong:Incoming 27 15122
+newdef HeavyStrong:Incoming 27 101252
 newdef HeavyStrong:OutgoingB 27 5212
 newdef HeavyStrong:OutgoingM 27 111
 newdef HeavyStrong:ModeType 27 0
 newdef HeavyStrong:MaxWeight 27 4.21194
-newdef HeavyStrong:Incoming 28 15122
+newdef HeavyStrong:Incoming 28 101252
 newdef HeavyStrong:OutgoingB 28 5112
 newdef HeavyStrong:OutgoingM 28 211
 newdef HeavyStrong:ModeType 28 0
 newdef HeavyStrong:MaxWeight 28 1.96324
-newdef HeavyStrong:Incoming 29 5124
+newdef HeavyStrong:Incoming 29 101254
 newdef HeavyStrong:OutgoingB 29 5222
 newdef HeavyStrong:OutgoingM 29 -211
 newdef HeavyStrong:ModeType 29 2
 newdef HeavyStrong:MaxWeight 29 0.107134
-newdef HeavyStrong:Incoming 30 5124
+newdef HeavyStrong:Incoming 30 101254
 newdef HeavyStrong:OutgoingB 30 5212
 newdef HeavyStrong:OutgoingM 30 111
 newdef HeavyStrong:ModeType 30 2
 newdef HeavyStrong:MaxWeight 30 0.132231
-newdef HeavyStrong:Incoming 31 5124
+newdef HeavyStrong:Incoming 31 101254
 newdef HeavyStrong:OutgoingB 31 5112
 newdef HeavyStrong:OutgoingM 31 211
 newdef HeavyStrong:ModeType 31 2
 newdef HeavyStrong:MaxWeight 31 0.0747326
-newdef HeavyStrong:Incoming 32 14324
+newdef HeavyStrong:Incoming 32 102344
 newdef HeavyStrong:OutgoingB 32 4322
 newdef HeavyStrong:OutgoingM 32 111
 newdef HeavyStrong:ModeType 32 2
 newdef HeavyStrong:MaxWeight 32 1.50908
-newdef HeavyStrong:Incoming 33 14324
+newdef HeavyStrong:Incoming 33 102344
 newdef HeavyStrong:OutgoingB 33 4312
 newdef HeavyStrong:OutgoingM 33 211
 newdef HeavyStrong:ModeType 33 2
 newdef HeavyStrong:MaxWeight 33 1.5594
-newdef HeavyStrong:Incoming 34 14314
+newdef HeavyStrong:Incoming 34 101344
 newdef HeavyStrong:OutgoingB 34 4312
 newdef HeavyStrong:OutgoingM 34 111
 newdef HeavyStrong:ModeType 34 2
 newdef HeavyStrong:MaxWeight 34 1.48272
-newdef HeavyStrong:Incoming 35 14314
+newdef HeavyStrong:Incoming 35 101344
 newdef HeavyStrong:OutgoingB 35 4322
 newdef HeavyStrong:OutgoingM 35 -211
 newdef HeavyStrong:ModeType 35 2
 newdef HeavyStrong:MaxWeight 35 1.75973
-newdef HeavyStrong:Incoming 36 14324
+newdef HeavyStrong:Incoming 36 102344
 newdef HeavyStrong:OutgoingB 36 4324
 newdef HeavyStrong:OutgoingM 36 111
 newdef HeavyStrong:ModeType 36 0
 newdef HeavyStrong:MaxWeight 36 2.24229
-newdef HeavyStrong:Incoming 37 14324
+newdef HeavyStrong:Incoming 37 102344
 newdef HeavyStrong:OutgoingB 37 4314
 newdef HeavyStrong:OutgoingM 37 211
 newdef HeavyStrong:ModeType 37 0
 newdef HeavyStrong:MaxWeight 37 2.09263
-newdef HeavyStrong:Incoming 38 14314
+newdef HeavyStrong:Incoming 38 101344
 newdef HeavyStrong:OutgoingB 38 4314
 newdef HeavyStrong:OutgoingM 38 111
 newdef HeavyStrong:ModeType 38 0
 newdef HeavyStrong:MaxWeight 38 2.36559
-newdef HeavyStrong:Incoming 39 14314
+newdef HeavyStrong:Incoming 39 101344
 newdef HeavyStrong:OutgoingB 39 4324
 newdef HeavyStrong:OutgoingM 39 -211
 newdef HeavyStrong:ModeType 39 0
 newdef HeavyStrong:MaxWeight 39 2.18137
-newdef HeavyStrong:Incoming 40 14322
+newdef HeavyStrong:Incoming 40 102342
 newdef HeavyStrong:OutgoingB 40 4322
 newdef HeavyStrong:OutgoingM 40 111
 newdef HeavyStrong:ModeType 40 0
 newdef HeavyStrong:MaxWeight 40 1.56278
-newdef HeavyStrong:Incoming 41 14322
+newdef HeavyStrong:Incoming 41 102342
 newdef HeavyStrong:OutgoingB 41 4312
 newdef HeavyStrong:OutgoingM 41 211
 newdef HeavyStrong:ModeType 41 0
 newdef HeavyStrong:MaxWeight 41 1.49557
-newdef HeavyStrong:Incoming 42 14312
+newdef HeavyStrong:Incoming 42 101342
 newdef HeavyStrong:OutgoingB 42 4312
 newdef HeavyStrong:OutgoingM 42 111
 newdef HeavyStrong:ModeType 42 0
 newdef HeavyStrong:MaxWeight 42 1.56355
-newdef HeavyStrong:Incoming 43 14312
+newdef HeavyStrong:Incoming 43 101342
 newdef HeavyStrong:OutgoingB 43 4322
 newdef HeavyStrong:OutgoingM 43 -211
 newdef HeavyStrong:ModeType 43 0
 newdef HeavyStrong:MaxWeight 43 1.55762
-newdef HeavyStrong:Incoming 44 14322
+newdef HeavyStrong:Incoming 44 102342
 newdef HeavyStrong:OutgoingB 44 4324
 newdef HeavyStrong:OutgoingM 44 111
 newdef HeavyStrong:ModeType 44 2
 newdef HeavyStrong:MaxWeight 44 0.00928127
-newdef HeavyStrong:Incoming 45 14322
+newdef HeavyStrong:Incoming 45 102342
 newdef HeavyStrong:OutgoingB 45 4314
 newdef HeavyStrong:OutgoingM 45 211
 newdef HeavyStrong:ModeType 45 2
 newdef HeavyStrong:MaxWeight 45 0.0125624
-newdef HeavyStrong:Incoming 46 14312
+newdef HeavyStrong:Incoming 46 101342
 newdef HeavyStrong:OutgoingB 46 4314
 newdef HeavyStrong:OutgoingM 46 111
 newdef HeavyStrong:ModeType 46 2
 newdef HeavyStrong:MaxWeight 46 0.0120602
-newdef HeavyStrong:Incoming 47 14312
+newdef HeavyStrong:Incoming 47 101342
 newdef HeavyStrong:OutgoingB 47 4324
 newdef HeavyStrong:OutgoingM 47 -211
 newdef HeavyStrong:ModeType 47 2
 newdef HeavyStrong:MaxWeight 47 0.0167952
-newdef HeavyStrong:Incoming 48 15324
+newdef HeavyStrong:Incoming 48 102354
 newdef HeavyStrong:OutgoingB 48 5322
 newdef HeavyStrong:OutgoingM 48 111
 newdef HeavyStrong:ModeType 48 2
 newdef HeavyStrong:MaxWeight 48 1.87626
-newdef HeavyStrong:Incoming 49 15324
+newdef HeavyStrong:Incoming 49 102354
 newdef HeavyStrong:OutgoingB 49 5312
 newdef HeavyStrong:OutgoingM 49 211
 newdef HeavyStrong:ModeType 49 2
 newdef HeavyStrong:MaxWeight 49 1.616
-newdef HeavyStrong:Incoming 50 15314
+newdef HeavyStrong:Incoming 50 101354
 newdef HeavyStrong:OutgoingB 50 5312
 newdef HeavyStrong:OutgoingM 50 111
 newdef HeavyStrong:ModeType 50 2
 newdef HeavyStrong:MaxWeight 50 1.84227
-newdef HeavyStrong:Incoming 51 15314
+newdef HeavyStrong:Incoming 51 101354
 newdef HeavyStrong:OutgoingB 51 5322
 newdef HeavyStrong:OutgoingM 51 -211
 newdef HeavyStrong:ModeType 51 2
 newdef HeavyStrong:MaxWeight 51 1.82865
-newdef HeavyStrong:Incoming 52 15324
+newdef HeavyStrong:Incoming 52 102354
 newdef HeavyStrong:OutgoingB 52 5324
 newdef HeavyStrong:OutgoingM 52 111
 newdef HeavyStrong:ModeType 52 0
 newdef HeavyStrong:MaxWeight 52 2.77725
-newdef HeavyStrong:Incoming 53 15324
+newdef HeavyStrong:Incoming 53 102354
 newdef HeavyStrong:OutgoingB 53 5314
 newdef HeavyStrong:OutgoingM 53 211
 newdef HeavyStrong:ModeType 53 0
 newdef HeavyStrong:MaxWeight 53 2.5378
-newdef HeavyStrong:Incoming 54 15314
+newdef HeavyStrong:Incoming 54 101354
 newdef HeavyStrong:OutgoingB 54 5314
 newdef HeavyStrong:OutgoingM 54 111
 newdef HeavyStrong:ModeType 54 0
 newdef HeavyStrong:MaxWeight 54 2.93925
-newdef HeavyStrong:Incoming 55 15314
+newdef HeavyStrong:Incoming 55 101354
 newdef HeavyStrong:OutgoingB 55 5324
 newdef HeavyStrong:OutgoingM 55 -211
 newdef HeavyStrong:ModeType 55 0
 newdef HeavyStrong:MaxWeight 55 2.69015
-newdef HeavyStrong:Incoming 56 15322
+newdef HeavyStrong:Incoming 56 102352
 newdef HeavyStrong:OutgoingB 56 5322
 newdef HeavyStrong:OutgoingM 56 111
 newdef HeavyStrong:ModeType 56 0
 newdef HeavyStrong:MaxWeight 56 1.34628
-newdef HeavyStrong:Incoming 57 15322
+newdef HeavyStrong:Incoming 57 102352
 newdef HeavyStrong:OutgoingB 57 5312
 newdef HeavyStrong:OutgoingM 57 211
 newdef HeavyStrong:ModeType 57 0
 newdef HeavyStrong:MaxWeight 57 1.28732
-newdef HeavyStrong:Incoming 58 15312
+newdef HeavyStrong:Incoming 58 101352
 newdef HeavyStrong:OutgoingB 58 5312
 newdef HeavyStrong:OutgoingM 58 111
 newdef HeavyStrong:ModeType 58 0
 newdef HeavyStrong:MaxWeight 58 1.34676
-newdef HeavyStrong:Incoming 59 15312
+newdef HeavyStrong:Incoming 59 101352
 newdef HeavyStrong:OutgoingB 59 5322
 newdef HeavyStrong:OutgoingM 59 -211
 newdef HeavyStrong:ModeType 59 0
 newdef HeavyStrong:MaxWeight 59 1.34286
-newdef HeavyStrong:Incoming 60 15322
+newdef HeavyStrong:Incoming 60 102352
 newdef HeavyStrong:OutgoingB 60 5324
 newdef HeavyStrong:OutgoingM 60 111
 newdef HeavyStrong:ModeType 60 2
 newdef HeavyStrong:MaxWeight 60 0.00860417
-newdef HeavyStrong:Incoming 61 15322
+newdef HeavyStrong:Incoming 61 102352
 newdef HeavyStrong:OutgoingB 61 5314
 newdef HeavyStrong:OutgoingM 61 211
 newdef HeavyStrong:ModeType 61 2
 newdef HeavyStrong:MaxWeight 61 0.0153272
-newdef HeavyStrong:Incoming 62 15312
+newdef HeavyStrong:Incoming 62 101352
 newdef HeavyStrong:OutgoingB 62 5314
 newdef HeavyStrong:OutgoingM 62 111
 newdef HeavyStrong:ModeType 62 2
 newdef HeavyStrong:MaxWeight 62 0.0115148
-newdef HeavyStrong:Incoming 63 15312
+newdef HeavyStrong:Incoming 63 101352
 newdef HeavyStrong:OutgoingB 63 5324
 newdef HeavyStrong:OutgoingM 63 -211
 newdef HeavyStrong:ModeType 63 2
@@ -15466,7 +15464,7 @@ newdef SU3SingletOctet1:Sigma- 3112
 newdef SU3SingletOctet1:Lambda 3122
 newdef SU3SingletOctet1:Xi0 3322
 newdef SU3SingletOctet1:Xi- 3312
-newdef SU3SingletOctet1:ExcitedLambda 13122
+newdef SU3SingletOctet1:ExcitedLambda 101232
 insert SU3SingletOctet1:MaxWeight 0 1.60862
 insert SU3SingletOctet1:MaxWeight 1 1.65601
 insert SU3SingletOctet1:MaxWeight 2 1.44904
@@ -15489,7 +15487,7 @@ newdef SU3SingletOctet2:Sigma- 3112
 newdef SU3SingletOctet2:Lambda 3122
 newdef SU3SingletOctet2:Xi0 3322
 newdef SU3SingletOctet2:Xi- 3312
-newdef SU3SingletOctet2:ExcitedLambda 3124
+newdef SU3SingletOctet2:ExcitedLambda 101234
 insert SU3SingletOctet2:MaxWeight 0 1.84716
 insert SU3SingletOctet2:MaxWeight 1 1.88647
 insert SU3SingletOctet2:MaxWeight 2 1.63557
@@ -15878,7 +15876,7 @@ newdef SU3Gamma5:Coupling 0.252
 newdef SU3Gamma5:Parity 0
 newdef SU3Gamma5:Sigma0 3212
 newdef SU3Gamma5:Lambda 3122
-newdef SU3Gamma5:ExcitedLambda 3124
+newdef SU3Gamma5:ExcitedLambda 101234
 insert SU3Gamma5:MaxWeight 0 1.60087
 insert SU3Gamma5:MaxWeight 1 2.20194
 #
@@ -21033,7 +21031,7 @@ create Herwig::LambdabExcitedLambdacSumRuleFormFactor ExcitedLambdaForm
 newdef ExcitedLambdaForm:Xi          0.29
 newdef ExcitedLambdaForm:Rho2        2.01
 newdef ExcitedLambdaForm:Incoming 0 5122
-newdef ExcitedLambdaForm:Outgoing 0 14122
+newdef ExcitedLambdaForm:Outgoing 0 101242
 newdef ExcitedLambdaForm:InSpin 0 2
 newdef ExcitedLambdaForm:OutSpin 0 2
 newdef ExcitedLambdaForm:Spectator1 0 1
@@ -21041,7 +21039,7 @@ newdef ExcitedLambdaForm:Spectator2 0 2
 newdef ExcitedLambdaForm:InQuark 0 5
 newdef ExcitedLambdaForm:OutQuark 0 4
 newdef ExcitedLambdaForm:Incoming 1 5122
-newdef ExcitedLambdaForm:Outgoing 1 4124
+newdef ExcitedLambdaForm:Outgoing 1 101244
 newdef ExcitedLambdaForm:InSpin 1 2
 newdef ExcitedLambdaForm:OutSpin 1 4
 newdef ExcitedLambdaForm:Spectator1 1 1
