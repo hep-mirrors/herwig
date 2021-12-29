@@ -6730,7 +6730,6 @@ insert phiwidth:NumberofEntries 12 420
 insert phiwidth:NumberofEntries 13 470
 insert phiwidth:NumberofEntries 14 470
 insert phiwidth:NumberofEntries 15 520
-
 newdef /Herwig/Particles/phi:Width_generator phiwidth
 #
 create Herwig::GenericWidthGenerator  K*+width

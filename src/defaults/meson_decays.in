@@ -27,7 +27,6 @@ decaymode eta->pi+,pi-,e-,e+; 0.000268 1 /Herwig/Decays/Mambo
 decaymode eta->pi0,gamma,gamma; 0.000256 1 /Herwig/Decays/Etapigammagamma
 decaymode eta->e-,e+,e-,e+; 2.4E-5 1 /Herwig/Decays/PScalar4f
 decaymode eta->mu-,mu+; 6.0E-6 1 /Herwig/Decays/DecayME0
-
 #
 decaymode eta'->pi+,pi-,eta; 0.444682 1 /Herwig/Decays/Etapipipi
 decaymode eta'->pi+,pi-,gamma; 0.29379 1 /Herwig/Decays/Etapipigamma

@@ -22,11 +22,11 @@ setup eta_c 441 eta_c 2.9804 0.0255 0.255 0 0 0 1 0
 create ThePEG::ParticleData eta_b
 setup eta_b 551 eta_b 9.3987 0.01 0.1 0 0 0 1 0 
 create ThePEG::ParticleData K+
-setup K+ 321 K+ 0.493677 5.3144882844061E-17 0 3713 3 0 1 1 
+setup K+ 321 K+ 0.493677 5.3173524656427E-17 0 3711 3 0 1 1 
 create ThePEG::ParticleData K0
 setup K0 311 K0 0.497611 1.9732793663968E+24 0 9.99995E-38 0 0 1 0
 create ThePEG::ParticleData K-
-setup K- -321 K- 0.493677 5.3144882844061E-17 0 3713 -3 0 1 1 
+setup K- -321 K- 0.493677 5.3173524656427E-17 0 3711 -3 0 1 1 
 makeanti K- K+
 create ThePEG::ParticleData Kbar0
 setup Kbar0 -311 Kbar0 0.497611 1.9732793663968E+24 0 9.99995E-38 0 0 1 0
