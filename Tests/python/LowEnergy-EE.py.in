@@ -215,25 +215,26 @@ analyses["PhiPi"]["BABAR_2017_I1511276" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["PhiPi"]["BABAR_2008_I765258"  ] = ["d02-x01-y01","d03-x01-y01"]
 analyses["PhiPi"]["SND_2020_I1806118"   ] = ["d02-x01-y01"]
 # 2K 2 pi
-analyses["2K2Pi"]["DM1_1982_I169382"    ] = ["d01-x01-y01"]
 analyses["2K2Pi"]["BABAR_2005_I676691"  ] = ["d02-x01-y01"]
-analyses["2K2Pi"]["BABAR_2014_I1287920" ] = ["d09-x01-y01","d10-x01-y01","d11-x01-y01"]
+analyses["2K2Pi"]["BABAR_2007_I747875"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+                                             "d04-x01-y01","d05-x01-y01","d07-x01-y01"]
 analyses["2K2Pi"]["BABAR_2012_I892684"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d05-x01-y01",
                                              "d06-x01-y01","d07-x01-y01"]
-analyses["2K2Pi"]["BABAR_2007_I747875"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
-                                             "d04-x01-y01","d05-x01-y01","d07-x01-y01"]
-analyses["2K2Pi"]["BESII_2008_I801210"  ] = ["d01-x01-y02"]
-analyses["2K2Pi"]["BESII_2008_I801208"  ] = ["d01-x01-y02"]
-analyses["2K2Pi"]["BELLE_2009_I809630"  ] = ["d01-x01-y01"]
-analyses["2K2Pi"]["CMD3_2016_I1395968"  ] = ["d01-x01-y01"]
-analyses['2K2Pi']["BESII_2007_I750713"  ] = ["d01-x01-y04"]
+analyses["2K2Pi"]["BABAR_2014_I1287920" ] = ["d09-x01-y01","d10-x01-y01","d11-x01-y01"]
 analyses["2K2Pi"]["BABAR_2017_I1511276" ] = ["d03-x01-y01","d04-x01-y01"]
 analyses["2K2Pi"]["BABAR_2017_I1591716" ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['2K2Pi']["BESII_2007_I750713"  ] = ["d01-x01-y04"]
+analyses["2K2Pi"]["BESII_2008_I801210"  ] = ["d01-x01-y02"]
+analyses["2K2Pi"]["BESII_2008_I801208"  ] = ["d01-x01-y02"]
 analyses['2K2Pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
-analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
 analyses['2K2Pi']["BESIII_2020_I1775344"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
+analyses['2K2Pi']["BESIII_2021_I1997451"] = ["d01-x01-y01"]
+analyses["2K2Pi"]["BELLE_2009_I809630"  ] = ["d01-x01-y01"]
+analyses["2K2Pi"]["CMD3_2016_I1395968"  ] = ["d01-x01-y01"]
+analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
+analyses["2K2Pi"]["DM1_1982_I169382"    ] = ["d01-x01-y01"]
 # 4K
 analyses["4K"]["BESIII_2019_I1743841"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BABAR_2005_I676691"  ] = ["d03-x01-y01"]
