@@ -1417,7 +1417,7 @@ do HQETMeson:SetUpDecayMode 10411 411 111 6.57442
 do HQETMeson:SetUpDecayMode 10411 421 211 6.61319
 do HQETMeson:SetUpDecayMode 10421 411 -211 6.5581
 do HQETMeson:SetUpDecayMode 10421 421 111 6.65623
-do HQETMeson:SetUpDecayMode 10431 431 111 0.232949
+do HQETMeson:SetUpDecayMode 10431 431 111 0.23295
 do HQETMeson:SetUpDecayMode 20413 413 111 5.06988
 do HQETMeson:SetUpDecayMode 20413 423 211 3.89552
 do HQETMeson:SetUpDecayMode 20423 413 -211 4.7005
@@ -1441,6 +1441,24 @@ do HQETMeson:SetUpDecayMode 100423 413 -211 0.927575
 do HQETMeson:SetUpDecayMode 100423 423 111 0.356375
 do HQETMeson:SetUpDecayMode 100433 413 311 0.555473
 do HQETMeson:SetUpDecayMode 100433 423 321 0.439498
+do HQETMeson:SetUpDecayMode 20415 423 211 0.875288
+do HQETMeson:SetUpDecayMode 20415 413 111 0.567836
+do HQETMeson:SetUpDecayMode 20425 413 -211 1.1261
+do HQETMeson:SetUpDecayMode 20425 423 111 0.441275
+do HQETMeson:SetUpDecayMode 20435 413 311 1.0999
+do HQETMeson:SetUpDecayMode 20435 423 321 0.889948
+do HQETMeson:SetUpDecayMode 417 421 211 0.725507
+do HQETMeson:SetUpDecayMode 417 411 111 0.354557
+do HQETMeson:SetUpDecayMode 427 411 -211 0.704963
+do HQETMeson:SetUpDecayMode 427 421 111 0.364866
+do HQETMeson:SetUpDecayMode 437 411 311 0.604124
+do HQETMeson:SetUpDecayMode 437 421 321 0.637948
+do HQETMeson:SetUpDecayMode 417 423 211 0.400638
+do HQETMeson:SetUpDecayMode 417 413 111 0.259993
+do HQETMeson:SetUpDecayMode 427 413 -211 0.517613
+do HQETMeson:SetUpDecayMode 427 423 111 0.201602
+do HQETMeson:SetUpDecayMode 437 413 311 0.331208
+do HQETMeson:SetUpDecayMode 437 423 321 0.266494
 #
 create Herwig::HQETRadiativeDecayer HQETMesonEM
 newdef HQETMesonEM:Iteration 10
