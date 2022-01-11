@@ -488,10 +488,11 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   // spin average
   double output = ME()->contract(rho_).real();
   // testing
-  double ratio = (output-test)/(output+test);
-  generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
-  		     << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
-  		     << output << " " << test << " " << ratio << endl;
+  double ratio = abs(output-test)/(output+test);
+  if(ratio>1e-14)
+    generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
+		       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+		       << output << " " << test << " " << ratio << endl;
   // isospin factors
   if(abs(outgoing[1]->id())==ParticleID::pi0) {
     int ispect = (abs(part.id())%100)/10;
