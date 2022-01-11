@@ -269,37 +269,37 @@ void StrongHeavyBaryonDecayer::doinit() {
 				   (_outgoingB[ix]==4232&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 0.5*_gxistar_cxi_cpi*GeV :
 			   _gxistar_cxi_cpi*or2*GeV);
-    else if(_incoming[ix]==14122&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
-				   (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
-				   (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
+    else if(_incoming[ix]==101242&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
+				    (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
       _prefactor.push_back(_flambda_c1sigma_cpi);
-    else if(_incoming[ix]== 4124&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
-				   (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
-				   (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
+    else if(_incoming[ix]==101244&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
+				    (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
       _prefactor.push_back(_flambda_c1starsigma_cpi*or3*GeV2);
-    else if((_incoming[ix]==14324&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==14314&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
+    else if((_incoming[ix]==102344&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==101344&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_c1starxi_cpi*0.5*or6*GeV2 :
 			   _fxi_c1starxi_cpi*0.5*or3*GeV2);
-    else if((_incoming[ix]==14324&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==14314&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
+    else if((_incoming[ix]==102344&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==101344&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_c1xi_cpi*0.5*or2 :
 			   _fxi_c1xi_cpi*0.5);
-    else if((_incoming[ix]==14322&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
+    else if((_incoming[ix]==102342&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==14312&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
+	    (_incoming[ix]==101342&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? _fxi_c1xi_cpi*0.5*or2 :
 			   _fxi_c1xi_cpi*0.5);
-    else if((_incoming[ix]==14322&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
+    else if((_incoming[ix]==102342&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==14312&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
+	    (_incoming[ix]==101342&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_c1starxi_cpi*0.5*or6*GeV2 :
@@ -326,37 +326,37 @@ void StrongHeavyBaryonDecayer::doinit() {
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   -0.5*_gxistar_bxi_bpi*GeV : 
 			   _gxistar_bxi_bpi*or2*GeV);
-    else if(_incoming[ix]==15122&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
-				   (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
-				   (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
+    else if(_incoming[ix]==101252&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
+				    (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
       _prefactor.push_back(_flambda_b1sigma_bpi);
-    else if(_incoming[ix]== 5124&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
-				   (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
-				   (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
+    else if(_incoming[ix]==101254&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
+				    (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
       _prefactor.push_back(_flambda_b1starsigma_bpi*or3*GeV*GeV);
-    else if((_incoming[ix]==15324&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==15314&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
+    else if((_incoming[ix]==102354&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==101354&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_b1starxi_bpi*0.5*or6*GeV2 :
 			   _fxi_b1starxi_bpi*0.5*or3*GeV2);
-    else if((_incoming[ix]==15324&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
+    else if((_incoming[ix]==102354&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==15314&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
+	    (_incoming[ix]==101354&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
 				    (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? _fxi_b1xi_bpi*0.5*or2 :
 			   _fxi_b1xi_bpi*0.5);
-    else if((_incoming[ix]==15322&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==15312&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
+    else if((_incoming[ix]==102352&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==101352&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_b1xi_bpi*0.5*or2 : _fxi_b1xi_bpi*0.5);
-    else if((_incoming[ix]==15322&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
-	    (_incoming[ix]==15312&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
-				    (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
+    else if((_incoming[ix]==102352&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==101352&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
+				     (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
       _prefactor.push_back(_outgoingM[ix]==111 ? 
 			   _fxi_b1starxi_bpi*0.5*or6*GeV2 :
 			   _fxi_b1starxi_bpi*0.5*or3*GeV2);
