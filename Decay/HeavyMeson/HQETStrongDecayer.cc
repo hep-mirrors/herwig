@@ -19,7 +19,7 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/HelicityFunctions.h"
-#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -240,9 +240,14 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   			      const vector<Lorentz5Momentum> & momenta,
   			      MEOption meopt) const {
   if(!ME()) {
-    ME(new_ptr(TwoBodyDecayMatrixElement(part.data().iSpin(),
-					 outgoing[0]->iSpin(),
-					 outgoing[1]->iSpin())));
+    if(part.data().iSpin()!=PDT::Spin3)
+      ME(new_ptr(TwoBodyDecayMatrixElement(part.data().iSpin(),
+					   outgoing[0]->iSpin(),
+					   outgoing[1]->iSpin())));
+    else
+      ME(new_ptr(GeneralDecayMatrixElement(part.data().iSpin(),
+					   outgoing[0]->iSpin(),
+					   outgoing[1]->iSpin())));
   }
   // stuff for incoming particle
   if(meopt==Initialize) {
@@ -419,7 +424,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       assert(false);
   }
   // 2- from (1-,2-)
-  else if(itemp==0      && part.data().iSpin()==PDT::Spin2) {
+  else if(itemp==10000 && part.data().iSpin()==PDT::Spin2) {
     // 2- -> 1- 0-
     if(outgoing[0]->iSpin()==PDT::Spin1) {
       InvEnergy fact = 4.*kp_*sqrt(momenta[0].mass()/part.mass())/fPi_/Lambda_*(part.momentum()*momenta[1])/part.mass();
@@ -438,12 +443,12 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       assert(false);
   }
   // 2- from (2-,3-)
-  else if(itemp==10000  && part.data().iSpin()==PDT::Spin2) {
+  else if(itemp==20000  && part.data().iSpin()==PDT::Spin2) {
     // 2- -> 1- 0-
     if(outgoing[0]->iSpin()==PDT::Spin1) {
       InvEnergy3 fact = 4.*k_*sqrt(momenta[0].mass()/part.mass())/sqrt(15.)/fPi_/sqr(Lambda_);
       for(unsigned int ix=0;ix<5;++ix) {
-	LorentzVector<complex<Energy> > vtemp = momenta[1]*tensorIn_[ix]+tensorIn_[ix]*momenta[ix];
+	LorentzVector<complex<Energy> > vtemp = momenta[1]*tensorIn_[ix]+tensorIn_[ix]*momenta[1];
 	complex<Energy2> dot = 0.5*(vtemp*momenta[1]);
 	for(unsigned int iy=0;iy<3;++iy) {
 	  (*ME())(ix,iy,0) = Complex(fact*(sqr(pcm)*vecOut_[iy].dot(vtemp) +5.*dot*(vecOut_[iy]*momenta[1])));
@@ -465,7 +470,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
 	(*ME())(ix,0,0) = Complex(fact*((spin3In_[ix].dot(momenta[1],0)*momenta[1])*momenta[1]));
       }
       // analytic test of answer
-      test = 32.*sqr(k_)*momenta[0].mass()/part.mass()*pow<6,1>(pcm)/sqr(fPi_*sqr(Lambda_));
+      test = 32.*sqr(k_)*momenta[0].mass()/35./part.mass()*pow<6,1>(pcm)/sqr(fPi_*sqr(Lambda_));
     }
     // 3- -> 1- 0-
     else if(outgoing[0]->iSpin()==PDT::Spin1) {
