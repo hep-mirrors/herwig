@@ -1379,46 +1379,39 @@ create Herwig::HQETStrongDecayer HQETMeson
 newdef HQETMeson:Iteration 10
 newdef HQETMeson:Ntry 500
 newdef HQETMeson:Points 10000
-newdef HQETMeson:GenerateIntermediates 0 
-newdef HQETMeson:fPi    130.2
-newdef HQETMeson:g      0.565208
-newdef HQETMeson:h      0.823903
-newdef HQETMeson:f      -0.46529
-newdef HQETMeson:Lambda 1
-newdef HQETMeson:psiL   0
-newdef HQETMeson:psiS   -0.0470218
-newdef HQETMeson:MaxWeight 0 1.31498
-newdef HQETMeson:MaxWeight 1 1.30639
-newdef HQETMeson:MaxWeight 2 1.32655
-newdef HQETMeson:MaxWeight 3 0.00419757
-newdef HQETMeson:MaxWeight 4 1.57478
-newdef HQETMeson:MaxWeight 5 3.20894
-newdef HQETMeson:MaxWeight 6 3.10594
-newdef HQETMeson:MaxWeight 7 1.59408
-newdef HQETMeson:MaxWeight 8 2.41412
-newdef HQETMeson:MaxWeight 9 2.40804
-newdef HQETMeson:MaxWeight 10 1.329
-newdef HQETMeson:MaxWeight 11 2.2431
-newdef HQETMeson:MaxWeight 12 2.80669
-newdef HQETMeson:MaxWeight 13 1.19846
-newdef HQETMeson:MaxWeight 14 1.74953
-newdef HQETMeson:MaxWeight 15 1.30836
-newdef HQETMeson:MaxWeight 16 5.36399
-newdef HQETMeson:MaxWeight 17 4.33456
-newdef HQETMeson:MaxWeight 18 5.43304
-newdef HQETMeson:MaxWeight 19 4.51354
-newdef HQETMeson:MaxWeight 20 1.57101
-newdef HQETMeson:MaxWeight 21 1.42377
-newdef HQETMeson:MaxWeight 22 8.1916
-newdef HQETMeson:MaxWeight 23 8.25275
-newdef HQETMeson:MaxWeight 24 8.16649
-newdef HQETMeson:MaxWeight 25 8.31916
-newdef HQETMeson:MaxWeight 26 1503.2
-newdef HQETMeson:MaxWeight 27 5.47496
-newdef HQETMeson:MaxWeight 28 4.22668
-newdef HQETMeson:MaxWeight 29 5.09938
-newdef HQETMeson:MaxWeight 30 4.19614
-newdef HQETMeson:MaxWeight 31 1974.31
+newdef HQETMeson:GenerateIntermediates 0
+do HQETMeson:SetUpDecayMode 413   421 211   1.31498
+do HQETMeson:SetUpDecayMode 413   411 111   1.30639
+do HQETMeson:SetUpDecayMode 423   421 111   1.32655
+do HQETMeson:SetUpDecayMode 433   431 111   0.00419
+do HQETMeson:SetUpDecayMode 415   411 111   1.57478
+do HQETMeson:SetUpDecayMode 415   421 211   3.20894
+do HQETMeson:SetUpDecayMode 425   411 -211  3.10594
+do HQETMeson:SetUpDecayMode 425   421 111   1.59408
+do HQETMeson:SetUpDecayMode 435   411 311   2.41412
+do HQETMeson:SetUpDecayMode 435   421 321   2.40804
+do HQETMeson:SetUpDecayMode 415   413 111   1.329  
+do HQETMeson:SetUpDecayMode 415   423 211   2.2431 
+do HQETMeson:SetUpDecayMode 425   413 -211  2.80669
+do HQETMeson:SetUpDecayMode 425   423 111   1.19846
+do HQETMeson:SetUpDecayMode 435   413 311   1.74953
+do HQETMeson:SetUpDecayMode 435   423 321   1.30836
+do HQETMeson:SetUpDecayMode 10413 413 111   5.36399
+do HQETMeson:SetUpDecayMode 10413 423 211   4.33456
+do HQETMeson:SetUpDecayMode 10423 413 -211  5.43304
+do HQETMeson:SetUpDecayMode 10423 423 111   4.51354
+do HQETMeson:SetUpDecayMode 10433 413 311   1.57101
+do HQETMeson:SetUpDecayMode 10433 423 321   1.42377
+do HQETMeson:SetUpDecayMode 10411 411 111   8.1916 
+do HQETMeson:SetUpDecayMode 10411 421 211   8.25275
+do HQETMeson:SetUpDecayMode 10421 411 -211  8.16649
+do HQETMeson:SetUpDecayMode 10421 421 111   8.31916
+do HQETMeson:SetUpDecayMode 10431 431 111   1503.2 
+do HQETMeson:SetUpDecayMode 20413 413 111   5.47496
+do HQETMeson:SetUpDecayMode 20413 423 211   4.22668
+do HQETMeson:SetUpDecayMode 20423 413 -211  5.09938
+do HQETMeson:SetUpDecayMode 20423 423 111   4.19614
+do HQETMeson:SetUpDecayMode 20433 433 111   1974.31
 #
 create Herwig::HQETRadiativeDecayer HQETMesonEM
 newdef HQETMesonEM:Iteration 10
@@ -15035,14 +15028,14 @@ newdef SU3StrongRoper:Sigma- 3112
 newdef SU3StrongRoper:Lambda 3122
 newdef SU3StrongRoper:Xi0 3322
 newdef SU3StrongRoper:Xi- 3312
-newdef SU3StrongRoper:ExcitedProton 12212
-newdef SU3StrongRoper:ExcitedNeutron 12112
-newdef SU3StrongRoper:ExcitedSigma+ 13222
-newdef SU3StrongRoper:ExcitedSigma0 13212
-newdef SU3StrongRoper:ExcitedSigma- 13112
-newdef SU3StrongRoper:ExcitedLambda 23122
-newdef SU3StrongRoper:ExcitedXi0 13322
-newdef SU3StrongRoper:ExcitedXi- 13312
+newdef SU3StrongRoper:ExcitedProton 202212
+newdef SU3StrongRoper:ExcitedNeutron 202112
+newdef SU3StrongRoper:ExcitedSigma+ 203222
+newdef SU3StrongRoper:ExcitedSigma0 203212
+newdef SU3StrongRoper:ExcitedSigma- 203112
+newdef SU3StrongRoper:ExcitedLambda 203122
+newdef SU3StrongRoper:ExcitedXi0 203322
+newdef SU3StrongRoper:ExcitedXi- 203312
 insert SU3StrongRoper:MaxWeight 0 1.80705
 insert SU3StrongRoper:MaxWeight 1 1.83437
 insert SU3StrongRoper:MaxWeight 2 0.626841
@@ -15111,14 +15104,14 @@ newdef SU3Strong2:Sigma- 3112
 newdef SU3Strong2:Lambda 3122
 newdef SU3Strong2:Xi0 3322
 newdef SU3Strong2:Xi- 3312
-newdef SU3Strong2:ExcitedProton 22212
-newdef SU3Strong2:ExcitedNeutron 22112
-newdef SU3Strong2:ExcitedSigma+ 23222
-newdef SU3Strong2:ExcitedSigma0 23212
-newdef SU3Strong2:ExcitedSigma- 23112
-newdef SU3Strong2:ExcitedLambda 33122
-newdef SU3Strong2:ExcitedXi0 23322
-newdef SU3Strong2:ExcitedXi- 23312
+newdef SU3Strong2:ExcitedProton 102212
+newdef SU3Strong2:ExcitedNeutron 102112
+newdef SU3Strong2:ExcitedSigma+ 103222
+newdef SU3Strong2:ExcitedSigma0 103212
+newdef SU3Strong2:ExcitedSigma- 103112
+newdef SU3Strong2:ExcitedLambda 103122
+newdef SU3Strong2:ExcitedXi0 103322
+newdef SU3Strong2:ExcitedXi- 103312
 insert SU3Strong2:MaxWeight 0 1.62119
 insert SU3Strong2:MaxWeight 1 1.63297
 insert SU3Strong2:MaxWeight 2 13.6826
@@ -15238,14 +15231,14 @@ newdef SU3RoperDecuplet:GenerateIntermediates 0
 newdef SU3RoperDecuplet:Coupling 1.35
 newdef SU3RoperDecuplet:Parity 1
 newdef SU3RoperDecuplet:Fpi 130.7
-newdef SU3RoperDecuplet:Proton 12212
-newdef SU3RoperDecuplet:Neutron 12112
-newdef SU3RoperDecuplet:Sigma+ 13222
-newdef SU3RoperDecuplet:Sigma0 13212
-newdef SU3RoperDecuplet:Sigma- 13112
-newdef SU3RoperDecuplet:Lambda 23122
-newdef SU3RoperDecuplet:Xi0 13322
-newdef SU3RoperDecuplet:Xi- 13312
+newdef SU3RoperDecuplet:Proton 202212
+newdef SU3RoperDecuplet:Neutron 202112
+newdef SU3RoperDecuplet:Sigma+ 203222
+newdef SU3RoperDecuplet:Sigma0 203212
+newdef SU3RoperDecuplet:Sigma- 203112
+newdef SU3RoperDecuplet:Lambda 203122
+newdef SU3RoperDecuplet:Xi0 203322
+newdef SU3RoperDecuplet:Xi- 203312
 newdef SU3RoperDecuplet:Delta++ 2224
 newdef SU3RoperDecuplet:Delta+ 2214
 newdef SU3RoperDecuplet:Delta0 2114
@@ -15316,14 +15309,14 @@ newdef SU3Strong3:Sigma- 3112
 newdef SU3Strong3:Lambda 3122
 newdef SU3Strong3:Xi0 3322
 newdef SU3Strong3:Xi- 3312
-newdef SU3Strong3:ExcitedProton 2124
-newdef SU3Strong3:ExcitedNeutron 1214
-newdef SU3Strong3:ExcitedSigma+ 13224
-newdef SU3Strong3:ExcitedSigma0 13214
-newdef SU3Strong3:ExcitedSigma- 13114
-newdef SU3Strong3:ExcitedLambda 13124
-newdef SU3Strong3:ExcitedXi0 13324
-newdef SU3Strong3:ExcitedXi- 13314
+newdef SU3Strong3:ExcitedProton 102214
+newdef SU3Strong3:ExcitedNeutron 102114
+newdef SU3Strong3:ExcitedSigma+ 103224
+newdef SU3Strong3:ExcitedSigma0 103214
+newdef SU3Strong3:ExcitedSigma- 103114
+newdef SU3Strong3:ExcitedLambda 103124
+newdef SU3Strong3:ExcitedXi0 103324
+newdef SU3Strong3:ExcitedXi- 103314
 insert SU3Strong3:MaxWeight 0 3.76502
 insert SU3Strong3:MaxWeight 1 3.80624
 insert SU3Strong3:MaxWeight 2 15.886
@@ -15385,14 +15378,14 @@ newdef SU3OctetDecuplet2:GenerateIntermediates 0
 newdef SU3OctetDecuplet2:Coupling 0.085
 newdef SU3OctetDecuplet2:Parity 1
 newdef SU3OctetDecuplet2:Fpi 130.7
-newdef SU3OctetDecuplet2:Proton 22212
-newdef SU3OctetDecuplet2:Neutron 22112
-newdef SU3OctetDecuplet2:Sigma+ 23222
-newdef SU3OctetDecuplet2:Sigma0 23212
-newdef SU3OctetDecuplet2:Sigma- 23112
-newdef SU3OctetDecuplet2:Lambda 33122
-newdef SU3OctetDecuplet2:Xi0 23322
-newdef SU3OctetDecuplet2:Xi- 23312
+newdef SU3OctetDecuplet2:Proton 102212
+newdef SU3OctetDecuplet2:Neutron 102112
+newdef SU3OctetDecuplet2:Sigma+ 103222
+newdef SU3OctetDecuplet2:Sigma0 103212
+newdef SU3OctetDecuplet2:Sigma- 103112
+newdef SU3OctetDecuplet2:Lambda 103122
+newdef SU3OctetDecuplet2:Xi0 103322
+newdef SU3OctetDecuplet2:Xi- 103312
 newdef SU3OctetDecuplet2:Delta++ 2224
 newdef SU3OctetDecuplet2:Delta+ 2214
 newdef SU3OctetDecuplet2:Delta0 2114
@@ -15504,22 +15497,22 @@ newdef SU3Strong4:Fcoupling -0.48
 newdef SU3Strong4:Dcoupling 0.68
 newdef SU3Strong4:Parity 1
 newdef SU3Strong4:Fpi 130.7
-newdef SU3Strong4:Proton 12212
-newdef SU3Strong4:Neutron 12112
-newdef SU3Strong4:Sigma+ 13222
-newdef SU3Strong4:Sigma0 13212
-newdef SU3Strong4:Sigma- 13112
-newdef SU3Strong4:Lambda 23122
-newdef SU3Strong4:Xi0 13322
-newdef SU3Strong4:Xi- 13312
-newdef SU3Strong4:ExcitedProton 22212
-newdef SU3Strong4:ExcitedNeutron 22112
-newdef SU3Strong4:ExcitedSigma+ 23222
-newdef SU3Strong4:ExcitedSigma0 23212
-newdef SU3Strong4:ExcitedSigma- 23112
-newdef SU3Strong4:ExcitedLambda 33122
-newdef SU3Strong4:ExcitedXi0 23322
-newdef SU3Strong4:ExcitedXi- 23312
+newdef SU3Strong4:Proton 202212
+newdef SU3Strong4:Neutron 202112
+newdef SU3Strong4:Sigma+ 203222
+newdef SU3Strong4:Sigma0 203212
+newdef SU3Strong4:Sigma- 203112
+newdef SU3Strong4:Lambda 203122
+newdef SU3Strong4:Xi0 203322
+newdef SU3Strong4:Xi- 203312
+newdef SU3Strong4:ExcitedProton 102212
+newdef SU3Strong4:ExcitedNeutron 102112
+newdef SU3Strong4:ExcitedSigma+ 103222
+newdef SU3Strong4:ExcitedSigma0 103212
+newdef SU3Strong4:ExcitedSigma- 103112
+newdef SU3Strong4:ExcitedLambda 103122
+newdef SU3Strong4:ExcitedXi0 103322
+newdef SU3Strong4:ExcitedXi- 103312
 insert SU3Strong4:MaxWeight 0 0.0639544
 insert SU3Strong4:MaxWeight 1 0.0683901
 insert SU3Strong4:MaxWeight 2 0.0719544
@@ -15579,14 +15572,14 @@ newdef SU3OctetDecuplet3:GenerateIntermediates 0
 newdef SU3OctetDecuplet3:Coupling 0.35
 newdef SU3OctetDecuplet3:Parity 1
 newdef SU3OctetDecuplet3:Fpi 130.7
-newdef SU3OctetDecuplet3:Proton 2124
-newdef SU3OctetDecuplet3:Neutron 1214
-newdef SU3OctetDecuplet3:Sigma+ 13224
-newdef SU3OctetDecuplet3:Sigma0 13214
-newdef SU3OctetDecuplet3:Sigma- 13114
-newdef SU3OctetDecuplet3:Lambda 13124
-newdef SU3OctetDecuplet3:Xi0 13324
-newdef SU3OctetDecuplet3:Xi- 13314
+newdef SU3OctetDecuplet3:Proton 102214
+newdef SU3OctetDecuplet3:Neutron 102114
+newdef SU3OctetDecuplet3:Sigma+ 103224
+newdef SU3OctetDecuplet3:Sigma0 103214
+newdef SU3OctetDecuplet3:Sigma- 103114
+newdef SU3OctetDecuplet3:Lambda 103124
+newdef SU3OctetDecuplet3:Xi0 103324
+newdef SU3OctetDecuplet3:Xi- 103314
 newdef SU3OctetDecuplet3:Delta++ 2224
 newdef SU3OctetDecuplet3:Delta+ 2214
 newdef SU3OctetDecuplet3:Delta0 2114
@@ -15720,14 +15713,14 @@ newdef SU3RoperGamma:Sigma- 3112
 newdef SU3RoperGamma:Lambda 3122
 newdef SU3RoperGamma:Xi0 3322
 newdef SU3RoperGamma:Xi- 3312
-newdef SU3RoperGamma:ExcitedProton 12212
-newdef SU3RoperGamma:ExcitedNeutron 12112
-newdef SU3RoperGamma:ExcitedSigma+ 13222
-newdef SU3RoperGamma:ExcitedSigma0 13212
-newdef SU3RoperGamma:ExcitedSigma- 13112
-newdef SU3RoperGamma:ExcitedLambda 23122
-newdef SU3RoperGamma:ExcitedXi0 13322
-newdef SU3RoperGamma:ExcitedXi- 13312
+newdef SU3RoperGamma:ExcitedProton 202212
+newdef SU3RoperGamma:ExcitedNeutron 202112
+newdef SU3RoperGamma:ExcitedSigma+ 203222
+newdef SU3RoperGamma:ExcitedSigma0 203212
+newdef SU3RoperGamma:ExcitedSigma- 203112
+newdef SU3RoperGamma:ExcitedLambda 203122
+newdef SU3RoperGamma:ExcitedXi0 203322
+newdef SU3RoperGamma:ExcitedXi- 203312
 insert SU3RoperGamma:MaxWeight 0 1.34534
 insert SU3RoperGamma:MaxWeight 1 2.3978
 insert SU3RoperGamma:MaxWeight 2 0.01954
@@ -15755,14 +15748,14 @@ newdef SU3Gamma2:Sigma- 3112
 newdef SU3Gamma2:Lambda 3122
 newdef SU3Gamma2:Xi0 3322
 newdef SU3Gamma2:Xi- 3312
-newdef SU3Gamma2:ExcitedProton 22212
-newdef SU3Gamma2:ExcitedNeutron 22112
-newdef SU3Gamma2:ExcitedSigma+ 23222
-newdef SU3Gamma2:ExcitedSigma0 23212
-newdef SU3Gamma2:ExcitedSigma- 23112
-newdef SU3Gamma2:ExcitedLambda 33122
-newdef SU3Gamma2:ExcitedXi0 23322
-newdef SU3Gamma2:ExcitedXi- 23312
+newdef SU3Gamma2:ExcitedProton 102212
+newdef SU3Gamma2:ExcitedNeutron 102112
+newdef SU3Gamma2:ExcitedSigma+ 103222
+newdef SU3Gamma2:ExcitedSigma0 103212
+newdef SU3Gamma2:ExcitedSigma- 103112
+newdef SU3Gamma2:ExcitedLambda 103122
+newdef SU3Gamma2:ExcitedXi0 103322
+newdef SU3Gamma2:ExcitedXi- 103312
 insert SU3Gamma2:MaxWeight 0 2.9575
 insert SU3Gamma2:MaxWeight 1 1.97747
 insert SU3Gamma2:MaxWeight 2 0.0962338
@@ -15848,14 +15841,14 @@ newdef SU3Gamma4:Sigma- 3112
 newdef SU3Gamma4:Lambda 3122
 newdef SU3Gamma4:Xi0 3322
 newdef SU3Gamma4:Xi- 3312
-newdef SU3Gamma4:ExcitedProton 2124
-newdef SU3Gamma4:ExcitedNeutron 1214
-newdef SU3Gamma4:ExcitedSigma+ 13224
-newdef SU3Gamma4:ExcitedSigma0 13214
-newdef SU3Gamma4:ExcitedSigma- 13114
-newdef SU3Gamma4:ExcitedLambda 13124
-newdef SU3Gamma4:ExcitedXi0 13324
-newdef SU3Gamma4:ExcitedXi- 13314
+newdef SU3Gamma4:ExcitedProton 102214
+newdef SU3Gamma4:ExcitedNeutron 102114
+newdef SU3Gamma4:ExcitedSigma+ 103224
+newdef SU3Gamma4:ExcitedSigma0 103214
+newdef SU3Gamma4:ExcitedSigma- 103114
+newdef SU3Gamma4:ExcitedLambda 103124
+newdef SU3Gamma4:ExcitedXi0 103324
+newdef SU3Gamma4:ExcitedXi- 103314
 insert SU3Gamma4:MaxWeight 0 0.415222
 insert SU3Gamma4:MaxWeight 1 0.417084
 insert SU3Gamma4:MaxWeight 2 0.0204893
