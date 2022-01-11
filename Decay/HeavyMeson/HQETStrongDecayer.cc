@@ -24,7 +24,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.566), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242),
+  : fPi_(130.2*MeV), g_(0.566), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242), gtilde_(0.283),
     psiL_(0.), psiS_(0.041), deltaEta_(1./43.7), Lambda_(1.*GeV)
 {}
 
@@ -560,7 +560,7 @@ void HQETStrongDecayer::dataBaseOutput(ofstream & output,
   output << "newdef " << name() << ":Lambda " << Lambda_/GeV << "\n";
   output << "newdef " << name() << ":psiL   " << psiL_       << "\n";
   output << "newdef " << name() << ":psiS   " << psiS_       << "\n";
-  output << "newdef " << name() << ":deltaEta " << deltaEta_ << "\n";
+  output << "newdef " << name() << ":DeltaEta " << deltaEta_ << "\n";
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode "
 	   << incoming_[ix] << " " << outgoing_[ix].first << " "
