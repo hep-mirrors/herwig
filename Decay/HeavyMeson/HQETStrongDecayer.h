@@ -6,6 +6,7 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/PDT/HeavyMesonWidthGenerator.fh"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/LorentzRank3Tensor.h"
@@ -22,6 +23,11 @@ using namespace ThePEG;
  * defined for HQETStrongDecayer.
  */
 class HQETStrongDecayer: public DecayIntegrator {
+
+  /**
+   *  The HeavyMesonWidthGenerator is a friend to get access to the couplings
+   */
+  friend class HeavyMesonWidthGenerator; 
 
 public:
 
