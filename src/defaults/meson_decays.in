@@ -1823,35 +1823,35 @@ decaymode K'*bar0->K*bar0,pi0; 0.311333 1 /Herwig/Decays/VectorVP
 decaymode K'*bar0->K-,pi+; 0.044 1 /Herwig/Decays/Vector2Meson
 decaymode K'*bar0->Kbar0,pi0; 0.022 1 /Herwig/Decays/Vector2Meson
 #
-decaymode D*1(2600)0->D*+,pi-; 0.501937 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)0->D*0,pi0; 0.255727 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)0->D+,pi-; 0.16062 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)0->D0,pi0; 0.081716 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)0->D*+,pi-; 0.501937 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)0->D*0,pi0; 0.255727 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)0->D+,pi-; 0.16062 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)0->D0,pi0; 0.081716 1 /Herwig/Decays/HQETMeson
 #
-decaymode D*1(2600)+->D*0,pi+; 0.506472 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)+->D*+,pi0; 0.251168 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)+->D0,pi+; 0.162132 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)+->D+,pi0; 0.080228 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)+->D*0,pi+; 0.506472 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)+->D*+,pi0; 0.251168 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)+->D0,pi+; 0.162132 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)+->D+,pi0; 0.080228 1 /Herwig/Decays/HQETMeson
 #
-decaymode Dbar*1(2600)0->D*-,pi+; 0.501937 1 /Herwig/Decays/HQETMeson
-decaymode Dbar*1(2600)0->D*bar0,pi0; 0.255727 1 /Herwig/Decays/HQETMeson
-decaymode Dbar*1(2600)0->D-,pi+; 0.16062 1 /Herwig/Decays/HQETMeson
-decaymode Dbar*1(2600)0->Dbar0,pi0; 0.081716 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2600)0->D*-,pi+; 0.501937 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2600)0->D*bar0,pi0; 0.255727 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2600)0->D-,pi+; 0.16062 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2600)0->Dbar0,pi0; 0.081716 1 /Herwig/Decays/HQETMeson
 #
-decaymode D*1(2600)-->D*bar0,pi-; 0.506472 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)-->D*-,pi0; 0.251168 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)-->Dbar0,pi-; 0.162132 1 /Herwig/Decays/HQETMeson
-decaymode D*1(2600)-->D-,pi0; 0.080228 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)-->D*bar0,pi-; 0.506472 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)-->D*-,pi0; 0.251168 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)-->Dbar0,pi-; 0.162132 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2600)-->D-,pi0; 0.080228 1 /Herwig/Decays/HQETMeson
 #
-decaymode Ds*1(2700)+->D0,K+; 0.264387 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)+->D+,K0; 0.25583 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)+->D*0,K+; 0.245676 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)+->D*+,K0; 0.234107 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)+->D0,K+; 0.264387 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)+->D+,K0; 0.25583 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)+->D*0,K+; 0.245676 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)+->D*+,K0; 0.234107 1 /Herwig/Decays/HQETMeson
 #
-decaymode Ds*1(2700)-->Dbar0,K-; 0.264387 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)-->D-,Kbar0; 0.25583 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)-->D*bar0,K-; 0.245676 1 /Herwig/Decays/HQETMeson
-decaymode Ds*1(2700)-->D*-,Kbar0; 0.234107 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)-->Dbar0,K-; 0.264387 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)-->D-,Kbar0; 0.25583 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)-->D*bar0,K-; 0.245676 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2700)-->D*-,Kbar0; 0.234107 1 /Herwig/Decays/HQETMeson
 #
 decaymode B_c(2S)*+->B_c*+,pi+,pi-; 0.531 1 /Herwig/Decays/DecayME0
 decaymode B_c(2S)*+->B_c*+,pi0,pi0; 0.265 1 /Herwig/Decays/DecayME0

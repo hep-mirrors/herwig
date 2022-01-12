@@ -6,6 +6,7 @@
 
 #include "HeavyMesonWidthGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -50,6 +51,65 @@ void HeavyMesonWidthGenerator::Init() {
   static ClassDocumentation<HeavyMesonWidthGenerator> documentation
     ("The HeavyMesonWidthGenerator class calculates the width for heavy meson decays");
 
+  static Parameter<HeavyMesonWidthGenerator,Energy> interfacefPi
+    ("fPi",
+     "The pion decay constant",
+     &HeavyMesonWidthGenerator::fPi_, MeV, 130.2*MeV, 100.0*MeV, 200.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfaceg
+    ("g",
+     "The coupling for 1S (0-,1-) decays",
+     &HeavyMesonWidthGenerator::g_, 0.566, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfaceh
+    ("h",
+     "The coupling for 1P (0+,1+) decays",
+     &HeavyMesonWidthGenerator::h_, 0.544, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacehp
+    ("hp",
+     "The coupling for 1P (1+,2+) decays",
+     &HeavyMesonWidthGenerator::hp_, 0.413, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacek
+    ("k",
+     "The coupling for 1D (2-,3-) decays",
+     &HeavyMesonWidthGenerator::k_, 0.407, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacekp
+    ("kp",
+     "The coupling for 1D (1-,2-) decays",
+     &HeavyMesonWidthGenerator::kp_, 0.242, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacegtilde
+    ("gtilde",
+     "The coupling for 2S (0-,1-) decays",
+     &HeavyMesonWidthGenerator::gtilde_, 0.283, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,Energy> interfacefLambda
+    ("Lambda",
+     "Strong decays momentum scale",
+     &HeavyMesonWidthGenerator::Lambda_, GeV, 1.*GeV, .1*GeV, 2.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacefpsiL
+    ("psiL",
+     "D_1 mixing angle for up and down heavy mesons",
+     &HeavyMesonWidthGenerator::psiL_, 0., -M_PI/2., M_PI/2.,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacefpsiS
+    ("psiS",
+     "D_1 mixing angle for strange heavy mesons",
+     &HeavyMesonWidthGenerator::psiS_, 0.041, -M_PI/2., M_PI/2.,
+     false, false, Interface::limited);
 }
  
 void HeavyMesonWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr decayer,
