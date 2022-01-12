@@ -396,7 +396,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       assert(false);
   }
   // 1- from (1-,2-)
-  else if(itemp==10000  && part.data().iSpin()==PDT::Spin1) {
+  else if(itemp==30000  && part.data().iSpin()==PDT::Spin1) {
     // 1- -> 0- 0-
     if(outgoing[0]->iSpin()==PDT::Spin0) {
       InvEnergy fact = 4.*kp_*sqrt(2.*momenta[0].mass()/3./part.mass())/part.mass()/fPi_/Lambda_*(part.momentum()*momenta[1]);
@@ -408,7 +408,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
 	/9./sqr(fPi_*Lambda_*part.mass())/part.mass();
     }
     // 1- -> 1- 0-
-    else if(outgoing[0]->iSpin()==PDT::Spin0) {
+    else if(outgoing[0]->iSpin()==PDT::Spin1) {
       InvEnergy2 fact = -2.*kp_*sqrt(2.*momenta[0].mass()/3./part.mass())/fPi_/Lambda_*(part.momentum()*momenta[1])/sqr(part.mass());	
       for(unsigned int ix=0;ix<3;++ix) {
       	LorentzVector<complex<double> > vtemp = fact*epsilon(momenta[1],part.momentum(),vecIn_[ix]);
