@@ -509,43 +509,67 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
 
 bool HQETStrongDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 				      double & coupling) const {
-  // int imode(-1);
-  // int id(dm.parent()->id());
-  // int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
-  // ParticleMSet::const_iterator pit(dm.products().begin());
-  // int id1((**pit).id());
-  // int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  // ++pit;
-  // int id2((**pit).id());
-  // int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
-  // unsigned int ix(0); bool order(false);
-  // do {
-  //   if(id   ==incoming_[ix]) {
-  //     if(id1==outgoing_[ix].first&&id2==outgoing_[ix].second) {
-  // 	imode=ix;
-  // 	order=true;
-  //     }
-  //     if(id2==outgoing_[ix].first&&id1==outgoing_[ix].second) {
-  // 	imode=ix;
-  // 	order=false;
-  //     }
-  //   }
-  //   if(idbar==incoming_[ix]&&imode<0) {
-  //     if(id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second) {
-  // 	imode=ix;
-  // 	order=true;
-  //     }
-  //     if(id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second) {
-  // 	imode=ix;
-  // 	order=false;
-  //     }
-  //   }
-  //   ++ix;
-  // }
-  // while(ix<incoming_.size()&&imode<0);
-  // coupling=_coupling[imode]*dm.parent()->mass();
-  // mecode=7;
-  // return order;
+  // extract ids of the particles
+  int id(dm.parent()->id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  pair<tPDPtr,tPDPtr> out;
+  out.first=*pit;
+  ++pit;
+  out.second=*pit;
+  bool order=true;
+  if (abs(out.first->id())<abs(out.second->id())) {
+    order=false;
+    swap(out.first,out.second);
+  }
+  // identify the incoming multiplet
+  unsigned int itemp = abs(id)-abs(id)%1000;
+  coupling=1.;
+  if     (itemp==0 && dm.parent()->iSpin()==PDT::Spin0) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 101;
+  }
+  else if(itemp==0 && dm.parent()->iSpin()==PDT::Spin1) {
+    mecode = out.first->iSpin()==PDT::Spin0 ? 102 : 103;
+  }
+  else if((itemp==10000||itemp==20000)  && dm.parent()->iSpin()==PDT::Spin1) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 104;
+  }
+  else if(itemp==0      && dm.parent()->iSpin()==PDT::Spin2) {
+    mecode = out.first->iSpin()==PDT::Spin0 ? 105 : 106;
+  }
+  else if(itemp==10000  && dm.parent()->iSpin()==PDT::Spin0) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 107;
+  }
+  else if(itemp==30000  && dm.parent()->iSpin()==PDT::Spin1) {
+    mecode = out.first->iSpin()==PDT::Spin0 ? 108 : 109;
+  }
+  else if(itemp==10000 && dm.parent()->iSpin()==PDT::Spin2) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 110;
+  }
+  else if(itemp==20000  && dm.parent()->iSpin()==PDT::Spin2) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 111;
+  }
+  else if(itemp==0      && dm.parent()->iSpin()==PDT::Spin3) {
+    mecode = out.first->iSpin()==PDT::Spin0 ? 112 : 113;
+  }
+  else if(itemp==100000 && dm.parent()->iSpin()==PDT::Spin0) {
+    assert(out.first->iSpin()!=PDT::Spin0);
+    mecode = 114;
+  }
+  else if(itemp==100000 && dm.parent()->iSpin()==PDT::Spin1) {
+    mecode = out.first->iSpin()==PDT::Spin0 ? 115 : 116;
+  }
+  // isospin factors
+  if(abs(out.second->id())==ParticleID::pi0) {
+    int ispect = (abs(dm.parent()->id())%100)/10;
+    coupling *= sqrt(ispect<3 ? 0.5 : 0.125*sqr(deltaEta_));
+  }
+  // return the order
+  return order;
 }
 
 void HQETStrongDecayer::dataBaseOutput(ofstream & output,

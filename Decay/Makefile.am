@@ -185,6 +185,9 @@ pkglib_LTLIBRARIES += HwHMDecay.la
 HwHMDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 11:0:0
 
+HwHMDecay_la_LIBADD = \
+$(top_builddir)/PDT/libHwHeavyMesonWidth.la
+
 HwHMDecay_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/HeavyMeson
 
