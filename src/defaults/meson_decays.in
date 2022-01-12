@@ -1288,6 +1288,36 @@ decaymode K''*bar0->Kbar0,pi0; 0.129 1 /Herwig/Decays/Vector2Meson
 decaymode K''*bar0->Kbar0,rho0; 0.104667 1 /Herwig/Decays/VectorVP
 decaymode K''*bar0->K*bar0,pi0; 0.099667 1 /Herwig/Decays/VectorVP
 #
+decaymode D_1*(2760)0->D+,pi-; 0.52278 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)0->D0,pi0; 0.26687 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)0->D*+,pi-; 0.139301 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)0->D*0,pi0; 0.071049 1 /Herwig/Decays/HQETMeson
+#
+decaymode D_1*(2760)+->D0,pi+; 0.529493 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)+->D+,pi0; 0.260253 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)+->D*0,pi+; 0.140847 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)+->D*+,pi0; 0.069407 1 /Herwig/Decays/HQETMeson
+#
+decaymode Dbar_1*(2760)0->D-,pi+; 0.52278 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2760)0->Dbar0,pi0; 0.26687 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2760)0->D*-,pi+; 0.139301 1 /Herwig/Decays/HQETMeson
+decaymode Dbar_1*(2760)0->D*bar0,pi0; 0.071049 1 /Herwig/Decays/HQETMeson
+#
+decaymode D_1*(2760)-->Dbar0,pi-; 0.529493 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)-->D-,pi0; 0.260253 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)-->D*bar0,pi-; 0.140847 1 /Herwig/Decays/HQETMeson
+decaymode D_1*(2760)-->D*-,pi0; 0.069407 1 /Herwig/Decays/HQETMeson
+#
+decaymode D_s1*(2860)+->D*0,K+; 0.265999 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)+->D*+,K0; 0.25781 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)+->D0,K+; 0.241382 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)+->D+,K0; 0.234809 1 /Herwig/Decays/HQETMeson
+#
+decaymode D_s1*(2860)-->D*bar0,K-; 0.265999 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)-->D*-,Kbar0; 0.25781 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)-->Dbar0,K-; 0.241382 1 /Herwig/Decays/HQETMeson
+decaymode D_s1*(2860)-->D-,Kbar0; 0.234809 1 /Herwig/Decays/HQETMeson
+#
 decaymode B_c(1D)*+->B*_c0+,gamma;  0.588 1 /Herwig/Decays/DecayME0
 decaymode B_c(1D)*+->B'_c1+,gamma;  0.299 1 /Herwig/Decays/DecayME0
 decaymode B_c(1D)*+->B_c1+,gamma;   0.047 1 /Herwig/Decays/DecayME0
