@@ -23,6 +23,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262415
 # BABAR D hadron decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I867611
+# BABAR D_s hadron decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I827985
 # LHCB D hadron decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1243156
 # LHCB D_s hadron decays
