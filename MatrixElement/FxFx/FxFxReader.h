@@ -290,6 +290,11 @@ public:
    */
   const map<string,double>& optionalEventWeights() const { return optionalWeights; }
 
+  /** 
+   * Return the Les Houches event number associated with the current event
+   */
+  const long& LHEEventNum() const { return LHEeventnum; }
+
   /**
    * Return the optional npLO and npNLO
    */
@@ -834,6 +839,11 @@ protected:
    * The optional weights associated to the last read events.
    */
   map<string,double> optionalWeights;
+  
+  /**
+   * The event number
+   */
+  long LHEeventnum;
 
    /**
    * If the maximum cross section of this reader has been increased
