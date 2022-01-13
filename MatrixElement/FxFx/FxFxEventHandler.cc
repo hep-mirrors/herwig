@@ -249,8 +249,15 @@ EventPtr FxFxEventHandler::generateEvent() {
 
       theLastXComb = currentReader()->getXComb();
 
-      currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
-				 generator()->currentEventNumber(), weight*fact)));
+      //whether to use the LHE event number or not for the event identification
+      if(UseLHEEvent==0 || currentReader()->LHEEventNum() == -1) { 
+	currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
+                                 generator()->currentEventNumber(), weight*fact )));
+      }
+      else if(UseLHEEvent==1 && currentReader()->LHEEventNum() != -1) {
+	currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
+				  currentReader()->LHEEventNum(), weight*fact )));
+      }
       currentEvent()->optionalWeights() = currentReader()->optionalEventWeights();
      // normalize the optional weights
       for(map<string,double>::iterator it = currentEvent()->optionalWeights().begin();
@@ -543,14 +550,14 @@ int FxFxEventHandler::ntriesinternal() const {
 void FxFxEventHandler::persistentOutput(PersistentOStream & os) const {
   os << stats << histStats << theReaders << theSelector
      << oenum(theWeightOption) << theUnitTolerance << theCurrentReader << warnPNum
-     << theNormWeight;
+     << theNormWeight << UseLHEEvent;
 
 }
 
 void FxFxEventHandler::persistentInput(PersistentIStream & is, int) {
   is >> stats >> histStats >> theReaders >> theSelector
      >> ienum(theWeightOption) >> theUnitTolerance >> theCurrentReader >> warnPNum
-     >> theNormWeight;
+     >> theNormWeight >> UseLHEEvent;;
 }
 
 ClassDescription<FxFxEventHandler>
@@ -644,6 +651,20 @@ void FxFxEventHandler::Init() {
      "Normalize the weights to the max cross section in pb",
      1);
 
+    static Switch<FxFxEventHandler,unsigned int> interfaceEventNumbering
+    ("EventNumbering",
+     "How to number the events",
+     &FxFxEventHandler::UseLHEEvent, 0, false, false);
+  static SwitchOption interfaceEventNumberingIncremental
+    (interfaceEventNumbering,
+     "Incremental",
+     "Standard incremental numbering (i.e. as they are generated)",
+     0);
+  static SwitchOption interfaceEventNumberingLHE
+    (interfaceEventNumbering,
+     "LHE",
+     "Corresponding to the LHE event number",
+     1);
 
   interfaceFxFxReaders.rank(10);
   interfaceWeightOption.rank(9);
