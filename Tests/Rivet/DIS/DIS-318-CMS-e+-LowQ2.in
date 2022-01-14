@@ -6,12 +6,10 @@ set EventGenerator:EventHandler:BeamA /Herwig/Particles/e+
 set EventGenerator:EventHandler:LuminosityFunction:BeamEMaxA 159.*GeV
 set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
-set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 20.
-set /Herwig/Cuts/NeutralCurrentCut:MinQ2 1.
+set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 100.
+set /Herwig/Cuts/NeutralCurrentCut:MinQ2 20.
 set /Herwig/Cuts/Cuts:MHatMin 0.
-# HERA F2
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HERA_2015_I1377206
-# H1 charged particle
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2013_I1217865
-# ZEUS D meson
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2008_I810112
+# H1 strangeness
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2009_I810046
+# combined D/D*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HERA_2015_I1353667

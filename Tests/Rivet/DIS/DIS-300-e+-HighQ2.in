@@ -17,3 +17,15 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2010_I875006
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1996_I420332
 # HERA F2
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HERA_2015_I1377206
+# H1 charged particle
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1996_I422230
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1996_I424463
+# H1 D*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1999_I481112
+# H1 event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2006_I699835
+# ZEUS forward
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I470499
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I508906
+# zeus neutral current
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I500267

@@ -160,9 +160,9 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.17,4.3,4.41,5.0,5.2,4.6,4.8,5.8,6.2,6.6,7.0,7.4,3.63,4.03,4.5,8.8,9.27,9.46,9.51,10.52,10.52-sym,10.54,10.58,10.45,10.47,10.6}.in) \
                   $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon4-asym,JPsi,Psi2S,Psi3770,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Xim}.in) \
-	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{460,575,820,920}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
-	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-920-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda) \
-		  $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{820,920}-e--{VeryLow,Low,Med,High}Q2.yoda) \
+	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
+	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda) \
+		  $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
 	          $(shell echo Rivet/TVT-Powheg-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
@@ -246,14 +246,22 @@ Rivet-R:
 Rivet-DIS : Rivet-DIS/done
 	touch $@
 
-Rivet-DIS/done: $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{460,575,820,920}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
-		$(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{820,920}-e--{VeryLow,Low,Med,High}Q2.yoda) \
-                $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-920-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
+# Rivet-DIS/done: $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
+# 		$(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
+#                 $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
+# 	rm -rf Rivet-DIS
+# 	python/merge-DIS DIS
+# 	python/merge-DIS Powheg-DIS
+# 	python/merge-DIS NoME-DIS
+# 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg NoME-DIS.yoda:Hw-NoME
+# 	touch $@
+
+Rivet-DIS/done: $(shell echo Rivet-DIS-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
+		$(shell echo Rivet-DIS-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
+                $(shell echo Rivet-DIS-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS
-	python/merge-DIS Powheg-DIS
-	python/merge-DIS NoME-DIS
-	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg NoME-DIS.yoda:Hw-NoME
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw
 	touch $@
 
 
