@@ -284,6 +284,10 @@ void MEGQBCQBase::constructVertex(tSubProPtr sub) {
   if(hard[2]->dataPtr()->iSpin()==PDT::Spin0) {
     ScalarWaveFunction(      hard[2],outgoing,true);
   }
+  else if(hard[2]->dataPtr()->iSpin()==PDT::Spin1) {
+    vector<VectorWaveFunction> v3;
+    VectorWaveFunction(v3,hard[2],outgoing,true ,false,true,vector_phase);
+  }
   else
     assert(false);
   // gluon

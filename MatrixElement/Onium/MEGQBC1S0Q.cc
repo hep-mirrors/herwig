@@ -162,7 +162,7 @@ double MEGQBC1S0Q::me2() const {
   // set matrix element
   setME(me);
   // final factors
-  return 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/(729.*sqr(a1*a2))*meSum;
+  return 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/(243.*sqr(a1*a2))*meSum;
 }
 
 IBPtr MEGQBC1S0Q::clone() const {
