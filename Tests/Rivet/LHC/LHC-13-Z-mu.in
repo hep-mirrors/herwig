@@ -4,6 +4,7 @@
 ##################################################
 # ATLAS Z
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_MU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1768911:LMODE=MU
 # ATLAS Z UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1736531
 # CMS Z UE
