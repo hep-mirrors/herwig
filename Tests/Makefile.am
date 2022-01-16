@@ -246,25 +246,15 @@ Rivet-R:
 Rivet-DIS : Rivet-DIS/done
 	touch $@
 
-# Rivet-DIS/done: $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
-# 		$(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
-#                 $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
-# 	rm -rf Rivet-DIS
-# 	python/merge-DIS DIS
-# 	python/merge-DIS Powheg-DIS
-# 	python/merge-DIS NoME-DIS
-# 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg NoME-DIS.yoda:Hw-NoME
-# 	touch $@
-
-Rivet-DIS/done: $(shell echo Rivet-DIS-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
-		$(shell echo Rivet-DIS-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
-                $(shell echo Rivet-DIS-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
+Rivet-DIS/done: $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
+		$(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
+                $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS
-	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw
+	python/merge-DIS Powheg-DIS
+	python/merge-DIS NoME-DIS
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg NoME-DIS.yoda:Hw-NoME
 	touch $@
-
-
 
 Rivet-TVT-EW : Rivet-TVT-EW/done
 	touch $@

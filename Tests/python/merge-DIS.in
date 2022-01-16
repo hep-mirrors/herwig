@@ -75,7 +75,12 @@ for f in yodafiles:
                 if "CC" in f : outhistos[aopath] = ao
             else :
                 if "CC" not in f : outhistos[aopath] = ao
-        elif "H1_1995_I394793/d05" in aopath or "H1_1995_I394793/d06" in aopath:
+        # this can be problematic with inf/nans
+        elif ("H1_1995_I394793/d05" in aopath or "H1_1995_I394793/d06" in aopath or
+              "H1_1996_I422230/d12" in aopath or "H1_1996_I422230/d11" in aopath or
+              "H1_1996_I422230/d10" in aopath or "H1_1996_I422230/d09" in aopath or
+              "H1_1996_I422230/d08" in aopath or "H1_1996_I422230/d07" in aopath or
+              "H1_1996_I422230/d06" in aopath or "H1_1996_I422230/d05" in aopath):
             skip=False
             for p in ao.points() :
                 if math.isnan(p.y()) : skip=True
