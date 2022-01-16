@@ -252,7 +252,8 @@ for f in yodafiles:
            "I1486238" in aopath or "1634970"  in aopath or
            "I1604271" in aopath or "I1598460" in aopath or
            "I1643640" in aopath or "I1808726" in aopath or
-           "1724098" in aopath or "I1719955" in aopath or
+           "I1724098" in aopath or "I1719955" in aopath or
+           "I1740909" in aopath or
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -452,8 +453,8 @@ for hpath,hsets in inhistos_pt.items():
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
-        hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238") or
-        hpath.find("1459051")>0 or hpath.find("1634970")>0) :
+        hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238")>0 or
+        hpath.find("1459051")>0 or hpath.find("1634970")>0 or hpath.find("I1740909")>0) :
         title=""
         path=""
         histo = list(list(hsets.values())[0].values())[0]
@@ -1681,7 +1682,21 @@ for  i in range (0,3) :
     for j in range (0,6) :
         for k in range(1,5) :
             useOnePt("/ATLAS_2020_I1808726/d%02d-x01-y01"%(4*i+12*j+k),"13000",pts[i])
-    
+
+logging.info("Processing ATLAS_2019_I1740909")
+for i in [1,2,9]:
+    mergeByPt("/ATLAS_2019_I1740909/d%02d-x01-y01" % i, "13000")
+pts = ["80" ,"110","260","400","400",
+       "600","600","600","900","900",
+       "900","900","900","1900"]
+for i in [13,27,41,55,69,83,97,111,125,139,153,167] :
+    for j in range(0,14) :
+        ihist=i+j
+        if ihist < 100:
+            useOnePt("/ATLAS_2019_I1740909/d%02d-x01-y01" % ihist, "13000",pts[j])
+        else :
+            useOnePt("/ATLAS_2019_I1740909/d%03d-x01-y01" % ihist, "13000",pts[j])
+
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)
