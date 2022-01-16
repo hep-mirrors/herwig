@@ -426,15 +426,19 @@ elif(collider=="EE") :
             except :
                 pass
     elif(simulation=="Powheg") :
-        process = StringBuilder()
-        try :
-            ecms = float(parameterName)
-            if(ecms<=3.75) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
-            elif(ecms<=10.6) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
-        except :
-            pass
+        if "LL" in parameterName :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/PowhegMEee2gZ2ll:Allowed Charged\n"
+        else :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2qq"))
+            try :
+                ecms = float(parameterName)
+                if(ecms<=3.75) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
+                elif(ecms<=10.6) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+            except :
+                pass
     elif(simulation=="Matchbox" ) :
         try :
             ecms = float(parameterName)
