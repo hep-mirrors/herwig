@@ -7,6 +7,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1711114
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1724098
+# ATLAS charged fragmentation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1740909
 # CMS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955

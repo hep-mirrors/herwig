@@ -15,3 +15,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1996_I421105
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2002_I561885
 # ZEUS azimuthal
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2000_I524911
+# H1 forward pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1999_I504022

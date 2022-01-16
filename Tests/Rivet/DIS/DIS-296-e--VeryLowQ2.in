@@ -14,4 +14,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1994_S2919893
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1995_S3167097
 # H1 fragmentation
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1995_I394793
-
+# ZEUS charged particle
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1995_I392386
+# ZEUS strange particle
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1995_I395196
