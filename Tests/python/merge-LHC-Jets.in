@@ -127,6 +127,8 @@ if __name__ == "__main__":
         sys.exit(1)
 yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda","-7-Bottom-6.yoda",
+           "-13-Bottom-0.yoda","-13-Bottom-1.yoda","-13-Bottom-2.yoda",
+           "-13-Bottom-3.yoda","-13-Bottom-4.yoda","-13-Bottom-5.yoda","-13-Bottom-6.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda",
@@ -253,7 +255,7 @@ for f in yodafiles:
            "I1604271" in aopath or "I1598460" in aopath or
            "I1643640" in aopath or "I1808726" in aopath or
            "I1724098" in aopath or "I1719955" in aopath or
-           "I1740909" in aopath or
+           "I1740909" in aopath or "I1913061" in aopath or
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -332,6 +334,13 @@ for f in yodafiles:
                             temp.bins()[2] += outhistos[aopath].bins()[2]
                             temp.bins()[3] += outhistos[aopath].bins()[3]
                         outhistos[aopath] = temp
+            elif "ATLAS_2018_I1707015" in aopath :
+                if "d03" in aopath or "d04" in aopath or "d05" in aopath:
+                    if "Top-SL" in file:
+                        outhistos[aopath] = ao
+                else :
+                    if( "Top-L" in file ) :
+                        outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
 
@@ -454,7 +463,8 @@ for hpath,hsets in inhistos_pt.items():
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238")>0 or
-        hpath.find("1459051")>0 or hpath.find("1634970")>0 or hpath.find("I1740909")>0) :
+        hpath.find("1459051")>0 or hpath.find("1634970")>0 or hpath.find("I1740909")>0 or
+        hpath.find("1913061")>0) :
         title=""
         path=""
         histo = list(list(hsets.values())[0].values())[0]
@@ -1696,6 +1706,14 @@ for i in [13,27,41,55,69,83,97,111,125,139,153,167] :
             useOnePt("/ATLAS_2019_I1740909/d%02d-x01-y01" % ihist, "13000",pts[j])
         else :
             useOnePt("/ATLAS_2019_I1740909/d%03d-x01-y01" % ihist, "13000",pts[j])
+
+logging.info("Processing ATLAS_2021_I1913061")
+for i in range(1,5) :
+    useOnePt("/ATLAS_2021_I1913061/d%02d-x01-y01" % ihist, "13000","40")
+for i in range(5,7) :
+    useOnePt("/ATLAS_2021_I1913061/d%02d-x01-y01" % ihist, "13000","40")
+for i in range(7,9) :
+    mergeByPt("/ATLAS_2021_I1913061/d%02d-x01-y01" % i, "13000")
 
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
