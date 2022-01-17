@@ -179,6 +179,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Charm-{0..5}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{5,13}-Charm-0.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Bottom-{0..9}.in) \
+		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-13-Bottom-{0..6}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Top-{L,SL}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{8,13}-Top-{All,L,SL}.in) \
                   $(shell echo Rivet/Star{,-Dipole}-{UE,Jets-{1..4}}.in ) \
@@ -317,6 +318,7 @@ Rivet-LHC-Jets/done : \
 		$(shell echo Rivet-LHC-7-Charm-{0..5}.yoda            ) \
 		$(shell echo Rivet-LHC-{5-13}-Charm-0.yoda            ) \
 		$(shell echo Rivet-LHC-7-Bottom-{0..9}.yoda           ) \
+		$(shell echo Rivet-LHC-13-Bottom-{0..6}.yoda           ) \
 		$(shell echo Rivet-LHC-{7,8,13}-Top-{L,SL}.yoda ) \
 		$(shell echo Rivet-LHC-{8,13}-Top-All.yoda )
 	rm -rf Rivet-LHC-Jets
