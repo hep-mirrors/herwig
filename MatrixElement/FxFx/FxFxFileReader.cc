@@ -707,6 +707,9 @@ bool FxFxFileReader::doReadEvent() {
     } 
   }
 
+  LHEeventnum = -1; // set the LHEeventnum to -1, this will be the default if the tag <event num> is not found
+
+
  // Now read any additional comments and named weights.
   // read until the end of rwgt is found
   bool readingWeights = false, readingaMCFast = false, readingMG5ClusInfo = false;
@@ -766,6 +769,20 @@ bool FxFxFileReader::doReadEvent() {
       string str_newline= "\n";
       erase_substr(mg5clusinfo,str_newline);
       optionalWeights[mg5clusinfo.c_str()] = -222; //for the mg5 scale info weights we give them a weight -222 for future identification
+    }
+
+    //the event num tag
+    if(cfile.find("<event num")) {
+      string hs = cfile.getline();
+      string startDEL = "<event num"; //starting delimiter
+      string stopDEL = "</event num>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL);
+      string LHEeventnum_str = hs.substr(firstLim);
+      erase_substr(LHEeventnum_str,stopDEL);
+      erase_substr(LHEeventnum_str,startDEL);
+      string str_arrow = ">";
+      erase_substr(LHEeventnum_str,str_arrow);
+      LHEeventnum =  std::stol(LHEeventnum_str, nullptr, 10); 
     }
     
     //store MG5 clustering information 
