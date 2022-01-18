@@ -1,6 +1,6 @@
 #! @PYTHON@
 from __future__ import print_function
-import logging, sys, os, yoda
+import logging, sys, os, yoda,math
 
 """%prog
 
@@ -114,6 +114,7 @@ for f in files:
         ## Get histos from this YODA file
         for aopath, ao in aos.items() :
             if("RAW" in aopath) :continue
+            if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
             if aopath not in inhistos:
                 inhistos[aopath] = {}
             if (aopath.find("CMS_2013_I1258128")>0) :
@@ -297,5 +298,16 @@ useOnePt("/MC_PHOTONJETUE/trans-ptsum-jet","0")
 
 # Choose output file
 name = args[0]+"-Photon.yoda"
+# remove any scatters with nans, causes yoda to crash
+remove = [] 
+for key in outhistos.keys() :
+    ao = outhistos[key]
+    if type(ao)==yoda.core.Scatter2D :
+        skip=False
+        for p in ao.points() :
+            if math.isnan(p.y()) : skip=True
+        if(skip) : remove.append(key)
+for key in remove : del outhistos[key]
+# output histos
 yoda.writeYODA(outhistos,name)
 sys.exit(0)
