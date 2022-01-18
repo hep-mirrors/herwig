@@ -807,12 +807,23 @@ elif(collider=="LHC") :
             process+=insert_ME("MEGammaJet")
             if "PromptPhoton-1" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 25.\n"
+                parameterName=parameterName.replace("-1","")
             elif "PromptPhoton-2" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 25.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 80.\n"
+                parameterName=parameterName.replace("-2","")
             elif "PromptPhoton-3" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 80.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 150.\n"
+                parameterName=parameterName.replace("-3","")
             elif "PromptPhoton-4" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 150.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 500.\n"
+                parameterName=parameterName.replace("-4","")
+            elif "PromptPhoton-5" in parameterName :
+                process+="set /Herwig/Cuts/PhotonKtCut:MinKT 500.\n"
+                parameterName=parameterName.replace("-5","")
         elif "DiPhoton-GammaGamma" in parameterName :
             process+=insert_ME("MEGammaGamma")
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"

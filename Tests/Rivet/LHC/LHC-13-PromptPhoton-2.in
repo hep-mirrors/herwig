@@ -1,8 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-# ATLAS prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1645627
-# ATLAS prompt photon + 2 jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1772071
