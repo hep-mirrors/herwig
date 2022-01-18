@@ -90,6 +90,7 @@ Tests/python/merge-GammaGamma
 Tests/python/merge-LHC-EW
 Tests/python/merge-LHC-Jets
 Tests/python/merge-LHC-Photon
+Tests/python/merge-Star
 Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon

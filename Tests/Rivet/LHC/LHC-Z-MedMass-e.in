@@ -1,6 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-# LHC B med mass
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1208102
