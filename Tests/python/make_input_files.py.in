@@ -377,6 +377,26 @@ if(collider=="DIS") :
                 process = StringBuilder(addProcess(thefactory,"e- p -> nu_e j","0","2","",2,2))
             else :
                 process = StringBuilder(addProcess(thefactory,"e+ p -> nu_ebar j","0","2","",2,2))
+    Q2Min=1.
+    Q2Max=1000000.
+    if "VeryLow" in name :
+        Q2Max=20.
+        parameterName=parameterName.replace("-VeryLowQ2","")
+    elif "Low" in name :
+        Q2Min=20.
+        Q2Max=100.
+        parameterName=parameterName.replace("-LowQ2","")
+    elif "Med" in name :
+        Q2Min=100.
+        Q2Max=1000.
+        parameterName=parameterName.replace("-MedQ2","")
+    elif "High" in name :
+        Q2Min=1000.
+        parameterName=parameterName.replace("-HighQ2","")
+    if "CC" in name :
+        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+    else :
+        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
 # EE
 elif(collider=="EE") :
     if(simulation=="") :
