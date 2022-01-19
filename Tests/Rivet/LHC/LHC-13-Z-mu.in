@@ -13,3 +13,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1635889
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=MU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
+# CMS mass spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1711625
