@@ -30,7 +30,7 @@ public:
    * The default constructor.
    */
   Gto3S1OctetSplitFn() : O8_(0.015*GeV2*GeV), state_(ccbar), n_(1),
-			  m_(1.2*GeV)
+			 m_(1.2*GeV), enhancementFactor_(1.)
   {}
   //@}
 
@@ -242,6 +242,11 @@ private:
    *  Fixed value of \f$\alpha_S\f$
    */
   double fixedAlphaS_;
+
+  /**
+   *  Enhancement factor
+   */
+  double enhancementFactor_;
 };
 
 }
