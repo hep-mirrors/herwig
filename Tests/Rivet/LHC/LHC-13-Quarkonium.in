@@ -9,3 +9,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1898832
 # CMS onium (charm and bottom)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1633431
+# general MC analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium

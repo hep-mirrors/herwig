@@ -9,3 +9,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
 # CMS Upsilon(1,2,3S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1225274
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1342266
+# general MC analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium

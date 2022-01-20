@@ -7,3 +7,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1094079
 # LHCB J/psi production at 2.76 TeV
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1205646
+# general MC analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium

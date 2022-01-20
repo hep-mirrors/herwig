@@ -5,3 +5,5 @@
 # charmonium production
 # ALICE frorward Jpsi and psi(2S) production 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
+# general MC analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium
