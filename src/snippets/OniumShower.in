@@ -155,7 +155,7 @@ set ctoc13D2SplittingSudakov:AngularOrdered Yes
 set ctoc13D2SplittingSudakov:StrictAO Yes
 set ctoc13D2SplittingSudakov:InteractionType QCD
 set ctoc13D2SplittingSudakov:State ccbar
-do SplittingGenerator:AddFinalSplitting c->c,psi_2; ctoc13D2SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->c,psi_2(1D); ctoc13D2SplittingSudakov
 # 1 3D3
 create Herwig::QtoQ3D3SplitFn ctoc13D3SplittingSudakov HwOniumShower.so
 set ctoc13D3SplittingSudakov:Alpha AlphaQCD
@@ -167,7 +167,7 @@ set ctoc13D3SplittingSudakov:AngularOrdered Yes
 set ctoc13D3SplittingSudakov:StrictAO Yes
 set ctoc13D3SplittingSudakov:InteractionType QCD
 set ctoc13D3SplittingSudakov:State ccbar
-do SplittingGenerator:AddFinalSplitting c->c,psi_3; ctoc13D3SplittingSudakov
+do SplittingGenerator:AddFinalSplitting c->c,psi_3(1D); ctoc13D3SplittingSudakov
 
 #
 #  Bottomonium
@@ -492,3 +492,63 @@ set QtoQbc1SplittingSudakov:State bc
 set QtoQbc1SplittingSudakov:Parameters /Herwig/OniumParameters
 do SplittingGenerator:AddFinalSplitting c->bbar,bc_1; QtoQbc1SplittingSudakov
 do SplittingGenerator:AddFinalSplitting b->cbar,bc_1; QtoQbc1SplittingSudakov
+
+#
+#  Octet charmonium
+#
+create Herwig::Gto3S1OctetSplitFn gtocc13S1SplittingSudakov HwOniumShower.so
+set gtocc13S1SplittingSudakov:Alpha AlphaQCD
+set gtocc13S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtocc13S1SplittingSudakov:PDFmax 2.0
+set gtocc13S1SplittingSudakov:ColourStructure OctetSinglet
+set gtocc13S1SplittingSudakov:AngularOrdered Yes
+set gtocc13S1SplittingSudakov:InteractionType QCD
+set gtocc13S1SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->Jpsi; gtocc13S1SplittingSudakov
+
+create Herwig::Gto3S1OctetSplitFn gtocc23S1SplittingSudakov HwOniumShower.so
+set gtocc23S1SplittingSudakov:Alpha AlphaQCD
+set gtocc23S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtocc23S1SplittingSudakov:PDFmax 2.0
+set gtocc23S1SplittingSudakov:ColourStructure OctetSinglet
+set gtocc23S1SplittingSudakov:AngularOrdered Yes
+set gtocc23S1SplittingSudakov:InteractionType QCD
+set gtocc23S1SplittingSudakov:State ccbar
+set gtocc23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->psi(2S); gtocc23S1SplittingSudakov
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement ccbar 3S1 100443 4.3e-3
+
+#
+#  Octet bottomonium
+#r
+create Herwig::Gto3S1OctetSplitFn gtobb13S1SplittingSudakov HwOniumShower.so
+set gtobb13S1SplittingSudakov:Alpha AlphaQCD
+set gtobb13S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtobb13S1SplittingSudakov:PDFmax 2.0
+set gtobb13S1SplittingSudakov:ColourStructure OctetSinglet
+set gtobb13S1SplittingSudakov:AngularOrdered Yes
+set gtobb13S1SplittingSudakov:InteractionType QCD
+set gtobb13S1SplittingSudakov:State bbbar
+do SplittingGenerator:AddFinalSplitting g->Upsilon; gtobb13S1SplittingSudakov
+
+create Herwig::Gto3S1OctetSplitFn gtobb23S1SplittingSudakov HwOniumShower.so
+set gtobb23S1SplittingSudakov:Alpha AlphaQCD
+set gtobb23S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtobb23S1SplittingSudakov:PDFmax 2.0
+set gtobb23S1SplittingSudakov:ColourStructure OctetSinglet
+set gtobb23S1SplittingSudakov:AngularOrdered Yes
+set gtobb23S1SplittingSudakov:InteractionType QCD
+set gtobb23S1SplittingSudakov:State bbbar
+set gtobb23S1SplittingSudakov:PrincipalQuantumNumber 2
+do SplittingGenerator:AddFinalSplitting g->Upsilon(2S); gtobb23S1SplittingSudakov
+
+create Herwig::Gto3S1OctetSplitFn gtobb33S1SplittingSudakov HwOniumShower.so
+set gtobb33S1SplittingSudakov:Alpha AlphaQCD
+set gtobb33S1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtobb33S1SplittingSudakov:PDFmax 2.0
+set gtobb33S1SplittingSudakov:ColourStructure OctetSinglet
+set gtobb33S1SplittingSudakov:AngularOrdered Yes
+set gtobb33S1SplittingSudakov:InteractionType QCD
+set gtobb33S1SplittingSudakov:State bbbar
+set gtobb33S1SplittingSudakov:PrincipalQuantumNumber 3
+do SplittingGenerator:AddFinalSplitting g->Upsilon(3S); gtobb33S1SplittingSudakov

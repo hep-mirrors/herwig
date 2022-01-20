@@ -64,3 +64,7 @@ do OniumParameters:SetWaveFunction bc 1S 0.250
 #  Octet matrix elements
 #
 do /Herwig/OniumParameters:SetOctetProductionMatrixElement ccbar 3S1 443 1.2e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement ccbar 3S1 100443 4.3e-3
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 553 4.3e-3
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 100553 4.3e-3
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 200553 4.3e-3
