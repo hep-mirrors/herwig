@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# charmonium production
+# ALICE Forward Jpsi and psi(2S) production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
+# ALICE  Jpsi production for midrapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1898832
+# CMS onium (charm and bottom)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1633431

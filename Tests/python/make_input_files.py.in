@@ -42,51 +42,6 @@ def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
       res+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/"+scale+"\n"
     return res
 
-didaddfirstjet=False
-def addFirstJet(ptcut):
-    global didaddfirstjet
-    if(didaddfirstjet):
-      logging.error("Can only add jetcut once.")
-      sys.exit(1)
-  
-    res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-    res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-    res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-    if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
-    didaddfirstjet=True
-    return res
-
-
-
-didaddsecondjet=False
-def addSecondJet(ptcut):
-    global didaddsecondjet
-    if(didaddsecondjet):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-    res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
-    didaddsecondjet=True
-    return res
-
-
-didaddjetpair=False
-def addJetPairCut(minmass):
-  global didaddjetpair
-  if(didaddjetpair):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-  res="""\
-create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
-set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
-set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
-insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
-""".format(mm=minmass)
-  didaddjetpair=True
-  return res
-
 addedBRReweighter=False
 def addBRReweighter():
   global addedBRReweighter
@@ -113,7 +68,6 @@ create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
 set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 """ + insert_ME("MEUpsilon")
-
 
 (opts, args) = parser.parse_args()
 ## Check args
@@ -367,16 +321,16 @@ elif(collider=="TVT") :
         elif "Jets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(500.)
-            elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhatmin_cut(900.)
+            if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(500.)
+            elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhat_cut(900.)
             elif "Run-I-Jets-1" in parameterName :  process+=jet_kt_cut( 20.)
             elif "Run-I-Jets-2" in parameterName :  process+=jet_kt_cut( 40.)
             elif "Run-I-Jets-3" in parameterName :  process+=jet_kt_cut( 65.)
             elif "Run-I-Jets-4" in parameterName :  process+=jet_kt_cut( 90.)
             elif "Run-I-Jets-5" in parameterName :  process+=jet_kt_cut(160.)
-            elif "Run-I-Jets-6" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-I-Jets-7" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(400.)
-            elif "Run-I-Jets-8" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(700.)
+            elif "Run-I-Jets-6" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(100.)
+            elif "Run-I-Jets-7" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(400.)
+            elif "Run-I-Jets-8" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(700.)
             elif "Run-II-Jets-0" in parameterName : process+=jet_kt_cut( 15.)
             elif "Run-II-Jets-1" in parameterName : process+=jet_kt_cut( 25.)
             elif "Run-II-Jets-2" in parameterName : process+=jet_kt_cut( 40.)
@@ -385,8 +339,8 @@ elif(collider=="TVT") :
             elif "Run-II-Jets-5" in parameterName : process+=jet_kt_cut(110.)
             elif "Run-II-Jets-6" in parameterName : process+=jet_kt_cut(160.)
             elif "Run-II-Jets-7" in parameterName : process+=jet_kt_cut(250.)
-            elif "Run-II-Jets-8" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-II-Jets-9" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(300.)
+            elif "Run-II-Jets-8" in parameterName : process+=jet_kt_cut( 30.)+mhat_cut(100.)
+            elif "Run-II-Jets-9" in parameterName : process+=jet_kt_cut( 30.)+mhat_cut(300.)
             elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
             elif "300-Jets-1" in parameterName :    process+=jet_kt_cut(  6.)
             elif "630-Jets-1" in parameterName :    process+=jet_kt_cut( 20.)
@@ -753,17 +707,17 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
                 
-            if "DiJets-1" in parameterName   : process+=mhatmin_cut(90.)
-            elif "DiJets-2" in parameterName : process+=mhatmin_cut(200.)
-            elif "DiJets-3" in parameterName : process+=mhatmin_cut(450.)
-            elif "DiJets-4" in parameterName : process+=mhatmin_cut(750.)
-            elif "DiJets-5" in parameterName : process+=mhatmin_cut(950.)
-            elif "DiJets-6" in parameterName : process+=mhatmin_cut(1550.)
-            elif "DiJets-7" in parameterName : process+=mhatmin_cut(2150.)
-            elif "DiJets-8" in parameterName : process+=mhatmin_cut(2750.)
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            if "DiJets-1" in parameterName   : process+=mhat_cut(90.)
+            elif "DiJets-2" in parameterName : process+=mhat_cut(200.)
+            elif "DiJets-3" in parameterName : process+=mhat_cut(450.)
+            elif "DiJets-4" in parameterName : process+=mhat_cut(750.)
+            elif "DiJets-5" in parameterName : process+=mhat_cut(950.)
+            elif "DiJets-6" in parameterName : process+=mhat_cut(1550.)
+            elif "DiJets-7" in parameterName : process+=mhat_cut(2150.)
+            elif "DiJets-8" in parameterName : process+=mhat_cut(2750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
         elif(      "7-Jets" in parameterName 
                or  "8-Jets" in parameterName 
                or "13-Jets" in parameterName 
@@ -810,9 +764,9 @@ elif(collider=="LHC") :
             elif "-4" in parameterName : process+=jet_kt_cut(50.)
             elif "-5" in parameterName : process+=jet_kt_cut(80.)
             elif "-6" in parameterName : process+=jet_kt_cut(110.)
-            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(90.)
-            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(340.)
-            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(500.)
+            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(90.)
+            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(340.)
+            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(500.)
         elif "Top-L" in parameterName :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+=insert_ME("MEHeavyQuark")
@@ -1310,9 +1264,9 @@ elif(collider=="LHC") :
             elif "DiJets-6" in parameterName : process+=addJetPairCut("1550")
             elif "DiJets-7" in parameterName : process+=addJetPairCut("2150")
             elif "DiJets-8" in parameterName : process+=addJetPairCut("2750")
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
             else :
                 logging.error("Exit 00002")
                 sys.exit(1)

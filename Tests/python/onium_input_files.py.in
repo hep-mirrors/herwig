@@ -1,0 +1,198 @@
+#! @PYTHON@
+#-*- mode: python -*-
+from __future__ import print_function
+import logging,sys,os
+from string import Template
+from HerwigInputs import *
+import sys
+if sys.version_info[:3] < (2,4,0):
+    print ("rivet scripts require Python version >= 2.4.0... exiting")
+    sys.exit(1)
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name [...]")
+    
+(opts, args) = parser.parse_args()
+## Check args
+if len(args) != 1:
+    logging.error("Must specify at least input file")
+    sys.exit(1)
+    
+name = args[0]
+print (name)
+# work out name and type of the collider
+(collider,have_hadronic_collider) = identifyCollider(name)
+
+thefactory="Factory"
+
+# settings for four flavour scheme
+fourFlavour="""
+read Matchbox/FourFlavourScheme.in
+{bjetgroup}
+set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
+""".format(bjetgroup=particlegroup(thefactory,'bjet','b','bbar','c', 'cbar',
+                                   's','sbar','d','dbar','u','ubar','g'))
+
+# workout the type of simulation
+(simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
+
+
+# DIS
+if(collider=="DIS") :
+    logging.error ("DIS processes not currently supported for onium production")
+    sys.exit(1)
+# EE
+elif(collider=="EE") :
+    logging.error ("EE processes not currently supported for onium production")
+    sys.exit(1)
+# EE-Gamma
+elif(collider=="EE-Gamma") :
+    logging.error ("EE-Gamma processes not currently supported for onium production")
+    sys.exit(1)
+elif(collider=="GammaGamma") :
+    logging.error ("GammaGamma processes not currently supported for onium production")
+    sys.exit(1)
+# TVT
+elif(collider=="TVT") :
+    logging.error ("Tevatron processes not currently supported for onium production")
+    sys.exit(1)
+# Star
+elif(collider=="Star" ) :
+    logging.error ("Star processes not currently supported for onium production")
+    sys.exit(1)
+# ISR and SppS
+elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == "Fermilab" ) :
+    logging.error ("ISR/SppS/SPS/Fixed target processes not currently supported for onium production")
+    sys.exit(1)      
+# LHC
+elif(collider=="LHC") :
+    ecms=7000.0
+    if   parameterName.startswith("7-")   : ecms = 7000.0
+    elif parameterName.startswith("8-")   : ecms = 8000.0
+    elif parameterName.startswith("13-")  : ecms = 13000.0
+    elif parameterName.startswith("900")  : ecms = 900.0
+    elif parameterName.startswith("2360") : ecms = 2360.0
+    elif parameterName.startswith("2760") : ecms = 2760.0
+    elif parameterName.startswith("5-")   : ecms = 5000.0
+    else                                  : ecms = 7000.0
+    process = StringBuilder(collider_lumi(ecms))
+    if(simulation=="") :
+        cuts=[5,10,20,40,80,ecms]
+        if "Charm" in parameterName :
+            process+="cp MEHeavyQuark MECharm\n" 
+            process+="set MECharm:QuarkType Charm\n"
+            process+=insert_ME("MECharm")
+            cuts[0]=0.
+        elif "Bottom" in parameterName :
+            process+="cp MEHeavyQuark MEBottom\n" 
+            process+="set MEBottom:QuarkType Bottom\n"
+            process+=insert_ME("MEBottom")
+            cuts[0]=0.
+        elif "Jets" in parameterName :
+            process+=insert_ME("MEQCD2to2")
+            process+="set MEQCD2to2:MaximumFlavour 3\n"
+        else :
+            logging.error(" Process %s not supported for internal matrix elements" % name)
+            sys.exit(1)
+        process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
+        for i in range(1,len(cuts)) :
+            tstring = "-%s."%i
+            if tstring in parameterName :
+                process+=jet_kt_cut(cuts[i-1],cuts[i])
+    elif simulation=="Powheg" :
+        logging.error(" Process %s not supported for internal POWHEG matrix elements" % name)
+        sys.exit(1)
+    elif( simulation=="Matchbox" or simulation=="Merging" ) :
+        cuts=[5,10,20,40,80,ecms]
+        if "Charm" in parameterName :
+            parameters["bscheme"]=fourFlavour
+            process+="set /Herwig/Particles/c:HardProcessMass 1.2*GeV\n"
+            process+="set /Herwig/Particles/cbar:HardProcessMass 1.2*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p c cbar","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p c cbar","2","0","MaxJetPtScale",1,0)
+            cuts[0]=0.
+        elif "Bottom" in parameterName :
+            parameters["bscheme"]=fourFlavour
+            process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
+            process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p b bbar","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p b bbar","2","0","MaxJetPtScale",1,0)
+            cuts[0]=0.
+        elif "Jets" in parameterName :
+            parameters["bscheme"]=particlegroup(thefactory,'lightjet',
+                                                's','sbar','d','dbar','u','ubar','g')
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p lightjet lightjet","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p lightjet lightjet","2","0","MaxJetPtScale",1,1)
+        else :
+            logging.error(" Process %s not supported for Matchbox matrix elements" % name)
+            sys.exit(1)
+        for i in range(1,len(cuts)) :
+            tstring = "-%s."%i
+            if tstring in parameterName :
+                process+=addFirstJet(cuts[i-1],cuts[i])
+# LHC-GammaGamma
+elif(collider=="LHC-GammaGamma" ) :
+    logging.error ("LHC-GammaGamm processes not currently supported for onium production")
+    sys.exit(1)
+temp = parameterName.split("-Onium")
+parameterName=temp[0]
+temp=temp[1].strip("-").split("-")
+colour=temp[0]
+particle=temp[1]
+pFile = os.path.join(collider,"{c}-{pn}-Quarkonium.in".format(c=collider, pn=parameterName))
+with open(os.path.join("Rivet",pFile), 'r') as f:
+    parameters['parameterFile'] = f.read()
+# now the onium shower stuff
+parameters["shower"] += "read snippets/OniumShower.in\n"
+sfile=open("../src/snippets/OniumShower.in")
+line=sfile.readline()
+while line :
+    if "AddFinalSplitting" in line :
+        sudakov=line.split()[-1]
+        nprod = len(line.split("->")[1].split(";")[0].split(","))
+        if colour == "Singlet" and nprod == 2 :
+            if particle == "All" :
+                parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
+            else :
+                if particle in line :
+                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
+                else :
+                    parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+        elif colour == "Octet" and nprod == 1 :
+            if particle == "All" :
+                pass
+            else :
+                if particle in line :
+                    pass
+                else :
+                    parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+        else :
+            parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+    line=sfile.readline()
+
+# switch off hadronization and MPI
+process += "set /Herwig/Shower/ShowerHandler:MPIHandler NULL\n"
+process += "set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL\n"
+process += "set /Herwig/Analysis/Basics:CheckQuark No\n"
+
+parameters['runname'] = 'Rivet-%s' % name
+parameters['process'] = str(process)
+if have_hadronic_collider :
+    parameters['collider'] = "PPCollider.in"
+
+# get template and write the file
+with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
+    templateText = f.read()
+
+template = Template( templateText )
+
+with open(os.path.join("Rivet",name+".in"), 'w') as f:
+        f.write( template.substitute(parameters) )
