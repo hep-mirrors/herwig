@@ -17,7 +17,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGGto3P2 class implements the colour singlet matrix element for \f$gg\to\^{3}P_2\f$ quarkonium.
+ * The MEGGto3P2 class implements the colour singlet matrix element for \f$gg\to^3\!\!P_2\f$ quarkonium.
  *
  * @see \ref MEGGto3P2Interfaces "The interfaces"
  * defined for MEGGto3P2.

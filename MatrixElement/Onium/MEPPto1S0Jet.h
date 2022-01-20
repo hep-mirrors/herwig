@@ -14,8 +14,8 @@ using namespace ThePEG;
 
 /**
  * The MEPPto1S0Jet class implements the colour singlet processes for
- * \f$gq\to \^{1}S_0 q\f$, \f$q\bar{q}\to \^{1}S_0 g\f$ and
- * \f$gg\to \^{1}S_0 g\f$.
+ * \f$gq\to^1\!\!S_0 q\f$, \f$q\bar{q}\to ^1\!\!S_0 g\f$ and
+ * \f$gg\to^1\!\!S_0 g\f$.
  *
  * @see \ref MEPPto1S0JetInterfaces "The interfaces"
  * defined for MEPPto1S0Jet.

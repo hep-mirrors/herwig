@@ -17,7 +17,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGGto1D2 class implements the colour singlet matrix element for \f$gg\to\^{1}D_2\f$ quarkonium.
+ * The MEGGto1D2 class implements the colour singlet matrix element for \f$gg\to^1\!\!D_2\f$ quarkonium.
  *
  * @see \ref MEGGto1D2Interfaces "The interfaces"
  * defined for MEGGto1D2.

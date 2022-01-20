@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEff2ffX class implements the processes \f$e^+e^-\toe^+e^- \gamma\gamma\f$ followed by
+ * The MEff2ffX class implements the processes \f$e^+e^-\to e^+e^- \gamma\gamma\f$ followed by
  * \f$\gamma\gamma\to X\f$ using the GammaGammaAmplitude class
  *
  * @see \ref MEff2ffXInterfaces "The interfaces"

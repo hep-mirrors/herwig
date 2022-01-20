@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The MEPPto3S1Jet class implements the colour singlet processes for
- * \f$gg\to \^{3}S_1 g\f$.
+ * \f$gg\to^3\!\!S_1 g\f$.
  *
  * @see \ref MEPPto3S1JetInterfaces "The interfaces"
  * defined for MEPPto3S1Jet.

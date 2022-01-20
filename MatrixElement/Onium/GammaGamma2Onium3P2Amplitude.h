@@ -16,7 +16,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GammaGamma2Onium3P2Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{3}P_2\f$ quarkonium.
+ * The GammaGamma2Onium3P2Amplitude class implements the matrix element for \f$\gamma\gamma\to^{3}\!\!P_2\f$ quarkonium.
  *
  * @see \ref GammaGamma2Onium3P2AmplitudeInterfaces "The interfaces"
  * defined for GammaGamma2Onium3P2Amplitude.

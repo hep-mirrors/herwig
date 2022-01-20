@@ -18,7 +18,7 @@ using namespace ThePEG;
 
 /**
  * The MEGGto1S0 class implements the colour singlet matrix element for
- * \f$gg\to \^{1}S_0\f$.
+ * \f$gg\to^1\!\!S_0\f$.
  *
  * @see \ref MEGGto1S0Interfaces "The interfaces"
  * defined for MEGGto1S0.

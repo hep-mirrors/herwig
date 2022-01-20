@@ -16,7 +16,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The GammaGamma2Onium1D2Amplitude class implements the matrix element for \f$\gamma\gamma\to\^{1}D_2\f$ quarkonium
+ * The GammaGamma2Onium1D2Amplitude class implements the matrix element for \f$\gamma\gamma\to^{1}\!\!D_2\f$ quarkonium
  * states.
  *
  * @see \ref GammaGamma2Onium1D2AmplitudeInterfaces "The interfaces"
