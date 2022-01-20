@@ -282,9 +282,9 @@ Rivet-TVT-Photon/done: $(shell echo Rivet{,-Powheg}-TVT-Run-II-{DiPhoton-GammaGa
 Rivet-TVT-Jets : Rivet-TVT-Jets/done
 	touch $@
 
-Rivet-TVT-Jets/done:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.yoda ) \
-	         $(shell echo Rivet-TVT-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.yoda ) \
-                 $(shell echo Rivet-TVT-{Run-I,Run-II,300,630,900}-UE.yoda)
+Rivet-TVT-Jets/done: $(shell echo Rivet-TVT-Run-{I,II}-{Jets-{1..6},DiJets-{1..4}}.yoda ) \
+	             $(shell echo Rivet-TVT-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.yoda ) \
+                     $(shell echo Rivet-TVT-{Run-I,Run-II,300,630,900}-UE.yoda)
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw

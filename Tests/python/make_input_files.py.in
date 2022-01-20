@@ -117,11 +117,17 @@ def selectDecayMode(particle,decaymodes):
   selecteddecaymode=True
   return res
 
-def jet_kt_cut(energy):
-    return "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=energy)
+def jet_kt_cut(ktmin,ktmax=-1.):
+    output = "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=ktmin)
+    if ktmax>0 :
+        output += "set /Herwig/Cuts/JetKtCut:MaxKT {E}*GeV\n".format(E=ktmax)
+    return output
 
-def mhatmin_cut(energy):
-    return "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=energy)
+def mhat_cut(mmin,mmax=-1):
+    output = "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=mmin)
+    if mmax>0. :
+        output += "set /Herwig/Cuts/Cuts:MHatMax {E}*GeV\n".format(E=mmax)
+    return output
 
 def mhat_minm_maxm(e1,e2,e3):
     return """\
@@ -492,12 +498,13 @@ elif(collider=="GammaGamma") :
 # TVT
 elif(collider=="TVT") :
     process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if "Run-II" in parameterName :  process+=collider_lumi(1960.0)
-    elif "Run-I" in parameterName : process+=collider_lumi(1800.0)
-    elif "900" in parameterName :   process+=collider_lumi(900.0)
-    elif "630" in parameterName :   process+=collider_lumi(630.0)
-    elif "300" in parameterName :   process+=collider_lumi(300.0)
-
+    ecms=1960.
+    if "Run-II" in parameterName :  ecms = 1960.0
+    elif "Run-I" in parameterName : ecms = 1800.0
+    elif "900" in parameterName :   ecms = 900.0
+    elif "630" in parameterName :   ecms = 630.0
+    elif "300" in parameterName :   ecms = 300.0
+    process+=collider_lumi(ecms)
     if(simulation=="") :
         if "PromptPhoton" in parameterName :
             process+=insert_ME("MEGammaJet")
@@ -522,32 +529,29 @@ elif(collider=="TVT") :
         elif "Jets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(500.)
-            elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhatmin_cut(900.)
-            elif "Run-I-Jets-1" in parameterName :  process+=jet_kt_cut( 20.)
-            elif "Run-I-Jets-2" in parameterName :  process+=jet_kt_cut( 40.)
-            elif "Run-I-Jets-3" in parameterName :  process+=jet_kt_cut( 65.)
-            elif "Run-I-Jets-4" in parameterName :  process+=jet_kt_cut( 90.)
-            elif "Run-I-Jets-5" in parameterName :  process+=jet_kt_cut(160.)
-            elif "Run-I-Jets-6" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-I-Jets-7" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(400.)
-            elif "Run-I-Jets-8" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(700.)
-            elif "Run-II-Jets-0" in parameterName : process+=jet_kt_cut( 15.)
-            elif "Run-II-Jets-1" in parameterName : process+=jet_kt_cut( 25.)
-            elif "Run-II-Jets-2" in parameterName : process+=jet_kt_cut( 40.)
-            elif "Run-II-Jets-3" in parameterName : process+=jet_kt_cut( 60.)
-            elif "Run-II-Jets-4" in parameterName : process+=jet_kt_cut( 85.)
-            elif "Run-II-Jets-5" in parameterName : process+=jet_kt_cut(110.)
-            elif "Run-II-Jets-6" in parameterName : process+=jet_kt_cut(160.)
-            elif "Run-II-Jets-7" in parameterName : process+=jet_kt_cut(250.)
-            elif "Run-II-Jets-8" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-II-Jets-9" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(300.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
-            elif "300-Jets-1" in parameterName :    process+=jet_kt_cut(  6.)
-            elif "630-Jets-1" in parameterName :    process+=jet_kt_cut( 20.)
-            elif "630-Jets-2" in parameterName :    process+=jet_kt_cut( 40.)
-            elif "630-Jets-3" in parameterName :    process+=jet_kt_cut( 75.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
+            if "DiJets" in name :
+                process +=jet_kt_cut( 30.)
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=mhat_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
+            else :
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=jet_kt_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
         elif "Run-I-WZ" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
             process+=insert_ME("MEqq2gZ2ff","Electron")
@@ -908,17 +912,17 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
                 
-            if "DiJets-1" in parameterName   : process+=mhatmin_cut(90.)
-            elif "DiJets-2" in parameterName : process+=mhatmin_cut(200.)
-            elif "DiJets-3" in parameterName : process+=mhatmin_cut(450.)
-            elif "DiJets-4" in parameterName : process+=mhatmin_cut(750.)
-            elif "DiJets-5" in parameterName : process+=mhatmin_cut(950.)
-            elif "DiJets-6" in parameterName : process+=mhatmin_cut(1550.)
-            elif "DiJets-7" in parameterName : process+=mhatmin_cut(2150.)
-            elif "DiJets-8" in parameterName : process+=mhatmin_cut(2750.)
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            if "DiJets-1" in parameterName   : process+=mhat_cut(90.)
+            elif "DiJets-2" in parameterName : process+=mhat_cut(200.)
+            elif "DiJets-3" in parameterName : process+=mhat_cut(450.)
+            elif "DiJets-4" in parameterName : process+=mhat_cut(750.)
+            elif "DiJets-5" in parameterName : process+=mhat_cut(950.)
+            elif "DiJets-6" in parameterName : process+=mhat_cut(1550.)
+            elif "DiJets-7" in parameterName : process+=mhat_cut(2150.)
+            elif "DiJets-8" in parameterName : process+=mhat_cut(2750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
         elif(      "7-Jets" in parameterName 
                or  "8-Jets" in parameterName 
                or "13-Jets" in parameterName 
@@ -965,9 +969,9 @@ elif(collider=="LHC") :
             elif "-4" in parameterName : process+=jet_kt_cut(50.)
             elif "-5" in parameterName : process+=jet_kt_cut(80.)
             elif "-6" in parameterName : process+=jet_kt_cut(110.)
-            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(90.)
-            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(340.)
-            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(500.)
+            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(90.)
+            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(340.)
+            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(500.)
         elif "Top-L" in parameterName :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+=insert_ME("MEHeavyQuark")
@@ -1465,9 +1469,9 @@ elif(collider=="LHC") :
             elif "DiJets-6" in parameterName : process+=addJetPairCut("1550")
             elif "DiJets-7" in parameterName : process+=addJetPairCut("2150")
             elif "DiJets-8" in parameterName : process+=addJetPairCut("2750")
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
             else :
                 logging.error("Exit 00002")
                 sys.exit(1)
