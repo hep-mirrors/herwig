@@ -353,7 +353,12 @@ protected:
    *  Fix final-state emitter for ME correction
    */
   void fixFinalStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
-   			    ColinePair cline,ColinePair aline);
+   			    ColinePair cline,ColinePair aline,bool reset=false);
+
+  /**
+   *  Reset ME correction after vetooed shower
+   */
+  void resetMECorrection(bool reset=false);
 
 private:
   
@@ -406,7 +411,12 @@ private:
    *  The transforms which still need to be applied
    */
   LorentzRotation _transforms;
-
+  
+  /**
+   *  Hard Matrix element correction
+   */
+  RealEmissionProcessPtr real_;
+  
 private:
 
   /**
