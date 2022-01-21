@@ -168,10 +168,10 @@ while line :
                     parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
         elif colour == "Octet" and nprod == 1 :
             if particle == "All" :
-                pass
+                parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
             else :
                 if particle in line :
-                    pass
+                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
                 else :
                     parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
         else :
