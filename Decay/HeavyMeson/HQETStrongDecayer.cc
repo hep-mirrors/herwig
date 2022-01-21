@@ -494,7 +494,7 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   double output = ME()->contract(rho_).real();
   // testing
   double ratio = abs(output-test)/(output+test);
-  if(ratio>1e-14)
+  if(ratio>1e-14 && generator()->state()!=InterfacedBase::runready)
     generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
 		       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
 		       << output << " " << test << " " << ratio << endl;
