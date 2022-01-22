@@ -341,13 +341,13 @@ protected:
    *  Fix the colours of a spectator
    */
   void fixSpectatorColours(PPtr newSpect,ShowerProgenitorPtr oldSpect,
-			   ColinePair & cline,ColinePair & aline, bool reconnect);
+			   ColinePair & cline,ColinePair & aline);
 
   /**
    *  Fix initial-state emitter for ME correction
    */
   void fixInitialStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
-			      ColinePair cline,ColinePair aline,double x);
+			      ColinePair cline,ColinePair aline,double x,bool reset=false);
 
   /**
    *  Fix final-state emitter for ME correction
