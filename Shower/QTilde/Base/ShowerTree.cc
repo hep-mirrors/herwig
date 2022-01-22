@@ -1181,34 +1181,39 @@ void ShowerTree::resetMECorrection(bool reset) {
   // II emission
   if(real_->emitter()   < real_->incoming().size() &&
      real_->spectator() < real_->incoming().size()) {
-    assert(!reset);
     // recoiling system
-    for( const auto & progen : outgoingLines() ) {
-      progen.first->progenitor()->transform(real_->transformation());
-      progen.first->copy()->transform(real_->transformation());
+    if(!reset) {
+      for( const auto & progen : outgoingLines() ) {
+	progen.first->progenitor()->transform(real_->transformation());
+	progen.first->copy()->transform(real_->transformation());
+      }
     }
     // the the radiating system
     ShowerProgenitorPtr emitter,spectator;
     unsigned int iemit  = real_->emitter();
     unsigned int ispect = real_->spectator();
     int ig = int(real_->emitted())-int(real_->incoming().size());
-    emitter = findInitialStateLine(real_->bornIncoming()[iemit]->id(),
-   				   real_->bornIncoming()[iemit]->momentum());
-    spectator = findInitialStateLine(real_->bornIncoming()[ispect]->id(),
-				     real_->bornIncoming()[ispect]->momentum());
+    Lorentz5Momentum ptemp = reset ? real_->incoming()[iemit]->momentum() : real_->bornIncoming()[iemit]->momentum();
+    long pid = reset ? real_->incoming()[iemit]->id() : real_->bornIncoming()[iemit]->id();
+    emitter = findInitialStateLine(pid,ptemp);
+    ptemp = reset ? real_->incoming()[ispect]->momentum() : real_->bornIncoming()[ispect]->momentum();
+    pid = reset ? real_->incoming()[ispect]->id() : real_->bornIncoming()[ispect]->id();
+    spectator = findInitialStateLine(pid,ptemp);
+    // new spetator
+    PPtr newSpect = new_ptr(Particle(*real_->incoming()[ispect]));
     // sort out the colours
     ColinePair cline,aline;
-    fixSpectatorColours(real_->incoming()[ispect],spectator,cline,aline);
+    fixSpectatorColours(newSpect,spectator,cline,aline);
     // update the spectator
-    spectator->copy(real_->incoming()[ispect]);
-    ShowerParticlePtr sp(new_ptr(ShowerParticle(*real_->incoming()[ispect],1,false)));
+    spectator->copy(newSpect);
+    ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,1,false)));
     sp->x(ispect ==0 ? real_->x().first :real_->x().second);
     spectator->progenitor(sp);
     incomingLines()[spectator]=sp;
     spectator->perturbative(true);
     // now for the emitter
     fixInitialStateEmitter(real_->incoming()[iemit],real_->outgoing()[ig],
-    			   emitter,cline,aline,iemit ==0 ? real_->x().first :real_->x().second);
+    			   emitter,cline,aline,iemit ==0 ? real_->x().first :real_->x().second,reset);
   }
   // FF emission
   else if(real_->emitter()   >= real_->incoming().size() &&
