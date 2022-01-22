@@ -1317,7 +1317,6 @@ void ShowerTree::resetMECorrection(bool reset) {
     }
     // decay process
     else {
-      assert(!reset);
       assert(real_->spectator()==0);
       unsigned int iemit  = real_->emitter()-real_->incoming().size();
       int ig = int(real_->emitted())-int(real_->incoming().size());
@@ -1327,20 +1326,22 @@ void ShowerTree::resetMECorrection(bool reset) {
   							   real_->bornIncoming()[0]->momentum());
       fixSpectatorColours(real_->incoming()[0],spectator,cline,aline);
       // find the emitter
+      Lorentz5Momentum ptemp = reset ? real_->outgoing()[iemit]->momentum() : real_->bornOutgoing()[iemit]->momentum();
       ShowerProgenitorPtr emitter = 
-      	findFinalStateLine(real_->bornOutgoing()[iemit]->id(),
-      			   real_->bornOutgoing()[iemit]->momentum());
+      	findFinalStateLine(real_->bornOutgoing()[iemit]->id(),ptemp);
       // recoiling system
-      for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-      	     cjt= outgoingLines().begin();
-      	   cjt != outgoingLines().end();++cjt ) {
-      	if(cjt->first==emitter) continue;
-      	cjt->first->progenitor()->transform(real_->transformation());
-      	cjt->first->copy()->transform(real_->transformation());
+      if(!reset) {
+	for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	       cjt= outgoingLines().begin();
+	     cjt != outgoingLines().end();++cjt ) {
+	  if(cjt->first==emitter) continue;
+	  cjt->first->progenitor()->transform(real_->transformation());
+	  cjt->first->copy()->transform(real_->transformation());
+	}
       }
       // sort out the emitter
       fixFinalStateEmitter(real_->outgoing()[iemit],
-      			   real_->outgoing()[ig],emitter,aline,cline);
+      			   real_->outgoing()[ig],emitter,aline,cline,reset);
     }
   }
 }
