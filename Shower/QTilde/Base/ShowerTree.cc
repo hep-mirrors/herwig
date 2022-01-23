@@ -1324,7 +1324,12 @@ void ShowerTree::resetMECorrection(bool reset) {
       // incoming spectator
       ShowerProgenitorPtr spectator = findInitialStateLine(real_->bornIncoming()[0]->id(),
   							   real_->bornIncoming()[0]->momentum());
-      fixSpectatorColours(real_->incoming()[0],spectator,cline,aline);
+      PPtr newSpect = new_ptr(Particle(*real_->incoming()[0]));
+      fixSpectatorColours(newSpect,spectator,cline,aline);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,2,false)));
+      spectator->copy(newSpect);
+      spectator->progenitor(sp);
+      _incomingLines[spectator]=sp;
       // find the emitter
       Lorentz5Momentum ptemp = reset ? real_->outgoing()[iemit]->momentum() : real_->bornOutgoing()[iemit]->momentum();
       ShowerProgenitorPtr emitter = 
