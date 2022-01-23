@@ -152,8 +152,12 @@ Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 Rivet-%.yoda : Rivet-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN) $<
 
+Rivet/Onium-%.in :
+	python/onium_input_files.py $(notdir $(subst .in,,$@))
+
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
+
 
 Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,27.7,29,30.2,30.3,30.5,30.7,30.8,30,31.2,31.3,31.6,34,34.8,41,41.5,42.1,42.6,43.5,43.6,45,50,52,53.3,55,55.3,56,57,58,59.5,60.8,60,61.4,65.4,66,75.7,76,82,85,10,12.8,21.5,22,22.5,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,130.1,133,136,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207,91-nopi}.in) \
 		  $(shell echo Rivet/EE-{183,189}-WW.in) \
@@ -268,6 +272,10 @@ Onium-Splitting: Analyses/RivetHerwig.so
 Onium-Sigma: Analyses/RivetHerwig.so
 	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSigma.py --fast --analyse
+
+Rivet-Onium: $(shell echo Rivet-Onium-LHC-{2760,5,7,13}-{Singlet,Octet}-{JPsi,psi2S,Upsilon,Upsilon2S,Upsilon3S}-{Charm,Bottom,Jets}-{1..5}.yoda)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium LHC
+	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml Rivet-LHC-Onium.yoda  -o Rivet-Onium
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

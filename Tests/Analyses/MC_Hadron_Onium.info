@@ -1,6 +1,7 @@
 Name: MC_Hadron_Onium
 Summary: Simple MC analysis of quarkonium production in hadronic collisions
 Status: VALIDATED
+Reentrant: true
 Authors:
  - Peter Richardson <peter.richardson@durhama.ac.uk>
 Description:

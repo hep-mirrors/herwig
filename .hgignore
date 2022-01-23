@@ -95,6 +95,7 @@ Tests/python/merge-Star
 Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
+Tests/python/merge-Onium
 Tests/python/mergeLowEnergy.py
 Tests/python/OniumSplitting.py
 Tests/python/OniumSigma.py

@@ -69,13 +69,13 @@ elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == 
 # LHC
 elif(collider=="LHC") :
     ecms=7000.0
-    if   parameterName.startswith("7-")   : ecms = 7000.0
-    elif parameterName.startswith("8-")   : ecms = 8000.0
-    elif parameterName.startswith("13-")  : ecms = 13000.0
-    elif parameterName.startswith("900")  : ecms = 900.0
-    elif parameterName.startswith("2360") : ecms = 2360.0
-    elif parameterName.startswith("2760") : ecms = 2760.0
-    elif parameterName.startswith("5-")   : ecms = 5000.0
+    if   parameterName.startswith("LHC-7-")   : ecms = 7000.0
+    elif parameterName.startswith("LHC-8-")   : ecms = 8000.0
+    elif parameterName.startswith("LHC-13-")  : ecms = 13000.0
+    elif parameterName.startswith("LHC-900")  : ecms = 900.0
+    elif parameterName.startswith("LHC-2360") : ecms = 2360.0
+    elif parameterName.startswith("LHC-2760") : ecms = 2760.0
+    elif parameterName.startswith("LHC-5-")   : ecms = 5000.0
     else                                  : ecms = 7000.0
     process = StringBuilder(collider_lumi(ecms))
     if(simulation=="") :
@@ -142,11 +142,10 @@ elif(collider=="LHC") :
 elif(collider=="LHC-GammaGamma" ) :
     logging.error ("LHC-GammaGamm processes not currently supported for onium production")
     sys.exit(1)
-temp = parameterName.split("-Onium")
-parameterName=temp[0]
-temp=temp[1].strip("-").split("-")
-colour=temp[0]
-particle=temp[1]
+temp = parameterName.split("-")
+parameterName=temp[1]
+colour=temp[2]
+particle=temp[3].replace("2S","(2S)").replace("3S","(3S)")
 pFile = os.path.join(collider,"{c}-{pn}-Quarkonium.in".format(c=collider, pn=parameterName))
 with open(os.path.join("Rivet",pFile), 'r') as f:
     parameters['parameterFile'] = f.read()

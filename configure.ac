@@ -261,6 +261,7 @@ AC_CONFIG_FILES([Tests/python/merge-Star         ],[chmod +x Tests/python/merge-
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW       ],[chmod +x Tests/python/merge-TVT-EW       ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-Jets     ],[chmod +x Tests/python/merge-TVT-Jets     ])  
 AC_CONFIG_FILES([Tests/python/merge-TVT-Photon   ],[chmod +x Tests/python/merge-TVT-Photon   ]) 
+AC_CONFIG_FILES([Tests/python/merge-Onium        ],[chmod +x Tests/python/merge-Onium        ]) 
 AC_CONFIG_FILES([Tests/python/plot-EE            ],[chmod +x Tests/python/plot-EE            ]) 
 AC_CONFIG_FILES([Sampling/herwig-mergegrids.py   ],[chmod +x Sampling/herwig-mergegrids.py   ])
 AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])

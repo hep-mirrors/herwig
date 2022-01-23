@@ -1,4 +1,5 @@
 #! @PYTHON@
+#-*- mode: python -*-
 from __future__ import print_function
 import logging, sys,subprocess,math,time
 
@@ -29,31 +30,44 @@ if __name__ == "__main__":
 
 # #######################################
 yodafiles=[]
-for energy in [225,251,296,300,318,"318-CMS"] :
-    for process in ["e+","e-","e+-CC","e--CC","e+"] :
-        mergeargs=["rivet-merge"]
-        for q2 in ["VeryLow","Low","Med","High"] : 
-            fname = "Rivet-%s-%s-%s-%sQ2.yoda" % (args[0], energy ,process,q2)
-            if(os.path.isfile(fname)) :
+for energy in [2760,5,7,13]:
+    mergeargs2=["rivet-merge"]
+    for colour in ["Singlet","Octet"]: 
+        for state in ["JPsi","psi2S","Upsilon","Upsilon2S","Upsilon3S"]:
+            for proc in ["Charm","Bottom","Jets"] :
+                mergeargs=["rivet-merge"]
+                for cut in range(1,6):
+                    fname = "Rivet-Onium-%s-%s-%s-%s-%s-%s.yoda" % (args[0], energy , colour, state, proc, cut)
+                    if(os.path.isfile(fname)) :
+                        mergeargs.append(fname)
+                        mergeargs2.append(fname)
+                if len(mergeargs)==1 : continue
+                if energy ==5 :
+                    mergeargs.append("-a")
+                    mergeargs.append("ALICE_2017_I1511865:ENERGY=5020")
+                elif energy ==13 :
+                    mergeargs.append("-a")
+                    mergeargs.append("ALICE_2017_I1511865:ENERGY=13000")
+                fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda"% (args[0], energy , colour, state, proc) 
+                mergeargs.append("-o")
                 mergeargs.append(fname)
-        if len(mergeargs)==1 : continue
-        if "e+" in process : beam="EPLUS"
-        else : beam="EMINUS"
-        if type(energy) == int :
-            mergeargs.append("-a")
-            mergeargs.append("HERA_2015_I1377206:ENERGY=%s"%energy)
-            mergeargs.append("-a")
-            mergeargs.append("HERA_2015_I1377206:BEAM=%s" %beam)
-        fname = "Rivet-%s-%s-%s.yoda"% (args[0], energy ,process)
-        mergeargs.append("-o")
-        mergeargs.append(fname)
-        yodafiles.append(fname)
-        p = subprocess.Popen(mergeargs)
+                p = subprocess.Popen(mergeargs)
+    if len(mergeargs2)==1 : continue
+    if energy ==5 :
+        mergeargs2.append("-a")
+        mergeargs2.append("ALICE_2017_I1511865:ENERGY=5020")
+    elif energy ==13 :
+        mergeargs2.append("-a")
+        mergeargs2.append("ALICE_2017_I1511865:ENERGY=13000")
+    fname = "Rivet-Onium-%s-%s.yoda"% (args[0], energy) 
+    mergeargs2.append("-o")
+    mergeargs2.append(fname)
+    yodafiles.append(fname)
+    p = subprocess.Popen(mergeargs2)
 # need a sleep here otherwise merged files not ready
-time.sleep(5) 
+time.sleep(10) 
 ## Get histos
 outhistos={}
-
 for f in yodafiles:
     if not os.access(f, os.R_OK):
         logging.error("%s can not be read" % f)
@@ -68,18 +82,18 @@ for f in yodafiles:
         if("RAW" in aopath) : continue
         elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
             continue
-        elif "HERA_2015_I1377206" in aopath :
+        elif "ALICE_2017_I1511865" in aopath :
             path=aopath.split(":")
-            ao.setPath(path[0]+"/"+path[2].split("/")[1])
-            if "d06" in aopath or "d07" in aopath :
-                if "CC" in f : outhistos[aopath] = ao
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if "d07" in aopath or "d08" in aopath :
+                if "-5" in f : outhistos[aopath] = ao
             else :
-                if "CC" not in f : outhistos[aopath] = ao
+                if "-5" not in f : outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
             
 # Choose output file
-name = args[0]+".yoda"
+name = args[0]+"-Onium.yoda"
 # remove any scatters with nans, causes yoda to crash
 remove = [] 
 for key in outhistos.keys() :
