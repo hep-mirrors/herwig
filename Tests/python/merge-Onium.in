@@ -30,10 +30,10 @@ if __name__ == "__main__":
 
 # #######################################
 yodafiles=[]
-for energy in [2760,5,7,13]:
+for energy in [2760,5,7,8,13]:
     mergeargs2=["rivet-merge"]
     for colour in ["Singlet","Octet"]: 
-        for state in ["JPsi","psi2S","Upsilon","Upsilon2S","Upsilon3S"]:
+        for state in ["eta_c","JPsi","psi2S","Upsilon","Upsilon2S","Upsilon3S"]:
             for proc in ["Charm","Bottom","Jets"] :
                 mergeargs=["rivet-merge"]
                 for cut in range(1,6):
@@ -45,6 +45,16 @@ for energy in [2760,5,7,13]:
                 if energy ==5 :
                     mergeargs.append("-a")
                     mergeargs.append("ALICE_2017_I1511865:ENERGY=5020")
+                elif energy == 7 :
+                    mergeargs.append("-a")
+                    mergeargs.append("ATLAS_2016_I1409298:ENERGY=7000")
+                    mergeargs.append("-a")
+                    mergeargs.append("LHCB_2015_I1316329:ENERGY=7000")
+                elif energy == 8 :
+                    mergeargs.append("-a")
+                    mergeargs.append("ATLAS_2016_I1409298:ENERGY=8000")
+                    mergeargs.append("-a")
+                    mergeargs.append("LHCB_2015_I1316329:ENERGY=8000")
                 elif energy ==13 :
                     mergeargs.append("-a")
                     mergeargs.append("ALICE_2017_I1511865:ENERGY=13000")
@@ -56,6 +66,16 @@ for energy in [2760,5,7,13]:
     if energy ==5 :
         mergeargs2.append("-a")
         mergeargs2.append("ALICE_2017_I1511865:ENERGY=5020")
+    elif energy == 7 :
+        mergeargs2.append("-a")
+        mergeargs2.append("ATLAS_2016_I1409298:ENERGY=7000")
+        mergeargs2.append("-a")
+        mergeargs2.append("LHCB_2015_I1316329:ENERGY=7000")
+    elif energy == 8 :
+        mergeargs2.append("-a")
+        mergeargs2.append("ATLAS_2016_I1409298:ENERGY=8000")
+        mergeargs2.append("-a")
+        mergeargs2.append("LHCB_2015_I1316329:ENERGY=8000")
     elif energy ==13 :
         mergeargs2.append("-a")
         mergeargs2.append("ALICE_2017_I1511865:ENERGY=13000")
@@ -86,9 +106,25 @@ for f in yodafiles:
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])
             if "d07" in aopath or "d08" in aopath :
-                if "-5" in f : outhistos[aopath] = ao
+                if "-5" in f : outhistos[ao.path()] = ao
             else :
-                if "-5" not in f : outhistos[aopath] = ao
+                if "-5" not in f : outhistos[ao.path()] = ao
+        elif "ATLAS_2016_I1409298" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if ("d01" in aopath or "d03" in aopath or "d05" in aopath or
+                "d07" in aopath or "d09" in aopath or "d11" in aopath or
+                "d13" in aopath or "d15" in aopath) :
+                if "-7" in f : outhistos[ao.path()] = ao
+            else :
+                if "-8" in f : outhistos[ao.path()] = ao
+        elif "LHCB_2015_I1316329" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if "d01" in aopath or "d03" in aopath :
+                if "-7" in f : outhistos[ao.path()] = ao
+            else :
+                if "-8" in f : outhistos[ao.path()] = ao
         else :
             outhistos[aopath] = ao
             
@@ -103,7 +139,8 @@ for key in outhistos.keys() :
         for p in ao.points() :
             if math.isnan(p.y()) : skip=True
         if(skip) : remove.append(key)
-for key in remove : del outhistos[key]
+for key in remove :
+    if key in outhistos : del outhistos[key]
 # output the yoda file
 yoda.writeYODA(outhistos,name)
 sys.exit(0)

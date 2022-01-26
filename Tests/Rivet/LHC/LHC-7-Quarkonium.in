@@ -2,12 +2,21 @@
 ##################################################
 # select the analyses
 ##################################################
-# charmonium production
 # ATLAS JPsi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
+# ATLAS JPsi/psi(2S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1409298
 # bottomonium
+# ATLAS Upsilon(1,2,3S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1204994
 # CMS Upsilon(1,2,3S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1225274
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1342266
+# CMS Upsilon polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1185414
+# LHCb eta_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1316329
+# LHCb J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I891233
 # general MC analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium

@@ -75,7 +75,7 @@ elif(collider=="LHC") :
     elif parameterName.startswith("LHC-900")  : ecms = 900.0
     elif parameterName.startswith("LHC-2360") : ecms = 2360.0
     elif parameterName.startswith("LHC-2760") : ecms = 2760.0
-    elif parameterName.startswith("LHC-5-")   : ecms = 5000.0
+    elif parameterName.startswith("LHC-5-")   : ecms = 5020.0
     else                                  : ecms = 7000.0
     process = StringBuilder(collider_lumi(ecms))
     if(simulation=="") :

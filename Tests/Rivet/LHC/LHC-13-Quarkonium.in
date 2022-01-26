@@ -3,6 +3,8 @@
 # select the analyses
 ##################################################
 # charmonium production
+# LHCb eta_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2020_I1763898
 # ALICE Forward Jpsi and psi(2S) production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
 # ALICE  Jpsi production for midrapidity

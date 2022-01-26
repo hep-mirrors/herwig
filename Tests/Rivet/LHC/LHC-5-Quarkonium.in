@@ -2,8 +2,17 @@
 ##################################################
 # select the analyses
 ##################################################
-# charmonium production
 # ALICE frorward Jpsi and psi(2S) production 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
+# ALICE central J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1735351
+# ATLAS Jpsi, psi(2) Upsilon(1,2,3S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1622737
+# CMS Jpsi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1512296
+# CMS psi(2S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1672011
+# LHCb Jpsi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2021_I1915030
 # general MC analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium
