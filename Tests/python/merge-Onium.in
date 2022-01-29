@@ -29,11 +29,25 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # #######################################
+energies = { 5020 : ["ALICE_2017_I1511865"],
+             7000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329", 
+                     "LHCB_2015_I1392456","LHCB_2014_I1308738"],
+             8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
+                     "LHCB_2015_I1392456","LHCB_2014_I1308738"],
+             13000 : ["ALICE_2017_I1511865"] }
 yodafiles=[]
 for energy in [2760,5,7,8,13]:
+    if energy==2760 :
+        ecms=energy
+    elif energy==5 :
+        ecms=5020
+    else :
+        ecms = energy*1000
     mergeargs2=["rivet-merge"]
     for colour in ["Singlet","Octet"]: 
-        for state in ["eta_c","JPsi","psi2S","Upsilon","Upsilon2S","Upsilon3S"]:
+        for state in ["eta_c","JPsi","psi2S","chi_c0","chi_c1","chi_c2",
+                      "Upsilon","Upsilon2S","Upsilon3S","chi_b0","chi_b1","chi_b2",
+                      "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
             for proc in ["Charm","Bottom","Jets"] :
                 mergeargs=["rivet-merge"]
                 for cut in range(1,6):
@@ -42,50 +56,26 @@ for energy in [2760,5,7,8,13]:
                         mergeargs.append(fname)
                         mergeargs2.append(fname)
                 if len(mergeargs)==1 : continue
-                if energy ==5 :
-                    mergeargs.append("-a")
-                    mergeargs.append("ALICE_2017_I1511865:ENERGY=5020")
-                elif energy == 7 :
-                    mergeargs.append("-a")
-                    mergeargs.append("ATLAS_2016_I1409298:ENERGY=7000")
-                    mergeargs.append("-a")
-                    mergeargs.append("LHCB_2015_I1316329:ENERGY=7000")
-                elif energy == 8 :
-                    mergeargs.append("-a")
-                    mergeargs.append("ATLAS_2016_I1409298:ENERGY=8000")
-                    mergeargs.append("-a")
-                    mergeargs.append("LHCB_2015_I1316329:ENERGY=8000")
-                elif energy ==13 :
-                    mergeargs.append("-a")
-                    mergeargs.append("ALICE_2017_I1511865:ENERGY=13000")
+                if ecms in energies:
+                    for val in energies[ecms]:
+                        mergeargs.append("-a")
+                        mergeargs.append("%s:ENERGY=%s" % (val,ecms))
                 fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda"% (args[0], energy , colour, state, proc) 
                 mergeargs.append("-o")
                 mergeargs.append(fname)
                 p = subprocess.Popen(mergeargs)
     if len(mergeargs2)==1 : continue
-    if energy ==5 :
-        mergeargs2.append("-a")
-        mergeargs2.append("ALICE_2017_I1511865:ENERGY=5020")
-    elif energy == 7 :
-        mergeargs2.append("-a")
-        mergeargs2.append("ATLAS_2016_I1409298:ENERGY=7000")
-        mergeargs2.append("-a")
-        mergeargs2.append("LHCB_2015_I1316329:ENERGY=7000")
-    elif energy == 8 :
-        mergeargs2.append("-a")
-        mergeargs2.append("ATLAS_2016_I1409298:ENERGY=8000")
-        mergeargs2.append("-a")
-        mergeargs2.append("LHCB_2015_I1316329:ENERGY=8000")
-    elif energy ==13 :
-        mergeargs2.append("-a")
-        mergeargs2.append("ALICE_2017_I1511865:ENERGY=13000")
+    if ecms in energies:
+        for val in energies[ecms]:
+            mergeargs2.append("-a")
+            mergeargs2.append("%s:ENERGY=%s" % (val,ecms))
     fname = "Rivet-Onium-%s-%s.yoda"% (args[0], energy) 
     mergeargs2.append("-o")
     mergeargs2.append(fname)
     yodafiles.append(fname)
     p = subprocess.Popen(mergeargs2)
 # need a sleep here otherwise merged files not ready
-time.sleep(10) 
+time.sleep(60) 
 ## Get histos
 outhistos={}
 for f in yodafiles:
@@ -122,6 +112,13 @@ for f in yodafiles:
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])
             if "d01" in aopath or "d03" in aopath :
+                if "-7" in f : outhistos[ao.path()] = ao
+            else :
+                if "-8" in f : outhistos[ao.path()] = ao
+        elif "LHCB_2014_I1308738" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if "d01" in aopath or "d02" in aopath or "d03" in aopath :
                 if "-7" in f : outhistos[ao.path()] = ao
             else :
                 if "-8" in f : outhistos[ao.path()] = ao

@@ -4,19 +4,32 @@
 ##################################################
 # ATLAS JPsi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
-# ATLAS JPsi/psi(2S)
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1409298
-# bottomonium
 # ATLAS Upsilon(1,2,3S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1204994
+# ATLAS chi_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1292798
+# ATLAS JPsi/psi(2S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1409298
+# CMS Upsilon polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1185414
+# CMS J/psi psi(2S) polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1244128
 # CMS Upsilon(1,2,3S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1225274
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1342266
-# CMS Upsilon polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1185414
-# LHCb eta_c
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1316329
 # LHCb J/psi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I891233
+# LHCb Upsilon(1,2,3S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1091071
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1392456
+#  LHCb chi_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1107645
+# LHCb J/psi polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1244315
+# LHCb eta_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1316329
+# LHCb chib
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1184177
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1308738
 # general MC analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium

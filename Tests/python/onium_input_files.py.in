@@ -145,7 +145,7 @@ elif(collider=="LHC-GammaGamma" ) :
 temp = parameterName.split("-")
 parameterName=temp[1]
 colour=temp[2]
-particle=temp[3].replace("2S","(2S)").replace("3S","(3S)")
+particle=temp[3].replace("2S","(2S)").replace("3S","(3S)").replace("2P","(2P)").replace("3P","(3P)")
 pFile = os.path.join(collider,"{c}-{pn}-Quarkonium.in".format(c=collider, pn=parameterName))
 with open(os.path.join("Rivet",pFile), 'r') as f:
     parameters['parameterFile'] = f.read()
@@ -161,7 +161,7 @@ while line :
             if particle == "All" :
                 parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
             else :
-                if particle in line :
+                if particle+";" in line :
                     parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
                 else :
                     parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
@@ -169,7 +169,7 @@ while line :
             if particle == "All" :
                 parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
             else :
-                if particle in line :
+                if particle+";" in line :
                     parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
                 else :
                     parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
