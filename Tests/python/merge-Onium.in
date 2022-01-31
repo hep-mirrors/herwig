@@ -31,9 +31,11 @@ if __name__ == "__main__":
 # #######################################
 energies = { 5020 : ["ALICE_2017_I1511865"],
              7000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329", 
-                     "LHCB_2015_I1392456","LHCB_2014_I1308738"],
+                     "LHCB_2015_I1392456","LHCB_2014_I1308738",
+                     "LHCB_2017_I1621596"],
              8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
-                     "LHCB_2015_I1392456","LHCB_2014_I1308738"],
+                     "LHCB_2015_I1392456","LHCB_2014_I1308738",
+                     "LHCB_2017_I1621596"],
              13000 : ["ALICE_2017_I1511865"] }
 yodafiles=[]
 for energy in [2760,5,7,8,13]:
@@ -122,6 +124,10 @@ for f in yodafiles:
                 if "-7" in f : outhistos[ao.path()] = ao
             else :
                 if "-8" in f : outhistos[ao.path()] = ao
+        elif "LHCB_2017_I1621596" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
             

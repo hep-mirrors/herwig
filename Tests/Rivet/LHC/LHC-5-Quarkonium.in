@@ -2,7 +2,7 @@
 ##################################################
 # select the analyses
 ##################################################
-# ALICE frorward Jpsi and psi(2S) production 
+# ALICE forward Jpsi and psi(2S) production 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
 # ALICE central J/psi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1735351
