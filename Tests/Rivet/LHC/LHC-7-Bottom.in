@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS b hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
+# CMS B_s0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I914325

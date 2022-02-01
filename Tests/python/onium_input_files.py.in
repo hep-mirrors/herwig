@@ -26,6 +26,9 @@ print (name)
 (collider,have_hadronic_collider) = identifyCollider(name)
 
 thefactory="Factory"
+octetEnhance=1e2
+singletEnhance=1e3
+gluonSingletEnhance=1e4
 
 # settings for four flavour scheme
 fourFlavour="""
@@ -140,7 +143,7 @@ elif(collider=="LHC") :
                 process+=addFirstJet(cuts[i-1],cuts[i])
 # LHC-GammaGamma
 elif(collider=="LHC-GammaGamma" ) :
-    logging.error ("LHC-GammaGamm processes not currently supported for onium production")
+    logging.error ("LHC-GammaGamma processes not currently supported for onium production")
     sys.exit(1)
 temp = parameterName.split("-")
 parameterName=temp[1]
@@ -149,38 +152,52 @@ particle=temp[3].replace("2S","(2S)").replace("3S","(3S)").replace("2P","(2P)").
 pFile = os.path.join(collider,"{c}-{pn}-Quarkonium.in".format(c=collider, pn=parameterName))
 with open(os.path.join("Rivet",pFile), 'r') as f:
     parameters['parameterFile'] = f.read()
+# non-prompt
+if colour == "NonPrompt" :
+    if "Charm" or "Bottom" in parameterName :
+        pFile = os.path.join(collider,"{c}-{pn}-Charm.in".format(c=collider, pn=parameterName))
+        with open(os.path.join("Rivet",pFile), 'r') as f:
+            parameters['parameterFile'] += f.read()
+    if "Bottom" in parameterName :
+        pFile = os.path.join(collider,"{c}-{pn}-Bottom.in".format(c=collider, pn=parameterName))
+        with open(os.path.join("Rivet",pFile), 'r') as f:
+            parameters['parameterFile'] += f.read()
 # now the onium shower stuff
-parameters["shower"] += "read snippets/OniumShower.in\n"
-sfile=open("../src/snippets/OniumShower.in")
-line=sfile.readline()
-while line :
-    if "AddFinalSplitting" in line :
-        sudakov=line.split()[-1]
-        nprod = len(line.split("->")[1].split(";")[0].split(","))
-        if colour == "Singlet" and nprod == 2 :
-            if particle == "All" :
-                parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
-            else :
-                if particle+";" in line :
-                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
-                else :
-                    parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
-        elif colour == "Octet" and nprod == 1 :
-            if particle == "All" :
-                parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
-            else :
-                if particle+";" in line :
-                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor 1e3\n" % sudakov
-                else :
-                    parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
-        else :
-            parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+else:
+    parameters["shower"] += "read snippets/OniumShower.in\n"
+    sfile=open("../src/snippets/OniumShower.in")
     line=sfile.readline()
+    while line :
+        if "AddFinalSplitting" in line :
+            sudakov=line.split()[-1]
+            nprod = len(line.split("->")[1].split(";")[0].split(","))
+            if colour == "Singlet" and nprod == 2 :
+                enhance = singletEnhance
+                if "g->" in line and particle in ["Jpsi","psi(2S)","Upsilon","Upsilon(2S)","Upsilon(3S)"]:
+                    enhance = gluonSingletEnhance
+                if particle == "All" :
+                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,enhance)
+                else :
+                    if particle+";" in line :
+                        parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,enhance)
+                    else :
+                        parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+            elif colour == "Octet" and nprod == 1 :
+                if particle == "All" :
+                    parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,octetEnhance)
+                else :
+                    if particle+";" in line :
+                        parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,octetEnhance)
+                    else :
+                        parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+            else :
+                parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
+        line=sfile.readline()
 
-# switch off hadronization and MPI
-process += "set /Herwig/Shower/ShowerHandler:MPIHandler NULL\n"
-process += "set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL\n"
-process += "set /Herwig/Analysis/Basics:CheckQuark No\n"
+    # switch off hadronization and MPI
+    process += "set /Herwig/Shower/ShowerHandler:MPIHandler NULL\n"
+    process += "set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL\n"
+    process += "set /Herwig/Analysis/Basics:CheckQuark No\n"
 
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)

@@ -38,6 +38,14 @@ energies = { 5020 : ["ALICE_2017_I1511865"],
                      "LHCB_2017_I1621596"],
              13000 : ["ALICE_2017_I1511865"] }
 yodafiles=[]
+processes=[]
+for colour in ["Singlet","Octet"]: 
+    for state in ["eta_c","Jpsi","psi2S","chi_c0","chi_c1","chi_c2",
+                  "Upsilon","Upsilon2S","Upsilon3S","chi_b0","chi_b1","chi_b2",
+                  "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
+        processes.append("%s-%s"%(colour,state))
+processes.append("NonPrompt")
+
 for energy in [2760,5,7,8,13]:
     if energy==2760 :
         ecms=energy
@@ -46,26 +54,23 @@ for energy in [2760,5,7,8,13]:
     else :
         ecms = energy*1000
     mergeargs2=["rivet-merge"]
-    for colour in ["Singlet","Octet"]: 
-        for state in ["eta_c","JPsi","psi2S","chi_c0","chi_c1","chi_c2",
-                      "Upsilon","Upsilon2S","Upsilon3S","chi_b0","chi_b1","chi_b2",
-                      "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
-            for proc in ["Charm","Bottom","Jets"] :
-                mergeargs=["rivet-merge"]
-                for cut in range(1,6):
-                    fname = "Rivet-Onium-%s-%s-%s-%s-%s-%s.yoda" % (args[0], energy , colour, state, proc, cut)
-                    if(os.path.isfile(fname)) :
-                        mergeargs.append(fname)
-                        mergeargs2.append(fname)
-                if len(mergeargs)==1 : continue
-                if ecms in energies:
-                    for val in energies[ecms]:
-                        mergeargs.append("-a")
-                        mergeargs.append("%s:ENERGY=%s" % (val,ecms))
-                fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda"% (args[0], energy , colour, state, proc) 
-                mergeargs.append("-o")
-                mergeargs.append(fname)
-                p = subprocess.Popen(mergeargs)
+    for state in processes:
+        for proc in ["Charm","Bottom","Jets"] :
+            mergeargs=["rivet-merge"]
+            for cut in range(1,6):
+                fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda" % (args[0], energy , state, proc, cut)
+                if(os.path.isfile(fname)) :
+                    mergeargs.append(fname)
+                    mergeargs2.append(fname)
+            if len(mergeargs)==1 : continue
+            if ecms in energies:
+                for val in energies[ecms]:
+                    mergeargs.append("-a")
+                    mergeargs.append("%s:ENERGY=%s" % (val,ecms))
+            fname = "Rivet-Onium-%s-%s-%s-%s.yoda"% (args[0], energy , state, proc) 
+            mergeargs.append("-o")
+            mergeargs.append(fname)
+            p = subprocess.Popen(mergeargs)
     if len(mergeargs2)==1 : continue
     if ecms in energies:
         for val in energies[ecms]:

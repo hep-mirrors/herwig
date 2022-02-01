@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# LHCb charm hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996

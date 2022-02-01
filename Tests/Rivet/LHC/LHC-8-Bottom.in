@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS BB pairs
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1598613
