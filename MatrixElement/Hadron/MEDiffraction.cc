@@ -331,6 +331,12 @@ bool MEDiffraction::generateKinematics(const double * ) {
       meMomenta()[5].setVect(p4.vect());
       meMomenta()[5].setT(p4.t());
 
+      // Check to make sure that the dissociating proton even has enough mass to
+      // produce the constituent masses of the three particles
+      if ((p3.mass()-mqq()-mq()-getParticleData(21)->constituentMass())/GeV < 0.0){
+        return false;
+      }
+
       //two body decay of the outgoing dissociation proton
       do{}
       while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
@@ -358,6 +364,12 @@ bool MEDiffraction::generateKinematics(const double * ) {
       //outgoing proton
       meMomenta()[2].setVect(p3.vect());
       meMomenta()[2].setT(p3.t());
+
+      // Check to make sure that the dissociating proton even has enough mass to
+      // produce the constituent masses of the three particles
+      if ((p4.mass()-mqq()-mq()-getParticleData(21)->constituentMass())/GeV < 0.0){
+        return false;
+      }
 
       //two body decay of the outgoing dissociation proton
       do{}
@@ -388,6 +400,12 @@ bool MEDiffraction::generateKinematics(const double * ) {
       meMomenta()[6].setMass(mq());
       meMomenta()[7].setMass(mqq());
 
+      // Check to make sure that the protons even have enough mass to
+      // produce the constituent masses of the three particles
+      if ((p3.mass()-mqq()-mq()-getParticleData(21)->constituentMass())/GeV < 0.0
+        || (p4.mass()-mqq()-mq()-getParticleData(21)->constituentMass())/GeV < 0.0){
+        return false;
+      }
 
       //two body decay of the outgoing dissociation proton
       do{}
@@ -565,10 +583,10 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
       double costheta = 0.;
       double sintheta = 1.0;
       do {
-        costheta =1-2*UseRandom::rnd();
+        costheta = 1-2*UseRandom::rnd();
         sintheta = sqrt(1-sqr(costheta));
       }
-      while (UseRandom::rnd() > 1./costheta);
+      while (UseRandom::rnd() > 1./sqr(costheta));
 
       // Generate the momenta
       Lorentz5Momentum k1=Lorentz5Momentum(p*sintheta*cos(phi), p*sintheta*sin(phi), p*costheta, sqrt(sqr(m1)+psq));
@@ -760,31 +778,33 @@ unsigned int MEDiffraction::orderInAlphaEW() const {
 Selector<MEBase::DiagramIndex>
 MEDiffraction::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-    if(!deltaOnly){
-      if(diffDirection<2){
+  if(!deltaOnly){
+    if(diffDirection<2){
 
-        for(unsigned int i = 0; i < diags.size(); i++){
-          if(diags[0]->id()==-1)
-            sel.insert(2./3.,i);
-          else
-            sel.insert(1./3.,i);
-        }
-
-      }else{
-        for(unsigned int i = 0; i < diags.size(); i++){
-          if(diags[0]->id()==-1)
-            sel.insert(4./9.,i);
-          else if(diags[0]->id()==-2)
-            sel.insert(2./9.,i);
-          else if(diags[0]->id()==-3)
-            sel.insert(2./9.,i);
-          else
-            sel.insert(1./9.,i);
-        }
+      for(unsigned int i = 0; i < diags.size(); i++){
+        if(diags[0]->id()==-1)
+          sel.insert(2./3.,i);
+        else
+          sel.insert(1./3.,i);
       }
-    }else{
-      sel.insert(1.0,0);
+
     }
+    else {
+      for(unsigned int i = 0; i < diags.size(); i++){
+        if(diags[0]->id()==-1)
+          sel.insert(4./9.,i);
+        else if(diags[0]->id()==-2)
+          sel.insert(2./9.,i);
+        else if(diags[0]->id()==-3)
+          sel.insert(2./9.,i);
+        else
+          sel.insert(1./9.,i);
+      }
+    }
+  }
+  else {
+    sel.insert(1.0,0);
+  }
 
   return sel;
 }
@@ -853,15 +873,15 @@ MEDiffraction::colourGeometries(tcDiagPtr ) const {
     case 1:
       switch(diffDirection){
         case 0:
-          static ColourLines clleft("-6 2 3 8, -8 -3 7");
+          static ColourLines clleft("-6 2 3 8, -8 -3 2 7");
           sel.insert(1.0, &clleft);
           break;
         case 1:
-          static ColourLines clright("-9 4 3 7, -7 -3 8");
+          static ColourLines clright("-9 4 3 7, -7 -3 4 8");
           sel.insert(1.0, &clright);
           break;
         case 2:
-          static ColourLines cldouble("-8 2 3 10, -10 -3 9, -13 6 5 11, -11 -5 12");
+          static ColourLines cldouble("-8 2 3 10, -10 -3 2 9, -13 6 5 11, -11 -5 6 12");
           sel.insert(1.0, &cldouble);
           break;
       }
