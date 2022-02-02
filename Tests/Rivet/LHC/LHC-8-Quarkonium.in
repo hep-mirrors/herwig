@@ -12,6 +12,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1230344
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1392456
 # LHCb Upsilon(1,2,3S) polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621596
+# LHCb B_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1327230
 # LHCb chib
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1308738
 # general MC analysis

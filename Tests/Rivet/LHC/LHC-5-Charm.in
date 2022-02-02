@@ -2,5 +2,11 @@
 ##################################################
 # select the analyses
 ##################################################
+# ALICE Lambda_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1829739
+# CMS Lambda_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2020_I1738943
+# ALICE Xi_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1863039
 # LHCb charm hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1490663

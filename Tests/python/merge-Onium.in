@@ -32,15 +32,16 @@ if __name__ == "__main__":
 energies = { 5020 : ["ALICE_2017_I1511865"],
              7000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329", 
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
-                     "LHCB_2017_I1621596"],
+                     "LHCB_2017_I1621596","LHCB_2016_I1391317"],
              8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
-                     "LHCB_2017_I1621596"],
+                     "LHCB_2017_I1621596","LHCB_2016_I1391317"],
              13000 : ["ALICE_2017_I1511865"] }
 yodafiles=[]
 processes=[]
 for colour in ["Singlet","Octet"]: 
     for state in ["eta_c","Jpsi","psi2S","chi_c0","chi_c1","chi_c2",
+                  "B_c","B_cStar","B_c2S","B_c2SStar",
                   "Upsilon","Upsilon2S","Upsilon3S","chi_b0","chi_b1","chi_b2",
                   "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
         processes.append("%s-%s"%(colour,state))
@@ -129,7 +130,8 @@ for f in yodafiles:
                 if "-7" in f : outhistos[ao.path()] = ao
             else :
                 if "-8" in f : outhistos[ao.path()] = ao
-        elif "LHCB_2017_I1621596" in aopath :
+        elif ( "LHCB_2017_I1621596" in aopath or
+               "LHCB_2016_I1391317" in aopath ):
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])
             outhistos[aopath] = ao

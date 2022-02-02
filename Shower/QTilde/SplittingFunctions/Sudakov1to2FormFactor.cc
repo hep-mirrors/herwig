@@ -97,7 +97,7 @@ void Sudakov1to2FormFactor::Init() {
   static Parameter<Sudakov1to2FormFactor,double> interfaceEnhancementFactor
     ("EnhancementFactor",
      "Factor by which to enhance the splitting, compenstated by weight events.",
-     &Sudakov1to2FormFactor::enhancementFactor_, 1., 0.0, 1e6,
+     &Sudakov1to2FormFactor::enhancementFactor_, 1., 0.0, 1e8,
      false, false, Interface::limited);
 
 }
