@@ -31,13 +31,13 @@ octetEnhance={ "Jpsi" : 1e2, "psi(2S)" : 1e2, "chi_c0" : 1e2, "chi_c1" : 1e2, "c
                "chi_b0" : 1e2, "chi_b1" : 1e2, "chi_b2" : 1e2,
                "chi_b0(2P)" : 1e2, "chi_b1(2P)" : 1e2, "chi_b2(2P)" : 1e2,
                "chi_b0(3P)" : 1e2, "chi_b1(3P)" : 1e2, "chi_b2(3P)" : 1e2,
-               "B_c+" : 1e4, "B_c*+" : 1e4, "B_c(2S)+" : 1e4, "B_c(2S)*+" : 1e4 }
+               "B_c+" : 1e2, "B_c*+" : 1e2, "B_c(2S)+" : 1e2, "B_c(2S)*+" : 1e2 }
 singletEnhance = { "Jpsi" : 1e3, "eta_c" : 1e3 , "psi(2S)" : 1e3,  "chi_c0" : 1e3, "chi_c1" : 1e3, "chi_c2" : 1e3,
                    "Upsilon" : 1e4,"Upsilon(2S)" : 1e4,"Upsilon(3S)" : 1e4,
                    "chi_b0" : 1e4, "chi_b1" : 1e4, "chi_b2" : 1e4,
                    "chi_b0(2P)" : 1e4, "chi_b1(2P)" : 1e5, "chi_b2(2P)" : 1e5,
                    "chi_b0(3P)" : 1e6, "chi_b1(3P)" : 1e6, "chi_b2(3P)" : 1e6,
-                   "B_c+" : 1e7, "B_c*+" : 1e7, "B_c(2S)+" : 1e8, "B_c(2S)*+" : 1e8 }
+                   "B_c+" : 1e2, "B_c*+" : 1e2, "B_c(2S)+" : 1e2, "B_c(2S)*+" : 1e2 }
 gluonSingletEnhance= { "Jpsi" : 1e4, "psi(2S)" : 1e4,  "chi_c0" : 1e4, "chi_c1" : 1e4, "chi_c2" : 1e4,
                        "Upsilon" : 1e5, "Upsilon(2S)" : 1e5, "Upsilon(3S)" : 1e5,
                        "chi_b0" : 1e4, "chi_b1" : 1e4, "chi_b2" : 1e4,
@@ -190,7 +190,7 @@ else:
                 if particle == "All" :
                     parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,enhance)
                 else :
-                    if particle+";" in line :
+                    if particle+";" in line or (particle[-1]=="+" and  particle.replace("+","-")+";" in line):
                         parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,enhance)
                     else :
                         parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
@@ -198,7 +198,7 @@ else:
                 if particle == "All" :
                     parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,octetEnhance[particle])
                 else :
-                    if particle+";" in line :
+                    if particle+";" in line or (particle[-1]=="+" and  particle.replace("+","-")+";" in line):
                         parameters["shower"] += "set /Herwig/Shower/%s:EnhancementFactor %s\n" % (sudakov,octetEnhance[particle])
                     else :
                         parameters["shower"] += line.replace("AddFinal","DeleteFinal").replace("SplittingGenerator","/Herwig/Shower/SplittingGenerator").replace(sudakov,"/Herwig/Shower/"+sudakov)
