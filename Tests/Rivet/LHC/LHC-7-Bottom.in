@@ -10,3 +10,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I914325
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1238809
 # LHCB B0, Lambda_b
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1391317
+# LHCb B+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1630633

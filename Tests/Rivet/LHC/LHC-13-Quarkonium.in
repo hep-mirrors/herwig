@@ -11,6 +11,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1898832
 # CMS onium (charm and bottom)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1633431
+# LHCB J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1391511
 # LHCb Upsilon
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1670013
 # general MC analysis
