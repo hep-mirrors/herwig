@@ -417,6 +417,7 @@ Rivet-LHC-Higgs/done:  \
 clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt
 	rm -rf Rivet-*
+	rm -rf Onium-Splitting
 
 distclean-local:
 	rm -rf .cache

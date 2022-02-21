@@ -4,5 +4,10 @@
 ##################################################
 # ALICE Xi_c
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2018_I1642729
+# ALICE D0,D+,D-s
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1716440
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511870
+# ATLAS D meson
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1408878
 # LHCb charm hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996

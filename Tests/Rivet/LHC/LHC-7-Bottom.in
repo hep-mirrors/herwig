@@ -6,8 +6,12 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
 # CMS B_s0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I914325
+# LHCb Bs fraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1215607
 # LHCb B0,B+,Bs
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1238809
+# LHCb lambda_b fraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1298273
 # LHCB B0, Lambda_b
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1391317
 # LHCb B+

@@ -10,6 +10,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1735351
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1622737
 # CMS Jpsi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1512296
+# CMS Jpsi in jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2022_I1870319
 # CMS psi(2S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1672011
 # LHCb Jpsi

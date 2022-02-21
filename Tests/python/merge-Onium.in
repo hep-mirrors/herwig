@@ -44,14 +44,16 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # #######################################
-energies = { 5020 : ["ALICE_2017_I1511865"],
-             7000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329", 
+energies = { 5020 : ["ALICE_2017_I1511865","ALICE_2019_I1716440"],
+             7000 : ["ALICE_2019_I1716440",
+                     "ATLAS_2016_I1409298","LHCB_2015_I1316329", 
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
-                     "LHCB_2017_I1621596","LHCB_2016_I1391317"],
+                     "LHCB_2017_I1621596","LHCB_2017_I1630633",
+                     "LHCB_2016_I1391317"],
              8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
                      "LHCB_2017_I1621596","LHCB_2016_I1391317"],
-             13000 : ["ALICE_2017_I1511865"] }
+             13000 : ["ALICE_2017_I1511865","LHCB_2017_I1630633"] }
 yodafiles=[]
 processes=[]
 for colour in ["Singlet","Octet"]: 
@@ -182,6 +184,16 @@ for energy in [2760,5,7,8,13]:
                                 pass
                             else :
                                 outhistos[key]=aos[key]
+                        elif "LHCB_2015_I1391511" in key :
+                            if "d01" in key or "d03" in key or "d04" in key or "d06" in key:
+                                pass
+                            elif "TMP/Jpsi" in key :
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/LHCB_2015_I1391511/d02-x01-y0%s" %(1+iy)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
                         elif "LHCB_2020_I1763898" in key :
                             if "d01" in key or "d02" in key:
                                 pass
@@ -236,7 +248,15 @@ else :
     time.sleep(30)
 ## Get histos
 outhistos={}
+inhistos={}
 for f in yodafiles:
+    energy =int(f.split("-")[-1].split(".")[0])
+    if energy==2760 :
+        ecms=energy
+    elif energy==5 :
+        ecms=5020
+    else :
+        ecms = energy*1000
     if not os.access(f, os.R_OK):
         logging.error("%s can not be read" % f)
         continue
@@ -257,6 +277,16 @@ for f in yodafiles:
                 if "-5" in f : outhistos[ao.path()] = ao
             else :
                 if "-5" not in f : outhistos[ao.path()] = ao
+        elif "ALICE_2019_I1716440" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if "h_energy" in aopath :
+                if ecms in inhistos :
+                    inhistos[ecms][ao.path()]=ao
+                else :
+                    inhistos[ecms]={}
+            else :
+                outhistos[ao.path()] = ao
         elif "LHCB_2015_I1316329" in aopath :
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])
@@ -279,7 +309,16 @@ for f in yodafiles:
             outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
-            
+
+if 7000 in inhistos and 5020 in inhistos :
+    for i in range(1,5) :
+        path="/ALICE_2019_I1716440/h_energy_%s" %i
+        if path in inhistos[7000] and path in inhistos[5020] :
+            newHisto = inhistos[7000][path]/inhistos[5020][path]
+            newPath = "/ALICE_2019_I1716440/d%s-x01-y01" %(i+13)
+            newHisto.setPath(newPath)
+            outhistos[newPath]=newHisto
+
 # Choose output file
 name = args[0]+"-Onium.yoda"
 removeNan()
