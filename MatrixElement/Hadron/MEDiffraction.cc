@@ -254,15 +254,15 @@ bool MEDiffraction::generateKinematics(const double * ) {
       	meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
       	////////////////////////////////////////////////////
         // Proton decays along z axis in rest frame
-        if (smearAngle == 0){
+        //if (smearAngle == 0){
           do{}
           while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
-        }
-        // Otherwise it has randomly sampled azimuth and polar angles.
+        //}
+        /*// Otherwise it has randomly sampled azimuth and polar angles.
         else{
           do{}
           while(!twoBodyDecayMomenta(p3,mqq(),mq(),decayMomenta.first,decayMomenta.second));
-        }
+        }*/
       	///////////
 
       	meMomenta()[2] = p4;
@@ -273,36 +273,36 @@ bool MEDiffraction::generateKinematics(const double * ) {
       	meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
       	////////////////////////////////////////////////////
         // Proton decays along z axis in rest frame
-        if (smearAngle == 0){
+        //if (smearAngle == 0){
           do{}
           while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomenta.first,decayMomenta.second));
-        }
-        // Otherwise it has randomly sampled azimuth and polar angles.
+        //}
+        /*// Otherwise it has randomly sampled azimuth and polar angles.
         else{
           do{}
           while(!twoBodyDecayMomenta(p4,mqq(),mq(),decayMomenta.first,decayMomenta.second));
-        }
+        }*/
       	meMomenta()[2] = p3;
       	meMomenta()[3] = decayMomenta. first;
       	meMomenta()[4] = decayMomenta.second;
       	break;
       case 2://double diffraction
         // Proton decays along z axis in rest frame
-        if (smearAngle == 0){
+        //if (smearAngle == 0){
           do{}
           while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
 
           do{}
           while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomentaTwo.first,decayMomentaTwo.second));
-        }
-        // Otherwise it has randomly sampled azimuth and polar angles.
+        //}
+        /*// Otherwise it has randomly sampled azimuth and polar angles.
         else{
           do{}
           while(!twoBodyDecayMomenta(p3,mqq(),mq(),decayMomenta.first,decayMomenta.second));
 
           do{}
           while(!twoBodyDecayMomenta(p4,mqq(),mq(),decayMomentaTwo.first,decayMomentaTwo.second));
-        }
+        }*/
 
       	meMomenta()[2] = decayMomenta. first;
       	meMomenta()[3] = decayMomenta.second;
@@ -582,11 +582,12 @@ bool MEDiffraction::twoBodyDecayMomenta(const Lorentz5Momentum & pIn,
       double phi = UseRandom::rnd() * Constants::twopi;
       double costheta = 0.;
       double sintheta = 1.0;
-      do {
+      /*do {
         costheta = 1-2*UseRandom::rnd();
         sintheta = sqrt(1-sqr(costheta));
       }
       while (UseRandom::rnd() > 1./sqr(costheta));
+      */
 
       // Generate the momenta
       Lorentz5Momentum k1=Lorentz5Momentum(p*sintheta*cos(phi), p*sintheta*sin(phi), p*costheta, sqrt(sqr(m1)+psq));
