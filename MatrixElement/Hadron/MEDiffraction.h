@@ -192,7 +192,7 @@ private:
   bool correctionWeightSwitch;
 
   /* allow for non-zero azimuthal and polar angles in the 1 to 2 decay */
-  bool smearAngle;
+  bool smearAngle = 0;
 
   /* manual set min mass */
   double thefixedM2min;
