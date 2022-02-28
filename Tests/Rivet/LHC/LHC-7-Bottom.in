@@ -4,8 +4,15 @@
 ##################################################
 # ATLAS b hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1240670
+# CMS B+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I883318
+# CMS B0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I896211
 # CMS B_s0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I914325
+# CMS lambda_b0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1113442
 # LHCb Bs fraction
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1215607
 # LHCb B0,B+,Bs
@@ -16,3 +23,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1298273
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1391317
 # LHCb B+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1630633
+# LHCb Bs fraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1760257

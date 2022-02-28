@@ -49,11 +49,13 @@ energies = { 5020 : ["ALICE_2017_I1511865","ALICE_2019_I1716440"],
                      "ATLAS_2016_I1409298","LHCB_2015_I1316329", 
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
                      "LHCB_2017_I1621596","LHCB_2017_I1630633",
-                     "LHCB_2016_I1391317"],
+                     "LHCB_2016_I1391317","LHCB_2019_I1760257"],
              8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
-                     "LHCB_2017_I1621596","LHCB_2016_I1391317"],
-             13000 : ["ALICE_2017_I1511865","LHCB_2017_I1630633"] }
+                     "LHCB_2017_I1621596","LHCB_2016_I1391317",
+                     "LHCB_2019_I1760257"],
+             13000 : ["ALICE_2017_I1511865","LHCB_2017_I1630633",
+                      "LHCB_2019_I1760257"] }
 yodafiles=[]
 processes=[]
 for colour in ["Singlet","Octet"]: 
@@ -285,8 +287,20 @@ for f in yodafiles:
                     inhistos[ecms][ao.path()]=ao
                 else :
                     inhistos[ecms]={}
+                    inhistos[ecms][ao.path()]=ao
             else :
                 outhistos[ao.path()] = ao
+        elif "LHCB_2019_I1760257" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            if "d05" in aopath or (("d03" in aopath or "d04" in aopath) and ecms==13000 ):
+                outhistos[ao.path()] = ao
+            else :
+                if ecms in inhistos :
+                    inhistos[ecms][ao.path()]=ao
+                else :
+                    inhistos[ecms]={}
+                    inhistos[ecms][ao.path()]=ao
         elif "LHCB_2015_I1316329" in aopath :
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])
@@ -318,6 +332,23 @@ if 7000 in inhistos and 5020 in inhistos :
             newPath = "/ALICE_2019_I1716440/d%s-x01-y01" %(i+13)
             newHisto.setPath(newPath)
             outhistos[newPath]=newHisto
+
+if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
+    path="/LHCB_2019_I1760257/d01-x01-y01"
+    if ( path in inhistos[ 7000] and  path in inhistos[ 8000] and
+         path in inhistos[13000] ) :
+        outhistos[path] = yoda.core.Scatter2D(path,path)
+        outhistos[path].addPoint(inhistos[ 7000][path].points()[0])
+        outhistos[path].addPoint(inhistos[ 8000][path].points()[1])
+        outhistos[path].addPoint(inhistos[13000][path].points()[2])
+        outhistos[path].addPoint(inhistos[13000][path].points()[3])
+        path2="/LHCB_2019_I1760257/d02-x01-y01"
+        outhistos[path2] = yoda.core.Scatter2D(path2,path2)
+        outhistos[path2].addPoint(inhistos[ 8000][path].points()[1])
+        outhistos[path2].addPoint(inhistos[13000][path].points()[2])
+        outhistos[path2].points()[1].setX(13)
+        for val in outhistos[path2].points():
+            val.scaleY(1./inhistos[ 7000][path].points()[0].y())
 
 # Choose output file
 name = args[0]+"-Onium.yoda"

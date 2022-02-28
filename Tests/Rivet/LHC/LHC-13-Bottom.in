@@ -2,7 +2,11 @@
 ##################################################
 # select the analyses
 ##################################################
+# CMS B+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1485195
 # LHCb B+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1630633
 # LHCB Lambda_b and B_s
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1720859
+# LHCb Bs fraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1760257
