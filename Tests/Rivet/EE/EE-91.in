@@ -162,6 +162,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I522656
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1995_I378545
 # excited lambda_b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1114753
+# lambda_b -> lambda_c mu- nu_mubar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621811
 ##################################################
 # unvalidated 
 ##################################################

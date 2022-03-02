@@ -17,7 +17,9 @@ def removeNan():
         if type(ao)==yoda.core.Scatter2D :
             skip=False
             for p in ao.points() :
-                if math.isnan(p.y()) : skip=True
+                if math.isnan(p.y()) :
+                    skip=True
+                    break
             if(skip) : remove.append(key)
     for key in remove :
         if key in outhistos : del outhistos[key]
@@ -49,13 +51,14 @@ energies = { 5020 : ["ALICE_2017_I1511865","ALICE_2019_I1716440"],
                      "ATLAS_2016_I1409298","LHCB_2015_I1316329", 
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
                      "LHCB_2017_I1621596","LHCB_2017_I1630633",
-                     "LHCB_2016_I1391317","LHCB_2019_I1760257"],
+                     "LHCB_2016_I1391317","LHCB_2019_I1760257",
+                     "LHCB_2021_I1888216","LHCB_2019_I1748712"],
              8000 : ["ATLAS_2016_I1409298","LHCB_2015_I1316329",
                      "LHCB_2015_I1392456","LHCB_2014_I1308738",
                      "LHCB_2017_I1621596","LHCB_2016_I1391317",
-                     "LHCB_2019_I1760257"],
+                     "LHCB_2019_I1760257","LHCB_2021_I1888216"],
              13000 : ["ALICE_2017_I1511865","LHCB_2017_I1630633",
-                      "LHCB_2019_I1760257"] }
+                      "LHCB_2019_I1760257","LHCB_2019_I1748712"] }
 yodafiles=[]
 processes=[]
 for colour in ["Singlet","Octet"]: 
@@ -279,6 +282,10 @@ for f in yodafiles:
                 if "-5" in f : outhistos[ao.path()] = ao
             else :
                 if "-5" not in f : outhistos[ao.path()] = ao
+        elif "LHCB_2021_I1888216" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[1].split("/")[1])
+            outhistos[ao.path()] = ao
         elif "ALICE_2019_I1716440" in aopath :
             path=aopath.split(":")
             ao.setPath(path[0]+"/"+path[1].split("/")[1])

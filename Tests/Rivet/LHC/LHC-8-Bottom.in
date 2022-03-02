@@ -8,3 +8,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1598613
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1391317
 # LHCb Bs fraction
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1760257
+# LHCB Lambda_b asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2021_I1888216
