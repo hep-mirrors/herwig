@@ -5,8 +5,7 @@
 // This is the declaration of the MEGQBCQBase class.
 //
 
-#include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/PDT/GenericMassGenerator.h"
+#include "MassiveIncoming.h"
 #include "OniumParameters.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
@@ -20,14 +19,14 @@ using namespace ThePEG;
  * @see \ref MEGQBCQBaseInterfaces "The interfaces"
  * defined for MEGQBCQBase.
  */
-class MEGQBCQBase: public HwMEBase {
+class MEGQBCQBase: public MassiveIncoming {
 
 public:
   
   /**
    * The default constructor.
    */
-  MEGQBCQBase(long pid=531) : id_(pid), n_(1), mOpt_(1)
+  MEGQBCQBase(long pid=531) : id_(pid), n_(1)
   {}
 
 public:
@@ -54,37 +53,6 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * Set the typed and momenta of the incoming and outgoing partons to
-   * be used in subsequent calls to me() and colourGeometries()
-   * according to the associated XComb object. If the function is
-   * overridden in a sub class the new function must call the base
-   * class one first.
-   */
-  virtual void setKinematics();
-
-  /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
-
-  /**
-   * Return the matrix element squared differential in the variables
-   * given by the last call to generateKinematics().
-   */
-  virtual CrossSection dSigHatDR() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -201,11 +169,6 @@ private:
   unsigned int n_;
 
   /**
-   *  Option for the mass handling
-   */
-  unsigned int mOpt_;
-
-  /**
    *  The quarkonium parameters
    */
   OniumParametersPtr params_;
@@ -214,11 +177,6 @@ private:
    *  Particle data object for the \f$B_c\f$ state
    */
   PDPtr state_;
-
-  /**
-   *  Mass generator for the state
-   */
-  GenericMassGeneratorPtr massGen_;
 
   /**
    *  Matrix element for correlations
