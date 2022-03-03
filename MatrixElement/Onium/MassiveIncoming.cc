@@ -177,7 +177,7 @@ void MassiveIncoming::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<MassiveIncoming,HwMEBase>
-describeHerwigMassiveIncoming("Herwig::MassiveIncoming", "HwMEHadronOnium.so");
+describeHerwigMassiveIncoming("Herwig::MassiveIncoming", "HwOniumParameters.so HwMEHadronOnium.so");
 
 void MassiveIncoming::Init() {
 
