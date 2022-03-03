@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGQBCQBase_H
-#define Herwig_MEGQBCQBase_H
+#ifndef Herwig_MEPP2DiquarkJet_H
+#define Herwig_MEPP2DiquarkJet_H
 //
-// This is the declaration of the MEGQBCQBase class.
+// This is the declaration of the MEPP2DiquarkJet class.
 //
 
 #include "MassiveIncoming.h"
@@ -14,19 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGQBCQBase class provides a base class for the simulation of \f$gc\to B_c b\f$ processes, handling the kinematics.
+ * Here is the documentation of the MEPP2DiquarkJet class.
  *
- * @see \ref MEGQBCQBaseInterfaces "The interfaces"
- * defined for MEGQBCQBase.
+ * @see \ref MEPP2DiquarkJetInterfaces "The interfaces"
+ * defined for MEPP2DiquarkJet.
  */
-class MEGQBCQBase: public MassiveIncoming {
+class MEPP2DiquarkJet: public MassiveIncoming {
 
 public:
-  
+
   /**
    * The default constructor.
    */
-  MEGQBCQBase(long pid=541) : id_(pid), n_(1)
+  MEPP2DiquarkJet(long pid=4403) : id_(pid)
   {}
 
 public:
@@ -45,7 +45,7 @@ public:
    * Return the order in \f$\alpha_{EW}\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaEW() const  {
+  virtual unsigned int orderInAlphaEW() const {
     return 0;
   }
 
@@ -78,21 +78,9 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   //@}
   
 protected:
-
-  /**
-   *  Access to principal quantum number
-   */
-  unsigned int principleQuantumNumber() const {
-    return n_;
-  }
 
   /**
    *  Access to the parameters
@@ -126,8 +114,6 @@ public:
   void persistentInput(PersistentIStream & is, int version);
   //@}
 
-public:
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -135,7 +121,7 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
+  
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -154,19 +140,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGQBCQBase & operator=(const MEGQBCQBase &) = delete;
+  MEPP2DiquarkJet & operator=(const MEPP2DiquarkJet &) = delete;
 
 private:
 
   /**
-   *    PDG code for the \f$B_c\f$ state
+   *    PDG code for the diquark state
    */
   long id_;
-
-  /**
-   *   Principle quantum number for the state
-   */
-  unsigned int n_;
 
   /**
    *  The quarkonium parameters
@@ -174,7 +155,7 @@ private:
   OniumParametersPtr params_;
 
   /**
-   *  Particle data object for the \f$B_c\f$ state
+   *  Particle data object for the diquark state
    */
   PDPtr state_;
 
@@ -182,8 +163,9 @@ private:
    *  Matrix element for correlations
    */
   mutable ProductionMatrixElement me_;
+
 };
 
 }
 
-#endif /* Herwig_MEGQBCQBase_H */
+#endif /* Herwig_MEPP2DiquarkJet_H */
