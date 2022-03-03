@@ -31,19 +31,19 @@ bool MassiveIncoming::generateKinematics(const double * r) {
   jacobian(1.);
   Energy ecm = sqrt(sHat());
   Energy mBc(ZERO);
-  Energy mb = mePartonData()[3]->hardProcessMass();
+  Energy mout = mePartonData()[3]->hardProcessMass();
   if(mOpt_==0 || !massGen_) {
     mBc=mePartonData()[2]->mass();
   }
   else {
-    Energy mmin = mePartonData()[2]->massMin(), mmax = min(mePartonData()[2]->massMax(),ecm-mb);
+    Energy mmin = mePartonData()[2]->massMin(), mmax = min(mePartonData()[2]->massMax(),ecm-mout);
     double jtemp(0.);
     mBc = massGen_->mass(jtemp,*mePartonData()[2],mmin,mmax,r[1]);
     jacobian(jacobian()*jtemp);
   }
   // set the masses
   meMomenta()[2].setMass(mBc);
-  meMomenta()[3].setMass(mb );
+  meMomenta()[3].setMass(mout );
 
   double ctmin = -1.0, ctmax = 1.0;
   Energy q = ZERO;
@@ -124,13 +124,23 @@ bool MassiveIncoming::generateKinematics(const double * r) {
   uHat(m22 + m32 - sHat() - tHat());
   jacobian((pq/sHat())*Constants::pi*jacobian());
   // now compute the rescaled momenta we need for the ME
-  double rr = mePartonData()[1]->mass()/mePartonData()[3]->mass();
   vector<Lorentz5Momentum> rescaled(4);
-  // masses
-  rescaled[0].setMass(          ZERO);
-  rescaled[1].setMass(rr/(1.+rr)*mBc);
-  rescaled[2].setMass(           mBc);
-  rescaled[3].setMass(1./(1.+rr)*mBc);
+  if(mePartonData()[0]->id()==ParticleID::g) {
+    double rr = mePartonData()[1]->mass()/mePartonData()[3]->mass();
+    // masses
+    rescaled[0].setMass(          ZERO);
+    rescaled[1].setMass(rr/(1.+rr)*mBc);
+    rescaled[2].setMass(           mBc);
+    rescaled[3].setMass(1./(1.+rr)*mBc);
+  }
+  else {
+    double rr = mePartonData()[1]->mass()/mePartonData()[0]->mass();
+    // masses
+    rescaled[0].setMass(1./(1.+rr)*mBc);
+    rescaled[1].setMass(rr/(1.+rr)*mBc);
+    rescaled[2].setMass(           mBc);
+    rescaled[3].setMass(mout          );
+  }
   // incoming
   Energy pin = 0.5*(sHat()-sqr(rescaled[1].mass()))/ecm;
   rescaled[0].setZ(pin); rescaled[1].setZ(-pin);
