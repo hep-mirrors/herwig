@@ -10,3 +10,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1630633
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1720859
 # LHCb Bs fraction
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1760257
+# LHCB Xi_b fraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1716259
+

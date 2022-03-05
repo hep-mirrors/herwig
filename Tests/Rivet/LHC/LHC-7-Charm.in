@@ -11,3 +11,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511870
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1408878
 # LHCb charm hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996
+# LHCb D_s asymetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1674916
