@@ -9,6 +9,8 @@ cd /Herwig/Shower
 #
 cp  PTCutOff PTCutOff2
 set PTCutOff2:pTmin 0.001
+cp  PTCutOff PTCutOff3
+set PTCutOff3:pTmin 1.
 
 #
 #  Quarkonium
@@ -49,6 +51,43 @@ do SplittingGenerator:AddFinalSplitting g->g,Jpsi; gtogcc13S1SplittingSudakov
 cp gtogcc13S1SplittingSudakov gtogcc23S1SplittingSudakov
 set gtogcc23S1SplittingSudakov:PrincipalQuantumNumber 2
 do SplittingGenerator:AddFinalSplitting g->g,psi(2S); gtogcc23S1SplittingSudakov
+# 3P0
+create Herwig::GtoG3P0SplitFn gtogcc13P0SplittingSudakov HwOniumShower.so
+set gtogcc13P0SplittingSudakov:Alpha AlphaQCD
+set gtogcc13P0SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtogcc13P0SplittingSudakov:Cutoff PTCutOff3
+set gtogcc13P0SplittingSudakov:PDFmax 2.0
+set gtogcc13P0SplittingSudakov:ColourStructure OctetOctetSinglet
+set gtogcc13P0SplittingSudakov:AngularOrdered Yes
+set gtogcc13P0SplittingSudakov:StrictAO Yes
+set gtogcc13P0SplittingSudakov:InteractionType QCD
+set gtogcc13P0SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->g,chi_c0; gtogcc13P0SplittingSudakov
+# 3P1
+create Herwig::GtoG3P1SplitFn gtogcc13P1SplittingSudakov HwOniumShower.so
+set gtogcc13P1SplittingSudakov:Alpha AlphaQCD
+set gtogcc13P1SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtogcc13P1SplittingSudakov:Cutoff PTCutOff3
+set gtogcc13P1SplittingSudakov:PDFmax 2.0
+set gtogcc13P1SplittingSudakov:ColourStructure OctetOctetSinglet
+set gtogcc13P1SplittingSudakov:AngularOrdered Yes
+set gtogcc13P1SplittingSudakov:StrictAO Yes
+set gtogcc13P1SplittingSudakov:InteractionType QCD
+set gtogcc13P1SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->g,chi_c1; gtogcc13P1SplittingSudakov
+# 3P2
+create Herwig::GtoG3P2SplitFn gtogcc13P2SplittingSudakov HwOniumShower.so
+set gtogcc13P2SplittingSudakov:Alpha AlphaQCD
+set gtogcc13P2SplittingSudakov:Parameters /Herwig/OniumParameters
+set gtogcc13P2SplittingSudakov:Cutoff PTCutOff3
+set gtogcc13P2SplittingSudakov:PDFmax 2.0
+set gtogcc13P2SplittingSudakov:ColourStructure OctetOctetSinglet
+set gtogcc13P2SplittingSudakov:AngularOrdered Yes
+set gtogcc13P2SplittingSudakov:StrictAO Yes
+set gtogcc13P2SplittingSudakov:InteractionType QCD
+set gtogcc13P2SplittingSudakov:State ccbar
+do SplittingGenerator:AddFinalSplitting g->g,chi_c2; gtogcc13P2SplittingSudakov
+
 #
 #  quark initiated
 #
