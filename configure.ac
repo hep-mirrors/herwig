@@ -247,6 +247,7 @@ AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEne
 AC_CONFIG_FILES([Tests/python/OniumSigma.py      ],[chmod +x Tests/python/OniumSigma.py      ])
 AC_CONFIG_FILES([Tests/python/OniumSplitting.py  ],[chmod +x Tests/python/OniumSplitting.py  ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
+AC_CONFIG_FILES([Tests/python/onium_input_files.py],[chmod +x Tests/python/onium_input_files.py])
 AC_CONFIG_FILES([Tests/python/R.py		 ],[chmod +x Tests/python/R.py		     ])
 AC_CONFIG_FILES([Tests/python/merge-DIS          ],[chmod +x Tests/python/merge-DIS          ])  
 AC_CONFIG_FILES([Tests/python/merge-EE           ],[chmod +x Tests/python/merge-EE           ])  
