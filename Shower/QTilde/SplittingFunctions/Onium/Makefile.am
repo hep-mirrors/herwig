@@ -29,4 +29,7 @@ QtoQP3D3SplitFn.cc     QtoQP3D3SplitFn.h  \
 QtoQBarQQ1SplitFn.cc   QtoQBarQQ1SplitFn.h \
 QtoQPBarQQP0SplitFn.cc QtoQPBarQQP0SplitFn.h \
 QtoQPBarQQP1SplitFn.cc QtoQPBarQQP1SplitFn.h \
-Gto3S1OctetSplitFn.h   Gto3S1OctetSplitFn.cc
+Gto3S1OctetSplitFn.h   Gto3S1OctetSplitFn.cc \
+Gto3P0OctetSplitFn.h   Gto3P0OctetSplitFn.cc \
+Gto3P1OctetSplitFn.h   Gto3P1OctetSplitFn.cc \
+Gto3P2OctetSplitFn.h   Gto3P2OctetSplitFn.cc
