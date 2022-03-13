@@ -144,17 +144,15 @@ public:
   generatePhiForward(const double z, const Energy2 t, const IdList &,
 		     const RhoDMatrix & rho) {
     assert(rho.iSpin()==PDT::Spin1);
-    // double r = sqr(m_)/(t-4.*sqr(m_));
-    // double on  = 0.5*(1.-2.*z*(1.-z)) - 4.*z*(1.-2.*z)*r + 16.*sqr(z*r);
-    // double off = z*(1.-z) + 4.*z*(1.-2.*z)*r - 16.*sqr(z*r);
-    // double max = on+ 2.*abs(rho(0,2))*off;
+    double r  = sqr(m_)/(t-4.*sqr(m_));
+    double on  = 1.-2.*(1.-4.*r)*z*(1.-z-4.*r*z);
+    double off = 2.*(1.-4.*r)*z*(1.-z-4.*r*z);
+    double max = on+ 2.*abs(rho(0,2)*off);
     vector<pair<int, Complex> > output;
-    // output.reserve(3);
-    // output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*on/max));
-    // output.push_back(make_pair(-2, rho(0,2)*off/max));
-    // output.push_back(make_pair( 2, rho(2,0)*off/max));
-    output.reserve(1);
-    output.push_back(make_pair( 0,0.));
+    output.reserve(3);
+    output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*on/max));
+    output.push_back(make_pair(-2, rho(0,2)*off/max));
+    output.push_back(make_pair( 2, rho(2,0)*off/max));
     return output;
   }
 
@@ -167,18 +165,11 @@ public:
    * @return The weight
    */
   vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2, const IdList &,
+  generatePhiBackward(const double, const Energy2, const IdList &,
 		      const RhoDMatrix & rho) {
     assert(false);
     assert(rho.iSpin()==PDT::Spin1);
-    double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
-    double off  = (1.-z)/z;
-    double max  = 2.*abs(rho(0,2))*off+diag;
     vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
-    output.push_back(make_pair( 2,-rho(0,2)           * off/max));
-    output.push_back(make_pair(-2,-rho(2,0)           * off/max));
     return output;
   }
   
@@ -196,11 +187,20 @@ public:
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
     Complex ii(0.,1.);
     double r  = sqr(m_)/(t-4.*sqr(m_));
-    Complex phase = exp(2.*ii*phi);
-    (*kernal)(0,0,0) =  z*(1.+4.*r);
-    (*kernal)(2,2,0) = -(*kernal)(0,0,0) ;
-    (*kernal)(0,2,0) = -(1.-z-4.*z*r)/phase;
-    (*kernal)(2,0,0) = -conj((*kernal)(0,2,0));
+    double rt = sqrt(r*z*(1.-z-4*r*z));
+    Complex phase = exp(ii*phi);
+    (*kernal)(0,0,0) = (2*sqrt(2)*phase*rt)/(-1 + z);
+    (*kernal)(0,0,1) = (z*(-1 + z + 4*r*(1 + z)))/(-1 + z);
+    (*kernal)(0,0,2) = (-2*sqrt(2)*z*rt)/(phase*(-1 + z));
+    (*kernal)(0,2,0) = (2*sqrt(2)*rt)/phase;
+    (*kernal)(0,2,1) = (-1 + z + 4*r*z)/sqr(phase);
+    (*kernal)(0,2,2) = 0.;
+    (*kernal)(2,0,0) = 0.;
+    (*kernal)(2,0,1) = -(sqr(phase)*(-1 + z + 4*r*z));
+    (*kernal)(2,0,2) = 2*sqrt(2)*phase*rt;
+    (*kernal)(2,2,0) = (-2*sqrt(2)*phase*z*rt)/(-1 + z);
+    (*kernal)(2,2,1) = -((z*(-1 + z + 4*r*(1 + z)))/(-1 + z));
+    (*kernal)(2,2,2) = (2*sqrt(2)*rt)/(phase*(-1 + z));
     return kernal;
   }
 
