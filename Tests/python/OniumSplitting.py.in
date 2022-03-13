@@ -54,6 +54,7 @@ aS=0.
 R02=0.
 mix1=0.
 mix2=0.
+pTmin=1.
 # q -> q 1S0
 def D_q_q_1S0(z) :
     return 8./81./math.pi*aS**2*R02*(1.-z)**2*z*(48. + 8.*z**2 - 8.*z**3 + 3.*z**4)/(m1**3*(2. - z)**6)
@@ -94,7 +95,23 @@ def D_g_g_3S1(z) :
     global zz
     zz = z
     return 3.*R02/2.*5./5184./numpy.pi**2/m1**3*aS**3*dblquad(IPsi,0.,z,low,upp)[0]
-    
+
+def D_g_g_3P0(x) :
+    smin = pTmin**2/x/(1-x)+4.*m1**2/x
+    return -aS**2*R02/(6.*m1**3*numpy.pi)*(-9/smin + (16*m1**2*(-2 + x)*(-1 + x))/(-4*m1**2 + smin)**2
+                                        + (128*m1**4*(-1 + x)**2)/(3.*(4*m1**2 - smin)**3)
+                                        + (2*(11 - 10*x + x**2))/(4*m1**2 - smin) - (3*(-5 + 3*x)*numpy.log(smin))/(2.*m1**2)
+                                        + (3*(-5 + 3*x)*numpy.log(-4*m1**2 + smin))/(2.*m1**2))
+
+def D_g_g_3P1(x) :
+    smin = pTmin**2/x/(1-x)+4.*m1**2/x
+    return -aS**2*R02/(m1**3*numpy.pi)*((-1 + 2*(1 - x) - 2*(1 - x)**2)/(-4*m1**2 + smin) - (4*m1**2*(1 - x))/(-4*m1**2 + smin)**2 + (32*m1**4*(1 - x)**2)/(3.*(-4*m1**2 + smin)**3))
+
+def D_g_g_3P2(x) :
+    smin = pTmin**2/x/(1-x)+4.*m1**2/x
+    return -aS**2*R02/(3.*m1**3*numpy.pi)*(-6/smin + (-7 - 10*(1 - x) - 2*(1 - x)**2)/(-4*m1**2 + smin) + (4*m1**2*(1 + 4*(1 - x))*(1 - x))/(-4*m1**2 + smin)**2 - 
+                                         (32*m1**4*(1 - x)**2)/(3.*(-4*m1**2 + smin)**3) + (3*(2 - x)*numpy.log(smin))/m1**2 - (3*(2 - x)*numpy.log(-4*m1**2 + smin))/m1**2)
+
 # q -> q 3S1
 def D_q_q_3S1(z) :
     return 8./math.pi*aS**2*R02*(1.-z)**2*z*(16.-32.*z+72.*z**2-32.*z**3+5.*z**4)/(27.*m1**3*(2.-z)**6)
@@ -269,6 +286,10 @@ testParameters={ "ctocEta_c"     : [441    ,"ctoc11S0SplittingSudakov",4,"ccbar"
                  "gtogJPsi"      : [443    ,"gtogcc13S1SplittingSudakov",21,"ccbar","1S",0.26,1.5,4.9,0.8**3,5e4    ,D_g_g_3S1,10**6],
                  "gtogEta_c2S"   : [100441 ,"gtogcc21S0SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e2    ,D_g_g_1S0,10**4],
                  "gtogPsi2S"     : [100443 ,"gtogcc23S1SplittingSudakov",21,"ccbar","2S",0.26,1.5,4.9,0.6966,5e4    ,D_g_g_3S1,10**6],
+
+                 "gtogChi_c0"    : [10441  ,"gtogcc13P0SplittingSudakov",21,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_g_g_3P0,10**7],
+                 "gtogChi_c1"    : [20443  ,"gtogcc13P1SplittingSudakov",21,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_g_g_3P1,10**6],
+                 "gtogChi_c2"    : [  445  ,"gtogcc13P2SplittingSudakov",21,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_g_g_3P2,10**6],
 
                  "ctocH_c"       : [10443  ,"ctoc11P1SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_1P1,10**4],
                  "ctocChi_c0"    : [10441  ,"ctoc13P0SplittingSudakov",4,"ccbar","1P",0.26,1.5,4.9,0.1296,5e2    ,D_q_q_3P0,10**4],
