@@ -276,7 +276,7 @@ Onium-Sigma: Analyses/RivetHerwig.so
 Rivet-Onium: $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Bottom}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.yoda) \
-	     $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Octet-{Jpsi,psi2S,chi_c{0..2},Upsilon,Upsilon2S,Upsilon3S}-Jets-{1..5}.yoda) \
+	     $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Octet-{Jpsi,psi2S,chi_c{0..2},Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-Jets-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{B_c,B_cStar,B_c2S,B_c2SStar}-{Charm,Bottom}-{1..5}.yoda)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium --initialize LHC
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium --process LHC

@@ -73,3 +73,15 @@ do /Herwig/OniumParameters:SetOctetProductionMatrixElement ccbar 3S1   445 1.55e
 do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 553 4.3e-3
 do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 100553 4.3e-3
 do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 200553 4.3e-3
+
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 10551 0.31e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 20553 0.93e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1   555 1.55e-2
+
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 110551 0.31e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 120553 0.93e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 100555 1.55e-2
+
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 210551 0.31e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 220553 0.93e-2
+do /Herwig/OniumParameters:SetOctetProductionMatrixElement bbbar 3S1 200555 1.55e-2
