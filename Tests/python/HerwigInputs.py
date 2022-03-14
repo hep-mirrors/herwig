@@ -165,7 +165,7 @@ def identifySimulation(name,collider,have_hadronic_collider) :
     return (simulation,templateName,parameterName,parameters)
 
 def addLeptonPairCut(minmass,maxmass):
-    return "set /Herwig/Cuts/LeptonPairMassCut:MinMass "+minmass+"*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass "+maxmass+"*GeV\n"
+    return "set /Herwig/Cuts/LeptonPairMassCut:MinMass %s*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass %s*GeV\n" %(minmass,maxmass)
 
 def setHardProcessWidthToZero(list1):
   res=""
