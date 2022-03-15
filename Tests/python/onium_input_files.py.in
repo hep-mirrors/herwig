@@ -71,10 +71,6 @@ elif(collider=="EE-Gamma") :
 elif(collider=="GammaGamma") :
     logging.error ("GammaGamma processes not currently supported for onium production")
     sys.exit(1)
-# TVT
-elif(collider=="TVT") :
-    logging.error ("Tevatron processes not currently supported for onium production")
-    sys.exit(1)
 # Star
 elif(collider=="Star" ) :
     logging.error ("Star processes not currently supported for onium production")
@@ -82,19 +78,28 @@ elif(collider=="Star" ) :
 # ISR and SppS
 elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == "Fermilab" ) :
     logging.error ("ISR/SppS/SPS/Fixed target processes not currently supported for onium production")
-    sys.exit(1)      
-# LHC
-elif(collider=="LHC") :
-    ecms=7000.0
-    if   parameterName.startswith("LHC-7-")   : ecms = 7000.0
-    elif parameterName.startswith("LHC-8-")   : ecms = 8000.0
-    elif parameterName.startswith("LHC-13-")  : ecms = 13000.0
-    elif parameterName.startswith("LHC-900")  : ecms = 900.0
-    elif parameterName.startswith("LHC-2360") : ecms = 2360.0
-    elif parameterName.startswith("LHC-2760") : ecms = 2760.0
-    elif parameterName.startswith("LHC-5-")   : ecms = 5020.0
-    else                                  : ecms = 7000.0
-    process = StringBuilder(collider_lumi(ecms))
+    sys.exit(1)
+# TVT and LHC
+elif collider=="TVT" or collider =="LHC" :
+    if collider =="TVT" :
+        process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
+        if "Run-II" in parameterName :  ecms = 1960.0
+        elif "Run-I" in parameterName : ecms = 1800.0
+        elif "900" in parameterName :   ecms = 900.0
+        elif "630" in parameterName :   ecms = 630.0
+        elif "300" in parameterName :   ecms = 300.0
+    elif collider=="LHC" :
+        process=StringBuilder("")
+        ecms=7000.0
+        if   parameterName.startswith("LHC-7-")   : ecms = 7000.0
+        elif parameterName.startswith("LHC-8-")   : ecms = 8000.0
+        elif parameterName.startswith("LHC-13-")  : ecms = 13000.0
+        elif parameterName.startswith("LHC-900")  : ecms = 900.0
+        elif parameterName.startswith("LHC-2360") : ecms = 2360.0
+        elif parameterName.startswith("LHC-2760") : ecms = 2760.0
+        elif parameterName.startswith("LHC-5-")   : ecms = 5020.0
+        else                                  : ecms = 7000.0
+    process += collider_lumi(ecms)
     if(simulation=="") :
         cuts=[5,10,20,40,80,ecms]
         if "Charm" in parameterName :
@@ -157,8 +162,12 @@ elif(collider=="LHC-GammaGamma" ) :
     sys.exit(1)
 temp = parameterName.split("-")
 parameterName=temp[1]
-colour=temp[2]
-particle=temp[3].replace("2S","(2S)").replace("3S","(3S)").replace("2P","(2P)").replace("3P","(3P)").replace("Star","*")
+iloc=2
+if temp[1] == "Run" :
+    iloc+=1
+    parameterName="%s-%s" %(temp[1],temp[2])
+colour=temp[iloc]
+particle=temp[iloc+1].replace("2S","(2S)").replace("3S","(3S)").replace("2P","(2P)").replace("3P","(3P)").replace("Star","*")
 if "B_c" in particle :
     particle+="+"
 pFile = os.path.join(collider,"{c}-{pn}-Quarkonium.in".format(c=collider, pn=parameterName))

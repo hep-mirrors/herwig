@@ -40,11 +40,6 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
-    ## Check args
-    if len(args) < 1:
-        logging.error("Must specify at least the name of the files")
-        sys.exit(1)
-
 # #######################################
 energies = { 5020 : ["ALICE_2017_I1511865","ALICE_2019_I1716440"],
              7000 : ["ALICE_2019_I1716440",
@@ -71,181 +66,187 @@ for colour in ["Singlet","Octet"]:
                   "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
         processes.append("%s-%s"%(colour,state))
 processes.append("NonPrompt")
-
-for energy in [2760,5,7,8,13]:
-    if energy==2760 :
-        ecms=energy
-    elif energy==5 :
-        ecms=5020
+for collider in ["TVT","LHC"] :
+    if collider == "TVT" :
+        collider_energies = ["Run-I"]
     else :
-        ecms = energy*1000
-    mergeargs2=["rivet-merge"]
-    for state in processes:
-        if opts.initialize :
-            mergeargs=["rivet-merge"]
-            for proc in ["Charm","Bottom","Jets"] :
-                for cut in range(1,6):
-                    fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda" % (args[0], energy , state, proc, cut)
-                    if(os.path.isfile(fname)) :
-                        mergeargs.append(fname)
-            if len(mergeargs)==1 : continue
-            if ecms in energies:
-                for val in energies[ecms]:
-                    mergeargs.append("-a")
-                    mergeargs.append("%s:ENERGY=%s" % (val,ecms))
-            fname = "Rivet-Onium-%s-%s-%s.yoda"% (args[0], energy , state) 
-            mergeargs.append("-o")
-            mergeargs.append(fname)
-            p = subprocess.Popen(mergeargs)
-        elif opts.process :
-            fname = "Rivet-Onium-%s-%s-%s.yoda" % (args[0], energy , state)
-            if not os.path.isfile(fname) : continue
-            aos=yoda.read(fname)
-            outhistos={}
-            for key in aos.keys():
-                if "NonPrompt" in fname :
-                    if "ATLAS_2011_S9035664" in key :
-                        if "d11" in key or "d12" in key or "d13" in key or "d14" in key:
-                            outhistos[key]=aos[key]
-                        elif "d20" in key or "d21" in key or "d22" in key or "d23" in key:
-                            iy=int(key.split("-")[-3].replace("/ATLAS_2011_S9035664/d","").replace("/RAW",""))
-                            path="/RAW/ATLAS_2011_S9035664/d%s-x01-y01" % (34-iy)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
+        collider_energies = [2760,5,7,8,13]
+    for energy in collider_energies:
+        if energy==2760 :
+            ecms=energy
+        elif energy==5 :
+            ecms=5020
+        elif energy == "Run-I" :
+            ecms=1800.
+        else :
+            ecms = energy*1000
+        mergeargs2=["rivet-merge"]
+        for state in processes:
+            if opts.initialize :
+                mergeargs=["rivet-merge"]
+                for proc in ["Charm","Bottom","Jets"] :
+                    for cut in range(1,6):
+                        fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda" % (collider, energy , state, proc, cut)
+                        if(os.path.isfile(fname)) :
+                            mergeargs.append(fname)
+                if len(mergeargs)==1 : continue
+                if ecms in energies:
+                    for val in energies[ecms]:
+                        mergeargs.append("-a")
+                        mergeargs.append("%s:ENERGY=%s" % (val,ecms))
+                fname = "Rivet-Onium-%s-%s-%s.yoda"% (collider, energy , state) 
+                mergeargs.append("-o")
+                mergeargs.append(fname)
+                p = subprocess.Popen(mergeargs)
+            elif opts.process :
+                fname = "Rivet-Onium-%s-%s-%s.yoda" % (collider, energy , state)
+                if not os.path.isfile(fname) : continue
+                aos=yoda.read(fname)
+                outhistos={}
+                for key in aos.keys():
+                    if "NonPrompt" in fname :
+                        if "ATLAS_2011_S9035664" in key :
+                            if "d11" in key or "d12" in key or "d13" in key or "d14" in key:
+                                outhistos[key]=aos[key]
+                            elif "d20" in key or "d21" in key or "d22" in key or "d23" in key:
+                                iy=int(key.split("-")[-3].replace("/ATLAS_2011_S9035664/d","").replace("/RAW",""))
+                                path="/RAW/ATLAS_2011_S9035664/d%s-x01-y01" % (34-iy)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                pass
+                        elif "ATLAS_2014_I1292798" in key :
+                            if "d03" in key or "d04" in key or "d07" in key or "d08" in key or "jpsi_1" in key or "d11" in key:
+                                outhistos[key]=aos[key]
+                            elif "chi_" in key:
+                                ipT =int(key.split("_")[-1])
+                                ichi=int(key.split("_")[-2])
+                                path="/RAW/ATLAS_2014_I1292798/d0%s-x01-y01" % (3+ichi+4*ipT)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                pass
+                        elif "ATLAS_2016_I1409298" in key :
+                            if ( "d01" in key or "d02" in key or "d05" in key or "d06" in key or "d09" in key or 
+                                 "d10" in key or "d11" in key or "d12" in key or "d13" in key or "d14" in key or "d16" in key) :
+                                pass
+                            elif "TMP/JPsi" in key or "TMP/psi2S" in key:
+                                ipsi = 0
+                                if  "TMP/psi2S" in key : ipsi=1
+                                iloc=0
+                                if ecms==8000.  : iloc=1
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/ATLAS_2016_I1409298:ENERGY=%s/d0%s-x01-y0%s" % (ecms,3+iloc+4*ipsi,iy+1)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "ATLAS_2018_I1622737" in key :
+                            if "d01" in key or "d02" in key :
+                                outhistos[key]=aos[key]
+                            else :
+                                pass
+                        elif "CMS_2011_I878118" in key :
+                            if "d02" in key or "d03" in key or "d04" in key :
+                                pass
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "CMS_2012_I944755" in key :
+                            if "y01" in key:
+                                pass
+                            elif "TMP/psi_" in key :
+                                iy  =int(key.split("_")[-1])
+                                ipsi=int(key.split("_")[-2])
+                                path="/RAW/CMS_2012_I944755/d0%s-x01-y02" %(iy+5*ipsi)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2011_I891233" in key :
+                            if "d06" in key or "d08" in key or "d09" in key :
+                                pass
+                            elif "TMP/JPsi_" in key :
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/LHCB_2011_I891233/d07-x01-y0%s" %(iy+1)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2013_I1230344" in key:
+                            if ("y01" in key or "y03" in key or "d09" in key or "d10" in key or "d11" in key or "d12" in key or
+                                "d13" in key or "d14" in key or "d15" in key or "d16" in key or "d17" in key or "TMP/Ups" in key) :
+                                pass
+                            elif "TMP/Jpsi" in key :
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/LHCB_2013_I1230344/d0%s-x01-y02" %(3+iy)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2015_I1316329" in key :
+                            if "d01" in key or "d02" in key:
+                                pass
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2015_I1327230" in key :
+                            if "d01" in key or "d02" in key or "d03" in key or "hB_0" in key or "h_pT_0" in key or "h_y_0" in key:
+                                pass
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2015_I1391511" in key :
+                            if "d01" in key or "d03" in key or "d04" in key or "d06" in key:
+                                pass
+                            elif "TMP/Jpsi" in key :
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/LHCB_2015_I1391511/d02-x01-y0%s" %(1+iy)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2020_I1763898" in key :
+                            if "d01" in key or "d02" in key:
+                                pass
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "LHCB_2021_I1915030" in key :
+                            if "d01" in key or "d03" in key or "d05" in key:
+                                pass
+                            elif "TMP/JPsi" in key :
+                                iy=int(key.split("_")[-1])
+                                path="/RAW/LHCB_2021_I1915030/d02-x01-y0%s" %(1+iy)
+                                outhistos[key] = aos[path].clone()
+                                outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif ("ATLAS_2013_I1204994" in key or "ATLAS_2017_I1598613" in key or "CMS_2019_I1672011"  in key or
+                              "CMS_2018_I1633431"   in key or "CMS_2015_I1345023"   in key or "CMS_2015_I1342266"  in key or
+                              "CMS_2013_I1244128"   in key or "CMS_2013_I1225274"   in key or "CMS_2013_I1185414"  in key or
+                              "CMS_2012_I1189050"   in key or "LHCB_2012_I1087907"  in key or "LHCB_2012_I1091071" in key or
+                              "LHCB_2012_I1107645"  in key or "LHCB_2012_I1184177"  in key or "LHCB_2013_I1242869" in key or
+                              "LHCB_2013_I1244315"  in key or "LHCB_2014_I1280929"  in key or "LHCB_2014_I1308738" in key or
+                              "LHCB_2014_I1315113"  in key or "LHCB_2015_I1392456"  in key or "LHCB_2017_I1621596" in key or
+                              "LHCB_2018_I1670013"  in key) :
                             pass
-                    elif "ATLAS_2014_I1292798" in key :
-                        if "d03" in key or "d04" in key or "d07" in key or "d08" in key or "jpsi_1" in key or "d11" in key:
-                            outhistos[key]=aos[key]
-                        elif "chi_" in key:
-                            ipT =int(key.split("_")[-1])
-                            ichi=int(key.split("_")[-2])
-                            path="/RAW/ATLAS_2014_I1292798/d0%s-x01-y01" % (3+ichi+4*ipT)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            pass
-                    elif "ATLAS_2016_I1409298" in key :
-                        if ( "d01" in key or "d02" in key or "d05" in key or "d06" in key or "d09" in key or 
-                             "d10" in key or "d11" in key or "d12" in key or "d13" in key or "d14" in key or "d16" in key) :
-                            pass
-                        elif "TMP/JPsi" in key or "TMP/psi2S" in key:
-                            ipsi = 0
-                            if  "TMP/psi2S" in key : ipsi=1
-                            iloc=0
-                            if ecms==8000.  : iloc=1
-                            iy=int(key.split("_")[-1])
-                            path="/RAW/ATLAS_2016_I1409298:ENERGY=%s/d0%s-x01-y0%s" % (ecms,3+iloc+4*ipsi,iy+1)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
                         else :
                             outhistos[key]=aos[key]
-                    elif "ATLAS_2018_I1622737" in key :
-                        if "d01" in key or "d02" in key :
-                            outhistos[key]=aos[key]
-                        else :
-                            pass
-                    elif "CMS_2011_I878118" in key :
-                        if "d02" in key or "d03" in key or "d04" in key :
-                            pass
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "CMS_2012_I944755" in key :
-                        if "y01" in key:
-                            pass
-                        elif "TMP/psi_" in key :
-                            iy  =int(key.split("_")[-1])
-                            ipsi=int(key.split("_")[-2])
-                            path="/RAW/CMS_2012_I944755/d0%s-x01-y02" %(iy+5*ipsi)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2011_I891233" in key :
-                        if "d06" in key or "d08" in key or "d09" in key :
-                            pass
-                        elif "TMP/JPsi_" in key :
-                            iy=int(key.split("_")[-1])
-                            path="/RAW/LHCB_2011_I891233/d07-x01-y0%s" %(iy+1)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2013_I1230344" in key:
-                        if ("y01" in key or "y03" in key or "d09" in key or "d10" in key or "d11" in key or "d12" in key or
-                            "d13" in key or "d14" in key or "d15" in key or "d16" in key or "d17" in key or "TMP/Ups" in key) :
-                            pass
-                        elif "TMP/Jpsi" in key :
-                            iy=int(key.split("_")[-1])
-                            path="/RAW/LHCB_2013_I1230344/d0%s-x01-y02" %(3+iy)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2015_I1316329" in key :
-                        if "d01" in key or "d02" in key:
-                            pass
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2015_I1327230" in key :
-                        if "d01" in key or "d02" in key or "d03" in key or "hB_0" in key or "h_pT_0" in key or "h_y_0" in key:
-                            pass
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2015_I1391511" in key :
-                        if "d01" in key or "d03" in key or "d04" in key or "d06" in key:
-                            pass
-                        elif "TMP/Jpsi" in key :
-                            iy=int(key.split("_")[-1])
-                            path="/RAW/LHCB_2015_I1391511/d02-x01-y0%s" %(1+iy)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2020_I1763898" in key :
-                        if "d01" in key or "d02" in key:
-                            pass
-                        else :
-                            outhistos[key]=aos[key]
-                    elif "LHCB_2021_I1915030" in key :
-                        if "d01" in key or "d03" in key or "d05" in key:
-                            pass
-                        elif "TMP/JPsi" in key :
-                            iy=int(key.split("_")[-1])
-                            path="/RAW/LHCB_2021_I1915030/d02-x01-y0%s" %(1+iy)
-                            outhistos[key] = aos[path].clone()
-                            outhistos[key].setPath(aos[key].path())
-                        else :
-                            outhistos[key]=aos[key]
-                    elif ("ATLAS_2013_I1204994" in key or "ATLAS_2017_I1598613" in key or "CMS_2019_I1672011"  in key or
-                          "CMS_2018_I1633431"   in key or "CMS_2015_I1345023"   in key or "CMS_2015_I1342266"  in key or
-                          "CMS_2013_I1244128"   in key or "CMS_2013_I1225274"   in key or "CMS_2013_I1185414"  in key or
-                          "CMS_2012_I1189050"   in key or "LHCB_2012_I1087907"  in key or "LHCB_2012_I1091071" in key or
-                          "LHCB_2012_I1107645"  in key or "LHCB_2012_I1184177"  in key or "LHCB_2013_I1242869" in key or
-                          "LHCB_2013_I1244315"  in key or "LHCB_2014_I1280929"  in key or "LHCB_2014_I1308738" in key or
-                          "LHCB_2014_I1315113"  in key or "LHCB_2015_I1392456"  in key or "LHCB_2017_I1621596" in key or
-                          "LHCB_2018_I1670013"  in key) :
-                        pass
                     else :
                         outhistos[key]=aos[key]
-                else :
-                    outhistos[key]=aos[key]
-                removeNan()
-                yoda.writeYODA(outhistos,fname)
-        else :
-            fname = "Rivet-Onium-%s-%s-%s.yoda" % (args[0], energy , state)
-            if not os.path.isfile(fname) : continue
-            mergeargs2.append(fname)
-    if len(mergeargs2)==1 or opts.process or opts.initialize : continue
-    if ecms in energies:
-        for val in energies[ecms]:
-            mergeargs2.append("-a")
-            mergeargs2.append("%s:ENERGY=%s" % (val,ecms))
-    fname = "Rivet-Onium-%s-%s.yoda"% (args[0], energy) 
-    mergeargs2.append("-o")
-    mergeargs2.append(fname)
-    yodafiles.append(fname)
-    p = subprocess.Popen(mergeargs2)
+                    removeNan()
+                    yoda.writeYODA(outhistos,fname)
+            else :
+                fname = "Rivet-Onium-%s-%s-%s.yoda" % (collider, energy , state)
+                if not os.path.isfile(fname) : continue
+                mergeargs2.append(fname)
+        if len(mergeargs2)==1 or opts.process or opts.initialize : continue
+        if ecms in energies:
+            for val in energies[ecms]:
+                mergeargs2.append("-a")
+                mergeargs2.append("%s:ENERGY=%s" % (val,ecms))
+        fname = "Rivet-Onium-%s-%s.yoda"% (collider, energy) 
+        mergeargs2.append("-o")
+        mergeargs2.append(fname)
+        yodafiles.append(fname)
+        p = subprocess.Popen(mergeargs2)
 
 if opts.initialize:
     time.sleep(30) 
@@ -258,13 +259,17 @@ else :
 outhistos={}
 inhistos={}
 for f in yodafiles:
-    energy =int(f.split("-")[-1].split(".")[0])
-    if energy==2760 :
-        ecms=energy
-    elif energy==5 :
-        ecms=5020
+    energy =f.split("-")[-1].split(".")[0]
+    if energy == "I" :
+        ecms=1800.
     else :
-        ecms = energy*1000
+        energy=int(energy)
+        if energy==2760 :
+            ecms=energy
+        elif energy==5 :
+            ecms=5020
+        else :
+            ecms = energy*1000
     if not os.access(f, os.R_OK):
         logging.error("%s can not be read" % f)
         continue
@@ -376,7 +381,10 @@ if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
         outhistos[path].addPoint(inhistos[13000][path].points()[1])
 
 # Choose output file
-name = args[0]+"-Onium.yoda"
+if len(args)==1 :
+    name = args[0]+"-Onium.yoda"
+else :
+    name = "Onium.yoda"
 removeNan()
 # output the yoda file
 yoda.writeYODA(outhistos,name)

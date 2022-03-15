@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# CDF J/psi, psi(2S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1997_I440101
+# CDF chi_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1997_I440446
