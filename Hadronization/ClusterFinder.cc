@@ -187,14 +187,14 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 			      << **pit << "in ClusterFinder::formClusters"
 			      << " for a coloured particle."
 			      << " Failed to find particles from a source"
-			      << Exception::runerror;
+			      << Exception::eventerror;
 	  }
 	}
 	else {
 	  throw Exception() << "Colour connections fail in the hadronization for "
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " a coloured particle"
-			    << Exception::runerror;
+			    << Exception::eventerror;
 	}
       }
     }
@@ -232,14 +232,14 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 			      << **pit << "in ClusterFinder::formClusters for"
 			      << " an anti-coloured particle."
 			      << " Failed to find particles from a sink"
-			      << Exception::runerror;
+			      << Exception::eventerror;
 	  }
 	}
 	else {
 	  throw Exception() << "Colour connections fail in the hadronization for "
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " an anti-coloured particle"
-			    << Exception::runerror;
+			    << Exception::eventerror;
 	}
       }
     }
