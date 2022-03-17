@@ -27,8 +27,6 @@ double MEPP2qq1Jet::me2() const {
   // return value
   Complex me2Sum(0.);
   vector<double> flows(2,0.);
-  // check the right diquark
-  assert(abs(mePartonData()[2]->id())==4403);
   // colour matrix
   static const double cMatrix[2][2]= {{8.,-4.},{-4.,8.}};
   // diquark wavefunction
@@ -193,25 +191,25 @@ double MEPP2qq1Jet::me2() const {
     if(mePartonData()[0]->id()>0) {
       for(unsigned int ih1=0;ih1<2;++ih1) {
 	for(unsigned int ih2=0;ih2<2;++ih2) {
+	  complex<Energy> dot6=v2[ih2].dimensionedWave().scalar(vbar1[ih1].dimensionedWave());
+	  LorentzPolarizationVectorE vec1 = v2[ih2].dimensionedWave().vectorCurrent(vbar1[ih1].dimensionedWave());
 	  for(unsigned int ih3=0;ih3<3;++ih3) {
+	    complex<Energy> dot2 = rescaledMomenta()[0]*v3[ih3].wave();
+	    complex<Energy> dot4 = rescaledMomenta()[1]*v3[ih3].wave();
+	    complex<Energy> dot7 = vec1*v3[ih3].wave();
+	    LorentzPolarizationVectorE vec3 = v2[ih2].dimensionedWave().slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	    complex<Energy2> dot10 = vec3*rescaledMomenta()[3];
 	    for(unsigned int ih4=0;ih4<2;++ih4) {
-	      auto dot1 = rescaledMomenta()[0]*g4[ih4].wave();
-	      auto dot2 = rescaledMomenta()[0]*v3[ih3].wave();
-	      auto dot3 = rescaledMomenta()[1]*g4[ih4].wave();
-	      auto dot4 = rescaledMomenta()[1]*v3[ih3].wave();
-	      auto dot5 = v3[ih3].wave()*g4[ih4].wave();
-	      complex<Energy> dot6=v2[ih2].dimensionedWave().scalar(vbar1[ih1].dimensionedWave());
-	      auto vec1 = v2[ih2].dimensionedWave().vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec2 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec3 = v2[ih2].dimensionedWave().slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec4 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto dot7 = vec1*v3[ih3].wave();
-	      auto dot8 = vec2*rescaledMomenta()[3];
-	      auto dot9 = vec2*v3[ih3].wave();
-	      auto dot10 = vec3*rescaledMomenta()[3];
-	      auto dot11 = vec1*g4[ih4].wave();
-	      auto dot12 = vec4*rescaledMomenta()[3];
-	      auto dot13 = vec1*rescaledMomenta()[3];
+	      complex<Energy> dot1 = rescaledMomenta()[0]*g4[ih4].wave();
+	      complex<Energy> dot3 = rescaledMomenta()[1]*g4[ih4].wave();
+	      Complex dot5 = v3[ih3].wave()*g4[ih4].wave();
+	      LorentzPolarizationVectorE vec2 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	      LorentzPolarizationVectorE vec4 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	      complex<Energy2> dot8 = vec2*rescaledMomenta()[3];
+	      complex<Energy> dot9 = vec2*v3[ih3].wave();
+	      complex<Energy> dot11 = vec1*g4[ih4].wave();
+	      complex<Energy2> dot12 = vec4*rescaledMomenta()[3];
+	      complex<Energy2> dot13 = vec1*rescaledMomenta()[3];
 	      Complex diag[5];
 	      diag[0] = (64.*M*(-4.*dot10*dot3 - 4.*dot2*dot8 + 4.*dot4*dot8 - 2.*dot3*dot7*M + dot5*dot6*M2 + 2.*dot1*(2.*dot10 - 4.*(dot2 + dot4)*dot6 + dot7*M) - 4.*dot5*dot6*th + 2.*dot9*th - 2.*dot9*uh))/((M2 - 4.*th)*(M2 - 4.*uh));
 	      diag[1] = (-64.*(dot12 - 2.*dot11*(dot2 + dot4) + 2.*dot3*dot7)*M2)/sqr(M2-4.*th);
@@ -236,25 +234,25 @@ double MEPP2qq1Jet::me2() const {
     else {
       for(unsigned int ih1=0;ih1<2;++ih1) {
 	for(unsigned int ih2=0;ih2<2;++ih2) {
+	  complex<Energy> dot6=v2[ih2].dimensionedWave().scalar(vbar1[ih1].dimensionedWave());
+	  LorentzPolarizationVectorE vec1 = v2[ih2].dimensionedWave().vectorCurrent(vbar1[ih1].dimensionedWave());
 	  for(unsigned int ih3=0;ih3<3;++ih3) {
+	    complex<Energy> dot2 = rescaledMomenta()[0]*v3[ih3].wave();
+	    complex<Energy> dot4 = rescaledMomenta()[1]*v3[ih3].wave();
+	    LorentzPolarizationVectorE vec3 = v2[ih2].dimensionedWave().slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	    complex<Energy> dot7 = vec1*v3[ih3].wave();
+	    complex<Energy2> dot10 = vec3*rescaledMomenta()[3];
 	    for(unsigned int ih4=0;ih4<2;++ih4) {
-	      auto dot1 = rescaledMomenta()[0]*g4[ih4].wave();
-	      auto dot2 = rescaledMomenta()[0]*v3[ih3].wave();
-	      auto dot3 = rescaledMomenta()[1]*g4[ih4].wave();
-	      auto dot4 = rescaledMomenta()[1]*v3[ih3].wave();
-	      auto dot5 = v3[ih3].wave()*g4[ih4].wave();
-	      complex<Energy> dot6=v2[ih2].dimensionedWave().scalar(vbar1[ih1].dimensionedWave());
-	      auto vec1 = v2[ih2].dimensionedWave().vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec2 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec3 = v2[ih2].dimensionedWave().slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto vec4 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
-	      auto dot7 = vec1*v3[ih3].wave();
-	      auto dot8 = vec2*rescaledMomenta()[3];
-	      auto dot9 = vec2*v3[ih3].wave();
-	      auto dot10 = vec3*rescaledMomenta()[3];
-	      auto dot11 = vec1*g4[ih4].wave();
-	      auto dot12 = vec4*rescaledMomenta()[3];
-	      auto dot13 = vec1*rescaledMomenta()[3];
+	      complex<Energy> dot1 = rescaledMomenta()[0]*g4[ih4].wave();
+	      complex<Energy> dot3 = rescaledMomenta()[1]*g4[ih4].wave();
+	      Complex dot5 = v3[ih3].wave()*g4[ih4].wave();
+	      LorentzPolarizationVectorE vec2 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	      LorentzPolarizationVectorE vec4 = v2[ih2].dimensionedWave().slash(g4[ih4].wave()).slash(v3[ih3].wave()).vectorCurrent(vbar1[ih1].dimensionedWave());
+	      complex<Energy2> dot8 = vec2*rescaledMomenta()[3];
+	      complex<Energy> dot9 = vec2*v3[ih3].wave();
+	      complex<Energy> dot11 = vec1*g4[ih4].wave();
+	      complex<Energy2> dot12 = vec4*rescaledMomenta()[3];
+	      complex<Energy2> dot13 = vec1*rescaledMomenta()[3];
 	      Complex diag[5];
 	      diag[0] = (-64.*M*(-4.*dot10*dot3 - 4.*dot2*dot8 + 4.*dot4*dot8 - 2.*dot3*dot7*M + dot5*dot6*M2 + 2.*dot1*(2.*dot10 - 4.*(dot2 + dot4)*dot6 + dot7*M) - 4.*dot5*dot6*th + 2.*dot9*th - 2.*dot9*uh))/((M2 - 4.*th)*(M2 - 4.*uh));
 	      diag[1] = (64.*(dot12 - 2.*dot11*(dot2 + dot4) + 2.*dot3*dot7)*M2)/sqr(M2-4.*th);

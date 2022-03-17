@@ -46,7 +46,7 @@ void MEPP2DiquarkJet::getDiagrams() const {
   }
   // q1 q2 -< diquark g (swap automatically included)
   add(new_ptr((Tree2toNDiagram(3), q1->CC(), q2->CC(), q2->CC(), 1, state_->CC(), 2, g,     -7)));
-  add(new_ptr((Tree2toNDiagram(3), q1->CC(), q2->CC(), q1->CC(), 2, state_->CC(), 1, g,     -8)));
+  add(new_ptr((Tree2toNDiagram(3), q1->CC(), q2->CC(), q2->CC(), 2, state_->CC(), 1, g,     -8)));
 }
 
 Energy2 MEPP2DiquarkJet::scale() const {
