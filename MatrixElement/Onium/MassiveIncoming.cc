@@ -142,9 +142,10 @@ bool MassiveIncoming::generateKinematics(const double * r) {
     rescaled[3].setMass(mout          );
   }
   // incoming
-  Energy pin = 0.5*(sHat()-sqr(rescaled[1].mass()))/ecm;
+  Energy pin = SimplePhaseSpace::getMagnitude(sHat(), rescaled[0].mass(), rescaled[1].mass());;
   rescaled[0].setZ(pin); rescaled[1].setZ(-pin);
-  rescaled[0].setT(pin); rescaled[1].setT(0.5*(sHat()+sqr(rescaled[1].mass()))/ecm);
+  rescaled[0].setT(0.5*(sHat()+sqr(rescaled[0].mass())-sqr(rescaled[1].mass()))/ecm);
+  rescaled[1].setT(0.5*(sHat()-sqr(rescaled[0].mass())+sqr(rescaled[1].mass()))/ecm);
   // outgoing
   try {
     q = SimplePhaseSpace::
