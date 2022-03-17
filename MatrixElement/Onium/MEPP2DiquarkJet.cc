@@ -66,12 +66,14 @@ MEPP2DiquarkJet::diagrams(const DiagramVector & diags) const {
 
 Selector<const ColourLines *>
 MEPP2DiquarkJet::colourGeometries(tcDiagPtr diag) const {
-  static ColourLines c[6] = {ColourLines("1 3 -6, 2 -1,-4 -6, -5 -6"),
+  static ColourLines c[8] = {ColourLines("1 3 -6, 2 -1,-4 -6, -5 -6"),
 			     ColourLines("-1 -5, 1 2 -6,3 -6, -4 -6"),
-			     ColourLines("1 -6, 3 5, -4 -6, -5 -2 -6"),
-			     ColourLines("1 5, 3 -6, 4 -6, -5 -2 -6"),
+			     ColourLines("1 -6, 3 5, -4 2 -6, -5 -6"),
+			     ColourLines("1 5, 3 -6, -4 -6, -5 2 -6"),
 			     ColourLines("-1 -3 6, -2 1,4 6, 5 6"),
-			     ColourLines("1 5, -1 -2 6,-3 6, 4 6")};
+			     ColourLines("1 5, -1 -2 6,-3 6, 4 6"),
+			     ColourLines("-1 6, -3 -5, 4 -2 6, 5 6"),
+			     ColourLines("-1 -5, -3 6, 4 6, 5 -2 6")};
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &c[abs(diag->id())-1]);
   return sel;
