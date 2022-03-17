@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEPP2cc1Jet_H
-#define Herwig_MEPP2cc1Jet_H
+#ifndef Herwig_MEPP2qq1Jet_H
+#define Herwig_MEPP2qq1Jet_H
 //
-// This is the declaration of the MEPP2cc1Jet class.
+// This is the declaration of the MEPP2qq1Jet class.
 //
 
 #include "MEPP2DiquarkJet.h"
@@ -12,19 +12,21 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2cc1Jet class.
+ * The MEPP2qq1Jet class implements the \f$2\to2\f$ processes for the production
+ * a spin-1 diquark with identical quarks
+ * 
  *
- * @see \ref MEPP2cc1JetInterfaces "The interfaces"
- * defined for MEPP2cc1Jet.
+ * @see \ref MEPP2qq1JetInterfaces "The interfaces"
+ * defined for MEPP2qq1Jet.
  */
-class MEPP2cc1Jet: public MEPP2DiquarkJet {
+class MEPP2qq1Jet: public MEPP2DiquarkJet {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEPP2cc1Jet() : MEPP2DiquarkJet(4403)
+  MEPP2qq1Jet() : type_(0)
   {}
 
 public:
@@ -101,7 +103,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2cc1Jet & operator=(const MEPP2cc1Jet &) = delete;
+  MEPP2qq1Jet & operator=(const MEPP2qq1Jet &) = delete;
 
 private:
   
@@ -110,8 +112,13 @@ private:
    */
   Energy3 R02_;
 
+  /**
+   *  Option for the type of diquark
+   */
+  unsigned int type_;
+
 };
 
 }
 
-#endif /* Herwig_MEPP2cc1Jet_H */
+#endif /* Herwig_MEPP2qq1Jet_H */

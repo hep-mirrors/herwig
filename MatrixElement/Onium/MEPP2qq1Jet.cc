@@ -1,11 +1,12 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEPP2cc1Jet class.
+// functions of the MEPP2qq1Jet class.
 //
 
-#include "MEPP2cc1Jet.h"
+#include "MEPP2qq1Jet.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -22,7 +23,7 @@
 
 using namespace Herwig;
 
-double MEPP2cc1Jet::me2() const {
+double MEPP2qq1Jet::me2() const {
   // return value
   Complex me2Sum(0.);
   vector<double> flows(2,0.);
@@ -282,35 +283,51 @@ double MEPP2cc1Jet::me2() const {
   return me2Sum.real();
 }
 
-IBPtr MEPP2cc1Jet::clone() const {
+IBPtr MEPP2qq1Jet::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MEPP2cc1Jet::fullclone() const {
+IBPtr MEPP2qq1Jet::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEPP2cc1Jet::doinit() {
+void MEPP2qq1Jet::doinit() {
+  setDiquark(1100*(type_+4)+3);
   MEPP2DiquarkJet::doinit();
   R02_ = oniumParameters()->radialWaveFunctionSquared(cc,1);
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<MEPP2cc1Jet,MEPP2DiquarkJet>
-describeHerwigMEPP2cc1Jet("Herwig::MEPP2cc1Jet", "HwOniumParameters.so HwMEHadronOnium.so");
+DescribeClass<MEPP2qq1Jet,MEPP2DiquarkJet>
+describeHerwigMEPP2qq1Jet("Herwig::MEPP2qq1Jet", "HwOniumParameters.so HwMEHadronOnium.so");
 
-void MEPP2cc1Jet::Init() {
+void MEPP2qq1Jet::Init() {
 
-  static ClassDocumentation<MEPP2cc1Jet> documentation
-    ("The MEPP2cc1Jet class implements the 2->2 matrix elements for vector cc production");
+  static ClassDocumentation<MEPP2qq1Jet> documentation
+    ("The MEPP2qq1Jet class implements the 2->2 matrix elements for vector cc production");
+
+  static Switch<MEPP2qq1Jet,unsigned int> interfaceDiquarkType
+    ("DiquarkType",
+     "Type of diquark to be produced",
+     &MEPP2qq1Jet::type_, 0, false, false);
+  static SwitchOption interfaceDiquarkTypeCharm
+    (interfaceDiquarkType,
+     "Charm",
+     "Produce the qq1 diquark",
+     0);
+  static SwitchOption interfaceDiquarkTypeBottom
+    (interfaceDiquarkType,
+     "Bottom",
+     "Produce the bb1 diquark",
+     1);
 
 }
 
-void MEPP2cc1Jet::persistentOutput(PersistentOStream & os) const {
-  os << ounit(R02_,GeV*GeV2);
+void MEPP2qq1Jet::persistentOutput(PersistentOStream & os) const {
+  os << ounit(R02_,GeV*GeV2) << type_;
 }
 
-void MEPP2cc1Jet::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(R02_,GeV*GeV2);
+void MEPP2qq1Jet::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(R02_,GeV*GeV2) >> type_;
 }

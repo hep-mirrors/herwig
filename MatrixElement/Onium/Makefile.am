@@ -16,7 +16,7 @@ MEGQBC1S0Q.h MEGQBC1S0Q.cc\
 MEGQBC3S1Q.h MEGQBC3S1Q.cc\
 MassiveIncoming.h MassiveIncoming.cc \
 MEPP2DiquarkJet.cc MEPP2DiquarkJet.h \
-MEPP2cc1Jet.cc MEPP2cc1Jet.h
+MEPP2qq1Jet.cc MEPP2qq1Jet.h
 HwMEHadronOnium_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
 HwMEGammaGammaOnium_la_SOURCES = \
