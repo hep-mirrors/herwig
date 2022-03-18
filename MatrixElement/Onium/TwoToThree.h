@@ -68,13 +68,13 @@ public:
    * @param r a pointer to the first of nDim() consecutive random numbers.
    * @return true if the generation succeeded, otherwise false.
    */
-  virtual bool generateKinematics(const double * r);
+  bool generateKinematics(const double * r);
 
   /**
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-  virtual CrossSection dSigHatDR() const;
+  CrossSection dSigHatDR() const;
   //@}
 
 public:
@@ -102,6 +102,15 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /**
+   * Set the mass generatror
+   */
+  void setMassGenerator(GenericMassGeneratorPtr in) {
+    massGen_=in;
+  }
 
 private:
 
