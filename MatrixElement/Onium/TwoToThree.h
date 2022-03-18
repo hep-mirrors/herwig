@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MassiveIncoming_H
-#define Herwig_MassiveIncoming_H
+#ifndef Herwig_TwoToThree_H
+#define Herwig_TwoToThree_H
 //
-// This is the declaration of the MassiveIncoming class.
+// This is the declaration of the TwoToThree class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -13,25 +13,33 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MassiveIncoming class provides the implementation fo the kinematics for massive incoming particles.
+ * The TwoToThree class implements simple \f$2\to3\f$ phase space
+ * for the three-body \f$B_c\f$ and diquark prodcution processes
  *
- * @see \ref MassiveIncomingInterfaces "The interfaces"
- * defined for MassiveIncoming.
+ * @see \ref TwoToThreeInterfaces "The interfaces"
+ * defined for TwoToThree.
  */
-class MassiveIncoming: public HwMEBase {
+class TwoToThree: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  MassiveIncoming() : mOpt_(1)
+  TwoToThree() : mOpt_(1)
   {}
 
 public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
+  /**
+   * Return the scale associated with the last set phase space point.
+   */
+  Energy2 scale() const {
+    return sHat();
+  }
+
   /**
    * Set the typed and momenta of the incoming and outgoing partons to
    * be used in subsequent calls to me() and colourGeometries()
@@ -47,11 +55,11 @@ public:
    * The number of internal degrees of freedom used in the matrix
    * element.
    */
-  virtual int nDim() const {
-    if(mOpt_==1 && massGen_) return 2;
-    else return 1;
+  int nDim() const {
+    if(mOpt_==1 && massGen_) return 5;
+    else return 4;
   }
-  
+
   /**
    * Generate internal degrees of freedom given nDim() uniform
    * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
@@ -68,7 +76,6 @@ public:
    */
   virtual CrossSection dSigHatDR() const;
   //@}
-
 
 public:
 
@@ -96,22 +103,13 @@ public:
    */
   static void Init();
 
-protected:
-
-  /**
-   * Set the mass generatror
-   */
-  void setMassGenerator(GenericMassGeneratorPtr in) {
-    massGen_=in;
-  }
-  
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MassiveIncoming & operator=(const MassiveIncoming &) = delete;
+  TwoToThree & operator=(const TwoToThree &);
 
 private:
   
@@ -124,8 +122,9 @@ private:
    *  Mass generator for the state
    */
   GenericMassGeneratorPtr massGen_;
+
 };
 
 }
 
-#endif /* Herwig_MassiveIncoming_H */
+#endif /* Herwig_TwoToThree_H */

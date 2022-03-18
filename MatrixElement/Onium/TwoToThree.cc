@@ -1,0 +1,147 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the TwoToThree class.
+//
+
+#include "TwoToThree.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/MatrixElement/Tree2toNDiagram.h"
+#include "ThePEG/Utilities/SimplePhaseSpace.h"
+#include "ThePEG/Cuts/Cuts.h"
+
+using namespace Herwig;
+
+bool TwoToThree::generateKinematics(const double * r) {
+  jacobian(1.);
+  // first generate the mass of the onium/diquark state
+  Energy ecm = sqrt(sHat());
+  Energy mBc(ZERO);
+  Energy mout[2] = {mePartonData()[3]->hardProcessMass(),mePartonData()[4]->hardProcessMass()};
+  if(mOpt_==0 || !massGen_) {
+    mBc=mePartonData()[2]->mass();
+  }
+  else {
+    Energy mmin = mePartonData()[2]->massMin(), mmax = min(mePartonData()[2]->massMax(),ecm-mout[0]+mout[1]);
+    double jtemp(0.);
+    mBc = massGen_->mass(jtemp,*mePartonData()[2],mmin,mmax,r[4]);
+    jacobian(jacobian()*jtemp);
+  }
+  // now generate mass of the onium/diquark+quark systems
+  unsigned int iout=UseRandom::rnd()>0.5;
+  unsigned int ispect= iout==0 ? 1:0;
+  Energy mmin = mout[iout]+mBc;
+  Energy mmax = ecm-mout[ispect];
+  if(mmax>mmin) return false;
+  jacobian(jacobian()*2.*log(mmax/mmin));
+  Energy moff = mmin*pow(mmax/mmin,r[0]);
+  // generate momenta of spectator and onium/diquark+quark systems
+  double ctmin = -1.0, ctmax = 1.0;
+  Energy q = ZERO;
+  try {
+    q = SimplePhaseSpace::
+      getMagnitude(sHat(), moff, mout[ispect]);
+  } 
+  catch ( ImpossibleKinematics & e) {
+    return false;
+  }
+  double cth = ctmin+(ctmax-ctmin)*r[1];
+  Energy pt = q*sqrt(1.0-sqr(cth));
+  phi(rnd(2.0*Constants::pi));
+  Lorentz5Momentum poff(pt*sin(phi()),  pt*cos(phi()),  q*cth,ZERO,moff);
+  poff.rescaleEnergy();
+  meMomenta()[3+ispect].setVect(Momentum3(-pt*sin(phi()), -pt*cos(phi()), -q*cth));
+  meMomenta()[3+ispect].rescaleEnergy();
+  // momenta of the particles making up the off-shell system
+  meMomenta()[2     ].setMass(mBc);
+  meMomenta()[3+iout].setMass(mout[iout]);
+  Energy q2 = ZERO;
+  try {
+    q2 = SimplePhaseSpace::getMagnitude(sqr(moff), meMomenta()[3].mass(),
+					meMomenta()[4].mass());
+  } catch ( ImpossibleKinematics & e ) {
+    return false;
+  }
+  double cth2 =-1.+2.*r[2];
+  double phi2=Constants::twopi*r[3];
+  Energy pt2 =q2*sqrt(1.-sqr(cth2));
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,ZERO,
+					    meMomenta()[2].mass()),
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,ZERO,
+					   meMomenta()[3+iout].mass())};
+  pl[0].rescaleEnergy();
+  pl[1].rescaleEnergy();
+  Boost boostv(poff.boostVector());
+  pl[0].boost(boostv);
+  pl[1].boost(boostv);
+  meMomenta()[3] = pl[0];
+  meMomenta()[4] = pl[1];
+  // check passes all the cuts
+  vector<LorentzMomentum> out(3);
+  tcPDVector tout(3);
+  for(unsigned int ix=0;ix<3;++ix) {
+    out[ ix] = meMomenta()[ix+2];
+    tout[ix] = mePartonData()[ix+2];
+  }
+  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
+    return false;
+  // at this point jacobian only has pieces from B_c mass generation and dm^2/m^2 for off-shell system
+  // piece for moff shell 'decay'
+  jacobian(jacobian()*0.125*q2/moff/sqr(Constants::pi));
+  // piece from channel select (factor sHat to make dimensionless)
+  Energy2 mother2 = (meMomenta()[2]+meMomenta()[3+ispect]).m2();
+  jacobian(jacobian()*2./(1./sqr(moff)+1./mother2)/sHat());
+  // piecefrom hard core process
+  jacobian(jacobian()*q/ecm/8./Constants::pi);
+  return true;
+}
+
+CrossSection TwoToThree::dSigHatDR() const {
+  return me2()*jacobian()*sqr(hbarc)/sHat();
+}
+
+void TwoToThree::persistentOutput(PersistentOStream & os) const {
+  os << mOpt_ << massGen_;
+}
+
+void TwoToThree::persistentInput(PersistentIStream & is, int) {
+  is >> mOpt_ >> massGen_;
+}
+
+
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<TwoToThree,HwMEBase>
+describeHerwigTwoToThree("Herwig::TwoToThree",
+			 "HwOniumParameters.so HwMEHadronOnium.so");
+
+void TwoToThree::Init() {
+
+  static ClassDocumentation<TwoToThree> documentation
+    ("The TwoToThree class implemnts simple 2->3 phase space");
+  
+  static Switch<TwoToThree,unsigned int> interfaceMassOption
+    ("MassOption",
+     "Mass of the treatment of mas of the B_c state",
+     &TwoToThree::mOpt_, 1, false, false);
+  static SwitchOption interfaceMassOptionOnShell
+    (interfaceMassOption,
+     "OnShell",
+     "Use the on-shell mass",
+     0);
+  static SwitchOption interfaceMassOptionOffShell
+    (interfaceMassOption,
+     "OffShell",
+     "Use an off-shell mass generated by the MassGenerator object for the B_c state.",
+     1);
+
+}
+

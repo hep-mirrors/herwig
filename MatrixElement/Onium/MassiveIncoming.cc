@@ -18,15 +18,6 @@
 
 using namespace Herwig;
 
-int MassiveIncoming::nDim() const {
-  if(mOpt_==1 && massGen_) return 2;
-  else return 1;
-}
-
-void MassiveIncoming::setKinematics() {
-  HwMEBase::setKinematics();
-}
-
 bool MassiveIncoming::generateKinematics(const double * r) {
   jacobian(1.);
   Energy ecm = sqrt(sHat());
@@ -178,7 +169,8 @@ void MassiveIncoming::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<MassiveIncoming,HwMEBase>
-describeHerwigMassiveIncoming("Herwig::MassiveIncoming", "HwOniumParameters.so HwMEHadronOnium.so");
+describeHerwigMassiveIncoming("Herwig::MassiveIncoming",
+			      "HwOniumParameters.so HwMEHadronOnium.so");
 
 void MassiveIncoming::Init() {
 

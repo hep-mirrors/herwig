@@ -15,6 +15,7 @@ MEGQBCQBase.h MEGQBCQBase.cc \
 MEGQBC1S0Q.h MEGQBC1S0Q.cc\
 MEGQBC3S1Q.h MEGQBC3S1Q.cc\
 MassiveIncoming.h MassiveIncoming.cc \
+TwoToThree.h TwoToThree.cc \
 MEPP2DiquarkJet.cc MEPP2DiquarkJet.h \
 MEPP2qq1Jet.cc MEPP2qq1Jet.h \
 MEPP2bc0Jet.cc MEPP2bc0Jet.h \
