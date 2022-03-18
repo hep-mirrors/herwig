@@ -21,59 +21,31 @@ using namespace Herwig;
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void GGtoBCQQbarBase::getDiagrams() const {
-  // Here is an example on how to specify diagrams.
-
   tcPDPtr g = getParticleData(ParticleID::g);
-  for ( int i = 1; i <= 5; ++i ) {
-    tcPDPtr q = getParticleData(i);
-    tcPDPtr qb = q->CC();
-
-    // For each flavour we add:
-    add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, g, 2, g, -1)));
-    // t-channel q + qbar -> g + g
-    add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 2, g, 1, g, -2)));
-    // u-channel q + qbar -> g + g
-    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, g , 3, g, 3, g, -3)));
-    // s-channel q + qbar -> g + g
-  }
+  tcPDPtr b = getParticleData(ParticleID::b);
+  tcPDPtr c = getParticleData(ParticleID::c);
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, state_      , 1, c->CC(), 1, b,-1)));
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, state_->CC(), 1, b->CC(), 1, c,-1)));
 }
 
 Selector<MEBase::DiagramIndex>
 GGtoBCQQbarBase::diagrams(const DiagramVector & diags) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    if ( diags[i]->id() == -1 ) sel.insert(1.0, i);
-    else if ( diags[i]->id() == -2 )  sel.insert(1.0, i);
-    else if ( diags[i]->id() == -3 )  sel.insert(1.0, i);
-  // You probably do not want equal weights here...
+    sel.insert(1.0, i);
   return sel;
-
-  // If there is only one possible diagram you can override the
-  // MEBase::diagram function instead.
-
 }
 
 Selector<const ColourLines *>
-GGtoBCQQbarBase::colourGeometries(tcDiagPtr diag) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
-  static ColourLines ctST("1 4, -4 -2 5, -5 -3");
-  static ColourLines ctSU("1 5, -5 -2 4, -4 -3");
+GGtoBCQQbarBase::colourGeometries(tcDiagPtr) const {
+  // {'c2': 'T(aa,ab,if,ie)', 'c3': 'T(ab,aa,if,ie)'}
+  static const ColourLines c1[2] = {ColourLines("1 5, -1 2, -2 -4"),
+				    ColourLines("1 -2, -1 -4, 2 5")};
 
   Selector<const ColourLines *> sel;
-  if ( diag->id() == -1 || diag->id() == -3 )
-    sel.insert(1.0, &ctST);
-  else
-    sel.insert(1.0, &ctSU);
+  for(unsigned int ix=0;ix<2;++ix)
+    sel.insert(meInfo()[ix], &c1[ix]);
   return sel;
-
-  // If there is only one possible colour geometry you can override the
-  // MEBase::selectColourGeometry function instead.
-
 }
 
 
