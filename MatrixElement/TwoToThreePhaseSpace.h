@@ -8,8 +8,10 @@
 //
 #ifndef HERWIG_TwoToThreePhaseSpace_H
 #define HERWIG_TwoToThreePhaseSpace_H
+#include "Herwig/Utilities/Kinematics.h"
+
 //
-// This is the declaration of the Isospin namespace and values.
+// This is the declaration of the TwoToThreePhaseSpace namespace and functions.
 //
 namespace Herwig {
 namespace TwoToThreePhaseSpace {
@@ -76,6 +78,59 @@ namespace TwoToThreePhaseSpace {
     jacobian *= ecm/moff*(rhomax-rhomin)*sqr(masses[ioff]/ecm)*D*0.125*p1*p2/sqr(ecm)/pow(Constants::twopi,3);
     if(ioff==1) swap(q1,q2);
     return jacobian;
+  }
+
+  /**
+   *  Rescale the momenta in the hard process for different masses
+   */
+  vector<Lorentz5Momentum> rescaleMomenta(const Energy & ecm,
+					  const vector<Lorentz5Momentum> & pin,
+					  const vector<Energy> & mNew) {
+    assert(pin.size()==mNew.size());
+    Energy2 sHat(sqr(ecm));
+    vector<Lorentz5Momentum> pout; pout.reserve(pin.size());
+    // first the incoming momenta if required
+    if( mNew[0] !=ZERO || mNew[1] !=ZERO ) {
+      Energy pNew = SimplePhaseSpace::getMagnitude(sHat, mNew[0], mNew[1]);
+      double sign = pin[0].z()>ZERO ? 1. : -1.;
+      pout.push_back(Lorentz5Momentum(ZERO,ZERO, sign*pNew,0.5*(sHat+sqr(mNew[0])-sqr(mNew[1]))/ecm,mNew[0]));
+      pout.push_back(Lorentz5Momentum(ZERO,ZERO,-sign*pNew,0.5*(sHat-sqr(mNew[0])+sqr(mNew[1]))/ecm,mNew[1]));
+    }
+    else {
+      pout.push_back(pin[0]);
+      pout.push_back(pin[1]);
+    }
+    // and then the outgoing momenta
+    vector<Energy2> p2; p2.reserve(mNew.size()-2);
+    vector<Energy2> m2; m2.reserve(mNew.size()-2);
+    for(unsigned int ix=2;ix<pin.size();++ix) {
+      m2.push_back(sqr(mNew[ix]));
+      p2.push_back(pin[ix].rho2());
+    }
+    // solve rescaling factor for FS usng Newton-Raphson
+    double lambda = 1.;
+    unsigned int ntry=0;
+    while (ntry<100) {
+      ++ntry;
+      Energy numerator=ecm;
+      Energy denominator=ZERO;
+      for(unsigned int ix=0;ix<p2.size();++ix) {
+	Energy en = sqrt(sqr(lambda)*p2[ix]+m2[ix]);
+	numerator   -= en;
+	denominator += p2[ix]/en;
+      }
+      denominator *= lambda;
+      lambda+=numerator/denominator;
+      if(abs(numerator/ecm)<1e-14) break;
+      if(ntry==100) {
+	cerr << "rescaing loop fails " << abs(numerator/ecm) << " " << lambda << " " << ecm/GeV << "\n";
+      }
+    }
+    for(unsigned int ix=2;ix<pin.size();++ix) {
+      pout.push_back(Lorentz5Momentum(pin[ix].x()*lambda,pin[ix].y()*lambda,pin[ix].z()*lambda,
+				      sqrt(sqr(lambda)*p2[ix-2]+m2[ix-2]),mNew[ix]));
+    }
+    return pout;
   }
 }
 }

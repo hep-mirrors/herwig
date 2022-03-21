@@ -13,20 +13,22 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 using namespace Herwig;
 
 
-#include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void GGtoBCQQbarBase::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr b = getParticleData(ParticleID::b);
   tcPDPtr c = getParticleData(ParticleID::c);
-  add(new_ptr((Tree2toNDiagram(2), g, g, 1, state_      , 1, c->CC(), 1, b,-1)));
-  add(new_ptr((Tree2toNDiagram(2), g, g, 1, state_->CC(), 1, b->CC(), 1, c,-1)));
-}
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, c->CC(), 4, state_, 4, c->CC(), 3, b,-1)));
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, b, 4, state_, 3, c->CC(), 4, b, -2)));
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, b->CC(), 4, state_->CC(), 4, b->CC(), 3, c,-1)));
+  add(new_ptr((Tree2toNDiagram(2), g, g, 1, g, 3, c, 4, state_->CC(), 3, b->CC(), 4, c, -2)));
+}										 
 
 Selector<MEBase::DiagramIndex>
 GGtoBCQQbarBase::diagrams(const DiagramVector & diags) const {
@@ -37,17 +39,22 @@ GGtoBCQQbarBase::diagrams(const DiagramVector & diags) const {
 }
 
 Selector<const ColourLines *>
-GGtoBCQQbarBase::colourGeometries(tcDiagPtr) const {
+GGtoBCQQbarBase::colourGeometries(tcDiagPtr diag) const {
   // {'c2': 'T(aa,ab,if,ie)', 'c3': 'T(ab,aa,if,ie)'}
-  static const ColourLines c1[2] = {ColourLines("1 5, -1 2, -2 -4"),
-				    ColourLines("1 -2, -1 -4, 2 5")};
+  static const ColourLines c1[2] = {ColourLines("1 3 7, -6 -4 -3 -2, 2 -1"),
+				    ColourLines("2 3 7, -6 -4 -3 -1, 1 -2")};
+  static const ColourLines c2[2] = {ColourLines("1 3 4 7, -6 -3 -2, 2 -1"),
+				    ColourLines("2 3 4 7, -6 -3 -1, 1 -2")};
 
   Selector<const ColourLines *> sel;
-  for(unsigned int ix=0;ix<2;++ix)
-    sel.insert(meInfo()[ix], &c1[ix]);
+  for(unsigned int ix=0;ix<2;++ix) {
+    if (abs(diag->id())==1)
+      sel.insert(meInfo()[ix+1], &c1[ix]);
+    else
+      sel.insert(meInfo()[ix+1], &c2[ix]);
+  }
   return sel;
 }
-
 
 void GGtoBCQQbarBase::persistentOutput(PersistentOStream & os) const {
   os << n_ << params_ << state_;
@@ -56,7 +63,6 @@ void GGtoBCQQbarBase::persistentOutput(PersistentOStream & os) const {
 void GGtoBCQQbarBase::persistentInput(PersistentIStream & is, int) {
   is >> n_ >> params_ >> state_;
 }
-
 
 // The following static variable is needed for the type
 // description system in ThePEG.

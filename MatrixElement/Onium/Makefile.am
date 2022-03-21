@@ -20,7 +20,9 @@ GGtoBCQQbarBase.h GGtoBCQQbarBase.cc \
 MEPP2DiquarkJet.cc MEPP2DiquarkJet.h \
 MEPP2qq1Jet.cc MEPP2qq1Jet.h \
 MEPP2bc0Jet.cc MEPP2bc0Jet.h \
-MEPP2bc1Jet.cc MEPP2bc1Jet.h
+MEPP2bc1Jet.cc MEPP2bc1Jet.h \
+MEGG2BC1S0QQbar.h MEGG2BC1S0QQbar.cc
+
 HwMEHadronOnium_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
 HwMEGammaGammaOnium_la_SOURCES = \

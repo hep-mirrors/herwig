@@ -41,9 +41,14 @@ bool TwoToThree::generateKinematics(const double * r) {
   if(ecm<mOut[0]+mOut[1]+mOut[2]) return false;
   // generate the momenta
   double jac = TwoToThreePhaseSpace::twoToThreeFS(ecm,mOut,r,meMomenta()[3],
-  						  meMomenta()[4],meMomenta()[2],1.);
+  						  meMomenta()[4],meMomenta()[2],0.);
   if(jac<0.) return false;
   jacobian(jacobian()*jac);
+  // rescaled momenta for the onium calculation
+  double r1 = meMomenta()[3].mass()/(meMomenta()[3].mass()+meMomenta()[4].mass());
+  vector<Energy> mNew = {ZERO,ZERO,mBc,r1*mBc,(1.-r1)*mBc};
+  if(ecm<2.*mBc) return false;
+  rescaledMomenta(TwoToThreePhaseSpace::rescaleMomenta(ecm, meMomenta(),mNew));
   // check passes all the cuts
   vector<LorentzMomentum> out(3);
   tcPDVector tout(3);
