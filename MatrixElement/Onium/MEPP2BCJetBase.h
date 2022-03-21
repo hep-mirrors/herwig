@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGQBCQBase_H
-#define Herwig_MEGQBCQBase_H
+#ifndef Herwig_MEPP2BCJetBase_H
+#define Herwig_MEPP2BCJetBase_H
 //
-// This is the declaration of the MEGQBCQBase class.
+// This is the declaration of the MEPP2BCJetBase class.
 //
 
 #include "MassiveIncoming.h"
@@ -14,19 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGQBCQBase class provides a base class for the simulation of \f$gc\to B_c b\f$ processes, handling the kinematics.
+ * The MEPP2BCJetBase class provides a base class for the simulation of \f$gq\to B_c q\f$  and $q\bar{q}\to B_c g\f$ processes, handling the kinematics.
  *
- * @see \ref MEGQBCQBaseInterfaces "The interfaces"
- * defined for MEGQBCQBase.
+ * @see \ref MEPP2BCJetBaseInterfaces "The interfaces"
+ * defined for MEPP2BCJetBase.
  */
-class MEGQBCQBase: public MassiveIncoming {
+class MEPP2BCJetBase: public MassiveIncoming {
 
 public:
   
   /**
    * The default constructor.
    */
-  MEGQBCQBase(long pid=541) : id_(pid), n_(1)
+  MEPP2BCJetBase(long pid=541) : id_(pid), n_(1)
   {}
 
 public:
@@ -154,7 +154,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGQBCQBase & operator=(const MEGQBCQBase &) = delete;
+  MEPP2BCJetBase & operator=(const MEPP2BCJetBase &) = delete;
 
 private:
 
@@ -186,4 +186,4 @@ private:
 
 }
 
-#endif /* Herwig_MEGQBCQBase_H */
+#endif /* Herwig_MEPP2BCJetBase_H */

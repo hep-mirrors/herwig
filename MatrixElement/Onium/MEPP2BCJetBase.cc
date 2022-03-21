@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEGQBCQBase class.
+// functions of the MEPP2BCJetBase class.
 //
 
-#include "MEGQBCQBase.h"
+#include "MEPP2BCJetBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -26,45 +26,45 @@ using namespace Herwig;
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<MEGQBCQBase,HwMEBase>
-describeHerwigMEGQBCQBase("Herwig::MEGQBCQBase", "HwOniumParameters.so HwMEHadronOnium.so");
+DescribeAbstractClass<MEPP2BCJetBase,HwMEBase>
+describeHerwigMEPP2BCJetBase("Herwig::MEPP2BCJetBase", "HwOniumParameters.so HwMEHadronOnium.so");
 
-void MEGQBCQBase::Init() {
+void MEPP2BCJetBase::Init() {
   
-  static ClassDocumentation<MEGQBCQBase> documentation
-    ("The MEGQBCQBase class is the base class fpr g c -> B_c b processes");
+  static ClassDocumentation<MEPP2BCJetBase> documentation
+    ("The MEPP2BCJetBase class is the base class fpr g c -> B_c b processes");
   
-  static Parameter<MEGQBCQBase,unsigned int> interfacePrincipalQuantumNumber
+  static Parameter<MEPP2BCJetBase,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
      "The principle quantum number of the states",
-     &MEGQBCQBase::n_, 1, 1, 10,
+     &MEPP2BCJetBase::n_, 1, 1, 10,
      false, false, Interface::limited);
 
-  static Reference<MEGQBCQBase,OniumParameters> interfaceParameters
+  static Reference<MEPP2BCJetBase,OniumParameters> interfaceParameters
     ("Parameters",
      "Quarkonium parameters",
-     &MEGQBCQBase::params_, false, false, true, false, false);
+     &MEPP2BCJetBase::params_, false, false, true, false, false);
 
 }
 
-void MEGQBCQBase::doinit() {
+void MEPP2BCJetBase::doinit() {
   HwMEBase::doinit();
   long pid = 100000*(n_-1)+id_;
   state_ = getParticleData(pid);
   if(!state_)
-    throw Exception() << "No B_c state with pid = " << pid << "in MEGQBCQBase::doinit()" << Exception::runerror;
+    throw Exception() << "No B_c state with pid = " << pid << "in MEPP2BCJetBase::doinit()" << Exception::runerror;
   setMassGenerator(dynamic_ptr_cast<GenericMassGeneratorPtr>(state_->massGenerator()));
 }
 
-void MEGQBCQBase::persistentOutput(PersistentOStream & os) const {
+void MEPP2BCJetBase::persistentOutput(PersistentOStream & os) const {
   os << n_ << params_ << state_;
 }
 
-void MEGQBCQBase::persistentInput(PersistentIStream & is, int) {
+void MEPP2BCJetBase::persistentInput(PersistentIStream & is, int) {
   is >> n_ >> params_ >> state_;
 }
 
-void MEGQBCQBase::getDiagrams() const {
+void MEPP2BCJetBase::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr c = getParticleData(4);
   tcPDPtr b = getParticleData(5);
@@ -77,7 +77,7 @@ void MEGQBCQBase::getDiagrams() const {
 }
 
 Selector<const ColourLines *>
-MEGQBCQBase::colourGeometries(tcDiagPtr diag) const {
+MEPP2BCJetBase::colourGeometries(tcDiagPtr diag) const {
   static ColourLines c[4] = {ColourLines("1 5, 3 2 -1"),
 			     ColourLines("1 3 5, 2 -1"),
 			     ColourLines("-1 -5, -3 -2 1"),
@@ -88,7 +88,7 @@ MEGQBCQBase::colourGeometries(tcDiagPtr diag) const {
 }
 
 Selector<MEBase::DiagramIndex>
-MEGQBCQBase::diagrams(const DiagramVector & diags) const {
+MEPP2BCJetBase::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
     if ( diags[i]->id() == -1 || diags[i]->id()==-3)
@@ -98,11 +98,11 @@ MEGQBCQBase::diagrams(const DiagramVector & diags) const {
   return sel;
 }
 
-Energy2 MEGQBCQBase::scale() const {
+Energy2 MEPP2BCJetBase::scale() const {
   return sHat();
 }
 
-void MEGQBCQBase::constructVertex(tSubProPtr sub) {
+void MEPP2BCJetBase::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
   ParticleVector hard;
   hard.reserve(4);

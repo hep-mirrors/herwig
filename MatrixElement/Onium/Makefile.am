@@ -11,9 +11,9 @@ MEGGto1D2.h MEGGto1D2.cc MEPPto1D2Jet.h MEPPto1D2Jet.cc \
 MEPPto3D1Jet.h MEPPto3D1Jet.cc \
 MEPPto3D2Jet.h MEPPto3D2Jet.cc \
 MEPPto3D3Jet.h MEPPto3D3Jet.cc \
-MEGQBCQBase.h MEGQBCQBase.cc \
-MEGQBC1S0Q.h MEGQBC1S0Q.cc\
-MEGQBC3S1Q.h MEGQBC3S1Q.cc\
+MEPP2BCJetBase.h MEPP2BCJetBase.cc \
+MEPP2BC1S0Jet.h MEPP2BC1S0Jet.cc\
+MEPP2BC3S1Jet.h MEPP2BC3S1Jet.cc\
 MassiveIncoming.h MassiveIncoming.cc \
 TwoToThree.h TwoToThree.cc \
 GGtoBCQQbarBase.h GGtoBCQQbarBase.cc \

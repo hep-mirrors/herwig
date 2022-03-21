@@ -1,30 +1,30 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGQBC3S1Q_H
-#define Herwig_MEGQBC3S1Q_H
+#ifndef Herwig_MEPP2BC1S0Jet_H
+#define Herwig_MEPP2BC1S0Jet_H
 //
-// This is the declaration of the MEGQBC3S1Q class.
+// This is the declaration of the MEPP2BC1S0Jet class.
 //
 
-#include "MEGQBCQBase.h"
+#include "MEPP2BCJetBase.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEGQBC3S1Q class implements the matrix element for \f$gc\to B_c(^3S_1) b\f$
+ * The MEPP2BC1S0Jet class implements the matrix element for \f$gq\to B_c(^1S_0) q\f$ and \f$q\bar{q}\to B_c(^1S_0) g\f$
  *
- * @see \ref MEGQBC3S1QInterfaces "The interfaces"
- * defined for MEGQBC3S1Q.
+ * @see \ref MEPP2BC1S0JetInterfaces "The interfaces"
+ * defined for MEPP2BC1S0Jet.
  */
-class MEGQBC3S1Q: public MEGQBCQBase {
+class MEPP2BC1S0Jet: public MEPP2BCJetBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEGQBC3S1Q() : MEGQBCQBase(543)
+  MEPP2BC1S0Jet() : MEPP2BCJetBase(541)
   {}
 
 public:
@@ -102,7 +102,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGQBC3S1Q & operator=(const MEGQBC3S1Q &) = delete;
+  MEPP2BC1S0Jet & operator=(const MEPP2BC1S0Jet &) = delete;
 
 private:
 
@@ -115,4 +115,4 @@ private:
 
 }
 
-#endif /* Herwig_MEGQBC3S1Q_H */
+#endif /* Herwig_MEPP2BC1S0Jet_H */

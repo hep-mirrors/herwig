@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEGQBC1S0Q class.
+// functions of the MEPP2BC1S0Jet class.
 //
 
-#include "MEGQBC1S0Q.h"
+#include "MEPP2BC1S0Jet.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -24,7 +24,7 @@
 
 using namespace Herwig;
 
-double MEGQBC1S0Q::me2() const {
+double MEPP2BC1S0Jet::me2() const {
   // gluon wavefunction
   VectorWaveFunction      g1w(rescaledMomenta()[0],mePartonData()[0],incoming);
   vector<VectorWaveFunction> g1;
@@ -165,36 +165,36 @@ double MEGQBC1S0Q::me2() const {
   return 16.*O1_*pow<3,1>(Constants::pi*standardModel()->alphaS(scale())/M)/(243.*sqr(a1*a2))*meSum;
 }
 
-IBPtr MEGQBC1S0Q::clone() const {
+IBPtr MEPP2BC1S0Jet::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MEGQBC1S0Q::fullclone() const {
+IBPtr MEPP2BC1S0Jet::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEGQBC1S0Q::doinit() {
-  MEGQBCQBase::doinit();
+void MEPP2BC1S0Jet::doinit() {
+  MEPP2BCJetBase::doinit();
   O1_ = oniumParameters()->singletMEProduction<0>(bcbar,principleQuantumNumber(),0,0);
 }
 
-void MEGQBC1S0Q::persistentOutput(PersistentOStream & os) const {
+void MEPP2BC1S0Jet::persistentOutput(PersistentOStream & os) const {
   os << ounit(O1_,GeV*GeV2);
 }
 
-void MEGQBC1S0Q::persistentInput(PersistentIStream & is, int) {
+void MEPP2BC1S0Jet::persistentInput(PersistentIStream & is, int) {
   is >> iunit(O1_,GeV*GeV2);
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<MEGQBC1S0Q,MEGQBCQBase>
-describeHerwigMEGQBC1S0Q("Herwig::MEGQBC1S0Q", "HwOniumParameters.so HwMEHadronOnium.so");
+DescribeClass<MEPP2BC1S0Jet,MEPP2BCJetBase>
+describeHerwigMEPP2BC1S0Jet("Herwig::MEPP2BC1S0Jet", "HwOniumParameters.so HwMEHadronOnium.so");
 
-void MEGQBC1S0Q::Init() {
+void MEPP2BC1S0Jet::Init() {
 
-  static ClassDocumentation<MEGQBC1S0Q> documentation
-    ("The MEGQBC1S0Q class implements the matrix element for g c -> B_c(1S0) b and charged conjugate");
+  static ClassDocumentation<MEPP2BC1S0Jet> documentation
+    ("The MEPP2BC1S0Jet class implements the matrix element for g c -> B_c(1S0) b and charged conjugate");
 
 }
 
