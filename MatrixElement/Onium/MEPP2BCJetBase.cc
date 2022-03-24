@@ -32,7 +32,7 @@ describeHerwigMEPP2BCJetBase("Herwig::MEPP2BCJetBase", "HwOniumParameters.so HwM
 void MEPP2BCJetBase::Init() {
   
   static ClassDocumentation<MEPP2BCJetBase> documentation
-    ("The MEPP2BCJetBase class is the base class fpr g c -> B_c b processes");
+    ("The MEPP2BCJetBase class is the base class for g q -> B_c q and q qbar -> Bc g processes");
   
   static Parameter<MEPP2BCJetBase,unsigned int> interfacePrincipalQuantumNumber
     ("PrincipalQuantumNumber",
@@ -71,17 +71,31 @@ void MEPP2BCJetBase::getDiagrams() const {
   // c initiated
   add(new_ptr((Tree2toNDiagram(3), g, c, c, 2, state_, 1, b,     -1)));
   add(new_ptr((Tree2toNDiagram(2), g, c, 1, c , 3, state_, 3, b, -2)));
+  // b initiated
+  add(new_ptr((Tree2toNDiagram(3), g, b, b, 2, state_->CC(), 1, c,     -1)));
+  add(new_ptr((Tree2toNDiagram(2), g, b, 1, b , 3, state_->CC(), 3, c, -2)));
   // cbar initiated
   add(new_ptr((Tree2toNDiagram(3), g, c->CC(), c->CC(), 2, state_->CC(), 1, b->CC(),     -3)));
   add(new_ptr((Tree2toNDiagram(2), g, c->CC(), 1, c->CC() , 3, state_->CC(), 3, b->CC(), -4)));
+  // bbar initiated
+  add(new_ptr((Tree2toNDiagram(3), g, b->CC(), b->CC(), 2, state_, 1, c->CC(),     -3)));
+  add(new_ptr((Tree2toNDiagram(2), g, b->CC(), 1, b->CC() , 3, state_, 3, c->CC(), -4)));
+  // b cbar -> Bc g
+  add(new_ptr((Tree2toNDiagram(3), b, c, c->CC(), 1, state_->CC(), 2, g, -5)));
+  add(new_ptr((Tree2toNDiagram(3), b, b->CC(), c->CC(), 2, state_->CC(), 1, g, -6)));
+  // c bbar -> Bc g
+  add(new_ptr((Tree2toNDiagram(3), c, b, b->CC(), 1, state_, 2, g, -5)));
+  add(new_ptr((Tree2toNDiagram(3), c, c->CC(), b->CC(), 2, state_, 1, g, -6)));
 }
 
 Selector<const ColourLines *>
 MEPP2BCJetBase::colourGeometries(tcDiagPtr diag) const {
-  static ColourLines c[4] = {ColourLines("1 5, 3 2 -1"),
+  static ColourLines c[6] = {ColourLines("1 5, 3 2 -1"),
 			     ColourLines("1 3 5, 2 -1"),
 			     ColourLines("-1 -5, -3 -2 1"),
-			     ColourLines("-1 -3 -5, -2 1")};
+			     ColourLines("-1 -3 -5, -2 1"),
+			     ColourLines("1 2 5, -3 -5"),
+			     ColourLines("1 5, -3 -2 -5")};
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &c[abs(diag->id())-1]);
   return sel;
@@ -112,8 +126,8 @@ void MEPP2BCJetBase::constructVertex(tSubProPtr sub) {
   hard.push_back(sub->outgoing()[1]);
   // get them in the right order
   bool swapped(false);
-  if(hard[0]->id()!=ParticleID::g) {
-    swapped=true;
+  if(hard[1]->id()==ParticleID::g || hard[0]->id()<0) {
+     swapped=true;
   }
   if(swapped) {
     swap(hard[0],hard[1]);
@@ -134,42 +148,57 @@ void MEPP2BCJetBase::constructVertex(tSubProPtr sub) {
   }
   else
     assert(false);
-  // gluon
-  vector<VectorWaveFunction> g1;
-  VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
-  g1[1]=g1[2];
-  // other particles
-  if(hard[1]->id()>0) {
-    vector<SpinorWaveFunction> q2;
-    vector<SpinorBarWaveFunction> q4;
-    SpinorWaveFunction(   q2,hard[1],incoming,false,true);
-    SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
-  }
-  else {
-    vector<SpinorBarWaveFunction> q2;
-    vector<SpinorWaveFunction>    q4;
-    SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
-    SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
-  }
-  // rescale the momenta
-  double rr = hard[1]->dataPtr()->mass()/hard[3]->dataPtr()->mass();
+  // masses and momenta
   Energy mBc = hard[2]->mass();
   Energy ecm=sqrt(sHat());
   vector<Lorentz5Momentum> rescaled(4);
-  // masses
-  rescaled[0].setMass(          ZERO);
-  rescaled[1].setMass(rr/(1.+rr)*mBc);
-  rescaled[2].setMass(           mBc);
-  rescaled[3].setMass(1./(1.+rr)*mBc);
-  // incoming
-  Energy pin = 0.5*(sHat()-sqr(rescaled[1].mass()))/ecm;
-  if(hard[0]->momentum().z()>ZERO) {
-    rescaled[0].setZ(pin); rescaled[1].setZ(-pin);
+  // gluon initiate
+  if(hard[0]->id()==ParticleID::g) {
+    vector<VectorWaveFunction> g1;
+    VectorWaveFunction(   g1,hard[0],incoming,false,true,true,vector_phase);
+    // other particles
+    if(hard[1]->id()>0) {
+      vector<SpinorWaveFunction> q2;
+      vector<SpinorBarWaveFunction> q4;
+      SpinorWaveFunction(   q2,hard[1],incoming,false,true);
+      SpinorBarWaveFunction(q4,hard[3],outgoing,true ,true);
+    }
+    else {
+      vector<SpinorBarWaveFunction> q2;
+      vector<SpinorWaveFunction>    q4;
+      SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+      SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
+    }
+    // masses for rescaling
+    double rr = hard[1]->dataPtr()->mass()/hard[3]->dataPtr()->mass();
+    // masses
+    rescaled[0].setMass(          ZERO);
+    rescaled[1].setMass(rr/(1.+rr)*mBc);
+    rescaled[2].setMass(           mBc);
+    rescaled[3].setMass(1./(1.+rr)*mBc);
   }
+  // q qbar
   else {
-    rescaled[0].setZ(-pin); rescaled[1].setZ(pin);
+    vector<SpinorWaveFunction> q1;
+    vector<SpinorBarWaveFunction> q2;
+    SpinorWaveFunction(   q1,hard[0],incoming,false,true);
+    SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+    vector<VectorWaveFunction> g4;
+    VectorWaveFunction(   g4,hard[3],outgoing,false,true,true,vector_phase);
+    // masses for rescaling
+    double rr = mePartonData()[1]->mass()/mePartonData()[0]->mass();
+    // masses
+    rescaled[0].setMass(1./(1.+rr)*mBc);
+    rescaled[1].setMass(rr/(1.+rr)*mBc);
+    rescaled[2].setMass(           mBc);
+    rescaled[3].setMass(     ZERO     );
   }
-  rescaled[0].setT(pin); rescaled[1].setT(0.5*(sHat()+sqr(rescaled[1].mass()))/ecm);
+  // rescale the momenta
+  // incoming
+  Energy pin = SimplePhaseSpace::getMagnitude(sHat(), rescaled[0].mass(), rescaled[1].mass());
+  rescaled[0].setZ(pin); rescaled[1].setZ(-pin);
+  rescaled[0].setT(0.5*(sHat()+sqr(rescaled[0].mass())-sqr(rescaled[1].mass()))/ecm);
+  rescaled[1].setT(0.5*(sHat()-sqr(rescaled[0].mass())+sqr(rescaled[1].mass()))/ecm);
   // outgoing
   Energy q;
   try {
