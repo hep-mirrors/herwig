@@ -15,6 +15,7 @@ MEPP2BCJetBase.h MEPP2BCJetBase.cc \
 MEPP2BC1S0Jet.h MEPP2BC1S0Jet.cc\
 MEPP2BC3S1Jet.h MEPP2BC3S1Jet.cc\
 MEPP2BC3P0Jet.h MEPP2BC3P0Jet.cc\
+MEPP2BCP1Jet.h MEPP2BCP1Jet.cc\
 MEPP2BC3P2Jet.h MEPP2BC3P2Jet.cc\
 MassiveIncoming.h MassiveIncoming.cc \
 TwoToThree.h TwoToThree.cc \
