@@ -77,11 +77,45 @@ double MEPP2BC3P0Jet::me2() const {
 	    complex<Energy> dot4 = vec1*g1[ih1].wave();
 	    complex<Energy2> dot5 = vec2*rescaledMomenta()[0];
 	    // diagrams
-	    diag[0]=(-4.*M*(a12*pow<3,1>(M)*(-((-11.-2.*a1+8.*a12)*(2.*dot1*dot3+dot5))+a1*(-4.+a1+4.*a12)*dot4*M)+M*((-3.+2.*a1)*(1.+4.*a1)*(2.*dot1*dot3+dot5)+2.*a1*(2.+a1-4.*a12)*dot4*M)*sh+(-3.+4.*a1)*dot4*sqr(sh)))/(a2*pow<3,1>(a12*M2-sh));
-diag[1]=(2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(-8.*dot1*dot3+8.*dot2*dot3+dot4*M)*(M2-th)+pow(a1,4)*M2*(M2*(16.*(-dot1+dot2)*dot6+4.*(dot1*dot3-dot2*dot3+dot5)*M+3.*dot4*M2)+(8.*(dot1-dot2)*dot6-4.*(dot1*dot3-dot2*dot3+dot5)*M-3.*dot4*M2)*th)-sh*(M2-th)*(2.*dot2*dot6+M*(dot5-dot4*M)+dot4*uh)-2.*a1*(dot1*dot3*M*(4.*M2-sh-4.*th)*(M2-th)+dot2*sh*(dot3*pow<3,1>(M)-9.*dot6*M2+5.*dot6*th-dot3*M*th)+dot1*dot6*(4.*pow<4,1>(M)+M2*(7.*sh-4.*th)-3.*sh*th)-2.*dot5*M*(M2-th)*(M2-uh)-dot4*sh*(M2-th)*(2.*M2+uh))+a12*(4.*dot1*(4.*dot6*M2*(M2+sh)-2.*dot6*(2.*M2+sh)*th+5.*dot3*M*sh*(-M2+th))+dot2*(20.*dot3*M*sh*(M2-th)+dot6*(-6.*pow<4,1>(M)+8.*sh*th+M2*(-16.*sh+6.*th)))+M*(M2-th)*(dot5*(M2-4.*sh)+dot4*M*(-M2-3.*sh+uh)))+2.*pow(a1,3)*M*(dot2*(-(dot3*(7.*M2+8.*sh)*(M2-th))+dot6*M*(-5.*M2+th))+dot1*(dot3*(7.*M2+8.*sh)*(M2-th)+dot6*M*(3.*M2+th))-M*(M2-th)*(2.*dot5*M+dot4*(2.*M2+sh+uh)))))/(a1*a2*sqr(-(a12*M2)+sh)*sqr(M2-th));
-diag[2]=(2.*M*(-4.*M*(M2-th)*(M*(2.*a1*(-(a2*dot1)-a1*dot2)*dot6+(2.*(2.*a1*a22*(dot1-dot2)+dot2)*dot3+dot5-2.*a1*a2*dot5)*M)-(2.*dot2*dot3+dot5)*th)-((2.*pow(a1,3)*M*(8.*dot1*dot3-8.*dot2*dot3+dot4*M)*(M2-th)+(2.*dot1*dot3*M-dot5*M-2.*dot2*(dot6+dot3*M)+dot4*sh)*(M2-th)+a12*(M2*(16.*(dot1-dot2)*dot6-4.*(7.*dot1*dot3-7.*dot2*dot3+dot5)*M-9.*dot4*M2)+(8.*(-dot1+dot2)*dot6+4.*(7.*dot1*dot3-7.*dot2*dot3+dot5)*M+9.*dot4*M2)*th)+2.*a1*((2.*M*(dot5+2.*dot4*M)-dot4*sh)*(M2-th)+dot1*(5.*dot3*pow<3,1>(M)-7.*dot6*M2+3.*dot6*th-5.*dot3*M*th)+dot2*(-5.*dot3*pow<3,1>(M)+9.*dot6*M2-5.*dot6*th+5.*dot3*M*th)))*(a22*M2-uh))/a2))/(a1*sqr(M2-th)*sqr(-(a22*M2)+uh));
-diag[3]=(4.*M*(a22*pow<3,1>(M)*((-5.+2.*a1*(-7.+4.*a1))*(2.*dot2*dot3+dot5)-(1.+a1*(-9.+4.*a1))*a2*dot4*M)+M*(-((1.+2.*a1)*(-5.+4.*a1)*(2.*dot2*dot3+dot5))+2.*(1.+a1*(-7.+4.*a1))*a2*dot4*M)*uh+(-1.+4.*a1)*dot4*sqr(uh)))/(a1*pow<3,1>(a22*M2-uh));
-diag[4]=(-2.*M*(16.*pow(a1,7)*(dot1-dot2)*dot3*pow<5,1>(M)+4.*pow(a1,6)*pow<4,1>(M)*(2.*dot1*dot6-2.*dot2*dot6-15.*dot1*dot3*M+13.*dot2*dot3*M+2.*dot5*M)+sh*(-(M*(2.*dot1*dot3*M2+4.*dot5*sh+dot4*M*(M2+sh)+dot2*(-2.*dot6*M+8.*dot3*sh)))+(-2.*dot2*dot6+2.*M*(dot1*dot3+dot4*M)+dot4*sh)*uh-dot4*sqr(uh))+pow(a1,4)*M2*(-14.*dot2*dot6*M2+4.*dot5*M*(M2-2.*(2.*sh+th))+dot4*M2*(M2+5.*sh-5.*uh)+8.*dot2*dot6*(sh+uh)-4.*dot2*dot3*M*(4.*M2+17.*sh+uh)+2.*dot1*dot3*M*(17.*M2+38.*sh+6.*uh)+4.*dot1*dot6*(M2-2.*(sh+uh)))-2.*pow(a1,5)*pow<3,1>(M)*(-13.*dot2*dot6*M+17.*dot2*dot3*M2+4.*dot5*M2+dot4*M*(sh-uh)-8.*dot2*dot3*(sh+uh)+dot1*(11.*dot6*M-29.*dot3*M2+8.*dot3*(sh+uh)))-2.*pow(a1,3)*M*(8.*dot5*M2*(M2-sh-th)+dot2*dot6*M*(5.*M2+17.*sh+uh)+dot4*M*(pow<4,1>(M)-sqr(sh)+2.*M2*(sh-uh)+sqr(uh))+dot2*dot3*(-7.*pow<4,1>(M)+8.*sh*uh+M2*(-37.*sh+7.*uh))+dot1*(dot6*M*(-17.*M2-15.*sh+uh)+dot3*(45.*pow<4,1>(M)+M2*(65.*sh-19.*uh)-8.*sh*uh)))+a12*(8.*dot5*M*sh*(sh+th)+4.*dot2*dot3*M*sh*(-6.*M2+5.*uh)+dot2*dot6*(6.*pow<4,1>(M)+M2*(38.*sh-6.*uh)-8.*sh*uh)+dot4*M2*(pow<4,1>(M)-5.*sqr(sh)-2.*M2*uh+4.*sh*uh+sqr(uh))+dot1*(2.*dot3*M*(25.*pow<4,1>(M)+M2*(47.*sh-25.*uh)-14.*sh*uh)+4.*dot6*(-8.*pow<4,1>(M)+2.*sh*uh+M2*(-9.*sh+4.*uh))))+2.*a1*(-2.*dot5*M*(pow<4,1>(M)+2.*sqr(sh)+4.*sh*th+sqr(th)-2.*M2*(2.*sh+th))+sh*(dot4*(pow<4,1>(M)+2.*M2*(sh-uh)+uh*(-sh+uh))+dot2*(dot3*M*(M2+4.*sh-uh)+dot6*(-7.*M2+5.*uh)))+dot1*(dot6*(4.*pow<4,1>(M)+M2*(7.*sh-4.*uh)-3.*sh*uh)+dot3*M*(-4.*pow<4,1>(M)+(5.*sh-4.*uh)*uh+M2*(-11.*sh+8.*uh))))))/(a1*a2*sqr(-(a12*M2)+sh)*sqr(-(a22*M2)+uh));
+	    diag[0]=(-4.*M*(a12*pow<3,1>(M)*(-((-11.-2.*a1+8.*a12)*(2.*dot1*dot3+dot5))+a1*(-4.+a1+4.*a12)*dot4*M)+
+			    M*((-3.+2.*a1)*(1.+4.*a1)*(2.*dot1*dot3+dot5)+2.*a1*(2.+a1-4.*a12)*dot4*M)*sh+(-3.+4.*a1)*dot4*sqr(sh)))/(a2*pow<3,1>(a12*M2-sh));
+	    diag[1]=2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(-8.*dot1*dot3+8.*dot2*dot3+dot4*M)*(M2-th)+
+			  pow(a1,4)*M2*(M2*(16.*(-dot1+dot2)*dot6+4.*(dot1*dot3-dot2*dot3+dot5)*M+3.*dot4*M2)+
+					(8.*(dot1-dot2)*dot6-4.*(dot1*dot3-dot2*dot3+dot5)*M-3.*dot4*M2)*th)-
+			  sh*(M2-th)*(2.*dot2*dot6+M*(dot5-dot4*M)+dot4*uh)-
+			  2.*a1*(dot1*dot3*M*(4.*M2-sh-4.*th)*(M2-th)+dot2*sh*(dot3*pow<3,1>(M)-9.*dot6*M2+5.*dot6*th-dot3*M*th)+
+				 dot1*dot6*(4.*pow<4,1>(M)+M2*(7.*sh-4.*th)-3.*sh*th)-2.*dot5*M*(M2-th)*(M2-uh)-dot4*sh*(M2-th)*(2.*M2+uh))+
+			  a12*(4.*dot1*(4.*dot6*M2*(M2+sh)-2.*dot6*(2.*M2+sh)*th+5.*dot3*M*sh*(-M2+th))+
+			       dot2*(20.*dot3*M*sh*(M2-th)+dot6*(-6.*pow<4,1>(M)+8.*sh*th+M2*(-16.*sh+6.*th)))+
+			       M*(M2-th)*(dot5*(M2-4.*sh)+dot4*M*(-M2-3.*sh+uh)))+
+			  2.*pow(a1,3)*M*(dot2*(-(dot3*(7.*M2+8.*sh)*(M2-th))+dot6*M*(-5.*M2+th))+
+					  dot1*(dot3*(7.*M2+8.*sh)*(M2-th)+dot6*M*(3.*M2+th))-M*(M2-th)*(2.*dot5*M+dot4*(2.*M2+sh+uh))))/(a1*a2*sqr(-(a12*M2)+sh)*sqr(M2-th));
+	    diag[2]=2.*M*(-4.*M*(M2-th)*(M*(2.*a1*(-(a2*dot1)-a1*dot2)*dot6+(2.*(2.*a1*a22*(dot1-dot2)+dot2)*dot3+dot5-2.*a1*a2*dot5)*M)-(2.*dot2*dot3+dot5)*th)-
+			  ((2.*pow(a1,3)*M*(8.*dot1*dot3-8.*dot2*dot3+dot4*M)*(M2-th)+(2.*dot1*dot3*M-dot5*M-2.*dot2*(dot6+dot3*M)+dot4*sh)*(M2-th)+
+			    a12*(M2*(16.*(dot1-dot2)*dot6-4.*(7.*dot1*dot3-7.*dot2*dot3+dot5)*M-9.*dot4*M2)+
+				 (8.*(-dot1+dot2)*dot6+4.*(7.*dot1*dot3-7.*dot2*dot3+dot5)*M+9.*dot4*M2)*th)+
+			    2.*a1*((2.*M*(dot5+2.*dot4*M)-dot4*sh)*(M2-th)+dot1*(5.*dot3*pow<3,1>(M)-7.*dot6*M2+3.*dot6*th-5.*dot3*M*th)+
+				   dot2*(-5.*dot3*pow<3,1>(M)+9.*dot6*M2-5.*dot6*th+5.*dot3*M*th)))*(a22*M2-uh))/a2)/(a1*sqr(M2-th)*sqr(-(a22*M2)+uh));
+	    diag[3]=4.*M*(a22*pow<3,1>(M)*((-5.+2.*a1*(-7.+4.*a1))*(2.*dot2*dot3+dot5)-(1.+a1*(-9.+4.*a1))*a2*dot4*M)+
+			  M*(-((1.+2.*a1)*(-5.+4.*a1)*(2.*dot2*dot3+dot5))+2.*(1.+a1*(-7.+4.*a1))*a2*dot4*M)*uh+(-1.+4.*a1)*dot4*sqr(uh))/(a1*pow<3,1>(a22*M2-uh));
+	    diag[4]=-2.*M*(16.*pow(a1,7)*(dot1-dot2)*dot3*pow<5,1>(M)+
+			   4.*pow(a1,6)*pow<4,1>(M)*(2.*dot1*dot6-2.*dot2*dot6-15.*dot1*dot3*M+13.*dot2*dot3*M+2.*dot5*M)+
+			   sh*(-(M*(2.*dot1*dot3*M2+4.*dot5*sh+dot4*M*(M2+sh)+dot2*(-2.*dot6*M+8.*dot3*sh)))+
+			       (-2.*dot2*dot6+2.*M*(dot1*dot3+dot4*M)+dot4*sh)*uh-dot4*sqr(uh))+
+			   pow(a1,4)*M2*(-14.*dot2*dot6*M2+4.*dot5*M*(M2-2.*(2.*sh+th))+dot4*M2*(M2+5.*sh-5.*uh)+8.*dot2*dot6*(sh+uh)-
+					 4.*dot2*dot3*M*(4.*M2+17.*sh+uh)+2.*dot1*dot3*M*(17.*M2+38.*sh+6.*uh)+4.*dot1*dot6*(M2-2.*(sh+uh)))-
+			   2.*pow(a1,5)*pow<3,1>(M)*(-13.*dot2*dot6*M+17.*dot2*dot3*M2+4.*dot5*M2+dot4*M*(sh-uh)-
+						     8.*dot2*dot3*(sh+uh)+dot1*(11.*dot6*M-29.*dot3*M2+8.*dot3*(sh+uh)))-
+			   2.*pow(a1,3)*M*(8.*dot5*M2*(M2-sh-th)+dot2*dot6*M*(5.*M2+17.*sh+uh)+
+					   dot4*M*(pow<4,1>(M)-sqr(sh)+2.*M2*(sh-uh)+sqr(uh))+
+					   dot2*dot3*(-7.*pow<4,1>(M)+8.*sh*uh+M2*(-37.*sh+7.*uh))+
+					   dot1*(dot6*M*(-17.*M2-15.*sh+uh)+dot3*(45.*pow<4,1>(M)+M2*(65.*sh-19.*uh)-8.*sh*uh)))+
+			   a12*(8.*dot5*M*sh*(sh+th)+4.*dot2*dot3*M*sh*(-6.*M2+5.*uh)+dot2*dot6*(6.*pow<4,1>(M)+M2*(38.*sh-6.*uh)-8.*sh*uh)+
+				dot4*M2*(pow<4,1>(M)-5.*sqr(sh)-2.*M2*uh+4.*sh*uh+sqr(uh))+
+				dot1*(2.*dot3*M*(25.*pow<4,1>(M)+M2*(47.*sh-25.*uh)-14.*sh*uh)+4.*dot6*(-8.*pow<4,1>(M)+2.*sh*uh+M2*(-9.*sh+4.*uh))))+
+			   2.*a1*(-2.*dot5*M*(pow<4,1>(M)+2.*sqr(sh)+4.*sh*th+sqr(th)-2.*M2*(2.*sh+th))+
+				  sh*(dot4*(pow<4,1>(M)+2.*M2*(sh-uh)+uh*(-sh+uh))+dot2*(dot3*M*(M2+4.*sh-uh)+dot6*(-7.*M2+5.*uh)))+
+				  dot1*(dot6*(4.*pow<4,1>(M)+M2*(7.*sh-4.*uh)-3.*sh*uh)+dot3*M*(-4.*pow<4,1>(M)+(5.*sh-4.*uh)*uh+M2*(-11.*sh+8.*uh)))))/(a1*a2*sqr(-(a12*M2)+sh)*sqr(-(a22*M2)+uh));
  	    // diagram weights
  	    save[0]+=norm(diag[3]);
  	    save[1]+=norm(diag[1]);
@@ -120,11 +154,43 @@ diag[4]=(-2.*M*(16.*pow(a1,7)*(dot1-dot2)*dot3*pow<5,1>(M)+4.*pow(a1,6)*pow<4,1>
 	    complex<Energy> dot4 = vec1*g1[ih1].wave();
 	    complex<Energy2> dot5 = vec2*rescaledMomenta()[0];
 	    // diagrams
-	    diag[0]=(4.*M*(a22*pow<3,1>(M)*((-5.+2.*a1*(-7.+4.*a1))*(2.*dot1*dot3-dot5)+(1.+a1*(-9.+4.*a1))*a2*dot4*M)+M*(-((1.+2.*a1)*(-5.+4.*a1)*(2.*dot1*dot3-dot5))-2.*(1.+a1*(-7.+4.*a1))*a2*dot4*M)*sh+(1.-4.*a1)*dot4*sqr(sh)))/(a1*pow<3,1>(a22*M2-sh));
-diag[1]=(-2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(-8.*dot1*dot3+8.*dot2*dot3+dot4*M)*(M2-th)+4.*a1*M*(M2-th)*(2.*dot2*M*(dot6+dot3*M)+dot5*(M2-sh)-2.*dot2*dot3*th)+pow(a1,4)*M2*(M2*(16.*(-dot1+dot2)*dot6+4.*(dot1*dot3-dot2*dot3+dot5)*M+3.*dot4*M2)+(8.*(dot1-dot2)*dot6-4.*(dot1*dot3-dot2*dot3+dot5)*M-3.*dot4*M2)*th)+(2.*dot1*dot6-dot5*M+dot4*(M2-sh))*(M2-th)*uh+2.*a1*(M2*(-9.*dot1*dot6+7.*dot2*dot6+dot1*dot3*M-dot2*dot3*M+2.*dot4*M2+dot4*sh)-(-5.*dot1*dot6+3.*dot2*dot6+dot1*dot3*M-dot2*dot3*M+2.*dot4*M2+dot4*sh)*th)*uh+a12*(M2*(6.*dot1*dot6-16.*dot2*dot6+M*(dot5-dot4*M)+dot4*sh)*(M2-th)+(M2*(16.*(dot1-dot2)*dot6-4.*(5.*dot1*dot3-5.*dot2*dot3+dot5)*M-3.*dot4*M2)+(8.*(-dot1+dot2)*dot6+4.*(5.*dot1*dot3-5.*dot2*dot3+dot5)*M+3.*dot4*M2)*th)*uh)+2.*pow(a1,3)*M*(-(M*(M2-th)*(2.*dot5*M+dot4*(2.*M2+sh+uh)))-dot2*(dot6*M*(3.*M2+th)+dot3*(M2-th)*(7.*M2+8.*uh))+dot1*(dot6*(5.*pow<3,1>(M)-M*th)+dot3*(M2-th)*(7.*M2+8.*uh)))))/(a1*a2*sqr(M2-th)*sqr(-(a12*M2)+uh));
-diag[2]=(-2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(8.*dot2*dot3+dot4*M)*(M2-th)-(2.*dot2*dot3*M*(-M2+sh)+dot5*M*(3.*M2+sh-4.*th)+dot4*(M2-sh)*(2.*M2-sh-th))*(M2-th)+pow(a1,4)*M2*(M*(4.*dot5-dot4*M)*(M2-th)+8.*dot2*dot6*(2.*M2-th)+76.*dot2*dot3*M*(-M2+th))-2.*a1*dot2*(-(dot3*M*(11.*M2-5.*sh)*(M2-th))+dot6*(11.*pow<4,1>(M)+3.*sh*th-7.*M2*(sh+th)))+2.*a1*(M2-th)*(dot5*M*(3.*M2+2.*sh-2.*th)+dot4*(pow<4,1>(M)+sh*(sh+th)-M2*(sh+2.*th)))+a12*(M*(M2-th)*(-(dot5*(3.*M2+4.*sh))+dot4*M*(5.*M2+2.*sh+5.*th))+2.*dot2*(30.*dot6*pow<4,1>(M)-dot3*M*(47.*M2-14.*sh)*(M2-th)+4.*dot6*sh*th-2.*dot6*M2*(4.*sh+9.*th)))+2.*a2*dot1*(dot3*M*((3.+a1*(-3.+2.*a1)*(4.+a1*(-9.+4.*a1)))*M2+sh+2.*(3.-4.*a1)*a1*sh-4.*th)*(M2-th)+dot6*((-1.+(-2.+a1)*a1*(-5.+8.*a1))*pow<4,1>(M)+(-1.+4.*a1)*sh*th+M2*(sh-8.*a1*sh+th+a1*(-6.+(13.-4.*a1)*a1)*th)))-2.*pow(a1,3)*M*(M*(M2-th)*(2.*dot5*M+dot4*(3.*M2+2.*sh+th))+dot2*(-(dot3*(65.*M2-8.*sh)*(M2-th))+3.*dot6*(9.*pow<3,1>(M)-5.*M*th)))))/(a1*a2*sqr(-(a22*M2)+sh)*sqr(M2-th));
-diag[3]=(-4.*M*(a12*pow<3,1>(M)*(-((-11.-2.*a1+8.*a12)*(2.*dot2*dot3-dot5))-a1*(-4.+a1+4.*a12)*dot4*M)+M*((-3.+2.*a1)*(1.+4.*a1)*(2.*dot2*dot3-dot5)+2.*a1*(-2.+a1*(-1.+4.*a1))*dot4*M)*uh+(3.-4.*a1)*dot4*sqr(uh)))/(a2*pow<3,1>(a12*M2-uh));
-diag[4]=(-2.*M*(16.*pow(a1,7)*(-dot1+dot2)*dot3*pow<5,1>(M)+4.*pow(a1,6)*pow<4,1>(M)*(-2.*dot1*dot6+2.*dot2*dot6+13.*dot1*dot3*M-15.*dot2*dot3*M+2.*dot5*M)+uh*((2.*dot1*dot6-2.*dot2*dot3*M+dot4*(M2-sh))*(M2-sh)+(-8.*dot1*dot3*M+4.*dot5*M+dot4*(M2-sh))*uh)+2.*pow(a1,3)*M*(pow<3,1>(M)*(-5.*dot1*dot6+17.*dot2*dot6+7.*dot1*dot3*M-45.*dot2*dot3*M+8.*dot5*M+dot4*M2)-M*((dot1+dot2)*dot6+(7.*dot1-19.*dot2)*dot3*M+2.*dot4*M2)*sh+dot4*M*sqr(sh)+(M*(-17.*dot1*dot6+15.*dot2*dot6+37.*dot1*dot3*M-65.*dot2*dot3*M+16.*dot5*M+2.*dot4*M2)+8.*(-dot1+dot2)*dot3*sh)*uh-dot4*M*sqr(uh))+a12*(M2*(6.*dot1*dot6*(M2-sh)-(16.*dot5*M+dot4*(M2-sh))*(M2-sh)+dot2*(50.*dot3*M*(M2-sh)+16.*dot6*(-2.*M2+sh)))+2.*((19.*dot1*dot6-18.*dot2*dot6-12.*dot1*dot3*M+47.*dot2*dot3*M-16.*dot5*M)*M2-2.*(2.*dot1*dot6-2.*dot2*dot6-5.*dot1*dot3*M+7.*dot2*dot3*M-2.*dot5*M+dot4*M2)*sh)*uh+5.*dot4*M2*sqr(uh))+2.*a1*(2.*M*(M2-sh)*(dot5*(M2-sh)+2.*dot2*(M*(dot6-dot3*M)+dot3*sh))-(M2*(7.*dot1*dot6-7.*dot2*dot6-dot1*dot3*M+11.*dot2*dot3*M-4.*dot5*M+dot4*M2)+(-5.*dot1*dot6+3.*dot2*dot6+dot1*dot3*M-5.*dot2*dot3*M+4.*dot5*M-2.*dot4*M2)*sh+dot4*sqr(sh))*uh+(4.*dot1*dot3*M-2.*M*(dot5+dot4*M)+dot4*sh)*sqr(uh))-2.*pow(a1,5)*pow<3,1>(M)*(-13.*dot1*dot6*M+11.*dot2*dot6*M+17.*dot1*dot3*M2-29.*dot2*dot3*M2+12.*dot5*M2+dot4*M*(sh-uh)-8.*dot1*dot3*(sh+uh)+8.*dot2*dot3*(sh+uh))-pow(a1,4)*M2*(M*(-12.*dot5*M2+8.*dot5*(sh+uh)+dot4*M*(M2-5.*sh+5.*uh))+2.*dot1*(7.*dot6*M2-4.*dot6*(sh+uh)+2.*dot3*M*(4.*M2+sh+17.*uh))-2.*dot2*(dot3*M*(17.*M2+6.*sh+38.*uh)+2.*dot6*(M2-2.*(sh+uh))))))/(a1*a2*sqr(-(a22*M2)+sh)*sqr(-(a12*M2)+uh));
+	    diag[0]=(4.*M*(a22*pow<3,1>(M)*((-5.+2.*a1*(-7.+4.*a1))*(2.*dot1*dot3-dot5)+(1.+a1*(-9.+4.*a1))*a2*dot4*M)+
+			   M*(-((1.+2.*a1)*(-5.+4.*a1)*(2.*dot1*dot3-dot5))-2.*(1.+a1*(-7.+4.*a1))*a2*dot4*M)*sh+(1.-4.*a1)*dot4*sqr(sh)))/(a1*pow<3,1>(a22*M2-sh));
+	    diag[1]=(-2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(-8.*dot1*dot3+8.*dot2*dot3+dot4*M)*(M2-th)+4.*a1*M*(M2-th)*(2.*dot2*M*(dot6+dot3*M)+dot5*(M2-sh)-2.*dot2*dot3*th)+
+			    pow(a1,4)*M2*(M2*(16.*(-dot1+dot2)*dot6+4.*(dot1*dot3-dot2*dot3+dot5)*M+3.*dot4*M2)+(8.*(dot1-dot2)*dot6-4.*(dot1*dot3-dot2*dot3+dot5)*M-3.*dot4*M2)*th)+
+			    (2.*dot1*dot6-dot5*M+dot4*(M2-sh))*(M2-th)*uh+2.*a1*(M2*(-9.*dot1*dot6+7.*dot2*dot6+dot1*dot3*M-dot2*dot3*M+2.*dot4*M2+dot4*sh)-
+										 (-5.*dot1*dot6+3.*dot2*dot6+dot1*dot3*M-dot2*dot3*M+2.*dot4*M2+dot4*sh)*th)*uh
+			    +a12*(M2*(6.*dot1*dot6-16.*dot2*dot6+M*(dot5-dot4*M)+dot4*sh)*(M2-th)+
+				  (M2*(16.*(dot1-dot2)*dot6-4.*(5.*dot1*dot3-5.*dot2*dot3+dot5)*M-3.*dot4*M2)+
+				   (8.*(-dot1+dot2)*dot6+4.*(5.*dot1*dot3-5.*dot2*dot3+dot5)*M+3.*dot4*M2)*th)*uh)+
+			    2.*pow(a1,3)*M*(-(M*(M2-th)*(2.*dot5*M+dot4*(2.*M2+sh+uh)))-dot2*(dot6*M*(3.*M2+th)+dot3*(M2-th)*(7.*M2+8.*uh))+
+					    dot1*(dot6*(5.*pow<3,1>(M)-M*th)+dot3*(M2-th)*(7.*M2+8.*uh)))))/(a1*a2*sqr(M2-th)*sqr(-(a12*M2)+uh));
+	    diag[2]=(-2.*M*(2.*pow(a1,5)*pow<3,1>(M)*(8.*dot2*dot3+dot4*M)*(M2-th)-(2.*dot2*dot3*M*(-M2+sh)+dot5*M*(3.*M2+sh-4.*th)+dot4*(M2-sh)*(2.*M2-sh-th))*(M2-th)+
+			    pow(a1,4)*M2*(M*(4.*dot5-dot4*M)*(M2-th)+8.*dot2*dot6*(2.*M2-th)+76.*dot2*dot3*M*(-M2+th))-
+			    2.*a1*dot2*(-(dot3*M*(11.*M2-5.*sh)*(M2-th))+dot6*(11.*pow<4,1>(M)+3.*sh*th-7.*M2*(sh+th)))+
+			    2.*a1*(M2-th)*(dot5*M*(3.*M2+2.*sh-2.*th)+dot4*(pow<4,1>(M)+sh*(sh+th)-M2*(sh+2.*th)))+
+			    a12*(M*(M2-th)*(-(dot5*(3.*M2+4.*sh))+dot4*M*(5.*M2+2.*sh+5.*th))+
+				 2.*dot2*(30.*dot6*pow<4,1>(M)-dot3*M*(47.*M2-14.*sh)*(M2-th)+4.*dot6*sh*th-2.*dot6*M2*(4.*sh+9.*th)))+
+			    2.*a2*dot1*(dot3*M*((3.+a1*(-3.+2.*a1)*(4.+a1*(-9.+4.*a1)))*M2+sh+2.*(3.-4.*a1)*a1*sh-4.*th)*(M2-th)+
+					dot6*((-1.+(-2.+a1)*a1*(-5.+8.*a1))*pow<4,1>(M)+(-1.+4.*a1)*sh*th+M2*(sh-8.*a1*sh+th+a1*(-6.+(13.-4.*a1)*a1)*th)))-
+			    2.*pow(a1,3)*M*(M*(M2-th)*(2.*dot5*M+dot4*(3.*M2+2.*sh+th))+dot2*(-(dot3*(65.*M2-8.*sh)*(M2-th))+3.*dot6*(9.*pow<3,1>(M)-5.*M*th)))))/(a1*a2*sqr(-(a22*M2)+sh)*sqr(M2-th));
+	    diag[3]=-4.*M*(a12*pow<3,1>(M)*(-((-11.-2.*a1+8.*a12)*(2.*dot2*dot3-dot5))-a1*(-4.+a1+4.*a12)*dot4*M)+
+			   M*((-3.+2.*a1)*(1.+4.*a1)*(2.*dot2*dot3-dot5)+2.*a1*(-2.+a1*(-1.+4.*a1))*dot4*M)*uh+(3.-4.*a1)*dot4*sqr(uh))/(a2*pow<3,1>(a12*M2-uh));
+	    diag[4]=(-2.*M*(16.*pow(a1,7)*(-dot1+dot2)*dot3*pow<5,1>(M)+4.*pow(a1,6)*pow<4,1>(M)*(-2.*dot1*dot6+2.*dot2*dot6+13.*dot1*dot3*M-15.*dot2*dot3*M+2.*dot5*M)+
+			    uh*((2.*dot1*dot6-2.*dot2*dot3*M+dot4*(M2-sh))*(M2-sh)+(-8.*dot1*dot3*M+4.*dot5*M+dot4*(M2-sh))*uh)+
+			    2.*pow(a1,3)*M*(pow<3,1>(M)*(-5.*dot1*dot6+17.*dot2*dot6+7.*dot1*dot3*M-45.*dot2*dot3*M+8.*dot5*M+dot4*M2)-
+					    M*((dot1+dot2)*dot6+(7.*dot1-19.*dot2)*dot3*M+2.*dot4*M2)*sh+dot4*M*sqr(sh)+
+					    (M*(-17.*dot1*dot6+15.*dot2*dot6+37.*dot1*dot3*M-65.*dot2*dot3*M+16.*dot5*M+2.*dot4*M2)+8.*(-dot1+dot2)*dot3*sh)*uh-dot4*M*sqr(uh))+
+			    a12*(M2*(6.*dot1*dot6*(M2-sh)-(16.*dot5*M+dot4*(M2-sh))*(M2-sh)+dot2*(50.*dot3*M*(M2-sh)+16.*dot6*(-2.*M2+sh)))+
+				 2.*((19.*dot1*dot6-18.*dot2*dot6-12.*dot1*dot3*M+47.*dot2*dot3*M-16.*dot5*M)*M2-2.*(2.*dot1*dot6-2.*dot2*dot6-5.*dot1*dot3*M+7.*dot2*dot3*M-2.*dot5*M+dot4*M2)*sh)*uh+
+				 5.*dot4*M2*sqr(uh))+2.*a1*(2.*M*(M2-sh)*(dot5*(M2-sh)+2.*dot2*(M*(dot6-dot3*M)+dot3*sh))-
+							    (M2*(7.*dot1*dot6-7.*dot2*dot6-dot1*dot3*M+11.*dot2*dot3*M-4.*dot5*M+dot4*M2)+
+							     (-5.*dot1*dot6+3.*dot2*dot6+dot1*dot3*M-5.*dot2*dot3*M+4.*dot5*M-2.*dot4*M2)*sh+dot4*sqr(sh))*uh+
+							    (4.*dot1*dot3*M-2.*M*(dot5+dot4*M)+dot4*sh)*sqr(uh))-
+			    2.*pow(a1,5)*pow<3,1>(M)*(-13.*dot1*dot6*M+11.*dot2*dot6*M+17.*dot1*dot3*M2-29.*dot2*dot3*M2+
+						      12.*dot5*M2+dot4*M*(sh-uh)-8.*dot1*dot3*(sh+uh)+8.*dot2*dot3*(sh+uh))-
+			    pow(a1,4)*M2*(M*(-12.*dot5*M2+8.*dot5*(sh+uh)+dot4*M*(M2-5.*sh+5.*uh))+2.*dot1*(7.*dot6*M2-4.*dot6*(sh+uh)+2.*dot3*M*(4.*M2+sh+17.*uh))-
+					  2.*dot2*(dot3*M*(17.*M2+6.*sh+38.*uh)+2.*dot6*(M2-2.*(sh+uh))))))/(a1*a2*sqr(-(a22*M2)+sh)*sqr(-(a12*M2)+uh));
 	    // diagram weights
 	    save[0]+=norm(diag[3]);
 	    save[1]+=norm(diag[1]);
