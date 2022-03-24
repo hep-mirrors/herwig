@@ -43,8 +43,8 @@ double MEPP2BC1S0Jet::me2() const {
     VectorWaveFunction g1w(rescaledMomenta()[0],mePartonData()[0],incoming);
     vector<VectorWaveFunction> g1;
     for(unsigned int ix=0;ix<2;++ix) {
-      g1w.reset(10);
-      //g1w.reset(2*ix);
+      //g1w.reset(10);
+      g1w.reset(2*ix);
       g1.push_back(g1w);
     }
     // matrix element
@@ -179,7 +179,7 @@ double MEPP2BC1S0Jet::me2() const {
     // final factors
     meSum *= 1./27.;
   }
-  //
+  // q qbar process
   else {
     a1 = rescaledMomenta()[0].mass()/M;
     a2 = rescaledMomenta()[1].mass()/M;
@@ -189,7 +189,7 @@ double MEPP2BC1S0Jet::me2() const {
     VectorWaveFunction g4w(rescaledMomenta()[3],mePartonData()[3],incoming);
     vector<VectorWaveFunction> g4;
     for(unsigned int ix=0;ix<2;++ix) {
-      g4w.reset(10);
+      //g4w.reset(10);
       g4w.reset(2*ix);
       g4.push_back(g4w);
     }
