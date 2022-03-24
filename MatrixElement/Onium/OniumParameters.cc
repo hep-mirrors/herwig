@@ -32,7 +32,8 @@ void OniumParameters::persistentOutput(PersistentOStream & os) const {
      << ounit(O1_P_prod_,GeV2*GeV2*GeV) << ounit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
      << ounit(O1_S_dec_,GeV2*GeV)
      << ounit(O1_P_dec_,GeV2*GeV2*GeV) << ounit(O1_D_dec_,GeV2*GeV2*GeV2*GeV)
-     << ounit(O8_S_prod_,GeV2*GeV);
+     << ounit(O8_S_prod_,GeV2*GeV)
+     << singletTripletMixing_;
 }
 
 void OniumParameters::persistentInput(PersistentIStream & is, int) {
@@ -42,7 +43,8 @@ void OniumParameters::persistentInput(PersistentIStream & is, int) {
      >> iunit(O1_P_prod_,GeV2*GeV2*GeV) >> iunit(O1_D_prod_,GeV2*GeV2*GeV2*GeV)
      >> iunit(O1_S_dec_,GeV2*GeV)
      >> iunit(O1_P_dec_,GeV2*GeV2*GeV) >> iunit(O1_D_dec_,GeV2*GeV2*GeV2*GeV)
-     >> iunit(O8_S_prod_,GeV2*GeV);
+     >> iunit(O8_S_prod_,GeV2*GeV)
+     >> singletTripletMixing_;
 }
 
 // The following static variable is needed for the type
