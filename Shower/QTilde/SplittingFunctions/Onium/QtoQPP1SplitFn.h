@@ -272,7 +272,7 @@ private:
   unsigned int n_;
 
   /**
-   *  Mixing angle between the $\phanton{A}^1P_1$ and $\phanton{A}^3P_1$ states
+   *  Mixing angle between the $\phantom{A}^1P_1$ and $\phantom{A}^3P_1$ states
    *
    */
   double theta_;
