@@ -290,6 +290,89 @@ double MEPP2BC3P2Jet::me2() const {
       for(unsigned int ih2=0;ih2<2;++ih2) {
 	for(unsigned int ih3=0;ih3<5;++ih3) {
 	  for(unsigned int ih4=0;ih4<2;++ih4) {
+	    complex<Energy> dot1 = rescaledMomenta()[0]*g4[ih4].wave();
+	    complex<Energy> dot2 = rescaledMomenta()[1]*g4[ih4].wave();
+	    complex<Energy> dot3=u1[ih1].dimensionedWave().scalar(vbar2[ih2].dimensionedWave());
+	    LorentzPolarizationVectorE vec1 = u1[ih1].dimensionedWave().vectorCurrent(vbar2[ih2].dimensionedWave());
+	    LorentzPolarizationVectorE vec2 = u1[ih1].dimensionedWave().slash(g4[ih4].wave()).vectorCurrent(vbar2[ih2].dimensionedWave());
+	    LorentzVector<complex<Energy2> >vec3 = u1[ih1].dimensionedWave().slash(rescaledMomenta()[3]).vectorCurrent(vbar2[ih2].dimensionedWave());
+	    LorentzVector<complex<Energy2> > vec4 = u1[ih1].dimensionedWave().slash(g4[ih4].wave()).slash(rescaledMomenta()[3]).vectorCurrent(vbar2[ih2].dimensionedWave());
+	    LorentzPolarizationVectorE vec5 = ten3[ih3].wave().preDot(rescaledMomenta()[0]);
+	    LorentzPolarizationVectorE vec6 = ten3[ih3].wave().preDot(rescaledMomenta()[1]);
+	    LorentzPolarizationVector vec7 = ten3[ih3].wave().preDot(g4[ih4].wave());
+	    complex<Energy2> dot4 = vec1*vec5;
+	    complex<Energy2> dot5 = vec1*vec6;
+	    complex<Energy>  dot6 = vec1*vec7;
+	    complex<Energy2> dot7 = vec2*vec5;
+	    complex<Energy2> dot8 = vec2*vec6;
+	    complex<Energy3> dot9 = vec3*vec5;
+	    complex<Energy3> dot10 = vec3*vec6;
+	    complex<Energy2> dot11 = vec5*rescaledMomenta()[0];
+	    complex<Energy2> dot12 = vec2*rescaledMomenta()[3];
+	    complex<Energy2> dot13 = vec5*rescaledMomenta()[1];
+	    complex<Energy>  dot14 = vec5*g4[ih4].wave();
+	    complex<Energy2> dot15 = vec6*rescaledMomenta()[1];
+	    complex<Energy>  dot16 = vec6*g4[ih4].wave();
+	    complex<Energy3> dot17 = vec4*vec5;
+	    complex<Energy>  dot18 = vec1*g4[ih4].wave();
+	    complex<Energy2> dot19 = vec1*rescaledMomenta()[3];
+	    complex<Energy3> dot20 = vec4*vec6;
+	    // diagrams
+	    diag[0]=(-8.*M2*(pow(a1,6)*dot6*pow<5,1>(M)-pow(a1,5)*pow<4,1>(M)*(2.*(dot14+dot16)*dot3+3.*dot6*M)+
+			     pow(a1,4)*pow<3,1>(M)*(-2.*(dot1+dot2)*(dot4+dot5)+2.*dot14*dot3*M+4.*dot16*dot3*M+2.*dot7*M+2.*dot8*M+3.*dot6*M2-dot6*th-dot6*uh)+
+			     uh*(-2.*dot11*dot12+2.*dot12*dot13+4.*dot1*dot11*dot3+4.*dot1*dot13*dot3-2.*dot1*dot9+2.*dot2*dot9+2.*dot1*dot4*M-dot7*M2+dot7*th+
+				 2.*dot14*dot3*uh-dot7*uh)+pow(a1,3)*M2*(-2.*dot11*dot12+2.*dot12*dot15+2.*dot10*dot2+2.*dot2*dot9+2.*dot2*dot4*M+
+									 4.*dot2*dot5*M-dot6*pow<3,1>(M)-2.*dot1*(dot10-2.*(dot11+dot15)*dot3+dot9-2.*dot4*M-3.*dot5*M)-
+									 2.*dot16*dot3*M2-3.*dot7*M2-5.*dot8*M2+2.*dot16*dot3*th+dot7*th+dot8*th+dot6*M*th+
+									 (4.*dot14*dot3+2.*dot16*dot3-dot7-dot8+3.*dot6*M)*uh)+
+			     a12*M*(2.*dot11*dot12*M+2.*dot12*dot13*M-4.*dot12*dot15*M-4.*dot10*dot2*M-2.*dot2*dot9*M+dot7*pow<3,1>(M)+4.*dot8*pow<3,1>(M)-
+				    2.*dot2*dot5*M2+2.*dot2*dot5*th-dot7*M*th-4.*dot8*M*th+(2.*dot2*dot4-M*(4.*(dot14+dot16)*dot3+dot7-2.*dot8+3.*dot6*M)+dot6*th)*uh+
+				    2.*dot1*(2.*dot10*M-2.*dot11*dot3*M-2.*dot13*dot3*M-4.*dot15*dot3*M+dot9*M-dot4*M2-3.*dot5*M2+dot5*th+dot4*uh))+
+			     a1*(-((2.*dot12*(dot13-dot15)-2.*dot10*dot2+dot8*(M2-th))*(M2-th))-
+				 (-2.*dot11*dot12+2.*dot12*dot13+2.*dot2*(dot9+dot4*M)+(-2.*dot16*dot3-3.*dot7+dot8-dot6*M)*M2+(2.*dot16*dot3+dot7-dot8+dot6*M)*th)*uh+
+				 (-2.*dot14*dot3+dot7)*sqr(uh)+2.*dot1*(2.*dot13*dot3*(-M2+sh)+(2.*dot15*dot3+dot5*M)*(M2-th)+
+									dot10*(-M2+th)+(-2.*dot11*dot3+dot9-2.*dot4*M)*uh))))/(a1*a2*sqr(-(a22*M2)+th)*sqr(-(a12*M2)+uh));
+	    diag[1]=(-16.*a2*(dot17-2.*(dot11+dot13)*dot18+2.*dot14*dot19+2.*dot2*dot4)*pow<3,1>(M))/(a1*pow<3,1>(a22*M2-th));
+	    diag[2]=(8.*M2*(2.*pow(a1,5)*(dot14-dot16)*dot3*pow<4,1>(M)+pow(a1,4)*pow<3,1>(M)*(2.*(dot1+dot2)*(dot4-dot5)+M*(4.*dot16*dot3-2.*dot7+2.*dot8-dot6*M)+dot6*sh)-
+			    (M2-sh)*(-2.*dot12*dot13-4.*dot1*dot13*dot3+2.*dot1*dot9-2.*dot2*dot9-dot17*M+2.*dot13*dot18*M-2.*dot14*dot19*M-2.*dot1*dot4*M-
+				     2.*dot2*dot4*M+2.*dot11*(dot12-2.*dot1*dot3+dot18*M)+dot7*M2-dot7*th-2.*dot14*dot3*uh+dot7*uh)+
+			    pow(a1,3)*M2*(2.*dot12*(dot11+dot15)+2.*dot10*dot2-2.*dot2*dot9-dot17*M+(2.*(dot11+2.*dot13-dot15)*dot18-2.*dot14*dot19+2.*dot16*dot19+dot20)*M-
+					  2.*dot2*dot4*M+6.*dot2*dot5*M+3.*dot6*pow<3,1>(M)-2.*dot1*(dot10+2.*(dot11+2.*dot13-dot15)*dot3-dot9+(dot4-3.*dot5)*M)+
+					  4.*dot14*dot3*M2-2.*dot16*dot3*M2+dot7*M2-5.*dot8*M2-4.*dot14*dot3*sh-3.*dot6*M*sh+2.*dot16*dot3*th-dot7*th+dot8*th-
+					  4.*dot14*dot3*uh+2.*dot16*dot3*uh+dot7*uh-dot8*uh)-
+			    a12*M*(4.*dot12*dot15*M+4.*dot10*dot2*M+2.*dot14*dot3*pow<3,1>(M)+4.*dot7*pow<3,1>(M)-4.*dot8*pow<3,1>(M)+3.*dot6*pow<4,1>(M)-4.*dot15*dot18*M2+
+				   4.*dot16*dot19*M2+2.*dot20*M2-4.*dot2*dot4*M2+6.*dot2*dot5*M2+4.*dot2*dot4*sh-2.*dot14*dot3*M*sh-4.*dot7*M*sh-3.*dot6*M2*sh-
+				   2.*dot2*dot5*th+4.*dot8*M*th-dot6*M2*th+dot6*sh*th+2.*(dot2*dot4+2.*dot16*dot3*M-dot7*M-dot8*M)*uh+
+				   dot1*(-4.*dot10*M+8.*dot15*dot3*M-4.*dot4*M2+6.*dot5*M2+4.*dot4*sh-2.*dot5*th+2.*dot4*uh))+
+			    a1*(-2.*dot17*pow<3,1>(M)+6.*dot13*dot18*pow<3,1>(M)-2.*dot15*dot18*pow<3,1>(M)-4.*dot14*dot19*pow<3,1>(M)+
+				2.*dot16*dot19*pow<3,1>(M)+dot20*pow<3,1>(M)-6.*dot2*dot4*pow<3,1>(M)+2.*dot2*dot5*pow<3,1>(M)+4.*dot7*pow<4,1>(M)-
+				dot8*pow<4,1>(M)+dot6*pow<5,1>(M)-2.*dot12*dot13*M2+2.*dot12*dot15*M2+2.*dot10*dot2*M2-4.*dot2*dot9*M2+2.*dot12*dot13*sh+
+				4.*dot2*dot9*sh+2.*dot17*M*sh-6.*dot13*dot18*M*sh+4.*dot14*dot19*M*sh+6.*dot2*dot4*M*sh-dot6*pow<3,1>(M)*sh-4.*dot7*M2*sh-
+				2.*dot12*dot15*th-2.*dot10*dot2*th+2.*dot15*dot18*M*th-2.*dot16*dot19*M*th-dot20*M*th-2.*dot2*dot5*M*th-dot6*pow<3,1>(M)*th-
+				2.*dot7*M2*th+2.*dot8*M2*th+2.*dot7*sh*th+dot6*M*sh*th-dot8*sqr(th)+2.*dot11*(dot12+dot18*M)*(2.*M2-2.*sh-uh)+
+				((dot17-4.*dot13*dot18+2.*dot14*dot19)*M+2.*dot2*(dot9+dot4*M)+2.*dot16*dot3*M2+dot7*M2-dot8*M2-2.*dot7*sh+4.*dot14*dot3*(-M2+sh)-
+				 2.*dot16*dot3*th+dot7*th+dot8*th)*uh+(2.*dot14*dot3-dot7)*sqr(uh)+
+				2.*dot1*(-3.*dot4*pow<3,1>(M)+dot5*pow<3,1>(M)-6.*dot13*dot3*M2+2.*dot15*dot3*M2+2.*dot9*M2+
+					 6.*dot13*dot3*sh-2.*dot9*sh+3.*dot4*M*sh-2.*dot15*dot3*th-dot5*M*th+dot10*(-M2+th)+
+					 4.*dot13*dot3*uh-dot9*uh+dot4*M*uh+2.*dot11*dot3*(-2.*M2+2.*sh+uh)))))/(a1*a2*sqr(M2-sh)*sqr(-(a22*M2)+th));
+	    diag[3]=(-16.*a1*(dot20-2.*dot1*dot5)*pow<3,1>(M))/(a2*pow<3,1>(-(a12*M2)+uh));
+	    diag[4]=(-8.*M2*(2.*pow(a1,5)*(dot14+3.*dot16)*dot3*pow<4,1>(M)+
+			     pow(a1,4)*pow<3,1>(M)*(2.*(dot1+dot2)*(dot4+3.*dot5)+M*(-2.*(dot14*dot3+3.*dot16*dot3+dot7+3.*dot8)+dot6*M)-dot6*sh)-
+			     pow(a1,3)*M2*(-2.*dot11*dot12+6.*dot12*dot15+6.*dot10*dot2+2.*dot2*dot9+dot17*M+3.*dot20*M+2.*dot2*dot4*M+
+					   6.*dot2*dot5*M+dot6*pow<3,1>(M)+2.*dot1*(-3.*dot10+2.*(dot11+4.*dot13+3.*dot15)*dot3-dot9+dot4*M+3.*dot5*M)-
+					   2.*dot16*dot3*M2-3.*dot7*M2-9.*dot8*M2-dot6*M*sh+2.*dot16*dot3*th+dot7*th+3.*dot8*th+(4.*dot14*dot3+10.*dot16*dot3-dot7-3.*dot8)*uh)-
+			     uh*(-2.*dot11*dot12+2.*dot12*dot15+2.*dot2*(dot10+dot9)-2.*dot1*(dot10-2.*(dot11+2.*dot13+dot15)*dot3+dot9)+
+				 M*(dot17+dot20-(dot7+dot8)*M)+(dot7+dot8)*th+(2.*(dot14+dot16)*dot3-dot7-dot8)*uh)+
+			     a12*M*(-6.*dot1*dot10*M-2.*dot11*dot12*M+6.*dot12*dot15*M+6.*dot10*dot2*M+4.*dot1*dot11*dot3*M+16.*dot1*dot13*dot3*M+
+				    12.*dot1*dot15*dot3*M-2.*dot1*dot9*M+2.*dot2*dot9*M-dot7*pow<3,1>(M)-5.*dot8*pow<3,1>(M)+dot17*M2+
+				    3.*dot20*M2+2.*dot1*dot5*M2+2.*dot2*dot5*M2-2.*dot1*dot5*th-2.*dot2*dot5*th+dot7*M*th+5.*dot8*M*th+
+				    (-2.*(dot1+dot2)*(dot4+2.*dot5)+M*(4.*dot14*dot3+8.*dot16*dot3+dot7+dot8-dot6*M)+dot6*sh)*uh)+
+			     a1*(-((M2-th)*(2.*dot10*dot2+M*(dot20-dot8*M)+dot8*th))+
+				 (4.*dot10*dot2+2.*dot2*(dot9+(dot4+dot5)*M)+M*(dot17+2.*dot20+M*(-2.*dot16*dot3-3.*(dot7+dot8)+dot6*M)-dot6*sh)+
+				  (2.*dot16*dot3+dot7+dot8)*th)*uh+(2.*dot14*dot3+4.*dot16*dot3-dot7-2.*dot8)*sqr(uh)-
+				 2.*dot12*(dot13*(M2-sh)+dot15*(M2-th-2.*uh)+dot11*uh)+
+				 2.*dot1*((dot10-2.*(dot13+dot15)*dot3)*(M2-th)+
+					  (-2.*dot10+2.*(dot11+3.*dot13+2.*dot15)*dot3-dot9+(dot4+dot5)*M)*uh))))/(a1*a2*sqr(M2-sh)*sqr(-(a12*M2)+uh));
 	    // diagram weights
 	    save[0]+=norm(diag[2]);
 	    save[1]+=norm(diag[4]);
@@ -301,7 +384,7 @@ double MEPP2BC3P2Jet::me2() const {
       }
     }
     // final factors
-    meSum *=  8./243.;
+    meSum *= 1./810.;
   }
   // save the diagram weights
   meInfo(save);
