@@ -19,6 +19,7 @@
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
@@ -145,6 +146,10 @@ void MEPP2BCJetBase::constructVertex(tSubProPtr sub) {
   else if(hard[2]->dataPtr()->iSpin()==PDT::Spin1) {
     vector<VectorWaveFunction> v3;
     VectorWaveFunction(v3,hard[2],outgoing,true ,false,true,vector_phase);
+  }
+  else if(hard[2]->dataPtr()->iSpin()==PDT::Spin2) {
+    vector<TensorWaveFunction> t3;
+    TensorWaveFunction(t3,hard[2],outgoing,true ,false,true,tensor_phase);
   }
   else
     assert(false);
