@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  MEPP2BCJetBase(long pid=541) : id_(pid), n_(1)
+  MEPP2BCJetBase() : n_(1)
   {}
 
 public:
@@ -106,6 +106,13 @@ protected:
    */
   void setME(ProductionMatrixElement & me) const {
     me_=me;
+  }
+
+  /**
+   *  Set the diquark state
+   */
+  void setBcState(long pid) {
+    id_ = pid;
   }
 
 public:

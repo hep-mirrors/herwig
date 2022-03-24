@@ -21,14 +21,6 @@ class MEPP2BC3S1Jet: public MEPP2BCJetBase {
 
 public:
 
-  /**
-   * The default constructor.
-   */
-  MEPP2BC3S1Jet() : MEPP2BCJetBase(543)
-  {}
-
-public:
-
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**

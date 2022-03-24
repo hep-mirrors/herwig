@@ -249,6 +249,7 @@ IBPtr MEPP2BC1S0Jet::fullclone() const {
 }
 
 void MEPP2BC1S0Jet::doinit() {
+  setBcState(541);
   MEPP2BCJetBase::doinit();
   O1_ = oniumParameters()->singletMEProduction<0>(bcbar,principleQuantumNumber(),0,0);
 }
