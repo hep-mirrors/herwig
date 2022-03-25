@@ -37,38 +37,97 @@ MEDiffraction::MEDiffraction()
 
 void MEDiffraction::getDiagrams() const {
     //incoming particles
-    cPDPair incomingHardons = generator()->eventHandler()->incoming();
+    cPDPair incomingHadrons = generator()->eventHandler()->incoming();
 
     tcPDPtr pom = getParticleData(990);
 
     //get incoming particles
-    tcPDPtr prt11 = getParticleData(incomingHardons.first->id());
-    tcPDPtr prt12 = getParticleData(incomingHardons.second->id());
+    tcPDPtr prt11 = getParticleData(incomingHadrons.first->id());
+    tcPDPtr prt12 = getParticleData(incomingHadrons.second->id());
+
+    // Check that we only have protons and neutrons at this stage
+    // (also anti-particle versions accepted)
+    if (incomingHadrons.first->id() != 2212 or incomingHadrons.first->id() != 2112){
+      // Error message
+    }
+    if (incomingHadrons.second->id() != 2212 or incomingHadrons.second->id() != 2112){
+      // Error message
+    }
 
     //get sign of id
     int sign1=0, sign2=0;
-    sign1 = (incomingHardons.first->id() > 0) ? 1 : -1;
-    sign2 = (incomingHardons.second->id() > 0) ? 1 : -1;
+    sign1 = (incomingHadrons.first->id() > 0)  ? 1 : -1;
+    sign2 = (incomingHadrons.second->id() > 0) ? 1 : -1;
 
-    tcPDPtr prt21 = getParticleData(sign1*2214);//Delta+
-    tcPDPtr prt22 = getParticleData(sign2*2214);//Delta+
+    // Initialize all the pointers for the products of the diffractive events
+    // The quarks are the same regardless
+    // for the left side
+    tcPDPtr q11, q21;
+    // for the right side
+    tcPDPtr q12, q22;
+    // Delta baryons produced in low-mass diffractive events
+    tcPDPtr prt21, prt22;
+    // Beam Remnants:
+    // for the left side
+    tcPDPtr dq11, dq111, dq21;
+    // for the right side
+    tcPDPtr dq12, dq112, dq22;
+    // If hadron 1 is a proton:
+    if (incomingHadrons.first->id() == 2212){
+      // Quarks
+      q11 = getParticleData(sign1*2); //u
+      q21 = getParticleData(sign1*1); //d
+      // Delta diffraction
+      prt21 = getParticleData(sign1*2214); // Delta+
+      // Remnants
+      dq11  = getParticleData(sign1*2101); //ud_0
+      dq111 = getParticleData(sign1*2103); //ud_1
+      dq21  = getParticleData(sign1*2203); //uu_1
 
-    //for the left side
-    tcPDPtr q11 = getParticleData(sign1*2); //u
-    tcPDPtr q21 = getParticleData(sign1*1); //d
-    //for the right side
-    tcPDPtr q12 = getParticleData(sign2*2); //u
-    tcPDPtr q22 = getParticleData(sign2*1); //d
-    //for the left side
-    tcPDPtr dq11 = getParticleData(sign1*2101); //ud_0
-    tcPDPtr dq111 = getParticleData(sign1*2103); //ud_1
-    tcPDPtr dq21 = getParticleData(sign1*2203); //uu_1
-    //for the right side
-    tcPDPtr dq12 = getParticleData(sign2*2101); //ud_0
-    tcPDPtr dq112 = getParticleData(sign2*2103); //ud_1
-    tcPDPtr dq22 = getParticleData(sign2*2203); //uu_1
+    }
+    // Otherwise it's a neutron
+    else {
+      // Note that we swap the order so that the tree diagram code is symmetric
+      // with respect to protons and neutrons
+      // (helps with the color geometries later)
+      q11 = getParticleData(sign1*1); //d
+      q21 = getParticleData(sign1*2); //u
 
-    tcPDPtr gl = getParticleData(21);//gluon
+      prt21 = getParticleData(sign1*2114); // Delta0
+
+      dq11  = getParticleData(sign1*2101); //ud_0
+      dq111 = getParticleData(sign1*2103); //ud_1
+      dq21  = getParticleData(sign1*1103); //dd_1
+    }
+
+    // If hadron 2 is a proton
+    if (incomingHadrons.first->id() == 2212){
+      // Quarks
+      q12 = getParticleData(sign2*2); //u
+      q22 = getParticleData(sign2*1); //d
+      // Delta diffraction
+      prt22 = getParticleData(sign2*2214); // Delta+
+      // Remnants
+      dq12  = getParticleData(sign2*2101); //ud_0
+      dq112 = getParticleData(sign2*2103); //ud_1
+      dq22  = getParticleData(sign2*2203); //uu_1
+
+    }
+    // Otherwise it's a neutron
+    else {
+      q12 = getParticleData(sign2*1); //d
+      q22 = getParticleData(sign2*2); //u
+
+
+      prt22 = getParticleData(sign2*2114); // Delta0
+
+      dq12  = getParticleData(sign2*2101); //ud_0
+      dq112 = getParticleData(sign2*2103); //ud_1
+      dq22  = getParticleData(sign2*1103); //dd_1
+    }
+
+    // Initialize the gluon (only used in the three-body decay option)
+    tcPDPtr gl = getParticleData(21); //gluon
 
     //switch between dissociation decays to different
     //number of clusters or dissociation into delta only
@@ -142,7 +201,10 @@ void MEDiffraction::getDiagrams() const {
             add(new_ptr((Tree2toNDiagram(5), prt11, pom, gl, q22, prt12, 1, prt11, 2, gl, 3, q22, 4, dq22, -2)));
             break;
           case 2: //double
-            //u -- ud_0 left u -- ud_0 right
+            //u -- ud_0 left u -- ud_0 right (for proton-proton scattering)
+            //d -- ud_0 left u -- ud_0 right (for n-p)
+            //u -- ud_0 left d -- ud_0 right (for p-n)
+            //d -- ud_0 left d -- ud_0 right (for n-n)
             add(new_ptr((Tree2toNDiagram(7), prt11, q11, gl, pom, gl, q12, prt12, 1, dq11, 2, q11, 3, gl, 4,
             gl, 5, q12, 6, dq12, -1)));
             //u -- ud_0 left d -- uu_1 right
