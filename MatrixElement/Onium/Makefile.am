@@ -18,6 +18,7 @@ MEPP2BC3P0Jet.h MEPP2BC3P0Jet.cc\
 MEPP2BCP1Jet.h MEPP2BCP1Jet.cc\
 MEPP2BC3P2Jet.h MEPP2BC3P2Jet.cc\
 MEPP2BC3D1Jet.h MEPP2BC3D1Jet.cc\
+MEPP2BC3D3Jet.h MEPP2BC3D3Jet.cc\
 MassiveIncoming.h MassiveIncoming.cc \
 TwoToThree.h TwoToThree.cc \
 GGtoBCQQbarBase.h GGtoBCQQbarBase.cc \

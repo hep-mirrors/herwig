@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/Rank3TensorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
@@ -150,6 +151,10 @@ void MEPP2BCJetBase::constructVertex(tSubProPtr sub) {
   else if(hard[2]->dataPtr()->iSpin()==PDT::Spin2) {
     vector<TensorWaveFunction> t3;
     TensorWaveFunction(t3,hard[2],outgoing,true ,false,true,tensor_phase);
+  }
+  else if(hard[2]->dataPtr()->iSpin()==PDT::Spin3) {
+    vector<Rank3TensorWaveFunction> t3;
+    Rank3TensorWaveFunction(t3,hard[2],outgoing,true ,false,true);
   }
   else
     assert(false);
