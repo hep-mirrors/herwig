@@ -95,17 +95,18 @@ double MEPP2BC3S1Jet::me2() const {
 	      complex<Energy2> dot13 = vec3*rescaledMomenta()[0];
 	      // diagrams
 	      diag[0]=(2.*(dot10-2.*dot5*dot7+2.*dot1*dot8+2.*dot2*dot9)*M2)/(a2*sqr(-(a12*M2)+sh));
-	      diag[1]=-((M*(-4.*dot13*dot3+2.*dot11*(dot2+dot4)+(dot10-2.*dot5*dot7)*M+2.*a1*M*(dot2*dot9-dot4*dot9+(dot12-2.*dot5*dot6)*M)-
-			    2.*dot1*(dot13+2.*dot4*dot6-dot8*M)-dot12*M2+2.*dot5*dot6*M2+2.*a12*dot5*dot6*M2-dot12*sh+dot12*uh-2.*dot5*dot6*uh))/(a1*a2*(a12*M2-sh)*(M2-th)));
-	      diag[2]=-((M*(-4.*dot13*dot3+2.*dot11*(dot2+dot4)-2.*dot1*(dot13+2.*dot4*dot6)+2.*a2*dot4*dot9*M+(dot10-2.*a2*dot2*dot9)*M-dot12*M2+
-			    2.*a1*dot12*M2+2.*dot5*dot6*M2-4.*a1*dot5*dot6*M2+2.*a12*dot5*dot6*M2-dot12*sh+dot12*uh-2.*dot5*dot6*uh))/(a1*a2*(M2-th)*(a22*M2-uh)));
+	      diag[1]=(2.*(dot12-dot5*dot6)*M)/(a1*a2*(-M2+th))
+		+((dot12*M-2.*dot5*dot6*M)/(a1-a12)
+		  -(M*(-4.*dot13*dot3+2.*dot11*(dot2+dot4)-2.*dot1*(dot13+2.*dot4*dot6)+(dot10-2.*dot5*dot7+2.*dot1*dot8+2.*a1*(dot2-dot4)*dot9)*M))/(a1*a2*(-M2+th)))/(-(a12*M2)+sh);
+	      diag[2]=(-2.*(dot12-dot5*dot6)*M)/(a1*a2*(-M2+th))
+		+(-((dot12*M)/(a1*a2))-(M*(-4.*dot13*dot3+2.*dot11*(dot2+dot4)-2.*dot1*(dot13+2.*dot4*dot6)+(dot10-2.*a2*(dot2-dot4)*dot9)*M))/(a1*a2*(-M2+th)))/(-(a22*M2)+uh);
 	      diag[3]=(2.*(dot10+2.*dot4*dot9)*M2)/(a1*sqr(-(a22*M2)+uh));
-	      diag[4]=(M*(4.*dot13*dot3-2.*dot11*(dot2+dot4)+2.*dot1*(dot13+2.*dot4*dot6)+2.*a2*dot2*dot9*M+2.*a1*M*(dot4*dot9-dot12*M+2.*dot5*dot6*M)+dot12*M2-
-			  2.*dot5*dot6*M2-2.*a12*dot5*dot6*M2+dot12*sh-dot12*uh+2.*dot5*dot6*uh))/(a1*a2*(a12*M2-sh)*(a22*M2-uh));
-	      Complex aSum =  (-0.5*diag[0] + diag[1] + diag[2] - 0.5*diag[3])/3. + 1.5*(diag[0] + diag[3] + 2.*diag[4]);
+	      diag[4]=(dot12*M)/((a1-a12)*(-(a22*M2)+uh))+
+		(-(((dot12-2.*dot5*dot6)*M)/(a1*a2))-(2.*M*(-2.*dot13*dot3+dot11*(dot2+dot4)-dot1*(dot13+2.*dot4*dot6)+(-(a2*dot2)-a1*dot4)*dot9*M))/(a1*a2*(-(a22*M2)+uh)))/(-(a12*M2)+sh);
 	      // diagram weights
 	      save[0]+=norm(diag[3]);
 	      save[1]+=norm(diag[1]);
+	      Complex aSum =  (-0.5*diag[0] + diag[1] + diag[2] - 0.5*diag[3])/3. + 1.5*(diag[0] + diag[3] + 2.*diag[4]);
 	      meSum+=norm(aSum);
 	      me(2*ih1,ih2,ih3,ih4)=aSum;
 	    }
@@ -151,11 +152,16 @@ double MEPP2BC3S1Jet::me2() const {
 	      complex<Energy> dot12 = vec2*g1[ih1].wave();
 	      complex<Energy2> dot13 = vec3*rescaledMomenta()[0];
 	      // diagrams
-	      diag[0]=(M*(4.*dot2*dot7*M-2.*dot8*M))/(a1*sqr(-(a22*M2)+sh));
-	      diag[1]=(M*(4.*dot13*dot3-2.*dot11*(dot2+dot4)+2.*a1*(dot2-dot4)*dot7*M+dot8*M-2.*dot5*dot9*M+2.*dot1*(dot13+2.*dot2*dot6+dot10*M)+dot12*M2-2.*dot5*dot6*M2+2.*a12*(dot12-dot5*dot6)*M2-dot12*th+2.*dot5*dot6*th-2.*dot12*uh+2.*dot5*dot6*uh))/(a1*a2*(M2-th)*(a12*M2-uh));
-	      diag[2]=(M*(4.*dot13*dot3-2.*dot11*(dot2+dot4)+2.*dot1*(dot13+2.*dot2*dot6)-2.*a2*dot2*dot7*M+2.*dot4*dot7*M-2.*a1*dot4*dot7*M+dot8*M-3.*dot12*M2+4.*a1*dot12*M2-2.*a12*dot12*M2+2.*dot5*dot6*M2-4.*a1*dot5*dot6*M2+2.*a12*dot5*dot6*M2+2.*dot12*sh-2.*dot5*dot6*sh+dot12*th))/(a1*a2*(a22*M2-sh)*(M2-th));
+	      diag[0]=(2.*(2.*dot2*dot7-dot8)*M2)/(a1*sqr(-(a22*M2)+sh));
+	      diag[1]=(-2.*(dot12-dot5*dot6)*M)/(a1*a2*(-M2+th))
+		+(-(((dot12-2.*dot5*dot6)*M)/(a1*a2))+
+		  (M*(4.*dot13*dot3-2.*dot11*(dot2+dot4)+(2.*a1*(dot2-dot4)*dot7+dot8-2.*dot5*dot9)*M+2.*dot1*(dot13+2.*dot2*dot6+dot10*M)))/(a1*a2*(-M2+th)))/(-(a12*M2)+uh);
+	      diag[2]=(2.*(dot12-dot5*dot6)*M)/(a1*a2*(-M2+th))
+		+((dot12*M)/(a1-a12)
+		  +(M*(4.*dot13*dot3-2.*dot11*(dot2+dot4)+2.*dot1*(dot13+2.*dot2*dot6)+(-2.*a2*(dot2-dot4)*dot7+dot8)*M))/(a1*a2*(-M2+th)))/(-(a22*M2)+sh);
 	      diag[3]=(-2.*(2.*dot1*dot10-2.*dot4*dot7+dot8-2.*dot5*dot9)*M2)/(a2*sqr(-(a12*M2)+uh));
-	      diag[4]=-((M*(-4.*dot13*dot3+2.*dot11*(dot2+dot4)-2.*dot1*(dot13+2.*dot2*dot6)-2.*dot4*dot7*M-2.*a1*M*(dot2*dot7-dot4*dot7+(dot12-2.*dot5*dot6)*M)+dot12*M2-2.*dot5*dot6*M2-2.*a12*dot5*dot6*M2-dot12*sh+2.*dot5*dot6*sh+dot12*uh))/(a1*a2*(a22*M2-sh)*(a12*M2-uh)));
+	      diag[4]=(dot12*M-2.*dot5*dot6*M)/((a1-a12)*(-(a12*M2)+uh))
+		+(-((dot12*M)/(a1*a2))+(2.*M*(2.*dot13*dot3-dot11*(dot2+dot4)+dot1*(dot13+2.*dot2*dot6)+(a1*dot2+dot4-a1*dot4)*dot7*M))/(a1*a2*(-(a12*M2)+uh)))/(-(a22*M2)+sh);
 	      // diagram weights
 	      save[0]+=norm(diag[3]);
 	      save[1]+=norm(diag[1]);
@@ -269,14 +275,18 @@ double MEPP2BC3S1Jet::me2() const {
 	    complex<Energy> dot9 = vec2*v3[ih3].wave();
 	    complex<Energy2> dot12 = vec4*rescaledMomenta()[3];
 	    complex<Energy> dot13 = vec1*g4[ih4].wave();
-	    diag[0]=-M*(-2.*dot1*dot10+2.*dot10*dot3-4.*dot2*dot3*dot6-4.*dot3*dot4*dot6+2.*dot2*dot8-2.*dot4*dot8-2.*a2*dot1*dot7*M+
-			2.*a1*dot3*dot7*M+2.*a12*dot5*dot6*M2+dot9*M2-2.*a1*dot9*M2-dot9*th-2.*dot5*dot6*uh+dot9*uh)/(a1*a2*(a22*M2-th)*(a12*M2-uh));
-	    diag[1]= 2.*(dot12-2.*(dot11*dot5+dot3*dot7))*M2/(a1*sqr(-(a22*M2)+th));
-	    diag[2]=-M*(-2.*dot1*dot10+2.*dot10*dot3-4.*dot2*dot3*dot6-4.*dot3*dot4*dot6+2.*dot2*dot8-2.*dot4*dot8+dot12*M-2.*dot11*dot5*M-
-			  2.*a2*dot1*dot7*M-2.*dot3*dot7*M+2.*a1*dot3*dot7*M+2.*a12*dot5*dot6*M2+dot9*M2-2.*a1*dot9*M2-dot9*th-2.*dot5*dot6*uh+dot9*uh)/(a1*a2*(M2-sh)*(a22*M2-th));
-	    diag[3]= 2.*(dot12-2.*dot13*(dot2+dot4)+2.*dot1*dot7)*M2/(a2*sqr(-(a12*M2)+uh));
-	    diag[4]=-M*(-2.*dot1*dot10+2.*dot10*dot3-4.*dot2*dot3*dot6-4.*dot3*dot4*dot6+2.*dot2*dot8-2.*dot4*dot8+dot12*M-2.*dot13*dot2*M-
-			2.*dot13*dot4*M+2.*a1*dot1*dot7*M+2.*a1*dot3*dot7*M+2.*a12*dot5*dot6*M2+dot9*M2-2.*a1*dot9*M2-dot9*th-2.*dot5*dot6*uh+dot9*uh)/(a1*a2*(M2-sh)*(a12*M2-uh));
+	    // diagrams
+	    diag[0]=-(((-2.*dot5*dot6+dot9)*M)/(a1*a2*(-(a22*M2)+th)))+
+	      ((dot9*M)/(a1-a12)-(2.*M*(-(dot1*dot10)+dot10*dot3-2.*dot2*dot3*dot6-2.*dot3*dot4*dot6+dot2*dot8-dot4*dot8-a2*dot1*dot7*M+a1*dot3*dot7*M))
+	       /(a1*a2*(-(a22*M2)+th)))/(-(a12*M2)+uh);
+	    diag[1]=(2.*(dot12-2.*(dot11*dot5+dot3*dot7))*M2)/(a1*sqr(-(a22*M2)+th));
+	    diag[2]=-(((2.*dot5*dot6-dot9)*M)/(a1*a2*(-(a22*M2)+th)))+
+	      ((-2.*(dot5*dot6-dot9)*M)/(a1*a2)-(M*(-2.*(dot1*dot10-dot10*dot3+2.*dot3*(dot2+dot4)*dot6+(-dot2+dot4)*dot8)+(dot12-2.*dot11*dot5-2.*a2*(dot1+dot3)*dot7)*M))
+	       /(a1*a2*(-(a22*M2)+th)))/(-M2+sh);
+	    diag[3]=(2.*(dot12-2.*dot13*(dot2+dot4)+2.*dot1*dot7)*M2)/(a2*sqr(-(a12*M2)+uh));
+	    diag[4]=-((dot9*M)/(a1*a2*(-(a12*M2)+uh)))+
+	      ((-2.*(-(dot5*dot6)+dot9)*M)/(a1*a2)-(M*(-2.*(dot1*dot10-dot10*dot3+2.*dot3*(dot2+dot4)*dot6+(-dot2+dot4)*dot8)+(dot12-2.*dot13*(dot2+dot4)+2.*a1*(dot1+dot3)*dot7)*M))
+	       /(a1*a2*(-(a12*M2)+uh)))/(-M2+sh);
 	    // diagram weights
 	    save[0]+=norm(diag[2]);
 	    save[1]+=norm(diag[4]);
