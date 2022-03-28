@@ -76,11 +76,14 @@ double MEPP2BC1S0Jet::me2() const {
 	    LorentzPolarizationVectorE vec2 = u2[ih2].dimensionedWave().slash(g1[ih1].wave()).generalCurrent(ubar4[ih4].dimensionedWave(),1.,-1.);
 	    complex<Energy> dot4 = vec1*g1[ih1].wave();
 	    complex<Energy2> dot5 = vec2*rescaledMomenta()[0];
-	    diag[0]=(-2.*M*(M*(2.*dot1*dot3+dot5-a12*dot4*M)+dot4*sh))/(a2*sqr(-(a12*M2)+sh));
-	    diag[1]=-((M*(-2.*dot2*dot6-dot5*M+dot4*M2+a12*dot4*M2-2.*a1*(dot1*(dot6+dot3*M)-dot2*(dot6+dot3*M)+dot4*M2)-dot4*uh))/(a1*a2*(a12*M2-sh)*(M2-th)));
-	    diag[2]=(M*(-2.*dot1*dot3*M+dot5*M+2.*a1*(dot1-dot2)*(dot6+dot3*M)+2.*dot2*(dot6+dot3*M)+a12*dot4*M2-dot4*sh))/(a1*a2*(M2-th)*(a22*M2-uh));
-	    diag[3]=(2.*M*(-(M*(2.*dot2*dot3+dot5+a22*dot4*M))+dot4*uh))/(a1*sqr(-(a22*M2)+uh));
-	    diag[4]=-((M*(-2.*dot2*dot6+2.*dot1*dot3*M-2.*a1*(dot1*(dot6+dot3*M)-dot2*(dot6+dot3*M)+dot4*M2)+dot4*(M2+sh-uh)))/(a1*a2*(a12*M2-sh)*(a22*M2-uh)));
+	    diag[0]=(-2.*(2.*dot1*dot3+dot5)*M2)/(a2*sqr(-(a12*M2)+sh))-(2.*dot4*M)/(a2*(-(a12*M2)+sh));
+	    diag[1]=-((dot4*M)/(a1*a2*(-M2+th)))+(-((dot4*M)/(a1*a2))+(M*(2.*dot2*dot6+dot5*M+2.*a1*(dot1-dot2)*(dot6+dot3*M)))/(a1*a2*(-M2+th)))/(-(a12*M2)+sh);
+	    diag[2]=(dot4*M)/((a1-a12)*(-M2+th))
+	      +((dot4*M)/(a1-a12)+(M*((-2.*dot1*dot3+dot5)*M+2.*a1*(dot1-dot2)*(dot6+dot3*M)+2.*dot2*(dot6+dot3*M)))/(a1*a2*(-M2+th)))/(-(a22*M2)+uh);
+	    diag[3]=(-2.*(2.*dot2*dot3+dot5)*M2)/(a1*sqr(-(a22*M2)+uh))
+	      +(2.*dot4*M)/(a1*(-(a22*M2)+uh));
+	    diag[4]=-((dot4*M)/(a1*a2*(-(a22*M2)+uh)))+
+	      ((dot4*M)/(a1-a12)+(2.*M*(dot2*dot6-dot1*dot3*M+a1*(dot1-dot2)*(dot6+dot3*M)))/(a1*a2*(-(a22*M2)+uh)))/(-(a12*M2)+sh);
  	    // diagram weights
  	    save[0]+=norm(diag[3]);
  	    save[1]+=norm(diag[1]);
@@ -118,11 +121,13 @@ double MEPP2BC1S0Jet::me2() const {
 	    LorentzPolarizationVectorE vec2 = v4[ih4].dimensionedWave().slash(g1[ih1].wave()).generalCurrent(vbar2[ih2].dimensionedWave(),1.,-1.);
 	    complex<Energy> dot4 = vec1*g1[ih1].wave();
 	    complex<Energy2> dot5 = vec2*rescaledMomenta()[0];
-	    diag[0]=(2.*M*(M*(-2.*dot1*dot3+dot5+a22*dot4*M)-dot4*sh))/(a1*sqr(-(a22*M2)+sh));
-	    diag[1]=-((M*(dot5*M-2.*a1*dot2*(dot6+dot3*M)+2.*dot1*(-(a2*dot6)+a1*dot3*M)+dot4*M2+a12*dot4*M2-dot4*th-dot4*uh))/(a1*a2*(M2-th)*(a12*M2-uh)));
-	    diag[2]=-((M*(2.*dot2*dot3*M+dot5*M-2.*a2*dot1*(dot6+dot3*M)-2.*a1*dot2*(dot6+dot3*M)-2.*dot4*M2+2.*a1*dot4*M2-a12*dot4*M2+dot4*sh+dot4*th))/(a1*a2*(a22*M2-sh)*(M2-th)));
-	    diag[3]=(-2.*M*(M*(2.*dot2*dot3-dot5+a12*dot4*M)-dot4*uh))/(a2*sqr(-(a12*M2)+uh));
-	    diag[4]=-((M*(2.*dot2*dot3*M-2.*a1*dot2*(dot6+dot3*M)+2.*dot1*(-(a2*dot6)+a1*dot3*M)-dot4*M2+2.*a1*dot4*M2+dot4*sh-dot4*uh))/(a1*a2*(a22*M2-sh)*(a12*M2-uh)));
+	    diag[0]=(2.*(-2.*dot1*dot3+dot5)*M2)/(a1*sqr(-(a22*M2)+sh))-(2.*dot4*M)/(a1*(-(a22*M2)+sh));
+	    diag[1]=(dot4*M)/((a1-a12)*(-M2+th))
+	      +((dot4*M)/(a1-a12)-(M*(dot5*M-2.*a1*dot2*(dot6+dot3*M)+2.*dot1*(-(a2*dot6)+a1*dot3*M)))/(a1*a2*(-M2+th)))/(-(a12*M2)+uh);
+	    diag[2]=-((dot4*M)/(a1*a2*(-M2+th)))+(-((dot4*M)/(a1*a2))-(M*((2.*dot2*dot3+dot5)*M-2.*a2*dot1*(dot6+dot3*M)-2.*a1*dot2*(dot6+dot3*M)))/(a1*a2*(-M2+th)))/(-(a22*M2)+sh);
+	    diag[3]=(-2.*(2.*dot2*dot3-dot5)*M2)/(a2*sqr(-(a12*M2)+uh))+(2.*dot4*M)/(a2*(-(a12*M2)+uh));
+	    diag[4]=-((dot4*M)/(a1*a2*(-(a12*M2)+uh)))+
+	      ((dot4*M)/(a1-a12)-(2.*M*(-(a2*dot1*dot6)+a1*dot1*dot3*M+dot2*dot3*M-a1*dot2*(dot6+dot3*M)))/(a1*a2*(-(a12*M2)+uh)))/(-(a22*M2)+sh);
 	    // diagram weights
 	    save[0]+=norm(diag[3]);
 	    save[1]+=norm(diag[1]);
@@ -216,11 +221,14 @@ double MEPP2BC1S0Jet::me2() const {
 	  LorentzPolarizationVectorE vec2 = u1[ih1].dimensionedWave().slash(g4[ih4].wave()).generalCurrent(vbar2[ih2].dimensionedWave(),1,-1);
 	  complex<Energy> dot5 = vec1*g4[ih4].wave();
 	  complex<Energy2> dot6 = vec2*rescaledMomenta()[3];
-	  diag[0]=-((M*(-2.*dot2*dot4+2.*dot1*dot3*M+2.*a1*((dot1+dot2)*dot4-(dot1+dot2)*dot3*M-dot5*M2)+dot5*(M2-th+uh)))/(a1*a2*(a22*M2-th)*(a12*M2-uh)));
-	  diag[1]=(2.*M*(M*(2.*dot2*dot3+dot6-a22*dot5*M)+dot5*th))/(a1*sqr(-(a22*M2)+th));
-	  diag[2]=-((M*(-2.*dot2*dot4+2.*dot1*dot3*M+2.*dot2*dot3*M+dot6*M+2.*a1*(dot1+dot2)*(dot4-dot3*M)-a12*dot5*M2+dot5*uh))/(a1*a2*(M2-sh)*(a22*M2-th)));
-	  diag[3]=(-2.*M*(2.*dot1*dot3*M-M*(dot6+a12*dot5*M)+dot5*uh))/(a2*sqr(-(a12*M2)+uh));
-	  diag[4]=-((M*(-2.*dot2*dot4+M*(dot6+dot5*M)+a12*dot5*M2+2.*a1*((dot1+dot2)*dot4-(dot1+dot2)*dot3*M-dot5*M2)-dot5*th))/(a1*a2*(M2-sh)*(a12*M2-uh)));
+	  // diagrams
+	  diag[0]=-((dot5*M)/(a1*a2*(-(a22*M2)+th)))+
+	    ((dot5*M)/(a1-a12)-(2.*M*(-(dot2*dot4)+dot1*dot3*M+a1*(dot1+dot2)*(dot4-dot3*M)))/(a1*a2*(-(a22*M2)+th)))/(-(a12*M2)+uh);
+	  diag[1]=(2.*(2.*dot2*dot3+dot6)*M2)/(a1*sqr(-(a22*M2)+th))+(2.*dot5*M)/(a1*(-(a22*M2)+th));
+	  diag[2]=(dot5*M)/((a1-a12)*(-(a22*M2)+th))+
+	    ((dot5*M)/(a1-a12)-(M*(-2.*dot2*dot4+(2.*(dot1+dot2)*dot3+dot6)*M+2.*a1*(dot1+dot2)*(dot4-dot3*M)))/(a1*a2*(-(a22*M2)+th)))/(-M2+sh);
+	  diag[3]=(-2.*(2.*dot1*dot3-dot6)*M2)/(a2*sqr(-(a12*M2)+uh))-(2.*dot5*M)/(a2*(-(a12*M2)+uh));
+	  diag[4]=-((dot5*M)/(a1*a2*(-(a12*M2)+uh)))+(-((dot5*M)/(a1*a2))-(M*(-2.*dot2*dot4+dot6*M+2.*a1*(dot1+dot2)*(dot4-dot3*M)))/(a1*a2*(-(a12*M2)+uh)))/(-M2+sh);
 	  // diagram weights
 	  save[0]+=norm(diag[2]);
 	  save[1]+=norm(diag[4]);
