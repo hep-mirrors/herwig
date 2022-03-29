@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  MEPP2BCJetBase() : n_(1)
+  MEPP2BCJetBase() : n_(1), process_(0)
   {}
 
 public:
@@ -174,6 +174,11 @@ private:
    *   Principle quantum number for the state
    */
   unsigned int n_;
+
+  /**
+   *  Which prcesses to include
+   */
+  unsigned int process_;
 
   /**
    *  The quarkonium parameters

@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -47,6 +48,26 @@ void MEPP2BCJetBase::Init() {
      "Quarkonium parameters",
      &MEPP2BCJetBase::params_, false, false, true, false, false);
 
+  static Switch<MEPP2BCJetBase,unsigned int> interfaceProcess
+    ("Process",
+     "Which subprocesses to include",
+     &MEPP2BCJetBase::process_, 0, false, false);
+  static SwitchOption interfaceProcessAll
+    (interfaceProcess,
+     "All",
+     "Include all subprocesses",
+     0);
+  static SwitchOption interfaceProcessGQ
+    (interfaceProcess,
+     "GQ",
+     "Only include the gq/gqbar initiated processes",
+     1);
+  static SwitchOption interfaceProcessQQbar
+    (interfaceProcess,
+     "QQbar",
+     "Only include the q qbar initiated processes",
+     2);
+
 }
 
 void MEPP2BCJetBase::doinit() {
@@ -59,35 +80,39 @@ void MEPP2BCJetBase::doinit() {
 }
 
 void MEPP2BCJetBase::persistentOutput(PersistentOStream & os) const {
-  os << n_ << params_ << state_;
+  os << n_ << process_ << params_ << state_;
 }
 
 void MEPP2BCJetBase::persistentInput(PersistentIStream & is, int) {
-  is >> n_ >> params_ >> state_;
+  is >> n_ >> process_ >> params_ >> state_;
 }
 
 void MEPP2BCJetBase::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr c = getParticleData(4);
   tcPDPtr b = getParticleData(5);
-  // c initiated
-  add(new_ptr((Tree2toNDiagram(3), g, c, c, 2, state_, 1, b,     -1)));
-  add(new_ptr((Tree2toNDiagram(2), g, c, 1, c , 3, state_, 3, b, -2)));
-  // b initiated
-  add(new_ptr((Tree2toNDiagram(3), g, b, b, 2, state_->CC(), 1, c,     -1)));
-  add(new_ptr((Tree2toNDiagram(2), g, b, 1, b , 3, state_->CC(), 3, c, -2)));
-  // cbar initiated
-  add(new_ptr((Tree2toNDiagram(3), g, c->CC(), c->CC(), 2, state_->CC(), 1, b->CC(),     -3)));
-  add(new_ptr((Tree2toNDiagram(2), g, c->CC(), 1, c->CC() , 3, state_->CC(), 3, b->CC(), -4)));
-  // bbar initiated
-  add(new_ptr((Tree2toNDiagram(3), g, b->CC(), b->CC(), 2, state_, 1, c->CC(),     -3)));
-  add(new_ptr((Tree2toNDiagram(2), g, b->CC(), 1, b->CC() , 3, state_, 3, c->CC(), -4)));
-  // b cbar -> Bc g
-  add(new_ptr((Tree2toNDiagram(3), b, c, c->CC(), 1, state_->CC(), 2, g, -5)));
-  add(new_ptr((Tree2toNDiagram(3), b, b->CC(), c->CC(), 2, state_->CC(), 1, g, -6)));
-  // c bbar -> Bc g
-  add(new_ptr((Tree2toNDiagram(3), c, b, b->CC(), 1, state_, 2, g, -5)));
-  add(new_ptr((Tree2toNDiagram(3), c, c->CC(), b->CC(), 2, state_, 1, g, -6)));
+  if(process_!=2) {
+    // c initiated
+    add(new_ptr((Tree2toNDiagram(3), g, c, c, 2, state_, 1, b,     -1)));
+    add(new_ptr((Tree2toNDiagram(2), g, c, 1, c , 3, state_, 3, b, -2)));
+    // b initiated
+    add(new_ptr((Tree2toNDiagram(3), g, b, b, 2, state_->CC(), 1, c,     -1)));
+    add(new_ptr((Tree2toNDiagram(2), g, b, 1, b , 3, state_->CC(), 3, c, -2)));
+    // cbar initiated
+    add(new_ptr((Tree2toNDiagram(3), g, c->CC(), c->CC(), 2, state_->CC(), 1, b->CC(),     -3)));
+    add(new_ptr((Tree2toNDiagram(2), g, c->CC(), 1, c->CC() , 3, state_->CC(), 3, b->CC(), -4)));
+    // bbar initiated
+    add(new_ptr((Tree2toNDiagram(3), g, b->CC(), b->CC(), 2, state_, 1, c->CC(),     -3)));
+    add(new_ptr((Tree2toNDiagram(2), g, b->CC(), 1, b->CC() , 3, state_, 3, c->CC(), -4)));
+  }
+  if(process_!=1) {
+    // b cbar -> Bc g
+    add(new_ptr((Tree2toNDiagram(3), b, c, c->CC(), 1, state_->CC(), 2, g, -5)));
+    add(new_ptr((Tree2toNDiagram(3), b, b->CC(), c->CC(), 2, state_->CC(), 1, g, -6)));
+    // c bbar -> Bc g
+    add(new_ptr((Tree2toNDiagram(3), c, b, b->CC(), 1, state_, 2, g, -5)));
+    add(new_ptr((Tree2toNDiagram(3), c, c->CC(), b->CC(), 2, state_, 1, g, -6)));
+  }
 }
 
 Selector<const ColourLines *>
