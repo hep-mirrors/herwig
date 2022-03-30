@@ -1,0 +1,92 @@
+#
+#-*- ThePEG-repository -*-
+
+################################################################################
+# This file demonstrates how to produce only single-diffractive events
+# for ATLAS at 13.6 TeV. Some of the default settings are based on the LHC-MB
+# .in file, which are tuned to ATLAS Min-Bias data @ 7 TeV. More recent
+# tunes and tunes for other centre-of-mass energies as well as more usage
+# instructions can be obtained from this Herwig wiki page:
+# http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+# The model for soft interactions and diffractions is explained in
+# [S. Gieseke, P. Kirchgaesser, F. Loshaj, arXiv:1612.04701]
+################################################################################
+
+read snippets/PPCollider.in
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+##################################################
+# LHC physics parameters (override defaults here)
+##################################################
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13600.0
+
+# Intrinsic pT tune extrapolated to LHC energy (note, tuned at 7 TeV)
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
+
+# Minimum Bias
+read snippets/MB.in
+
+# Diffraction model
+read Diffraction.in
+
+#################################################
+# Single Diffractive Events Only
+#################################################
+# Remove all matrix elements, and only include diffraction
+cd /Herwig/MatrixElements/
+clear QCDDiffraction:MatrixElements
+clear /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers
+# Insert the diffractive subprocess
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDDiffraction
+
+# For single diffraction, we insert matrix elements
+insert QCDDiffraction:MatrixElements[0] MEDiffractionLeft
+insert QCDDiffraction:MatrixElements[0] MEDiffractionRight
+# For double diffraction as well, uncomment the following line
+#insert QCDDiffraction:MatrixElements[0] MEDiffractionDouble
+
+# Uncomment the following two lines if you want to include
+# the option for Delta+ baryon decay for single-diffractive processes
+# See [arXiv:1612.04701] for more details.
+#insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaLeft
+#insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaRight
+# As above, Delta+ baryon decay option in double-diffractive events
+#insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaDouble
+
+# Need to let Herwig know not to use correctionweight() functionality
+set MEDiffractionLeft:SingleDiffractionOnly Yes
+set MEDiffractionRight:SingleDiffractionOnly Yes
+
+
+#set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
+# Turn off colour reconnection
+set /Herwig/Hadronization/ColourReconnector:ColourReconnection No
+
+##################################################
+# Analyses
+##################################################
+
+## Comment these lines out in order to use rivet analyses
+#cd /Herwig/Analysis
+#create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+
+# cd /Herwig/Generators
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+## Some example analyses for minimum bias events
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+
+#insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+#set /Herwig/Analysis/HepMCFile:PrintEvent 10000000
+#set /Herwig/Analysis/HepMCFile:Format GenEvent
+#set /Herwig/Analysis/HepMCFile:Units GeV_mm
+#set /Herwig/Analysis/HepMCFile:Filename dif.fifo
+
+##################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-MB-SD EventGenerator
