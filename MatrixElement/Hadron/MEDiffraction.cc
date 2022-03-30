@@ -47,12 +47,12 @@ void MEDiffraction::getDiagrams() const {
 
     // Check that we only have protons and neutrons at this stage
     // (also anti-particle versions accepted)
-    if (incomingHadrons.first->id() != 2212 or incomingHadrons.first->id() != 2112){
+    /*if (incomingHadrons.first->id() != 2212 || incomingHadrons.first->id() != 2112){
       // Error message
     }
-    if (incomingHadrons.second->id() != 2212 or incomingHadrons.second->id() != 2112){
+    if (incomingHadrons.second->id() != 2212 || incomingHadrons.second->id() != 2112){
       // Error message
-    }
+    }*/
 
     //get sign of id
     int sign1=0, sign2=0;
@@ -101,7 +101,7 @@ void MEDiffraction::getDiagrams() const {
     }
 
     // If hadron 2 is a proton
-    if (incomingHadrons.first->id() == 2212){
+    if (incomingHadrons.second->id() == 2212){
       // Quarks
       q12 = getParticleData(sign2*2); //u
       q22 = getParticleData(sign2*1); //d
@@ -117,7 +117,6 @@ void MEDiffraction::getDiagrams() const {
     else {
       q12 = getParticleData(sign2*1); //d
       q22 = getParticleData(sign2*2); //u
-
 
       prt22 = getParticleData(sign2*2114); // Delta0
 
