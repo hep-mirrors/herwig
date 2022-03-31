@@ -346,9 +346,6 @@ bool MEDiffraction::generateKinematics(const double * ) {
       	meMomenta()[2] = p3;
       	meMomenta()[3] = decayMomenta. first;
       	meMomenta()[4] = decayMomenta.second;
-        cout<<"p3: "<<p3/GeV<<endl;
-        cout<<"pB1: "<<decayMomenta.first/GeV<<endl;
-        cout<<"pB2: "<<decayMomenta.second/GeV<<endl;
       	break;
       case 2://double diffraction
         // Proton decays along z axis in rest frame
