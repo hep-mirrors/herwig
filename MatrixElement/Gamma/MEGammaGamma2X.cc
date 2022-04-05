@@ -97,6 +97,8 @@ double MEGammaGamma2X::me2() const {
   for(unsigned int ix=0;ix<2;++ix) {
     p1w.reset(2*ix);p1.push_back(p1w);
     p2w.reset(2*ix);p2.push_back(p2w);
+    //p1w.reset(10);p1.push_back(p1w);
+    //p2w.reset(10);p2.push_back(p2w);
   }
   DVector save;
   double output =  amp_->me2(p1,p2,meMomenta()[0].m2(),meMomenta()[1].m2(),sHat(),
@@ -112,7 +114,7 @@ MEGammaGamma2X::diagrams(const DiagramVector & diags) const {
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     unsigned int id = abs(diags[i]->id())-1;
     if(id<meInfo().size())
-      sel.insert(meInfo()[0], i);
+      sel.insert(meInfo()[id], i);
     else if ( meInfo().empty() ) sel.insert(1., i);
     else
       assert(false);
