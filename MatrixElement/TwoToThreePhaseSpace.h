@@ -23,7 +23,8 @@ namespace TwoToThreePhaseSpace {
    */
   double twoToThreeFS(Energy ecm, vector<Energy> masses, const double * r,
 		      Lorentz5Momentum & q1, Lorentz5Momentum & q2, Lorentz5Momentum & q3,
-		      double power=1.) {
+		      double power,
+		      double rphi=UseRandom::rnd()) {
     power=0.;
     assert(masses.size()==3);
     double jacobian = 1.;
@@ -64,7 +65,7 @@ namespace TwoToThreePhaseSpace {
     }
     double cos1 = -1.+2.*r[0];
     double sin1(sqrt(1.-sqr(cos1)));
-    double phi1 = Constants::twopi*UseRandom::rnd();
+    double phi1 = Constants::twopi*rphi;
     Lorentz5Momentum poff(sin1*p1*cos(phi1),sin1*p1*sin(phi1),cos1*p1,sqrt(sqr(p1)+moff2),moff);
     q2.setVect(Momentum3(-sin1*p1*cos(phi1),-sin1*p1*sin(phi1),-cos1*p1));
     q2.setMass(masses[ispect]);
