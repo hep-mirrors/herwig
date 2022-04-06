@@ -35,7 +35,6 @@ public:
   {}
   //@}
 
-
 public:
 
   /** @name Virtual functions required by GammaGammaAmplitude class. */
@@ -191,6 +190,7 @@ private:
    *  Principal quantum number
    */
   unsigned int n_;
+
   /**
    * Pole mass squared parameter for the form factors
    */
