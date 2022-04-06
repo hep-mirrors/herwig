@@ -41,7 +41,7 @@ bool TwoToThree::generateKinematics(const double * r) {
   if(ecm<mOut[0]+mOut[1]+mOut[2]) return false;
   // generate the momenta
   double jac = TwoToThreePhaseSpace::twoToThreeFS(ecm,mOut,r,meMomenta()[3],
-  						  meMomenta()[4],meMomenta()[2],0.);
+  						  meMomenta()[4],meMomenta()[2],1.);
   if(jac<0.) return false;
   jacobian(jacobian()*jac);
   // rescaled momenta for the onium calculation
