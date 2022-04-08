@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGG2BC1S0QQbar_H
-#define Herwig_MEGG2BC1S0QQbar_H
+#ifndef Herwig_MEGG2BC3S1QQbar_H
+#define Herwig_MEGG2BC3S1QQbar_H
 //
-// This is the declaration of the MEGG2BC1S0QQbar class.
+// This is the declaration of the MEGG2BC3S1QQbar class.
 //
 
 #include "GGtoBCQQbarBase.h"
@@ -12,19 +12,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGG2BC1S0QQbar class implements the matrix elements for $gg\to B_c(^1S_0)^+ \bar{c} b$ +c.c.
+ * Here is the documentation of the MEGG2BC3S1QQbar class.
  *
- * @see \ref MEGG2BC1S0QQbarInterfaces "The interfaces"
- * defined for MEGG2BC1S0QQbar.
+ * @see \ref MEGG2BC3S1QQbarInterfaces "The interfaces"
+ * defined for MEGG2BC3S1QQbar.
  */
-class MEGG2BC1S0QQbar: public GGtoBCQQbarBase {
+class MEGG2BC3S1QQbar: public GGtoBCQQbarBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEGG2BC1S0QQbar() : GGtoBCQQbarBase(541), O1_(ZERO)
+  MEGG2BC3S1QQbar() : GGtoBCQQbarBase(541), O1_(ZERO)
   {}
 
 public:
@@ -99,7 +99,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGG2BC1S0QQbar & operator=(const MEGG2BC1S0QQbar &) = delete;
+  MEGG2BC3S1QQbar & operator=(const MEGG2BC3S1QQbar &) = delete;
 
 private:
 
@@ -112,4 +112,4 @@ private:
 
 }
 
-#endif /* Herwig_MEGG2BC1S0QQbar_H */
+#endif /* Herwig_MEGG2BC3S1QQbar_H */
