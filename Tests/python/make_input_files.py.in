@@ -255,6 +255,8 @@ elif(collider=="EE-Gamma") :
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_2Max 1e10" % mename
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Min 1.  " % mename
             process+="set /Herwig/MatrixElements/MEff2ff%s3:Q2_1Max 1e10" % mename
+        elif "ChiC2" in parameterName :
+            process = StringBuilder(insert_ME("MEff2ffChiC21P"))
         elif "Onium" in parameterName :
             process = StringBuilder(insert_ME("MEff2ffEtaC1S") )
             process+= insert_ME("MEff2ffEtaC2S" )
