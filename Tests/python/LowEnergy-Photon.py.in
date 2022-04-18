@@ -19,7 +19,7 @@ path=opts.path
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
 analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      : {},
-             "EtaprimePiPi" : {}, "4Pi"       : {}, "EtaPhi"  : {}, "EtaOmega" : {},
+             "EtaPi" : {}, "4Pi"       : {}, "EtaEta"  : {}, "EtaOmega" : {},
              "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
              "EtaPiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
              "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
@@ -51,9 +51,17 @@ analyses["KK"  ]["BELLE_2005_I667712"   ] = ["d01-x01-y01",
                                              "d06-x01-y01","d06-x01-y02","d06-x01-y03",
                                              "d06-x01-y04","d06-x01-y05","d06-x01-y06"]
 analyses["KK"  ]["CLEO_1994_I372230"    ] = ["d01-x01-y01"]
-analyses["PiPi"]["MARKII_1984_I195739"  ] = ["d01-x01-y01"]
-analyses["PiPi"]["MARKII_1986_I220003"  ] = ["d01-x01-y01","d01-x01-y02"]
+analyses["KK"  ]["MARKII_1984_I195739"  ] = ["d01-x01-y01"]
+analyses["KK"  ]["MARKII_1986_I220003"  ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["KK"  ]["TPC_1986_I228072"     ] = ["d05-x01-y01"]
+# K0K0
+analyses["KK"  ]["BELLE_2013_I1245023"  ] = ["d01-x01-y01","d01-x01-y02"]
+# Eta Eta
+analyses["EtaEta"]["BELLE_2010_I862260" ] = ["d01-x01-y01","d01-x01-y02"]
+# Eta Pi
+analyses["EtaPi"]["BELLE_2009_I822474" ] = ["d01-x01-y01"]
+# proton antiproton
+analyses["PPbar"]["BELLE_2005_I677625" ] = ["d01-x01-y01"]
 # proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
@@ -91,6 +99,21 @@ if(opts.plot) :
                     output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
                 for iy in range(100,142) :
                     output+= " -m/%s/%s" % (analysis,"d%03d-x01-y01"%iy)
+            elif(analysis=="BELLE_2010_I862260") :
+                for iy in range(2,44) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
+            elif(analysis=="BELLE_2009_I822474") :
+                for iy in range(2,76) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
+            elif(analysis=="BELLE_2013_I1245023") :
+                for iy in range(2,41) :
+                    for iz in range(1,4) :
+                        output+= " -m/%s/%s" % (analysis,"d%02d-x01-y0%s"%(iy,iz))
+            elif(analysis=="BELLE_2005_I677625") :
+                for iy in range(2,7) :
+                    for iz in range(1,4) :
+                        if iy==6 and iz ==3 : break
+                        output+= " -m/%s/%s" % (analysis,"d%02d-x01-y0%s"%(iy,iz))
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
@@ -203,8 +226,15 @@ for energy in sorted(energies) :
         maxflavour=4
     # input file for perturbative QCD
     if(opts.perturbative and energy> thresholds[0]) :
+        process=""
+        for i in range(1,maxflavour+1) :
+            process+="cp MEgg2ff MEgg2qq%s\n" %i
+            process+="cp gg2ffAmp gg2fqq%sAmp\n" %i
+            process+="set MEgg2qq%s:Amplitude gg2fqq%sAmp\n" % (i,i)
+            process+="set gg2fqq%sAmp:Process %s\n" %(i,i+10)
+            process+="insert SubProcess:MatrixElements 0 MEgg2qq%s\n" % i
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : "", "maxflavour" : 10+maxflavour})
+                                                     "process" : process})
         with open(opts.dest+"/Rivet-LowEnergy-GammaGamma-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-GammaGamma-Perturbative-%8.6f.yoda " % energy

@@ -9,9 +9,7 @@ read snippets/EECollider.in
 ##################################################
 cd /Herwig/MatrixElements
 # default gamma gamma -> q qbar
-insert SubProcess:MatrixElements 0 MEgg2ff
-set MEgg2ff:Process ${maxflavour}
-${lepton}
+${process}
 set /Herwig/Particles/pi0:Stable Stable
 set /Herwig/Particles/K_S0:Stable Stable
 
@@ -35,4 +33,4 @@ ${ANALYSES}
 # Save run for later usage with 'Herwig run'
 ##################################################
 set EventGenerator:MaxErrors 10000
-saverun Rivet-LowEnergy-EE-Perturbative-${ECMS} EventGenerator
+saverun Rivet-LowEnergy-GammaGamma-Perturbative-${ECMS} EventGenerator

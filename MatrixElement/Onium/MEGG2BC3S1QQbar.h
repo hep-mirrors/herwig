@@ -12,7 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEGG2BC3S1QQbar class.
+ * The MEGG2BC3S1QQbar class implements the matrix elements for $gg\to B_c(^3S_1)^+ \bar{c} b$ +c.c.
  *
  * @see \ref MEGG2BC3S1QQbarInterfaces "The interfaces"
  * defined for MEGG2BC3S1QQbar.
@@ -24,7 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  MEGG2BC3S1QQbar() : GGtoBCQQbarBase(541), O1_(ZERO)
+  MEGG2BC3S1QQbar() : GGtoBCQQbarBase(543), O1_(ZERO)
   {}
 
 public:

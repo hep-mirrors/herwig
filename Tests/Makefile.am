@@ -204,7 +204,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.in ) \
 	          $(shell echo Rivet/EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-Direct-tautau-{189,196,206}.in ) \
-                  $(shell echo Rivet/EE-Gamma-{pi0,EtaC}-10.58.in ) \
+                  $(shell echo Rivet/EE-Gamma-{pi0,EtaC,ChiC2}-10.58.in ) \
                   $(shell echo Rivet/EE-Gamma-Onium-91.2.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
 
@@ -226,7 +226,7 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
-                     $(shell echo Rivet-EE-Gamma-{pi0,EtaC}-10.58.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-{pi0,EtaC,ChiC2}-10.58.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Onium-91.2.yoda ) \
 	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
@@ -262,7 +262,8 @@ Rivet-LowEnergy-EE-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); plots=`python/LowEnergy-EE.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@) $$plots; if [ -e LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ] && [ -e LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@) LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Non-Pert" LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@) LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@)  LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Pert" $$plots; fi
 
 Rivet-LowEnergy-Photon-%:
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); fi; OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+#	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots; if [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ] && [ -e LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@)  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; fi
 
 Onium-Splitting: Analyses/RivetHerwig.so
