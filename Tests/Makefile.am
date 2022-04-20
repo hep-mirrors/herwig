@@ -205,6 +205,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-Direct-tautau-{189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-{pi0,EtaC,ChiC2}-10.58.in ) \
+                  $(shell echo Rivet/EE-Gamma-{Eta-{1,29},EtaPrime-34.3}.in ) \
                   $(shell echo Rivet/EE-Gamma-Onium-91.2.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
 
@@ -227,6 +228,7 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-{pi0,EtaC,ChiC2}-10.58.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-{Eta-{1,29},EtaPrime-34.3}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Onium-91.2.yoda ) \
 	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma

@@ -42,6 +42,11 @@ analyses["PiPi"]["MARKII_1990_I304882"  ] = ["d01-x01-y01",
 analyses["PiPi"]["PLUTO_1984_I204487"   ] = ["d01-x01-y01"]
 analyses["PiPi"]["TPC_1986_I228072"     ] = ["d01-x01-y01","d04-x01-y01"]
 analyses["PiPi"]["VENUS_1995_I392360"   ] = ["d01-x01-y01"]
+# pi0pi0
+analyses["PiPi"]["BELLE_2009_I815978"       ] = ["d31-x01-y01","d31-x01-y02"]
+analyses["PiPi"]["CRYSTAL_BALL_1982_I168793"] = ["d01-x01-y01"]
+analyses["PiPi"]["CRYSTAL_BALL_1990_I294492"] = ["d01-x01-y01"]
+analyses["PiPi"]["JADE_1990_I295180"        ] = ["d01-x01-y01"]
 # K+K-
 analyses["KK"  ]["ALEPH_2003_I626022"   ] = ["d04-x01-y01"]
 analyses["KK"  ]["BELLE_2003_I629334"   ] = ["d01-x01-y01"]
@@ -60,8 +65,30 @@ analyses["KK"  ]["BELLE_2013_I1245023"  ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["EtaEta"]["BELLE_2010_I862260" ] = ["d01-x01-y01","d01-x01-y02"]
 # Eta Pi
 analyses["EtaPi"]["BELLE_2009_I822474" ] = ["d01-x01-y01"]
+analyses["EtaPi"]["CRYSTAL_BALL_1986_I217547" ] = ["d01-x01-y01"]
+# 4 pions
+analyses["4Pi"]["ARGUS_1989_I266416" ] = ["d01-x01-y01","d02-x01-y01",
+                                          "d03-x01-y01","d04-x01-y01"]
+analyses["4Pi"]["CELLO_1989_I267081" ] = ["d01-x01-y01","d02-x01-y01"]
 # proton antiproton
+analyses["PPbar"]["ARGUS_1989_I267759" ] = ["d02-x01-y01"]
 analyses["PPbar"]["BELLE_2005_I677625" ] = ["d01-x01-y01"]
+analyses["PPbar"]["CLEO_1994_I358510"  ] = ["d01-x01-y01"]
+analyses["PPbar"]["JADE_1986_I231554"  ] = ["d01-x01-y01"]
+analyses["PPbar"]["TASSO_1983_I191417" ] = ["d01-x01-y01"]
+analyses["PPbar"]["TPC_1987_I246557"   ] = ["d01-x01-y01"]
+# K_0S K+/- pi -/+
+analyses["2K1Pi"]["CELLO_1989_I266414" ] = ["d01-x01-y01"]
+# K*K* and various 2K2pi states
+analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01-y03","d03-x01-y04",
+                                            "d04-x01-y01","d04-x01-y02","d04-x01-y03","d04-x01-y04",
+                                            "d05-x01-y01","d05-x01-y02","d05-x01-y03","d05-x01-y04",
+                                            "d06-x01-y01","d06-x01-y02",
+                                            "d07-x01-y01","d07-x01-y02","d07-x01-y03",
+                                            "d08-x01-y01","d08-x01-y02","d08-x01-y03",
+                                            "d09-x01-y01","d09-x01-y02",
+                                            "d10-x01-y01","d10-x01-y02",
+                                            "d11-x01-y01"]
 # proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
@@ -114,6 +141,27 @@ if(opts.plot) :
                     for iz in range(1,4) :
                         if iy==6 and iz ==3 : break
                         output+= " -m/%s/%s" % (analysis,"d%02d-x01-y0%s"%(iy,iz))
+            elif(analysis=="BELLE_2009_I815978") :
+                for iy in range(1,31) :
+                    for iz in range(1,4) :
+                        if iy==30 and iz ==2 : break
+                        output+= " -m/%s/%s" % (analysis,"d%02d-x01-y0%s"%(iy,iz))
+            elif(analysis=="CLEO_1994_I358510") :
+                for iy in range(2,4) :
+                    output+= " -m/%s/%s" % (analysis,"d%02d-x01-y01"%iy)
+            elif(analysis=="CLEO_1994_I358510TASSO_1983_I191417" or analysis=="CRYSTAL_BALL_1986_I217547") :
+                for iy in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y%02d"%iy)
+            elif(analysis=="JADE_1986_I231554" or analysis=="CRYSTAL_BALL_1982_I168793") :
+                output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
+            elif(analysis=="ARGUS_1989_I267759") :
+                output+= " -m/%s/%s" % (analysis,"d01-x01-y01")
+            elif(analysis=="TPC_1987_I246557") :
+                for iy in range(1,3) :
+                    output+= " -m/%s/%s" % (analysis,"d03-x01-y%02d"%iy)
+            elif(analysis=="CRYSTAL_BALL_1990_I294492") :
+                for iy in range(1,8) :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y%02d"%iy)
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
