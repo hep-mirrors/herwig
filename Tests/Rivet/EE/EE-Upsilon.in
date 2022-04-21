@@ -14,7 +14,10 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+# ARGUS pi0 and eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
+# Crystal Ball pi0 and eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1991_I297905
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097

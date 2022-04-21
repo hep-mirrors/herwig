@@ -2,6 +2,7 @@
 from __future__ import print_function
 import logging
 import sys
+import math
 
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -10,6 +11,23 @@ if sys.version_info[:3] < (2,4,0):
 import os, yoda, copy
 
 # # #############################################
+
+# remove any scatters with nans, causes yoda to crash
+def removeNan():
+    global outhistos
+    remove = [] 
+    for key in outhistos.keys() :
+        ao = outhistos[key]
+        if type(ao)==yoda.core.Scatter2D :
+            skip=False
+            for p in ao.points() :
+                if ( math.isnan(p.y()) or
+                     math.isnan(p.yErrs().minus) or math.isnan(p.yErrs().plus)) :
+                    skip=True
+                    break
+            if(skip) : remove.append(key)
+    for key in remove :
+        if key in outhistos : del outhistos[key]
 
 def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
@@ -214,8 +232,8 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or "JADE_1979_I142874" in aopath or
-           "195333" in aopath or
-           "526164" in aopath or "178416" in aopath or
+           "I195333" in aopath or "I297905" in aopath or
+           "I526164" in aopath or "I178416" in aopath or
            "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
            "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
            "BABAR_2014_I1286317" in aopath or
@@ -1184,6 +1202,17 @@ useOne("/ARGUS_1990_I278933/d05-x01-y02","9.46")
 useOne("/ARGUS_1990_I278933/d06-x01-y01","U1")
 useOne("/ARGUS_1990_I278933/d06-x01-y02","U2")
 
+useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y01","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y02","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d02-x01-y01","U1")
+useOne("/CRYSTAL_BALL_1991_I297905/d02-x01-y02","U1")
+useOne("/CRYSTAL_BALL_1991_I297905/d03-x01-y01","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d03-x01-y02","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d04-x01-y01","U1")
+useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y01","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y02","9.46")
+useOne("/CRYSTAL_BALL_1991_I297905/d06-x01-y01","U1")
+
 useOne("/ARGUS_1989_I262551/d01-x01-y01","10.00")
 useOne("/ARGUS_1989_I262551/d02-x01-y01","U1")
 useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
@@ -1385,6 +1414,7 @@ for i in range(1,5) :
 
 # Choose output file
 name = args[0]+".yoda"
+removeNan()
 # output the yoda file
 yoda.writeYODA(outhistos,name)
 sys.exit(0)
