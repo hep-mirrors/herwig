@@ -57,6 +57,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
 # BABAR e- spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
+# Crystal Ball e- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1989_I263581
 # CLEO multiplicty in Upsilon(4S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
 # BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays

@@ -40,3 +40,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I283027
 # BABAR anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
+# ARGUS photon spectrtum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1987_I248655
+# Crystal Ball photon spectrtum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1991_I315873

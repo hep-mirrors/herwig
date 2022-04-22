@@ -80,6 +80,10 @@ analyses["PPbar"]["TPC_1987_I246557"   ] = ["d01-x01-y01"]
 # K_0S K+/- pi -/+
 analyses["2K1Pi"]["CELLO_1989_I266414" ] = ["d01-x01-y01"]
 # K*K* and various 2K2pi states
+analyses["2K2Pi"]["ARGUS_1987_I248680"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01",
+                                           "d05-x01-y01","d05-x01-y02","d05-x01-y03","d05-x01-y04","d05-x01-y05"]
+analyses["2K2Pi"]["ARGUS_1988_I262713"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01"]
+analyses["2K2Pi"]["ARGUS_1994_I372451"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01-y03","d03-x01-y04",
                                             "d04-x01-y01","d04-x01-y02","d04-x01-y03","d04-x01-y04",
                                             "d05-x01-y01","d05-x01-y02","d05-x01-y03","d05-x01-y04",
@@ -89,6 +93,8 @@ analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01
                                             "d09-x01-y01","d09-x01-y02",
                                             "d10-x01-y01","d10-x01-y02",
                                             "d11-x01-y01"]
+# 6 meson final-states
+analyses["6m"]["ARGUS_1996_I403304"] = [ "d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 # proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
