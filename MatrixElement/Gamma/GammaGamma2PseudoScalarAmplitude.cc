@@ -6,7 +6,8 @@
 
 #include "GammaGamma2PseudoScalarAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -26,11 +27,11 @@ IBPtr GammaGamma2PseudoScalarAmplitude::fullclone() const {
 }
 
 void GammaGamma2PseudoScalarAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << ounit(F00_,1./GeV) << ounit(LambdaP2_,GeV2);
+  os << particle_ << ounit(F00_,1./GeV) << ounit(LambdaP2_,GeV2);
 }
 
 void GammaGamma2PseudoScalarAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(F00_,1./GeV) >> iunit(LambdaP2_,GeV2);
+  is >> particle_ >> iunit(F00_,1./GeV) >> iunit(LambdaP2_,GeV2);
 }
 
 // The following static variable is needed for the type
@@ -44,17 +45,22 @@ void GammaGamma2PseudoScalarAmplitude::Init() {
   static ClassDocumentation<GammaGamma2PseudoScalarAmplitude> documentation
     ("The GammaGamma2PseudoScalarAmplitude class implements"
      " the amplitude for gamma gamma -> pseudoscalar");
+  
+  static Reference<GammaGamma2PseudoScalarAmplitude,ParticleData> interfaceParticle
+    ("Particle",
+     "The particle produced by the amplitude",
+     &GammaGamma2PseudoScalarAmplitude::particle_, false, false, true, false, false);
 
-  static ParVector<GammaGamma2PseudoScalarAmplitude,InvEnergy> interfaceF00
+  static Parameter<GammaGamma2PseudoScalarAmplitude,InvEnergy> interfaceF00
     ("F00",
      "The form factor at zero momentum transfer",
-     &GammaGamma2PseudoScalarAmplitude::F00_, 1./GeV, 3, 1./GeV, 0./GeV, 100./GeV,
+     &GammaGamma2PseudoScalarAmplitude::F00_, 1/GeV, 0.274/GeV, 0./GeV, 100./GeV,
      false, false, Interface::limited);
 
-  static ParVector<GammaGamma2PseudoScalarAmplitude,Energy2> interfaceLambdaP2
+  static Parameter<GammaGamma2PseudoScalarAmplitude,Energy2> interfaceLambdaP2
     ("LambdaP2",
      "The square of the pole mass for the form factor",
-     &GammaGamma2PseudoScalarAmplitude::LambdaP2_, GeV2, 3, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &GammaGamma2PseudoScalarAmplitude::LambdaP2_, GeV2, 0.6*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
 
 }
@@ -63,19 +69,14 @@ vector<DiagPtr> GammaGamma2PseudoScalarAmplitude::getDiagrams(unsigned int iopt)
   vector<DiagPtr> output;
   output.reserve(3);
   tcPDPtr g  = getParticleData(ParticleID::gamma );
+
   if(iopt==0) {
-    for(long pid=111; pid<340; pid+=110) {
-      tcPDPtr ps = getParticleData(pid);
-      output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, -1)));
-    }
+    output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, particle_, -1)));
   }
   else {
     tcPDPtr ep = getParticleData(ParticleID::eplus );
     tcPDPtr em = getParticleData(ParticleID::eminus);
-    for(long pid=111; pid<340; pid+=110) {
-      tcPDPtr ps = getParticleData(pid);
-      output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, ps, -1)));
-    }
+    output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, particle_, -1)));
   }
   return output;
 }
@@ -123,15 +124,13 @@ double GammaGamma2PseudoScalarAmplitude::me2(const vector<VectorWaveFunction> & 
 					     const Energy2 & t1, const Energy2 & t2,
 					     const Energy2 & scale, 
 					     const vector<Lorentz5Momentum> & momenta,
-					     const cPDVector & partons,
-					     DVector &  ) const {
+					     const cPDVector & , DVector &  ) const {
   Energy M  = momenta.back().mass();
   // calculate the matrix element
   double output(0.);
   helicityAmplitude(v1,v2,M,output);
   // form factor
-  int iloc = partons[0]->id()/100 -1;
-  InvEnergy form = F00_[iloc]/(1.-t1/LambdaP2_[iloc])/(1.-t2/LambdaP2_[iloc]);
+  InvEnergy form = F00_/(1.-t1/LambdaP2_)/(1.-t2/LambdaP2_);
   // coupling factors
   double alpha = generator()->standardModel()->alphaEM();
   return 0.25*pow<4,1>(M)/scale*sqr(form)*output*sqr(alpha*4.*Constants::pi);

@@ -13,7 +13,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the GammaGamma2PseudoScalarAmplitude class.
+ * The GammaGamma2PseudoScalarAmplitude class implements the amplitide for \f$\gamma\gamma\to\f$ pseudoscalar meson
  *
  * @see \ref GammaGamma2PseudoScalarAmplitudeInterfaces "The interfaces"
  * defined for GammaGamma2PseudoScalarAmplitude.
@@ -25,8 +25,8 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2PseudoScalarAmplitude() : F00_({0.274/GeV,0.274/GeV,0.344/GeV}),
-				       LambdaP2_({0.6*GeV2,0.6*GeV2,0.6*GeV2})
+  GammaGamma2PseudoScalarAmplitude() : F00_(0.274/GeV),
+				       LambdaP2_(0.6*GeV2)
   {}
 
 public:
@@ -147,18 +147,23 @@ private:
 private:
 
   /**
+   *   Particle
+   */
+  PDPtr particle_;
+  
+  /**
    *   Parameters for the form-factors
    */
   //@{
   /**
-   *    Form factors at $Q_1^2=Q_2^2=0$
+   *    Form factor at $Q_1^2=Q_2^2=0$
    */
-  vector<InvEnergy> F00_;
-
+  InvEnergy F00_;
+  
   /**
    * Pole mass squared parameter for the form factors
    */
-  vector<Energy2> LambdaP2_;
+  Energy2 LambdaP2_;
   //@}
 
 };

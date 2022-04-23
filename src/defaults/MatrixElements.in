@@ -405,9 +405,27 @@ newdef MEgg2ff:Amplitude gg2ffAmp
 create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so
 
 # f f -> f f pi0,eta,eta' via 2 photon process
-create Herwig::MEff2ffX MEff2ffPseudoScalar
-create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2P
-set MEff2ffPseudoScalar:Amplitude AmpGG2P
+# pi0
+create Herwig::MEff2ffX MEff2ffpi0
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2pi0
+newdef MEff2ffpi0:Amplitude AmpGG2pi0
+set AmpGG2pi0:F00 0.274
+set AmpGG2pi0:LambdaP2 0.6
+set AmpGG2pi0:Particle /Herwig/Particles/pi0
+# eta
+create Herwig::MEff2ffX MEff2ffeta
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2eta
+newdef MEff2ffeta:Amplitude AmpGG2eta
+set AmpGG2eta:F00 0.274
+set AmpGG2eta:LambdaP2 0.6
+set AmpGG2eta:Particle /Herwig/Particles/eta
+# eta'
+create Herwig::MEff2ffX MEff2ffetaPrime
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2etaPrime
+set AmpGG2etaPrime:Particle /Herwig/Particles/eta'
+set AmpGG2etaPrime:F00 0.344
+set AmpGG2etaPrime:LambdaP2 0.6
+newdef MEff2ffetaPrime:Amplitude AmpGG2etaPrime
 
 # f f -> f f eta_c via 2 photon process
 create Herwig::MEff2ffX MEff2ffEtaC1S

@@ -13,7 +13,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 ##################################################
 # CLEO pi0, eta, eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I446031
-# BELLE pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2012_I1114749
-# BABAR pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I821653
+# BABAR eta eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I883525
+# BABAR eta' double diff
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2018_I1691222

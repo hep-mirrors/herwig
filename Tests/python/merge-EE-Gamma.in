@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging,sys, os, yoda, copy
 
@@ -68,8 +69,8 @@ yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
            "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
            "-Direct-Jets-198","-Single-Resolved-Jets-198","-Double-Resolved-Jets-198",
            "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206",
-           "-pi0-10.58","-EtaC-10.58","-ChiC2-10.58","-Eta-1","-Eta-29",
-           "-EtaPrime-34.3","-EtaPrime-91.2","-Onium-91.2"]
+           "-pi0-10.58","-Eta-10.58","-EtaPrime-10.58","-EtaC-10.58","-ChiC2-10.58",
+	   "-Eta-1","-Eta-29","-EtaPrime-34.3","-EtaPrime-91.2","-Onium-91.2"]
 
 # Get histos
 inhistos  = {}
@@ -89,7 +90,7 @@ for f in yodafiles:
     for aopath, ao in aos.items() :
         if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
         # merge of different energy values
-        if("L3_2004_I645127" in aopath) :
+        if "L3_2004_I645127" in aopath :
             if(("d01" in aopath and "mu" in file) or
                ("d02" in aopath and "tau" in file)) :
                 if aopath not in inhistos :

@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import yoda,os,math,subprocess,optparse
 from string import Template
@@ -66,6 +67,10 @@ analyses["EtaEta"]["BELLE_2010_I862260" ] = ["d01-x01-y01","d01-x01-y02"]
 # Eta Pi
 analyses["EtaPi"]["BELLE_2009_I822474" ] = ["d01-x01-y01"]
 analyses["EtaPi"]["CRYSTAL_BALL_1986_I217547" ] = ["d01-x01-y01"]
+# 3 pions
+analyses["3Pi"]["ARGUS_1997_I420421" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y05",
+                                          "d04-x01-y03","d05-x01-y01"]
+analyses["3Pi"]["TASSO_1986_I228876" ] = ["d01-x01-y01"]
 # 4 pions
 analyses["4Pi"]["ARGUS_1989_I266416" ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]

@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging,sys,os
 from string import Template
@@ -235,11 +236,18 @@ elif(collider=="EE-Gamma") :
                 process = StringBuilder(insert_ME("MEQCD2to2"))
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
-        elif "pi0" in parameterName or "EtaC" in parameterName or "Eta" in parameterName or "EtaPrime" in parameterName :
-            mename="PseudoScalar"
-            if "EtaC" in parameterName : mename="EtaC1S"
+        elif ("pi0"  in parameterName or "Eta" in parameterName or "EtaPrime" in parameterName or
+              "EtaC" in parameterName):
+            if "EtaC" in parameterName :
+                mename="EtaC1S"
+            elif "pi0" in parameterName :
+                mename="pi0"
+            elif "EtaPrime" in parameterName :
+                mename="etaPrime"
+            elif "Eta" in parameterName :
+                mename="eta"
             process = StringBuilder(insert_ME("MEff2ff%s" % mename) )
-            if "10.58" in parameterName : 
+            if "10.58" in parameterName: 
                 process+="cp /Herwig/MatrixElements/MEff2ff%s /Herwig/MatrixElements/MEff2ff%s2" % (mename,mename)
                 process+= insert_ME("MEff2ff%s2" % mename)
                 process+="cp /Herwig/MatrixElements/MEff2ff%s /Herwig/MatrixElements/MEff2ff%s3" % (mename,mename)
