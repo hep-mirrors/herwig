@@ -40,8 +40,6 @@ double GammaGammaAmplitude::generateKinematics(const double * r,
 					       vector<Lorentz5Momentum> & momenta,
 					       const tcPDVector & partons) {
   double jac = 0.25/pow(Constants::twopi,5);
-  // jacobian(1.);
-  // double mjac(1.);
   vector<Energy> masses;
   for(unsigned int ix=0;ix<partons.size();++ix) {
     momenta[ix].setMass(partons[ix]->mass());

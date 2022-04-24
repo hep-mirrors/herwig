@@ -108,7 +108,7 @@ void GammaGamma2Onium1S0Amplitude::Init() {
   static SwitchOption interfaceMassOptionOffShell
     (interfaceMassOption,
      "OffShell",
-     "Generate an off-shell onium state using the nass generator",
+     "Generate an off-shell onium state using the mass generator",
      1);
 
 }

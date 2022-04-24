@@ -7,6 +7,7 @@
 
 #include "GammaGammaAmplitude.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -25,8 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2PseudoScalarAmplitude() : F00_(0.274/GeV),
-				       LambdaP2_(0.6*GeV2)
+  GammaGamma2PseudoScalarAmplitude() : F00_(0.274/GeV), LambdaP2_(0.6*GeV2), mOpt_(0)
   {}
 
 public:
@@ -54,7 +54,7 @@ public:
    * element.
    */
   virtual int nDim(unsigned int) const {
-    return 0;
+    return mOpt_;
   }
 
   /**
@@ -83,6 +83,12 @@ public:
     double output(0);
     return helicityAmplitude(v1,v2,particles[0]->mass(),output);
   }
+
+  /**
+   * Generate the mass of the \f$\gamma\gamma\f$ system
+   */
+  virtual Energy generateW(double r, const tcPDVector & partons,
+			   Energy Wmax, Energy2 & jacW, Energy2 scale);
 
 public:
 
@@ -129,6 +135,18 @@ protected:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
   /**
    *  Calculation of the helicity amplitudes for the process
    */
@@ -164,6 +182,16 @@ private:
    * Pole mass squared parameter for the form factors
    */
   Energy2 LambdaP2_;
+
+  /**
+   *  Option for the mass generation
+   */
+  unsigned int mOpt_;
+
+  /**
+   *  The mass generator for the onium state
+   */
+  GenericMassGeneratorPtr massGen_;
   //@}
 
 };

@@ -1,39 +1,33 @@
 // -*- C++ -*-
-#ifndef Herwig_GammaGamma2Onium1S0Amplitude_H
-#define Herwig_GammaGamma2Onium1S0Amplitude_H
+#ifndef Herwig_GammaGamma2ScalarAmplitude_H
+#define Herwig_GammaGamma2ScalarAmplitude_H
 //
-// This is the declaration of the GammaGamma2Onium1S0Amplitude class.
+// This is the declaration of the GammaGamma2ScalarAmplitude class.
 //
 
-#include "Herwig/MatrixElement/Gamma/GammaGammaAmplitude.h"
-#include "OniumParameters.h"
-#include "Herwig/PDT/GenericMassGenerator.h"
+#include "GammaGammaAmplitude.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The GammaGamma2Onium1S0Amplitude class implements the matrix element for \f$\gamma\gamma\to^{1}\!\!S_0\f$ quarkonium.
- * states.
+ * The GammaGamma2ScalarAmplitude class implements the amplitide for \f$\gamma\gamma\to\f$ scalar meson
  *
- * @see \ref GammaGamma2Onium1S0AmplitudeInterfaces "The interfaces"
- * defined for GammaGamma2Onium1S0Amplitude.
+ * @see \ref GammaGamma2ScalarAmplitudeInterfaces "The interfaces"
+ * defined for GammaGamma2ScalarAmplitude.
  */
-class GammaGamma2Onium1S0Amplitude: public GammaGammaAmplitude {
+class GammaGamma2ScalarAmplitude: public GammaGammaAmplitude {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  GammaGamma2Onium1S0Amplitude() : O1_(ZERO), state_(ccbar), n_(1),
-				   Lambda2_(sqr(3.0969*GeV)), mOpt_(0)
+  GammaGamma2ScalarAmplitude() : F00_(8.89*MeV), LambdaP2_(0.6*GeV2), mOpt_(1)
   {}
-  //@}
 
 public:
 
@@ -76,15 +70,8 @@ public:
 		     const Energy2 & t1, const Energy2 & t2,
 		     const Energy2 & scale, 
 		     const vector<Lorentz5Momentum> & momenta,
-		     const cPDVector & , DVector & ) const {
-    Energy M  = momenta.back().mass();
-    double output(0.);
-    helicityAmplitude(v1,v2,M,output);
-    // coupling factors
-    double eQ = state_==ccbar ? 2./3. : -1./3.;
-    double alpha = generator()->standardModel()->alphaEM();
-    return 128.*output*O1_/M/scale*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
-  }
+		     const cPDVector & partons,
+		     DVector & dweights ) const; 
   
   /**
    * Matrix element for spin correlations
@@ -94,7 +81,8 @@ public:
 				     tParticleVector & particles) const {
     ScalarWaveFunction(particles[0],outgoing,true);
     double output(0);
-    return helicityAmplitude(v1,v2,particles[0]->mass(),output);
+    return helicityAmplitude(v1,v2,v1[0].momentum().m2(),v2[0].momentum().m2(),
+			     particles[0]->mass(),output);
   }
 
   /**
@@ -102,6 +90,18 @@ public:
    */
   virtual Energy generateW(double r, const tcPDVector & partons,
 			   Energy Wmax, Energy2 & jacW, Energy2 scale);
+
+  /**
+   * Generate internal degrees of freedom given 'nDim()' uniform
+   * random numbers in the interval ]0,1[. To help the phase space
+   * generator, the 'dSigHatDR()' should be a smooth function of these
+   * numbers, although this is not strictly necessary. Return
+   * false if the chosen points failed the kinematical cuts.
+   */
+  virtual double generateKinematics(const double * r,
+				    const Energy2 & scale, 
+				    vector<Lorentz5Momentum> & momenta,
+				    const tcPDVector & partons);
 
 public:
 
@@ -165,6 +165,7 @@ protected:
    */
   ProductionMatrixElement helicityAmplitude(const vector<VectorWaveFunction> & v1,
 					    const vector<VectorWaveFunction> & v2,
+					    const Energy2 & t1, const Energy2 & t2,
 					    const Energy & M, double & output) const;
   
 private:
@@ -173,37 +174,28 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2Onium1S0Amplitude & operator=(const GammaGamma2Onium1S0Amplitude &) = delete;
+  GammaGamma2ScalarAmplitude & operator=(const GammaGamma2ScalarAmplitude &) = delete;
 
 private:
 
+  /**
+   *   Particle
+   */
+  PDPtr particle_;
+  
   /**
    *   Parameters for the form-factors
    */
   //@{
   /**
-   *  Access to the parameters for the quarkonium states
+   *    Form factor at $Q_1^2=Q_2^2=0$
    */
-  OniumParametersPtr params_;
+  Energy F00_;
   
-  /**
-   *  The \f$O_1\f$ colour-singlet coefficient
-   */
-  Energy3 O1_;
-
-  /**
-   *  Type of state
-   */
-  OniumState state_;
-
-  /**
-   *  Principal quantum number
-   */
-  unsigned int n_;
   /**
    * Pole mass squared parameter for the form factors
    */
-  Energy2 Lambda2_;
+  Energy2 LambdaP2_;
 
   /**
    *  Option for the mass generation
@@ -220,4 +212,4 @@ private:
 
 }
 
-#endif /* Herwig_GammaGamma2Onium1S0Amplitude_H */
+#endif /* Herwig_GammaGamma2ScalarAmplitude_H */

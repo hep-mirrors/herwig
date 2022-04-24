@@ -5,6 +5,7 @@ MEGammaGamma2WW.cc MEGammaGamma2WW.h \
 MEff2ffX.cc MEff2ffX.h \
 MEGammaGamma2X.cc MEGammaGamma2X.h \
 GammaGammaAmplitude.h GammaGammaAmplitude.fh GammaGammaAmplitude.cc \
+GammaGamma2ScalarAmplitude.h  GammaGamma2ScalarAmplitude.cc \
 GammaGamma2PseudoScalarAmplitude.h  GammaGamma2PseudoScalarAmplitude.cc \
 GammaGamma2PiPiAmplitude.h  GammaGamma2PiPiAmplitude.cc \
 GammaGamma2ffgAmplitude.h  GammaGamma2ffAmplitude.cc

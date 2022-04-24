@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the GammaGamma2PseudoScalarAmplitude class.
+// functions of the GammaGamma2ScalarAmplitude class.
 //
 
-#include "GammaGamma2PseudoScalarAmplitude.h"
+#include "GammaGamma2ScalarAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
@@ -19,26 +19,26 @@
 
 using namespace Herwig;
 
-IBPtr GammaGamma2PseudoScalarAmplitude::clone() const {
+IBPtr GammaGamma2ScalarAmplitude::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr GammaGamma2PseudoScalarAmplitude::fullclone() const {
+IBPtr GammaGamma2ScalarAmplitude::fullclone() const {
   return new_ptr(*this);
 }
 
-void GammaGamma2PseudoScalarAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << particle_ << ounit(F00_,1./GeV) << ounit(LambdaP2_,GeV2) << mOpt_ << massGen_;
+void GammaGamma2ScalarAmplitude::persistentOutput(PersistentOStream & os) const {
+  os << particle_ << ounit(F00_,GeV) << ounit(LambdaP2_,GeV2) << mOpt_ << massGen_;
 }
 
-void GammaGamma2PseudoScalarAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> particle_ >> iunit(F00_,1./GeV) >> iunit(LambdaP2_,GeV2) >> mOpt_ >> massGen_;
+void GammaGamma2ScalarAmplitude::persistentInput(PersistentIStream & is, int) {
+  is >> particle_ >> iunit(F00_,GeV) >> iunit(LambdaP2_,GeV2) >> mOpt_ >> massGen_;
 }
 
-void GammaGamma2PseudoScalarAmplitude::doinit() {
+void GammaGamma2ScalarAmplitude::doinit() {
   GammaGammaAmplitude::doinit();
   if(particle_->iSpin()!=PDT::Spin0)
-    throw Exception() << "Mustr have a spin-0 particle in GammaGamma2PseudoScalarAmplitude"
+    throw Exception() << "Mustr have a spin-0 particle in GammaGamma2ScalarAmplitude"
 		      << Exception::runerror;
   if(particle_->massGenerator())
     massGen_=dynamic_ptr_cast<GenericMassGeneratorPtr>(particle_->massGenerator());
@@ -47,51 +47,51 @@ void GammaGamma2PseudoScalarAmplitude::doinit() {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<GammaGamma2PseudoScalarAmplitude,GammaGammaAmplitude>
-describeHerwigGammaGamma2PseudoScalarAmplitude("Herwig::GammaGamma2PseudoScalarAmplitude",
+DescribeClass<GammaGamma2ScalarAmplitude,GammaGammaAmplitude>
+describeHerwigGammaGamma2ScalarAmplitude("Herwig::GammaGamma2ScalarAmplitude",
 					       "HwMEGammaGamma.so");
 
-void GammaGamma2PseudoScalarAmplitude::Init() {
+void GammaGamma2ScalarAmplitude::Init() {
 
-  static ClassDocumentation<GammaGamma2PseudoScalarAmplitude> documentation
-    ("The GammaGamma2PseudoScalarAmplitude class implements"
+  static ClassDocumentation<GammaGamma2ScalarAmplitude> documentation
+    ("The GammaGamma2ScalarAmplitude class implements"
      " the amplitude for gamma gamma -> pseudoscalar");
   
-  static Reference<GammaGamma2PseudoScalarAmplitude,ParticleData> interfaceParticle
+  static Reference<GammaGamma2ScalarAmplitude,ParticleData> interfaceParticle
     ("Particle",
      "The particle produced by the amplitude",
-     &GammaGamma2PseudoScalarAmplitude::particle_, false, false, true, false, false);
+     &GammaGamma2ScalarAmplitude::particle_, false, false, true, false, false);
 
-  static Parameter<GammaGamma2PseudoScalarAmplitude,InvEnergy> interfaceF00
+  static Parameter<GammaGamma2ScalarAmplitude,Energy> interfaceF00
     ("F00",
      "The form factor at zero momentum transfer",
-     &GammaGamma2PseudoScalarAmplitude::F00_, 1/GeV, 0.274/GeV, 0./GeV, 100./GeV,
+     &GammaGamma2ScalarAmplitude::F00_, GeV, 8.89*MeV, 0.*GeV, 100.*GeV,
      false, false, Interface::limited);
 
-  static Parameter<GammaGamma2PseudoScalarAmplitude,Energy2> interfaceLambdaP2
+  static Parameter<GammaGamma2ScalarAmplitude,Energy2> interfaceLambdaP2
     ("LambdaP2",
      "The square of the pole mass for the form factor",
-     &GammaGamma2PseudoScalarAmplitude::LambdaP2_, GeV2, 0.6*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &GammaGamma2ScalarAmplitude::LambdaP2_, GeV2, 0.6*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
   
-  static Switch<GammaGamma2PseudoScalarAmplitude,unsigned int> interfaceMassOption
+  static Switch<GammaGamma2ScalarAmplitude,unsigned int> interfaceMassOption
     ("MassOption",
-     "Option for the generation of the pseudoscalar mass",
-     &GammaGamma2PseudoScalarAmplitude::mOpt_, 0, false, false);
+     "Option for the generation of the scalar mass",
+     &GammaGamma2ScalarAmplitude::mOpt_, 1, false, false);
   static SwitchOption interfaceMassOptionOnShell
     (interfaceMassOption,
      "OnShell",
-     "Generate the pseudoscalar state on-shell",
+     "Generate the scalar state on-shell",
      0);
   static SwitchOption interfaceMassOptionOffShell
     (interfaceMassOption,
      "OffShell",
-     "Generate an off-shell pseudoscalar state using the mass generator",
+     "Generate an off-shell scalar state using the mass generator",
      1);
 
 }
 
-vector<DiagPtr> GammaGamma2PseudoScalarAmplitude::getDiagrams(unsigned int iopt) const {
+vector<DiagPtr> GammaGamma2ScalarAmplitude::getDiagrams(unsigned int iopt) const {
   vector<DiagPtr> output;
   output.reserve(3);
   tcPDPtr g  = getParticleData(ParticleID::gamma );
@@ -107,10 +107,11 @@ vector<DiagPtr> GammaGamma2PseudoScalarAmplitude::getDiagrams(unsigned int iopt)
   return output;
 }
 
-ProductionMatrixElement GammaGamma2PseudoScalarAmplitude::
+ProductionMatrixElement GammaGamma2ScalarAmplitude::
 helicityAmplitude(const vector<VectorWaveFunction> & v1,
 		  const vector<VectorWaveFunction> & v2,
-		  const Energy & M, double & output) const {
+		  const Energy2 & t1, const Energy2 & t2,
+		  const Energy &, double & output) const {
   ProductionMatrixElement me;
   if(v1.size()==4&&v2.size()==4) {
     me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
@@ -125,49 +126,66 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
   output = 0;
   Lorentz5Momentum pG1 = v1[0].momentum();
   Lorentz5Momentum pG2 = v2[0].momentum();
+  Energy2 p1p2=pG1*pG2;
+  Energy4 X = sqr(p1p2)-t1*t2;
   for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
     for(unsigned int ih1B=0;ih1B<2;++ih1B) {
-      auto vOff = Helicity::epsilon(v1[2*ih1A+ih1B].wave(),pG1,pG2);
+      complex<Energy> d1[2]={ v1[2*ih1A+ih1B].wave()*pG1, v1[2*ih1A+ih1B].wave()*pG2};
       for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
-  	  Complex amp = (vOff*v2[2*ih2A+ih2B].wave())/sqr(M);
-  	  output += norm(amp); 
-  	  if(v1.size()==4) {
-  	    me(ih1A,ih1B,ih2A,ih2B,0) = amp;
-  	  }
-  	  else {
-  	    me(2*ih1B,2*ih2B,0) = amp;
-  	  }
-  	}
+      	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+	  complex<Energy> d2[2]={ v2[2*ih2A+ih2B].wave()*pG1, v2[2*ih2A+ih2B].wave()*pG2};
+	  Complex amp = v1[2*ih1A+ih1B].wave()*v2[2*ih2A+ih2B].wave()
+	    + (-p1p2*(d1[1]*d2[0]+d1[0]*d2[1]) + t2*d1[0]*d2[0] + t1*d1[1]*d2[1])/X;
+	  output += norm(amp); 
+	  if(v1.size()==4) {
+	    me(ih1A,ih1B,ih2A,ih2B,0) = amp;
+	  }
+	  else {
+	    me(2*ih1B,2*ih2B,0) = amp;
+	  }
+      	}
       }
     }
   }
   return me;
 }
 
-double GammaGamma2PseudoScalarAmplitude::me2(const vector<VectorWaveFunction> & v1,
+double GammaGamma2ScalarAmplitude::me2(const vector<VectorWaveFunction> & v1,
 					     const vector<VectorWaveFunction> & v2,
 					     const Energy2 & t1, const Energy2 & t2,
 					     const Energy2 & scale, 
 					     const vector<Lorentz5Momentum> & momenta,
 					     const cPDVector & , DVector &  ) const {
+  cerr << "testing in me2\n";
   Energy M  = momenta.back().mass();
   // calculate the matrix element
   double output(0.);
-  helicityAmplitude(v1,v2,M,output);
+  helicityAmplitude(v1,v2,t1,t2,M,output);
   // form factor
-  InvEnergy form = F00_/(1.-t1/LambdaP2_)/(1.-t2/LambdaP2_);
-  // coupling factors
+  Energy form = F00_/(1.-t1/LambdaP2_)/(1.-t2/LambdaP2_);
+  // // coupling factors
   double alpha = generator()->standardModel()->alphaEM();
-  return 0.25*pow<4,1>(M)/scale*sqr(form)*output*sqr(alpha*4.*Constants::pi);
+  return 0.25*sqr(form)/scale*output*sqr(alpha*4.*Constants::pi);
 }
 
-Energy GammaGamma2PseudoScalarAmplitude::generateW(double r, const tcPDVector & partons,
-						   Energy Wmax,Energy2 & jacW, Energy2 scale) {
+Energy GammaGamma2ScalarAmplitude::generateW(double r, const tcPDVector & partons,
+					     Energy Wmax,Energy2 & jacW, Energy2 scale) {
   Energy Wmin = partons.back()->massMin();
   Wmax = min(Wmax,partons.back()->massMax());
   double wgt(0.);
   Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);
   jacW = scale*wgt;
   return output;
+}
+
+double GammaGamma2ScalarAmplitude::generateKinematics(const double * r,
+						      const Energy2 & scale, 
+						      vector<Lorentz5Momentum> & momenta,
+						      const tcPDVector & ) {
+  Energy M = sqrt(scale);
+  double jac = scale*massGen_->BreitWignerWeight(M)/pow(Constants::twopi,3);
+  momenta[0].setVect(Momentum3(ZERO,ZERO,ZERO));
+  momenta[0].setE(M);
+  momenta[0].rescaleMass();
+  return jac;
 }
