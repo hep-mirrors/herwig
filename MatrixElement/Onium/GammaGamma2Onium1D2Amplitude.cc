@@ -230,3 +230,16 @@ ProductionMatrixElement GammaGamma2Onium1D2Amplitude::me(const vector<VectorWave
   double output(0);
   return helicityAmplitude(v1,v2,t3,particles[0]->mass(),output);
 }
+
+double GammaGamma2Onium1D2Amplitude::
+generateKinematics(const double * r,
+		   const Energy2 & scale, 
+		   vector<Lorentz5Momentum> & momenta,
+		   const tcPDVector & ) {
+  Energy M = sqrt(scale);
+  double jac = scale*massGen_->BreitWignerWeight(M)/pow(Constants::twopi,3);
+  momenta[0].setVect(Momentum3(ZERO,ZERO,ZERO));
+  momenta[0].setE(M);
+  momenta[0].rescaleMass();
+  return jac;
+}

@@ -103,6 +103,18 @@ public:
   virtual Energy generateW(double r, const tcPDVector & partons,
 			   Energy Wmax, Energy2 & jacW, Energy2 scale);
 
+  /**
+   * Generate internal degrees of freedom given 'nDim()' uniform
+   * random numbers in the interval ]0,1[. To help the phase space
+   * generator, the 'dSigHatDR()' should be a smooth function of these
+   * numbers, although this is not strictly necessary. Return
+   * false if the chosen points failed the kinematical cuts.
+   */
+  virtual double generateKinematics(const double * r,
+				    const Energy2 & scale, 
+				    vector<Lorentz5Momentum> & momenta,
+				    const tcPDVector & partons);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

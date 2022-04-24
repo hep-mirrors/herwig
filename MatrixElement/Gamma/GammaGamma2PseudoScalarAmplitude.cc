@@ -171,3 +171,16 @@ Energy GammaGamma2PseudoScalarAmplitude::generateW(double r, const tcPDVector & 
   jacW = scale*wgt;
   return output;
 }
+
+double GammaGamma2PseudoScalarAmplitude::
+generateKinematics(const double * r,
+		   const Energy2 & scale, 
+		   vector<Lorentz5Momentum> & momenta,
+		   const tcPDVector & ) {
+  Energy M = sqrt(scale);
+  double jac = scale*massGen_->BreitWignerWeight(M)/pow(Constants::twopi,3);
+  momenta[0].setVect(Momentum3(ZERO,ZERO,ZERO));
+  momenta[0].setE(M);
+  momenta[0].rescaleMass();
+  return jac;
+}
