@@ -1,0 +1,58 @@
+# -*- ThePEG-repository -*-
+
+read snippets/EECollider.in
+
+##################################################
+# Selected the hard process 
+##################################################
+# leading-order processes
+##################################################
+cd /Herwig/MatrixElements
+create Herwig::MEGammaGamma2X MEgg2f0_980 HwMEGammaGamma.so
+create Herwig::GammaGamma2ScalarAmplitude GG2f0_980Amp
+set GG2f0_980Amp:MassOption OffShell
+set GG2f0_980Amp:Particle /Herwig/Particles/f_0
+set GG2f0_980Amp:F00 0.00889
+set MEgg2f0_980:Amplitude GG2f0_980Amp
+create Herwig::MEGammaGamma2X MEgg2a0_980 HwMEGammaGamma.so
+create Herwig::GammaGamma2ScalarAmplitude GG2a0_980Amp
+set GG2a0_980Amp:MassOption OffShell
+set GG2a0_980Amp:Particle /Herwig/Particles/a_00
+set GG2a0_980Amp:F00 0.00898
+set MEgg2a0_980:Amplitude GG2a0_980Amp
+
+# set the process
+insert SubProcess:MatrixElements 0 MEgg2f0_980
+insert SubProcess:MatrixElements 0 MEgg2a0_980
+
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set EventGenerator:EventHandler:LuminosityFunction:Energy ${ECMS}
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/gamma:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/pi0:Stable Stable
+set /Herwig/Particles/K_S0:Stable Stable
+cd /Herwig/Generators
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
+${ANALYSES}
+
+cd /Herwig/EventHandlers
+set EventHandler:BeamA /Herwig/Particles/gamma
+set EventHandler:BeamB /Herwig/Particles/gamma
+
+###################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+saverun Rivet-LowEnergy-GammaGamma-Resonance-${ECMS} EventGenerator

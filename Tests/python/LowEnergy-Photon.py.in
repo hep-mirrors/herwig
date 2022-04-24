@@ -12,6 +12,7 @@ op.add_option("--process"         , dest="processes"       , default=[], action=
 op.add_option("--path"            , dest="path"            , default=path)
 op.add_option("--non-perturbative", dest="nonPerturbative" , default=False, action="store_true")
 op.add_option("--perturbative"    , dest="perturbative"    , default=False, action="store_true")
+op.add_option("--resonance"       , dest="resonance"       , default=False, action="store_true")
 op.add_option("--dest"            , dest="dest"            , default="Rivet")
 op.add_option("--list"            , dest="list"            , default=False, action="store_true")
 op.add_option("--plots"           , dest="plot"           , default=False, action="store_true")
@@ -75,6 +76,7 @@ analyses["3Pi"]["TASSO_1986_I228876" ] = ["d01-x01-y01"]
 analyses["4Pi"]["ARGUS_1989_I266416" ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
 analyses["4Pi"]["CELLO_1989_I267081" ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["4Pi"]["TASSO_1982_I180755" ] = ["d01-x01-y01"]
 # proton antiproton
 analyses["PPbar"]["ARGUS_1989_I267759" ] = ["d02-x01-y01"]
 analyses["PPbar"]["BELLE_2005_I677625" ] = ["d01-x01-y01"]
@@ -100,7 +102,6 @@ analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01
                                             "d11-x01-y01"]
 # 6 meson final-states
 analyses["6m"]["ARGUS_1996_I403304"] = [ "d01-x01-y01","d01-x01-y02","d01-x01-y03"]
-# proton-antiproton
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :
@@ -266,6 +267,9 @@ perturbative=Template( templateText )
 with open("python/LowEnergy-GammaGamma-NonPerturbative.in", 'r') as f:
     templateText = f.read()
 nonPerturbative=Template( templateText )
+with open("python/LowEnergy-GammaGamma-Resonance.in", 'r') as f:
+    templateText = f.read()
+resonance=Template( templateText )
 
 targets=""
 for energy in sorted(energies) :
@@ -304,4 +308,11 @@ for energy in sorted(energies) :
         with open(opts.dest+"/Rivet-LowEnergy-GammaGamma-NonPerturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-GammaGamma-NonPerturbative-%8.6f.yoda " % energy
+    # input file for resonances
+    if(opts.resonance and energy>0.81 and energy<1.17) :
+        inputResonance = resonance.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal})
+        with open(opts.dest+"/Rivet-LowEnergy-GammaGamma-Resonance-%8.6f.in" % energy ,'w') as f:
+            f.write(inputResonance)
+        targets += "Rivet-LowEnergy-GammaGamma-Resonance-%8.6f.yoda " % energy
+
 print (targets)

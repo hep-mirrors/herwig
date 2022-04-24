@@ -425,6 +425,7 @@ create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2etaPrime
 set AmpGG2etaPrime:Particle /Herwig/Particles/eta'
 set AmpGG2etaPrime:F00 0.344
 set AmpGG2etaPrime:LambdaP2 0.6
+set AmpGG2etaPrime:MassOption OffShell
 newdef MEff2ffetaPrime:Amplitude AmpGG2etaPrime
 
 # f f -> f f eta_c via 2 photon process

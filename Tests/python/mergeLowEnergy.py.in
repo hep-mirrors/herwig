@@ -23,8 +23,11 @@ for key in cmd3_weights.keys() :
 
 for key in cmd3_weights.keys() :
     cmd3_weights[key][1] /= wSum 
-    
-for runType in ["NonPerturbative","Perturbative"]:
+output=""
+labels={ "NonPerturbative" : "Non-Pert" ,
+         "Perturbative"    : "Pert"     ,
+         "Resonance"       : "Res"      }
+for runType in ["NonPerturbative","Perturbative","Resonance"]:
     outhistos={}
     for fileName in glob.glob("Rivet-LowEnergy-%s-%s-*.yoda" % (name[0],runType) ):
         energy = float(fileName.split("-")[-1].strip(".yoda"))
@@ -128,4 +131,6 @@ for runType in ["NonPerturbative","Perturbative"]:
             print  (type(outhistos[val]) )
     
     yoda.writeYODA(outhistos,"LowEnergy-%s-%s.yoda" % (runType,args[0]))
+    output+="LowEnergy-%s-%s.yoda:%s " % (runType,args[0],labels[runType])
+print(output)
 
