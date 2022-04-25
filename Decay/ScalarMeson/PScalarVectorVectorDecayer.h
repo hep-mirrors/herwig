@@ -173,7 +173,7 @@ private:
   vector<long> incoming_;
 
   /**
-   * the PDG code for the first outgoing particle
+   * the PDG code for the outgoing particles
    */
   vector<pair<long,long> > outgoing_;
 

@@ -21251,67 +21251,19 @@ create Herwig::ScalarVectorVectorDecayer  SVV
 newdef SVV:Iteration 1
 newdef SVV:Ntry 2000
 newdef SVV:Points 10000
-newdef SVV:GenerateIntermediates 0 
-newdef SVV:Incoming   0 10221
-newdef SVV:FirstOutgoing  0 113
-newdef SVV:SecondOutgoing 0 113
-newdef SVV:Coupling   0 11.26
-newdef SVV:MaxWeight  0 17.5926
-newdef SVV:Incoming   1 10221
-newdef SVV:FirstOutgoing  1 213
-newdef SVV:SecondOutgoing 1 -213
-newdef SVV:Coupling   1 15.92
-newdef SVV:MaxWeight  1 19.1659
-newdef SVV:Incoming   2 9030221
-newdef SVV:FirstOutgoing  2 113
-newdef SVV:SecondOutgoing 2 113
-newdef SVV:Coupling   2 1.691
-newdef SVV:MaxWeight  2 16.8
-newdef SVV:Incoming   3 9030221
-newdef SVV:FirstOutgoing  3 213
-newdef SVV:SecondOutgoing 3 -213
-newdef SVV:Coupling   3 2.391
-newdef SVV:MaxWeight  3 17.
-newdef SVV:Incoming   4 10441
-newdef SVV:FirstOutgoing  4 443
-newdef SVV:SecondOutgoing 4 22
-newdef SVV:Coupling   4 0.251
-newdef SVV:MaxWeight  4 1.1081
-newdef SVV:Incoming   5 10441
-newdef SVV:FirstOutgoing  5 323
-newdef SVV:SecondOutgoing 5 -323
-newdef SVV:Coupling   5 0.0088
-newdef SVV:MaxWeight  5 12.5
-newdef SVV:Incoming   6 10441
-newdef SVV:FirstOutgoing  6 313
-newdef SVV:SecondOutgoing 6 -313
-newdef SVV:Coupling   6 0.0088
-newdef SVV:MaxWeight  6 12.5
-newdef SVV:Incoming   7 10441
-newdef SVV:FirstOutgoing  7 333
-newdef SVV:SecondOutgoing 7 333
-newdef SVV:Coupling   7 0.0067
-newdef SVV:MaxWeight  7 9.85019
-newdef SVV:Incoming   8 10441
-newdef SVV:FirstOutgoing  8 22
-newdef SVV:SecondOutgoing 8 22
-newdef SVV:Coupling   8 0.0027
-newdef SVV:MaxWeight  8 1.10652
-newdef SVV:Incoming   9 10111
-newdef SVV:FirstOutgoing  9 113
-newdef SVV:SecondOutgoing 9 223
-newdef SVV:Coupling   9 27.09
-newdef SVV:MaxWeight  9 8.
-newdef SVV:Incoming   10 10211
-newdef SVV:FirstOutgoing  10 213
-newdef SVV:SecondOutgoing 10 223
-newdef SVV:Coupling   10 27.09
-newdef SVV:MaxWeight  10 8.
-newdef SVV:Incoming   11 10441
-newdef SVV:FirstOutgoing  11 223
-newdef SVV:SecondOutgoing 11 223
-newdef SVV:Coupling   11 0.0093
-newdef SVV:MaxWeight  11 11.5
+newdef SVV:GenerateIntermediates 0
+do SVV:SetUpDecayMode 10221 113 113 11.26 17.5926
+do SVV:SetUpDecayMode 10221 213 -213 15.92 19.1659
+do SVV:SetUpDecayMode 9030221 113 113 1.691 16.8
+do SVV:SetUpDecayMode 9030221 213 -213 2.391 17.
+do SVV:SetUpDecayMode 10441 443 22 0.251 1.1081
+do SVV:SetUpDecayMode 10441 323 -323 0.0088 12.5
+do SVV:SetUpDecayMode 10441 313 -313 0.0088 12.5
+do SVV:SetUpDecayMode 10441 333 333 0.0067 9.85019
+do SVV:SetUpDecayMode 10441 22 22 0.0027 1.10652
+do SVV:SetUpDecayMode 10111 113 223 27.09 8.
+do SVV:SetUpDecayMode 10211 213 223 27.09 8.
+do SVV:SetUpDecayMode 10441 223 223 0.0093 11.5
 #
 create Herwig::a1SimpleDecayer  a1Simple
 newdef a1Simple:Iteration 5
