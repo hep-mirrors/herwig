@@ -15,7 +15,8 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Deleted.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Utilities/Kinematics.h"
@@ -30,65 +31,28 @@ using namespace ThePEG::Helicity;
 void ScalarVectorVectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<_incoming.size();++ix)
-      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+    for(unsigned int ix=0;ix<incoming_.size();++ix)
+      if(mode(ix)) maxWeight_[ix] = mode(ix)->maxWeight();
   }
-}
-
-ScalarVectorVectorDecayer::ScalarVectorVectorDecayer() 
-  : _incoming(13), _outgoing1(13), _outgoing2(13), _coupling(13), 
-    _maxweight(13) {
-  // f_0(1370) to rho rho
-  _incoming[0] = 10221; _outgoing1[0] = 113; _outgoing2[0] = 113; 
-  _coupling[0] = 11.26/GeV; _maxweight[0] = 20.; 
-  _incoming[1] = 10221; _outgoing1[1] = 213; _outgoing2[1] = -213; 
-  _coupling[1] = 15.92/GeV; _maxweight[1] = 20.; 
-  // f_0(1500) to rho rho
-  _incoming[2] = 9030221; _outgoing1[2] = 113; _outgoing2[2] = 113; 
-  _coupling[2] = 1.691/GeV; _maxweight[2] = 20.; 
-  _incoming[3] = 9030221; _outgoing1[3] = 213; _outgoing2[3] = -213; 
-  _coupling[3] = 2.391/GeV; _maxweight[3] = 20.; 
-  // chi_c0 decays
-  _incoming[4] = 10441; _outgoing1[4] = 443; _outgoing2[4] = 22; 
-  _coupling[4] = 0.251/GeV; _maxweight[4] = 1.; 
-  _incoming[5] = 10441; _outgoing1[5] = 323; _outgoing2[5] = -323; 
-  _coupling[5] = 0.0088/GeV; _maxweight[5] = 1.; 
-  _incoming[6] = 10441; _outgoing1[6] = 313; _outgoing2[6] = -313; 
-  _coupling[6] = 0.0088/GeV; _maxweight[6] = 1.; 
-  _incoming[7] = 10441; _outgoing1[7] = 333; _outgoing2[7] = 333;
-  _coupling[7] = 0.0067/GeV; _maxweight[7] = 1.; 
-  _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22;
-  _coupling[8] = 0.0027/GeV; _maxweight[8] = 1.; 
-  _incoming[11] = 10441; _outgoing1[11] = 223; _outgoing2[11] = 223;
-  _coupling[11] = 0.0093/GeV; _maxweight[11] = 1.;
-  // a'_0 -> omega rho
-  _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223;
-  _coupling[9] = 27.09/GeV; _maxweight[9] = 20.;
-  _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223;
-  _coupling[10] = 27.09/GeV; _maxweight[10] = 20.;
-  // size of arrays
-  _initsize = _incoming.size();
-  // intermediates
-  generateIntermediates(false);
 }
 
 void ScalarVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
-  unsigned int isize(_coupling.size());
-  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
-     isize!=_outgoing2.size() || isize!=_maxweight.size())
+  unsigned int isize(coupling_.size());
+  if(isize!=incoming_.size()  || isize!=outgoing_.size() ||
+     isize!=maxWeight_.size())
     throw InitException() << "Inconsistent parameters in " 
 			  << "ScalarVectorVectorDecayerDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr in     =  getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoing1[ix]),
-		     getParticleData(_outgoing2[ix])};
-    PhaseSpaceModePtr mode;
+  PhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr in     =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix].first ),
+		     getParticleData(outgoing_[ix].second)};
     if(in&&out[0]&&out[1]) 
-      mode=new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      mode=new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
@@ -100,7 +64,7 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
   cc = false;
   // check that at least some modes exist
   // must be two outgoing particles
-  if(_incoming.size()==0||children.size()!=2) return -1;
+  if(incoming_.size()==0||children.size()!=2) return -1;
   // ids of the particles
   int id0(parent->id());
   int id1(children[0]->id());
@@ -112,16 +76,16 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
   unsigned int ix=0;
   int imode(-1);
   do {
-    if(_incoming[ix]==id0) {
-      if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	 (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)) {
+    if(incoming_[ix]==id0) {
+      if((outgoing_[ix].first==id1&&outgoing_[ix].second==id2)||
+	 (outgoing_[ix].first==id2&&outgoing_[ix].second==id1)) {
 	imode=ix;
 	break;
       }
     }
-    if(_incoming[ix]==ccid0) {
-      if((_outgoing1[ix]==ccid1&&_outgoing2[ix]==ccid2)||
-	 (_outgoing1[ix]==ccid2&&_outgoing2[ix]==ccid1)) {
+    if(incoming_[ix]==ccid0) {
+      if((outgoing_[ix].first==ccid1&&outgoing_[ix].second==ccid2)||
+	 (outgoing_[ix].first==ccid2&&outgoing_[ix].second==ccid1)) {
 	imode=ix;
 	cc=true;
 	break;
@@ -129,7 +93,7 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
     }
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
+  while(imode<0&&ix<incoming_.size());
   return imode;
 }
 
@@ -150,38 +114,27 @@ void ScalarVectorVectorDecayer::Init() {
 
   static ClassDocumentation<ScalarVectorVectorDecayer> documentation
     ("The ScalarVectorVectorDecayer class is designed for"
-     " the decay of a pseduoscalar meson to two spin-1 particles.");
+     " the decay of a scalar meson to two spin-1 particles.");
 
-  static ParVector<ScalarVectorVectorDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &ScalarVectorVectorDecayer::_incoming,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Command<ScalarVectorVectorDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, vectors, coupling(1/GeV) and max weight for a decay",
+     &ScalarVectorVectorDecayer::setUpDecayMode, false);
+  
+  static Deleted<ScalarVectorVectorDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in ScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarVectorVectorDecayer,int> interfaceOutcoming1
-    ("FirstOutgoing",
-     "The PDG code for the first outgoing particle",
-     &ScalarVectorVectorDecayer::_outgoing1,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<ScalarVectorVectorDecayer> interfaceOutcoming1
+    ("FirstOutgoing","The old methods of setting up a decay in ScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarVectorVectorDecayer,int> interfaceOutcoming2
-    ("SecondOutgoing",
-     "The PDG code for the second outgoing particle",
-     &ScalarVectorVectorDecayer::_outgoing2,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<ScalarVectorVectorDecayer> interfaceOutcoming2
+    ("SecondOutgoing","The old methods of setting up a decay in ScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarVectorVectorDecayer,InvEnergy> interfaceCoupling
-    ("Coupling",
-     "The coupling for the decay mode",
-     &ScalarVectorVectorDecayer::_coupling,
-     1/GeV, 0, ZERO, ZERO, 10000/GeV, false, false, true);
+  static Deleted<ScalarVectorVectorDecayer> interfaceCoupling
+    ("Coupling","The old methods of setting up a decay in ScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarVectorVectorDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &ScalarVectorVectorDecayer::_maxweight,
-     0, 0, 0, 0., 500000., false, false, true);
-
+  static Deleted<ScalarVectorVectorDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in ScalarVectorVectorDecayer have been deleted, please use SetUpDecayMode");
 }
 
 void ScalarVectorVectorDecayer::
@@ -190,7 +143,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
   ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
 					incoming,true);
   for(unsigned int ix=0;ix<2;++ix)
-    VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+    VectorWaveFunction::constructSpinInfo(vectors_[ix],decay[ix],
 					  outgoing,true,decay[ix]->id()==ParticleID::gamma);
 }
 
@@ -205,13 +158,13 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
     photon[ix] = outgoing[ix]->id()==ParticleID::gamma;
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
   for(unsigned int ix=0;ix<2;++ix) {
-    _vectors[ix].resize(3);
+    vectors_[ix].resize(3);
     for(unsigned int ihel=0;ihel<3;++ihel) {
       if(photon[ix] && ihel==1) continue;
-      _vectors[ix][ihel] = HelicityFunctions::polarizationVector(-momenta[ix],ihel,Helicity::outgoing);
+      vectors_[ix][ihel] = HelicityFunctions::polarizationVector(-momenta[ix],ihel,Helicity::outgoing);
     }
   }
   // now compute the matrix element
@@ -227,11 +180,11 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
 				     (vectors_[0][ix]*momenta[1])/(p1p2-momenta[0].mass()*momenta[1].mass())));
     }
   }
-  double me = ME()->contract(_rho).real();
+  double me = ME()->contract(rho_).real();
   // test of the matrix element
   // Energy pcm=Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
   // 					   momenta[1].mass());
-  // double test = sqr(_coupling[imode()]/part.mass())*
+  // double test = sqr(coupling_[imode()]/part.mass())*
   //   (2.*sqr(pcm*part.mass())+3.*sqr(momenta[0].mass()*momenta[1].mass()));
   // cerr << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
@@ -243,7 +196,7 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
 void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class  
+  // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
@@ -264,16 +217,16 @@ bool ScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
   int id2((**pit).id());
   unsigned int ix(0);
   do {
-    if(_incoming[ix]==id) {
-      if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	 (id2==_outgoing1[ix]&&id1==_outgoing2[ix])) imode=ix;
+    if(incoming_[ix]==id) {
+      if((id1==outgoing_[ix].first&&id2==outgoing_[ix].second)||
+	 (id2==outgoing_[ix].first&&id1==outgoing_[ix].second)) imode=ix;
     }
     ++ix;
   }
   while(imode<0&&ix<incoming_.size());
   coupling=coupling_[imode]/dm.parent()->mass();
   itype = 12;
-  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
+  return id1==outgoing_[imode].first&&id2==outgoing_[imode].second;
 }
 
 string ScalarVectorVectorDecayer::setUpDecayMode(string arg) {
