@@ -2597,117 +2597,29 @@ create Herwig::TensorMesonVectorVectorDecayer  TVV
 newdef TVV:Iteration 1
 newdef TVV:Ntry 1000
 newdef TVV:Points 10000
-newdef TVV:GenerateIntermediates 0
-newdef TVV:Incoming 0 115
-newdef TVV:FirstOutgoing 0 22
-newdef TVV:SecondOutgoing 0 22
-newdef TVV:Coupling 0 0.00727
-newdef TVV:MaxWeight 0 1.60102
-newdef TVV:Incoming 1 225
-newdef TVV:FirstOutgoing 1 22
-newdef TVV:SecondOutgoing 1 22
-newdef TVV:Coupling 1 0.01253
-newdef TVV:MaxWeight 1 1.9
-newdef TVV:Incoming 2 335
-newdef TVV:FirstOutgoing 2 22
-newdef TVV:SecondOutgoing 2 22
-newdef TVV:Coupling 2 0.00161
-newdef TVV:MaxWeight 2 1.60342
-newdef TVV:Incoming 3 100555
-newdef TVV:FirstOutgoing 3 553
-newdef TVV:SecondOutgoing 3 223
-newdef TVV:Coupling 3 0.0118
-newdef TVV:MaxWeight 3 1.80247
-newdef TVV:Incoming 4 100555
-newdef TVV:FirstOutgoing 4 553
-newdef TVV:SecondOutgoing 4 22
-newdef TVV:Coupling 4 0.0172
-newdef TVV:MaxWeight 4 1.61188
-newdef TVV:Incoming 5 100555
-newdef TVV:FirstOutgoing 5 100553
-newdef TVV:SecondOutgoing 5 22
-newdef TVV:Coupling 5 0.145
-newdef TVV:MaxWeight 5 1.61121
-newdef TVV:Incoming 6 100555
-newdef TVV:FirstOutgoing 6 333
-newdef TVV:SecondOutgoing 6 333
-newdef TVV:Coupling 6 0.00483
-newdef TVV:MaxWeight 6 17.0515
-newdef TVV:Incoming 7 445
-newdef TVV:FirstOutgoing 7 443
-newdef TVV:SecondOutgoing 7 22
-newdef TVV:Coupling 7 0.243
-newdef TVV:MaxWeight 7 1.64486
-newdef TVV:Incoming 8 445
-newdef TVV:FirstOutgoing 8 323
-newdef TVV:SecondOutgoing 8 -323
-newdef TVV:Coupling 8 0.0056
-newdef TVV:MaxWeight 8 15.
-newdef TVV:Incoming 9 445
-newdef TVV:FirstOutgoing 9 313
-newdef TVV:SecondOutgoing 9 -313
-newdef TVV:Coupling 9 0.0056
-newdef TVV:MaxWeight 9 18.9725
-newdef TVV:Incoming 10 445
-newdef TVV:FirstOutgoing 10 333
-newdef TVV:SecondOutgoing 10 333
-newdef TVV:Coupling 10 0.00418
-newdef TVV:MaxWeight 10 10.6
-newdef TVV:Incoming 11 445
-newdef TVV:FirstOutgoing 11 22
-newdef TVV:SecondOutgoing 11 22
-newdef TVV:Coupling 11 0.00122
-newdef TVV:MaxWeight 11 1.59743
-newdef TVV:Incoming 12 555
-newdef TVV:FirstOutgoing 12 553
-newdef TVV:SecondOutgoing 12 22
-newdef TVV:Coupling 12 0.0683
-newdef TVV:MaxWeight 12 1.69405
-newdef TVV:Incoming 13 115
-newdef TVV:FirstOutgoing 13 223
-newdef TVV:SecondOutgoing 13 113
-newdef TVV:Coupling 13 23.1
-newdef TVV:MaxWeight 13 25.
-newdef TVV:Incoming 14 215
-newdef TVV:FirstOutgoing 14 223
-newdef TVV:SecondOutgoing 14 213
-newdef TVV:Coupling 14 23.1
-newdef TVV:MaxWeight 14 25.
-newdef TVV:Incoming 15 225
-newdef TVV:FirstOutgoing 15 113
-newdef TVV:SecondOutgoing 15 113
-newdef TVV:Coupling 15 11.7
-newdef TVV:MaxWeight 15 24.5803
-newdef TVV:Incoming 16 225
-newdef TVV:FirstOutgoing 16 213
-newdef TVV:SecondOutgoing 16 -213
-newdef TVV:Coupling 16 16.5
-newdef TVV:MaxWeight 16 25.1912
-newdef TVV:Incoming 17 315
-newdef TVV:FirstOutgoing 17 113
-newdef TVV:SecondOutgoing 17 313
-newdef TVV:Coupling 17 13.42
-newdef TVV:MaxWeight 17 25.1576
-newdef TVV:Incoming 18 315
-newdef TVV:FirstOutgoing 18 -213
-newdef TVV:SecondOutgoing 18 323
-newdef TVV:Coupling 18 18.98
-newdef TVV:MaxWeight 18 28.0583
-newdef TVV:Incoming 19 325
-newdef TVV:FirstOutgoing 19 113
-newdef TVV:SecondOutgoing 19 323
-newdef TVV:Coupling 19 13.42
-newdef TVV:MaxWeight 19 26.8526
-newdef TVV:Incoming 20 325
-newdef TVV:FirstOutgoing 20 213
-newdef TVV:SecondOutgoing 20 313
-newdef TVV:Coupling 20 18.98
-newdef TVV:MaxWeight 20 24.8093
-newdef TVV:Incoming 21 445
-newdef TVV:FirstOutgoing 21 223
-newdef TVV:SecondOutgoing 21 223
-newdef TVV:Coupling 21 0.00389
-newdef TVV:MaxWeight 21 10.2336
+newdef TVV:GenerateIntermediates 0 
+do TVV:SetUpDecayMode 115 22 22 0.00727 1.60102
+do TVV:SetUpDecayMode 225 22 22 0.01253 1.9
+do TVV:SetUpDecayMode 335 22 22 0.00161 1.60342
+do TVV:SetUpDecayMode 100555 553 223 0.0118 1.80247
+do TVV:SetUpDecayMode 100555 553 22 0.0172 1.61188
+do TVV:SetUpDecayMode 100555 100553 22 0.145 1.61121
+do TVV:SetUpDecayMode 100555 333 333 0.00483 17.0515
+do TVV:SetUpDecayMode 445 443 22 0.243 1.64486
+do TVV:SetUpDecayMode 445 323 -323 0.0056 15.
+do TVV:SetUpDecayMode 445 313 -313 0.0056 18.9725
+do TVV:SetUpDecayMode 445 333 333 0.00418 10.6
+do TVV:SetUpDecayMode 445 22 22 0.00122 1.59743
+do TVV:SetUpDecayMode 555 553 22 0.0683 1.69405
+do TVV:SetUpDecayMode 115 223 113 23.1 25.
+do TVV:SetUpDecayMode 215 223 213 23.1 25.
+do TVV:SetUpDecayMode 225 113 113 11.7 24.5803
+do TVV:SetUpDecayMode 225 213 -213 16.5 25.1912
+do TVV:SetUpDecayMode 315 113 313 13.42 25.1576
+do TVV:SetUpDecayMode 315 -213 323 18.98 28.0583
+do TVV:SetUpDecayMode 325 113 323 13.42 26.8526
+do TVV:SetUpDecayMode 325 213 313 18.98 24.8093
+do TVV:SetUpDecayMode 445 223 223 0.00389 10.2336
 #
 create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1
