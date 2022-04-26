@@ -309,7 +309,7 @@ for energy in sorted(energies) :
             f.write(inputNonPerturbative)
         targets += "Rivet-LowEnergy-GammaGamma-NonPerturbative-%8.6f.yoda " % energy
     # input file for resonances
-    if(opts.resonance and energy>0.81 and energy<1.17) :
+    if(opts.resonance and energy>0.81) :
         inputResonance = resonance.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal})
         with open(opts.dest+"/Rivet-LowEnergy-GammaGamma-Resonance-%8.6f.in" % energy ,'w') as f:
             f.write(inputResonance)

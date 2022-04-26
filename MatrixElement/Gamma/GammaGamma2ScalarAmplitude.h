@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  GammaGamma2ScalarAmplitude() : F00_(8.89*MeV), LambdaP2_(0.6*GeV2), mOpt_(1)
+  GammaGamma2ScalarAmplitude() : FTT_(8.89*MeV), LambdaP2_(0.6*GeV2), mOpt_(1)
   {}
 
 public:
@@ -190,7 +190,7 @@ private:
   /**
    *    Form factor at $Q_1^2=Q_2^2=0$
    */
-  Energy F00_;
+  Energy FTT_;
   
   /**
    * Pole mass squared parameter for the form factors

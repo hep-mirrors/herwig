@@ -28,11 +28,11 @@ IBPtr GammaGamma2PseudoScalarAmplitude::fullclone() const {
 }
 
 void GammaGamma2PseudoScalarAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << particle_ << ounit(F00_,1./GeV) << ounit(LambdaP2_,GeV2) << mOpt_ << massGen_;
+  os << particle_ << ounit(FTT_,1./GeV) << ounit(LambdaP2_,GeV2) << mOpt_ << massGen_;
 }
 
 void GammaGamma2PseudoScalarAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> particle_ >> iunit(F00_,1./GeV) >> iunit(LambdaP2_,GeV2) >> mOpt_ >> massGen_;
+  is >> particle_ >> iunit(FTT_,1./GeV) >> iunit(LambdaP2_,GeV2) >> mOpt_ >> massGen_;
 }
 
 void GammaGamma2PseudoScalarAmplitude::doinit() {
@@ -62,10 +62,10 @@ void GammaGamma2PseudoScalarAmplitude::Init() {
      "The particle produced by the amplitude",
      &GammaGamma2PseudoScalarAmplitude::particle_, false, false, true, false, false);
 
-  static Parameter<GammaGamma2PseudoScalarAmplitude,InvEnergy> interfaceF00
-    ("F00",
+  static Parameter<GammaGamma2PseudoScalarAmplitude,InvEnergy> interfaceFTT
+    ("FTT",
      "The form factor at zero momentum transfer",
-     &GammaGamma2PseudoScalarAmplitude::F00_, 1/GeV, 0.274/GeV, 0./GeV, 100./GeV,
+     &GammaGamma2PseudoScalarAmplitude::FTT_, 1/GeV, 0.274/GeV, 0./GeV, 100./GeV,
      false, false, Interface::limited);
 
   static Parameter<GammaGamma2PseudoScalarAmplitude,Energy2> interfaceLambdaP2
@@ -156,7 +156,7 @@ double GammaGamma2PseudoScalarAmplitude::me2(const vector<VectorWaveFunction> & 
   double output(0.);
   helicityAmplitude(v1,v2,M,output);
   // form factor
-  InvEnergy form = F00_/(1.-t1/LambdaP2_)/(1.-t2/LambdaP2_);
+  InvEnergy form = FTT_/(1.-t1/LambdaP2_)/(1.-t2/LambdaP2_);
   // coupling factors
   double alpha = generator()->standardModel()->alphaEM();
   return 0.25*pow<4,1>(M)/scale*sqr(form)*output*sqr(alpha*4.*Constants::pi);

@@ -7,6 +7,7 @@ MEGammaGamma2X.cc MEGammaGamma2X.h \
 GammaGammaAmplitude.h GammaGammaAmplitude.fh GammaGammaAmplitude.cc \
 GammaGamma2ScalarAmplitude.h  GammaGamma2ScalarAmplitude.cc \
 GammaGamma2PseudoScalarAmplitude.h  GammaGamma2PseudoScalarAmplitude.cc \
+GammaGamma2TensorAmplitude.h  GammaGamma2TensorAmplitude.cc \
 GammaGamma2PiPiAmplitude.h  GammaGamma2PiPiAmplitude.cc \
 GammaGamma2ffgAmplitude.h  GammaGamma2ffAmplitude.cc
 HwMEGammaGamma_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:1

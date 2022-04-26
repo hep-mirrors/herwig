@@ -1,32 +1,33 @@
 // -*- C++ -*-
-#ifndef Herwig_GammaGamma2PseudoScalarAmplitude_H
-#define Herwig_GammaGamma2PseudoScalarAmplitude_H
+#ifndef Herwig_GammaGamma2TensorAmplitude_H
+#define Herwig_GammaGamma2TensorAmplitude_H
 //
-// This is the declaration of the GammaGamma2PseudoScalarAmplitude class.
+// This is the declaration of the GammaGamma2TensorAmplitude class.
 //
 
 #include "GammaGammaAmplitude.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The GammaGamma2PseudoScalarAmplitude class implements the amplitide for \f$\gamma\gamma\to\f$ pseudoscalar meson
+ * The GammaGamma2TensorAmplitude class implements the amplitide for \f$\gamma\gamma\to\f$ scalar meson
  *
- * @see \ref GammaGamma2PseudoScalarAmplitudeInterfaces "The interfaces"
- * defined for GammaGamma2PseudoScalarAmplitude.
+ * @see \ref GammaGamma2TensorAmplitudeInterfaces "The interfaces"
+ * defined for GammaGamma2TensorAmplitude.
  */
-class GammaGamma2PseudoScalarAmplitude: public GammaGammaAmplitude {
+class GammaGamma2TensorAmplitude: public GammaGammaAmplitude {
 
 public:
 
   /**
    * The default constructor.
    */
-  GammaGamma2PseudoScalarAmplitude() : FTT_(0.274/GeV), LambdaP2_(0.6*GeV2), mOpt_(0)
+  GammaGamma2TensorAmplitude() : FTT0_(ZERO), FTT2_(8.89*MeV), LambdaP2_(0.6*GeV2), mOpt_(1)
   {}
 
 public:
@@ -79,9 +80,11 @@ public:
   virtual ProductionMatrixElement me(const vector<VectorWaveFunction> & v1,
 				     const vector<VectorWaveFunction> & v2,
 				     tParticleVector & particles) const {
-    ScalarWaveFunction(particles[0],outgoing,true);
+    vector<TensorWaveFunction> t3;
+    TensorWaveFunction(t3,particles[0],outgoing,true,false);
     double output(0);
-    return helicityAmplitude(v1,v2,particles[0]->mass(),output);
+    return helicityAmplitude(v1,v2,t3,v1[0].momentum().m2(),v2[0].momentum().m2(),
+    			     particles[0]->mass(),output);
   }
 
   /**
@@ -164,6 +167,8 @@ protected:
    */
   ProductionMatrixElement helicityAmplitude(const vector<VectorWaveFunction> & v1,
 					    const vector<VectorWaveFunction> & v2,
+					    const vector<TensorWaveFunction> & ten,
+					    const Energy2 & t1, const Energy2 & t2,
 					    const Energy & M, double & output) const;
   
 private:
@@ -172,7 +177,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaGamma2PseudoScalarAmplitude & operator=(const GammaGamma2PseudoScalarAmplitude &) = delete;
+  GammaGamma2TensorAmplitude & operator=(const GammaGamma2TensorAmplitude &) = delete;
 
 private:
 
@@ -188,7 +193,12 @@ private:
   /**
    *    Form factor at $Q_1^2=Q_2^2=0$
    */
-  InvEnergy FTT_;
+  InvEnergy FTT0_;
+  
+  /**
+   *    Form factor at $Q_1^2=Q_2^2=0$
+   */
+  Energy FTT2_;
   
   /**
    * Pole mass squared parameter for the form factors
@@ -210,4 +220,4 @@ private:
 
 }
 
-#endif /* Herwig_GammaGamma2PseudoScalarAmplitude_H */
+#endif /* Herwig_GammaGamma2TensorAmplitude_H */

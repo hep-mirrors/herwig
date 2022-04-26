@@ -12,18 +12,64 @@ create Herwig::MEGammaGamma2X MEgg2f0_980 HwMEGammaGamma.so
 create Herwig::GammaGamma2ScalarAmplitude GG2f0_980Amp
 set GG2f0_980Amp:MassOption OffShell
 set GG2f0_980Amp:Particle /Herwig/Particles/f_0
-set GG2f0_980Amp:F00 0.00889
+set GG2f0_980Amp:FTT 0.0293433
 set MEgg2f0_980:Amplitude GG2f0_980Amp
+create Herwig::MEGammaGamma2X MEgg2f0_1370 HwMEGammaGamma.so
+create Herwig::GammaGamma2ScalarAmplitude GG2f0_1370Amp
+set GG2f0_1370Amp:MassOption OffShell
+set GG2f0_1370Amp:Particle /Herwig/Particles/f'_0
+set GG2f0_1370Amp:FTT 0.134229
+set MEgg2f0_1370:Amplitude GG2f0_1370Amp
+create Herwig::MEGammaGamma2X MEgg2f0_1710 HwMEGammaGamma.so
+create Herwig::GammaGamma2ScalarAmplitude GG2f0_1710Amp
+set GG2f0_1710Amp:MassOption OffShell
+set GG2f0_1710Amp:Particle /Herwig/Particles/f_0(1710)
+set GG2f0_1710Amp:FTT 0.0130292
+set MEgg2f0_1710:Amplitude GG2f0_1710Amp
 create Herwig::MEGammaGamma2X MEgg2a0_980 HwMEGammaGamma.so
 create Herwig::GammaGamma2ScalarAmplitude GG2a0_980Amp
 set GG2a0_980Amp:MassOption OffShell
 set GG2a0_980Amp:Particle /Herwig/Particles/a_00
-set GG2a0_980Amp:F00 0.00898
+set GG2a0_980Amp:FTT 0.0296427
 set MEgg2a0_980:Amplitude GG2a0_980Amp
+create Herwig::MEGammaGamma2X MEgg2a0_1450 HwMEGammaGamma.so
+create Herwig::GammaGamma2ScalarAmplitude GG2a0_1450Amp
+set GG2a0_1450Amp:MassOption OffShell
+set GG2a0_1450Amp:Particle /Herwig/Particles/a'_00
+set GG2a0_1450Amp:FTT 0.045237
+set MEgg2a0_1450:Amplitude GG2a0_1450Amp
+
+create Herwig::MEGammaGamma2X MEgg2a2_1320 HwMEGammaGamma.so
+create Herwig::GammaGamma2TensorAmplitude GG2a2_1320Amp
+set GG2a2_1320Amp:MassOption OffShell
+set GG2a2_1320Amp:Particle /Herwig/Particles/a_20
+set GG2a2_1320Amp:FTT0 0.
+set GG2a2_1320Amp:FTT2 0.0581115
+set MEgg2a2_1320:Amplitude GG2a2_1320Amp
+create Herwig::MEGammaGamma2X MEgg2f2_1270 HwMEGammaGamma.so
+create Herwig::GammaGamma2TensorAmplitude GG2f2_1270Amp
+set GG2f2_1270Amp:MassOption OffShell
+set GG2f2_1270Amp:Particle /Herwig/Particles/f_2
+set GG2f2_1270Amp:FTT0 0.
+set GG2f2_1270Amp:FTT2 0.0921718
+set MEgg2f2_1270:Amplitude GG2f2_1270Amp
+create Herwig::MEGammaGamma2X MEgg2f2_1525 HwMEGammaGamma.so
+create Herwig::GammaGamma2TensorAmplitude GG2f2_1525Amp
+set GG2f2_1525Amp:MassOption OffShell
+set GG2f2_1525Amp:Particle /Herwig/Particles/f'_2
+set GG2f2_1525Amp:FTT0 0.
+set GG2f2_1525Amp:FTT2 0.0178537
+set MEgg2f2_1525:Amplitude GG2f2_1525Amp
+
 
 # set the process
 insert SubProcess:MatrixElements 0 MEgg2f0_980
+insert SubProcess:MatrixElements 0 MEgg2f0_1710
 insert SubProcess:MatrixElements 0 MEgg2a0_980
+insert SubProcess:MatrixElements 0 MEgg2a0_1450
+insert SubProcess:MatrixElements 0 MEgg2a2_1320
+insert SubProcess:MatrixElements 0 MEgg2f2_1270
+insert SubProcess:MatrixElements 0 MEgg2f2_1525
 
 
 ##################################################
