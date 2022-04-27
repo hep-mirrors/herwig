@@ -31,111 +31,26 @@ using namespace ThePEG::Helicity;
 void TensorMesonVectorPScalarDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()){
-    for(unsigned int ix=0;ix<_incoming.size();++ix)
-      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+    for(unsigned int ix=0;ix<incoming_.size();++ix)
+      if(mode(ix)) maxWeight_[ix] = mode(ix)->maxWeight();
   }
-}
-
-TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
-  :  _incoming(31), _outgoingV(31), _outgoingP(31), 
-     _coupling(31), _maxweight(31) {
-  // a_2 -> rho pi
-  _incoming[0] =  115; _outgoingV[0] =  213; _outgoingP[0] = -211; 
-  _coupling[0] = 21.1/GeV2; _maxweight[0] = 10.; 
-  _incoming[1] =  215; _outgoingV[1] =  113; _outgoingP[1] =  211; 
-  _coupling[1] = 21.1/GeV2; _maxweight[1] = 9.; 
-  _incoming[2] =  215; _outgoingV[2] =  213; _outgoingP[2] =  111; 
-  _coupling[2] = 21.1/GeV2; _maxweight[2] = 9.; 
-  // a_2+/- -> gamma pi+/-
-  _incoming[3] =  215; _outgoingV[3] =  22; _outgoingP[3] =  211; 
-  _coupling[3] = 0.551/GeV2; _maxweight[3] = 2.; 
-  // k_2 -> K_2 omega
-  _incoming[4] =  315; _outgoingV[4] = 223; _outgoingP[4] =  311; 
-  _coupling[4] = 11.66/GeV2; _maxweight[4] = 17.; 
-  _incoming[5] =  325; _outgoingV[5] = 223; _outgoingP[5] =  321; 
-  _coupling[5] = 11.66/GeV2; _maxweight[5] = 20.5; 
-  // k_2+/- -> K+/- gamma
-  _incoming[6] =  325; _outgoingV[6] = 22; _outgoingP[6] =  321; 
-  _coupling[6] = 0.553/GeV2; _maxweight[6] = 2.2; 
-  // B_c2 -> B_c gamma
-  _incoming[7] =  545; _outgoingV[7] = 22; _outgoingP[7] =  541; 
-  _coupling[7] = 0.651/GeV2; _maxweight[7] = 2.; 
-  // K_2 -> K rho
-  _incoming[8] =  325; _outgoingV[8] =  113; _outgoingP[8] =  321; 
-  _coupling[8] = 10.14/GeV2; _maxweight[8] = 9.; 
-  _incoming[9] =  325; _outgoingV[9] =  213; _outgoingP[9] =  311; 
-  _coupling[9] = 14.33/GeV2; _maxweight[9] = 9.; 
-  _incoming[10] =  315; _outgoingV[10] =  113; _outgoingP[10] =  311; 
-  _coupling[10] = 10.14/GeV2; _maxweight[10] = 9.; 
-  _incoming[11] =  315; _outgoingV[11] = -213; _outgoingP[11] =  321; 
-  _coupling[11] = 14.33/GeV2; _maxweight[11] = 9.; 
-  // K_2 -> K* pi 
-  _incoming[12] =  325; _outgoingV[12] =  323; _outgoingP[12] =  111; 
-  _coupling[12] = 9.733/GeV2; _maxweight[12] = 13; 
-  _incoming[13] =  325; _outgoingV[13] =  313; _outgoingP[13] =  211; 
-  _coupling[13] = 13.77/GeV2; _maxweight[13] = 11; 
-  _incoming[14] =  315; _outgoingV[14] =  313; _outgoingP[14] =  111; 
-  _coupling[14] = 9.733/GeV2; _maxweight[14] = 8.; 
-  _incoming[15] =  315; _outgoingV[15] =  323; _outgoingP[15] = -211; 
-  _coupling[15] = 13.77/GeV2; _maxweight[15] = 8.; 
-  // D_2 -> D* pi 
-  _incoming[16] =  425; _outgoingV[16] =  423; _outgoingP[16] =  111; 
-  _coupling[16] = 8.035/GeV2; _maxweight[16] = 2.2; 
-  _incoming[17] =  425; _outgoingV[17] =  413; _outgoingP[17] = -211; 
-  _coupling[17] = 11.670/GeV2; _maxweight[17] = 2.4; 
-  _incoming[18] =  415; _outgoingV[18] =  413; _outgoingP[18] =  111; 
-  _coupling[18] = 6.801/GeV2; _maxweight[18] = 2.4; 
-  _incoming[19] =  415; _outgoingV[19] =  423; _outgoingP[19] =  211; 
-  _coupling[19] = 9.527/GeV2; _maxweight[19] = 2.; 
-  // D_s2 -> D* K
-  _incoming[20] =  435; _outgoingV[20] =  423; _outgoingP[20] =  321; 
-  _coupling[20] = 13.10/GeV2; _maxweight[20] = 2.2; 
-  _incoming[21] =  435; _outgoingV[21] =  413; _outgoingP[21] =  311; 
-  _coupling[21] = 13.10/GeV2; _maxweight[21] = 2.5; 
-  // B_2 -> B* pi 
-  _incoming[22] =  525; _outgoingV[22] =  523; _outgoingP[22] =  111; 
-  _coupling[22] = 4.99/GeV2; _maxweight[22] = 2.1; 
-  _incoming[23] =  525; _outgoingV[23] =  513; _outgoingP[23] =  211; 
-  _coupling[23] = 7.059/GeV2; _maxweight[23] = 2.1; 
-  _incoming[24] =  515; _outgoingV[24] =  513; _outgoingP[24] =  111; 
-  _coupling[24] = 4.99/GeV2; _maxweight[24] = 2.1; 
-  _incoming[25] =  515; _outgoingV[25] =  523; _outgoingP[25] = -211; 
-  _coupling[25] = 7.059/GeV2; _maxweight[25] = 2.1; 
-  // D_s2
-  _incoming[26] =  435; _outgoingV[26] =  423; _outgoingP[26] =  321; 
-  _coupling[26] = 13.09/GeV2; _maxweight[26] = 2.2; 
-  _incoming[27] =  435; _outgoingV[27] =  413; _outgoingP[27] =  311; 
-  _coupling[27] = 13.09/GeV2; _maxweight[27] = 2.5; 
-  // B_s2
-  _incoming[28] =  535; _outgoingV[28] =  523; _outgoingP[28] = -321; 
-  _coupling[28] = 7.29/GeV2; _maxweight[28] = 2.4; 
-  _incoming[29] =  535; _outgoingV[29] =  513; _outgoingP[29] = -311; 
-  _coupling[29] = 9.43/GeV2; _maxweight[29] = 2.1; 
-  // upsilon_2(1d) to chi_b gamma
-  _incoming[30] = 20555; _outgoingV[30] =   22; _outgoingP[30] = 10551; 
-  _coupling[30] = 1.11/GeV2; _maxweight[30] = 2.4; 
-  // initial size of the arrays
-  _initsize=_incoming.size();
-  // intermediates
-  generateIntermediates(false);
 }
 
 void TensorMesonVectorPScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
-  unsigned int isize=_incoming.size();
-  if(isize!=_outgoingV.size()||isize!=_outgoingP.size()||
-     isize!=_maxweight.size()||isize!=_coupling.size())
+  unsigned int isize=incoming_.size();
+  if(isize!=outgoing_.size() || isize!=maxWeight_.size() || isize!=coupling_.size())
     throw InitException() << "Inconsistent parameters TensorMesonVectorPScalarDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
   PhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr     in = getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoingV[ix]),
-		     getParticleData(_outgoingP[ix])};
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr     in = getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix].first),
+		     getParticleData(outgoing_[ix].second)};
     if(in&&out[0]&&out[1]) 
-      mode=new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      mode=new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
@@ -155,29 +70,29 @@ int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc, tcPDPtr parent,
   unsigned int ix(0);
   cc=false;
   do {
-    if(id   ==_incoming[ix]) {
-      if((id1   ==_outgoingP[ix]&&id2   ==_outgoingV[ix])||
-	 (id2   ==_outgoingP[ix]&&id1   ==_outgoingV[ix])) imode=ix;
+    if(id   ==incoming_[ix]) {
+      if((id1   ==outgoing_[ix].second&&id2   ==outgoing_[ix].first)||
+	 (id2   ==outgoing_[ix].second&&id1   ==outgoing_[ix].first)) imode=ix;
     }
-    if(idbar==_incoming[ix]) {
-      if((id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix])||
-	 (id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix])) {
+    if(idbar==incoming_[ix]) {
+      if((id1bar==outgoing_[ix].second&&id2bar==outgoing_[ix].first)||
+	 (id2bar==outgoing_[ix].second&&id1bar==outgoing_[ix].first)) {
 	imode=ix;
 	cc=true;
       }
     }
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   return imode;
 }
 
 void TensorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoingV << _outgoingP << _maxweight << ounit(_coupling,1/GeV2);
+  os << incoming_ << outgoing_ << maxWeight_ << ounit(coupling_,1/GeV2);
 }
 
 void TensorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/GeV2);
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> iunit(coupling_,1/GeV2);
 }
 
 // The following static variable is needed for the type
@@ -191,43 +106,32 @@ void TensorMesonVectorPScalarDecayer::Init() {
     ("The TensorMesonVectorPScalarDecayer class implements the"
      " decay of a tensor meson to a spin-1 particle and a pseduoscalar meson");
 
-  static ParVector<TensorMesonVectorPScalarDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &TensorMesonVectorPScalarDecayer::_incoming,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Command<TensorMesonVectorPScalarDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, vector, scalar, coupling(1/GeV2) and max weight for a decay",
+     &TensorMesonVectorPScalarDecayer::setUpDecayMode, false);
+  
+  static Deleted<TensorMesonVectorPScalarDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in TensorMesonVectorPScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<TensorMesonVectorPScalarDecayer,int> interfaceOutcomingV
-    ("OutgoingVector",
-     "The PDG code for the outgoing spin-1particle",
-     &TensorMesonVectorPScalarDecayer::_outgoingV,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<TensorMesonVectorPScalarDecayer> interfaceOutcoming1
+    ("FirstOutgoing","The old methods of setting up a decay in TensorMesonVectorPScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<TensorMesonVectorPScalarDecayer,int> interfaceOutcomingP
-    ("OutgoingScalar",
-     "The PDG code for the outgoing pseudoscalar meson",
-     &TensorMesonVectorPScalarDecayer::_outgoingP,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<TensorMesonVectorPScalarDecayer> interfaceOutcoming2
+    ("SecondOutgoing","The old methods of setting up a decay in TensorMesonVectorPScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<TensorMesonVectorPScalarDecayer,InvEnergy2> interfaceCoupling
-    ("Coupling",
-     "The coupling for the decay mode",
-     &TensorMesonVectorPScalarDecayer::_coupling,
-     1/GeV2, 0, ZERO, ZERO, 100./GeV2, false, false, true);
+  static Deleted<TensorMesonVectorPScalarDecayer> interfaceCoupling
+    ("Coupling","The old methods of setting up a decay in TensorMesonVectorPScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<TensorMesonVectorPScalarDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &TensorMesonVectorPScalarDecayer::_maxweight,
-     0, 0, 0, 0., 1000., false, false, true);
-
+  static Deleted<TensorMesonVectorPScalarDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in TensorMesonVectorPScalarDecayer have been deleted, please use SetUpDecayMode");
 }
 void TensorMesonVectorPScalarDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
-  TensorWaveFunction::constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&part),
+  TensorWaveFunction::constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
   // set up the spin information for the decay products
-  VectorWaveFunction::constructSpinInfo(_vectors,decay[0],outgoing,true,
+  VectorWaveFunction::constructSpinInfo(vectors_,decay[0],outgoing,true,
 					decay[0]->id()==ParticleID::gamma);
   ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
 }
@@ -240,36 +144,36 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
   // check for photons
-  bool photon(_outgoingV[imode()]==ParticleID::gamma);
+  bool photon(outgoing_[imode()].first==ParticleID::gamma);
   // stuff for incoming particle
   if(meopt==Initialize) {
-    _rho = RhoDMatrix(PDT::Spin2);
+    rho_ = RhoDMatrix(PDT::Spin2);
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&part),
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
 			     incoming,false);
   }
-  _vectors.resize(3);
+  vectors_.resize(3);
   for(unsigned int ix=0;ix<3;++ix) {
     if(photon && ix==1) continue;
-    _vectors[ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
+    vectors_[ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
-  InvEnergy3 fact(_coupling[imode()]/part.mass());
+  InvEnergy3 fact(coupling_[imode()]/part.mass());
   // calculate the matrix element
   for(unsigned int inhel=0;inhel<5;++inhel) {
     for(unsigned int vhel=0;vhel<3;++vhel){
       if(vhel==1&&photon) (*ME())(inhel,vhel,0)=0.;
       else {
 	LorentzVector<complex<InvEnergy> > vtemp=
-	  fact*epsilon(momenta[0],_vectors[vhel],momenta[1]);
-	(*ME())(inhel,vhel,0) = Complex((momenta[1]*_tensors[inhel]).dot(vtemp));
+	  fact*epsilon(momenta[0],vectors_[vhel],momenta[1]);
+	(*ME())(inhel,vhel,0) = Complex((momenta[1]*tensors_[inhel]).dot(vtemp));
       }
     }
   }
-  double me = ME()->contract(_rho).real();
+  double me = ME()->contract(rho_).real();
   // test of the answer
   // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
   // 					     momenta[1].mass());
-  // double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()])/80.;
+  // double test = Energy4(pow<4,1>(2*pcm))*sqr( coupling_[imode()])/80.;
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << me << " " << test << " " << (me-test)/(me+test) << endl;
@@ -291,30 +195,30 @@ bool TensorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & m
   unsigned int ix(0); 
   bool order(false);
   do {
-    if(id   ==_incoming[ix]) {
-      if(id1==_outgoingP[ix]&&id2==_outgoingV[ix]) {
+    if(id   ==incoming_[ix]) {
+      if(id1==outgoing_[ix].second&&id2==outgoing_[ix].first) {
 	imode=ix;
 	order=true;
       }
-      if(id2==_outgoingP[ix]&&id1==_outgoingV[ix]) {
+      if(id2==outgoing_[ix].second&&id1==outgoing_[ix].first) {
 	imode=ix;
 	order=false;
       }
     }
-    if(idbar==_incoming[ix]&&imode<0) {
-      if(id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix]) {
+    if(idbar==incoming_[ix]&&imode<0) {
+      if(id1bar==outgoing_[ix].second&&id2bar==outgoing_[ix].first) {
 	imode=ix;
 	order=true;
       }
-      if(id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix]) {
+      if(id2bar==outgoing_[ix].second&&id1bar==outgoing_[ix].first) {
 	imode=ix;
 	order=false;
       }
     }
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
-  coupling=_coupling[imode]*sqr(dm.parent()->mass());
+  while(ix<incoming_.size()&&imode<0);
+  coupling=coupling_[imode]*sqr(dm.parent()->mass());
   mecode=8;
   return order;
 }
@@ -324,33 +228,57 @@ void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingVector " << ix << " " 
-	     << _outgoingV[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingScalar " << ix << " " 
-	     << _outgoingP[ix] << "\n";
-      output << "newdef " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix]*GeV2 << "\n";
-      output << "newdef " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "insert " << name() << ":OutgoingVector " << ix << " " 
-	     << _outgoingV[ix] << "\n";
-      output << "insert " << name() << ":OutgoingScalar " << ix << " " 
-	     << _outgoingP[ix] << "\n";
-      output << "insert " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix]*GeV2 << "\n";
-      output << "insert " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix].first  << " " << outgoing_[ix].second  << " "
+	   << coupling_[ix]*GeV2 << " " << maxWeight_[ix]  << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+string TensorMesonVectorPScalarDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin2)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 2";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 0";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  coupling_.push_back(g/GeV2);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }
