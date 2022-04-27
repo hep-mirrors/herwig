@@ -1404,11 +1404,11 @@ newdef Vector2Meson:FirstOutgoing 58 9000211
 newdef Vector2Meson:SecondOutgoing 58 -211
 newdef Vector2Meson:Coupling 58 0.968
 newdef Vector2Meson:MaxWeight 58 4.32395
-newdef Vector2Meson:Incoming 59 0
-newdef Vector2Meson:FirstOutgoing 59 0
-newdef Vector2Meson:SecondOutgoing 59 0
-newdef Vector2Meson:Coupling 59 0
-newdef Vector2Meson:MaxWeight 59 0
+newdef Vector2Meson:Incoming 59 400553
+newdef Vector2Meson:FirstOutgoing 59 521
+newdef Vector2Meson:SecondOutgoing 59 -521
+newdef Vector2Meson:Coupling 59 24.188
+newdef Vector2Meson:MaxWeight 59 1.6
 newdef Vector2Meson:Incoming 60 443
 newdef Vector2Meson:FirstOutgoing 60 130
 newdef Vector2Meson:SecondOutgoing 60 310
@@ -1429,6 +1429,26 @@ newdef Vector2Meson:FirstOutgoing 63 130
 newdef Vector2Meson:SecondOutgoing 63 310
 newdef Vector2Meson:Coupling 63 0.918
 newdef Vector2Meson:MaxWeight 63 1.6008
+newdef Vector2Meson:Incoming 64 400553
+newdef Vector2Meson:FirstOutgoing 64 10531
+newdef Vector2Meson:SecondOutgoing 64 -10531
+newdef Vector2Meson:Coupling 64 24.188
+newdef Vector2Meson:MaxWeight 64 1.6
+newdef Vector2Meson:Incoming 65 400553
+newdef Vector2Meson:FirstOutgoing 65 531
+newdef Vector2Meson:SecondOutgoing 65 -531
+newdef Vector2Meson:Coupling 65 24.188
+newdef Vector2Meson:MaxWeight 65 1.6
+newdef Vector2Meson:Incoming 66 400553
+newdef Vector2Meson:FirstOutgoing 66 531
+newdef Vector2Meson:SecondOutgoing 66 -10531
+newdef Vector2Meson:Coupling 66 24.188
+newdef Vector2Meson:MaxWeight 66 1.6
+newdef Vector2Meson:Incoming 67 400553
+newdef Vector2Meson:FirstOutgoing 67 -531
+newdef Vector2Meson:SecondOutgoing 67 10531
+newdef Vector2Meson:Coupling 67 24.188
+newdef Vector2Meson:MaxWeight 67 1.6
 
 #
 create Herwig::TauDecayer  Tau3Pion
@@ -2758,6 +2778,11 @@ newdef Vector2Leptons:OutgoingFermion 41 3122
 newdef Vector2Leptons:OutgoingAntiFermion 41 -3122
 newdef Vector2Leptons:Coupling 41 0.0009565
 newdef Vector2Leptons:MaxWeight 41 1.59998
+newdef Vector2Leptons:Incoming 42 400553
+newdef Vector2Leptons:OutgoingFermion 42 11
+newdef Vector2Leptons:OutgoingAntiFermion 42 -11
+newdef Vector2Leptons:Coupling 42 1.081E-3
+newdef Vector2Leptons:MaxWeight 42 1.7
 
 #
 create Herwig::WeakPartonicDecayer  WeakPartonic0
@@ -3968,6 +3993,16 @@ newdef TensorVP:OutgoingVector 30 22
 newdef TensorVP:OutgoingScalar 30 10551
 newdef TensorVP:Coupling 30 1.11
 newdef TensorVP:MaxWeight 30 1.82265
+newdef TensorVP:Incoming 31 400553
+newdef TensorVP:OutgoingVector 31 523
+newdef TensorVP:OutgoingScalar 31 -521
+newdef TensorVP:Coupling 31 24.188
+newdef TensorVP:MaxWeight 31 1.6
+newdef TensorVP:Incoming 32 400553
+newdef TensorVP:OutgoingVector 32 -523
+newdef TensorVP:OutgoingScalar 32 521
+newdef TensorVP:Coupling 32 24.188
+newdef TensorVP:MaxWeight 32 1.6
 
 #
 create Herwig::TensorMesonVectorVectorDecayer  TVV
@@ -6924,6 +6959,16 @@ newdef VectorVV:Outgoing1 3 -213
 newdef VectorVV:Outgoing2 3 213
 newdef VectorVV:Coupling 3 9.59
 newdef VectorVV:MaxWeight 3 45.0477
+newdef VectorVV:Incoming 4 400553
+newdef VectorVV:Outgoing1 4 523
+newdef VectorVV:Outgoing2 4 -523
+newdef VectorVV:Coupling 4 24.188
+newdef VectorVV:MaxWeight 4 1.6
+newdef VectorVV:Incoming 5 400553
+newdef VectorVV:Outgoing1 5 313
+newdef VectorVV:Outgoing2 5 -313
+newdef VectorVV:Coupling 5 24.188
+newdef VectorVV:MaxWeight 5 1.6
 
 #
 create Herwig::ScalarMesonFactorizedDecayer  ISGW2Hadronic
@@ -23006,6 +23051,51 @@ newdef OniumPiPi:ReB 6 0
 newdef OniumPiPi:ImB 6 0
 newdef OniumPiPi:ReC 6 0
 newdef OniumPiPi:ImC 6 0
+newdef OniumPiPi:Incoming 7 400553
+newdef OniumPiPi:Outgoing 7 553
+newdef OniumPiPi:Coupling 7 6.88e-05
+newdef OniumPiPi:ReA 7 1
+newdef OniumPiPi:ImA 7 0
+newdef OniumPiPi:ReB 7 -2.35
+newdef OniumPiPi:ImB 7 0.55
+newdef OniumPiPi:ReC 7 0
+newdef OniumPiPi:ImC 7 0
+newdef OniumPiPi:Incoming 8 400553
+newdef OniumPiPi:Outgoing 8 100553
+newdef OniumPiPi:Coupling 8 6.88e-05
+newdef OniumPiPi:ReA 8 1
+newdef OniumPiPi:ImA 8 0
+newdef OniumPiPi:ReB 8 -2.35
+newdef OniumPiPi:ImB 8 0.55
+newdef OniumPiPi:ReC 8 0
+newdef OniumPiPi:ImC 8 0
+newdef OniumPiPi:Incoming 9 400553
+newdef OniumPiPi:Outgoing 9 200553
+newdef OniumPiPi:Coupling 9 6.88e-05
+newdef OniumPiPi:ReA 9 1
+newdef OniumPiPi:ImA 9 0
+newdef OniumPiPi:ReB 9 -2.35
+newdef OniumPiPi:ImB 9 0.55
+newdef OniumPiPi:ReC 9 0
+newdef OniumPiPi:ImC 9 0
+newdef OniumPiPi:Incoming 10 400553
+newdef OniumPiPi:Outgoing 10 10553
+newdef OniumPiPi:Coupling 10 6.88e-05
+newdef OniumPiPi:ReA 10 1
+newdef OniumPiPi:ImA 10 0
+newdef OniumPiPi:ReB 10 -2.35
+newdef OniumPiPi:ImB 10 0.55
+newdef OniumPiPi:ReC 10 0
+newdef OniumPiPi:ImC 10 0
+newdef OniumPiPi:Incoming 11 400553
+newdef OniumPiPi:Outgoing 11 110553
+newdef OniumPiPi:Coupling 11 6.88e-05
+newdef OniumPiPi:ReA 11 1
+newdef OniumPiPi:ImA 11 0
+newdef OniumPiPi:ReB 11 -2.35
+newdef OniumPiPi:ImB 11 0.55
+newdef OniumPiPi:ReC 11 0
+newdef OniumPiPi:ImC 11 0
 newdef OniumPiPi:MaxWeight 0 4.26075
 newdef OniumPiPi:MaxWeight 1 4.82302
 newdef OniumPiPi:MaxWeight 2 2.40535
@@ -23013,13 +23103,13 @@ newdef OniumPiPi:MaxWeight 3 2.36975
 newdef OniumPiPi:MaxWeight 4 3.26611
 newdef OniumPiPi:MaxWeight 5 3.64848
 newdef OniumPiPi:MaxWeight 6 2.94445
-newdef OniumPiPi:MaxWeight 7 2.98196
-newdef OniumPiPi:MaxWeight 8 5.1262
-newdef OniumPiPi:MaxWeight 9 5.45035
-newdef OniumPiPi:MaxWeight 10 3.04451
-newdef OniumPiPi:MaxWeight 11 3.08418
-newdef OniumPiPi:MaxWeight 12 2.60132
-newdef OniumPiPi:MaxWeight 13 3.2421
+newdef OniumPiPi:MaxWeight 7 3.26611
+newdef OniumPiPi:MaxWeight 8 3.26611
+newdef OniumPiPi:MaxWeight 9 3.26611
+newdef OniumPiPi:MaxWeight 10 3.26611
+newdef OniumPiPi:MaxWeight 11 3.26611
+#newdef OniumPiPi:MaxWeight 12 2.60132
+#newdef OniumPiPi:MaxWeight 13 3.2421
 
 #
 create Herwig::TauDecayer  Tau3Kaon
@@ -24415,4 +24505,4 @@ newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
 
-@LOAD_EVTGEN_DECAYER@
+read EvtGenDecayer.in

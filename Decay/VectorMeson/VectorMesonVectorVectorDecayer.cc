@@ -56,8 +56,8 @@ void VectorMesonVectorVectorDecayer::doinit() {
 }
 
 VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
-  : _coupling(4), _incoming(4), _outgoing1(4), _outgoing2(4), 
-    _maxweight(4) {
+  : _coupling(6), _incoming(6), _outgoing1(6), _outgoing2(6),
+    _maxweight(6) {
   // decay of rho'' to rho rho
   _incoming[0] = 30213; _outgoing1[0] =  213; _outgoing2[0] = 113; 
   _coupling[0] = 3.21; _maxweight[0] = 35.; 
@@ -68,6 +68,11 @@ VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer()
   _coupling[2] = 9.59; _maxweight[2] = 55.; 
   _incoming[3] =  100113; _outgoing1[3] = -213; _outgoing2[3] = 213; 
   _coupling[3] = 9.59; _maxweight[3] = 50.; 
+  // upsilon(5s)
+  _incoming[4] = 400553; _outgoing1[4] = 523; _outgoing2[4] = -523;
+  _coupling[4] = 24.188; _maxweight[4] = 1.6;
+  _incoming[5] = 400553; _outgoing1[5] = 313; _outgoing2[5] = -313;
+  _coupling[5] = 24.188; _maxweight[5] = 1.6;
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates

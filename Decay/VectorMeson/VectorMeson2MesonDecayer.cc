@@ -59,7 +59,7 @@ void VectorMeson2MesonDecayer::doinit() {
 }
 
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
-  _incoming(64), _outgoing1(64), _outgoing2(64), _maxweight(64), _coupling(64) {
+  _incoming(68), _outgoing1(68), _outgoing2(68), _maxweight(68), _coupling(68) {
   // matrix element storage
   // don't generate intermediates
   generateIntermediates(false);
@@ -216,6 +216,17 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[57] = 0.968; _maxweight[57] = 10.; 
   _incoming[58] = 20333; _outgoing1[58] =  9000211; _outgoing2[58] = -211; 
   _coupling[58] = 0.968; _maxweight[58] = 10.; 
+  // upsilon(5s)
+  _incoming[59] = 400553; _outgoing1[59] = 521; _outgoing2[59] = -521;
+  _coupling[59] = 24.188; _maxweight[59] = 1.6;
+  _incoming[64] = 400553; _outgoing1[64] = 10531; _outgoing2[64] = -10531;
+  _coupling[64] = 24.188; _maxweight[64] = 1.6;
+  _incoming[65] = 400553; _outgoing1[65] = 531; _outgoing2[65] = -531;
+  _coupling[65] = 24.188; _maxweight[65] = 1.6;
+  _incoming[66] = 400553; _outgoing1[66] = 531; _outgoing2[66] = -10531;
+  _coupling[66] = 24.188; _maxweight[66] = 1.6;
+  _incoming[67] = 400553; _outgoing1[67] = -531; _outgoing2[67] = 10531;
+  _coupling[67] = 24.188; _maxweight[67] = 1.6;
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }
