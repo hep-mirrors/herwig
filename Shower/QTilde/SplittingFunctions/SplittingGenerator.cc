@@ -256,7 +256,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       cit != _fbranchings.upper_bound(index); ++cit) {
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType())) continue;
-    if(!rhoCalc) {
+    if(!rhoCalc && particle.dataPtr()->iSpin()!=PDT::Spin0) {
       rho = particle.extractRhoMatrix(true);
       rhoCalc = true;
     }
@@ -485,7 +485,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr ,
     // setup the PDF
     cit->second.sudakov->setPDF(pdf,freeze);
     //calc rho as needed
-    if(!rhoCalc) {
+    if(!rhoCalc && particle.dataPtr()->iSpin()!=PDT::Spin0) {
       rho = particle.extractRhoMatrix(false);
       rhoCalc = true;
     }
@@ -613,5 +613,3 @@ IVector SplittingGenerator::getReferences() {
   }
   return ret;
 }
-
-
