@@ -34,6 +34,9 @@ using namespace ThePEG;
  *  where \f$p_{1,2}\f$ and \f$\epsilon_{1,2}\f$ are the momenta and polarzation
  *  vectors of the outgoing vectors.
  *
+ *  While this Lorentz structure always applies for pseudoscalar to two pseudovectors or scalar to 
+ *  vector pseudovector decays, in practice it is only used for pseudoscalar to two vector decays.
+ *
  *  The incoming pseudoscalar meson, the outgoing vectors and the coupling can
  *  be specified using the relevant interfaces.
  *

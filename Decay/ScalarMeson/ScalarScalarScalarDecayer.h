@@ -27,6 +27,7 @@ using namespace ThePEG;
  *  The matrix element is taken to b
  *  \f[\mathcal{M} = g \f].
  *
+ * The same Lorentz structure also applies and is used for Scalar to two PseudoScalars, and PseudoScalar to Scalar PseudoScalar decays.
  * @see DecayIntegrator
  * 
  * \author Peter Richardson

@@ -22,7 +22,7 @@ using namespace ThePEG;
  *
  * The <code>PScalarPScalarVectorDecayer</code> class is designed to perform the decay
  * of a pseudoscalar meson to another pseudoscalar meson and a vector meson.
- * There are only a few of these decays. In this case the matrix element has the 
+ * In this case the matrix element has the 
  * form
  *  \f[\mathcal{M} = g\epsilon_2^\mu(p_0+p_1)_\mu,\f]
  *  where
@@ -31,6 +31,7 @@ using namespace ThePEG;
  * - \f$\epsilon_2\f$ is the polarization vector of the vector meson.
  * - \f$g\f$ is the coupling for the decay.
  *
+ * The same Lorentz structure is also valid, and used for Scalar to Scalar Vector, Scalar to PseudoScalar PseudoVector, or PseudoScalar to PseudoVector Scalar decays.
  * @see DecayIntegrator
  *
  * \author Peter Richardson

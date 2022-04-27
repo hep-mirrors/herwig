@@ -98,11 +98,11 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
 
 void ScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(coupling_,1/GeV) << incoming_ << outgoing_ << maxWeight_;
+  os << ounit(coupling_,GeV) << incoming_ << outgoing_ << maxWeight_;
 }
 
 void ScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(coupling_,1/GeV) >> incoming_ >> outgoing_ >> maxWeight_;
+  is >> iunit(coupling_,GeV) >> incoming_ >> outgoing_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -168,16 +168,16 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
     }
   }
   // now compute the matrix element
-  InvEnergy2 fact(coupling_[imode()]/part.mass());
+  double fact(coupling_[imode()]/part.mass());
   Energy2 p1p2(momenta[0]*momenta[1]);
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     if(photon[0] && ix==1) continue;
     for(iy=0;iy<3;++iy) {
       if(photon[1] && iy==1) continue;
-      (*ME())(0,ix,iy)=Complex(fact*(p1p2*vectors_[0][ix].dot(vectors_[1][iy])-
+      (*ME())(0,ix,iy)=Complex(fact*(vectors_[0][ix].dot(vectors_[1][iy])-
 				     (vectors_[1][iy]*momenta[0])*
-				     (vectors_[0][ix]*momenta[1])));
+				     (vectors_[0][ix]*momenta[1])/(p1p2-momenta[0].mass()*momenta[1].mass())));
     }
   }
   double me = ME()->contract(rho_).real();
@@ -201,7 +201,7 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
 	   << outgoing_[ix].first  << " " << outgoing_[ix].second  << " "
-	   << coupling_[ix]*GeV << " " << maxWeight_[ix]  << "\n";
+	   << coupling_[ix]/GeV << " " << maxWeight_[ix]  << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
@@ -224,7 +224,7 @@ bool ScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
     ++ix;
   }
   while(imode<0&&ix<incoming_.size());
-  coupling=coupling_[imode]*dm.parent()->mass();
+  coupling=coupling_[imode]/dm.parent()->mass();
   itype = 12;
   return id1==outgoing_[imode].first&&id2==outgoing_[imode].second;
 }
@@ -269,7 +269,7 @@ string ScalarVectorVectorDecayer::setUpDecayMode(string arg) {
   // store the information
   incoming_.push_back(in);
   outgoing_.push_back(out);
-  coupling_.push_back(g/GeV);
+  coupling_.push_back(g*GeV);
   maxWeight_.push_back(wgt);
   // success
   return "";

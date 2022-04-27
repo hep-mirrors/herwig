@@ -23,8 +23,8 @@ using namespace ThePEG;
  * The ScalarVectorVectorDecayer class is designed to perform the decay of 
  * a scalar meson to two spin-1 particles. The matrix element is taken
  * to have the form
- *  \f[\mathcal{M}=g\left[ p_1 \cdot p_2 \epsilon_1 \cdot \epsilon_2
- *                        -p_1 \cdot \epsilon_2 p_2 \cdot\epsilon_1\right],\f]
+ *  \f[\mathcal{M}=g\left[ \epsilon_1 \cdot \epsilon_2
+ *                        -\frac{p_1 \cdot \epsilon_2 p_2 \cdot\epsilon_1}{p_1 \cdot p_2-m_1m_2}  \right],\f]
  *  where \f$\epsilon_{1,2}\f$ are the polarzation
  *  vectors of the outgoing vector particles.
  *
@@ -174,7 +174,7 @@ private:
   /**
    * the coupling for the decay, \f$g\f$.
    */
-  vector<InvEnergy> coupling_;
+  vector<Energy> coupling_;
 
   /**
    * the maximum weight for the decay
