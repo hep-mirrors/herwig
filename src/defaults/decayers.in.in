@@ -2244,162 +2244,38 @@ create Herwig::TensorMesonVectorPScalarDecayer  TensorVP
 newdef TensorVP:Iteration 1
 newdef TensorVP:Ntry 2000
 newdef TensorVP:Points 10000
-newdef TensorVP:GenerateIntermediates 0
-newdef TensorVP:Incoming 0 115
-newdef TensorVP:OutgoingVector 0 213
-newdef TensorVP:OutgoingScalar 0 -211
-newdef TensorVP:Coupling 0 21.1
-newdef TensorVP:MaxWeight 0 4.68304
-newdef TensorVP:Incoming 1 215
-newdef TensorVP:OutgoingVector 1 113
-newdef TensorVP:OutgoingScalar 1 211
-newdef TensorVP:Coupling 1 21.1
-newdef TensorVP:MaxWeight 1 4.71348
-newdef TensorVP:Incoming 2 215
-newdef TensorVP:OutgoingVector 2 213
-newdef TensorVP:OutgoingScalar 2 111
-newdef TensorVP:Coupling 2 21.1
-newdef TensorVP:MaxWeight 2 4.73233
-newdef TensorVP:Incoming 3 215
-newdef TensorVP:OutgoingVector 3 22
-newdef TensorVP:OutgoingScalar 3 211
-newdef TensorVP:Coupling 3 0.551
-newdef TensorVP:MaxWeight 3 1.7
-newdef TensorVP:Incoming 4 315
-newdef TensorVP:OutgoingVector 4 223
-newdef TensorVP:OutgoingScalar 4 311
-newdef TensorVP:Coupling 4 11.66
-newdef TensorVP:MaxWeight 4 40.
-newdef TensorVP:Incoming 5 325
-newdef TensorVP:OutgoingVector 5 223
-newdef TensorVP:OutgoingScalar 5 321
-newdef TensorVP:Coupling 5 11.66
-newdef TensorVP:MaxWeight 5 40.
-newdef TensorVP:Incoming 6 325
-newdef TensorVP:OutgoingVector 6 22
-newdef TensorVP:OutgoingScalar 6 321
-newdef TensorVP:Coupling 6 0.553
-newdef TensorVP:MaxWeight 6 1.9
-newdef TensorVP:Incoming 7 545
-newdef TensorVP:OutgoingVector 7 22
-newdef TensorVP:OutgoingScalar 7 541
-newdef TensorVP:Coupling 7 0.651
-newdef TensorVP:MaxWeight 7 1.63579
-newdef TensorVP:Incoming 8 325
-newdef TensorVP:OutgoingVector 8 113
-newdef TensorVP:OutgoingScalar 8 321
-newdef TensorVP:Coupling 8 10.14
-newdef TensorVP:MaxWeight 8 7.09367
-newdef TensorVP:Incoming 9 325
-newdef TensorVP:OutgoingVector 9 213
-newdef TensorVP:OutgoingScalar 9 311
-newdef TensorVP:Coupling 9 14.33
-newdef TensorVP:MaxWeight 9 6.86114
-newdef TensorVP:Incoming 10 315
-newdef TensorVP:OutgoingVector 10 113
-newdef TensorVP:OutgoingScalar 10 311
-newdef TensorVP:Coupling 10 10.14
-newdef TensorVP:MaxWeight 10 6.65245
-newdef TensorVP:Incoming 11 315
-newdef TensorVP:OutgoingVector 11 -213
-newdef TensorVP:OutgoingScalar 11 321
-newdef TensorVP:Coupling 11 14.33
-newdef TensorVP:MaxWeight 11 8.1
-newdef TensorVP:Incoming 12 325
-newdef TensorVP:OutgoingVector 12 323
-newdef TensorVP:OutgoingScalar 12 111
-newdef TensorVP:Coupling 12 9.733
-newdef TensorVP:MaxWeight 12 2.9
-newdef TensorVP:Incoming 13 325
-newdef TensorVP:OutgoingVector 13 313
-newdef TensorVP:OutgoingScalar 13 211
-newdef TensorVP:Coupling 13 13.77
-newdef TensorVP:MaxWeight 13 2.796
-newdef TensorVP:Incoming 14 315
-newdef TensorVP:OutgoingVector 14 313
-newdef TensorVP:OutgoingScalar 14 111
-newdef TensorVP:Coupling 14 9.733
-newdef TensorVP:MaxWeight 14 3.
-newdef TensorVP:Incoming 15 315
-newdef TensorVP:OutgoingVector 15 323
-newdef TensorVP:OutgoingScalar 15 -211
-newdef TensorVP:Coupling 15 13.77
-newdef TensorVP:MaxWeight 15 3.
-newdef TensorVP:Incoming 16 425
-newdef TensorVP:OutgoingVector 16 423
-newdef TensorVP:OutgoingScalar 16 111
-newdef TensorVP:Coupling 16 8.035
-newdef TensorVP:MaxWeight 16 6.
-newdef TensorVP:Incoming 17 425
-newdef TensorVP:OutgoingVector 17 413
-newdef TensorVP:OutgoingScalar 17 -211
-newdef TensorVP:Coupling 17 11.67
-newdef TensorVP:MaxWeight 17 6.
-newdef TensorVP:Incoming 18 415
-newdef TensorVP:OutgoingVector 18 413
-newdef TensorVP:OutgoingScalar 18 111
-newdef TensorVP:Coupling 18 6.801
-newdef TensorVP:MaxWeight 18 6.
-newdef TensorVP:Incoming 19 415
-newdef TensorVP:OutgoingVector 19 423
-newdef TensorVP:OutgoingScalar 19 211
-newdef TensorVP:Coupling 19 9.527
-newdef TensorVP:MaxWeight 19 6.
-newdef TensorVP:Incoming 20 435
-newdef TensorVP:OutgoingVector 20 423
-newdef TensorVP:OutgoingScalar 20 321
-newdef TensorVP:Coupling 20 13.1
-newdef TensorVP:MaxWeight 20 5.
-newdef TensorVP:Incoming 21 435
-newdef TensorVP:OutgoingVector 21 413
-newdef TensorVP:OutgoingScalar 21 311
-newdef TensorVP:Coupling 21 13.1
-newdef TensorVP:MaxWeight 21 5.
-newdef TensorVP:Incoming 22 525
-newdef TensorVP:OutgoingVector 22 523
-newdef TensorVP:OutgoingScalar 22 111
-newdef TensorVP:Coupling 22 4.99
-newdef TensorVP:MaxWeight 22 1.61535
-newdef TensorVP:Incoming 23 525
-newdef TensorVP:OutgoingVector 23 513
-newdef TensorVP:OutgoingScalar 23 211
-newdef TensorVP:Coupling 23 7.059
-newdef TensorVP:MaxWeight 23 1.5842
-newdef TensorVP:Incoming 24 515
-newdef TensorVP:OutgoingVector 24 513
-newdef TensorVP:OutgoingScalar 24 111
-newdef TensorVP:Coupling 24 4.99
-newdef TensorVP:MaxWeight 24 1.61501
-newdef TensorVP:Incoming 25 515
-newdef TensorVP:OutgoingVector 25 523
-newdef TensorVP:OutgoingScalar 25 -211
-newdef TensorVP:Coupling 25 7.059
-newdef TensorVP:MaxWeight 25 1.58463
-newdef TensorVP:Incoming 26 435
-newdef TensorVP:OutgoingVector 26 423
-newdef TensorVP:OutgoingScalar 26 321
-newdef TensorVP:Coupling 26 13.09
-newdef TensorVP:MaxWeight 26 1.78925
-newdef TensorVP:Incoming 27 435
-newdef TensorVP:OutgoingVector 27 413
-newdef TensorVP:OutgoingScalar 27 311
-newdef TensorVP:Coupling 27 13.09
-newdef TensorVP:MaxWeight 27 2.06728
-newdef TensorVP:Incoming 28 535
-newdef TensorVP:OutgoingVector 28 523
-newdef TensorVP:OutgoingScalar 28 -321
-newdef TensorVP:Coupling 28 7.29
-newdef TensorVP:MaxWeight 28 1.60271
-newdef TensorVP:Incoming 29 535
-newdef TensorVP:OutgoingVector 29 513
-newdef TensorVP:OutgoingScalar 29 -311
-newdef TensorVP:Coupling 29 9.43
-newdef TensorVP:MaxWeight 29 1.59959
-newdef TensorVP:Incoming 30 20555
-newdef TensorVP:OutgoingVector 30 22
-newdef TensorVP:OutgoingScalar 30 10551
-newdef TensorVP:Coupling 30 1.11
-newdef TensorVP:MaxWeight 30 1.82265
+newdef TensorVP:GenerateIntermediates 0 
+do TensorVP:SetUpDecayMode 115 213 -211 21.1 4.68304
+do TensorVP:SetUpDecayMode 215 113 211 21.1 4.71348
+do TensorVP:SetUpDecayMode 215 213 111 21.1 4.73233
+do TensorVP:SetUpDecayMode 215 22 211 0.551 1.7
+do TensorVP:SetUpDecayMode 315 223 311 11.66 40.
+do TensorVP:SetUpDecayMode 325 223 321 11.66 40.
+do TensorVP:SetUpDecayMode 325 22 321 0.553 1.9
+do TensorVP:SetUpDecayMode 545 22 541 0.651 1.63579
+do TensorVP:SetUpDecayMode 325 113 321 10.14 7.09367
+do TensorVP:SetUpDecayMode 325 213 311 14.33 6.86114
+do TensorVP:SetUpDecayMode 315 113 311 10.14 6.65245
+do TensorVP:SetUpDecayMode 315 -213 321 14.33 8.1
+do TensorVP:SetUpDecayMode 325 323 111 9.733 2.9
+do TensorVP:SetUpDecayMode 325 313 211 13.77 2.796
+do TensorVP:SetUpDecayMode 315 313 111 9.733 3.
+do TensorVP:SetUpDecayMode 315 323 -211 13.77 3.
+do TensorVP:SetUpDecayMode 425 423 111 8.035 6.
+do TensorVP:SetUpDecayMode 425 413 -211 11.67 6.
+do TensorVP:SetUpDecayMode 415 413 111 6.801 6.
+do TensorVP:SetUpDecayMode 415 423 211 9.527 6.
+do TensorVP:SetUpDecayMode 435 423 321 13.1 5.
+do TensorVP:SetUpDecayMode 435 413 311 13.1 5.
+do TensorVP:SetUpDecayMode 525 523 111 4.99 1.61535
+do TensorVP:SetUpDecayMode 525 513 211 7.059 1.5842
+do TensorVP:SetUpDecayMode 515 513 111 4.99 1.61501
+do TensorVP:SetUpDecayMode 515 523 -211 7.059 1.58463
+do TensorVP:SetUpDecayMode 435 423 321 13.09 1.78925
+do TensorVP:SetUpDecayMode 435 413 311 13.09 2.06728
+do TensorVP:SetUpDecayMode 535 523 -321 7.29 1.60271
+do TensorVP:SetUpDecayMode 535 513 -311 9.43 1.59959
+do TensorVP:SetUpDecayMode 20555 22 10551 1.11 1.82265
 #
 create Herwig::TensorMesonVectorVectorDecayer  TVV
 newdef TVV:Iteration 1
