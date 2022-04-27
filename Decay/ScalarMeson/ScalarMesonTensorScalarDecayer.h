@@ -26,6 +26,8 @@ using namespace Herwig;
  *
  *  \f[\mathcal{M} = \epsilon^{\alpha\beta} p_{0\alpha} p_{2\beta} \f]
  *
+ * This Lorentz structure would also apply for scalar to pseudotensor scalar, pseudoscalar to tensor scalar or
+ * pseudoscalar to pseudotensor pseudoscalar decays.
  * The incoming and outgoing mesons and the coupling can be specified using the
  * interfaces.
  *

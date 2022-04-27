@@ -134,11 +134,11 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
 
 void ScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_coupling,1/GeV) << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(coupling_,GeV) << incoming_ << outgoing_ << maxWeight_;
 }
 
 void ScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(coupling_,GeV) >> incoming_ >> outgoing_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -215,16 +215,16 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
     }
   }
   // now compute the matrix element
-  InvEnergy2 fact(_coupling[imode()]/part.mass());
+  double fact(coupling_[imode()]/part.mass());
   Energy2 p1p2(momenta[0]*momenta[1]);
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     if(photon[0] && ix==1) continue;
     for(iy=0;iy<3;++iy) {
       if(photon[1] && iy==1) continue;
-      (*ME())(0,ix,iy)=Complex(fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
-				     (_vectors[1][iy]*momenta[0])*
-				     (_vectors[0][ix]*momenta[1])));
+      (*ME())(0,ix,iy)=Complex(fact*(vectors_[0][ix].dot(vectors_[1][iy])-
+				     (vectors_[1][iy]*momenta[0])*
+				     (vectors_[0][ix]*momenta[1])/(p1p2-momenta[0].mass()*momenta[1].mass())));
     }
   }
   double me = ME()->contract(_rho).real();
@@ -245,31 +245,10 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class  
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "newdef " << name() << ":FirstOutgoing  " << ix << " "
-	     << _outgoing1[ix]  << "\n";
-      output << "newdef " << name() << ":SecondOutgoing " << ix << " "
-	     << _outgoing2[ix]  << "\n";
-      output << "newdef " << name() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*GeV   << "\n";
-      output << "newdef " << name() << ":MaxWeight  " << ix << " "
-	     << _maxweight[ix]  << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "insert " << name() << ":FirstOutgoing  " << ix << " "
-	     << _outgoing1[ix]  << "\n";
-      output << "insert " << name() << ":SecondOutgoing " << ix << " "
-	     << _outgoing2[ix]  << "\n";
-      output << "insert " << name() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*GeV   << "\n";
-      output << "insert " << name() << ":MaxWeight  " << ix << " "
-	     << _maxweight[ix]  << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix].first  << " " << outgoing_[ix].second  << " "
+	   << coupling_[ix]/GeV << " " << maxWeight_[ix]  << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
@@ -291,8 +270,54 @@ bool ScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
     }
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
-  coupling=_coupling[imode]*dm.parent()->mass();
+  while(imode<0&&ix<incoming_.size());
+  coupling=coupling_[imode]/dm.parent()->mass();
   itype = 12;
   return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
+}
+
+string ScalarVectorVectorDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 0";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  coupling_.push_back(g*GeV);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }
