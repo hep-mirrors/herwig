@@ -675,10 +675,10 @@ decaymode chi_c0->rho-,pi+,pi0; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->rho0,pi+,pi-; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->rho+,pi-,pi0; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->Jpsi,gamma; 0.013 1 /Herwig/Decays/SVV
-decaymode chi_c0->K_1-,K+; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_1bar0,K0; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_10,Kbar0; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_1+,K-; 0.01 1 /Herwig/Decays/DecayME0
+decaymode chi_c0->K_1-,K+; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_1bar0,K0; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_10,Kbar0; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_1+,K-; 0.01 1 /Herwig/Decays/PPVDecayer
 decaymode chi_c0->pi-,pi+,pi-,pi+; 0.00739 1 /Herwig/Decays/Mambo
 decaymode chi_c0->K0,Kbar0; 0.0054 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->K+,K-; 0.0054 1 /Herwig/Decays/ScalarSS

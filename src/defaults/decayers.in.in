@@ -10600,6 +10600,8 @@ do PPVDecayer:SetUpDecayMode 10221 -211 20213 2.68 3.30881
 do PPVDecayer:SetUpDecayMode 10221 111 20113 2.68 3.42189
 do PPVDecayer:SetUpDecayMode 9030221 -211 20213 1.147 3.21729
 do PPVDecayer:SetUpDecayMode 9030221 111 20113 1.147 3.28207
+do PPVDecayer:SetUpDecayMode 10441 321 -10323 0.023 2.
+do PPVDecayer:SetUpDecayMode 10441 311 -10313 0.023 2.
 #
 create Herwig::QuarkoniumDecayer  QDecayME0
 newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
