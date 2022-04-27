@@ -35,11 +35,6 @@ using namespace Herwig;
 class ScalarMesonTensorScalarDecayer: public DecayIntegrator {
 
 public:
-
-  /**
-   * Default constructor.
-   */
-  ScalarMesonTensorScalarDecayer();
   
   /**
    * Which of the possible decays is required
@@ -144,6 +139,13 @@ protected:
   virtual void doinitrun();
   //@}
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
@@ -156,42 +158,32 @@ private:
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * the PDG code for the tensor meson
+   * the PDG code for the outgoing mesons (tensor then scalar)
    */
-  vector<int> _outgoingT;
-
-  /**
-   * the PDG code for the scalar meson
-   */
-  vector<int> _outgoingS;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * the coupling for the decay
    */
-  vector<InvEnergy> _coupling;
+  vector<InvEnergy> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization tensors for the decay product
    */
-  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+  mutable vector<Helicity::LorentzTensor<double> > tensors_;
 };
 
 }
