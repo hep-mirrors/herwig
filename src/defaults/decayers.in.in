@@ -10581,101 +10581,25 @@ newdef PPVDecayer:Iteration 1
 newdef PPVDecayer:Ntry 500
 newdef PPVDecayer:Points 10000
 newdef PPVDecayer:GenerateIntermediates 0 
-newdef PPVDecayer:Incoming 0 100111
-newdef PPVDecayer:OutgoingPScalar 0 -211
-newdef PPVDecayer:OutgoingVector 0 213
-newdef PPVDecayer:Coupling 0 3.57
-newdef PPVDecayer:MaxWeight 0 4.85468
-newdef PPVDecayer:Incoming 1 100211
-newdef PPVDecayer:OutgoingPScalar 1 111
-newdef PPVDecayer:OutgoingVector 1 213
-newdef PPVDecayer:Coupling 1 3.57
-newdef PPVDecayer:MaxWeight 1 4.92159
-newdef PPVDecayer:Incoming 2 100211
-newdef PPVDecayer:OutgoingPScalar 2 211
-newdef PPVDecayer:OutgoingVector 2 113
-newdef PPVDecayer:Coupling 2 3.57
-newdef PPVDecayer:MaxWeight 2 4.77463
-newdef PPVDecayer:Incoming 3 100311
-newdef PPVDecayer:OutgoingPScalar 3 311
-newdef PPVDecayer:OutgoingVector 3 113
-newdef PPVDecayer:Coupling 3 1
-newdef PPVDecayer:MaxWeight 3 3.79851
-newdef PPVDecayer:Incoming 4 100321
-newdef PPVDecayer:OutgoingPScalar 4 321
-newdef PPVDecayer:OutgoingVector 4 113
-newdef PPVDecayer:Coupling 4 1
-newdef PPVDecayer:MaxWeight 4 3.8839
-newdef PPVDecayer:Incoming 5 100311
-newdef PPVDecayer:OutgoingPScalar 5 321
-newdef PPVDecayer:OutgoingVector 5 -213
-newdef PPVDecayer:Coupling 5 1.41
-newdef PPVDecayer:MaxWeight 5 3.92582
-newdef PPVDecayer:Incoming 6 100321
-newdef PPVDecayer:OutgoingPScalar 6 311
-newdef PPVDecayer:OutgoingVector 6 213
-newdef PPVDecayer:Coupling 6 1.41
-newdef PPVDecayer:MaxWeight 6 3.83809
-newdef PPVDecayer:Incoming 7 100311
-newdef PPVDecayer:OutgoingPScalar 7 111
-newdef PPVDecayer:OutgoingVector 7 313
-newdef PPVDecayer:Coupling 7 1.55
-newdef PPVDecayer:MaxWeight 7 1.63383
-newdef PPVDecayer:Incoming 8 100321
-newdef PPVDecayer:OutgoingPScalar 8 111
-newdef PPVDecayer:OutgoingVector 8 323
-newdef PPVDecayer:Coupling 8 1.55
-newdef PPVDecayer:MaxWeight 8 1.64466
-newdef PPVDecayer:Incoming 9 100311
-newdef PPVDecayer:OutgoingPScalar 9 -211
-newdef PPVDecayer:OutgoingVector 9 323
-newdef PPVDecayer:Coupling 9 2.19
-newdef PPVDecayer:MaxWeight 9 1.64501
-newdef PPVDecayer:Incoming 10 100321
-newdef PPVDecayer:OutgoingPScalar 10 211
-newdef PPVDecayer:OutgoingVector 10 313
-newdef PPVDecayer:Coupling 10 2.19
-newdef PPVDecayer:MaxWeight 10 1.61787
-newdef PPVDecayer:Incoming 11 100331
-newdef PPVDecayer:OutgoingPScalar 11 -321
-newdef PPVDecayer:OutgoingVector 11 323
-newdef PPVDecayer:Coupling 11 2.92
-newdef PPVDecayer:MaxWeight 11 4.09876
-newdef PPVDecayer:Incoming 12 100331
-newdef PPVDecayer:OutgoingPScalar 12 -311
-newdef PPVDecayer:OutgoingVector 12 313
-newdef PPVDecayer:Coupling 12 2.92
-newdef PPVDecayer:MaxWeight 12 3.68371
-newdef PPVDecayer:Incoming 13 9020221
-newdef PPVDecayer:OutgoingPScalar 13 -321
-newdef PPVDecayer:OutgoingVector 13 323
-newdef PPVDecayer:Coupling 13 0.956
-newdef PPVDecayer:MaxWeight 13 4.40423
-newdef PPVDecayer:Incoming 14 9020221
-newdef PPVDecayer:OutgoingPScalar 14 -311
-newdef PPVDecayer:OutgoingVector 14 313
-newdef PPVDecayer:Coupling 14 0.956
-newdef PPVDecayer:MaxWeight 14 3.48178
-newdef PPVDecayer:Incoming 15 10221
-newdef PPVDecayer:OutgoingPScalar 15 -211
-newdef PPVDecayer:OutgoingVector 15 20213
-newdef PPVDecayer:Coupling 15 2.68
-newdef PPVDecayer:MaxWeight 15 3.30881
-newdef PPVDecayer:Incoming 16 10221
-newdef PPVDecayer:OutgoingPScalar 16 111
-newdef PPVDecayer:OutgoingVector 16 20113
-newdef PPVDecayer:Coupling 16 2.68
-newdef PPVDecayer:MaxWeight 16 3.42189
-newdef PPVDecayer:Incoming 17 9030221
-newdef PPVDecayer:OutgoingPScalar 17 -211
-newdef PPVDecayer:OutgoingVector 17 20213
-newdef PPVDecayer:Coupling 17 1.147
-newdef PPVDecayer:MaxWeight 17 3.21729
-newdef PPVDecayer:Incoming 18 9030221
-newdef PPVDecayer:OutgoingPScalar 18 111
-newdef PPVDecayer:OutgoingVector 18 20113
-newdef PPVDecayer:Coupling 18 1.147
-newdef PPVDecayer:MaxWeight 18 3.28207
+do PPVDecayer:SetUpDecayMode 100111 -211 213 3.57 0 4.85468
+do PPVDecayer:SetUpDecayMode 100211 111 213 3.57 4.92159
+do PPVDecayer:SetUpDecayMode 100211 211 113 3.57 4.77463
+do PPVDecayer:SetUpDecayMode 100311 311 113 1 3.79851
+do PPVDecayer:SetUpDecayMode 100321 321 113 1 3.8839
+do PPVDecayer:SetUpDecayMode 100311 321 -213 1.41 3.92582
+do PPVDecayer:SetUpDecayMode 100321 311 213 1.41 3.83809
+do PPVDecayer:SetUpDecayMode 100311 111 313 1.55 1.63383
+do PPVDecayer:SetUpDecayMode 100321 111 323 1.55 1.64466
+do PPVDecayer:SetUpDecayMode 100311 -211 323 2.19 1.64501
+do PPVDecayer:SetUpDecayMode 100321 211 313 2.19 1.61787
+do PPVDecayer:SetUpDecayMode 100331 -321 323 2.92 4.09876
+do PPVDecayer:SetUpDecayMode 100331 -311 313 2.92 3.68371
+do PPVDecayer:SetUpDecayMode 9020221 -321 323 0.956 4.40423
+do PPVDecayer:SetUpDecayMode 9020221 -311 313 0.956 3.48178
+do PPVDecayer:SetUpDecayMode 10221 -211 20213 2.68 3.30881
+do PPVDecayer:SetUpDecayMode 10221 111 20113 2.68 3.42189
+do PPVDecayer:SetUpDecayMode 9030221 -211 20213 1.147 3.21729
+do PPVDecayer:SetUpDecayMode 9030221 111 20113 1.147 3.28207
 #
 create Herwig::QuarkoniumDecayer  QDecayME0
 newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
