@@ -10857,22 +10857,10 @@ create Herwig::ScalarMesonTensorScalarDecayer  STSDecayer
 newdef STSDecayer:Iteration 1
 newdef STSDecayer:Ntry 500
 newdef STSDecayer:Points 10000
-newdef STSDecayer:GenerateIntermediates 0
-newdef STSDecayer:Incoming 0 411
-newdef STSDecayer:OutgoingTensor 0 225
-newdef STSDecayer:OutgoingScalar 0 211
-newdef STSDecayer:Coupling 0 8.23e-07
-newdef STSDecayer:MaxWeight 0 0.00242193
-newdef STSDecayer:Incoming 1 10441
-newdef STSDecayer:OutgoingTensor 1 325
-newdef STSDecayer:OutgoingScalar 1 -10321
-newdef STSDecayer:Coupling 1 0.0217
-newdef STSDecayer:MaxWeight 1 4.36393
-newdef STSDecayer:Incoming 2 10441
-newdef STSDecayer:OutgoingTensor 2 315
-newdef STSDecayer:OutgoingScalar 2 -10311
-newdef STSDecayer:Coupling 2 0.0217
-newdef STSDecayer:MaxWeight 2 4.35748
+newdef STSDecayer:GenerateIntermediates 0 
+do STSDecayer:SetUpDecayMode 411 225 211 8.23e-07 0.00242193
+do STSDecayer:SetUpDecayMode 10441 325 -10321 0.0217 4.36393
+do STSDecayer:SetUpDecayMode 10441 315 -10311 0.0217 4.35748
 #
 create Herwig::SemiLeptonicBaryonDecayer  BaryonLight1
 newdef BaryonLight1:Iteration 1

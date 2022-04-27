@@ -105,6 +105,7 @@ void PScalarPScalarVectorDecayer::Init() {
   static ClassDocumentation<PScalarPScalarVectorDecayer> documentation
     ("The PScalarPScalarVectorDecayer class is designed for"
      " the decay of a pseduoscalar meson to two spin-1 particles.");
+  
   static Command<PScalarPScalarVectorDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
      "Set up the particles (incoming, vectors, coupling (dimensionless) and max weight for a decay",
