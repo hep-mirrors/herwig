@@ -37,8 +37,8 @@ void TensorMesonVectorPScalarDecayer::doinitrun() {
 }
 
 TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
-  :  _incoming(31), _outgoingV(31), _outgoingP(31), 
-     _coupling(31), _maxweight(31) {
+  :  _incoming(33), _outgoingV(33), _outgoingP(33),
+     _coupling(33), _maxweight(33) {
   // a_2 -> rho pi
   _incoming[0] =  115; _outgoingV[0] =  213; _outgoingP[0] = -211; 
   _coupling[0] = 21.1/GeV2; _maxweight[0] = 10.; 
@@ -114,6 +114,11 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   // upsilon_2(1d) to chi_b gamma
   _incoming[30] = 20555; _outgoingV[30] =   22; _outgoingP[30] = 10551; 
   _coupling[30] = 1.11/GeV2; _maxweight[30] = 2.4; 
+  // upsilon(5s)
+  _incoming[31] = 400553; _outgoingV[31] = 523; _outgoingP[31] = -521;
+  _coupling[31] = 24.188/GeV2; _maxweight[31] = 1.6;
+  _incoming[32] = 400553; _outgoingV[32] = -523; _outgoingP[32] = 521;
+  _coupling[32] = 24.188/GeV2; _maxweight[32] = 1.6;
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates
