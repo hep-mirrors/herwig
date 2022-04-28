@@ -14,8 +14,8 @@
 #include "PScalarLeptonNeutrinoDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
-#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Deleted.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -32,56 +32,20 @@ void PScalarLeptonNeutrinoDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   unsigned int iz(0),ix,iy;
   if(initialize()) {
-    for(ix=0;ix<_incoming.size();++ix) {
-      for(iy=0;iy<_leptons[ix];++iy) {
-	if(iy==0)      _maxweighte  [ix] = mode(iz)->maxWeight();
-	else if(iy==1) _maxweightmu [ix] = mode(iz)->maxWeight();
-	else if(iy==2) _maxweighttau[ix] = mode(iz)->maxWeight();
+    for(ix=0;ix<incoming_.size();++ix) {
+      for(iy=0;iy<leptons_[ix];++iy) {
+	maxWeight_[ix][iy] = mode(iz)->maxWeight();
 	++iz;
       }
     }
   }
 }
 
-PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
-  : _incoming(6), _decayconstant(6), _leptons(6), _maxweighte(6), 
-    _maxweightmu(6), _maxweighttau(6) {
-  // pion decay
-  _incoming[0] = 211; _decayconstant[0] = 127.27*MeV; _leptons[0] = 2; 
-  _maxweighte[0] = 0.00014; _maxweightmu[0] = 1.09; 
-  _maxweighttau[0] = 0.0; 
-  // kaon decay
-  _incoming[1] = 321; _decayconstant[1] = 36.06*MeV; _leptons[1] = 2; 
-  _maxweighte[1] = 1.87e-05; _maxweightmu[1] = 0.74; 
-  _maxweighttau[1] = 0.0; 
-  // D_s decay
-  _incoming[2] = 431; _decayconstant[2] = 281.36*MeV; _leptons[2] = 3; 
-  _maxweighte[2] = 1.83428e-07; _maxweightmu[2] = 0.00782778; 
-  _maxweighttau[2] = 0.00782778; 
-  // D decay
-  _incoming[3] = 411; _decayconstant[3] = 51.20*MeV; _leptons[3] = 3; 
-  _maxweighte[3] = 1.19915e-08; _maxweightmu[3] = 0.000511418; 
-  _maxweighttau[3] = 0.00135052; 
-  // B_c decay
-  _incoming[4] = 541; _decayconstant[4] = 16.0*MeV; _leptons[4] = 3; 
-  _maxweighte[4] = 1.7429e-09; _maxweightmu[4] = 7.47667e-05; 
-  _maxweighttau[4] = 0.0179128; 
-  // B_u decays
-  _incoming[5] = 521; _decayconstant[5] = 0.759*MeV; _leptons[5] = 3; 
-  _maxweighte[5] = 1.19578e-11; _maxweightmu[5] = 5.12844e-07; 
-  _maxweighttau[5] = 0.000114138; 
-  // initial size of the vectors
-  _initsize=_incoming.size();
-  // intermediates
-  generateIntermediates(false);
-}
-
 void PScalarLeptonNeutrinoDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
-  unsigned int isize(_incoming.size());
-  if(isize!=_decayconstant.size()||isize!=_leptons.size()||isize!=_maxweighte.size()||
-     isize!=_maxweightmu.size()||isize!=_maxweighttau.size())
+  unsigned int isize(incoming_.size());
+  if(isize!=decayConstant_.size()||isize!=leptons_.size()||isize!=maxWeight_.size())
     throw InitException() << "Inconsistent parameters in PScalarLeptonNeutrinoDecayer"
 			  << Exception::abortnow;
   // create the integration channels
@@ -97,9 +61,9 @@ void PScalarLeptonNeutrinoDecayer::doinit() {
   tPDPtr lepbar[3]={getParticleData(ParticleID::eplus),
 		    getParticleData(ParticleID::muplus),
 		    getParticleData(ParticleID::tauplus)};
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr in = getParticleData(_incoming[ix]);
-    for(unsigned int iy=0;iy<_leptons[ix];++iy) {
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr in = getParticleData(incoming_[ix]);
+    for(unsigned int iy=0;iy<leptons_[ix];++iy) {
       tPDVector out(2);
       if(in->iCharge()>0) {
 	out[0]=lepbar[iy];
@@ -109,10 +73,7 @@ void PScalarLeptonNeutrinoDecayer::doinit() {
 	out[0]=lep[iy];
 	out[1]=nubar[iy];
       }
-      double wgt;
-      if(iy==0)      wgt = _maxweighte[ix];
-      else if(iy==1) wgt = _maxweightmu[ix];
-      else           wgt = _maxweighttau[ix];
+      double wgt = maxWeight_[ix][iy];
       PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgt));
       addMode(mode);
     }
@@ -138,31 +99,27 @@ int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,tcPDPtr parent,
   int ichan(-1);
   unsigned int ix(0);
   do {
-    if(id0   ==_incoming[ix]||id0bar==_incoming[ix]) {
+    if(id0   ==incoming_[ix]||id0bar==incoming_[ix]) {
       found=true;ichan+=ilep;
-      cc=id0bar==_incoming[ix];
+      cc=id0bar==incoming_[ix];
     }
     else {
-      ichan+=_leptons[ix];
+      ichan+=leptons_[ix];
     }
     ++ix;
   }
-  while (!found&&ix<_incoming.size());
+  while (!found&&ix<incoming_.size());
   if(found) imode=ichan;
   return imode;
 }
 
 
 void PScalarLeptonNeutrinoDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << ounit(_decayconstant,GeV)
-     << _leptons << _maxweighte << _maxweightmu 
-     << _maxweighttau;
+  os << incoming_ << ounit(decayConstant_,GeV) << leptons_ << maxWeight_;
 }
 
 void PScalarLeptonNeutrinoDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> iunit(_decayconstant,GeV) 
-     >> _leptons >> _maxweighte >> _maxweightmu 
-     >> _maxweighttau;
+  is >> incoming_ >> iunit(decayConstant_,GeV) >> leptons_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -177,42 +134,34 @@ void PScalarLeptonNeutrinoDecayer::Init() {
      " the implementation of leptonic decay of a pseudoscalar meson to a lepton"
      "and a neutrino.");
 
-  static ParVector<PScalarLeptonNeutrinoDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &PScalarLeptonNeutrinoDecayer::_incoming,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Command<PScalarLeptonNeutrinoDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, decay constant no of leptonic decays, max weights",
+     &PScalarLeptonNeutrinoDecayer::setUpDecayMode, false);
 
-  static ParVector<PScalarLeptonNeutrinoDecayer,unsigned int> interfaceLepton
-    ("Leptons",
-     "The allowed outgoing leptons, 1 is only electrons, 2 is electrons and muons and "
-     "3 is all lepton flavours",
-     &PScalarLeptonNeutrinoDecayer::_leptons,
-     0, 0, 0, 1, 3, false, false, true);
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<PScalarLeptonNeutrinoDecayer,double> interfaceMaxWeighte
-    ("MaxWeightElectron",
-     "The maximum weight for the electron decay mode",
-     &PScalarLeptonNeutrinoDecayer::_maxweighte,
-     0, 0, 0, 0., 100., false, false, true);
-
-  static ParVector<PScalarLeptonNeutrinoDecayer,double> interfaceMaxWeightmu
-    ("MaxWeightMuon",
-     "The maximum weight for the muon decay mode",
-     &PScalarLeptonNeutrinoDecayer::_maxweightmu,
-     0, 0, 0, 0., 100., false, false, true);
-
-  static ParVector<PScalarLeptonNeutrinoDecayer,double> interfaceMaxWeighttau
-    ("MaxWeightTau",
-     "The maximum weight for the tau decay mode",
-     &PScalarLeptonNeutrinoDecayer::_maxweighttau,
-     0, 0, 0, 0., 100., false, false, true);
-
-  static ParVector<PScalarLeptonNeutrinoDecayer,Energy> interfaceDecayConstant
-    ("DecayConstant",
-     "The decay constant for the incoming pseudoscaalr meson.",
-     &PScalarLeptonNeutrinoDecayer::_decayconstant,
-     MeV, 0, ZERO, ZERO, 1000.*MeV, false, false, true);
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceLeptons
+    ("Leptons","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceMaxWeightElectron
+    ("MaxWeightElectron","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceMaxWeightMuon
+    ("MaxWeightMuon","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceMaxWeightTau
+    ("MaxWeightTau","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<PScalarLeptonNeutrinoDecayer> interfaceDecayConstant
+    ("DecayConstant","The old methods of setting up a decay in "
+     "PScalarLeptonNeutrinoDecayer have been deleted, please use SetUpDecayMode");
 }
 
 void PScalarLeptonNeutrinoDecayer::
@@ -228,9 +177,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 					incoming,true);
   // set up the spin information for the decay products
   SpinorBarWaveFunction::
-    constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
   SpinorWaveFunction::
-    constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
 }
 
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
@@ -241,8 +190,8 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which decay constant to use
   int icoup(0),id(abs(part.id()));
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(id==abs(_incoming[ix])) icoup=ix;
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    if(id==abs(incoming_[ix])) icoup=ix;
   }
   // find the particles
   unsigned int iferm(0),ianti(0);
@@ -255,31 +204,31 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
   // initialization
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // calculate the spinors
-  _wave.resize(2);
-  _wavebar.resize(2);
+  wave_.resize(2);
+  wavebar_.resize(2);
   for(unsigned int ix=0;ix<2;++ix) {
-    _wavebar[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
-    _wave   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
+    wavebar_[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
+    wave_   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
   }
   // the prefactor
   Energy premass =  idferm%2==0 ? momenta[ianti].mass() : momenta[iferm].mass();
-  InvEnergy pre = premass * 2.*_decayconstant[icoup]*SM().fermiConstant()/part.mass();
+  InvEnergy pre = premass * 2.*decayConstant_[icoup]*SM().fermiConstant()/part.mass();
   // compute the matrix element
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
     for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1]) {
       (*ME())(ispin)= idferm%2==0 ? 
-	Complex(pre*_wave[ispin[ianti+1]].rightScalar(_wavebar[ispin[iferm+1]])) :
-	Complex(pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]])) ;
+	Complex(pre*wave_[ispin[ianti+1]].rightScalar(wavebar_[ispin[iferm+1]])) :
+	Complex(pre*wave_[ispin[ianti+1]].leftScalar( wavebar_[ispin[iferm+1]])) ;
     }
   }
-  double me = 0.5*ME()->contract(_rho).real();
+  double me = 0.5*ME()->contract(rho_).real();
   // test of the matrix element
   // Energy mass = idferm%2==0 ? momenta[ianti].mass() : momenta[iferm].mass();
-  // double test = 0.5*sqr(_decayconstant[icoup]*SM().fermiConstant()*2.*mass/part.mass())*
+  // double test = 0.5*sqr(decayConstant_[icoup]*SM().fermiConstant()*2.*mass/part.mass())*
   //   (sqr(part.mass())-sqr(mass));
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
@@ -292,36 +241,47 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "newdef " << name() << ":Leptons    " << ix << " "
-	     << _leptons[ix]   << "\n";
-      output << "newdef " << name() << ":MaxWeightElectron " << ix << " "
-	     << _maxweighte[ix]   << "\n";
-      output << "newdef " << name() << ":MaxWeightMuon "     << ix << " "
-	     << _maxweightmu[ix]   << "\n";
-      output << "newdef " << name() << ":MaxWeightTau "      << ix << " "
-	     << _maxweighttau[ix]   << "\n";
-      output << "newdef " << name() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]/MeV  << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "insert " << name() << ":Leptons    " << ix << " "
-	     << _leptons[ix]   << "\n";
-      output << "insert " << name() << ":MaxWeightElectron " << ix << " "
-	     << _maxweighte[ix]   << "\n";
-      output << "insert " << name() << ":MaxWeightMuon "     << ix << " "
-	     << _maxweightmu[ix]   << "\n";
-      output << "insert " << name() << ":MaxWeightTau "      << ix << " "
-	     << _maxweighttau[ix]   << "\n";
-      output << "insert " << name() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]/MeV  << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << decayConstant_[ix]/MeV << " " << leptons_[ix];
+    for(unsigned int iy=0;iy<3;++iy) output << " " << maxWeight_[ix][iy];
+    output << "\n";
   }
   if(header) 
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+string PScalarLeptonNeutrinoDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 0";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // no of leptons
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int lepton = stoi(stype);
+  // and the maximum weights
+  array<double,3> wgt;
+  for(unsigned int iy=0;iy<3;++iy) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    wgt[iy] = stof(stype);
+  }
+  // store the information
+  incoming_.push_back(in);
+  decayConstant_.push_back(g*MeV);
+  leptons_.push_back(lepton);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }

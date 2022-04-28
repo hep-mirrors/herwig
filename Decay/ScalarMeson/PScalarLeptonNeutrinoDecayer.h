@@ -36,13 +36,6 @@ using namespace ThePEG;
  * 
  */
 class PScalarLeptonNeutrinoDecayer: public DecayIntegrator {
-
-public:
-
-  /**
-   * Default constructor.
-   */
-  PScalarLeptonNeutrinoDecayer();
   
   /**
    * Which of the possible decays is required
@@ -138,6 +131,13 @@ protected:
   virtual void doinitrun();
   //@}
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
@@ -150,53 +150,38 @@ private:
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * the meson decay constant for a particular particle multiplied by the CKM matrix
    * element, \e i.e. \f$f_pV_{CKM}\f$
    */
-  vector<Energy> _decayconstant;
+  vector<Energy> decayConstant_;
 
   /**
    * which outgoing leptons are allowed for a particular decay
    */
-  vector<unsigned int> _leptons;
+  vector<unsigned int> leptons_;
 
   /**
-   * the maximum weight for the integration of a given decay to \f$e\nu_e\f$.
+   * The maximum weight for the integration of decay to (\f$e\nu_e\f$, \f$\mu\nu_\mu\f$,\f$\tau\nu_\tau\f$).
    */
-  vector<double> _maxweighte;
-
-  /**
-   * the maximum weight for the integration of a given decay to \f$\mu\nu_\mu\f$.
-   */
-  vector<double> _maxweightmu;
-
-  /**
-   * the maximum weight for the integration of a given decay to \f$\tau\nu_\tau\f$.
-   */
-  vector<double> _maxweighttau;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
+  vector<array<double,3> > maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinors for the decay products
    */
-  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > _wave;
+  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > wave_;
 
   /**
    *  barred spinors for the decay products
    */
-  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > _wavebar;
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > wavebar_;
 
 };
 
