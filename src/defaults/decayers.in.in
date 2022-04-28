@@ -4711,43 +4711,13 @@ create Herwig::PScalarLeptonNeutrinoDecayer  PScalarlnu
 newdef PScalarlnu:Iteration 1
 newdef PScalarlnu:Ntry 500
 newdef PScalarlnu:Points 100
-newdef PScalarlnu:GenerateIntermediates 0 
-newdef PScalarlnu:Incoming   0 211
-newdef PScalarlnu:Leptons    0 2
-newdef PScalarlnu:MaxWeightElectron 0 0.000138471
-newdef PScalarlnu:MaxWeightMuon 0 1.08315
-newdef PScalarlnu:MaxWeightTau 0 0
-newdef PScalarlnu:DecayConstant 0 127.27
-newdef PScalarlnu:Incoming   1 321
-newdef PScalarlnu:Leptons    1 2
-newdef PScalarlnu:MaxWeightElectron 1 1.87067e-05
-newdef PScalarlnu:MaxWeightMuon 1 0.731058
-newdef PScalarlnu:MaxWeightTau 1 0
-newdef PScalarlnu:DecayConstant 1 36.06
-newdef PScalarlnu:Incoming   2 431
-newdef PScalarlnu:Leptons    2 3
-newdef PScalarlnu:MaxWeightElectron 2 1.83428e-07
-newdef PScalarlnu:MaxWeightMuon 2 0.00782778
-newdef PScalarlnu:MaxWeightTau 2 0.0760936
-newdef PScalarlnu:DecayConstant 2 281.36
-newdef PScalarlnu:Incoming   3 411
-newdef PScalarlnu:Leptons    3 3
-newdef PScalarlnu:MaxWeightElectron 3 1.19915e-08
-newdef PScalarlnu:MaxWeightMuon 3 0.000511418
-newdef PScalarlnu:MaxWeightTau 3 0.00135052
-newdef PScalarlnu:DecayConstant 3 51.2
-newdef PScalarlnu:Incoming   4 541
-newdef PScalarlnu:Leptons    4 3
-newdef PScalarlnu:MaxWeightElectron 4 1.7429e-09
-newdef PScalarlnu:MaxWeightMuon 4 7.47667e-05
-newdef PScalarlnu:MaxWeightTau 4 0.0179128
-newdef PScalarlnu:DecayConstant 4 16
-newdef PScalarlnu:Incoming   5 521
-newdef PScalarlnu:Leptons    5 3
-newdef PScalarlnu:MaxWeightElectron 5 1.19578e-11
-newdef PScalarlnu:MaxWeightMuon 5 5.12844e-07
-newdef PScalarlnu:MaxWeightTau 5 0.000114138
-newdef PScalarlnu:DecayConstant 5 0.759
+newdef PScalarlnu:GenerateIntermediates 0
+do PScalarlnu:SetUpDecayMode 211 127.27 2 0.000138471 1.08315 0
+do PScalarlnu:SetUpDecayMode 321 36.06 2 1.87067e-05 0.731058 0
+do PScalarlnu:SetUpDecayMode 431 281.36 3 1.83428e-07 0.00782778 0.0760936
+do PScalarlnu:SetUpDecayMode 411 51.2 3 1.19915e-08 0.000511418 0.00135052
+do PScalarlnu:SetUpDecayMode 541 16 3 1.7429e-09 7.47667e-05 0.0179128
+do PScalarlnu:SetUpDecayMode 521 0.759 3 1.19578e-11 5.12844e-07 0.000114138
 #
 create Herwig::VectorMesonVectorVectorDecayer  VectorVV
 newdef VectorVV:Iteration 1
@@ -9528,396 +9498,84 @@ newdef ScalarSS:Iteration 1
 newdef ScalarSS:Ntry 500
 newdef ScalarSS:Points 10000
 newdef ScalarSS:GenerateIntermediates 0 
-newdef ScalarSS:Incoming 0 9010221
-newdef ScalarSS:FirstOutgoing 0 111
-newdef ScalarSS:SecondOutgoing 0 111
-newdef ScalarSS:Coupling 0 1660
-newdef ScalarSS:MaxWeight 0 1.1
-newdef ScalarSS:Incoming 1 9010221
-newdef ScalarSS:FirstOutgoing 1 211
-newdef ScalarSS:SecondOutgoing 1 -211
-newdef ScalarSS:Coupling 1 2350
-newdef ScalarSS:MaxWeight 1 1.1
-newdef ScalarSS:Incoming 2 9010221
-newdef ScalarSS:FirstOutgoing 2 321
-newdef ScalarSS:SecondOutgoing 2 -321
-newdef ScalarSS:Coupling 2 1020
-newdef ScalarSS:MaxWeight 2 1.1
-newdef ScalarSS:Incoming 3 9010221
-newdef ScalarSS:FirstOutgoing 3 311
-newdef ScalarSS:SecondOutgoing 3 -311
-newdef ScalarSS:Coupling 3 1020
-newdef ScalarSS:MaxWeight 3 1.1
-newdef ScalarSS:Incoming 4 10221
-newdef ScalarSS:FirstOutgoing 4 111
-newdef ScalarSS:SecondOutgoing 4 111
-newdef ScalarSS:Coupling 4 745
-newdef ScalarSS:MaxWeight 4 1.18096
-newdef ScalarSS:Incoming 5 10221
-newdef ScalarSS:FirstOutgoing 5 211
-newdef ScalarSS:SecondOutgoing 5 -211
-newdef ScalarSS:Coupling 5 1054
-newdef ScalarSS:MaxWeight 5 1.18029
-newdef ScalarSS:Incoming 6 10221
-newdef ScalarSS:FirstOutgoing 6 100111
-newdef ScalarSS:SecondOutgoing 6 111
-newdef ScalarSS:Coupling 6 5027
-newdef ScalarSS:MaxWeight 6 2.3846
-newdef ScalarSS:Incoming 7 10221
-newdef ScalarSS:FirstOutgoing 7 100211
-newdef ScalarSS:SecondOutgoing 7 -211
-newdef ScalarSS:Coupling 7 5027
-newdef ScalarSS:MaxWeight 7 2.30756
-newdef ScalarSS:Incoming 8 10221
-newdef ScalarSS:FirstOutgoing 8 321
-newdef ScalarSS:SecondOutgoing 8 -321
-newdef ScalarSS:Coupling 8 886
-newdef ScalarSS:MaxWeight 8 1.19989
-newdef ScalarSS:Incoming 9 10221
-newdef ScalarSS:FirstOutgoing 9 311
-newdef ScalarSS:SecondOutgoing 9 -311
-newdef ScalarSS:Coupling 9 886
-newdef ScalarSS:MaxWeight 9 1.19012
-newdef ScalarSS:Incoming 10 10331
-newdef ScalarSS:FirstOutgoing 10 111
-newdef ScalarSS:SecondOutgoing 10 111
-newdef ScalarSS:Coupling 10 503
-newdef ScalarSS:MaxWeight 10 1.1012
-newdef ScalarSS:Incoming 11 10331
-newdef ScalarSS:FirstOutgoing 11 211
-newdef ScalarSS:SecondOutgoing 11 -211
-newdef ScalarSS:Coupling 11 711
-newdef ScalarSS:MaxWeight 11 1.09915
-newdef ScalarSS:Incoming 12 10331
-newdef ScalarSS:FirstOutgoing 12 321
-newdef ScalarSS:SecondOutgoing 12 -321
-newdef ScalarSS:Coupling 12 2096
-newdef ScalarSS:MaxWeight 12 1.05631
-newdef ScalarSS:Incoming 13 10331
-newdef ScalarSS:FirstOutgoing 13 311
-newdef ScalarSS:SecondOutgoing 13 -311
-newdef ScalarSS:Coupling 13 2096
-newdef ScalarSS:MaxWeight 13 1.05209
-newdef ScalarSS:Incoming 14 9000221
-newdef ScalarSS:FirstOutgoing 14 111
-newdef ScalarSS:SecondOutgoing 14 111
-newdef ScalarSS:Coupling 14 3654
-newdef ScalarSS:MaxWeight 14 1.09971
-newdef ScalarSS:Incoming 15 9000221
-newdef ScalarSS:FirstOutgoing 15 211
-newdef ScalarSS:SecondOutgoing 15 -211
-newdef ScalarSS:Coupling 15 5178
-newdef ScalarSS:MaxWeight 15 1.09997
-newdef ScalarSS:Incoming 16 9000111
-newdef ScalarSS:FirstOutgoing 16 221
-newdef ScalarSS:SecondOutgoing 16 111
-newdef ScalarSS:Coupling 16 3330
-newdef ScalarSS:MaxWeight 16 1.10192
-newdef ScalarSS:Incoming 17 9000211
-newdef ScalarSS:FirstOutgoing 17 221
-newdef ScalarSS:SecondOutgoing 17 211
-newdef ScalarSS:Coupling 17 3330
-newdef ScalarSS:MaxWeight 17 1.10212
-newdef ScalarSS:Incoming 18 9000111
-newdef ScalarSS:FirstOutgoing 18 321
-newdef ScalarSS:SecondOutgoing 18 -321
-newdef ScalarSS:Coupling 18 2540
-newdef ScalarSS:MaxWeight 18 1.1
-newdef ScalarSS:Incoming 19 9000111
-newdef ScalarSS:FirstOutgoing 19 311
-newdef ScalarSS:SecondOutgoing 19 -311
-newdef ScalarSS:Coupling 19 2540
-newdef ScalarSS:MaxWeight 19 1.1
-newdef ScalarSS:Incoming 20 9000211
-newdef ScalarSS:FirstOutgoing 20 321
-newdef ScalarSS:SecondOutgoing 20 -311
-newdef ScalarSS:Coupling 20 3590
-newdef ScalarSS:MaxWeight 20 1.1
-newdef ScalarSS:Incoming 21 10111
-newdef ScalarSS:FirstOutgoing 21 221
-newdef ScalarSS:SecondOutgoing 21 111
-newdef ScalarSS:Coupling 21 1357
-newdef ScalarSS:MaxWeight 21 1.09914
-newdef ScalarSS:Incoming 22 10211
-newdef ScalarSS:FirstOutgoing 22 221
-newdef ScalarSS:SecondOutgoing 22 211
-newdef ScalarSS:Coupling 22 1357
-newdef ScalarSS:MaxWeight 22 1.09815
-newdef ScalarSS:Incoming 23 10111
-newdef ScalarSS:FirstOutgoing 23 331
-newdef ScalarSS:SecondOutgoing 23 111
-newdef ScalarSS:Coupling 23 995
-newdef ScalarSS:MaxWeight 23 1.13279
-newdef ScalarSS:Incoming 24 10211
-newdef ScalarSS:FirstOutgoing 24 331
-newdef ScalarSS:SecondOutgoing 24 211
-newdef ScalarSS:Coupling 24 995
-newdef ScalarSS:MaxWeight 24 1.13026
-newdef ScalarSS:Incoming 25 10111
-newdef ScalarSS:FirstOutgoing 25 321
-newdef ScalarSS:SecondOutgoing 25 -321
-newdef ScalarSS:Coupling 25 950
-newdef ScalarSS:MaxWeight 25 1.10325
-newdef ScalarSS:Incoming 26 10111
-newdef ScalarSS:FirstOutgoing 26 311
-newdef ScalarSS:SecondOutgoing 26 -311
-newdef ScalarSS:Coupling 26 950
-newdef ScalarSS:MaxWeight 26 1.09597
-newdef ScalarSS:Incoming 27 10211
-newdef ScalarSS:FirstOutgoing 27 321
-newdef ScalarSS:SecondOutgoing 27 -311
-newdef ScalarSS:Coupling 27 1344
-newdef ScalarSS:MaxWeight 27 1.10042
-newdef ScalarSS:Incoming 28 10221
-newdef ScalarSS:FirstOutgoing 28 221
-newdef ScalarSS:SecondOutgoing 28 221
-newdef ScalarSS:Coupling 28 235
-newdef ScalarSS:MaxWeight 28 1.26383
-newdef ScalarSS:Incoming 29 10331
-newdef ScalarSS:FirstOutgoing 29 221
-newdef ScalarSS:SecondOutgoing 29 221
-newdef ScalarSS:Coupling 29 2189
-newdef ScalarSS:MaxWeight 29 5.4
-newdef ScalarSS:Incoming 30 10221
-newdef ScalarSS:FirstOutgoing 30 9000221
-newdef ScalarSS:SecondOutgoing 30 9000221
-newdef ScalarSS:Coupling 30 21460
-newdef ScalarSS:MaxWeight 30 7.54408
-newdef ScalarSS:Incoming 31 10311
-newdef ScalarSS:FirstOutgoing 31 311
-newdef ScalarSS:SecondOutgoing 31 111
-newdef ScalarSS:Coupling 31 2837
-newdef ScalarSS:MaxWeight 31 1.1139
-newdef ScalarSS:Incoming 32 10311
-newdef ScalarSS:FirstOutgoing 32 321
-newdef ScalarSS:SecondOutgoing 32 -211
-newdef ScalarSS:Coupling 32 4000
-newdef ScalarSS:MaxWeight 32 1.1087
-newdef ScalarSS:Incoming 33 10321
-newdef ScalarSS:FirstOutgoing 33 321
-newdef ScalarSS:SecondOutgoing 33 111
-newdef ScalarSS:Coupling 33 2837
-newdef ScalarSS:MaxWeight 33 1.1165
-newdef ScalarSS:Incoming 34 10321
-newdef ScalarSS:FirstOutgoing 34 311
-newdef ScalarSS:SecondOutgoing 34 211
-newdef ScalarSS:Coupling 34 4000
-newdef ScalarSS:MaxWeight 34 1.10612
-newdef ScalarSS:Incoming 35 10411
-newdef ScalarSS:FirstOutgoing 35 411
-newdef ScalarSS:SecondOutgoing 35 111
-newdef ScalarSS:Coupling 35 5472
-newdef ScalarSS:MaxWeight 35 1.09982
-newdef ScalarSS:Incoming 36 10411
-newdef ScalarSS:FirstOutgoing 36 421
-newdef ScalarSS:SecondOutgoing 36 211
-newdef ScalarSS:Coupling 36 7714
-newdef ScalarSS:MaxWeight 36 1.09992
-newdef ScalarSS:Incoming 37 10421
-newdef ScalarSS:FirstOutgoing 37 421
-newdef ScalarSS:SecondOutgoing 37 111
-newdef ScalarSS:Coupling 37 5447
-newdef ScalarSS:MaxWeight 37 1.09983
-newdef ScalarSS:Incoming 38 10421
-newdef ScalarSS:FirstOutgoing 38 411
-newdef ScalarSS:SecondOutgoing 38 -211
-newdef ScalarSS:Coupling 38 7818
-newdef ScalarSS:MaxWeight 38 1.1194
-newdef ScalarSS:Incoming 39 10511
-newdef ScalarSS:FirstOutgoing 39 511
-newdef ScalarSS:SecondOutgoing 39 111
-newdef ScalarSS:Coupling 39 9698
-newdef ScalarSS:MaxWeight 39 1.10058
-newdef ScalarSS:Incoming 40 10511
-newdef ScalarSS:FirstOutgoing 40 521
-newdef ScalarSS:SecondOutgoing 40 -211
-newdef ScalarSS:Coupling 40 13710
-newdef ScalarSS:MaxWeight 40 1.09697
-newdef ScalarSS:Incoming 41 10521
-newdef ScalarSS:FirstOutgoing 41 521
-newdef ScalarSS:SecondOutgoing 41 111
-newdef ScalarSS:Coupling 41 9698
-newdef ScalarSS:MaxWeight 41 1.10162
-newdef ScalarSS:Incoming 42 10521
-newdef ScalarSS:FirstOutgoing 42 511
-newdef ScalarSS:SecondOutgoing 42 211
-newdef ScalarSS:Coupling 42 13710
-newdef ScalarSS:MaxWeight 42 1.09592
-newdef ScalarSS:Incoming 43 100311
-newdef ScalarSS:FirstOutgoing 43 10311
-newdef ScalarSS:SecondOutgoing 43 111
-newdef ScalarSS:Coupling 43 6595
-newdef ScalarSS:MaxWeight 43 2.13753
-newdef ScalarSS:Incoming 44 100311
-newdef ScalarSS:FirstOutgoing 44 10321
-newdef ScalarSS:SecondOutgoing 44 -211
-newdef ScalarSS:Coupling 44 9445
-newdef ScalarSS:MaxWeight 44 2.13275
-newdef ScalarSS:Incoming 45 100321
-newdef ScalarSS:FirstOutgoing 45 10321
-newdef ScalarSS:SecondOutgoing 45 111
-newdef ScalarSS:Coupling 45 6595
-newdef ScalarSS:MaxWeight 45 2.13257
-newdef ScalarSS:Incoming 46 100321
-newdef ScalarSS:FirstOutgoing 46 10311
-newdef ScalarSS:SecondOutgoing 46 211
-newdef ScalarSS:Coupling 46 9445
-newdef ScalarSS:MaxWeight 46 2.13815
-newdef ScalarSS:Incoming 47 10431
-newdef ScalarSS:FirstOutgoing 47 431
-newdef ScalarSS:SecondOutgoing 47 111
-newdef ScalarSS:Coupling 47 103
-newdef ScalarSS:MaxWeight 47 1.10901
-newdef ScalarSS:Incoming 48 10531
-newdef ScalarSS:FirstOutgoing 48 531
-newdef ScalarSS:SecondOutgoing 48 111
-newdef ScalarSS:Coupling 48 8314
-newdef ScalarSS:MaxWeight 48 0.664961
-newdef ScalarSS:Incoming 49 100221
-newdef ScalarSS:FirstOutgoing 49 9000111
-newdef ScalarSS:SecondOutgoing 49 111
-newdef ScalarSS:Coupling 49 2057
-newdef ScalarSS:MaxWeight 49 1.89242
-newdef ScalarSS:Incoming 50 100221
-newdef ScalarSS:FirstOutgoing 50 9000211
-newdef ScalarSS:SecondOutgoing 50 -211
-newdef ScalarSS:Coupling 50 2057
-newdef ScalarSS:MaxWeight 50 1.91997
-newdef ScalarSS:Incoming 51 9020221
-newdef ScalarSS:FirstOutgoing 51 9000111
-newdef ScalarSS:SecondOutgoing 51 111
-newdef ScalarSS:Coupling 51 1470
-newdef ScalarSS:MaxWeight 51 1.85695
-newdef ScalarSS:Incoming 52 9020221
-newdef ScalarSS:FirstOutgoing 52 9000211
-newdef ScalarSS:SecondOutgoing 52 -211
-newdef ScalarSS:Coupling 52 1470
-newdef ScalarSS:MaxWeight 52 1.89707
-newdef ScalarSS:Incoming 53 9020221
-newdef ScalarSS:FirstOutgoing 53 221
-newdef ScalarSS:SecondOutgoing 53 9000221
-newdef ScalarSS:Coupling 53 4051
-newdef ScalarSS:MaxWeight 53 1.76697
-newdef ScalarSS:Incoming 54 100221
-newdef ScalarSS:FirstOutgoing 54 9000221
-newdef ScalarSS:SecondOutgoing 54 221
-newdef ScalarSS:Coupling 54 4316
-newdef ScalarSS:MaxWeight 54 1.75782
-newdef ScalarSS:Incoming 55 10441
-newdef ScalarSS:FirstOutgoing 55 321
-newdef ScalarSS:SecondOutgoing 55 -321
-newdef ScalarSS:Coupling 55 104
-newdef ScalarSS:MaxWeight 55 1.18153
-newdef ScalarSS:Incoming 56 10441
-newdef ScalarSS:FirstOutgoing 56 311
-newdef ScalarSS:SecondOutgoing 56 -311
-newdef ScalarSS:Coupling 56 104
-newdef ScalarSS:MaxWeight 56 1.18066
-newdef ScalarSS:Incoming 57 10441
-newdef ScalarSS:FirstOutgoing 57 211
-newdef ScalarSS:SecondOutgoing 57 -211
-newdef ScalarSS:Coupling 57 93
-newdef ScalarSS:MaxWeight 57 1.10662
-newdef ScalarSS:Incoming 58 10441
-newdef ScalarSS:FirstOutgoing 58 111
-newdef ScalarSS:SecondOutgoing 58 111
-newdef ScalarSS:Coupling 58 66
-newdef ScalarSS:MaxWeight 58 1.11492
-newdef ScalarSS:Incoming 59 10441
-newdef ScalarSS:FirstOutgoing 59 221
-newdef ScalarSS:SecondOutgoing 59 221
-newdef ScalarSS:Coupling 59 64
-newdef ScalarSS:MaxWeight 59 1.17978
-newdef ScalarSS:Incoming 60 9030221
-newdef ScalarSS:FirstOutgoing 60 211
-newdef ScalarSS:SecondOutgoing 60 -211
-newdef ScalarSS:Coupling 60 1398
-newdef ScalarSS:MaxWeight 60 1.09972
-newdef ScalarSS:Incoming 61 9030221
-newdef ScalarSS:FirstOutgoing 61 111
-newdef ScalarSS:SecondOutgoing 61 111
-newdef ScalarSS:Coupling 61 989
-newdef ScalarSS:MaxWeight 61 1.10202
-newdef ScalarSS:Incoming 62 9030221
-newdef ScalarSS:FirstOutgoing 62 9000221
-newdef ScalarSS:SecondOutgoing 62 9000221
-newdef ScalarSS:Coupling 62 6079
-newdef ScalarSS:MaxWeight 62 7.35565
-newdef ScalarSS:Incoming 63 9030221
-newdef ScalarSS:FirstOutgoing 63 221
-newdef ScalarSS:SecondOutgoing 63 221
-newdef ScalarSS:Coupling 63 809
-newdef ScalarSS:MaxWeight 63 1.12039
-newdef ScalarSS:Incoming 64 9030221
-newdef ScalarSS:FirstOutgoing 64 221
-newdef ScalarSS:SecondOutgoing 64 331
-newdef ScalarSS:Coupling 64 2844
-newdef ScalarSS:MaxWeight 64 6.5
-newdef ScalarSS:Incoming 65 9030221
-newdef ScalarSS:FirstOutgoing 65 321
-newdef ScalarSS:SecondOutgoing 65 -321
-newdef ScalarSS:Coupling 65 686
-newdef ScalarSS:MaxWeight 65 1.1015
-newdef ScalarSS:Incoming 66 9030221
-newdef ScalarSS:FirstOutgoing 66 311
-newdef ScalarSS:SecondOutgoing 66 -311
-newdef ScalarSS:Coupling 66 686
-newdef ScalarSS:MaxWeight 66 1.09478
-newdef ScalarSS:Incoming 67 9030221
-newdef ScalarSS:FirstOutgoing 67 100111
-newdef ScalarSS:SecondOutgoing 67 111
-newdef ScalarSS:Coupling 67 2615
-newdef ScalarSS:MaxWeight 67 2.28089
-newdef ScalarSS:Incoming 68 9030221
-newdef ScalarSS:FirstOutgoing 68 100211
-newdef ScalarSS:SecondOutgoing 68 -211
-newdef ScalarSS:Coupling 68 2615
-newdef ScalarSS:MaxWeight 68 2.23395
-newdef ScalarSS:Incoming 69 9000311
-newdef ScalarSS:FirstOutgoing 69 311
-newdef ScalarSS:SecondOutgoing 69 111
-newdef ScalarSS:Coupling 69 3834
-newdef ScalarSS:MaxWeight 69 1.10384
-newdef ScalarSS:Incoming 70 9000311
-newdef ScalarSS:FirstOutgoing 70 321
-newdef ScalarSS:SecondOutgoing 70 -211
-newdef ScalarSS:Coupling 70 5406
-newdef ScalarSS:MaxWeight 70 1.10171
-newdef ScalarSS:Incoming 71 9000321
-newdef ScalarSS:FirstOutgoing 71 321
-newdef ScalarSS:SecondOutgoing 71 111
-newdef ScalarSS:Coupling 71 3834
-newdef ScalarSS:MaxWeight 71 1.11557
-newdef ScalarSS:Incoming 72 9000321
-newdef ScalarSS:FirstOutgoing 72 311
-newdef ScalarSS:SecondOutgoing 72 211
-newdef ScalarSS:Coupling 72 5406
-newdef ScalarSS:MaxWeight 72 1.08994
-newdef ScalarSS:Incoming 73 10441
-newdef ScalarSS:FirstOutgoing 73 10321
-newdef ScalarSS:SecondOutgoing 73 -10321
-newdef ScalarSS:Coupling 73 104
-newdef ScalarSS:MaxWeight 73 1.53966
-newdef ScalarSS:Incoming 74 10441
-newdef ScalarSS:FirstOutgoing 74 10311
-newdef ScalarSS:SecondOutgoing 74 -10311
-newdef ScalarSS:Coupling 74 104
-newdef ScalarSS:MaxWeight 74 1.50609
-newdef ScalarSS:Incoming 75 10531
-newdef ScalarSS:FirstOutgoing 75 511
-newdef ScalarSS:SecondOutgoing 75 -311
-newdef ScalarSS:Coupling 75 12170
-newdef ScalarSS:MaxWeight 75 1.07391
-newdef ScalarSS:Incoming 76 10531
-newdef ScalarSS:FirstOutgoing 76 521
-newdef ScalarSS:SecondOutgoing 76 -321
-newdef ScalarSS:Coupling 76 12170
-newdef ScalarSS:MaxWeight 76 1.1278
-newdef ScalarSS:Incoming 77 10441
-newdef ScalarSS:FirstOutgoing 77 9010221
-newdef ScalarSS:SecondOutgoing 77 9010221
-newdef ScalarSS:Coupling 77 84
-newdef ScalarSS:MaxWeight 77 1.31568
+do ScalarSS:SetUpDecayMode 9010221 111 111 1660 1.1
+do ScalarSS:SetUpDecayMode 9010221 211 -211 2350 1.1
+do ScalarSS:SetUpDecayMode 9010221 321 -321 1020 1.1
+do ScalarSS:SetUpDecayMode 9010221 311 -311 1020 1.1
+do ScalarSS:SetUpDecayMode 10221 111 111 745 1.18096
+do ScalarSS:SetUpDecayMode 10221 211 -211 1054 1.18029
+do ScalarSS:SetUpDecayMode 10221 100111 111 5027 2.3846
+do ScalarSS:SetUpDecayMode 10221 100211 -211 5027 2.30756
+do ScalarSS:SetUpDecayMode 10221 321 -321 886 1.19989
+do ScalarSS:SetUpDecayMode 10221 311 -311 886 1.19012
+do ScalarSS:SetUpDecayMode 10331 111 111 503 1.1012
+do ScalarSS:SetUpDecayMode 10331 211 -211 711 1.09915
+do ScalarSS:SetUpDecayMode 10331 321 -321 2096 1.05631
+do ScalarSS:SetUpDecayMode 10331 311 -311 2096 1.05209
+do ScalarSS:SetUpDecayMode 9000221 111 111 3654 1.09971
+do ScalarSS:SetUpDecayMode 9000221 211 -211 5178 1.09997
+do ScalarSS:SetUpDecayMode 9000111 221 111 3330 1.10192
+do ScalarSS:SetUpDecayMode 9000211 221 211 3330 1.10212
+do ScalarSS:SetUpDecayMode 9000111 321 -321 2540 1.1
+do ScalarSS:SetUpDecayMode 9000111 311 -311 2540 1.1
+do ScalarSS:SetUpDecayMode 9000211 321 -311 3590 1.1
+do ScalarSS:SetUpDecayMode 10111 221 111 1357 1.09914
+do ScalarSS:SetUpDecayMode 10211 221 211 1357 1.09815
+do ScalarSS:SetUpDecayMode 10111 331 111 995 1.13279
+do ScalarSS:SetUpDecayMode 10211 331 211 995 1.13026
+do ScalarSS:SetUpDecayMode 10111 321 -321 950 1.10325
+do ScalarSS:SetUpDecayMode 10111 311 -311 950 1.09597
+do ScalarSS:SetUpDecayMode 10211 321 -311 1344 1.10042
+do ScalarSS:SetUpDecayMode 10221 221 221 235 1.26383
+do ScalarSS:SetUpDecayMode 10331 221 221 2189 5.4
+do ScalarSS:SetUpDecayMode 10221 9000221 9000221 21460 7.54408
+do ScalarSS:SetUpDecayMode 10311 311 111 2837 1.1139
+do ScalarSS:SetUpDecayMode 10311 321 -211 4000 1.1087
+do ScalarSS:SetUpDecayMode 10321 321 111 2837 1.1165
+do ScalarSS:SetUpDecayMode 10321 311 211 4000 1.10612
+do ScalarSS:SetUpDecayMode 10411 411 111 5472 1.09982
+do ScalarSS:SetUpDecayMode 10411 421 211 7714 1.09992
+do ScalarSS:SetUpDecayMode 10421 421 111 5447 1.09983
+do ScalarSS:SetUpDecayMode 10421 411 -211 7818 1.1194
+do ScalarSS:SetUpDecayMode 10511 511 111 9698 1.10058
+do ScalarSS:SetUpDecayMode 10511 521 -211 13710 1.09697
+do ScalarSS:SetUpDecayMode 10521 521 111 9698 1.10162
+do ScalarSS:SetUpDecayMode 10521 511 211 13710 1.09592
+do ScalarSS:SetUpDecayMode 100311 10311 111 6595 2.13753
+do ScalarSS:SetUpDecayMode 100311 10321 -211 9445 2.13275
+do ScalarSS:SetUpDecayMode 100321 10321 111 6595 2.13257
+do ScalarSS:SetUpDecayMode 100321 10311 211 9445 2.13815
+do ScalarSS:SetUpDecayMode 10431 431 111 103 1.10901
+do ScalarSS:SetUpDecayMode 10531 531 111 8314 0.664961
+do ScalarSS:SetUpDecayMode 100221 9000111 111 2057 1.89242
+do ScalarSS:SetUpDecayMode 100221 9000211 -211 2057 1.91997
+do ScalarSS:SetUpDecayMode 9020221 9000111 111 1470 1.85695
+do ScalarSS:SetUpDecayMode 9020221 9000211 -211 1470 1.89707
+do ScalarSS:SetUpDecayMode 9020221 221 9000221 4051 1.76697
+do ScalarSS:SetUpDecayMode 100221 9000221 221 4316 1.75782
+do ScalarSS:SetUpDecayMode 10441 321 -321 104 1.18153
+do ScalarSS:SetUpDecayMode 10441 311 -311 104 1.18066
+do ScalarSS:SetUpDecayMode 10441 211 -211 93 1.10662
+do ScalarSS:SetUpDecayMode 10441 111 111 66 1.11492
+do ScalarSS:SetUpDecayMode 10441 221 221 64 1.17978
+do ScalarSS:SetUpDecayMode 9030221 211 -211 1398 1.09972
+do ScalarSS:SetUpDecayMode 9030221 111 111 989 1.10202
+do ScalarSS:SetUpDecayMode 9030221 9000221 9000221 6079 7.35565
+do ScalarSS:SetUpDecayMode 9030221 221 221 809 1.12039
+do ScalarSS:SetUpDecayMode 9030221 221 331 2844 6.5
+do ScalarSS:SetUpDecayMode 9030221 321 -321 686 1.1015
+do ScalarSS:SetUpDecayMode 9030221 311 -311 686 1.09478
+do ScalarSS:SetUpDecayMode 9030221 100111 111 2615 2.28089
+do ScalarSS:SetUpDecayMode 9030221 100211 -211 2615 2.23395
+do ScalarSS:SetUpDecayMode 9000311 311 111 3834 1.10384
+do ScalarSS:SetUpDecayMode 9000311 321 -211 5406 1.10171
+do ScalarSS:SetUpDecayMode 9000321 321 111 3834 1.11557
+do ScalarSS:SetUpDecayMode 9000321 311 211 5406 1.08994
+do ScalarSS:SetUpDecayMode 10441 10321 -10321 104 1.53966
+do ScalarSS:SetUpDecayMode 10441 10311 -10311 104 1.50609
+do ScalarSS:SetUpDecayMode 10531 511 -311 12170 1.07391
+do ScalarSS:SetUpDecayMode 10531 521 -321 12170 1.1278
+do ScalarSS:SetUpDecayMode 10441 9010221 9010221 84 1.31568
 #
 create Herwig::PScalarPScalarVectorDecayer  PPVDecayer
 newdef PPVDecayer:Iteration 1
