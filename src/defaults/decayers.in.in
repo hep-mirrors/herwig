@@ -4710,347 +4710,7 @@ newdef ZDecayer:Points 10000
 newdef ZDecayer:GenerateIntermediates 0
 newdef ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 #
-create Herwig::PVectorMesonVectorPScalarDecayer  PVectorVP
-newdef PVectorVP:Iteration 1
-newdef PVectorVP:Ntry 2500
-newdef PVectorVP:Points 10000
-newdef PVectorVP:GenerateIntermediates 0
-newdef PVectorVP:Incoming 0 10333
-newdef PVectorVP:OutgoingVector 0 313
-newdef PVectorVP:OutgoingPScalar 0 -311
-newdef PVectorVP:Coupling 0 4.889
-newdef PVectorVP:MaxWeight 0 2.44776
-newdef PVectorVP:Incoming 1 10333
-newdef PVectorVP:OutgoingVector 1 323
-newdef PVectorVP:OutgoingPScalar 1 -321
-newdef PVectorVP:Coupling 1 4.156
-newdef PVectorVP:MaxWeight 1 2.51169
-newdef PVectorVP:Incoming 2 10223
-newdef PVectorVP:OutgoingVector 2 113
-newdef PVectorVP:OutgoingPScalar 2 111
-newdef PVectorVP:Coupling 2 4.411
-newdef PVectorVP:MaxWeight 2 3.29541
-newdef PVectorVP:Incoming 3 10223
-newdef PVectorVP:OutgoingVector 3 -213
-newdef PVectorVP:OutgoingPScalar 3 211
-newdef PVectorVP:Coupling 3 4.411
-newdef PVectorVP:MaxWeight 3 3.32547
-newdef PVectorVP:Incoming 4 10113
-newdef PVectorVP:OutgoingVector 4 223
-newdef PVectorVP:OutgoingPScalar 4 111
-newdef PVectorVP:Coupling 4 3.862
-newdef PVectorVP:MaxWeight 4 5.9555
-newdef PVectorVP:Incoming 5 10213
-newdef PVectorVP:OutgoingVector 5 223
-newdef PVectorVP:OutgoingPScalar 5 211
-newdef PVectorVP:Coupling 5 3.862
-newdef PVectorVP:MaxWeight 5 5.6102
-newdef PVectorVP:Incoming 6 10213
-newdef PVectorVP:OutgoingVector 6 22
-newdef PVectorVP:OutgoingPScalar 6 211
-newdef PVectorVP:Coupling 6 0.195
-newdef PVectorVP:MaxWeight 6 1.58726
-newdef PVectorVP:Incoming 7 10433
-newdef PVectorVP:OutgoingVector 7 413
-newdef PVectorVP:OutgoingPScalar 7 311
-newdef PVectorVP:Coupling 7 0.161
-newdef PVectorVP:MaxWeight 7 2.09271
-newdef PVectorVP:Incoming 8 10433
-newdef PVectorVP:OutgoingVector 8 423
-newdef PVectorVP:OutgoingPScalar 8 321
-newdef PVectorVP:Coupling 8 0.161
-newdef PVectorVP:MaxWeight 8 1.62303
-newdef PVectorVP:Incoming 9 20533
-newdef PVectorVP:OutgoingVector 9 513
-newdef PVectorVP:OutgoingPScalar 9 -311
-newdef PVectorVP:Coupling 9 0.389
-newdef PVectorVP:MaxWeight 9 1.57892
-newdef PVectorVP:Incoming 10 20533
-newdef PVectorVP:OutgoingVector 10 523
-newdef PVectorVP:OutgoingPScalar 10 -321
-newdef PVectorVP:Coupling 10 0.389
-newdef PVectorVP:MaxWeight 10 1.65181
-newdef PVectorVP:Incoming 11 10323
-newdef PVectorVP:OutgoingVector 11 213
-newdef PVectorVP:OutgoingPScalar 11 311
-newdef PVectorVP:Coupling 11 4.98
-newdef PVectorVP:MaxWeight 11 2.21683
-newdef PVectorVP:Incoming 12 10323
-newdef PVectorVP:OutgoingVector 12 113
-newdef PVectorVP:OutgoingPScalar 12 321
-newdef PVectorVP:Coupling 12 3.4
-newdef PVectorVP:MaxWeight 12 2.22014
-newdef PVectorVP:Incoming 13 10313
-newdef PVectorVP:OutgoingVector 13 -213
-newdef PVectorVP:OutgoingPScalar 13 321
-newdef PVectorVP:Coupling 13 4.87
-newdef PVectorVP:MaxWeight 13 2.21695
-newdef PVectorVP:Incoming 14 10313
-newdef PVectorVP:OutgoingVector 14 113
-newdef PVectorVP:OutgoingPScalar 14 311
-newdef PVectorVP:Coupling 14 3.55
-newdef PVectorVP:MaxWeight 14 2.21985
-newdef PVectorVP:Incoming 15 20323
-newdef PVectorVP:OutgoingVector 15 213
-newdef PVectorVP:OutgoingPScalar 15 311
-newdef PVectorVP:Coupling 15 0.97
-newdef PVectorVP:MaxWeight 15 2.5873
-newdef PVectorVP:Incoming 16 20323
-newdef PVectorVP:OutgoingVector 16 113
-newdef PVectorVP:OutgoingPScalar 16 321
-newdef PVectorVP:Coupling 16 0.69
-newdef PVectorVP:MaxWeight 16 2.67905
-newdef PVectorVP:Incoming 17 20313
-newdef PVectorVP:OutgoingVector 17 -213
-newdef PVectorVP:OutgoingPScalar 17 321
-newdef PVectorVP:Coupling 17 0.97
-newdef PVectorVP:MaxWeight 17 2.62517
-newdef PVectorVP:Incoming 18 20313
-newdef PVectorVP:OutgoingVector 18 113
-newdef PVectorVP:OutgoingPScalar 18 311
-newdef PVectorVP:Coupling 18 0.707
-newdef PVectorVP:MaxWeight 18 2.67986
-newdef PVectorVP:Incoming 19 10323
-newdef PVectorVP:OutgoingVector 19 223
-newdef PVectorVP:OutgoingPScalar 19 321
-newdef PVectorVP:Coupling 19 4.76
-newdef PVectorVP:MaxWeight 19 3.5592
-newdef PVectorVP:Incoming 20 10313
-newdef PVectorVP:OutgoingVector 20 223
-newdef PVectorVP:OutgoingPScalar 20 311
-newdef PVectorVP:Coupling 20 6
-newdef PVectorVP:MaxWeight 20 3.13577
-newdef PVectorVP:Incoming 21 20323
-newdef PVectorVP:OutgoingVector 21 223
-newdef PVectorVP:OutgoingPScalar 21 321
-newdef PVectorVP:Coupling 21 0.6
-newdef PVectorVP:MaxWeight 21 5.60103
-newdef PVectorVP:Incoming 22 20313
-newdef PVectorVP:OutgoingVector 22 223
-newdef PVectorVP:OutgoingPScalar 22 311
-newdef PVectorVP:Coupling 22 0.6
-newdef PVectorVP:MaxWeight 22 5.65356
-newdef PVectorVP:Incoming 23 10323
-newdef PVectorVP:OutgoingVector 23 313
-newdef PVectorVP:OutgoingPScalar 23 211
-newdef PVectorVP:Coupling 23 0.941
-newdef PVectorVP:MaxWeight 23 3.34513
-newdef PVectorVP:Incoming 24 10323
-newdef PVectorVP:OutgoingVector 24 323
-newdef PVectorVP:OutgoingPScalar 24 111
-newdef PVectorVP:Coupling 24 0.656
-newdef PVectorVP:MaxWeight 24 3.44165
-newdef PVectorVP:Incoming 25 10313
-newdef PVectorVP:OutgoingVector 25 323
-newdef PVectorVP:OutgoingPScalar 25 -211
-newdef PVectorVP:Coupling 25 0.932
-newdef PVectorVP:MaxWeight 25 3.52483
-newdef PVectorVP:Incoming 26 10313
-newdef PVectorVP:OutgoingVector 26 313
-newdef PVectorVP:OutgoingPScalar 26 111
-newdef PVectorVP:Coupling 26 0.658
-newdef PVectorVP:MaxWeight 26 3.35878
-newdef PVectorVP:Incoming 27 20323
-newdef PVectorVP:OutgoingVector 27 313
-newdef PVectorVP:OutgoingPScalar 27 211
-newdef PVectorVP:Coupling 27 2.845
-newdef PVectorVP:MaxWeight 27 6.20364
-newdef PVectorVP:Incoming 28 20323
-newdef PVectorVP:OutgoingVector 28 323
-newdef PVectorVP:OutgoingPScalar 28 111
-newdef PVectorVP:Coupling 28 1.99
-newdef PVectorVP:MaxWeight 28 7.14694
-newdef PVectorVP:Incoming 29 20313
-newdef PVectorVP:OutgoingVector 29 323
-newdef PVectorVP:OutgoingPScalar 29 -211
-newdef PVectorVP:Coupling 29 2.84
-newdef PVectorVP:MaxWeight 29 6.18289
-newdef PVectorVP:Incoming 30 20313
-newdef PVectorVP:OutgoingVector 30 313
-newdef PVectorVP:OutgoingPScalar 30 111
-newdef PVectorVP:Coupling 30 2
-newdef PVectorVP:MaxWeight 30 6.27914
-newdef PVectorVP:Incoming 31 10423
-newdef PVectorVP:OutgoingVector 31 413
-newdef PVectorVP:OutgoingPScalar 31 -211
-newdef PVectorVP:Coupling 31 0.489
-newdef PVectorVP:MaxWeight 31 1.97898
-newdef PVectorVP:Incoming 32 10423
-newdef PVectorVP:OutgoingVector 32 423
-newdef PVectorVP:OutgoingPScalar 32 111
-newdef PVectorVP:Coupling 32 0.347
-newdef PVectorVP:MaxWeight 32 1.76435
-newdef PVectorVP:Incoming 33 10413
-newdef PVectorVP:OutgoingVector 33 423
-newdef PVectorVP:OutgoingPScalar 33 211
-newdef PVectorVP:Coupling 33 0.542
-newdef PVectorVP:MaxWeight 33 1.75368
-newdef PVectorVP:Incoming 34 10413
-newdef PVectorVP:OutgoingVector 34 413
-newdef PVectorVP:OutgoingPScalar 34 111
-newdef PVectorVP:Coupling 34 0.383
-newdef PVectorVP:MaxWeight 34 2.00289
-newdef PVectorVP:Incoming 35 20423
-newdef PVectorVP:OutgoingVector 35 413
-newdef PVectorVP:OutgoingPScalar 35 -211
-newdef PVectorVP:Coupling 35 1.933
-newdef PVectorVP:MaxWeight 35 3.82352
-newdef PVectorVP:Incoming 36 20423
-newdef PVectorVP:OutgoingVector 36 423
-newdef PVectorVP:OutgoingPScalar 36 111
-newdef PVectorVP:Coupling 36 1.367
-newdef PVectorVP:MaxWeight 36 1.81635
-newdef PVectorVP:Incoming 37 20413
-newdef PVectorVP:OutgoingVector 37 423
-newdef PVectorVP:OutgoingPScalar 37 211
-newdef PVectorVP:Coupling 37 1.926
-newdef PVectorVP:MaxWeight 37 1.91055
-newdef PVectorVP:Incoming 38 20413
-newdef PVectorVP:OutgoingVector 38 413
-newdef PVectorVP:OutgoingPScalar 38 111
-newdef PVectorVP:Coupling 38 1.367
-newdef PVectorVP:MaxWeight 38 2.01247
-newdef PVectorVP:Incoming 39 10523
-newdef PVectorVP:OutgoingVector 39 513
-newdef PVectorVP:OutgoingPScalar 39 211
-newdef PVectorVP:Coupling 39 0.13
-newdef PVectorVP:MaxWeight 39 1.5882
-newdef PVectorVP:Incoming 40 10523
-newdef PVectorVP:OutgoingVector 40 523
-newdef PVectorVP:OutgoingPScalar 40 111
-newdef PVectorVP:Coupling 40 0.0924
-newdef PVectorVP:MaxWeight 40 1.61264
-newdef PVectorVP:Incoming 41 10513
-newdef PVectorVP:OutgoingVector 41 523
-newdef PVectorVP:OutgoingPScalar 41 -211
-newdef PVectorVP:Coupling 41 0.13
-newdef PVectorVP:MaxWeight 41 1.58872
-newdef PVectorVP:Incoming 42 10513
-newdef PVectorVP:OutgoingVector 42 513
-newdef PVectorVP:OutgoingPScalar 42 111
-newdef PVectorVP:Coupling 42 0.0924
-newdef PVectorVP:MaxWeight 42 1.61211
-newdef PVectorVP:Incoming 43 20523
-newdef PVectorVP:OutgoingVector 43 513
-newdef PVectorVP:OutgoingPScalar 43 211
-newdef PVectorVP:Coupling 43 0.445
-newdef PVectorVP:MaxWeight 43 1.59926
-newdef PVectorVP:Incoming 44 20523
-newdef PVectorVP:OutgoingVector 44 523
-newdef PVectorVP:OutgoingPScalar 44 111
-newdef PVectorVP:Coupling 44 0.314
-newdef PVectorVP:MaxWeight 44 1.59799
-newdef PVectorVP:Incoming 45 20513
-newdef PVectorVP:OutgoingVector 45 523
-newdef PVectorVP:OutgoingPScalar 45 -211
-newdef PVectorVP:Coupling 45 0.445
-newdef PVectorVP:MaxWeight 45 1.59924
-newdef PVectorVP:Incoming 46 20513
-newdef PVectorVP:OutgoingVector 46 513
-newdef PVectorVP:OutgoingPScalar 46 111
-newdef PVectorVP:Coupling 46 0.314
-newdef PVectorVP:MaxWeight 46 1.59793
-newdef PVectorVP:Incoming 47 20433
-newdef PVectorVP:OutgoingVector 47 433
-newdef PVectorVP:OutgoingPScalar 47 111
-newdef PVectorVP:Coupling 47 0.022
-newdef PVectorVP:MaxWeight 47 1.6163
-newdef PVectorVP:Incoming 48 20433
-newdef PVectorVP:OutgoingVector 48 22
-newdef PVectorVP:OutgoingPScalar 48 431
-newdef PVectorVP:Coupling 48 0.0587
-newdef PVectorVP:MaxWeight 48 1.60079
-newdef PVectorVP:Incoming 49 10533
-newdef PVectorVP:OutgoingVector 49 22
-newdef PVectorVP:OutgoingPScalar 49 531
-newdef PVectorVP:Coupling 49 0.142
-newdef PVectorVP:MaxWeight 49 0.253632
-newdef PVectorVP:Incoming 50 10533
-newdef PVectorVP:OutgoingVector 50 533
-newdef PVectorVP:OutgoingPScalar 50 111
-newdef PVectorVP:Coupling 50 0.0074
-newdef PVectorVP:MaxWeight 50 0.126654
-newdef PVectorVP:Incoming 51 10543
-newdef PVectorVP:OutgoingVector 51 22
-newdef PVectorVP:OutgoingPScalar 51 541
-newdef PVectorVP:Coupling 51 0.0759
-newdef PVectorVP:MaxWeight 51 1.60144
-newdef PVectorVP:Incoming 52 20543
-newdef PVectorVP:OutgoingVector 52 22
-newdef PVectorVP:OutgoingPScalar 52 541
-newdef PVectorVP:Coupling 52 0.175
-newdef PVectorVP:MaxWeight 52 1.60099
-newdef PVectorVP:Incoming 53 10443
-newdef PVectorVP:OutgoingVector 53 22
-newdef PVectorVP:OutgoingPScalar 53 441
-newdef PVectorVP:Coupling 53 0.329
-newdef PVectorVP:MaxWeight 53 3.98776
-newdef PVectorVP:Incoming 54 10553
-newdef PVectorVP:OutgoingVector 54 22
-newdef PVectorVP:OutgoingPScalar 54 551
-newdef PVectorVP:Coupling 54 0.0356
-newdef PVectorVP:MaxWeight 54 0.221701
-newdef PVectorVP:Incoming 55 20213
-newdef PVectorVP:OutgoingVector 55 323
-newdef PVectorVP:OutgoingPScalar 55 -311
-newdef PVectorVP:Coupling 55 3.42
-newdef PVectorVP:MaxWeight 55 3.19968
-newdef PVectorVP:Incoming 56 20213
-newdef PVectorVP:OutgoingVector 56 -313
-newdef PVectorVP:OutgoingPScalar 56 321
-newdef PVectorVP:Coupling 56 3.42
-newdef PVectorVP:MaxWeight 56 3.53218
-newdef PVectorVP:Incoming 57 20113
-newdef PVectorVP:OutgoingVector 57 -323
-newdef PVectorVP:OutgoingPScalar 57 321
-newdef PVectorVP:Coupling 57 3.42
-newdef PVectorVP:MaxWeight 57 3.57566
-newdef PVectorVP:Incoming 58 20113
-newdef PVectorVP:OutgoingVector 58 -313
-newdef PVectorVP:OutgoingPScalar 58 311
-newdef PVectorVP:Coupling 58 3.42
-newdef PVectorVP:MaxWeight 58 3.31095
-newdef PVectorVP:Incoming 59 20113
-newdef PVectorVP:OutgoingVector 59 22
-newdef PVectorVP:OutgoingPScalar 59 111
-newdef PVectorVP:Coupling 59 0.01
-newdef PVectorVP:MaxWeight 59 1.6
-newdef PVectorVP:Incoming 60 20213
-newdef PVectorVP:OutgoingVector 60 22
-newdef PVectorVP:OutgoingPScalar 60 211
-newdef PVectorVP:Coupling 60 0.01
-newdef PVectorVP:MaxWeight 60 1.6
-newdef PVectorVP:Incoming 61 20333
-newdef PVectorVP:OutgoingVector 61 -323
-newdef PVectorVP:OutgoingPScalar 61 321
-newdef PVectorVP:Coupling 61 1.637
-newdef PVectorVP:MaxWeight 61 5.43736
-newdef PVectorVP:Incoming 62 20333
-newdef PVectorVP:OutgoingVector 62 -313
-newdef PVectorVP:OutgoingPScalar 62 311
-newdef PVectorVP:Coupling 62 1.737
-newdef PVectorVP:MaxWeight 62 4.63598
-newdef PVectorVP:Incoming 63 10313
-newdef PVectorVP:OutgoingVector 63 22
-newdef PVectorVP:OutgoingPScalar 63 311
-newdef PVectorVP:Coupling 63 0.119
-newdef PVectorVP:MaxWeight 63 1.6
-newdef PVectorVP:Incoming 64 20313
-newdef PVectorVP:OutgoingVector 64 22
-newdef PVectorVP:OutgoingPScalar 64 311
-newdef PVectorVP:Coupling 64 0.22
-newdef PVectorVP:MaxWeight 64 1.6
-newdef PVectorVP:Incoming 65 10533
-newdef PVectorVP:OutgoingVector 65 513
-newdef PVectorVP:OutgoingPScalar 65 -311
-newdef PVectorVP:Coupling 65 0.0418
-newdef PVectorVP:MaxWeight 65 1.60089
-newdef PVectorVP:Incoming 66 10533
-newdef PVectorVP:OutgoingVector 66 523
-newdef PVectorVP:OutgoingPScalar 66 -321
-newdef PVectorVP:Coupling 66 0.0373
-newdef PVectorVP:MaxWeight 66 1.60358
-#
+
 create Herwig::PScalarLeptonNeutrinoDecayer  PScalarlnu
 newdef PScalarlnu:Iteration 1
 newdef PScalarlnu:Ntry 500
@@ -10322,198 +9982,111 @@ create Herwig::VectorMesonVectorScalarDecayer  VVSDecayer
 newdef VVSDecayer:Iteration 1
 newdef VVSDecayer:Ntry 500
 newdef VVSDecayer:Points 10000
-newdef VVSDecayer:GenerateIntermediates 0
-newdef VVSDecayer:Incoming 0 333
-newdef VVSDecayer:OutgoingVector 0 22
-newdef VVSDecayer:OutgoingScalar 0 9000111
-newdef VVSDecayer:Coupling 0 0.238
-newdef VVSDecayer:MaxWeight 0 9.00936
-newdef VVSDecayer:Incoming 1 333
-newdef VVSDecayer:OutgoingVector 1 22
-newdef VVSDecayer:OutgoingScalar 1 9010221
-newdef VVSDecayer:Coupling 1 0.267
-newdef VVSDecayer:MaxWeight 1 14.2908
-newdef VVSDecayer:Incoming 2 443
-newdef VVSDecayer:OutgoingVector 2 22
-newdef VVSDecayer:OutgoingScalar 2 10331
-newdef VVSDecayer:Coupling 2 0.00207
-newdef VVSDecayer:MaxWeight 2 2.22552
-newdef VVSDecayer:Incoming 3 443
-newdef VVSDecayer:OutgoingVector 3 223
-newdef VVSDecayer:OutgoingScalar 3 10331
-newdef VVSDecayer:Coupling 3 0.00144
-newdef VVSDecayer:MaxWeight 3 8.11845
-newdef VVSDecayer:Incoming 4 443
-newdef VVSDecayer:OutgoingVector 4 333
-newdef VVSDecayer:OutgoingScalar 4 10331
-newdef VVSDecayer:Coupling 4 0.00127
-newdef VVSDecayer:MaxWeight 4 7.04697
-newdef VVSDecayer:Incoming 5 443
-newdef VVSDecayer:OutgoingVector 5 333
-newdef VVSDecayer:OutgoingScalar 5 9010221
-newdef VVSDecayer:Coupling 5 0.00064
-newdef VVSDecayer:MaxWeight 5 5.78346
-newdef VVSDecayer:Incoming 6 443
-newdef VVSDecayer:OutgoingVector 6 223
-newdef VVSDecayer:OutgoingScalar 6 9010221
-newdef VVSDecayer:Coupling 6 0.00044
-newdef VVSDecayer:MaxWeight 6 6.12632
-newdef VVSDecayer:Incoming 7 100553
-newdef VVSDecayer:OutgoingVector 7 22
-newdef VVSDecayer:OutgoingScalar 7 10551
-newdef VVSDecayer:Coupling 7 0.105
-newdef VVSDecayer:MaxWeight 7 1.84492
-newdef VVSDecayer:Incoming 8 200553
-newdef VVSDecayer:OutgoingVector 8 22
-newdef VVSDecayer:OutgoingScalar 8 110551
-newdef VVSDecayer:Coupling 8 0.16
-newdef VVSDecayer:MaxWeight 8 1.95828
-newdef VVSDecayer:Incoming 9 100443
-newdef VVSDecayer:OutgoingVector 9 22
-newdef VVSDecayer:OutgoingScalar 9 10441
-newdef VVSDecayer:Coupling 9 0.258
-newdef VVSDecayer:MaxWeight 9 3.80961
-newdef VVSDecayer:Incoming 10 100443
-newdef VVSDecayer:OutgoingVector 10 22
-newdef VVSDecayer:OutgoingScalar 10 331
-newdef VVSDecayer:Coupling 10 0.0508
-newdef VVSDecayer:MaxWeight 10 1.64121
-newdef VVSDecayer:Incoming 11 100443
-newdef VVSDecayer:OutgoingVector 11 22
-newdef VVSDecayer:OutgoingScalar 11 10331
-newdef VVSDecayer:Coupling 11 0.00068
-newdef VVSDecayer:MaxWeight 11 1.8543
-newdef VVSDecayer:Incoming 12 100443
-newdef VVSDecayer:OutgoingVector 12 333
-newdef VVSDecayer:OutgoingScalar 12 9010221
-newdef VVSDecayer:Coupling 12 0.000509
-newdef VVSDecayer:MaxWeight 12 5.66804
-newdef VVSDecayer:Incoming 13 100213
-newdef VVSDecayer:OutgoingVector 13 213
-newdef VVSDecayer:OutgoingScalar 13 9000221
-newdef VVSDecayer:Coupling 13 5.056
-newdef VVSDecayer:MaxWeight 13 4.95975
-newdef VVSDecayer:Incoming 14 100113
-newdef VVSDecayer:OutgoingVector 14 113
-newdef VVSDecayer:OutgoingScalar 14 9000221
-newdef VVSDecayer:Coupling 14 5.056
-newdef VVSDecayer:MaxWeight 14 5.10698
-newdef VVSDecayer:Incoming 15 443
-newdef VVSDecayer:OutgoingVector 15 22
-newdef VVSDecayer:OutgoingScalar 15 9030221
-newdef VVSDecayer:Coupling 15 0.00114
-newdef VVSDecayer:MaxWeight 15 2.8072
-#
-create Herwig::VectorMesonPVectorPScalarDecayer  VAPDecayer
-newdef VAPDecayer:Iteration 1
-newdef VAPDecayer:Ntry 1500
-newdef VAPDecayer:Points 10000
-newdef VAPDecayer:GenerateIntermediates 0
-newdef VAPDecayer:Incoming 0 443
-newdef VAPDecayer:OutgoingPVector 0 20313
-newdef VAPDecayer:OutgoingPScalar 0 -311
-newdef VAPDecayer:Coupling 0 0.00127
-newdef VAPDecayer:MaxWeight 0 3.57449
-newdef VAPDecayer:Incoming 1 443
-newdef VAPDecayer:OutgoingPVector 1 20323
-newdef VAPDecayer:OutgoingPScalar 1 -321
-newdef VAPDecayer:Coupling 1 0.00127
-newdef VAPDecayer:MaxWeight 1 3.58
-newdef VAPDecayer:Incoming 2 443
-newdef VAPDecayer:OutgoingPVector 2 10213
-newdef VAPDecayer:OutgoingPScalar 2 -211
-newdef VAPDecayer:Coupling 2 0.00106
-newdef VAPDecayer:MaxWeight 2 7.98666
-newdef VAPDecayer:Incoming 3 443
-newdef VAPDecayer:OutgoingPVector 3 10113
-newdef VAPDecayer:OutgoingPScalar 3 111
-newdef VAPDecayer:Coupling 3 0.00106
-newdef VAPDecayer:MaxWeight 3 8.01101
-newdef VAPDecayer:Incoming 4 100443
-newdef VAPDecayer:OutgoingPVector 4 10313
-newdef VAPDecayer:OutgoingPScalar 4 -311
-newdef VAPDecayer:Coupling 4 0.00152
-newdef VAPDecayer:MaxWeight 4 3.70225
-newdef VAPDecayer:Incoming 5 100443
-newdef VAPDecayer:OutgoingPVector 5 10323
-newdef VAPDecayer:OutgoingPScalar 5 -321
-newdef VAPDecayer:Coupling 5 0.00152
-newdef VAPDecayer:MaxWeight 5 4.09967
-newdef VAPDecayer:Incoming 6 100443
-newdef VAPDecayer:OutgoingPVector 6 10213
-newdef VAPDecayer:OutgoingPScalar 6 -211
-newdef VAPDecayer:Coupling 6 0.000694
-newdef VAPDecayer:MaxWeight 6 8.30558
-newdef VAPDecayer:Incoming 7 100443
-newdef VAPDecayer:OutgoingPVector 7 10113
-newdef VAPDecayer:OutgoingPScalar 7 111
-newdef VAPDecayer:Coupling 7 0.000694
-newdef VAPDecayer:MaxWeight 7 8.31092
-newdef VAPDecayer:Incoming 8 30213
-newdef VAPDecayer:OutgoingPVector 8 10223
-newdef VAPDecayer:OutgoingPScalar 8 211
-newdef VAPDecayer:Coupling 8 1.45
-newdef VAPDecayer:MaxWeight 8 2.82326
-newdef VAPDecayer:Incoming 9 30113
-newdef VAPDecayer:OutgoingPVector 9 10223
-newdef VAPDecayer:OutgoingPScalar 9 111
-newdef VAPDecayer:Coupling 9 1.45
-newdef VAPDecayer:MaxWeight 9 2.83643
-newdef VAPDecayer:Incoming 10 30213
-newdef VAPDecayer:OutgoingPVector 10 20213
-newdef VAPDecayer:OutgoingPScalar 10 111
-newdef VAPDecayer:Coupling 10 1.09
-newdef VAPDecayer:MaxWeight 10 2.82168
-newdef VAPDecayer:Incoming 11 30213
-newdef VAPDecayer:OutgoingPVector 11 20113
-newdef VAPDecayer:OutgoingPScalar 11 211
-newdef VAPDecayer:Coupling 11 1.09
-newdef VAPDecayer:MaxWeight 11 2.78114
-newdef VAPDecayer:Incoming 12 30113
-newdef VAPDecayer:OutgoingPVector 12 20213
-newdef VAPDecayer:OutgoingPScalar 12 -211
-newdef VAPDecayer:Coupling 12 1.09
-newdef VAPDecayer:MaxWeight 12 2.79808
-newdef VAPDecayer:Incoming 13 100213
-newdef VAPDecayer:OutgoingPVector 13 10223
-newdef VAPDecayer:OutgoingPScalar 13 211
-newdef VAPDecayer:Coupling 13 1.2
-newdef VAPDecayer:MaxWeight 13 2.81029
-newdef VAPDecayer:Incoming 14 100113
-newdef VAPDecayer:OutgoingPVector 14 10223
-newdef VAPDecayer:OutgoingPScalar 14 111
-newdef VAPDecayer:Coupling 14 1.2
-newdef VAPDecayer:MaxWeight 14 2.85301
-newdef VAPDecayer:Incoming 15 100213
-newdef VAPDecayer:OutgoingPVector 15 20213
-newdef VAPDecayer:OutgoingPScalar 15 111
-newdef VAPDecayer:Coupling 15 1.83
-newdef VAPDecayer:MaxWeight 15 2.96886
-newdef VAPDecayer:Incoming 16 100213
-newdef VAPDecayer:OutgoingPVector 16 20113
-newdef VAPDecayer:OutgoingPScalar 16 211
-newdef VAPDecayer:Coupling 16 1.83
-newdef VAPDecayer:MaxWeight 16 2.92035
-newdef VAPDecayer:Incoming 17 100113
-newdef VAPDecayer:OutgoingPVector 17 20213
-newdef VAPDecayer:OutgoingPScalar 17 -211
-newdef VAPDecayer:Coupling 17 1.83
-newdef VAPDecayer:MaxWeight 17 2.92087
-newdef VAPDecayer:Incoming 18 100223
-newdef VAPDecayer:OutgoingPVector 18 10113
-newdef VAPDecayer:OutgoingPScalar 18 111
-newdef VAPDecayer:Coupling 18 1.659
-newdef VAPDecayer:MaxWeight 18 2.55908
-newdef VAPDecayer:Incoming 19 100223
-newdef VAPDecayer:OutgoingPVector 19 10213
-newdef VAPDecayer:OutgoingPScalar 19 -211
-newdef VAPDecayer:Coupling 19 1.659
-newdef VAPDecayer:MaxWeight 19 2.33324
-newdef VAPDecayer:Incoming 20 100443
-newdef VAPDecayer:OutgoingPVector 20 10443
-newdef VAPDecayer:OutgoingPScalar 20 111
-newdef VAPDecayer:Coupling 20 0.0029
-newdef VAPDecayer:MaxWeight 20 1.86135
+newdef VVSDecayer:GenerateIntermediates 0 
+do VVSDecayer:SetUpDecayMode 333 22 9000111 0.238 9.00936
+do VVSDecayer:SetUpDecayMode 333 22 9010221 0.267 14.2908
+do VVSDecayer:SetUpDecayMode 443 22 10331 0.00207 2.22552
+do VVSDecayer:SetUpDecayMode 443 223 10331 0.00144 8.11845
+do VVSDecayer:SetUpDecayMode 443 333 10331 0.00127 7.04697
+do VVSDecayer:SetUpDecayMode 443 333 9010221 0.00064 5.78346
+do VVSDecayer:SetUpDecayMode 443 223 9010221 0.00044 6.12632
+do VVSDecayer:SetUpDecayMode 100553 22 10551 0.105 1.84492
+do VVSDecayer:SetUpDecayMode 200553 22 110551 0.16 1.95828
+do VVSDecayer:SetUpDecayMode 100443 22 10441 0.258 3.80961
+do VVSDecayer:SetUpDecayMode 100443 22 331 0.0508 1.64121
+do VVSDecayer:SetUpDecayMode 100443 22 10331 0.00068 1.8543
+do VVSDecayer:SetUpDecayMode 100443 333 9010221 0.000509 5.66804
+do VVSDecayer:SetUpDecayMode 100213 213 9000221 5.056 4.95975
+do VVSDecayer:SetUpDecayMode 100113 113 9000221 5.056 5.10698
+do VVSDecayer:SetUpDecayMode 443 22 9030221 0.00114 2.8072
+do VVSDecayer:SetUpDecayMode 443 20313 -311 0.00127 3.57449
+do VVSDecayer:SetUpDecayMode 443 20323 -321 0.00127 3.58
+do VVSDecayer:SetUpDecayMode 443 10213 -211 0.00106 7.98666
+do VVSDecayer:SetUpDecayMode 443 10113 111 0.00106 8.01101
+do VVSDecayer:SetUpDecayMode 100443 10313 -311 0.00152 3.70225
+do VVSDecayer:SetUpDecayMode 100443 10323 -321 0.00152 4.09967
+do VVSDecayer:SetUpDecayMode 100443 10213 -211 0.000694 8.30558
+do VVSDecayer:SetUpDecayMode 100443 10113 111 0.000694 8.31092
+do VVSDecayer:SetUpDecayMode 30213 10223 211 1.45 2.82326
+do VVSDecayer:SetUpDecayMode 30113 10223 111 1.45 2.83643
+do VVSDecayer:SetUpDecayMode 30213 20213 111 1.09 2.82168
+do VVSDecayer:SetUpDecayMode 30213 20113 211 1.09 2.78114
+do VVSDecayer:SetUpDecayMode 30113 20213 -211 1.09 2.79808
+do VVSDecayer:SetUpDecayMode 100213 10223 211 1.2 2.81029
+do VVSDecayer:SetUpDecayMode 100113 10223 111 1.2 2.85301
+do VVSDecayer:SetUpDecayMode 100213 20213 111 1.83 2.96886
+do VVSDecayer:SetUpDecayMode 100213 20113 211 1.83 2.92035
+do VVSDecayer:SetUpDecayMode 100113 20213 -211 1.83 2.92087
+do VVSDecayer:SetUpDecayMode 100223 10113 111 1.659 2.55908
+do VVSDecayer:SetUpDecayMode 100223 10213 -211 1.659 2.33324
+do VVSDecayer:SetUpDecayMode 100443 10443 111 0.0029 1.86135
+do VVSDecayer:SetUpDecayMode 10333 313 -311 4.889 2.44776
+do VVSDecayer:SetUpDecayMode 10333 323 -321 4.156 2.51169
+do VVSDecayer:SetUpDecayMode 10223 113 111 4.411 3.29541
+do VVSDecayer:SetUpDecayMode 10223 -213 211 4.411 3.32547
+do VVSDecayer:SetUpDecayMode 10113 223 111 3.862 5.9555
+do VVSDecayer:SetUpDecayMode 10213 223 211 3.862 5.6102
+do VVSDecayer:SetUpDecayMode 10213 22 211 0.195 1.58726
+do VVSDecayer:SetUpDecayMode 10433 413 311 0.161 2.09271
+do VVSDecayer:SetUpDecayMode 10433 423 321 0.161 1.62303
+do VVSDecayer:SetUpDecayMode 20533 513 -311 0.389 1.57892
+do VVSDecayer:SetUpDecayMode 20533 523 -321 0.389 1.65181
+do VVSDecayer:SetUpDecayMode 10323 213 311 4.98 2.21683
+do VVSDecayer:SetUpDecayMode 10323 113 321 3.4 2.22014
+do VVSDecayer:SetUpDecayMode 10313 -213 321 4.87 2.21695
+do VVSDecayer:SetUpDecayMode 10313 113 311 3.55 2.21985
+do VVSDecayer:SetUpDecayMode 20323 213 311 0.97 2.5873
+do VVSDecayer:SetUpDecayMode 20323 113 321 0.69 2.67905
+do VVSDecayer:SetUpDecayMode 20313 -213 321 0.97 2.62517
+do VVSDecayer:SetUpDecayMode 20313 113 311 0.707 2.67986
+do VVSDecayer:SetUpDecayMode 10323 223 321 4.76 3.5592
+do VVSDecayer:SetUpDecayMode 10313 223 311 6 3.13577
+do VVSDecayer:SetUpDecayMode 20323 223 321 0.6 5.60103
+do VVSDecayer:SetUpDecayMode 20313 223 311 0.6 5.65356
+do VVSDecayer:SetUpDecayMode 10323 313 211 0.941 3.34513
+do VVSDecayer:SetUpDecayMode 10323 323 111 0.656 3.44165
+do VVSDecayer:SetUpDecayMode 10313 323 -211 0.932 3.52483
+do VVSDecayer:SetUpDecayMode 10313 313 111 0.658 3.35878
+do VVSDecayer:SetUpDecayMode 20323 313 211 2.845 6.20364
+do VVSDecayer:SetUpDecayMode 20323 323 111 1.99 7.14694
+do VVSDecayer:SetUpDecayMode 20313 323 -211 2.84 6.18289
+do VVSDecayer:SetUpDecayMode 20313 313 111 2 6.27914
+do VVSDecayer:SetUpDecayMode 10423 413 -211 0.489 1.97898
+do VVSDecayer:SetUpDecayMode 10423 423 111 0.347 1.76435
+do VVSDecayer:SetUpDecayMode 10413 423 211 0.542 1.75368
+do VVSDecayer:SetUpDecayMode 10413 413 111 0.383 2.00289
+do VVSDecayer:SetUpDecayMode 20423 413 -211 1.933 3.82352
+do VVSDecayer:SetUpDecayMode 20423 423 111 1.367 1.81635
+do VVSDecayer:SetUpDecayMode 20413 423 211 1.926 1.91055
+do VVSDecayer:SetUpDecayMode 20413 413 111 1.367 2.01247
+do VVSDecayer:SetUpDecayMode 10523 513 211 0.13 1.5882
+do VVSDecayer:SetUpDecayMode 10523 523 111 0.0924 1.61264
+do VVSDecayer:SetUpDecayMode 10513 523 -211 0.13 1.58872
+do VVSDecayer:SetUpDecayMode 10513 513 111 0.0924 1.61211
+do VVSDecayer:SetUpDecayMode 20523 513 211 0.445 1.59926
+do VVSDecayer:SetUpDecayMode 20523 523 111 0.314 1.59799
+do VVSDecayer:SetUpDecayMode 20513 523 -211 0.445 1.59924
+do VVSDecayer:SetUpDecayMode 20513 513 111 0.314 1.59793
+do VVSDecayer:SetUpDecayMode 20433 433 111 0.022 1.6163
+do VVSDecayer:SetUpDecayMode 20433 22 431 0.0587 1.60079
+do VVSDecayer:SetUpDecayMode 10533 22 531 0.142 0.253632
+do VVSDecayer:SetUpDecayMode 10533 533 111 0.0074 0.126654
+do VVSDecayer:SetUpDecayMode 10543 22 541 0.0759 1.60144
+do VVSDecayer:SetUpDecayMode 20543 22 541 0.175 1.60099
+do VVSDecayer:SetUpDecayMode 10443 22 441 0.329 3.98776
+do VVSDecayer:SetUpDecayMode 10553 22 551 0.0356 0.221701
+do VVSDecayer:SetUpDecayMode 20213 323 -311 3.42 3.19968
+do VVSDecayer:SetUpDecayMode 20213 -313 321 3.42 3.53218
+do VVSDecayer:SetUpDecayMode 20113 -323 321 3.42 3.57566
+do VVSDecayer:SetUpDecayMode 20113 -313 311 3.42 3.31095
+do VVSDecayer:SetUpDecayMode 20113 22 111 0.01 1.6
+do VVSDecayer:SetUpDecayMode 20213 22 211 0.01 1.6
+do VVSDecayer:SetUpDecayMode 20333 -323 321 1.637 5.43736
+do VVSDecayer:SetUpDecayMode 20333 -313 311 1.737 4.63598
+do VVSDecayer:SetUpDecayMode 10313 22 311 0.119 1.6
+do VVSDecayer:SetUpDecayMode 20313 22 311 0.22 1.6
+do VVSDecayer:SetUpDecayMode 10533 513 -311 0.0418 1.60089
+do VVSDecayer:SetUpDecayMode 10533 523 -321 0.0373 1.60358
 #
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 

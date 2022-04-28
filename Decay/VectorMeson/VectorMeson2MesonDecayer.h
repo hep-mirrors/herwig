@@ -190,7 +190,7 @@ private:
   /**
    * the maximum weight for the integration
    */
-  vector<double> maxweight_;
+  vector<double> maxWeight_;
 
   /**
    * the coupling for the decay

@@ -46,6 +46,8 @@ insert SubProcess:MatrixElements 0 MEee2gZ2qq
 ##################################################
 cd /Herwig/Generators
 set EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set /Herwig/Decays/VVSDecayer:Initialize 1
+set /Herwig/Decays/VVSDecayer:DatabaseOutput 1
 cd /Herwig/Generators
 ##################################################
 ## prepare for Rivet analysis or HepMC output

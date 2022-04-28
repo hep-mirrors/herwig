@@ -30,7 +30,7 @@ void VectorMeson2MesonDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<incoming_.size();++ix)
-      if(mode(ix)) maxweight_[ix]= mode(ix)->maxWeight();
+      if(mode(ix)) maxWeight_[ix]= mode(ix)->maxWeight();
   }
 }
 
@@ -38,7 +38,7 @@ void VectorMeson2MesonDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=incoming_.size();
-  if(isize!=outgoing_.size() || isize!=maxweight_.size() ||
+  if(isize!=outgoing_.size() || isize!=maxWeight_.size() ||
      isize!=coupling_.size()) {
     throw InitException() << "Inconsistent parameters in "
 			  << "VectorMeson2MesonDecayer" << Exception::runerror;
@@ -50,7 +50,7 @@ void VectorMeson2MesonDecayer::doinit() {
     tPDVector out = {getParticleData(outgoing_[ix].first),
     		     getParticleData(outgoing_[ix].second)};
     if(in&&out[0]&&out[1]) 
-      mode = new_ptr(PhaseSpaceMode(in,out,maxweight_[ix]));
+      mode = new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
@@ -93,11 +93,11 @@ int VectorMeson2MesonDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
   
 void VectorMeson2MesonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << incoming_ << outgoing_ << maxweight_ << coupling_;
+  os << incoming_ << outgoing_ << maxWeight_ << coupling_;
 }
   
 void VectorMeson2MesonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> incoming_ >> outgoing_ >> maxweight_ >> coupling_;
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> coupling_;
 }
   
 // The following static variable is needed for the type
@@ -223,7 +223,7 @@ void VectorMeson2MesonDecayer::dataBaseOutput(ofstream & output,
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
 	   << outgoing_[ix].first << " " << outgoing_[ix].second << " "
-	   << coupling_[ix] << " " << maxweight_[ix] << "\n";
+	   << coupling_[ix] << " " << maxWeight_[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
@@ -248,7 +248,7 @@ string VectorMeson2MesonDecayer::setUpDecayMode(string arg) {
   if(!pData)
     return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
   if(pData->iSpin()!=PDT::Spin0)
-    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1";
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 0";
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   out.second = stoi(stype);
@@ -269,7 +269,7 @@ string VectorMeson2MesonDecayer::setUpDecayMode(string arg) {
   incoming_.push_back(in);
   outgoing_.push_back(out);
   coupling_.push_back(g);
-  maxweight_.push_back(wgt);
+  maxWeight_.push_back(wgt);
   // success
   return "";
 }
