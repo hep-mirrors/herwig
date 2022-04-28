@@ -1486,6 +1486,38 @@ newdef HQETMesonEM:MaxWeight 3 3.34656
 newdef HQETMesonEM:MaxWeight 4 3.55541
 newdef HQETMesonEM:MaxWeight 5 5.55942
 #
+create Herwig::Spin3MesonVectorScalarDecayer  Spin3VS
+newdef Spin3VS:Iteration 1
+newdef Spin3VS:Ntry 500
+newdef Spin3VS:Points 10000
+newdef Spin3VS:GenerateIntermediates 0 
+do Spin3VS:SetUpDecayMode 227 10213 -211 9.83 14.4611
+do Spin3VS:SetUpDecayMode 227 10113 111 9.83 14.541
+#
+create Herwig::Spin3MesonVectorScalarDecayer  Spin3VP
+newdef Spin3VP:Iteration 1
+newdef Spin3VP:Ntry 500
+newdef Spin3VP:Points 10000
+newdef Spin3VP:GenerateIntermediates 0 
+do Spin3VP:SetUpDecayMode 117 223 111 2.56 14.3724
+do Spin3VP:SetUpDecayMode 217 223 211 2.56 15.0937
+do Spin3VP:SetUpDecayMode 117 -323 321 1.31 23.915
+do Spin3VP:SetUpDecayMode 117 -313 311 1.31 23.3936
+do Spin3VP:SetUpDecayMode 217 -313 321 1.87 22.3731
+do Spin3VP:SetUpDecayMode 217 323 -311 1.87 20.2477
+do Spin3VP:SetUpDecayMode 227 213 -211 3.36 5.2274
+do Spin3VP:SetUpDecayMode 227 113 111 3.36 5.17949
+do Spin3VP:SetUpDecayMode 337 -323 321 2.04 9.45735
+do Spin3VP:SetUpDecayMode 337 -313 311 2.04 8.75126
+do Spin3VP:SetUpDecayMode 327 213 311 3.96 8.704
+do Spin3VP:SetUpDecayMode 327 113 321 2.81 8.67937
+do Spin3VP:SetUpDecayMode 317 -213 321 3.96 8.66011
+do Spin3VP:SetUpDecayMode 317 113 311 2.81 8.87377
+do Spin3VP:SetUpDecayMode 327 323 111 1.84 8.61878
+do Spin3VP:SetUpDecayMode 327 313 211 2.61 8.66593
+do Spin3VP:SetUpDecayMode 317 323 -211 2.61 7.884
+do Spin3VP:SetUpDecayMode 317 313 111 1.84 8.03042
+#
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500
@@ -21469,7 +21501,6 @@ newdef Spin3PP:Iteration 1
 newdef Spin3PP:Ntry 500
 newdef Spin3PP:Points 10000
 newdef Spin3PP:GenerateIntermediates 0 
-set Spin3PP:DatabaseOutput 1
 do Spin3PP:SetUpDecayMode 447 411 -411 6.01096 1.59891
 do Spin3PP:SetUpDecayMode 447 421 -421 6.01096 1.6008
 do Spin3PP:SetUpDecayMode 117 211 -211 1.548 7.52271
