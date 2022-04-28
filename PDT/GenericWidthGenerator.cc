@@ -867,6 +867,12 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     // T3 -> PP
   case 13: gam = 16.*sqr(pcm2)*pcm2/35./q2/sqr(m02);
     break;
+    // T3 -> VP
+  case 14: gam = 4.*sqr(pcm2)/15./q2/m02;
+    break;
+    // T3 -> VS
+  case 15: gam = 16.*pow(pcm2/m02,3)/105.;
+    break;
     // unknown
   default:
     throw Exception() << "Unknown type of mode " << MEcode_[imode] 

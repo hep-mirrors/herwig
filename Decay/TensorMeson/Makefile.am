@@ -12,11 +12,15 @@ ALL_H_FILES = \
 TensorMeson2PScalarDecayer.h\
 TensorMesonVectorPScalarDecayer.h \
 TensorMesonVectorVectorDecayer.h \
-Spin3Meson2PScalarDecayer.h
+Spin3Meson2PScalarDecayer.h \
+Spin3MesonVectorScalarDecayer.h \
+Spin3MesonVectorPScalarDecayer.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 TensorMeson2PScalarDecayer.cc \
 TensorMesonVectorPScalarDecayer.cc \
-TensorMesonVectorVectorDecayer.cc  \
-Spin3Meson2PScalarDecayer.cc
+TensorMesonVectorVectorDecayer.cc \
+Spin3Meson2PScalarDecayer.cc \
+Spin3MesonVectorScalarDecayer.cc \
+Spin3MesonVectorPScalarDecayer.cc
