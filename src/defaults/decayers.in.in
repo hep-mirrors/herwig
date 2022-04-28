@@ -21425,6 +21425,19 @@ newdef Spin3PP:GenerateIntermediates 0
 set Spin3PP:DatabaseOutput 1
 do Spin3PP:SetUpDecayMode 447 411 -411 6.01096 1.59891
 do Spin3PP:SetUpDecayMode 447 421 -421 6.01096 1.6008
+do Spin3PP:SetUpDecayMode 117 211 -211 1.548 7.52271
+do Spin3PP:SetUpDecayMode 217 211 111 1.548 7.54001
+do Spin3PP:SetUpDecayMode 117 321 -321 0.53 13.8703
+do Spin3PP:SetUpDecayMode 117 311 -311 0.53 13.7072
+do Spin3PP:SetUpDecayMode 217 321 -311 0.737 13.3601
+do Spin3PP:SetUpDecayMode 317 311 221 3.04 8.38239
+do Spin3PP:SetUpDecayMode 327 321 221 3.04 8.44805
+do Spin3PP:SetUpDecayMode 327 321 111 0.92 6.12415
+do Spin3PP:SetUpDecayMode 327 311 211 1.3 6.09512
+do Spin3PP:SetUpDecayMode 317 311 111 0.92 6.11427
+do Spin3PP:SetUpDecayMode 317 321 -211 1.3 6.13277
+do Spin3PP:SetUpDecayMode 337 321 -321 1.83 6.56579
+do Spin3PP:SetUpDecayMode 337 310 130 1.83 2.10003
 #
 create Herwig::TauDecayer  Tau1K2Pi
 newdef Tau1K2Pi:Iteration 10
