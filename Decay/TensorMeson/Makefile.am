@@ -14,7 +14,8 @@ TensorMesonVectorPScalarDecayer.h \
 TensorMesonVectorVectorDecayer.h \
 Spin3Meson2PScalarDecayer.h \
 Spin3MesonVectorScalarDecayer.h \
-Spin3MesonVectorPScalarDecayer.h
+Spin3MesonVectorPScalarDecayer.h \
+Spin3MesonTensorPScalarDecayer.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -23,4 +24,5 @@ TensorMesonVectorPScalarDecayer.cc \
 TensorMesonVectorVectorDecayer.cc \
 Spin3Meson2PScalarDecayer.cc \
 Spin3MesonVectorScalarDecayer.cc \
-Spin3MesonVectorPScalarDecayer.cc
+Spin3MesonVectorPScalarDecayer.cc \
+Spin3MesonTensorPScalarDecayer.cc
