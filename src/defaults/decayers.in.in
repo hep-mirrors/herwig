@@ -21695,4 +21695,13 @@ newdef D0KmPipPi0CLEO:Rho1700Phase 171
 newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
 newdef D0KmPipPi0CLEO:K1680MinusPhase 103
 #
+create Herwig::Spin3MesonTensorPScalarDecayer  Spin3TP
+newdef Spin3TP:Iteration 1
+newdef Spin3TP:Ntry 500
+newdef Spin3TP:Points 10000
+newdef Spin3TP:GenerateIntermediates 0 
+do Spin3TP:SetUpDecayMode 217 215  111 1. 1.
+do Spin3TP:SetUpDecayMode 217 115  211 1. 1.
+do Spin3TP:SetUpDecayMode 117 215 -211 1. 1.
+#
 @LOAD_EVTGEN_DECAYER@

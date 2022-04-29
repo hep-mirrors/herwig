@@ -1409,8 +1409,8 @@ decaymode B_c2(H)-->B_c-,pi0,pi0;  0.008 1 /Herwig/Decays/DecayME0
 #
 #
 decaymode rho_3+->pi+,pi0; 0.23581 1 /Herwig/Decays/Spin3PP
-decaymode rho_3+->a_20,pi+; 0.234443 1 /Herwig/Decays/DecayME0
-decaymode rho_3+->a_2+,pi0; 0.234443 1 /Herwig/Decays/DecayME0
+decaymode rho_3+->a_20,pi+; 0.234443 1 /Herwig/Decays/Spin3TP
+decaymode rho_3+->a_2+,pi0; 0.234443 1 /Herwig/Decays/Spin3TP
 decaymode rho_3+->pi+,omega; 0.16 1 /Herwig/Decays/Spin3VP
 decaymode rho_3+->rho+,rho0; 0.081547 1 /Herwig/Decays/DecayME0
 decaymode rho_3+->K*bar0,K+; 0.018985 1 /Herwig/Decays/Spin3VP
@@ -1418,8 +1418,8 @@ decaymode rho_3+->K*+,Kbar0; 0.018985 1 /Herwig/Decays/Spin3VP
 decaymode rho_3+->K+,Kbar0; 0.015787 1 /Herwig/Decays/Spin3PP
 #
 decaymode rho_30->pi+,pi-; 0.235811 1 /Herwig/Decays/Spin3PP
-decaymode rho_30->a_2-,pi+; 0.234443 1 /Herwig/Decays/DecayME0
-decaymode rho_30->a_2+,pi-; 0.234443 1 /Herwig/Decays/DecayME0
+decaymode rho_30->a_2-,pi+; 0.234443 1 /Herwig/Decays/Spin3TP
+decaymode rho_30->a_2+,pi-; 0.234443 1 /Herwig/Decays/Spin3TP
 decaymode rho_30->pi0,omega; 0.16 1 /Herwig/Decays/Spin3VP
 decaymode rho_30->rho+,rho-; 0.081547 1 /Herwig/Decays/DecayME0
 decaymode rho_30->K*-,K+; 0.009492 1 /Herwig/Decays/Spin3VP
@@ -1430,8 +1430,8 @@ decaymode rho_30->K0,Kbar0; 0.007894 1 /Herwig/Decays/Spin3PP
 decaymode rho_30->K+,K-; 0.007894 1 /Herwig/Decays/Spin3PP
 #
 decaymode rho_3-->pi-,pi0; 0.23581 1 /Herwig/Decays/Spin3PP
-decaymode rho_3-->a_2-,pi0; 0.234443 1 /Herwig/Decays/DecayME0
-decaymode rho_3-->a_20,pi-; 0.234443 1 /Herwig/Decays/DecayME0
+decaymode rho_3-->a_2-,pi0; 0.234443 1 /Herwig/Decays/Spin3TP
+decaymode rho_3-->a_20,pi-; 0.234443 1 /Herwig/Decays/Spin3TP
 decaymode rho_3-->pi-,omega; 0.16 1 /Herwig/Decays/Spin3VP
 decaymode rho_3-->rho-,rho0; 0.081547 1 /Herwig/Decays/DecayME0
 decaymode rho_3-->K*-,K0; 0.018985 1 /Herwig/Decays/Spin3VP

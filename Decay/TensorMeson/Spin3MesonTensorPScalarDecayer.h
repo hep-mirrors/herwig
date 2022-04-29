@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// Spin3MesonVectorScalarDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Spin3MesonTensorPScalarDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_Spin3MesonVectorScalarDecayer_H
-#define HERWIG_Spin3MesonVectorScalarDecayer_H
+#ifndef HERWIG_Spin3MesonTensorPScalarDecayer_H
+#define HERWIG_Spin3MesonTensorPScalarDecayer_H
 //
-// This is the declaration of the Spin3MesonVectorScalarDecayer class.
+// This is the declaration of the Spin3MesonTensorPScalarDecayer class.
 //
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -20,9 +20,9 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>Spin3MesonVectorScalarDecayer</code> class is designed for the decay
- *  of a rank 3 tensor meson to a vector and a scalar via matrix element which takes the form
- *  \f[ \mathcal{M} =  g \epsilon^{\mu\nu\rho}\epsilon_1^\beta (g_{\mu\beta} - \frac{p_{1\mu}p_{0\beta}}{p_0\cdot p_1-m_0m_1}) (p_1-p_2)_\nu (p_1-p_2)_\rho\f]
+ *  The <code>Spin3MesonTensorPScalarDecayer</code> class is designed for the decay
+ *  of a rank 3 tensor meson to a tensor and a scalar via matrix element which takes the form
+ *  \f[ \mathcal{M} =  g \epsilon^{\alpha_1\alpha_2\alpha_3}\epsilon_1^{\beta_1\beta_2} \epsilon_{\mu\nu\alpha_1\beta_1}(g_{\alpha_2\beta_2} - \frac{p_{1\alpha_2}p_{0\beta_2}}{p_0\cdot p_1-m_0m_1})P_{-\mu}p_{1\nu}(p_1-p_2)_\alpha_3\f]
  *  where \f$\epsilon^{\mu\nu\rho}\f$ is the polarization tensor of the decaying 
  *  meson, $p_{1,2}$ are the momenta of the decay products and \f$g\f$ is the coupling.
  *
@@ -36,11 +36,11 @@ using namespace ThePEG;
  *
  * @see DecayIntegrator
  *
- * @see \ref Spin3MesonVectorScalarDecayerInterfaces "The interfaces"
- * defined for Spin3MesonVectorScalarDecayer.
+ * @see \ref Spin3MesonTensorPScalarDecayerInterfaces "The interfaces"
+ * defined for Spin3MesonTensorPScalarDecayer.
  * 
  */
-class Spin3MesonVectorScalarDecayer: public DecayIntegrator {
+class Spin3MesonTensorPScalarDecayer: public DecayIntegrator {
 
 public:
 
@@ -152,7 +152,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Spin3MesonVectorScalarDecayer & operator=(const Spin3MesonVectorScalarDecayer &) = delete;
+  Spin3MesonTensorPScalarDecayer & operator=(const Spin3MesonTensorPScalarDecayer &) = delete;
   
 public:
 
@@ -176,7 +176,7 @@ private:
   /**
    * the coupling for the decay
    */
-  vector<InvEnergy> coupling_;
+  vector<InvEnergy2> coupling_;
 
   /**
    * the maximum weight for the decay
@@ -187,12 +187,12 @@ private:
    *  Storage of polarization tensors to try and increase
    *  speed
    */
-  mutable vector<Helicity::LorentzRank3Tensor<double> > tensors_;
+  mutable vector<Helicity::LorentzRank3Tensor<double> > rank3_;
 
   /**
-   *  Storage of the polarization vectors
+   *  Polarization tensors for the decay product
    */
-  mutable vector<Helicity::LorentzPolarizationVector> vectors_;
+  mutable vector<Helicity::LorentzTensor<double> > tensors_;
 
   /**
    *   Storage of the \f$\rho\f$ matrix
@@ -203,4 +203,4 @@ private:
 
 }
 
-#endif /* HERWIG_Spin3MesonVectorScalarDecayer_H */
+#endif /* HERWIG_Spin3MesonTensorPScalarDecayer_H */
