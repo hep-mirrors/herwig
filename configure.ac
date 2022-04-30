@@ -39,7 +39,7 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
 dnl modified search order
-AC_PROG_FC([gfortran g95 g77]) 
+AC_PROG_FC([gfortran g95 g77])
 dnl xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
 AC_LANG_PUSH([Fortran])
 AC_MSG_CHECKING([if the Fortran compiler ($FC) works])
@@ -146,7 +146,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/TensorMeson/Makefile
 		Decay/WeakCurrents/Makefile
 		Decay/Partonic/Makefile
-		Decay/General/Makefile	
+		Decay/General/Makefile
 		Decay/Radiation/Makefile
 		Decay/EvtGen/Makefile
 		Doc/refman.conf
@@ -238,19 +238,19 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_check        ])
 AC_CONFIG_FILES([Tests/python/LowEnergy.py       ],[chmod +x Tests/python/LowEnergy.py       ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
-AC_CONFIG_FILES([Tests/python/merge-DIS          ],[chmod +x Tests/python/merge-DIS          ])  
-AC_CONFIG_FILES([Tests/python/merge-EE           ],[chmod +x Tests/python/merge-EE           ])  
-AC_CONFIG_FILES([Tests/python/merge-EE-Gamma     ],[chmod +x Tests/python/merge-EE-Gamma     ])  
+AC_CONFIG_FILES([Tests/python/merge-DIS          ],[chmod +x Tests/python/merge-DIS          ])
+AC_CONFIG_FILES([Tests/python/merge-EE           ],[chmod +x Tests/python/merge-EE           ])
+AC_CONFIG_FILES([Tests/python/merge-EE-Gamma     ],[chmod +x Tests/python/merge-EE-Gamma     ])
 AC_CONFIG_FILES([Tests/python/merge-Fixed        ],[chmod +x Tests/python/merge-Fixed        ])
-AC_CONFIG_FILES([Tests/python/merge-GammaGamma   ],[chmod +x Tests/python/merge-GammaGamma   ])  
+AC_CONFIG_FILES([Tests/python/merge-GammaGamma   ],[chmod +x Tests/python/merge-GammaGamma   ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-EW       ],[chmod +x Tests/python/merge-LHC-EW       ])
-AC_CONFIG_FILES([Tests/python/merge-LHC-Jets     ],[chmod +x Tests/python/merge-LHC-Jets     ])  
-AC_CONFIG_FILES([Tests/python/merge-LHC-Photon   ],[chmod +x Tests/python/merge-LHC-Photon   ])  
-AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py  ],[chmod +x Tests/python/mergeLowEnergy.py  ])  
+AC_CONFIG_FILES([Tests/python/merge-LHC-Jets     ],[chmod +x Tests/python/merge-LHC-Jets     ])
+AC_CONFIG_FILES([Tests/python/merge-LHC-Photon   ],[chmod +x Tests/python/merge-LHC-Photon   ])
+AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py  ],[chmod +x Tests/python/mergeLowEnergy.py  ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW       ],[chmod +x Tests/python/merge-TVT-EW       ])
-AC_CONFIG_FILES([Tests/python/merge-TVT-Jets     ],[chmod +x Tests/python/merge-TVT-Jets     ])  
-AC_CONFIG_FILES([Tests/python/merge-TVT-Photon   ],[chmod +x Tests/python/merge-TVT-Photon   ])  
-AC_CONFIG_FILES([Tests/python/plot-EE            ],[chmod +x Tests/python/plot-EE            ])  
+AC_CONFIG_FILES([Tests/python/merge-TVT-Jets     ],[chmod +x Tests/python/merge-TVT-Jets     ])
+AC_CONFIG_FILES([Tests/python/merge-TVT-Photon   ],[chmod +x Tests/python/merge-TVT-Photon   ])
+AC_CONFIG_FILES([Tests/python/plot-EE            ],[chmod +x Tests/python/plot-EE            ])
 AC_CONFIG_FILES([Tests/python/R.py               ],[chmod +x Tests/python/R.py               ])
 AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])

@@ -112,7 +112,7 @@ void HiggsVectorBosonProcessConstructor::constructDiagrams() {
     if(_type==false && (**iv).id()!=ParticleID::Z0)
       continue;
     else if(_type==true && (abs((**iv).id()) != ParticleID::Wplus &&
-			    (**iv).id()      != ParticleID::Z0)) 
+			    (**iv).id()      != ParticleID::Z0))
       continue;
     // loop over the possible Higgs bosons
     for(PDVector::const_iterator ih=_higgs.begin();
@@ -123,7 +123,7 @@ void HiggsVectorBosonProcessConstructor::constructDiagrams() {
       // find a suitable vertex
       for(unsigned int nv = 0; nv < model()->numberOfVertices(); ++nv ) {
 	VertexBasePtr vertex = model()->vertex(nv);
-	AbstractVVSVertexPtr svert = 
+	AbstractVVSVertexPtr svert =
 	  dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
 	if(!svert) continue;
 	if(vertex->getNpoint() != 3) continue;
@@ -139,6 +139,10 @@ void HiggsVectorBosonProcessConstructor::constructDiagrams() {
 	objectname += (**ih).PDGName();
 	GeneralfftoVHPtr matrixElement = dynamic_ptr_cast<GeneralfftoVHPtr>
 	  (generator()->preinitCreate(classname, objectname));
+  if(abs((**iv).id()) == ParticleID::Z0 && !vertex->allowed(23,23,(**ih).id()))
+    continue;
+  if(abs((**iv).id()) == ParticleID::Wplus && !vertex->allowed(-24,24,(**ih).id()))
+    continue;
 	if( !matrixElement )
 	  throw Exception()
 	    << "HiggsVectorBosonProcessConstructor::constructDiagrams() "
@@ -156,12 +160,12 @@ void HiggsVectorBosonProcessConstructor::constructDiagrams() {
 	    process = GeneralfftoVH::HadronWminus;
 	}
 	// set the coupling
-	generator()->preinitInterface(matrixElement, "Coupling", 
-				      "set", _alpha->fullName()); 
+	generator()->preinitInterface(matrixElement, "Coupling",
+				      "set", _alpha->fullName());
 	// set the information
 	matrixElement->setProcessInfo( process, *ih, svert,_shapeOpt);
 	// insert it
-	generator()->preinitInterface(subProcess(), "MatrixElements", 
+	generator()->preinitInterface(subProcess(), "MatrixElements",
 				      subProcess()->MEs().size(),
 				      "insert", matrixElement->fullName());
       }
