@@ -1518,6 +1518,15 @@ do Spin3VP:SetUpDecayMode 327 313 211 2.61 8.66593
 do Spin3VP:SetUpDecayMode 317 323 -211 2.61 7.884
 do Spin3VP:SetUpDecayMode 317 313 111 1.84 8.03042
 #
+create Herwig::Spin3MesonTensorPScalarDecayer  Spin3TP
+newdef Spin3TP:Iteration 1
+newdef Spin3TP:Ntry 500
+newdef Spin3TP:Points 10000
+newdef Spin3TP:GenerateIntermediates 0
+do Spin3TP:SetUpDecayMode 217 215 111 14.7 59.2194
+do Spin3TP:SetUpDecayMode 217 115 211 14.7 56.0268
+do Spin3TP:SetUpDecayMode 117 215 -211 14.7 55.8436
+#
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500
@@ -21741,15 +21750,6 @@ newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
 newdef D0KmPipPi0CLEO:Rho1700Phase 171
 newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
 newdef D0KmPipPi0CLEO:K1680MinusPhase 103
-#
-create Herwig::Spin3MesonTensorPScalarDecayer  Spin3TP
-newdef Spin3TP:Iteration 1
-newdef Spin3TP:Ntry 500
-newdef Spin3TP:Points 10000
-newdef Spin3TP:GenerateIntermediates 0 
-do Spin3TP:SetUpDecayMode 217 215  111 1. 1.
-do Spin3TP:SetUpDecayMode 217 115  211 1. 1.
-do Spin3TP:SetUpDecayMode 117 215 -211 1. 1.
 #
 @LOAD_EVTGEN_DECAYER@
 
