@@ -186,7 +186,7 @@ double Spin3MesonTensorPScalarDecayer::me2(const int,const Particle & part,
   TensorWaveFunction twave(momenta[0],outgoing[0],Helicity::outgoing);
   tensors_.resize(5);
   for(unsigned int ihel=0;ihel<5;++ihel) {
-    twave.reset(ihel);
+    twave.reset(ihel,tensor_phase);
     tensors_[ihel] = twave.wave();
   }
   // calculate the matrix element
@@ -205,12 +205,12 @@ double Spin3MesonTensorPScalarDecayer::me2(const int,const Particle & part,
   }
   double output = ME()->contract(rho_).real();
   // test of the answer
-  Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-   					     momenta[1].mass());
-  double test = 8./15.*pow<4,1>(pcm)*sqr(fact)*sqr(part.mass());
-  cout << "testing matrix element for " << part.PDGName() << " -> " 
-       << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
-       << output << " " << test << " " << (output-test)/(output+test) << endl;
+  // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
+  //  					     momenta[1].mass());
+  // double test = 8./15.*pow<4,1>(pcm)*sqr(fact)*sqr(part.mass());
+  // cout << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
+  //      << output << " " << test << " " << (output-test)/(output+test) << endl;
   // return the answer
   return output;
 }
