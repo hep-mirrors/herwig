@@ -1518,6 +1518,31 @@ do Spin3VP:SetUpDecayMode 327 313 211 2.61 8.66593
 do Spin3VP:SetUpDecayMode 317 323 -211 2.61 7.884
 do Spin3VP:SetUpDecayMode 317 313 111 1.84 8.03042
 #
+create Herwig::TensorMesonTensorScalarDecayer  TensorTS
+newdef TensorTS:Iteration 1
+newdef TensorTS:Ntry 2000
+newdef TensorTS:Points 10000
+newdef TensorTS:GenerateIntermediates 0 
+do TensorTS:SetUpDecayMode 10215 225 211 7.03 2.61509
+do TensorTS:SetUpDecayMode 10115 225 111 7.03 2.62074
+do TensorTS:SetUpDecayMode 10225 115 111 4.69 3.76572
+do TensorTS:SetUpDecayMode 10225 215 -211 4.69 3.72084
+do TensorTS:SetUpDecayMode 10335 115 111 4.08 2.56465
+do TensorTS:SetUpDecayMode 10335 215 -211 4.08 2.58711
+do TensorTS:SetUpDecayMode 10335 225 221 5.6 5.64108
+do TensorTS:SetUpDecayMode 10325 225 321 11.5 6.54852
+do TensorTS:SetUpDecayMode 10315 225 311 11.5 6.46993
+do TensorTS:SetUpDecayMode 10325 325 111 0.86 4.11563
+do TensorTS:SetUpDecayMode 10325 315 211 1.23 3.65465
+do TensorTS:SetUpDecayMode 10315 315 111 0.86 3.5513
+do TensorTS:SetUpDecayMode 10315 325 -211 1.23 4.21926
+do TensorTS:SetUpDecayMode 20325 225 321 6.04 5.01724
+do TensorTS:SetUpDecayMode 20315 225 311 6.04 5.00233
+do TensorTS:SetUpDecayMode 20325 325 111 5.12 3.91523
+do TensorTS:SetUpDecayMode 20325 315 211 7.44 3.55145
+do TensorTS:SetUpDecayMode 20315 315 111 5.12 3.40497
+do TensorTS:SetUpDecayMode 20315 325 -211 7.44 4.06722
+#
 create Herwig::Spin3MesonTensorPScalarDecayer  Spin3TP
 newdef Spin3TP:Iteration 1
 newdef Spin3TP:Ntry 500

@@ -669,7 +669,7 @@ setup eta(1295) 100221 eta(1295) 1.294 0.055 0.395 0 0 0 1 0
 newdef eta(1295):WidthLoCut 0.24
 newdef eta(1295):WidthUpCut 0.55
 create ThePEG::ParticleData eta(1475)
-setup eta(1475) 100331 eta(1475) 1.476 0.087 0.174 0 0 0 1 0 
+setup eta(1475) 100331 eta(1475) 1.475 0.09 0.174 0 0 0 1 0 
 create ThePEG::ParticleData eta_c(2S)
 setup eta_c(2S) 100441 eta_c(2S) 3.6375 0.0113 0.113 0 0 0 1 0 
 create ThePEG::ParticleData eta_b(2S)

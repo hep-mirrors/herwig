@@ -12,6 +12,7 @@ ALL_H_FILES = \
 TensorMeson2PScalarDecayer.h\
 TensorMesonVectorPScalarDecayer.h \
 TensorMesonVectorVectorDecayer.h \
+TensorMesonTensorScalarDecayer.h \
 Spin3Meson2PScalarDecayer.h \
 Spin3MesonVectorScalarDecayer.h \
 Spin3MesonVectorPScalarDecayer.h \
@@ -22,6 +23,7 @@ ALL_CC_FILES = \
 TensorMeson2PScalarDecayer.cc \
 TensorMesonVectorPScalarDecayer.cc \
 TensorMesonVectorVectorDecayer.cc \
+TensorMesonTensorScalarDecayer.cc \
 Spin3Meson2PScalarDecayer.cc \
 Spin3MesonVectorScalarDecayer.cc \
 Spin3MesonVectorPScalarDecayer.cc \
