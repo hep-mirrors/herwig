@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// TensorMesonTensorScalarDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// TensorMesonVectorScalarDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_TensorMesonTensorScalarDecayer_H
-#define HERWIG_TensorMesonTensorScalarDecayer_H
+#ifndef HERWIG_TensorMesonVectorScalarDecayer_H
+#define HERWIG_TensorMesonVectorScalarDecayer_H
 //
-// This is the declaration of the TensorMesonTensorScalarDecayer class.
+// This is the declaration of the TensorMesonVectorScalarDecayer class.
 //
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -20,16 +20,15 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>TensorMesonTensorScalarDecayer</code> class handles the decay of
- *  a tensor meson to tensor and a scalar meson. In reality all the decays
- *  handled by this class are for a pseudotensor meson to a tensor and a pseudoscalar meson,
+ *  The <code>TensorMesonVectorScalarDecayer</code> class handles the decay of
+ *  a tensor meson to vector and a scalar meson. In reality all the decays
+ *  handled by this class are for a pseudotensor meson to a vector and a pseudoscalar meson,
  *  which has the same structure. The matrix element is
- *  given by \f[\mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta_1\beta_2} 
- *  \left(g_{\alpha_1\beta_1}+\frac{p_{1\alpha_1}p_{0\beta_1}{p_0\cdot p_1-m_0m_1}\right)
- *  \left(g_{\alpha_2\beta_2}+\frac{p_{1\alpha_2}p_{0\beta_2}{p_0\cdot p_1-m_0m_1}\right)\f]
- * where \f$p_{0,1}\f$ are the momenta of the incoming and outgoing tensor mesons,
- * and \f$\epsilon_{0,1}\f$ are the polarization tensors of the 
- * incoming and outgoing tensor mesons.
+ *  given by \f[\mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta} 
+ *  \left(g_{\alpha_1\beta}+\frac{p_{1\alpha_1}p_{0\beta}{p_0\cdot p_1-m_0m_1}\right)(p_1-p2)_{\alpha_2}\f]
+ *  where \f$p_{0,1,2}\f$ are the momenta of the incoming and outgoing tensor vector and scalar mesons, respectively,
+ * and \f$\epsilon_{0}\f$ is the polarization tensors of the incoming tensor meson and $\epslion_1$ that of the outgoing
+ * vector meson.
  *
  *  The incoming tensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
@@ -37,10 +36,10 @@ using namespace ThePEG;
  *  DecayIntegrator class or specified using the interface.
  *
  * @see DecayIntegrator
- * @see \ref TensorMesonTensorScalarDecayerInterfaces "The interfaces"
- * defined for TensorMesonTensorScalarDecayer.
+ * @see \ref TensorMesonVectorScalarDecayerInterfaces "The interfaces"
+ * defined for TensorMesonVectorScalarDecayer.
  */
-class TensorMesonTensorScalarDecayer: public DecayIntegrator {
+class TensorMesonVectorScalarDecayer: public DecayIntegrator {
 
 public:
 
@@ -153,7 +152,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TensorMesonTensorScalarDecayer & operator=(const TensorMesonTensorScalarDecayer &) = delete;
+  TensorMesonVectorScalarDecayer & operator=(const TensorMesonVectorScalarDecayer &) = delete;
 
 public:
 
@@ -177,7 +176,7 @@ private:
   /**
    * coupling for the decay
    */
-  vector<Energy> coupling_;
+  vector<double> coupling_;
 
   /**
    * max weight ofr the decay
@@ -188,13 +187,12 @@ private:
    *  Storage of polarization tensors (incoming) to try and increase
    *  speed
    */
-  mutable vector<Helicity::LorentzTensor<double> > tensors_in_;
+  mutable vector<Helicity::LorentzTensor<double> > tensors_;
 
   /**
-   *  Storage of polarization tensors(outgoing) to try and increase
-   *  speed
+   *  Storage of the polarization vectors
    */
-  mutable vector<Helicity::LorentzTensor<double> > tensors_out_;
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_;
 
   /**
    *   Storage of the \f$\rho\f$ matrix
@@ -205,4 +203,4 @@ private:
 }
 
 
-#endif /* HERWIG_TensorMesonTensorScalarDecayer_H */
+#endif /* HERWIG_TensorMesonVectorScalarDecayer_H */
