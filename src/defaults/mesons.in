@@ -622,14 +622,14 @@ setup psi_3(1D) 447 psi_3(1D) 3.84271 0.0028 0.014 0 0 0 7 0
 create ThePEG::ParticleData Upsilon_3(1D)
 setup Upsilon_3(1D) 557 Upsilon_3(1D) 10.1651 2.55E-5 0.000255 0 0 0 7 0 
 create ThePEG::ParticleData K_3*+
-setup K_3*+ 327 K_3*+ 1.776 0.159 0.477 0 3 0 7 0 
+setup K_3*+ 327 K_3*+ 1.779 0.161 0.477 0 3 0 7 0 
 create ThePEG::ParticleData K_3*0
-setup K_3*0 317 K_3*0 1.776 0.159 0.477 0 0 0 7 0 
+setup K_3*0 317 K_3*0 1.779 0.161 0.477 0 0 0 7 0 
 create ThePEG::ParticleData K_3*-
-setup K_3*- -327 K_3*- 1.776 0.159 0.477 0 -3 0 7 0 
+setup K_3*- -327 K_3*- 1.779 0.161 0.477 0 -3 0 7 0 
 makeanti K_3*- K_3*+
 create ThePEG::ParticleData K_3*bar0
-setup K_3*bar0 -317 K_3*bar0 1.776 0.159 0.477 0 0 0 7 0 
+setup K_3*bar0 -317 K_3*bar0 1.779 0.161 0.477 0 0 0 7 0 
 makeanti K_3*bar0 K_3*0
 create ThePEG::ParticleData D_3*(2750)0
 setup D_3*(2750)0 427 D_3*(2750)0 2.7631 0.066 0.192 0 0 0 7 0 

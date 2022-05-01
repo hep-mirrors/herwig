@@ -1698,34 +1698,38 @@ newdef /Herwig/Particles/f_0(1500):Mass_generator f0(1500)Mass
 #
 create Herwig::GenericMassGenerator  rho_30Mass
 newdef rho_30Mass:Particle /Herwig/Particles/rho_30 
-newdef rho_30Mass:BreitWignerShape 0
-newdef rho_30Mass:MaximumWeight 0.956393
-newdef rho_30Mass:NGenerate 100
+newdef /Herwig/Masses/rho_30Mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho_30Mass:MaximumWeight 0.956393
+newdef /Herwig/Masses/rho_30Mass:NGenerate 100
+newdef /Herwig/Masses/rho_30Mass:WidthOption 0
 
 newdef /Herwig/Particles/rho_30:Mass_generator rho_30Mass
 #
 create Herwig::GenericMassGenerator  rho_3+Mass
-newdef rho_3+Mass:Particle /Herwig/Particles/rho_3+ 
-newdef rho_3+Mass:BreitWignerShape 0
-newdef rho_3+Mass:MaximumWeight 0.956393
-newdef rho_3+Mass:NGenerate 100
+newdef rho_3+Mass:Particle /Herwig/Particles/rho_3+
+newdef /Herwig/Masses/rho_3+Mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho_3+Mass:MaximumWeight 0.956393
+newdef /Herwig/Masses/rho_3+Mass:NGenerate 100
+newdef /Herwig/Masses/rho_3+Mass:WidthOption 0
 
 newdef /Herwig/Particles/rho_3+:Mass_generator rho_3+Mass
 newdef /Herwig/Particles/rho_3-:Mass_generator rho_3+Mass
 #
 create Herwig::GenericMassGenerator  omega_3Mass
-newdef omega_3Mass:Particle /Herwig/Particles/omega_3 
-newdef omega_3Mass:BreitWignerShape 0
-newdef omega_3Mass:MaximumWeight 0.887309
-newdef omega_3Mass:NGenerate 100
+newdef omega_3Mass:Particle /Herwig/Particles/omega_3
+newdef /Herwig/Masses/omega_3Mass:BreitWignerShape 0
+newdef /Herwig/Masses/omega_3Mass:MaximumWeight 0.887309
+newdef /Herwig/Masses/omega_3Mass:NGenerate 100
+newdef /Herwig/Masses/omega_3Mass:WidthOption 0
 
 newdef /Herwig/Particles/omega_3:Mass_generator omega_3Mass
 #
 create Herwig::GenericMassGenerator  phi_3Mass
 newdef phi_3Mass:Particle /Herwig/Particles/phi_3 
-newdef phi_3Mass:BreitWignerShape 0
-newdef phi_3Mass:MaximumWeight 0.958159
-newdef phi_3Mass:NGenerate 100
+newdef /Herwig/Masses/phi_3Mass:BreitWignerShape 0
+newdef /Herwig/Masses/phi_3Mass:MaximumWeight 0.95816
+newdef /Herwig/Masses/phi_3Mass:NGenerate 100
+newdef /Herwig/Masses/phi_3Mass:WidthOption 0
 
 newdef /Herwig/Particles/phi_3:Mass_generator phi_3Mass
 #
@@ -1852,18 +1856,20 @@ newdef /Herwig/Particles/eta_b2:Mass_generator eta_b2(1D)Mass
 #
 create Herwig::GenericMassGenerator  K_3+Mass
 newdef K_3+Mass:Particle /Herwig/Particles/K_3*+ 
-newdef K_3+Mass:BreitWignerShape 0
-newdef K_3+Mass:MaximumWeight 0.934869
-newdef K_3+Mass:NGenerate 100
+newdef /Herwig/Masses/K_3+Mass:BreitWignerShape 0
+newdef /Herwig/Masses/K_3+Mass:MaximumWeight 0.933971
+newdef /Herwig/Masses/K_3+Mass:NGenerate 100
+newdef /Herwig/Masses/K_3+Mass:WidthOption 0
 
 newdef /Herwig/Particles/K_3*+:Mass_generator K_3+Mass
 newdef /Herwig/Particles/K_3*-:Mass_generator K_3+Mass
 #
 create Herwig::GenericMassGenerator  K_30Mass
 newdef K_30Mass:Particle /Herwig/Particles/K_3*0 
-newdef K_30Mass:BreitWignerShape 0
-newdef K_30Mass:MaximumWeight 0.934868
-newdef K_30Mass:NGenerate 100
+newdef /Herwig/Masses/K_30Mass:BreitWignerShape 0
+newdef /Herwig/Masses/K_30Mass:MaximumWeight 0.933971
+newdef /Herwig/Masses/K_30Mass:NGenerate 100
+newdef /Herwig/Masses/K_30Mass:WidthOption 0
 
 newdef /Herwig/Particles/K_3*bar0:Mass_generator K_30Mass
 newdef /Herwig/Particles/K_3*0:Mass_generator K_30Mass
