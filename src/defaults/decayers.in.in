@@ -1575,6 +1575,14 @@ do TensorVS:SetUpDecayMode 20325 313 211 1.41 7.05247
 do TensorVS:SetUpDecayMode 20315 313 111 0.99 6.17997
 do TensorVS:SetUpDecayMode 20315 323 -211 1.41 6.93157
 #
+create Herwig::PseudoTensorMesonVectorVectorDecayer  PTVV
+newdef PTVV:Iteration 1
+newdef PTVV:Ntry 1000
+newdef PTVV:Points 10000
+newdef PTVV:GenerateIntermediates 0 
+do PTVV:SetUpDecayMode 10115 113 223 1.6 9.99983
+do PTVV:SetUpDecayMode 10215 213 223 1.6 10.1526
+#
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500

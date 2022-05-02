@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// TensorMesonTensorScalarDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// PseudoTensorMesonVectorVectorDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the TensorMesonTensorScalarDecayer class.
+// functions of the PseudoTensorMesonVectorVectorDecayer class.
 //
 
-#include "TensorMesonTensorScalarDecayer.h"
+#include "PseudoTensorMesonVectorVectorDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Deleted.h"
@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
@@ -28,7 +29,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void TensorMesonTensorScalarDecayer::doinitrun() {
+void PseudoTensorMesonVectorVectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()){
     for(unsigned int ix=0;ix<incoming_.size();++ix)
@@ -36,12 +37,12 @@ void TensorMesonTensorScalarDecayer::doinitrun() {
   }
 }
 
-void TensorMesonTensorScalarDecayer::doinit() {
+void PseudoTensorMesonVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=incoming_.size();
   if(isize!=outgoing_.size() || isize!=maxWeight_.size() || isize!=coupling_.size())
-    throw InitException() << "Inconsistent parameters TensorMesonTensorScalarDecayer" 
+    throw InitException() << "Inconsistent parameters PseudoTensorMesonVectorVectorDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
   PhaseSpaceModePtr mode;
@@ -57,7 +58,7 @@ void TensorMesonTensorScalarDecayer::doinit() {
   }
 }
 
-int TensorMesonTensorScalarDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+int PseudoTensorMesonVectorVectorDecayer::modeNumber(bool & cc, tcPDPtr parent, 
 						const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
@@ -87,76 +88,92 @@ int TensorMesonTensorScalarDecayer::modeNumber(bool & cc, tcPDPtr parent,
   return imode;
 }
 
-void TensorMesonTensorScalarDecayer::persistentOutput(PersistentOStream & os) const {
+void PseudoTensorMesonVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << outgoing_ << maxWeight_ << ounit(coupling_,GeV);
 }
 
-void TensorMesonTensorScalarDecayer::persistentInput(PersistentIStream & is, int) {
+void PseudoTensorMesonVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> outgoing_ >> maxWeight_ >> iunit(coupling_,GeV);
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TensorMesonTensorScalarDecayer,DecayIntegrator>
-describeHerwigTensorMesonTensorScalarDecayer("Herwig::TensorMesonTensorScalarDecayer", "HwTMDecay.so");
+DescribeClass<PseudoTensorMesonVectorVectorDecayer,DecayIntegrator>
+describeHerwigPseudoTensorMesonVectorVectorDecayer("Herwig::PseudoTensorMesonVectorVectorDecayer", "HwTMDecay.so");
 
-void TensorMesonTensorScalarDecayer::Init() {
+void PseudoTensorMesonVectorVectorDecayer::Init() {
 
-  static ClassDocumentation<TensorMesonTensorScalarDecayer> documentation
-    ("The TensorMesonTensorScalarDecayer class implements the"
-     " decay of a tensor meson to a spin-1 particle and a pseduoscalar meson");
+  static ClassDocumentation<PseudoTensorMesonVectorVectorDecayer> documentation
+    ("The PseudoTensorMesonVectorVectorDecayer class implements the"
+     " decay of a pseudotensor meson to two vector mesons");
 
-  static Command<TensorMesonTensorScalarDecayer> interfaceSetUpDecayMode
+  static Command<PseudoTensorMesonVectorVectorDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
-     "Set up the particles (incoming, tensor, scalar, coupling(GeV) and max weight for a decay",
-     &TensorMesonTensorScalarDecayer::setUpDecayMode, false);
+     "Set up the particles (incoming, vectors, coupling(GeV) and max weight for a decay",
+     &PseudoTensorMesonVectorVectorDecayer::setUpDecayMode, false);
 
 }
-void TensorMesonTensorScalarDecayer::
+void PseudoTensorMesonVectorVectorDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
-  TensorWaveFunction::constructSpinInfo(tensors_in_,const_ptr_cast<tPPtr>(&part),
+  TensorWaveFunction::constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
   // set up the spin information for the decay products
-  TensorWaveFunction::constructSpinInfo(tensors_out_,decay[0],outgoing,true,false);
-  ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::constructSpinInfo(vectors_[ix],decay[ix],
+					  outgoing,true,
+					  decay[ix]->id()==ParticleID::gamma);
 }
 
 // matrix elememt for the process
-double TensorMesonTensorScalarDecayer::me2(const int,const Particle & part,
+double PseudoTensorMesonVectorVectorDecayer::me2(const int,const Particle & part,
 					    const tPDVector & outgoing,
 					    const vector<Lorentz5Momentum> & momenta,
 					    MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin2,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
+  // check for photons
+  bool photon[2] = {outgoing_[imode()].first ==ParticleID::gamma,
+		    outgoing_[imode()].second==ParticleID::gamma};
   // stuff for incoming particle
   if(meopt==Initialize) {
     rho_ = RhoDMatrix(PDT::Spin2);
     TensorWaveFunction::
-      calculateWaveFunctions(tensors_in_,rho_,const_ptr_cast<tPPtr>(&part),
-			     incoming,false);
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
+  			     incoming,false);
   }
-  TensorWaveFunction twave(momenta[0],outgoing[0],Helicity::outgoing);
-  tensors_out_.resize(5);
-  for(unsigned int ihel=0;ihel<5;++ihel) {
-    twave.reset(ihel);
-    tensors_out_[ihel] = twave.wave();
+  Energy2 denom[2];
+  for(unsigned int iy=0;iy<2;++iy) {
+    denom[iy] = momenta[iy]*part.momentum()-momenta[iy].mass()*part.mass();
+    vectors_[iy].resize(3);
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(photon[iy] && ix==1) continue;
+      vectors_[iy][ix] = HelicityFunctions::polarizationVector(-momenta[iy],ix,Helicity::outgoing);
+    }
   }
   double fact(coupling_[imode()]/part.mass());
-  Energy2 denom = momenta[0]*part.momentum()-momenta[0].mass()*part.mass();
   // calculate the matrix element
   for(unsigned int inhel=0;inhel<5;++inhel) {
-    LorentzPolarizationVectorE v0 = tensors_in_[inhel].postDot(momenta[0]);
-    Complex d0=(v0*momenta[0])/denom;
-    for(unsigned int thel=0;thel<5;++thel) {
-      LorentzPolarizationVectorE v1 = tensors_out_[thel].postDot(part.momentum());
-      Complex d1=(v1*part.momentum())/denom;
-      (*ME())(inhel,thel,0) = fact*(tensors_in_[inhel]*tensors_out_[thel]
-				    -2.*(v0*v1)/denom +d0*d1);
+    LorentzPolarizationVectorE v1 = tensors_[inhel].preDot (momenta[0]);
+    LorentzPolarizationVectorE v2 = tensors_[inhel].postDot(momenta[1]);
+    complex<Energy2> d0 = v1*momenta[1];
+    for(unsigned int vhel1=0;vhel1<3;++vhel1) {
+      LorentzPolarizationVector v3 = tensors_[inhel].postDot(vectors_[0][vhel1]);
+      complex<InvEnergy> d1 = vectors_[0][vhel1]*part.momentum()/denom[0];
+      complex<Energy> d4 = v2*vectors_[0][vhel1];
+      for(unsigned int vhel2=0;vhel2<3;++vhel2) {
+	complex<InvEnergy> d2 = vectors_[1][vhel2]*part.momentum()/denom[1];
+	if ( (photon[0] && vhel1==1) || (photon[1] && vhel2==1))
+	  (*ME())(inhel,vhel1,vhel2)=0.;
+	else {
+	  (*ME())(inhel,vhel1,vhel2)=fact*(v3*vectors_[1][vhel2] -(v1*vectors_[1][vhel2])*d1
+					   -d4*d2+d0*d1*d2);
+	}
+      }
     }
   }
   double me = ME()->contract(rho_).real();
   // test of the answer
-  // double test =sqr( coupling_[imode()]/part.mass());
+  // double test = sqr(coupling_[imode()]/part.mass());
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << me << " " << test << " " << (me-test)/(me+test) << endl;
@@ -164,7 +181,7 @@ double TensorMesonTensorScalarDecayer::me2(const int,const Particle & part,
   return me;
 }
 
-bool TensorMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+bool PseudoTensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 						   double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
@@ -202,11 +219,11 @@ bool TensorMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & me
   }
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode]/dm.parent()->mass();
-  mecode=6;
+  mecode=0;
   return order;
 }
 
-void TensorMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
+void PseudoTensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 						     bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
@@ -220,7 +237,7 @@ void TensorMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
 		    << fullName() << "\";" << endl;
 }
 
-string TensorMesonTensorScalarDecayer::setUpDecayMode(string arg) {
+string PseudoTensorMesonVectorVectorDecayer::setUpDecayMode(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
@@ -239,16 +256,16 @@ string TensorMesonTensorScalarDecayer::setUpDecayMode(string arg) {
   pData = getParticleData(out.first);
   if(!pData)
     return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
-  if(pData->iSpin()!=PDT::Spin2)
-    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 2";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 1";
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   out.second = stoi(stype);
   pData = getParticleData(out.second);
   if(!pData)
     return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
-  if(pData->iSpin()!=PDT::Spin0)
-    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 0";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1";
   // get the coupling
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);

@@ -1108,7 +1108,7 @@ decaymode pi_2+->pi+,f_2; 0.546654 1 /Herwig/Decays/TensorTS
 decaymode pi_2+->rho0,pi+; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_2+->rho+,pi0; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_2+->pi+,sigma; 0.084624 1 /Herwig/Decays/Tensor2PScalar
-decaymode pi_2+->rho+,omega; 0.02629 1 /Herwig/Decays/DecayME0
+decaymode pi_2+->rho+,omega; 0.02629 1 /Herwig/Decays/PTVV
 decaymode pi_2+->K*bar0,K+; 0.020448 1 /Herwig/Decays/TensorVS
 decaymode pi_2+->K*+,Kbar0; 0.020448 1 /Herwig/Decays/TensorVS
 #
@@ -1116,7 +1116,7 @@ decaymode pi_20->pi0,f_2; 0.546654 1 /Herwig/Decays/TensorTS
 decaymode pi_20->rho-,pi+; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_20->rho+,pi-; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_20->pi0,sigma; 0.084624 1 /Herwig/Decays/Tensor2PScalar
-decaymode pi_20->rho0,omega; 0.02629 1 /Herwig/Decays/DecayME0
+decaymode pi_20->rho0,omega; 0.02629 1 /Herwig/Decays/PTVV
 decaymode pi_20->K*-,K+; 0.010224 1 /Herwig/Decays/TensorVS
 decaymode pi_20->K*bar0,K0; 0.010224 1 /Herwig/Decays/TensorVS
 decaymode pi_20->K*0,Kbar0; 0.010224 1 /Herwig/Decays/TensorVS
@@ -1126,7 +1126,7 @@ decaymode pi_2-->pi-,f_2; 0.546654 1 /Herwig/Decays/TensorTS
 decaymode pi_2-->rho-,pi0; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_2-->rho0,pi-; 0.150768 1 /Herwig/Decays/TensorVS
 decaymode pi_2-->pi-,sigma; 0.084624 1 /Herwig/Decays/Tensor2PScalar
-decaymode pi_2-->rho-,omega; 0.02629 1 /Herwig/Decays/DecayME0
+decaymode pi_2-->rho-,omega; 0.02629 1 /Herwig/Decays/PTVV
 decaymode pi_2-->K*-,K0; 0.020448 1 /Herwig/Decays/TensorVS
 decaymode pi_2-->K*0,K-; 0.020448 1 /Herwig/Decays/TensorVS
 #
