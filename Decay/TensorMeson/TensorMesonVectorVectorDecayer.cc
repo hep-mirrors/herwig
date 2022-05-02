@@ -252,7 +252,7 @@ bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & me
   }
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode]*dm.parent()->mass();
-  mecode=9;
+  mecode=6;
   return id1==outgoing_[imode].first&&id2==outgoing_[imode].second;
 }
 

@@ -14,6 +14,7 @@ TensorMesonVectorPScalarDecayer.h \
 TensorMesonVectorVectorDecayer.h \
 TensorMesonTensorScalarDecayer.h \
 TensorMesonVectorScalarDecayer.h \
+PseudoTensorMesonVectorVectorDecayer.h \
 Spin3Meson2PScalarDecayer.h \
 Spin3MesonVectorScalarDecayer.h \
 Spin3MesonVectorPScalarDecayer.h \
@@ -26,6 +27,7 @@ TensorMesonVectorPScalarDecayer.cc \
 TensorMesonVectorVectorDecayer.cc \
 TensorMesonTensorScalarDecayer.cc \
 TensorMesonVectorScalarDecayer.cc \
+PseudoTensorMesonVectorVectorDecayer.cc \
 Spin3Meson2PScalarDecayer.cc \
 Spin3MesonVectorScalarDecayer.cc \
 Spin3MesonVectorPScalarDecayer.cc \
