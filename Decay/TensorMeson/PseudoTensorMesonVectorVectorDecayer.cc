@@ -89,11 +89,11 @@ int PseudoTensorMesonVectorVectorDecayer::modeNumber(bool & cc, tcPDPtr parent,
 }
 
 void PseudoTensorMesonVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << incoming_ << outgoing_ << maxWeight_ << ounit(coupling_,GeV);
+  os << incoming_ << outgoing_ << maxWeight_ << ounit(coupling_,1./GeV);
 }
 
 void PseudoTensorMesonVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> incoming_ >> outgoing_ >> maxWeight_ >> iunit(coupling_,GeV);
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> iunit(coupling_,1./GeV);
 }
 
 // The following static variable is needed for the type
@@ -109,7 +109,7 @@ void PseudoTensorMesonVectorVectorDecayer::Init() {
 
   static Command<PseudoTensorMesonVectorVectorDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
-     "Set up the particles (incoming, vectors, coupling(GeV) and max weight for a decay",
+     "Set up the particles (incoming, vectors, coupling(1/GeV) and max weight for a decay",
      &PseudoTensorMesonVectorVectorDecayer::setUpDecayMode, false);
 
 }
@@ -150,30 +150,32 @@ double PseudoTensorMesonVectorVectorDecayer::me2(const int,const Particle & part
       vectors_[iy][ix] = HelicityFunctions::polarizationVector(-momenta[iy],ix,Helicity::outgoing);
     }
   }
-  double fact(coupling_[imode()]/part.mass());
+  InvEnergy2 fact(coupling_[imode()]/part.mass());
+  Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),momenta[1].mass());
+  InvEnergy2 c1 = 0.5*(sqr(part.mass())+sqr(momenta[0].mass())-sqr(momenta[1].mass()))/sqr(part.mass()*pcm);
+  InvEnergy2 c2 = 0.5*(sqr(part.mass())-sqr(momenta[0].mass())+sqr(momenta[1].mass()))/sqr(part.mass()*pcm);
   // calculate the matrix element
   for(unsigned int inhel=0;inhel<5;++inhel) {
-    LorentzPolarizationVectorE v1 = tensors_[inhel].preDot (momenta[0]);
-    LorentzPolarizationVectorE v2 = tensors_[inhel].postDot(momenta[1]);
-    complex<Energy2> d0 = v1*momenta[1];
+    LorentzPolarizationVectorE v0 = tensors_[inhel].postDot(momenta[0]-momenta[1]);
+    LorentzVector<complex<Energy3> > v1 = epsilon(v0,momenta[0],momenta[1]);
     for(unsigned int vhel1=0;vhel1<3;++vhel1) {
-      LorentzPolarizationVector v3 = tensors_[inhel].postDot(vectors_[0][vhel1]);
-      complex<InvEnergy> d1 = vectors_[0][vhel1]*part.momentum()/denom[0];
-      complex<Energy> d4 = v2*vectors_[0][vhel1];
+      LorentzVector<complex<Energy2> > v3 = epsilon(part.momentum(),v0,vectors_[0][vhel1]);
+      complex<InvEnergy> d1 = c1*vectors_[0][vhel1]*momenta[1];
+      complex<Energy3> d3 =  vectors_[0][vhel1]*v1;
       for(unsigned int vhel2=0;vhel2<3;++vhel2) {
-	complex<InvEnergy> d2 = vectors_[1][vhel2]*part.momentum()/denom[1];
 	if ( (photon[0] && vhel1==1) || (photon[1] && vhel2==1))
 	  (*ME())(inhel,vhel1,vhel2)=0.;
 	else {
-	  (*ME())(inhel,vhel1,vhel2)=fact*(v3*vectors_[1][vhel2] -(v1*vectors_[1][vhel2])*d1
-					   -d4*d2+d0*d1*d2);
+	  complex<InvEnergy> d2 = c2*vectors_[1][vhel2]*momenta[0];
+	  (*ME())(inhel,vhel1,vhel2)=Complex(fact*(v3.dot(vectors_[1][vhel2])
+						   - d1*v1.dot(vectors_[1][vhel2]) - d2*d3));
 	}
       }
     }
   }
   double me = ME()->contract(rho_).real();
   // test of the answer
-  // double test = sqr(coupling_[imode()]/part.mass());
+  // double test = 16./15.*sqr(coupling_[imode()]*pcm);
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << me << " " << test << " " << (me-test)/(me+test) << endl;
@@ -182,7 +184,7 @@ double PseudoTensorMesonVectorVectorDecayer::me2(const int,const Particle & part
 }
 
 bool PseudoTensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-						   double & coupling) const {
+							 double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
   int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
@@ -218,7 +220,7 @@ bool PseudoTensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,in
     ++ix;
   }
   while(ix<incoming_.size()&&imode<0);
-  coupling=coupling_[imode]/dm.parent()->mass();
+  coupling=coupling_[imode]*dm.parent()->mass();
   mecode=0;
   return order;
 }
@@ -231,7 +233,7 @@ void PseudoTensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
 	   << outgoing_[ix].first  << " " << outgoing_[ix].second  << " "
-	   << coupling_[ix]/GeV << " " << maxWeight_[ix]  << "\n";
+	   << coupling_[ix]*GeV << " " << maxWeight_[ix]  << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
@@ -277,7 +279,7 @@ string PseudoTensorMesonVectorVectorDecayer::setUpDecayMode(string arg) {
   // store the information
   incoming_.push_back(in);
   outgoing_.push_back(out);
-  coupling_.push_back(g*GeV);
+  coupling_.push_back(g/GeV);
   maxWeight_.push_back(wgt);
   // success
   return "";
