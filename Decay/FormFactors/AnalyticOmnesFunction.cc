@@ -120,3 +120,15 @@ Complex AnalyticOmnesFunction::D(Energy2 s) const {
     }
     return 1.-s/mrho2-s/48./pi2/fPi_/fPi_*log(mrho2/mpi2)-f;
 }
+
+void AnalyticOmnesFunction::dataBaseOutput(ofstream & output,bool header,
+					   bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::AnalyticOmnesFunction " << name() << " \n";
+  output << "newdef " << name() << ":fpi             " << fPi_/MeV         << "\n";
+  output << "newdef " << name() << ":RhoMass         " << mRho_/MeV        << "\n";
+  output << "newdef " << name() << ":RhoWidth        " << rhoWidth_/MeV    << "\n";
+  output << "newdef " << name() << ":LocalParameters " << localParameters_ << "\n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}

@@ -367,5 +367,7 @@ void EtaPiPiFermionsDecayer::dataBaseOutput(ofstream & output,
     output << "newdef " << name() << ":Option      " << ix << "  " 
 	   << _option[ix]      << "\n";
   }
+  omnesFunction_->dataBaseOutput(output,false,true);
+  output << "newdef " << name() << ":OmnesFunction " << omnesFunction_->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

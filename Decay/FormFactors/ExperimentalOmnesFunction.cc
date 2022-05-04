@@ -253,38 +253,45 @@ Complex ExperimentalOmnesFunction::D(Energy2 s) const {
   return (*oRe_)(q)+ii*(*oIm_)(q);
 }
 
-  // output << "newdef " << name() << ":InitializeOmnes " << _initialize      << "\n";
-  // output << "newdef " << name() << ":OmnesPoints     " << _npoints         << "\n";
-  // output << "newdef " << name() << ":OmnesCut        " << _epscut/MeV      << "\n";
-  // for(unsigned int ix=0;ix<_energy.size();++ix) {
-  //   if(ix<_nsizea) {
-  //     output << "newdef " << name() << ":Phase_Energy " << ix << "  " 
-  // 	     << _energy[ix]/MeV << "\n";
-  //     output << "newdef " << name() << ":Phase_Shift  " << ix << "  " 
-  // 	     << _phase[ix]  << "\n";
-  //   }
-  //   else {
-  //     output << "insert " << name() << ":Phase_Energy " << ix << "  " 
-  // 	     << _energy[ix]/MeV << "\n";
-  //     output << "insert " << name() << ":Phase_Shift  " << ix << "  " 
-  // 	     << _phase[ix]  << "\n";
-  //   }
-  // }
-  // for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
-  //     if(ix<_nsizeb) {
-  // 	output << "newdef " << name() << ":OmnesEnergy " << ix << "  " 
-  // 	       << _omnesenergy[ix]/MeV << "\n";
-  // 	output << "newdef " << name() << ":OmnesReal " << ix << "  " 
-  // 	       << _omnesfunctionreal[ix] << "\n";
-  // 	output << "newdef " << name() << ":OmnesImag " << ix << "  " 
-  // 	       << _omnesfunctionimag [ix] << "\n";
-  //     }
-  //     else {
-  // 	output << "insert " << name() << ":OmnesEnergy " << ix << "  " 
-  // 	       << _omnesenergy[ix]/MeV << "\n";
-  // 	output << "insert " << name() << ":OmnesReal " << ix << "  " 
-  // 	       << _omnesfunctionreal[ix] << "\n";
-  // 	output << "insert " << name() << ":OmnesImag " << ix << "  " 
-  // 	       << _omnesfunctionimag [ix] << "\n";
-  //     }
-  // }
+void ExperimentalOmnesFunction::dataBaseOutput(ofstream & output,bool header,
+					   bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::ExperimentalOmnesFunction " << name() << " \n";
+  output << "newdef " << name() << ":Initialize " << initialize_      << "\n";
+  output << "newdef " << name() << ":OmnesPoints     " << nPoints_         << "\n";
+  output << "newdef " << name() << ":OmnesCut        " << epsCut_/MeV      << "\n";
+  for(unsigned int ix=0;ix<energy_.size();++ix) {
+    if(ix<nsizea_) {
+      output << "newdef " << name() << ":Phase_Energy " << ix << "  " 
+  	     << energy_[ix]/MeV << "\n";
+      output << "newdef " << name() << ":Phase_Shift  " << ix << "  " 
+  	     << phase_[ix]  << "\n";
+    }
+    else {
+      output << "insert " << name() << ":Phase_Energy " << ix << "  " 
+  	     << energy_[ix]/MeV << "\n";
+      output << "insert " << name() << ":Phase_Shift  " << ix << "  " 
+  	     << phase_[ix]  << "\n";
+    }
+  }
+  for(unsigned int ix=0;ix<omnesEnergy_.size();++ix) {
+    if(ix<nsizeb_) {
+      output << "newdef " << name() << ":OmnesEnergy " << ix << "  " 
+	     << omnesEnergy_[ix]/MeV << "\n";
+      output << "newdef " << name() << ":OmnesReal " << ix << "  " 
+	     << omnesFunctionRe_[ix] << "\n";
+      output << "newdef " << name() << ":OmnesImag " << ix << "  " 
+	     << omnesFunctionIm_[ix] << "\n";
+    }
+    else {
+      output << "insert " << name() << ":OmnesEnergy " << ix << "  " 
+	     << omnesEnergy_[ix]/MeV << "\n";
+      output << "insert " << name() << ":OmnesReal " << ix << "  " 
+	     << omnesFunctionRe_[ix] << "\n";
+      output << "insert " << name() << ":OmnesImag " << ix << "  " 
+	     << omnesFunctionIm_[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}

@@ -31,6 +31,14 @@ public:
    */
   virtual Complex D(Energy2 s) const;
 
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   * @param create Whether or not to add a statement creating the object
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
+
 public:
 
   /**
