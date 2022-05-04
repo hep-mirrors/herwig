@@ -28,7 +28,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include "ThePEG/Helicity/HelicityFunctions.h"
-#include "OmnesFunction.h"
+#include "Herwig/Decay/FormFactors/OmnesFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

@@ -16,7 +16,7 @@ using namespace Herwig;
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractNoPIOClass<OmnesFunction,Interfaced>
-describeHerwigOmnesFunction("Herwig::OmnesFunction", "HwSMDecay.so");
+describeHerwigOmnesFunction("Herwig::OmnesFunction", "Herwig.so");
 
 void OmnesFunction::Init() {
 

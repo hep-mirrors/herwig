@@ -29,10 +29,7 @@ DtoKPiPiMarkIII.h \
 WeakDalitzDecay.h\
 CLEODptoKmPipPip.h\
 CLEOD0toKmPipPi0.h\
-CLEOD0toK0PipPim.h\
-OmnesFunction.h\
-AnalyticOmnesFunction.h\
-ExperimentalOmnesFunction.h
+CLEOD0toK0PipPim.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -56,7 +53,4 @@ DtoKPiPiMarkIII.cc \
 WeakDalitzDecay.cc\
 CLEODptoKmPipPip.cc\
 CLEOD0toKmPipPi0.cc\
-CLEOD0toK0PipPim.cc\
-OmnesFunction.cc\
-AnalyticOmnesFunction.cc\
-ExperimentalOmnesFunction.cc
+CLEOD0toK0PipPim.cc
