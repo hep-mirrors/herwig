@@ -1583,6 +1583,14 @@ newdef PTVV:GenerateIntermediates 0
 do PTVV:SetUpDecayMode 10115 113 223 2.21 20.2476
 do PTVV:SetUpDecayMode 10215 213 223 2.21 14.7618
 #
+create Herwig::TensorMesonTensorPScalarDecayer  TTP
+newdef TTP:Iteration 1
+newdef TTP:Ntry 1000
+newdef TTP:Points 10000
+newdef TTP:GenerateIntermediates 0 
+do TTP:SetUpDecayMode 215 225 211 45 5.70402
+do TTP:SetUpDecayMode 115 225 111 45 6.58157
+#
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
 newdef Vector2Leptons:Ntry 500
@@ -2286,54 +2294,57 @@ newdef Tensor2PScalar:Iteration 1
 newdef Tensor2PScalar:Ntry 3000
 newdef Tensor2PScalar:Points 10000
 newdef Tensor2PScalar:GenerateIntermediates 0 
-do Tensor2PScalar:SetUpDecayMode 115 221 111 10.9 4.5
-do Tensor2PScalar:SetUpDecayMode 215 221 211 10.9 4.5
-do Tensor2PScalar:SetUpDecayMode 115 331 111 9.92 4.2
-do Tensor2PScalar:SetUpDecayMode 215 331 211 9.92 4.2
-do Tensor2PScalar:SetUpDecayMode 115 311 -311 7.36 1.54249
-do Tensor2PScalar:SetUpDecayMode 115 321 -321 7.36 1.62503
-do Tensor2PScalar:SetUpDecayMode 215 321 -311 10.41 4.5
-do Tensor2PScalar:SetUpDecayMode 225 211 -211 18.73 5.5
-do Tensor2PScalar:SetUpDecayMode 225 111 111 13.24 5.5
-do Tensor2PScalar:SetUpDecayMode 225 221 221 8.362 5.4
-do Tensor2PScalar:SetUpDecayMode 225 321 -321 11.03 5.
-do Tensor2PScalar:SetUpDecayMode 225 311 -311 11.38 5.
+do Tensor2PScalar:SetUpDecayMode 115 221 111 10.9 1.65316
+do Tensor2PScalar:SetUpDecayMode 215 221 211 10.9 1.64258
+do Tensor2PScalar:SetUpDecayMode 115 331 111 9.92 1.75949
+do Tensor2PScalar:SetUpDecayMode 215 331 211 9.92 1.70722
+do Tensor2PScalar:SetUpDecayMode 115 310 310 5.2 1.58967
+do Tensor2PScalar:SetUpDecayMode 115 130 130 5.2 1.58967
+do Tensor2PScalar:SetUpDecayMode 115 321 -321 7.36 1.67672
+do Tensor2PScalar:SetUpDecayMode 215 321 -311 10.41 1.63467
+do Tensor2PScalar:SetUpDecayMode 225 211 -211 18.73 1.57416
+do Tensor2PScalar:SetUpDecayMode 225 111 111 13.24 1.58603
+do Tensor2PScalar:SetUpDecayMode 225 221 221 8.362 1.71393
+do Tensor2PScalar:SetUpDecayMode 225 321 -321 11.03 1.58584
+do Tensor2PScalar:SetUpDecayMode 225 130 130 8.05 1.59016
+do Tensor2PScalar:SetUpDecayMode 225 310 310 8.05 1.59016
 do Tensor2PScalar:SetUpDecayMode 335 321 -321 14.65 1.60028
-do Tensor2PScalar:SetUpDecayMode 335 311 -311 14.65 1.55404
-do Tensor2PScalar:SetUpDecayMode 335 221 221 9.15 1.60254
+do Tensor2PScalar:SetUpDecayMode 335 310 310 10.36 1.15672
+do Tensor2PScalar:SetUpDecayMode 335 130 130 10.36 1.16794
+do Tensor2PScalar:SetUpDecayMode 335 221 221 9.15 1.61424
 do Tensor2PScalar:SetUpDecayMode 335 211 -211 0.86 1.60017
 do Tensor2PScalar:SetUpDecayMode 335 111 111 0.608 1.60798
-do Tensor2PScalar:SetUpDecayMode 325 321 221 1.52 5.1
-do Tensor2PScalar:SetUpDecayMode 315 311 221 1.52 5.1
-do Tensor2PScalar:SetUpDecayMode 325 321 111 8.3 5.1
-do Tensor2PScalar:SetUpDecayMode 325 311 211 11.74 5.1
-do Tensor2PScalar:SetUpDecayMode 315 311 111 8.68 5.1
-do Tensor2PScalar:SetUpDecayMode 315 321 -211 12.28 5.1
-do Tensor2PScalar:SetUpDecayMode 525 521 111 27.23 1.61546
-do Tensor2PScalar:SetUpDecayMode 525 511 211 38.52 1.5839
-do Tensor2PScalar:SetUpDecayMode 515 511 111 27.16 1.59996
-do Tensor2PScalar:SetUpDecayMode 515 521 -211 38.62 1.59933
-do Tensor2PScalar:SetUpDecayMode 425 421 111 18.07 6.
-do Tensor2PScalar:SetUpDecayMode 425 411 -211 25.56 6.
-do Tensor2PScalar:SetUpDecayMode 415 411 111 14.91 6.
-do Tensor2PScalar:SetUpDecayMode 415 421 211 21.09 6.
-do Tensor2PScalar:SetUpDecayMode 435 421 321 23.39 6.
-do Tensor2PScalar:SetUpDecayMode 435 411 311 23.39 6.
-do Tensor2PScalar:SetUpDecayMode 535 521 -321 45.43 1.60661
-do Tensor2PScalar:SetUpDecayMode 535 511 -311 48.84 1.58181
+do Tensor2PScalar:SetUpDecayMode 325 321 221 1.52 1.73005
+do Tensor2PScalar:SetUpDecayMode 315 311 221 1.52 1.59146
+do Tensor2PScalar:SetUpDecayMode 325 321 111 8.3 1.59797
+do Tensor2PScalar:SetUpDecayMode 325 311 211 11.74 1.57335
+do Tensor2PScalar:SetUpDecayMode 315 311 111 8.68 1.59206
+do Tensor2PScalar:SetUpDecayMode 315 321 -211 12.28 1.60384
+do Tensor2PScalar:SetUpDecayMode 525 521 111 27.23 1.61058
+do Tensor2PScalar:SetUpDecayMode 525 511 211 38.52 1.58036
+do Tensor2PScalar:SetUpDecayMode 515 511 111 27.16 1.59641
+do Tensor2PScalar:SetUpDecayMode 515 521 -211 38.62 1.59448
+do Tensor2PScalar:SetUpDecayMode 425 421 111 18.07 1.29457
+do Tensor2PScalar:SetUpDecayMode 425 411 -211 25.56 2.50567
+do Tensor2PScalar:SetUpDecayMode 415 411 111 14.91 0.867481
+do Tensor2PScalar:SetUpDecayMode 415 421 211 21.09 1.76064
+do Tensor2PScalar:SetUpDecayMode 435 421 321 23.39 2.89468
+do Tensor2PScalar:SetUpDecayMode 435 411 311 23.39 2.76409
+do Tensor2PScalar:SetUpDecayMode 535 521 -321 45.43 1.58715
+do Tensor2PScalar:SetUpDecayMode 535 511 -311 48.84 1.56884
 do Tensor2PScalar:SetUpDecayMode 445 211 -211 0.02 1.5984
 do Tensor2PScalar:SetUpDecayMode 445 111 111 0.0141 1.5916
 do Tensor2PScalar:SetUpDecayMode 445 321 -321 0.056 1.59793
-do Tensor2PScalar:SetUpDecayMode 445 311 -311 0.056 1.59254
-do Tensor2PScalar:SetUpDecayMode 225 9000221 9000221 104.1 140.
-do Tensor2PScalar:SetUpDecayMode 10115 9000221 111 15.3 8.14835
-do Tensor2PScalar:SetUpDecayMode 10215 9000221 211 15.3 8.211
-do Tensor2PScalar:SetUpDecayMode 10225 9000111 111 11.3 8.34671
-do Tensor2PScalar:SetUpDecayMode 10225 9000211 -211 11.3 8.2342
-do Tensor2PScalar:SetUpDecayMode 10335 9000111 111 4.43 7.81454
-do Tensor2PScalar:SetUpDecayMode 10335 9000211 -211 4.43 8.54955
-do Tensor2PScalar:SetUpDecayMode 100445 411 -411 22.3 1.6114
-do Tensor2PScalar:SetUpDecayMode 100445 421 -421 22.3 1.61675
+do Tensor2PScalar:SetUpDecayMode 445 311 -311 0.056 1.59259
+do Tensor2PScalar:SetUpDecayMode 225 9000221 9000221 104.1 43.4218
+do Tensor2PScalar:SetUpDecayMode 10115 9000221 111 15.3 7.28776
+do Tensor2PScalar:SetUpDecayMode 10215 9000221 211 15.3 7.29621
+do Tensor2PScalar:SetUpDecayMode 10225 9000111 111 11.3 6.45245
+do Tensor2PScalar:SetUpDecayMode 10225 9000211 -211 11.3 6.4156
+do Tensor2PScalar:SetUpDecayMode 10335 9000111 111 4.43 2.88423
+do Tensor2PScalar:SetUpDecayMode 10335 9000211 -211 4.43 2.94995
+do Tensor2PScalar:SetUpDecayMode 100445 411 -411 22.3 1.60573
+do Tensor2PScalar:SetUpDecayMode 100445 421 -421 22.3 1.61147
 #
 create Herwig::TensorMesonVectorPScalarDecayer  TensorVP
 newdef TensorVP:Iteration 1
@@ -2344,6 +2355,7 @@ do TensorVP:SetUpDecayMode 115 213 -211 21.1 4.68304
 do TensorVP:SetUpDecayMode 215 113 211 21.1 4.71348
 do TensorVP:SetUpDecayMode 215 213 111 21.1 4.73233
 do TensorVP:SetUpDecayMode 215 22 211 0.551 1.7
+do TensorVP:SetUpDecayMode 115 22 111 0.551 1.7
 do TensorVP:SetUpDecayMode 315 223 311 11.66 40.
 do TensorVP:SetUpDecayMode 325 223 321 11.66 40.
 do TensorVP:SetUpDecayMode 325 22 321 0.553 1.9
@@ -20100,6 +20112,7 @@ do SVV:SetUpDecayMode 10441 22 22 0.0384 1.10652
 do SVV:SetUpDecayMode 10111 113 223 13.9 8.
 do SVV:SetUpDecayMode 10211 213 223 13.9 8.
 do SVV:SetUpDecayMode 10441 223 223 0.0397 11.5
+do SVV:SetUpDecayMode 10111 22 22 3.12 1.32957
 #
 create Herwig::a1SimpleDecayer  a1Simple
 newdef a1Simple:Iteration 5

@@ -416,16 +416,16 @@ makeanti B'_c1- B'_c1+
 # the 1^3P_2 multiplet
 #
 create ThePEG::ParticleData a_2+
-setup a_2+ 215 a_2+ 1.3183 0.107 0.214 0 3 0 5 0 
+setup a_2+ 215 a_2+ 1.3182 0.105 0.21 0 3 0 5 0 
 create ThePEG::ParticleData a_20
-setup a_20 115 a_20 1.3183 0.107 0.214 0 0 0 5 0 
+setup a_20 115 a_20 1.3182 0.105 0.21 0 0 0 5 0 
 create ThePEG::ParticleData a_2-
-setup a_2- -215 a_2- 1.3183 0.107 0.214 0 -3 0 5 0 
+setup a_2- -215 a_2- 1.3182 0.105 0.21 0 -3 0 5 0 
 makeanti a_2- a_2+
 create ThePEG::ParticleData f_2
-setup f_2 225 f_2 1.2754 0.1852 0.1801 0 0 0 5 0 
+setup f_2 225 f_2 1.2755 0.1867 0.18085 0 0 0 5 0 
 newdef f_2:WidthLoCut 0.175
-newdef f_2:WidthUpCut 0.1852
+newdef f_2:WidthUpCut 0.1867
 create ThePEG::ParticleData f'_2
 setup f'_2 335 f'_2 1.525 0.073 0.365 0 0 0 5 0 
 create ThePEG::ParticleData chi_c2
@@ -433,11 +433,11 @@ setup chi_c2 445 chi_c2 3.5562 0.00206 0.0206 0 0 0 5 0
 create ThePEG::ParticleData chi_b2
 setup chi_b2 555 chi_b2 9.91221 0.00017 0.0017 0 0 0 5 0 
 create ThePEG::ParticleData K*_2+
-setup K*_2+ 325 K*_2+ 1.4256 0.0985 0.197 0 3 0 5 0 
+setup K*_2+ 325 K*_2+ 1.4273 0.1 0.2 0 3 0 5 0 
 create ThePEG::ParticleData K*_20
 setup K*_20 315 K*_20 1.4324 0.109 0.218 0 0 0 5 0 
 create ThePEG::ParticleData K*_2-
-setup K*_2- -325 K*_2- 1.4256 0.0985 0.197 0 -3 0 5 0 
+setup K*_2- -325 K*_2- 1.4273 0.1 0.2 0 -3 0 5 0 
 makeanti K*_2- K*_2+
 create ThePEG::ParticleData K*_2bar0
 setup K*_2bar0 -315 K*_2bar0 1.4324 0.109 0.218 0 0 0 5 0 
