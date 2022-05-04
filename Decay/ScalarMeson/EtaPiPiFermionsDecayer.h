@@ -1,58 +1,67 @@
 // -*- C++ -*-
 //
-// EtaPiPiPiDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// EtaPiPiFermionsDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_EtaPiPiPiDecayer_H
-#define HERWIG_EtaPiPiPiDecayer_H
-// This is the declaration of the EtaPiPiPiDecayer class.
+#ifndef HERWIG_EtaPiPiFermionsDecayer_H
+#define HERWIG_EtaPiPiFermionsDecayer_H
+// This is the declaration of the EtaPiPiFermionsDecayer class.
 
+#include "Herwig/Utilities/Kinematics.h"
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
+#include "Herwig/Utilities/Interpolator.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "OmnesFunction.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * The <code>EtaPiPiPiDecayer</code> class is designed for the simulation of
- * the decay of the \f$\eta\f$ or \f$\eta'\f$ to either \f$\pi^+\pi^-\pi^0\f$ 
- * or \f$\pi^0\pi^0\pi^0\f$ and the decay of the \f$\eta'\f$ to 
- * \f$\pi^+\pi^-\eta\f$ or \f$\pi^0\pi^0\eta\f$
+ * The <code>EtaPiPiFermionsDecayer</code> class implements the decay of
+ * the \f$\eta\f$ or \f$\eta'\f$ to \f$\pi^+\pi^-\gamma\f$ using either 
+ * a VMD type model or a model using either the theoretical or experimental 
+ * form of the Omnes function taken from hep-ph/0112150.
  *
- *  The matrix element takes the form 
- * \f[ |\mathcal{M}|^2 = N\left[1+ay+by^2+cx^2\right],\f]
- *  where 
- * \f[x = \frac{\sqrt{3}(u-t)}{2M_0(M_0-m_1-m_2-m_3)},\f]
- * \f[y = \frac{(m_1+m_2+m_3)((M_0-m_3)^2-s)}{2M_0(m_1+m_2)(M_0-m_1-m_2-m_3)}-1,\f]
- *  where 
- * - \f$m_{1,2,3}\f$ are the masses of the outgoing mesons
- * - \f$u = (p_0-p_1)^2\f$,
- * - \f$t = (p_0-p_2)^2\f$,
- * - \f$s = (p_0-p_3)^2\f$.
+ * The matrix element is given by
+ * \f[\mathcal{M} = B(s_{+-},s_{+\gamma},s_{-\gamma})\epsilon^{\mu\nu\alpha\beta}
+ *      \epsilon^*_{\mu}p_{+\nu}p_{-\alpha}p_{\gamma\beta}\f]
+ * where \f$p_{+,-}\f$ are the momenta of the positively and negatively charged pions,
+ * \f$p_{\gamma}\f$ is the momentum of the photon and \f$s_{ij} = (p_i+p_j)^2\f$.
  *
- *  This form is taken from hep-ph/0301058 as are the experimental results for 
- * the constants which are used where available and the theory results which are
- * used when there is no experimental data. 
+ *  The different models take
+ *
+ *  \f[B(s_{+-},s_{+\gamma},s_{-\gamma}) = 
+ *  B_0\left(1+\frac32\frac{s_{+-}}{M^2_\rho-s_{+-}-iM_\rho\Gamma_\rho(s_{+-})}\right)\f]
+ *  where \f$M_\rho\f$ and \f$\Gamma_\rho\f$ are the mass and running width 
+ *  of the \f$\rho\f$
+ *  respectively for the VMD model.
+ *
+ *  For the Omnes function case we take
+ *
+ *  \f[B(s_{+-},s_{+\gamma},s_{-\gamma}) = 
+ *  B_0\left(1-c+c\frac{1+as_{+-}}{D_1(s_{+-})}\right)\f]
+ *  either the experimental or analytic form of the Omnes function \f$D_1(s_{+-})\f$
+ *  taken from hep-ph/0112150 can be used.
+ *
+ *  The coefficient \f$B_0\f$ is given in hep-ph/0112150. We use the values from this
+ *  paper and use their default choice \f$c=1\f$, \f$a=\frac1{2M_\rho}\f$.
  *
  * @see DecayIntegrator
  * 
  */
-class EtaPiPiPiDecayer: public DecayIntegrator {
+class EtaPiPiFermionsDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * Default constructor.
    */
-  EtaPiPiPiDecayer() {
-    // no intermediates
-    generateIntermediates(false);
-  }
- 
+  EtaPiPiFermionsDecayer();
   
   /**
    * Which of the possible decays is required
@@ -89,20 +98,24 @@ public:
    * @return A pointer to a WidthCalculatorBase object capable of calculating the width
    */
   virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
-  
+
   /**
-   * The differential three body decay rate with one integral performed.
+   * The matrix element to be integrated for the three-body decays as a function
+   * of the invariant masses of pairs of the outgoing particles.
    * @param imode The mode for which the matrix element is needed.
    * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
-   * @param s  The invariant mass which still needs to be integrate over.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
    * @param m1 The mass of the first  outgoing particle.
    * @param m2 The mass of the second outgoing particle.
    * @param m3 The mass of the third  outgoing particle.
-   * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
+   * @return The matrix element
    */
-  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2, const  Energy2 s,
-				   const Energy m1, const Energy m2, 
-				   const Energy m3) const;
+  virtual double threeBodyMatrixElement(const int imode,const Energy2 q2,
+					const  Energy2 s3,const Energy2 s2,
+					const Energy2 s1,const Energy m1,
+					const Energy m2,const Energy m3) const;
 
   /**
    * Output the setup information for the particle database
@@ -150,11 +163,12 @@ protected:
    */
   virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
-
+  
 protected:
-
+  
   /** @name Standard Interfaced functions. */
   //@{
+
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
@@ -173,69 +187,85 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &) = delete;
-
-public:
-
-  /**
-   *   Set the parameters for a decay mode
-   */
-  string setUpDecayMode(string arg);
+  EtaPiPiFermionsDecayer & operator=(const EtaPiPiFermionsDecayer &) = delete;
 
 private:
 
   /**
-   * the id of the incoming particle
+   * the pion decay constant, \f$F_\pi\f$.
    */
-  vector<int> incoming_;
+  Energy _fpi;
 
   /**
-   * the id of the last neutral meson
+   * the PDG code for the incoming particle
    */
-  vector<int> outgoing_;
+  vector<int> _incoming;
 
   /**
-   * whether the pions are charged or neutral
+   * Coupling for the decay, \f$B_0\f$.
    */
-  vector<bool> charged_;
+  vector<double> _coupling;
 
   /**
-   * the prefactor for the decay
+   * The maximum weight
    */
-  vector<double> prefactor_;
+  vector<double> _maxweight;
 
   /**
-   * The constants for the matrix elements
+   * The option for the energy dependence of the prefactor
    */
-  //*{
-  /**
-   * The \f$a\f$ constant
-   */
-  vector<double> a_;
+  vector<int> _option;
 
   /**
-   * The \f$a\f$ constant
+   * The constants for the omnes function form.
    */
-  vector<double> b_;
+  InvEnergy2 _aconst;
 
   /**
-   * The \f$a\f$ constant
+   * The constants for the Omnes function form.
    */
-  vector<double> c_;
-  //@}
+  double _cconst;
 
   /**
-   * maximum weights
+   * The \f$\rho\f$ mass
    */
-  vector<double> maxWeight_;
+  Energy _mrho;
 
   /**
-   *  Spin density matrix
+   * The \f$\rho\f$ width
    */
-  mutable RhoDMatrix rho_;
+  Energy _rhowidth;
+
+  /**
+   * Constant for the running \f$rho\f$ width.
+   */
+  double _rhoconst;
+
+  /**
+   * The \f$m_\pi\f$.
+   */
+  Energy _mpi;
+
+  /**
+   * Use local values of the parameters.
+   */
+  bool _localparameters;
+
+  /**
+   *  Object calculating the Omnes function
+   */
+  OmnesFunctionPtr omnesFunction_;
+
+  /**
+   *  Spin densit matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the photon
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
 };
-
 }
 
-
-#endif /* HERWIG_EtaPiPiPiDecayer_H */
+#endif /* HERWIG_EtaPiPiFermionsDecayer_H */

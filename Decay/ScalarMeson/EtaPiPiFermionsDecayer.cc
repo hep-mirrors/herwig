@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// EtaPiPiGammaDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// EtaPiPiFermionsDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the EtaPiPiGammaDecayer class.
+// functions of the EtaPiPiFermionsDecayer class.
 //
 
-#include "EtaPiPiGammaDecayer.h"
+#include "EtaPiPiFermionsDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
@@ -34,14 +34,14 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 
-DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator>
-describeHerwigEtaPiPiGammaDecayer("Herwig::EtaPiPiGammaDecayer",
+DescribeClass<EtaPiPiFermionsDecayer,DecayIntegrator>
+describeHerwigEtaPiPiFermionsDecayer("Herwig::EtaPiPiFermionsDecayer",
 				  "HwSMDecay.so");
-HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
+HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiFermionsDecayer,double,Energy)
 
 
 
-void EtaPiPiGammaDecayer::doinitrun() {
+void EtaPiPiFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_maxweight.size();++ix)
@@ -49,7 +49,7 @@ void EtaPiPiGammaDecayer::doinitrun() {
   }
 }
 
-EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
+EtaPiPiFermionsDecayer::EtaPiPiFermionsDecayer() 
   : _incoming(2), _coupling(2), _maxweight(2), _option(2) {
   // the pion decay constant
   _fpi=130.7*MeV;
@@ -78,13 +78,13 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   generateIntermediates(false);
 }
 
-void EtaPiPiGammaDecayer::doinit() {
+void EtaPiPiFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size())
     throw InitException() << "Inconsistent parameters in " 
-			  << "EtaPiPiGammaDecayer::doinit()" << Exception::abortnow;
+			  << "EtaPiPiFermionsDecayer::doinit()" << Exception::abortnow;
   // set the parameters
   tPDPtr rho(getParticleData(ParticleID::rho0));
   if(!_localparameters) {
@@ -107,7 +107,7 @@ void EtaPiPiGammaDecayer::doinit() {
   }
 }
 
-int EtaPiPiGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
+int EtaPiPiFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 				    const tPDVector & children) const {
   int imode(-1);
   // check number of external particles
@@ -131,22 +131,22 @@ int EtaPiPiGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-void EtaPiPiGammaDecayer::persistentOutput(PersistentOStream & os) const {
+void EtaPiPiFermionsDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_fpi,MeV) << _incoming << _coupling << _maxweight << _option 
      << ounit(_aconst,1/MeV2) << _cconst <<ounit(_mrho,MeV) << ounit(_rhowidth,MeV) 
      << _rhoconst << ounit(_mpi,MeV) << _localparameters << omnesFunction_;
 }
 
-void EtaPiPiGammaDecayer::persistentInput(PersistentIStream & is, int) {
+void EtaPiPiFermionsDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_fpi,MeV) >> _incoming >> _coupling >> _maxweight >> _option 
      >> iunit(_aconst,1/MeV2) >> _cconst >>iunit(_mrho,MeV) >> iunit(_rhowidth,MeV) 
      >> _rhoconst >> iunit(_mpi,MeV) >> _localparameters >> omnesFunction_;
 }
 
-void EtaPiPiGammaDecayer::Init() {
+void EtaPiPiFermionsDecayer::Init() {
 
-  static ClassDocumentation<EtaPiPiGammaDecayer> documentation
-    ("The EtaPiPiGammaDecayer class is design for the decay of"
+  static ClassDocumentation<EtaPiPiFermionsDecayer> documentation
+    ("The EtaPiPiFermionsDecayer class is design for the decay of"
      " the eta and eta prime to pi+pi-gamma",
      "The decays of $\\eta,\\eta'\\to\\pi^+\\pi^-\\gamma$ were simulated"
      " using the matrix elements from \\cite{Venugopal:1998fq,Holstein:2001bt}",
@@ -157,51 +157,51 @@ void EtaPiPiGammaDecayer::Init() {
      " Phys.\\ Scripta {\\bf T99} (2002) 55 [arXiv:hep-ph/0112150].\n"
      "%%CITATION = PHSTB,T99,55;%%\n");
 
-  static Reference<EtaPiPiGammaDecayer,OmnesFunction> interfaceOmnesFunction
+  static Reference<EtaPiPiFermionsDecayer,OmnesFunction> interfaceOmnesFunction
     ("OmnesFunction",
      "Omnes function for the matrix element",
-     &EtaPiPiGammaDecayer::omnesFunction_, false, false, true, false, false);
+     &EtaPiPiFermionsDecayer::omnesFunction_, false, false, true, false, false);
 
-  static Parameter<EtaPiPiGammaDecayer,Energy> interfacefpi
+  static Parameter<EtaPiPiFermionsDecayer,Energy> interfacefpi
     ("fpi",
      "The pion decay constant",
-     &EtaPiPiGammaDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.*MeV,
+     &EtaPiPiFermionsDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.*MeV,
      false, false, false); 
 
-  static ParVector<EtaPiPiGammaDecayer,int> interfaceIncoming
+  static ParVector<EtaPiPiFermionsDecayer,int> interfaceIncoming
     ("Incoming",
      "The PDG code for the incoming particle",
-     &EtaPiPiGammaDecayer::_incoming,
+     &EtaPiPiFermionsDecayer::_incoming,
      0, 0, 0, -10000000, 10000000, false, false, true);
 
-  static ParVector<EtaPiPiGammaDecayer,double> interfaceCoupling
+  static ParVector<EtaPiPiFermionsDecayer,double> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
-     &EtaPiPiGammaDecayer::_coupling,
+     &EtaPiPiFermionsDecayer::_coupling,
      0, 0, 0, 0., 100., false, false, true);
 
-  static ParVector<EtaPiPiGammaDecayer,double> interfaceMaxWeight
+  static ParVector<EtaPiPiFermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
-     &EtaPiPiGammaDecayer::_maxweight,
+     &EtaPiPiFermionsDecayer::_maxweight,
      0, 0, 0, 0., 100., false, false, true);
 
-  static Parameter<EtaPiPiGammaDecayer,Energy> interfaceRhoMass
+  static Parameter<EtaPiPiFermionsDecayer,Energy> interfaceRhoMass
     ("RhoMass",
      "The mass of the rho",
-     &EtaPiPiGammaDecayer::_mrho, MeV, 771.1*MeV, 400.*MeV, 1000.*MeV,
+     &EtaPiPiFermionsDecayer::_mrho, MeV, 771.1*MeV, 400.*MeV, 1000.*MeV,
      false, false, false);
 
-  static Parameter<EtaPiPiGammaDecayer,Energy> interfaceRhoWidth
+  static Parameter<EtaPiPiFermionsDecayer,Energy> interfaceRhoWidth
     ("RhoWidth",
      "The width of the rho",
-     &EtaPiPiGammaDecayer::_rhowidth, MeV, 149.2*MeV, 100.*MeV, 300.*MeV,
+     &EtaPiPiFermionsDecayer::_rhowidth, MeV, 149.2*MeV, 100.*MeV, 300.*MeV,
      false, false, false);
 
-  static Switch<EtaPiPiGammaDecayer,bool> interfaceLocalParameters
+  static Switch<EtaPiPiFermionsDecayer,bool> interfaceLocalParameters
     ("LocalParameters",
      "Use local values of the rho mass and width",
-     &EtaPiPiGammaDecayer::_localparameters, true, false, false);
+     &EtaPiPiFermionsDecayer::_localparameters, true, false, false);
   static SwitchOption interfaceLocalParametersLocal
     (interfaceLocalParameters,
      "Local",
@@ -213,29 +213,29 @@ void EtaPiPiGammaDecayer::Init() {
      "Use values from the particle data objects",
      false);
 
-  static Parameter<EtaPiPiGammaDecayer,double> interfaceOmnesC
+  static Parameter<EtaPiPiFermionsDecayer,double> interfaceOmnesC
     ("OmnesC",
      "The constant c for the Omnes form of the prefactor",
-     &EtaPiPiGammaDecayer::_cconst, 1.0, -10., 10.,
+     &EtaPiPiFermionsDecayer::_cconst, 1.0, -10., 10.,
      false, false, false);
 
-  static Parameter<EtaPiPiGammaDecayer,InvEnergy2> interfaceOmnesA
+  static Parameter<EtaPiPiFermionsDecayer,InvEnergy2> interfaceOmnesA
     ("OmnesA",
      "The constant a for the Omnes form of the prefactor",
-     &EtaPiPiGammaDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, ZERO,
+     &EtaPiPiFermionsDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, ZERO,
      10./GeV2,
      false, false, false);
 
-  static ParVector<EtaPiPiGammaDecayer,int> interfaceOption
+  static ParVector<EtaPiPiFermionsDecayer,int> interfaceOption
     ("Option",
      "The form of the prefactor 0 is a VMD model using M Gamma for the width term,"
      "1 is a VMD model using q Gamma for the width term,"
      "2. analytic form of the Omnes function,"
      "3. experimental form of the Omnes function.",
-     &EtaPiPiGammaDecayer::_option,
+     &EtaPiPiFermionsDecayer::_option,
      0, 0, 0, 0, 4, false, false, true);
 }
-void EtaPiPiGammaDecayer::
+void EtaPiPiFermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   // set up the spin information for the decay products
   ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
@@ -246,7 +246,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 					outgoing,true,true);
 }
 
-double EtaPiPiGammaDecayer::me2(const int,const Particle & part,
+double EtaPiPiFermionsDecayer::me2(const int,const Particle & part,
 					const tPDVector &,
 					const vector<Lorentz5Momentum> & momenta,
 					MEOption meopt) const {
@@ -299,7 +299,7 @@ double EtaPiPiGammaDecayer::me2(const int,const Particle & part,
   return ME()->contract(_rho).real();
 }
 
-double EtaPiPiGammaDecayer::
+double EtaPiPiFermionsDecayer::
 threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const 
 		       Energy2 s2,const Energy2 s1,const Energy ,
 		       const Energy ,const Energy ) const {
@@ -330,7 +330,7 @@ threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const
 }
 
 WidthCalculatorBasePtr 
-EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
+EtaPiPiFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // workout which mode we are doing
   int id(dm.parent()->id()),imode(1);
   if(id==ParticleID::eta){imode=0;}
@@ -341,12 +341,12 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<int> intype(1,1);
   vector<double> inpow(1,0.0);
   WidthCalculatorBasePtr 
-    output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiGammaDecayer>
+    output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiFermionsDecayer>
 		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,ZERO)));
   return output;
 }
 
-void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
+void EtaPiPiFermionsDecayer::dataBaseOutput(ofstream & output,
 					 bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
