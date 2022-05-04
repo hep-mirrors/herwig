@@ -14,6 +14,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 
@@ -50,7 +51,7 @@ void AnalyticOmnesFunction::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<AnalyticOmnesFunction,OmnesFunction>
-describeHerwigAnalyticOmnesFunction("Herwig::AnalyticOmnesFunction", "HwSMDecay.so");
+describeHerwigAnalyticOmnesFunction("Herwig::AnalyticOmnesFunction", "HwFormFactors.so");
 
 void AnalyticOmnesFunction::Init() {
 

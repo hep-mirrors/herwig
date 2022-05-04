@@ -89,7 +89,10 @@ FormFactors/BtoSGammaHadronicMass.fh \
 FormFactors/KMatrix.h \
 FormFactors/KMatrix.fh \
 FormFactors/ScalarAmplitude.h \
-FormFactors/ScalarAmplitude.fh
+FormFactors/ScalarAmplitude.fh\
+FormFactors/OmnesFunction.h\
+FormFactors/OmnesFunction.fh\
+FormFactors/OmnesFunction.cc
 
 pkglib_LTLIBRARIES += HwFormFactors.la
 

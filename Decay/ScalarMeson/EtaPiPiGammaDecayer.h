@@ -15,7 +15,7 @@
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Interpolator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "OmnesFunction.fh"
+#include "Herwig/Decay/FormFactors/OmnesFunction.fh"
 
 namespace Herwig {
 using namespace ThePEG;

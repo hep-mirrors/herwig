@@ -171,7 +171,7 @@ void ExperimentalOmnesFunction::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG. 
 DescribeClass<ExperimentalOmnesFunction,OmnesFunction>
-describeHerwigExperimentalOmnesFunction("Herwig::ExperimentalOmnesFunction", "HwSMDecay.so");
+describeHerwigExperimentalOmnesFunction("Herwig::ExperimentalOmnesFunction", "HwFormFactors.so");
 HERWIG_INTERPOLATOR_CLASSDESC(ExperimentalOmnesFunction,double,Energy)
 
 void ExperimentalOmnesFunction::Init() {
