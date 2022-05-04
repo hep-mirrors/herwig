@@ -15,6 +15,7 @@
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Interpolator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "OmnesFunction.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -191,48 +192,6 @@ private:
 private:
 
   /**
-   * The analytic Omnes function, \f$D_1^{\rm anal}(s)\f$.
-   * @param s The scale \f$s\f$.
-   * @return The analytic Omnes function.
-   */
-  Complex analyticOmnes(Energy2 s) const {
-    Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
-    double root, pi2 = sqr(Constants::pi);
-    Complex f,ii(0.,1.);
-    double pre(mpi2/12./pi2/_fpi/_fpi);
-    if(s>4.*mpi2) {
-      // real piece
-      root=sqrt(1.-4.*mpi2/s);
-      f=(1.-0.25*s/mpi2)*root*log((root+1.)/(-root+1.))-2.;
-      f *=pre;
-      // imaginary piece
-      f += ii*s/mrho2*_rhoconst/8.*pow(root,3);
-    }
-    else {
-      root=sqrt(4.*mpi2/s-1.);
-      f=2.*(1.-0.25*s/mpi2)*root*atan2(1.,root)-2.;
-      f *=pre;
-    }
-    return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
-  }
-  
-  /**
-   * The experimental Omnes function, \f$D_1^{\rm exp}(s)\f$.
-   * @param s The scale \f$s\f$.
-   * @return The experimental Omnes function.
-   */
-  Complex experimentalOmnes(Energy2 s) const {
-    if(!_oreal) {
-      _oreal = make_InterpolatorPtr(_omnesfunctionreal,_omnesenergy,3);
-      _oimag = make_InterpolatorPtr(_omnesfunctionimag,_omnesenergy,3);
-    }
-    Energy q(sqrt(s)); Complex ii(0.,1.);
-    return (*_oreal)(q)+ii*(*_oimag)(q);
-  }
-
-private:
-
-  /**
    * the pion decay constant, \f$F_\pi\f$.
    */
   Energy _fpi;
@@ -293,69 +252,9 @@ private:
   bool _localparameters;
 
   /**
-   *  Energy values for the experimental data on the phase shift
+   *  Object calculating the Omnes function
    */
-  vector<Energy> _energy;
-
-  /**
-   *  Experimental values of the phase shift
-   */
-  vector<double> _phase;
-
-  /**
-   *  Energy values for the interpolation table for the Omnes function.
-   */
-  vector<Energy> _omnesenergy;
-
-  /**
-   * Real part of the Omnes function for the interpolation table
-   */
-  vector<double> _omnesfunctionreal;
-
-  /**
-   * Imaginary part of the Omnes function for the interpolation table
-   */
-  vector<double> _omnesfunctionimag;
-
-  /**
-   * set up of the interpolation table
-   */
-  bool _initialize;
-
-  /**
-   * Number of points for the intepolation of the experimental Omnes function
-   */
-  unsigned int _npoints;
-
-  /**
-   * Interpolators for the experimental Omnes function.
-   */
-  //@{
-  /**
-   *  The interpolator for the real part
-   */
-  mutable Interpolator<double,Energy>::Ptr _oreal;
-
-  /**
-   *  The interpolator for the imaginary part
-   */
-  mutable Interpolator<double,Energy>::Ptr _oimag;
-  //@}
-
-  /**
-   *  Cut-off parameter for the integral of the experimental function
-   */ 
-  Energy _epscut;
-
-  /**
-   *  Size of the vectors for the experimental data 
-   */
-  unsigned int _nsizea;
-
-  /**
-   * Size of the vectors for the interpolation tables
-   */
-  unsigned int _nsizeb;
+  OmnesFunctionPtr omnesFunction_;
 
   /**
    *  Spin densit matrix
@@ -366,58 +265,6 @@ private:
    *  Polarization vectors for the photon
    */
   mutable vector<Helicity::LorentzPolarizationVector> _vectors;
-};
-
-/**
- * A simple struct to provide the integrand for the integral
- * \f[\int^\infty_{4m^2_\pi}\frac{ds'\delta_1(s')}{s'(s'-s-i\epsilon)}\f]
- */
-struct OmnesIntegrand {
-
-  /**
-   * constructor with the interpolator and precision
-   * @param inter The interpolator for the phase shift
-   * @param cut   The cut-off
-   */
-  OmnesIntegrand(Interpolator<double,Energy>::Ptr inter, Energy2 cut) {
-    _interpolator=inter;
-    _precision=cut;
-  }
-
-  /**
-   *  Set the scale
-   */
-  void setScale(Energy2 in) { _s=in;}
-
-  /**
-   *  get the value
-   */
-  InvEnergy4 operator ()(Energy2 xpoint) const {
-    InvEnergy4 output = InvEnergy4();
-    Energy q(sqrt(xpoint));
-    if(abs(xpoint-_s)>_precision) 
-      output= (*_interpolator)(q)/xpoint/(xpoint-_s);
-    return output;
-  }
-  /** Return type for the GaussianIntegrator */
-  typedef InvEnergy4 ValType;
-  /** Argument type for the GaussianIntegrator */
-  typedef Energy2 ArgType;
-  
-  /**
-   *  The interpolator
-   */
-  Interpolator<double,Energy>::Ptr _interpolator;
-
-  /**
-   *  The scale
-   */
-  Energy2 _s;
-
-  /**
-   * The precision.
-   */
-  Energy2 _precision; 
 };
 }
 

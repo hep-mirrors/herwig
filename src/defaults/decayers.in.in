@@ -1826,21 +1826,23 @@ do PVff:SetUpDecayMode 221 22 11 0.00755416 2 113 0.707 0 2.82505
 do PVff:SetUpDecayMode 221 22 13 0.00755416 2 113 0.707 0 2.19738
 do PVff:SetUpDecayMode 331 22 11 0.0104 2 113 0.7758 0.1503 5.19839
 do PVff:SetUpDecayMode 331 22 13 0.0104 2 113 0.7758 0.1503 3.01441
+do PVff:SetUpDecayMode 331 223 11 0.0428 2 113 0.7758 0.1503 0.000532818
 #
+create Herwig::AnalyticOmnesFunction AnalyticOmnesFunction 
+create Herwig::ExperimentalOmnesFunction ExperimentalOmnesFunction
+newdef ExperimentalOmnesFunction:Initialize 1
 create Herwig::EtaPiPiGammaDecayer  Etapipigamma
 newdef Etapipigamma:Iteration 1
 newdef Etapipigamma:Ntry 500
 newdef Etapipigamma:Points 10000
 newdef Etapipigamma:GenerateIntermediates 0
+newdef Etapipigamma:OmnesFunction ExperimentalOmnesFunction 
 newdef Etapipigamma:fpi             130.7
 newdef Etapipigamma:RhoMass         771.1
 newdef Etapipigamma:RhoWidth        149.2
 newdef Etapipigamma:LocalParameters 1
 newdef Etapipigamma:OmnesC          1
 newdef Etapipigamma:OmnesA          0.840908
-newdef Etapipigamma:InitializeOmnes 0
-newdef Etapipigamma:OmnesPoints     100
-newdef Etapipigamma:OmnesCut        0.4
 newdef Etapipigamma:Incoming    0  221
 newdef Etapipigamma:Coupling    0  0.00506
 newdef Etapipigamma:MaxWeight   0  3.95071
@@ -1849,376 +1851,6 @@ newdef Etapipigamma:Incoming    1  331
 newdef Etapipigamma:Coupling    1  0.004278
 newdef Etapipigamma:MaxWeight   1  3.53141
 newdef Etapipigamma:Option      1  3
-newdef Etapipigamma:Phase_Energy 0  300
-newdef Etapipigamma:Phase_Shift  0  0.1
-newdef Etapipigamma:Phase_Energy 1  320
-newdef Etapipigamma:Phase_Shift  1  0.4
-newdef Etapipigamma:Phase_Energy 2  340
-newdef Etapipigamma:Phase_Shift  2  0.7
-newdef Etapipigamma:Phase_Energy 3  360
-newdef Etapipigamma:Phase_Shift  3  1
-newdef Etapipigamma:Phase_Energy 4  380
-newdef Etapipigamma:Phase_Shift  4  1.5
-newdef Etapipigamma:Phase_Energy 5  400
-newdef Etapipigamma:Phase_Shift  5  2
-newdef Etapipigamma:Phase_Energy 6  420
-newdef Etapipigamma:Phase_Shift  6  2.5
-newdef Etapipigamma:Phase_Energy 7  440
-newdef Etapipigamma:Phase_Shift  7  3.2
-newdef Etapipigamma:Phase_Energy 8  460
-newdef Etapipigamma:Phase_Shift  8  4
-newdef Etapipigamma:Phase_Energy 9  480
-newdef Etapipigamma:Phase_Shift  9  4.9
-newdef Etapipigamma:Phase_Energy 10  500
-newdef Etapipigamma:Phase_Shift  10  5.9
-newdef Etapipigamma:Phase_Energy 11  520
-newdef Etapipigamma:Phase_Shift  11  7.1
-newdef Etapipigamma:Phase_Energy 12  540
-newdef Etapipigamma:Phase_Shift  12  8.5
-newdef Etapipigamma:Phase_Energy 13  560
-newdef Etapipigamma:Phase_Shift  13  10.1
-newdef Etapipigamma:Phase_Energy 14  580
-newdef Etapipigamma:Phase_Shift  14  12.1
-newdef Etapipigamma:Phase_Energy 15  600
-newdef Etapipigamma:Phase_Shift  15  14.4
-newdef Etapipigamma:Phase_Energy 16  620
-newdef Etapipigamma:Phase_Shift  16  17.3
-newdef Etapipigamma:Phase_Energy 17  640
-newdef Etapipigamma:Phase_Shift  17  20.9
-newdef Etapipigamma:Phase_Energy 18  660
-newdef Etapipigamma:Phase_Shift  18  25.4
-newdef Etapipigamma:Phase_Energy 19  680
-newdef Etapipigamma:Phase_Shift  19  31.2
-newdef Etapipigamma:Phase_Energy 20  700
-newdef Etapipigamma:Phase_Shift  20  38.7
-newdef Etapipigamma:Phase_Energy 21  720
-newdef Etapipigamma:Phase_Shift  21  48.4
-newdef Etapipigamma:Phase_Energy 22  740
-newdef Etapipigamma:Phase_Shift  22  60.6
-newdef Etapipigamma:Phase_Energy 23  760
-newdef Etapipigamma:Phase_Shift  23  74.9
-newdef Etapipigamma:Phase_Energy 24  780
-newdef Etapipigamma:Phase_Shift  24  90
-newdef Etapipigamma:Phase_Energy 25  800
-newdef Etapipigamma:Phase_Shift  25  103.8
-newdef Etapipigamma:Phase_Energy 26  820
-newdef Etapipigamma:Phase_Shift  26  115.3
-newdef Etapipigamma:Phase_Energy 27  840
-newdef Etapipigamma:Phase_Shift  27  124.3
-newdef Etapipigamma:Phase_Energy 28  860
-newdef Etapipigamma:Phase_Shift  28  131.3
-newdef Etapipigamma:Phase_Energy 29  880
-newdef Etapipigamma:Phase_Shift  29  136.7
-newdef Etapipigamma:Phase_Energy 30  900
-newdef Etapipigamma:Phase_Shift  30  141
-newdef Etapipigamma:Phase_Energy 31  920
-newdef Etapipigamma:Phase_Shift  31  144.5
-newdef Etapipigamma:Phase_Energy 32  940
-newdef Etapipigamma:Phase_Shift  32  147.3
-newdef Etapipigamma:Phase_Energy 33  960
-newdef Etapipigamma:Phase_Shift  33  149.7
-newdef Etapipigamma:Phase_Energy 34  980
-newdef Etapipigamma:Phase_Shift  34  151.8
-newdef Etapipigamma:OmnesEnergy 0  282.534
-newdef Etapipigamma:OmnesReal 0  0.860715
-newdef Etapipigamma:OmnesImag 0  0.00243357
-newdef Etapipigamma:OmnesEnergy 1  289.32
-newdef Etapipigamma:OmnesReal 1  0.851815
-newdef Etapipigamma:OmnesImag 1  0.000895003
-newdef Etapipigamma:OmnesEnergy 2  296.106
-newdef Etapipigamma:OmnesReal 2  0.843733
-newdef Etapipigamma:OmnesImag 2  -0.000612528
-newdef Etapipigamma:OmnesEnergy 3  302.893
-newdef Etapipigamma:OmnesReal 3  0.835875
-newdef Etapipigamma:OmnesImag 3  -0.00209191
-newdef Etapipigamma:OmnesEnergy 4  309.679
-newdef Etapipigamma:OmnesReal 4  0.828085
-newdef Etapipigamma:OmnesImag 4  -0.00354367
-newdef Etapipigamma:OmnesEnergy 5  316.466
-newdef Etapipigamma:OmnesReal 5  0.820288
-newdef Etapipigamma:OmnesImag 5  -0.00496772
-newdef Etapipigamma:OmnesEnergy 6  323.252
-newdef Etapipigamma:OmnesReal 6  0.812438
-newdef Etapipigamma:OmnesImag 6  -0.00636369
-newdef Etapipigamma:OmnesEnergy 7  330.038
-newdef Etapipigamma:OmnesReal 7  0.804502
-newdef Etapipigamma:OmnesImag 7  -0.00773098
-newdef Etapipigamma:OmnesEnergy 8  336.825
-newdef Etapipigamma:OmnesReal 8  0.796459
-newdef Etapipigamma:OmnesImag 8  -0.0090689
-newdef Etapipigamma:OmnesEnergy 9  343.611
-newdef Etapipigamma:OmnesReal 9  0.788299
-newdef Etapipigamma:OmnesImag 9  -0.0102966
-newdef Etapipigamma:OmnesEnergy 10  350.398
-newdef Etapipigamma:OmnesReal 10  0.77978
-newdef Etapipigamma:OmnesImag 10  -0.0114782
-newdef Etapipigamma:OmnesEnergy 11  357.184
-newdef Etapipigamma:OmnesReal 11  0.770922
-newdef Etapipigamma:OmnesImag 11  -0.0127871
-newdef Etapipigamma:OmnesEnergy 12  363.97
-newdef Etapipigamma:OmnesReal 12  0.761747
-newdef Etapipigamma:OmnesImag 12  -0.0144893
-newdef Etapipigamma:OmnesEnergy 13  370.757
-newdef Etapipigamma:OmnesReal 13  0.752726
-newdef Etapipigamma:OmnesImag 13  -0.016514
-newdef Etapipigamma:OmnesEnergy 14  377.543
-newdef Etapipigamma:OmnesReal 14  0.743834
-newdef Etapipigamma:OmnesImag 14  -0.0186276
-newdef Etapipigamma:OmnesEnergy 15  384.33
-newdef Etapipigamma:OmnesReal 15  0.735054
-newdef Etapipigamma:OmnesImag 15  -0.0206377
-newdef Etapipigamma:OmnesEnergy 16  391.116
-newdef Etapipigamma:OmnesReal 16  0.726157
-newdef Etapipigamma:OmnesImag 16  -0.02254
-newdef Etapipigamma:OmnesEnergy 17  397.902
-newdef Etapipigamma:OmnesReal 17  0.717152
-newdef Etapipigamma:OmnesImag 17  -0.0243863
-newdef Etapipigamma:OmnesEnergy 18  404.689
-newdef Etapipigamma:OmnesReal 18  0.70801
-newdef Etapipigamma:OmnesImag 18  -0.0260832
-newdef Etapipigamma:OmnesEnergy 19  411.475
-newdef Etapipigamma:OmnesReal 19  0.698521
-newdef Etapipigamma:OmnesImag 19  -0.0277386
-newdef Etapipigamma:OmnesEnergy 20  418.261
-newdef Etapipigamma:OmnesReal 20  0.688707
-newdef Etapipigamma:OmnesImag 20  -0.0294852
-newdef Etapipigamma:OmnesEnergy 21  425.048
-newdef Etapipigamma:OmnesReal 21  0.678618
-newdef Etapipigamma:OmnesImag 21  -0.0315487
-newdef Etapipigamma:OmnesEnergy 22  431.834
-newdef Etapipigamma:OmnesReal 22  0.668556
-newdef Etapipigamma:OmnesImag 22  -0.033826
-newdef Etapipigamma:OmnesEnergy 23  438.621
-newdef Etapipigamma:OmnesReal 23  0.658497
-newdef Etapipigamma:OmnesImag 23  -0.0362089
-newdef Etapipigamma:OmnesEnergy 24  445.407
-newdef Etapipigamma:OmnesReal 24  0.64843
-newdef Etapipigamma:OmnesImag 24  -0.0385967
-newdef Etapipigamma:OmnesEnergy 25  452.193
-newdef Etapipigamma:OmnesReal 25  0.638272
-newdef Etapipigamma:OmnesImag 25  -0.041005
-newdef Etapipigamma:OmnesEnergy 26  458.98
-newdef Etapipigamma:OmnesReal 26  0.628033
-newdef Etapipigamma:OmnesImag 26  -0.0434403
-newdef Etapipigamma:OmnesEnergy 27  465.766
-newdef Etapipigamma:OmnesReal 27  0.61771
-newdef Etapipigamma:OmnesImag 27  -0.0458954
-newdef Etapipigamma:OmnesEnergy 28  472.553
-newdef Etapipigamma:OmnesReal 28  0.607297
-newdef Etapipigamma:OmnesImag 28  -0.0483626
-newdef Etapipigamma:OmnesEnergy 29  479.339
-newdef Etapipigamma:OmnesReal 29  0.596791
-newdef Etapipigamma:OmnesImag 29  -0.0508342
-newdef Etapipigamma:OmnesEnergy 30  486.125
-newdef Etapipigamma:OmnesReal 30  0.586171
-newdef Etapipigamma:OmnesImag 30  -0.0532531
-newdef Etapipigamma:OmnesEnergy 31  492.912
-newdef Etapipigamma:OmnesReal 31  0.575358
-newdef Etapipigamma:OmnesImag 31  -0.0556832
-newdef Etapipigamma:OmnesEnergy 32  499.698
-newdef Etapipigamma:OmnesReal 32  0.564361
-newdef Etapipigamma:OmnesImag 32  -0.0581586
-newdef Etapipigamma:OmnesEnergy 33  506.485
-newdef Etapipigamma:OmnesReal 33  0.553215
-newdef Etapipigamma:OmnesImag 33  -0.0607546
-newdef Etapipigamma:OmnesEnergy 34  513.271
-newdef Etapipigamma:OmnesReal 34  0.541985
-newdef Etapipigamma:OmnesImag 34  -0.0634187
-newdef Etapipigamma:OmnesEnergy 35  520.057
-newdef Etapipigamma:OmnesReal 35  0.530668
-newdef Etapipigamma:OmnesImag 35  -0.0661333
-newdef Etapipigamma:OmnesEnergy 36  526.844
-newdef Etapipigamma:OmnesReal 36  0.519264
-newdef Etapipigamma:OmnesImag 36  -0.068884
-newdef Etapipigamma:OmnesEnergy 37  533.63
-newdef Etapipigamma:OmnesReal 37  0.507775
-newdef Etapipigamma:OmnesImag 37  -0.071656
-newdef Etapipigamma:OmnesEnergy 38  540.417
-newdef Etapipigamma:OmnesReal 38  0.496219
-newdef Etapipigamma:OmnesImag 38  -0.0744313
-newdef Etapipigamma:OmnesEnergy 39  547.203
-newdef Etapipigamma:OmnesReal 39  0.484506
-newdef Etapipigamma:OmnesImag 39  -0.0771089
-newdef Etapipigamma:OmnesEnergy 40  553.989
-newdef Etapipigamma:OmnesReal 40  0.472569
-newdef Etapipigamma:OmnesImag 40  -0.0798123
-newdef Etapipigamma:OmnesEnergy 41  560.776
-newdef Etapipigamma:OmnesReal 41  0.460391
-newdef Etapipigamma:OmnesImag 41  -0.082595
-newdef Etapipigamma:OmnesEnergy 42  567.562
-newdef Etapipigamma:OmnesReal 42  0.448121
-newdef Etapipigamma:OmnesImag 42  -0.0856019
-newdef Etapipigamma:OmnesEnergy 43  574.349
-newdef Etapipigamma:OmnesReal 43  0.43585
-newdef Etapipigamma:OmnesImag 43  -0.0886756
-newdef Etapipigamma:OmnesEnergy 44  581.135
-newdef Etapipigamma:OmnesReal 44  0.423613
-newdef Etapipigamma:OmnesImag 44  -0.0917406
-newdef Etapipigamma:OmnesEnergy 45  587.921
-newdef Etapipigamma:OmnesReal 45  0.411225
-newdef Etapipigamma:OmnesImag 45  -0.0946243
-newdef Etapipigamma:OmnesEnergy 46  594.708
-newdef Etapipigamma:OmnesReal 46  0.398597
-newdef Etapipigamma:OmnesImag 46  -0.0975016
-newdef Etapipigamma:OmnesEnergy 47  601.494
-newdef Etapipigamma:OmnesReal 47  0.385723
-newdef Etapipigamma:OmnesImag 47  -0.100435
-newdef Etapipigamma:OmnesEnergy 48  608.281
-newdef Etapipigamma:OmnesReal 48  0.372705
-newdef Etapipigamma:OmnesImag 48  -0.103516
-newdef Etapipigamma:OmnesEnergy 49  615.067
-newdef Etapipigamma:OmnesReal 49  0.35959
-newdef Etapipigamma:OmnesImag 49  -0.106676
-newdef Etapipigamma:OmnesEnergy 50  621.853
-newdef Etapipigamma:OmnesReal 50  0.3464
-newdef Etapipigamma:OmnesImag 50  -0.109892
-newdef Etapipigamma:OmnesEnergy 51  628.64
-newdef Etapipigamma:OmnesReal 51  0.333099
-newdef Etapipigamma:OmnesImag 51  -0.113121
-newdef Etapipigamma:OmnesEnergy 52  635.426
-newdef Etapipigamma:OmnesReal 52  0.319687
-newdef Etapipigamma:OmnesImag 52  -0.116385
-newdef Etapipigamma:OmnesEnergy 53  642.213
-newdef Etapipigamma:OmnesReal 53  0.306191
-newdef Etapipigamma:OmnesImag 53  -0.119664
-newdef Etapipigamma:OmnesEnergy 54  648.999
-newdef Etapipigamma:OmnesReal 54  0.292542
-newdef Etapipigamma:OmnesImag 54  -0.12291
-newdef Etapipigamma:OmnesEnergy 55  655.785
-newdef Etapipigamma:OmnesReal 55  0.278725
-newdef Etapipigamma:OmnesImag 55  -0.126183
-newdef Etapipigamma:OmnesEnergy 56  662.572
-newdef Etapipigamma:OmnesReal 56  0.264753
-newdef Etapipigamma:OmnesImag 56  -0.129498
-newdef Etapipigamma:OmnesEnergy 57  669.358
-newdef Etapipigamma:OmnesReal 57  0.250639
-newdef Etapipigamma:OmnesImag 57  -0.132862
-newdef Etapipigamma:OmnesEnergy 58  676.145
-newdef Etapipigamma:OmnesReal 58  0.236391
-newdef Etapipigamma:OmnesImag 58  -0.136272
-newdef Etapipigamma:OmnesEnergy 59  682.931
-newdef Etapipigamma:OmnesReal 59  0.222033
-newdef Etapipigamma:OmnesImag 59  -0.139718
-newdef Etapipigamma:OmnesEnergy 60  689.717
-newdef Etapipigamma:OmnesReal 60  0.207536
-newdef Etapipigamma:OmnesImag 60  -0.143173
-newdef Etapipigamma:OmnesEnergy 61  696.504
-newdef Etapipigamma:OmnesReal 61  0.192894
-newdef Etapipigamma:OmnesImag 61  -0.14665
-newdef Etapipigamma:OmnesEnergy 62  703.29
-newdef Etapipigamma:OmnesReal 62  0.178088
-newdef Etapipigamma:OmnesImag 62  -0.150158
-newdef Etapipigamma:OmnesEnergy 63  710.077
-newdef Etapipigamma:OmnesReal 63  0.163157
-newdef Etapipigamma:OmnesImag 63  -0.153716
-newdef Etapipigamma:OmnesEnergy 64  716.863
-newdef Etapipigamma:OmnesReal 64  0.148099
-newdef Etapipigamma:OmnesImag 64  -0.157273
-newdef Etapipigamma:OmnesEnergy 65  723.649
-newdef Etapipigamma:OmnesReal 65  0.132821
-newdef Etapipigamma:OmnesImag 65  -0.160847
-newdef Etapipigamma:OmnesEnergy 66  730.436
-newdef Etapipigamma:OmnesReal 66  0.117442
-newdef Etapipigamma:OmnesImag 66  -0.164521
-newdef Etapipigamma:OmnesEnergy 67  737.222
-newdef Etapipigamma:OmnesReal 67  0.101967
-newdef Etapipigamma:OmnesImag 67  -0.168175
-newdef Etapipigamma:OmnesEnergy 68  744.009
-newdef Etapipigamma:OmnesReal 68  0.0862561
-newdef Etapipigamma:OmnesImag 68  -0.171796
-newdef Etapipigamma:OmnesEnergy 69  750.795
-newdef Etapipigamma:OmnesReal 69  0.0704108
-newdef Etapipigamma:OmnesImag 69  -0.17551
-newdef Etapipigamma:OmnesEnergy 70  757.581
-newdef Etapipigamma:OmnesReal 70  0.0544367
-newdef Etapipigamma:OmnesImag 70  -0.179198
-newdef Etapipigamma:OmnesEnergy 71  764.368
-newdef Etapipigamma:OmnesReal 71  0.0381921
-newdef Etapipigamma:OmnesImag 71  -0.182849
-newdef Etapipigamma:OmnesEnergy 72  771.154
-newdef Etapipigamma:OmnesReal 72  0.0217339
-newdef Etapipigamma:OmnesImag 72  -0.186618
-newdef Etapipigamma:OmnesEnergy 73  777.94
-newdef Etapipigamma:OmnesReal 73  0.00508946
-newdef Etapipigamma:OmnesImag 73  -0.190478
-newdef Etapipigamma:OmnesEnergy 74  784.727
-newdef Etapipigamma:OmnesReal 74  -0.0116072
-newdef Etapipigamma:OmnesImag 74  -0.19445
-newdef Etapipigamma:OmnesEnergy 75  791.513
-newdef Etapipigamma:OmnesReal 75  -0.0284628
-newdef Etapipigamma:OmnesImag 75  -0.198325
-newdef Etapipigamma:OmnesEnergy 76  798.3
-newdef Etapipigamma:OmnesReal 76  -0.0455793
-newdef Etapipigamma:OmnesImag 76  -0.202216
-newdef Etapipigamma:OmnesEnergy 77  805.086
-newdef Etapipigamma:OmnesReal 77  -0.0628504
-newdef Etapipigamma:OmnesImag 77  -0.206211
-newdef Etapipigamma:OmnesEnergy 78  811.872
-newdef Etapipigamma:OmnesReal 78  -0.0803254
-newdef Etapipigamma:OmnesImag 78  -0.210165
-newdef Etapipigamma:OmnesEnergy 79  818.659
-newdef Etapipigamma:OmnesReal 79  -0.0980794
-newdef Etapipigamma:OmnesImag 79  -0.214176
-newdef Etapipigamma:OmnesEnergy 80  825.445
-newdef Etapipigamma:OmnesReal 80  -0.115981
-newdef Etapipigamma:OmnesImag 80  -0.218339
-newdef Etapipigamma:OmnesEnergy 81  832.232
-newdef Etapipigamma:OmnesReal 81  -0.134042
-newdef Etapipigamma:OmnesImag 81  -0.222474
-newdef Etapipigamma:OmnesEnergy 82  839.018
-newdef Etapipigamma:OmnesReal 82  -0.15233
-newdef Etapipigamma:OmnesImag 82  -0.226615
-newdef Etapipigamma:OmnesEnergy 83  845.804
-newdef Etapipigamma:OmnesReal 83  -0.170883
-newdef Etapipigamma:OmnesImag 83  -0.230769
-newdef Etapipigamma:OmnesEnergy 84  852.591
-newdef Etapipigamma:OmnesReal 84  -0.18971
-newdef Etapipigamma:OmnesImag 84  -0.234988
-newdef Etapipigamma:OmnesEnergy 85  859.377
-newdef Etapipigamma:OmnesReal 85  -0.208805
-newdef Etapipigamma:OmnesImag 85  -0.239288
-newdef Etapipigamma:OmnesEnergy 86  866.164
-newdef Etapipigamma:OmnesReal 86  -0.228131
-newdef Etapipigamma:OmnesImag 86  -0.243689
-newdef Etapipigamma:OmnesEnergy 87  872.95
-newdef Etapipigamma:OmnesReal 87  -0.247688
-newdef Etapipigamma:OmnesImag 87  -0.24814
-newdef Etapipigamma:OmnesEnergy 88  879.736
-newdef Etapipigamma:OmnesReal 88  -0.267484
-newdef Etapipigamma:OmnesImag 88  -0.25262
-newdef Etapipigamma:OmnesEnergy 89  886.523
-newdef Etapipigamma:OmnesReal 89  -0.287624
-newdef Etapipigamma:OmnesImag 89  -0.257087
-newdef Etapipigamma:OmnesEnergy 90  893.309
-newdef Etapipigamma:OmnesReal 90  -0.308122
-newdef Etapipigamma:OmnesImag 90  -0.261627
-newdef Etapipigamma:OmnesEnergy 91  900.096
-newdef Etapipigamma:OmnesReal 91  -0.328979
-newdef Etapipigamma:OmnesImag 91  -0.266226
-newdef Etapipigamma:OmnesEnergy 92  906.882
-newdef Etapipigamma:OmnesReal 92  -0.350331
-newdef Etapipigamma:OmnesImag 92  -0.270868
-newdef Etapipigamma:OmnesEnergy 93  913.668
-newdef Etapipigamma:OmnesReal 93  -0.372196
-newdef Etapipigamma:OmnesImag 93  -0.275687
-newdef Etapipigamma:OmnesEnergy 94  920.455
-newdef Etapipigamma:OmnesReal 94  -0.394596
-newdef Etapipigamma:OmnesImag 94  -0.280733
-newdef Etapipigamma:OmnesEnergy 95  927.241
-newdef Etapipigamma:OmnesReal 95  -0.417471
-newdef Etapipigamma:OmnesImag 95  -0.286075
-newdef Etapipigamma:OmnesEnergy 96  934.028
-newdef Etapipigamma:OmnesReal 96  -0.440914
-newdef Etapipigamma:OmnesImag 96  -0.291621
-newdef Etapipigamma:OmnesEnergy 97  940.814
-newdef Etapipigamma:OmnesReal 97  -0.465088
-newdef Etapipigamma:OmnesImag 97  -0.297381
-newdef Etapipigamma:OmnesEnergy 98  947.6
-newdef Etapipigamma:OmnesReal 98  -0.490461
-newdef Etapipigamma:OmnesImag 98  -0.303462
-newdef Etapipigamma:OmnesEnergy 99  954.387
-newdef Etapipigamma:OmnesReal 99  -0.51781
-newdef Etapipigamma:OmnesImag 99  -0.310381
 #
 create Herwig::EtaPiGammaGammaDecayer  Etapigammagamma
 newdef Etapigammagamma:Iteration 1
@@ -2233,63 +1865,21 @@ newdef Etapigammagamma:RhoWidth 149.2
 newdef Etapigammagamma:RatioFpiF8 0.769231
 newdef Etapigammagamma:RatioFpiF0 0.961538
 newdef Etapigammagamma:Theta -0.349066
-newdef Etapigammagamma:EtaMax 2.36858
-newdef Etapigammagamma:EtaPrimeMax 0.00597214
+newdef Etapigammagamma:EtaMax 2.37239
+newdef Etapigammagamma:EtaPrimeMax 9.76071
 newdef Etapigammagamma:LocalParameters 1
 #
 create Herwig::EtaPiPiPiDecayer  Etapipipi
 newdef Etapipipi:Iteration 1
 newdef Etapipipi:Ntry 500
 newdef Etapipipi:Points 10000
-newdef Etapipipi:GenerateIntermediates 0
-newdef Etapipipi:Incoming   0 221
-newdef Etapipipi:Outgoing  0 111
-newdef Etapipipi:Charged 0 1
-newdef Etapipipi:Prefactor 0 0.06477
-newdef Etapipipi:a 0 -1.17
-newdef Etapipipi:b 0 0.21
-newdef Etapipipi:c 0 0.06
-newdef Etapipipi:MaxWeight  0 1.72861
-newdef Etapipipi:Incoming   1 221
-newdef Etapipipi:Outgoing  1 111
-newdef Etapipipi:Charged 1 0
-newdef Etapipipi:Prefactor 1 0.0883547
-newdef Etapipipi:a 1 0
-newdef Etapipipi:b 1 -0.062
-newdef Etapipipi:c 1 -0.062
-newdef Etapipipi:MaxWeight  1 1.45813
-newdef Etapipipi:Incoming   2 331
-newdef Etapipipi:Outgoing  2 111
-newdef Etapipipi:Charged 2 1
-newdef Etapipipi:Prefactor 2 0.037165
-newdef Etapipipi:a 2 -3.08
-newdef Etapipipi:b 2 0.13
-newdef Etapipipi:c 2 0.62
-newdef Etapipipi:MaxWeight  2 0.0153201
-newdef Etapipipi:Incoming   3 331
-newdef Etapipipi:Outgoing  3 111
-newdef Etapipipi:Charged 3 0
-newdef Etapipipi:Prefactor 3 0.016203
-newdef Etapipipi:a 3 0
-newdef Etapipipi:b 3 -0.86
-newdef Etapipipi:c 3 -0.86
-newdef Etapipipi:MaxWeight  3 2.52411
-newdef Etapipipi:Incoming   4 331
-newdef Etapipipi:Outgoing  4 221
-newdef Etapipipi:Charged 4 1
-newdef Etapipipi:Prefactor 4 49.42
-newdef Etapipipi:a 4 -0.093
-newdef Etapipipi:b 4 -0.059
-newdef Etapipipi:c 4 -0.003
-newdef Etapipipi:MaxWeight  4 1.421
-newdef Etapipipi:Incoming   5 331
-newdef Etapipipi:Outgoing  5 221
-newdef Etapipipi:Charged 5 0
-newdef Etapipipi:Prefactor 5 20.62
-newdef Etapipipi:a 5 -0.105
-newdef Etapipipi:b 5 -0.065
-newdef Etapipipi:c 5 -0.004
-newdef Etapipipi:MaxWeight  5 1.42649
+newdef Etapipipi:GenerateIntermediates 0 
+do Etapipipi:SetUpDecayMode 221 111 1 0.06477 -1.17 0.21 0.06 1.72861
+do Etapipipi:SetUpDecayMode 221 111 0 0.0883547 0 -0.062 -0.062 1.45813
+do Etapipipi:SetUpDecayMode 331 111 1 0.02576 -3.08 0.13 0.62 2.94049
+do Etapipipi:SetUpDecayMode 331 111 0 0.01891 0 -0.86 -0.86 1.827
+do Etapipipi:SetUpDecayMode 331 221 1 49.42 -0.093 -0.059 -0.003 1.421
+do Etapipipi:SetUpDecayMode 331 221 0 20.62 -0.105 -0.065 -0.004 1.42649
 #
 create Herwig::TensorMeson2PScalarDecayer  Tensor2PScalar
 newdef Tensor2PScalar:Iteration 1
