@@ -35,7 +35,7 @@ decaymode eta'->omega,gamma; 0.025 1 /Herwig/Decays/PVV
 decaymode eta'->gamma,gamma; 0.022466 1 /Herwig/Decays/PVV
 decaymode eta'->pi+,pi-,pi0; 0.00361 1 /Herwig/Decays/Etapipipi
 decaymode eta'->pi0,pi0,pi0; 0.0025 1 /Herwig/Decays/Etapipipi
-decaymode eta'->pi+,pi-,e-,e+; 0.0024 1 /Herwig/Decays/Mambo
+decaymode eta'->pi+,pi-,e-,e+; 0.0024 1 /Herwig/Decays/EtapipiFermions
 decaymode eta'->pi0,gamma,gamma; 0.00062 1 /Herwig/Decays/Etapigammagamma
 decaymode eta'->e-,e+,gamma; 0.000494 1 /Herwig/Decays/PVff
 decaymode eta'->omega,e-,e+; 0.0002 1 /Herwig/Decays/PVff

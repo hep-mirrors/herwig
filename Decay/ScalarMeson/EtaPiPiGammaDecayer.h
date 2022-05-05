@@ -13,7 +13,6 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
-#include "Herwig/Utilities/Interpolator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig/Decay/FormFactors/OmnesFunction.fh"
 

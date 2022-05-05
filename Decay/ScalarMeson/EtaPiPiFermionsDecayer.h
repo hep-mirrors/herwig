@@ -13,9 +13,8 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
-#include "Herwig/Utilities/Interpolator.h"
-#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig/Decay/FormFactors/OmnesFunction.fh"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -91,31 +90,6 @@ public:
    */
   virtual void constructSpinInfo(const Particle & part,
 				 ParticleVector outgoing) const;
-
-  /**
-   * Method to return an object to calculate the 3 body partial width.
-   * @param dm The DecayMode
-   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
-   */
-  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
-
-  /**
-   * The matrix element to be integrated for the three-body decays as a function
-   * of the invariant masses of pairs of the outgoing particles.
-   * @param imode The mode for which the matrix element is needed.
-   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The matrix element
-   */
-  virtual double threeBodyMatrixElement(const int imode,const Energy2 q2,
-					const  Energy2 s3,const Energy2 s2,
-					const Energy2 s1,const Energy m1,
-					const Energy m2,const Energy m3) const;
 
   /**
    * Output the setup information for the particle database
@@ -194,62 +168,67 @@ private:
   /**
    * the pion decay constant, \f$F_\pi\f$.
    */
-  Energy _fpi;
+  Energy fPi_;
 
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
+
+  /**
+   *  The PDG code of the leptons
+   */
+  vector<int> lepton_;
 
   /**
    * Coupling for the decay, \f$B_0\f$.
    */
-  vector<double> _coupling;
+  vector<double> coupling_;
 
   /**
    * The maximum weight
    */
-  vector<double> _maxweight;
+  vector<double> maxWeight_;
 
   /**
    * The option for the energy dependence of the prefactor
    */
-  vector<int> _option;
+  vector<int> option_;
 
   /**
    * The constants for the omnes function form.
    */
-  InvEnergy2 _aconst;
+  InvEnergy2 aConst_;
 
   /**
    * The constants for the Omnes function form.
    */
-  double _cconst;
+  double cConst_;
 
   /**
    * The \f$\rho\f$ mass
    */
-  Energy _mrho;
+  Energy mRho_;
 
   /**
    * The \f$\rho\f$ width
    */
-  Energy _rhowidth;
+  Energy rhoWidth_;
 
   /**
    * Constant for the running \f$rho\f$ width.
    */
-  double _rhoconst;
+  double rhoConst_;
 
   /**
    * The \f$m_\pi\f$.
    */
-  Energy _mpi;
+  Energy mPi_;
 
   /**
    * Use local values of the parameters.
    */
-  bool _localparameters;
+  bool localParameters_;
 
   /**
    *  Object calculating the Omnes function
@@ -259,12 +238,17 @@ private:
   /**
    *  Spin densit matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
-   *  Polarization vectors for the photon
+   *  Spinors for the fermions
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > wave_;
+
+  /**
+   *  Barred spinors for the fermions 
+   */
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > wavebar_;
 };
 }
 
