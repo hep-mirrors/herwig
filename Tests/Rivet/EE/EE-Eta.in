@@ -20,6 +20,13 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
 # BES eta' dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1641075
+<<<<<<< local
+=======
+# BES eta' -> pi0 gamma gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1504943
+# Crystal Barrel eta' -> pi+pi- gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BARREL_1997_I456942
+>>>>>>> graft
 # eta -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
 
