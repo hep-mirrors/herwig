@@ -161,7 +161,8 @@ double TensorMesonVectorScalarDecayer::me2(const int,const Particle & part,
   // test of the answer
   // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
   // 					     momenta[1].mass());
-  // double test = sqr(coupling_[imode()]/part.mass())*4.*sqr(pcm)/3.;
+  // double test = sqr(coupling_[imode()]/part.mass())*sqr(pcm);
+  // test *= photon ? 4./5. : 4./3.;
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << me << " " << test << " " << (me-test)/(me+test) << endl;

@@ -887,6 +887,8 @@ do Vector2Meson:SetUpDecayMode 100333 130 310 0.918 1.6008
 do Vector2Meson:SetUpDecayMode 9000553 511 -511 1.33 1.60538
 do Vector2Meson:SetUpDecayMode 9000553 521 -521 1.33 1.60989
 do Vector2Meson:SetUpDecayMode 9000553 531 -531 0.75 1.57946
+do Vector2Meson:SetUpDecayMode 10323 321 10221 1. 1.
+do Vector2Meson:SetUpDecayMode 10313 311 10221 1. 1. 
 #
 create Herwig::TauDecayer  Tau3Pion
 newdef Tau3Pion:Iteration 10
@@ -1574,6 +1576,8 @@ do TensorVS:SetUpDecayMode 20325 323 111 0.99 6.6902
 do TensorVS:SetUpDecayMode 20325 313 211 1.41 7.05247
 do TensorVS:SetUpDecayMode 20315 313 111 0.99 6.17997
 do TensorVS:SetUpDecayMode 20315 323 -211 1.41 6.93157
+do TensorVS:SetUpDecayMode 10215 22 211 0.163 1.59356
+do TensorVS:SetUpDecayMode 10115 22 111 0.163 0.00124589
 #
 create Herwig::PseudoTensorMesonVectorVectorDecayer  PTVV
 newdef PTVV:Iteration 1
@@ -9646,6 +9650,8 @@ do ScalarSS:SetUpDecayMode 10441 10311 -10311 104 1.50609
 do ScalarSS:SetUpDecayMode 10531 511 -311 12170 1.07391
 do ScalarSS:SetUpDecayMode 10531 521 -321 12170 1.1278
 do ScalarSS:SetUpDecayMode 10441 9010221 9010221 84 1.31568
+do ScalarSS:SetUpDecayMode 10311 311 221 5973 1.25177
+do ScalarSS:SetUpDecayMode 10321 321 221 5973 1.25638
 #
 create Herwig::PScalarPScalarVectorDecayer  PPVDecayer
 newdef PPVDecayer:Iteration 1
