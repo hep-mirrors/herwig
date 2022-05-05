@@ -823,7 +823,9 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   double gam(0.);
   switch(MEcode_[imode]) {
     // V -> P P (T->VS)
-  case  0: gam = pcm2/6./q2;
+  case  0:
+    gam = pcm2/6./q2;
+    if(m1==ZERO) gam *= 3./5.;
     break;
     // V -> P V
   case  1: gam = pcm2/12./m02;
