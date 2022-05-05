@@ -22,9 +22,9 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
-#include "Herwig/Utilities/GaussianIntegrator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include "ThePEG/Helicity/HelicityFunctions.h"
@@ -44,36 +44,38 @@ HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiFermionsDecayer,double,Energy)
 void EtaPiPiFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<_maxweight.size();++ix)
-      _maxweight[ix]=mode(ix)->maxWeight();
+    for(unsigned int ix=0;ix<maxWeight_.size();++ix)
+      maxWeight_[ix]=mode(ix)->maxWeight();
   }
 }
 
 EtaPiPiFermionsDecayer::EtaPiPiFermionsDecayer() 
-  : _incoming(2), _coupling(2), _maxweight(2), _option(2) {
+  : incoming_(2), lepton_(2), coupling_(2), maxWeight_(2), option_(2) {
   // the pion decay constant
-  _fpi=130.7*MeV;
+  fPi_=130.7*MeV;
   // the rho mass
-  _mrho=0.7711*GeV;
-  _rhowidth=0.1492*GeV;
+  mRho_=0.7711*GeV;
+  rhoWidth_=0.1492*GeV;
   // the constants for the omnes function form
-  _aconst=0.5/_mrho/_mrho;
-  _cconst=1.0;
+  aConst_=0.5/mRho_/mRho_;
+  cConst_=1.0;
   // use local values of the parameters
-  _localparameters=true;
+  localParameters_=true;
   // the modes
   // eta decay
-  _incoming[0] = 221; 
-  _option[0] = 3; 
-  _coupling[0] = 5.060e-3; 
-  _maxweight[0] = 3.95072; 
+  incoming_[0] = 221; 
+  option_[0] = 3; 
+  coupling_[0] = 5.060e-3;
+  lepton_[0]=11;
+  maxWeight_[0] = 3.95072; 
   // eta' decay
-  _incoming[1] = 331; 
-  _option[1] = 3; 
-  _coupling[1] = 4.278e-3; 
-  _maxweight[1] = 3.53141; 
-  _rhoconst=0.;
-  _mpi=ZERO;
+  incoming_[1] = 331; 
+  option_[1] = 3; 
+  coupling_[1] = 4.278e-3;
+  lepton_[1]=11;
+  maxWeight_[1] = 3.53141; 
+  rhoConst_=0.;
+  mPi_=ZERO;
   // intermediates
   generateIntermediates(false);
 }
@@ -81,28 +83,32 @@ EtaPiPiFermionsDecayer::EtaPiPiFermionsDecayer()
 void EtaPiPiFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the parameters
-  unsigned int isize=_incoming.size();
-  if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size())
+  unsigned int isize=incoming_.size();
+  if(isize!=coupling_.size()||isize!=option_.size()||isize!=lepton_.size()||isize!=maxWeight_.size())
     throw InitException() << "Inconsistent parameters in " 
 			  << "EtaPiPiFermionsDecayer::doinit()" << Exception::abortnow;
   // set the parameters
   tPDPtr rho(getParticleData(ParticleID::rho0));
-  if(!_localparameters) {
-    _mrho=rho->mass();
-    _rhowidth=rho->width();
+  if(!localParameters_) {
+    mRho_=rho->mass();
+    rhoWidth_=rho->width();
   }
-  _mpi=getParticleData(ParticleID::piplus)->mass();
-  Energy pcm(Kinematics::pstarTwoBodyDecay(_mrho,_mpi,_mpi));
-  _rhoconst=sqr(_mrho)*_rhowidth/pow<3,1>(pcm);
+  mPi_=getParticleData(ParticleID::piplus)->mass();
+  Energy pcm(Kinematics::pstarTwoBodyDecay(mRho_,mPi_,mPi_));
+  rhoConst_=sqr(mRho_)*rhoWidth_/pow<3,1>(pcm);
   // set up the modes
-  tPDVector out = {getParticleData(ParticleID::piplus),
-		   getParticleData(ParticleID::piminus),
-		   getParticleData(ParticleID::gamma)};
+  tPDPtr gamma = getParticleData(ParticleID::gamma);
   PhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_coupling.size();++ix) {
-    tPDPtr in = getParticleData(_incoming[ix]);
-    mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
-    mode->addChannel((PhaseSpaceChannel(mode),0,rho,0,3,1,1,1,2));
+  for(unsigned int ix=0;ix<coupling_.size();++ix) {
+    tPDVector out = {getParticleData(ParticleID::piplus),
+		     getParticleData(ParticleID::piminus),
+		     getParticleData( lepton_[ix]),
+		     getParticleData(-lepton_[ix])};
+    tPDPtr in = getParticleData(incoming_[ix]);
+    mode = new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
+    PhaseSpaceChannel newChannel((PhaseSpaceChannel(mode),0,rho,0,gamma,1,1,1,2,2,3,2,4));
+    newChannel.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    mode->addChannel(newChannel);
     addMode(mode);
   }
 }
@@ -111,36 +117,42 @@ int EtaPiPiFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 				    const tPDVector & children) const {
   int imode(-1);
   // check number of external particles
-  if(children.size()!=3){return imode;}
+  if(children.size()!=4){return imode;}
   // check the outgoing particles
-  unsigned int npip(0),npim(0),ngamma(0);
+  unsigned int npip(0),npim(0),nl(0),il(0);
   tPDVector::const_iterator pit = children.begin();
   int id;
   for(;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)       ++npip;
     else if(id==ParticleID::piminus) ++npim;
-    else if(id==ParticleID::gamma)   ++ngamma;
+    else {
+      il = abs(id);
+      ++nl;
+    }
   }
-  if(!(npip==1&&npim==1&&ngamma==1)) return imode;
+  if(!(npip==1&&npim==1&&nl==2)) return imode;
   unsigned int ix(0);
   id=parent->id();
-  do{if(id==_incoming[ix]){imode=ix;}++ix;}
-  while(imode<0&&ix<_incoming.size());
+  do {
+    if(id==incoming_[ix] && il==lepton_[ix]) imode=ix;
+    ++ix;
+  }
+  while(imode<0&&ix<incoming_.size());
   cc=false;
   return imode;
 }
 
 void EtaPiPiFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_fpi,MeV) << _incoming << _coupling << _maxweight << _option 
-     << ounit(_aconst,1/MeV2) << _cconst <<ounit(_mrho,MeV) << ounit(_rhowidth,MeV) 
-     << _rhoconst << ounit(_mpi,MeV) << _localparameters << omnesFunction_;
+  os << ounit(fPi_,MeV) << incoming_ << coupling_ << maxWeight_ << lepton_ << option_ 
+     << ounit(aConst_,1/MeV2) << cConst_ <<ounit(mRho_,MeV) << ounit(rhoWidth_,MeV) 
+     << rhoConst_ << ounit(mPi_,MeV) << localParameters_ << omnesFunction_;
 }
 
 void EtaPiPiFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_fpi,MeV) >> _incoming >> _coupling >> _maxweight >> _option 
-     >> iunit(_aconst,1/MeV2) >> _cconst >>iunit(_mrho,MeV) >> iunit(_rhowidth,MeV) 
-     >> _rhoconst >> iunit(_mpi,MeV) >> _localparameters >> omnesFunction_;
+  is >> iunit(fPi_,MeV) >> incoming_ >> coupling_ >> maxWeight_ >> lepton_ >> option_ 
+     >> iunit(aConst_,1/MeV2) >> cConst_ >>iunit(mRho_,MeV) >> iunit(rhoWidth_,MeV) 
+     >> rhoConst_ >> iunit(mPi_,MeV) >> localParameters_ >> omnesFunction_;
 }
 
 void EtaPiPiFermionsDecayer::Init() {
@@ -165,43 +177,43 @@ void EtaPiPiFermionsDecayer::Init() {
   static Parameter<EtaPiPiFermionsDecayer,Energy> interfacefpi
     ("fpi",
      "The pion decay constant",
-     &EtaPiPiFermionsDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.*MeV,
+     &EtaPiPiFermionsDecayer::fPi_, MeV, 130.7*MeV, ZERO, 200.*MeV,
      false, false, false); 
 
   static ParVector<EtaPiPiFermionsDecayer,int> interfaceIncoming
     ("Incoming",
      "The PDG code for the incoming particle",
-     &EtaPiPiFermionsDecayer::_incoming,
+     &EtaPiPiFermionsDecayer::incoming_,
      0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<EtaPiPiFermionsDecayer,double> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
-     &EtaPiPiFermionsDecayer::_coupling,
+     &EtaPiPiFermionsDecayer::coupling_,
      0, 0, 0, 0., 100., false, false, true);
 
   static ParVector<EtaPiPiFermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
-     &EtaPiPiFermionsDecayer::_maxweight,
+     &EtaPiPiFermionsDecayer::maxWeight_,
      0, 0, 0, 0., 100., false, false, true);
 
   static Parameter<EtaPiPiFermionsDecayer,Energy> interfaceRhoMass
     ("RhoMass",
      "The mass of the rho",
-     &EtaPiPiFermionsDecayer::_mrho, MeV, 771.1*MeV, 400.*MeV, 1000.*MeV,
+     &EtaPiPiFermionsDecayer::mRho_, MeV, 771.1*MeV, 400.*MeV, 1000.*MeV,
      false, false, false);
 
   static Parameter<EtaPiPiFermionsDecayer,Energy> interfaceRhoWidth
     ("RhoWidth",
      "The width of the rho",
-     &EtaPiPiFermionsDecayer::_rhowidth, MeV, 149.2*MeV, 100.*MeV, 300.*MeV,
+     &EtaPiPiFermionsDecayer::rhoWidth_, MeV, 149.2*MeV, 100.*MeV, 300.*MeV,
      false, false, false);
 
   static Switch<EtaPiPiFermionsDecayer,bool> interfaceLocalParameters
     ("LocalParameters",
      "Use local values of the rho mass and width",
-     &EtaPiPiFermionsDecayer::_localparameters, true, false, false);
+     &EtaPiPiFermionsDecayer::localParameters_, true, false, false);
   static SwitchOption interfaceLocalParametersLocal
     (interfaceLocalParameters,
      "Local",
@@ -216,13 +228,13 @@ void EtaPiPiFermionsDecayer::Init() {
   static Parameter<EtaPiPiFermionsDecayer,double> interfaceOmnesC
     ("OmnesC",
      "The constant c for the Omnes form of the prefactor",
-     &EtaPiPiFermionsDecayer::_cconst, 1.0, -10., 10.,
+     &EtaPiPiFermionsDecayer::cConst_, 1.0, -10., 10.,
      false, false, false);
 
   static Parameter<EtaPiPiFermionsDecayer,InvEnergy2> interfaceOmnesA
     ("OmnesA",
      "The constant a for the Omnes form of the prefactor",
-     &EtaPiPiFermionsDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, ZERO,
+     &EtaPiPiFermionsDecayer::aConst_, 1./GeV2, 0.8409082/GeV2, ZERO,
      10./GeV2,
      false, false, false);
 
@@ -232,8 +244,15 @@ void EtaPiPiFermionsDecayer::Init() {
      "1 is a VMD model using q Gamma for the width term,"
      "2. analytic form of the Omnes function,"
      "3. experimental form of the Omnes function.",
-     &EtaPiPiFermionsDecayer::_option,
+     &EtaPiPiFermionsDecayer::option_,
      0, 0, 0, 0, 4, false, false, true);
+  
+  static ParVector<EtaPiPiFermionsDecayer,int> interfaceLepton
+    ("Lepton",
+     "The type of lepton",
+     &EtaPiPiFermionsDecayer::lepton_, -1, 11, 11, 15,
+     false, false, Interface::limited);
+
 }
 void EtaPiPiFermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
@@ -242,8 +261,10 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 					incoming,true);
   for(unsigned int ix=0;ix<2;++ix)
     ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-  VectorWaveFunction::constructSpinInfo(_vectors,decay[2],
-					outgoing,true,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(wavebar_,decay[2],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(wave_   ,decay[3],outgoing,true);
 }
 
 double EtaPiPiFermionsDecayer::me2(const int,const Particle & part,
@@ -251,18 +272,26 @@ double EtaPiPiFermionsDecayer::me2(const int,const Particle & part,
 					const vector<Lorentz5Momentum> & momenta,
 					MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1)));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  _vectors.resize(3);
-  for(unsigned int ix=0;ix<3;ix+=2) {
-    _vectors[ix] = HelicityFunctions::polarizationVector(-momenta[2],ix,Helicity::outgoing);
+  // calculate the spinors
+  wavebar_.resize(2);
+  wave_   .resize(2);
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    wavebar_[ihel] = HelicityFunctions::dimensionedSpinorBar(-momenta[2],ihel,Helicity::outgoing);
+    wave_   [ihel] = HelicityFunctions::dimensionedSpinor   (-momenta[3],ihel,Helicity::outgoing);
   }
+  Lorentz5Momentum pff(momenta[2]+momenta[3]);
+  pff.rescaleMass();
+  Energy2 mff2(pff.mass()*pff.mass());
   // prefactor for the matrix element
-  complex<InvEnergy3> pre(_coupling[imode()]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
+  complex<InvEnergy4> pre(part.mass()*coupling_[imode()]*2.*sqrt(2.)/(fPi_*fPi_*fPi_)*
+			  sqrt(SM().alphaEM(mff2)*4.*Constants::pi)/mff2);
   Lorentz5Momentum ppipi(momenta[0]+momenta[1]);
   ppipi.rescaleMass();
   Energy q(ppipi.mass());
@@ -270,102 +299,58 @@ double EtaPiPiFermionsDecayer::me2(const int,const Particle & part,
   Complex ii(0.,1.);
   // first VMD option
   Complex fact;
-  if(_option[imode()]==0) {
-    Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
-    Complex resfact(q2/(_mrho*_mrho-q2-ii*_mrho*pcm*pcm*pcm*_rhoconst/q2));
+  if(option_[imode()]==0) {
+    Energy pcm(Kinematics::pstarTwoBodyDecay(q,mPi_,mPi_));
+    Complex resfact(q2/(mRho_*mRho_-q2-ii*mRho_*pcm*pcm*pcm*rhoConst_/q2));
     fact=(1.+1.5*resfact);
   }
   // second VMD option
-  else if(_option[imode()]==1) {
-    Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
-    Complex resfact(q2/(_mrho*_mrho-q2-ii*pcm*pcm*pcm*_rhoconst/q));
+  else if(option_[imode()]==1) {
+    Energy pcm(Kinematics::pstarTwoBodyDecay(q,mPi_,mPi_));
+    Complex resfact(q2/(mRho_*mRho_-q2-ii*pcm*pcm*pcm*rhoConst_/q));
     fact=(1.+1.5*resfact);
   }
   // omnes function
-  else if(_option[imode()]==2 || _option[imode()]==3) {
-    fact=(1.-_cconst+_cconst*(1.+_aconst*q2)/omnesFunction_->D(q2));
+  else if(option_[imode()]==2 || option_[imode()]==3) {
+    fact=(1.-cConst_+cConst_*(1.+aConst_*q2)/omnesFunction_->D(q2));
   }
   pre = pre*fact;
-  LorentzPolarizationVector epstemp(pre*Helicity::epsilon(momenta[0],
-							  momenta[1],
-							  momenta[2]));
+  LorentzVector<complex<InvEnergy> >
+    epstemp(pre*Helicity::epsilon(momenta[0],momenta[1],pff));
   // compute the matrix element
-  vector<unsigned int> ispin(4,0);
-  for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
-    if(ispin[3]==1) (*ME())(ispin)=0.;
-    else            (*ME())(ispin)=epstemp.dot(_vectors[ispin[3]]);
+  vector<unsigned int> ispin(5,0);
+  for(ispin[3]=0;ispin[3]<2;++ispin[3]) {
+    for(ispin[4]=0;ispin[4]<2;++ispin[4]) {
+      LorentzPolarizationVectorE fcurrent = wave_[ispin[4]].vectorCurrent(wavebar_[ispin[3]]);
+      (*ME())(ispin) = Complex(epstemp.dot(fcurrent));
+    }
   }
   // contract the whole thing
-  return ME()->contract(_rho).real();
-}
-
-double EtaPiPiFermionsDecayer::
-threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const 
-		       Energy2 s2,const Energy2 s1,const Energy ,
-		       const Energy ,const Energy ) const {
-  complex<InvEnergy3> pre(_coupling[imodeb]*2.*sqrt(2.)/pow<3,1>(_fpi));
-  Energy q(sqrt(s3));
-  Complex ii(0.,1.);
-  // first VMD option
-  Complex fact;
-  if(_option[imodeb]==0) {
-    Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
-    Complex resfact(s3/(_mrho*_mrho-s3-ii*_mrho*pcm*pcm*pcm*_rhoconst/s3));
-    fact=(1.+1.5*resfact);
-  }
-  // second VMD option
-  else if(_option[imodeb]==1) {
-    Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
-    Complex resfact(s3/(_mrho*_mrho-s3-ii*pcm*pcm*pcm*_rhoconst/q));
-    fact=(1.+1.5*resfact);
-  }
-  // omnes function
-  else if(_option[imodeb]==2||_option[imodeb]==3) {
-    fact=(1.-_cconst+_cconst*(1.+_aconst*s3)/omnesFunction_->D(s3));
-  }
-  pre =pre*fact;
-  InvEnergy6 factor((pre*conj(pre)).real());
-  Energy2 mpi2(_mpi*_mpi);
-  return factor*((-mpi2*(-2*mpi2+s1+s2)*(-2*mpi2+s1+s2)+(mpi2-s1)*(mpi2-s2)*s3)/4.);
-}
-
-WidthCalculatorBasePtr 
-EtaPiPiFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
-  // workout which mode we are doing
-  int id(dm.parent()->id()),imode(1);
-  if(id==ParticleID::eta){imode=0;}
-  // construct the integrator
-  vector<double> inweights(1,1.);
-  vector<Energy> inmass(1,getParticleData(ParticleID::rho0)->mass());
-  vector<Energy> inwidth(1,getParticleData(ParticleID::rho0)->width());
-  vector<int> intype(1,1);
-  vector<double> inpow(1,0.0);
-  WidthCalculatorBasePtr 
-    output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiFermionsDecayer>
-		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,ZERO)));
-  return output;
+  return ME()->contract(rho_).real();
 }
 
 void EtaPiPiFermionsDecayer::dataBaseOutput(ofstream & output,
-					 bool header) const {
+					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "newdef " << name() << ":fpi             " << _fpi/MeV         << "\n";
-  output << "newdef " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
-  output << "newdef " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
-  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "newdef " << name() << ":OmnesC          " << _cconst          << "\n";
-  output << "newdef " << name() << ":OmnesA          " << _aconst*GeV2     << "\n";
+  output << "newdef " << name() << ":fpi             " << fPi_/MeV         << "\n";
+  output << "newdef " << name() << ":RhoMass         " << mRho_/MeV        << "\n";
+  output << "newdef " << name() << ":RhoWidth        " << rhoWidth_/MeV    << "\n";
+  output << "newdef " << name() << ":LocalParameters " << localParameters_ << "\n";
+  output << "newdef " << name() << ":OmnesC          " << cConst_          << "\n";
+  output << "newdef " << name() << ":OmnesA          " << aConst_*GeV2     << "\n";
   for(unsigned int ix=0;ix<2;++ix) {
     output << "newdef " << name() << ":Incoming    " << ix << "  " 
-	   << _incoming[ix]    << "\n";
+	   << incoming_[ix]    << "\n";
     output << "newdef " << name() << ":Coupling    " << ix << "  " 
-	   << _coupling[ix]    << "\n";
+	   << coupling_[ix]    << "\n";
+    output << "newdef " << name() << ":Lepton      " << ix << "  " 
+	   << lepton_[ix]      << "\n";
     output << "newdef " << name() << ":MaxWeight   " << ix << "  " 
-	   << _maxweight[ix]   << "\n";
+	   << maxWeight_[ix]   << "\n";
     output << "newdef " << name() << ":Option      " << ix << "  " 
-	   << _option[ix]      << "\n";
+	   << option_[ix]      << "\n";
   }
   omnesFunction_->dataBaseOutput(output,false,true);
   output << "newdef " << name() << ":OmnesFunction " << omnesFunction_->name() << " \n";

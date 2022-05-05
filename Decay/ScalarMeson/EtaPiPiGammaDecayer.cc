@@ -23,8 +23,6 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
-#include "Herwig/Utilities/GaussianIntegrator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include "ThePEG/Helicity/HelicityFunctions.h"
