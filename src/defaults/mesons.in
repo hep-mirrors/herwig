@@ -523,7 +523,9 @@ create ThePEG::ParticleData rho''-
 setup rho''- -30213 rho''- 1.72 0.25 0.5 0 -3 0 3 0 
 makeanti rho''- rho''+
 create ThePEG::ParticleData omega''
-setup omega'' 30223 omega'' 1.67 0.315 0.63 0 0 0 3 0 
+setup omega'' 30223 omega'' 1.67 0.315 0.63 0 0 0 3 0
+create ThePEG::ParticleData phi(2170)
+setup phi(2170) 30333 phi(2170) 2.159 0.137 0.411 0 0 0 3 0 
 create ThePEG::ParticleData psi(3770)
 setup psi(3770) 30443 psi(3770) 3.7711 0.023 0.1305 0 0 0 3 0 
 newdef psi(3770):WidthLoCut 0.031

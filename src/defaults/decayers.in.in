@@ -795,6 +795,7 @@ do VectorVP:SetUpDecayMode 100443 113 331 2.6e-07 3.3628
 do VectorVP:SetUpDecayMode 9000553 -533 531 0.000149 1.54526
 do VectorVP:SetUpDecayMode 9000553 -513 511 0.000195 1.55437
 do VectorVP:SetUpDecayMode 9000553 -523 521 0.000195 1.55739
+do VectorVP:SetUpDecayMode 30223 223 221 0.00462 12.6483
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -1631,6 +1632,7 @@ do Vector2Leptons:SetUpDecayMode 9000553 13 -13 0.001 1.56074
 do Vector2Leptons:SetUpDecayMode 9000553 15 -15 0.001 1.55385
 do Vector2Leptons:SetUpDecayMode 443 3112 -3112 0.001342 1.5934
 do Vector2Leptons:SetUpDecayMode 100443 3112 -3112 0.0009273 1.5978
+do Vector2Leptons:SetUpDecayMode 30223 11 -11 0.00462 1.60088
 #
 create Herwig::VectorMeson2SpinThreeHalfBaryonsDecayer  Vector2Baryons3Half
 newdef Vector2Baryons3Half:Iteration 1
