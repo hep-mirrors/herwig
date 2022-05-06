@@ -344,9 +344,9 @@ newdef a_1-:VariableRatio 1
 create ThePEG::ParticleData f_1
 setup f_1 20223 f_1 1.2818 0.0242 0.242 0 0 0 3 0 
 create ThePEG::ParticleData f'_1
-setup f'_1 20333 f'_1 1.4263 0.0549 0.41175 0 0 0 3 0 
-newdef f'_1:WidthLoCut 0.2745
-newdef f'_1:WidthUpCut 0.549
+setup f'_1 20333 f'_1 1.4263 0.0545 0.40875 0 0 0 3 0 
+newdef f'_1:WidthLoCut 0.2725
+newdef f'_1:WidthUpCut 0.545
 create ThePEG::ParticleData chi_c1
 setup chi_c1 20443 chi_c1 3.51066 0.00089 0.0089 0 0 0 3 0 
 create ThePEG::ParticleData chi_b1
@@ -366,23 +366,23 @@ setup K'_1bar0 -20313 K'_1bar0 1.403 0.174 0.348 0 0 0 3 0
 makeanti K'_1bar0 K'_10
 newdef K'_1bar0:VariableRatio 1
 create ThePEG::ParticleData D'_10
-setup D'_10 20423 D'_10 2.438 0.329 0.454 0 0 0 3 0 
+setup D'_10 20423 D'_10 2.412 0.314 0.439 0 0 0 3 0 
 newdef D'_10:WidthLoCut 0.25
-newdef D'_10:WidthUpCut 0.658
+newdef D'_10:WidthUpCut 0.628
 create ThePEG::ParticleData D'_1+
-setup D'_1+ 20413 D'_1+ 2.438 0.329 0.454 0 3 0 3 0 
+setup D'_1+ 20413 D'_1+ 2.412 0.314 0.439 0 3 0 3 0 
 newdef D'_1+:WidthLoCut 0.25
-newdef D'_1+:WidthUpCut 0.658
+newdef D'_1+:WidthUpCut 0.628
 create ThePEG::ParticleData D'_1bar0
-setup D'_1bar0 -20423 D'_1bar0 2.438 0.329 0.454 0 0 0 3 0 
+setup D'_1bar0 -20423 D'_1bar0 2.412 0.314 0.439 0 0 0 3 0 
 makeanti D'_1bar0 D'_10
 newdef D'_1bar0:WidthLoCut 0.25
-newdef D'_1bar0:WidthUpCut 0.658
+newdef D'_1bar0:WidthUpCut 0.628
 create ThePEG::ParticleData D'_1-
-setup D'_1- -20413 D'_1- 2.438 0.329 0.454 0 -3 0 3 0 
+setup D'_1- -20413 D'_1- 2.412 0.314 0.439 0 -3 0 3 0 
 makeanti D'_1- D'_1+
 newdef D'_1-:WidthLoCut 0.25
-newdef D'_1-:WidthUpCut 0.658
+newdef D'_1-:WidthUpCut 0.628
 create ThePEG::ParticleData D'_s1+
 setup D'_s1+ 20433 D'_s1+ 2.4595 3.82E-5 0.000382 0 3 0 3 0 
 create ThePEG::ParticleData D'_s1-
@@ -568,14 +568,14 @@ setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.00074 0.0074 0 0 0 5 0
 create ThePEG::ParticleData Upsilon_2(1D)
 setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1637 2.8E-5 0.00028 0 0 0 5 0 
 create ThePEG::ParticleData K_2(1820)+
-setup K_2(1820)+ 20325 K_2(1820)+ 1.816 0.276 0.552 0 3 0 5 0 
+setup K_2(1820)+ 20325 K_2(1820)+ 1.819 0.264 0.528 0 3 0 5 0 
 create ThePEG::ParticleData K_2(1820)0
-setup K_2(1820)0 20315 K_2(1820)0 1.816 0.276 0.552 0 0 0 5 0 
+setup K_2(1820)0 20315 K_2(1820)0 1.819 0.264 0.528 0 0 0 5 0 
 create ThePEG::ParticleData K_2(1820)-
-setup K_2(1820)- -20325 K_2(1820)- 1.816 0.276 0.552 0 -3 0 5 0 
+setup K_2(1820)- -20325 K_2(1820)- 1.819 0.264 0.528 0 -3 0 5 0 
 makeanti K_2(1820)- K_2(1820)+
 create ThePEG::ParticleData K_2(1820)bar0
-setup K_2(1820)bar0 -20315 K_2(1820)bar0 1.816 0.276 0.552 0 0 0 5 0 
+setup K_2(1820)bar0 -20315 K_2(1820)bar0 1.819 0.264 0.528 0 0 0 5 0 
 makeanti K_2(1820)bar0 K_2(1820)0
 create ThePEG::ParticleData D_2(2740)0
 setup D_2(2740)0 20425 D_2(2740)0 2.747 0.088 0.264 0 0 0 5 0 
@@ -876,20 +876,20 @@ setup K_S0 310 K_S0 0.497611 7.3514250055883E-15 0 26.842 0 0 1 0
 create ThePEG::ParticleData K_L0
 setup K_L0 130 K_L0 0.497611 1.2871947162427E-17 0 15330 0 0 1 1 
 create ThePEG::ParticleData kappa0
-setup kappa0 9000311 kappa0 0.841 0.618 0.7215 0 0 0 1 0 
+setup kappa0 9000311 kappa0 0.845 0.468 0.5895 0 0 0 1 0 
 newdef kappa0:WidthLoCut 0.207
-newdef kappa0:WidthUpCut 1.236
+newdef kappa0:WidthUpCut 0.972
 create ThePEG::ParticleData kappabar0
-setup kappabar0 -9000311 kappabar0 0.841 0.618 0.7215 0 0 0 1 0 
+setup kappabar0 -9000311 kappabar0 0.845 0.468 0.5895 0 0 0 1 0 
 makeanti kappabar0 kappa0
 newdef kappabar0:WidthLoCut 0.207
-newdef kappabar0:WidthUpCut 1.236
+newdef kappabar0:WidthUpCut 0.972
 create ThePEG::ParticleData kappa-
-setup kappa- -9000321 kappa- 0.841 0.618 0.7215 0 -3 0 1 0 
+setup kappa- -9000321 kappa- 0.845 0.468 0.5895 0 -3 0 1 0 
 newdef kappa-:WidthLoCut 0.207
-newdef kappa-:WidthUpCut 1.236
+newdef kappa-:WidthUpCut 0.972
 create ThePEG::ParticleData kappa+
-setup kappa+ 9000321 kappa+ 0.841 0.618 0.7215 0 3 0 1 0 
+setup kappa+ 9000321 kappa+ 0.845 0.468 0.5895 0 3 0 1 0 
 makeanti kappa+ kappa-
 newdef kappa+:WidthLoCut 0.207
-newdef kappa+:WidthUpCut 1.236
+newdef kappa+:WidthUpCut 0.972

@@ -4,14 +4,14 @@
 # file containing the particle data for the quarks
 #
 create ThePEG::ConstituentParticleData d
-setup d 1 d 0.005 0.  0 0 -1 3 2 1  0.325
+setup d 1 d 0.00467 0.  0 0 -1 3 2 1  0.325
 create ThePEG::ConstituentParticleData dbar
-setup dbar -1 dbar 0.005 0.  0 0 1 -3 2 1  0.325
+setup dbar -1 dbar 0.00467 0.  0 0 1 -3 2 1  0.325
 makeanti dbar d
 create ThePEG::ConstituentParticleData ubar
-setup ubar -2 ubar 0.0023 0.  0 0 -2 -3 2 1  0.325
+setup ubar -2 ubar 0.00216 0.  0 0 -2 -3 2 1  0.325
 create ThePEG::ConstituentParticleData u
-setup u 2 u 0.0023 0.  0 0 2 3 2 1  0.325
+setup u 2 u 0.00216 0.  0 0 2 3 2 1  0.325
 makeanti u ubar
 create ThePEG::ConstituentParticleData c
 setup c 4 c 1.25 0.  0 0 2 3 2 1  1.6
