@@ -1265,11 +1265,13 @@ decaymode rho''-->K*-,K0; 0.017998 1 /Herwig/Decays/VectorVP
 decaymode rho''-->K*0,K-; 0.017998 1 /Herwig/Decays/VectorVP
 decaymode rho''-->K-,K0; 0.001872 1 /Herwig/Decays/Vector2Meson
 #
-decaymode omega''->omega,pi+,pi-; 0.333333 1 /Herwig/Decays/DecayME0
-decaymode omega''->rho-,pi+; 0.166667 1 /Herwig/Decays/VectorVP
-decaymode omega''->rho+,pi-; 0.166667 1 /Herwig/Decays/VectorVP
-decaymode omega''->omega,pi0,pi0; 0.166667 1 /Herwig/Decays/DecayME0
-decaymode omega''->rho0,pi0; 0.166666 1 /Herwig/Decays/VectorVP
+decaymode omega''->omega,eta; 0.201478 1 /Herwig/Decays/VectorVP
+decaymode omega''->rho-,pi+; 0.180746 1 /Herwig/Decays/VectorVP
+decaymode omega''->rho0,pi0; 0.180746 1 /Herwig/Decays/VectorVP
+decaymode omega''->rho+,pi-; 0.180746 1 /Herwig/Decays/VectorVP
+decaymode omega''->omega,pi+,pi-; 0.170854 1 /Herwig/Decays/DecayME0
+decaymode omega''->omega,pi0,pi0; 0.085427 1 /Herwig/Decays/DecayME0
+decaymode omega''->e-,e+; 3.0E-6 1 /Herwig/Decays/Vector2Leptons
 #
 decaymode psi(3770)->D0,Dbar0; 0.595969 1 /Herwig/Decays/Vector2Meson
 decaymode psi(3770)->D+,D-; 0.400064 1 /Herwig/Decays/Vector2Meson
