@@ -796,6 +796,8 @@ do VectorVP:SetUpDecayMode 9000553 -533 531 0.000149 1.54526
 do VectorVP:SetUpDecayMode 9000553 -513 511 0.000195 1.55437
 do VectorVP:SetUpDecayMode 9000553 -523 521 0.000195 1.55739
 do VectorVP:SetUpDecayMode 30223 223 221 0.00462 12.6483
+do VectorVP:SetUpDecayMode 30333 223 221 0.00186 5.22461
+do VectorVP:SetUpDecayMode 30333 333 331 0.00482 7.5409
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -9823,6 +9825,7 @@ do VVSDecayer:SetUpDecayMode 10313 22 311 0.119 1.6
 do VVSDecayer:SetUpDecayMode 20313 22 311 0.22 1.6
 do VVSDecayer:SetUpDecayMode 10533 513 -311 0.0418 1.60089
 do VVSDecayer:SetUpDecayMode 10533 523 -321 0.0373 1.60358
+do VVSDecayer:SetUpDecayMode 30333 333 9010221 1.73 6.54072
 #
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
