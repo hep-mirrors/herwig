@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the width generators for Herwig outputted
-# from the Herwig++ Particles Database at 11:22:30 on the 7/5/2022.
+# from the Herwig++ Particles Database at 13:26:23 on the 8/5/2022.
 #
 create Herwig::GenericWidthGenerator  rho+width
 newdef rho+width:Particle /Herwig/Particles/rho+ 
@@ -8925,7 +8925,7 @@ insert f_2width:NumberofEntries 9 216
 
 newdef /Herwig/Particles/f_2:Width_generator f_2width
 #
-create Herwig::GenericWidthGenerator  D*0width
+create Herwig::HeavyMesonWidthGenerator  D*0width
 newdef D*0width:Particle /Herwig/Particles/D*0 
 
 newdef D*0width:Prefactor 1
@@ -8935,27 +8935,37 @@ newdef D*0width:Points 50
 newdef D*0width:InterpolationOrder 1
 insert D*0width:MEtype 0 1
 insert D*0width:MEtype 1 1
-insert D*0width:MEcode 0 1
-insert D*0width:MEcode 1 0
-insert D*0width:MEcoupling 0 1.23457
-insert D*0width:MEcoupling 1 6.31029
+insert D*0width:MEcode 0 102
+insert D*0width:MEcode 1 18
+insert D*0width:MEcoupling 0 0.782964
+insert D*0width:MEcoupling 1 1.23523
 insert D*0width:ModeOn 0 1
 insert D*0width:ModeOn 1 1
-insert D*0width:MinimumMasses 0 1.8645
-insert D*0width:MinimumMasses 1 1.99948
-insert D*0width:MEmass1 0 0
-insert D*0width:MEmass1 1 1.8645
-insert D*0width:MEmass2 0 1.8645
-insert D*0width:MEmass2 1 0.134978
-insert D*0width:DecayModes 0 D*0->D0,gamma; 
-insert D*0width:DecayModes 1 D*0->D0,pi0; 
+insert D*0width:MinimumMasses 0 1.99982
+insert D*0width:MinimumMasses 1 1.86484
+insert D*0width:MEmass1 0 1.86484
+insert D*0width:MEmass1 1 1.86484
+insert D*0width:MEmass2 0 0.134977
+insert D*0width:MEmass2 1 0
+insert D*0width:DecayModes 0 D*0->D0,pi0; 
+insert D*0width:DecayModes 1 D*0->D0,gamma; 
 insert D*0width:NumberofEntries 0 0
 insert D*0width:NumberofEntries 1 0
+newdef D*0width:fPi    130.2
+newdef D*0width:g      0.566
+newdef D*0width:h      0.544
+newdef D*0width:hp     0.413
+newdef D*0width:k      0.407
+newdef D*0width:kp     0.242
+newdef D*0width:gtilde 0.283
+newdef D*0width:Lambda 1
+newdef D*0width:psiL   0
+newdef D*0width:psiS   0.041
 
 newdef /Herwig/Particles/D*0:Width_generator D*0width
 newdef /Herwig/Particles/D*bar0:Width_generator D*0width
 #
-create Herwig::GenericWidthGenerator  B*0width
+create Herwig::HeavyMesonWidthGenerator  B*0width
 newdef B*0width:Particle /Herwig/Particles/B*0 
 
 newdef B*0width:Prefactor 1
@@ -8964,19 +8974,29 @@ newdef B*0width:BRMinimum 0.01
 newdef B*0width:Points 50
 newdef B*0width:InterpolationOrder 1
 insert B*0width:MEtype 0 1
-insert B*0width:MEcode 0 1
-insert B*0width:MEcoupling 0 1.65554
+insert B*0width:MEcode 0 18
+insert B*0width:MEcoupling 0 1.6929
 insert B*0width:ModeOn 0 1
-insert B*0width:MinimumMasses 0 5.2794
-insert B*0width:MEmass1 0 0
-insert B*0width:MEmass2 0 5.2794
+insert B*0width:MinimumMasses 0 5.27965
+insert B*0width:MEmass1 0 5.27965
+insert B*0width:MEmass2 0 0
 insert B*0width:DecayModes 0 B*0->B0,gamma; 
 insert B*0width:NumberofEntries 0 0
+newdef B*0width:fPi    130.2
+newdef B*0width:g      0.566
+newdef B*0width:h      0.544
+newdef B*0width:hp     0.413
+newdef B*0width:k      0.407
+newdef B*0width:kp     0.242
+newdef B*0width:gtilde 0.283
+newdef B*0width:Lambda 1
+newdef B*0width:psiL   0
+newdef B*0width:psiS   0.041
 
 newdef /Herwig/Particles/B*bar0:Width_generator B*0width
 newdef /Herwig/Particles/B*0:Width_generator B*0width
 #
-create Herwig::GenericWidthGenerator  B*+width
+create Herwig::HeavyMesonWidthGenerator  B*+width
 newdef B*+width:Particle /Herwig/Particles/B*+ 
 
 newdef B*+width:Prefactor 1
@@ -8985,19 +9005,29 @@ newdef B*+width:BRMinimum 0.01
 newdef B*+width:Points 50
 newdef B*+width:InterpolationOrder 1
 insert B*+width:MEtype 0 1
-insert B*+width:MEcode 0 1
-insert B*+width:MEcoupling 0 2.94588
+insert B*+width:MEcode 0 18
+insert B*+width:MEcoupling 0 3.0209
 insert B*+width:ModeOn 0 1
-insert B*+width:MinimumMasses 0 5.279
-insert B*+width:MEmass1 0 0
-insert B*+width:MEmass2 0 5.279
+insert B*+width:MinimumMasses 0 5.27934
+insert B*+width:MEmass1 0 5.27934
+insert B*+width:MEmass2 0 0
 insert B*+width:DecayModes 0 B*+->B+,gamma; 
 insert B*+width:NumberofEntries 0 0
+newdef B*+width:fPi    130.2
+newdef B*+width:g      0.566
+newdef B*+width:h      0.544
+newdef B*+width:hp     0.413
+newdef B*+width:k      0.407
+newdef B*+width:kp     0.242
+newdef B*+width:gtilde 0.283
+newdef B*+width:Lambda 1
+newdef B*+width:psiL   0
+newdef B*+width:psiS   0.041
 
 newdef /Herwig/Particles/B*+:Width_generator B*+width
 newdef /Herwig/Particles/B*-:Width_generator B*+width
 #
-create Herwig::GenericWidthGenerator  D*+width
+create Herwig::HeavyMesonWidthGenerator  D*+width
 newdef D*+width:Particle /Herwig/Particles/D*+ 
 
 newdef D*+width:Prefactor 1
@@ -9008,30 +9038,40 @@ newdef D*+width:InterpolationOrder 1
 insert D*+width:MEtype 0 1
 insert D*+width:MEtype 1 1
 insert D*+width:MEtype 2 1
-insert D*+width:MEcode 0 1
-insert D*+width:MEcode 1 0
-insert D*+width:MEcode 2 0
-insert D*+width:MEcoupling 0 0.305721
-insert D*+width:MEcoupling 1 6.31932
-insert D*+width:MEcoupling 2 8.9273
+insert D*+width:MEcode 0 102
+insert D*+width:MEcode 1 102
+insert D*+width:MEcode 2 18
+insert D*+width:MEcoupling 0 0.999037
+insert D*+width:MEcoupling 1 0.708363
+insert D*+width:MEcoupling 2 0.295813
 insert D*+width:ModeOn 0 1
 insert D*+width:ModeOn 1 1
 insert D*+width:ModeOn 2 1
-insert D*+width:MinimumMasses 0 1.8693
-insert D*+width:MinimumMasses 1 2.00428
-insert D*+width:MinimumMasses 2 2.00407
-insert D*+width:MEmass1 0 0
-insert D*+width:MEmass1 1 1.8693
-insert D*+width:MEmass1 2 1.8645
-insert D*+width:MEmass2 0 1.8693
-insert D*+width:MEmass2 1 0.134978
-insert D*+width:MEmass2 2 0.13957
-insert D*+width:DecayModes 0 D*+->D+,gamma; 
+insert D*+width:MinimumMasses 0 2.00441
+insert D*+width:MinimumMasses 1 2.00464
+insert D*+width:MinimumMasses 2 1.86966
+insert D*+width:MEmass1 0 1.86484
+insert D*+width:MEmass1 1 1.86966
+insert D*+width:MEmass1 2 1.86966
+insert D*+width:MEmass2 0 0.13957
+insert D*+width:MEmass2 1 0.134977
+insert D*+width:MEmass2 2 0
+insert D*+width:DecayModes 0 D*+->D0,pi+; 
 insert D*+width:DecayModes 1 D*+->D+,pi0; 
-insert D*+width:DecayModes 2 D*+->D0,pi+; 
+insert D*+width:DecayModes 2 D*+->D+,gamma; 
 insert D*+width:NumberofEntries 0 0
 insert D*+width:NumberofEntries 1 0
 insert D*+width:NumberofEntries 2 0
+newdef D*+width:fPi    130.2
+newdef D*+width:g      0.566
+newdef D*+width:h      0.544
+newdef D*+width:hp     0.413
+newdef D*+width:k      0.407
+newdef D*+width:kp     0.242
+newdef D*+width:gtilde 0.283
+newdef D*+width:Lambda 1
+newdef D*+width:psiL   0
+newdef D*+width:psiS   0.041
 
 newdef /Herwig/Particles/D*+:Width_generator D*+width
 newdef /Herwig/Particles/D*-:Width_generator D*+width
@@ -9678,7 +9718,7 @@ insert a_2+width:NumberofEntries 7 279
 newdef /Herwig/Particles/a_2-:Width_generator a_2+width
 newdef /Herwig/Particles/a_2+:Width_generator a_2+width
 #
-create Herwig::GenericWidthGenerator  D_s*width
+create Herwig::HeavyMesonWidthGenerator  D_s*width
 newdef D_s*width:Particle /Herwig/Particles/D_s*+ 
 
 newdef D_s*width:Prefactor 1
@@ -9688,27 +9728,37 @@ newdef D_s*width:Points 50
 newdef D_s*width:InterpolationOrder 1
 insert D_s*width:MEtype 0 1
 insert D_s*width:MEtype 1 1
-insert D_s*width:MEcode 0 1
-insert D_s*width:MEcode 1 0
-insert D_s*width:MEcoupling 0 1.61264
-insert D_s*width:MEcoupling 1 1.39821
+insert D_s*width:MEcode 0 102
+insert D_s*width:MEcode 1 18
+insert D_s*width:MEcoupling 0 0.624861
+insert D_s*width:MEcoupling 1 0.413736
 insert D_s*width:ModeOn 0 1
 insert D_s*width:ModeOn 1 1
-insert D_s*width:MinimumMasses 0 1.9682
-insert D_s*width:MinimumMasses 1 2.10318
-insert D_s*width:MEmass1 0 0
+insert D_s*width:MinimumMasses 0 2.10318
+insert D_s*width:MinimumMasses 1 1.9682
+insert D_s*width:MEmass1 0 1.9682
 insert D_s*width:MEmass1 1 1.9682
-insert D_s*width:MEmass2 0 1.9682
-insert D_s*width:MEmass2 1 0.134978
-insert D_s*width:DecayModes 0 D_s*+->D_s+,gamma; 
-insert D_s*width:DecayModes 1 D_s*+->D_s+,pi0; 
+insert D_s*width:MEmass2 0 0.134977
+insert D_s*width:MEmass2 1 0
+insert D_s*width:DecayModes 0 D_s*+->D_s+,pi0; 
+insert D_s*width:DecayModes 1 D_s*+->D_s+,gamma; 
 insert D_s*width:NumberofEntries 0 0
 insert D_s*width:NumberofEntries 1 0
+newdef D_s*width:fPi    130.2
+newdef D_s*width:g      0.566
+newdef D_s*width:h      0.544
+newdef D_s*width:hp     0.413
+newdef D_s*width:k      0.407
+newdef D_s*width:kp     0.242
+newdef D_s*width:gtilde 0.283
+newdef D_s*width:Lambda 1
+newdef D_s*width:psiL   0
+newdef D_s*width:psiS   0.041
 
 newdef /Herwig/Particles/D_s*+:Width_generator D_s*width
 newdef /Herwig/Particles/D_s*-:Width_generator D_s*width
 #
-create Herwig::GenericWidthGenerator  B_s*width
+create Herwig::HeavyMesonWidthGenerator  B_s*width
 newdef B_s*width:Particle /Herwig/Particles/B_s*0 
 
 newdef B_s*width:Prefactor 1
@@ -9717,14 +9767,24 @@ newdef B_s*width:BRMinimum 0.01
 newdef B_s*width:Points 50
 newdef B_s*width:InterpolationOrder 1
 insert B_s*width:MEtype 0 1
-insert B_s*width:MEcode 0 1
-insert B_s*width:MEcoupling 0 1.34344
+insert B_s*width:MEcode 0 18
+insert B_s*width:MEcoupling 0 1.21854
 insert B_s*width:ModeOn 0 1
-insert B_s*width:MinimumMasses 0 5.3675
-insert B_s*width:MEmass1 0 0
-insert B_s*width:MEmass2 0 5.3675
+insert B_s*width:MinimumMasses 0 5.36688
+insert B_s*width:MEmass1 0 5.36688
+insert B_s*width:MEmass2 0 0
 insert B_s*width:DecayModes 0 B_s*0->B_s0,gamma; 
 insert B_s*width:NumberofEntries 0 0
+newdef B_s*width:fPi    130.2
+newdef B_s*width:g      0.566
+newdef B_s*width:h      0.544
+newdef B_s*width:hp     0.413
+newdef B_s*width:k      0.407
+newdef B_s*width:kp     0.242
+newdef B_s*width:gtilde 0.283
+newdef B_s*width:Lambda 1
+newdef B_s*width:psiL   0
+newdef B_s*width:psiS   0.041
 
 newdef /Herwig/Particles/B_s*bar0:Width_generator B_s*width
 newdef /Herwig/Particles/B_s*0:Width_generator B_s*width

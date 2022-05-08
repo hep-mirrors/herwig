@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
- * The HQETRadiativeDecayer class implements the EM decays of excited heavy,
+ * The HQETRadiativeDecayer class implements the electromagnetic decays of excited heavy,
  * i.e. bottom and charm mesons, using heavy quark effective theory results
  *
  * @see \ref HQETRadiativeDecayerInterfaces "The interfaces"
@@ -27,7 +27,8 @@ public:
   /**
    * The default constructor.
    */
-  HQETRadiativeDecayer();
+  HQETRadiativeDecayer() : Ch_(0.76), Lambda_(1.*GeV)
+  {}
 
   /**
    * Which of the possible decays is required
@@ -142,6 +143,13 @@ private:
    * In fact, it should not even be implemented.
    */
   HQETRadiativeDecayer & operator=(const HQETRadiativeDecayer &) = delete;
+  
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
 
 private:
 
@@ -154,11 +162,6 @@ private:
    *  coefficient for radiative heavy meson decays
    */
   double Ch_;
-
-  /**
-   *   \f$\eta-\pi^0 \f$ mixing for isospin violating decays
-   */
-  double deltaEta_;
   //@}
 
   /**
@@ -180,17 +183,17 @@ private:
   /**
    * the PDG codes for outgoing heavy meson
    */
-  vector<int> outgoingH_;
-
-  /**
-   * the PDG codes for outgoing light meson
-   */
-  vector<int> outgoingL_;
+  vector<int> outgoing_;
 
   /**
    *  Type of decay
    */
   vector<int> type_;
+
+  /**
+  *  Coupling for the decay
+  */
+  vector<InvEnergy> coupling_;
 
   /**
    * the maximum weight for the decay

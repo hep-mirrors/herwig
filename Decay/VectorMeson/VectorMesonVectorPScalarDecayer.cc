@@ -147,9 +147,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double VectorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
-					const tPDVector & ,
-					const vector<Lorentz5Momentum> & momenta,
-					MEOption meopt) const {
+					    const tPDVector & ,
+					    const vector<Lorentz5Momentum> & momenta,
+					    MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // is the vector massless

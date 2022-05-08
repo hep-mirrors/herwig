@@ -513,8 +513,8 @@ decaymode D*-->D-,gamma; 0.016 1 /Herwig/Decays/HQETMesonEM
 decaymode D_s*+->D_s+,pi0; 0.942 1 /Herwig/Decays/HQETMeson
 decaymode D_s*+->D_s+,gamma; 0.058 1 /Herwig/Decays/HQETMesonEM
 #
-decaymode D_s*-->D_s-,gamma; 0.942 1 /Herwig/Decays/HQETMesonEM
-decaymode D_s*-->D_s-,pi0; 0.058 1 /Herwig/Decays/HQETMeson
+decaymode D_s*-->D_s-,pi0; 0.942 1 /Herwig/Decays/HQETMeson
+decaymode D_s*-->D_s-,gamma; 0.058 1 /Herwig/Decays/HQETMesonEM
 #
 decaymode B*0->B0,gamma; 1 1 /Herwig/Decays/HQETMesonEM
 #
