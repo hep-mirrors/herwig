@@ -157,7 +157,7 @@ Energy HeavyMesonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1
   if(q<m1+m2) return ZERO;
   // mode from the base class
   int mecode(MEcode(imode));
-  if(mecode<=100){ 
+  if(mecode<=100) { 
     return GenericWidthGenerator::partial2BodyWidth(imode,q,m1,m2);
   }
   // calcluate the decay momentum

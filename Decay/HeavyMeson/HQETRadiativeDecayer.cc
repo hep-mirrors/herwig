@@ -22,39 +22,32 @@
 
 using namespace Herwig;
 
-HQETRadiativeDecayer::HQETRadiativeDecayer(): Ch_(-1.058455), deltaEta_(1./43.7), Lambda_(1.*GeV),
-    incoming_ ({413,423,433,                         //D* EM decay modes: VtoSV
-                513,523,533}),                       //B* EM decay modes: VtoSV
-    outgoingH_({411,421,431,
-                511,521,531}),
-    outgoingL_({22,22,22,
-                22,22,22}),
-    type_     ({1,  1,  1,
-                2,  2,  2}),
-    maxWeight_({1., 1., 1.,
-                1., 1., 1.})
-{}
-
 void HQETRadiativeDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=incoming_.size();
-  if(isize!=outgoingH_.size()||isize!=outgoingL_.size()||
-     isize!=maxWeight_.size()||isize!=type_     .size())
+  if(isize!=outgoing_.size()||isize!=maxWeight_.size()||isize!=type_     .size())
     throw InitException() << "Inconsistent parameters in HQETRadiativeDecayer"
     			  << Exception::abortnow;
   // set up the integration channels
   PhaseSpaceModePtr mode;
+  tPDPtr gamma = getParticleData(ParticleID::gamma);
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
-    tPDPtr     in = getParticleData(incoming_[ix]);
-    tPDVector out = {getParticleData(outgoingH_[ix]),
-		     getParticleData(outgoingL_[ix])};
+    tPDPtr     in =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix]),gamma};
     if(in&&out[0]&&out[1]) {
       mode=new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     }
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
+    // calculate coupling A
+    Energy mQ = abs(incoming_[ix])/100 == 4 ?
+      getParticleData(ParticleID::c)->mass() : getParticleData(ParticleID::b)->mass();
+    double eq = ((abs(incoming_[ix])/10)%10)==2 ?  2./3. : -1./3.;
+    double eQ =  abs(incoming_[ix])/100==4      ?  2./3. : -1./3.;
+    coupling_.push_back(8.*sqrt(Constants::pi)*
+			(eQ/4./mQ*sqrt(SM().alphaEM(sqr(mQ)))+Ch_/Lambda_*eq*sqrt(SM().alphaEM(sqr(Lambda_)))));
   }
 }
 
@@ -75,11 +68,11 @@ IBPtr HQETRadiativeDecayer::fullclone() const {
 }
 
 void HQETRadiativeDecayer::persistentOutput(PersistentOStream & os) const {
-  os << Ch_ << deltaEta_<< ounit(Lambda_,GeV) << maxWeight_;
+  os << Ch_ << ounit(Lambda_,GeV) << incoming_ << outgoing_ << type_ << maxWeight_ << ounit(coupling_,1./GeV);
 }
 
 void HQETRadiativeDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> Ch_ >> deltaEta_>> iunit(Lambda_,GeV) >> maxWeight_;
+  is >> Ch_ >> iunit(Lambda_,GeV) >> incoming_ >> outgoing_ >> type_ >> maxWeight_ >> iunit(coupling_,1./GeV);
 }
 
 // The following static variable is needed for the type
@@ -104,21 +97,19 @@ void HQETRadiativeDecayer::Init() {
      &HQETRadiativeDecayer::maxWeight_,
      0, 0, 0, 0., 100000., false, false, true);
 
-  static Parameter<HQETRadiativeDecayer,double> interfaceDeltaEta
-    ("DeltaEta",
-     "The mixing parameter for eta-pi0 of isospin violating decays",
-     &HQETRadiativeDecayer::deltaEta_, 1./43.7, 0.0, 1.,
-     false, false, Interface::limited);
-
   static Parameter<HQETRadiativeDecayer,Energy> interfacefLambda
     ("Lambda",
      "Strong decays momentum scale",
-     &HQETRadiativeDecayer::Lambda_, GeV, 1.*GeV, .1*GeV, 2.*GeV,
-     false, false, Interface::limited);
+     &HQETRadiativeDecayer::Lambda_, GeV, 1.*GeV, .1*GeV, 2.*GeV, false, false, Interface::limited);
+
+  static Command<HQETRadiativeDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles, coupling(1/GeV^2) and max weight for a decay",
+     &HQETRadiativeDecayer::setUpDecayMode, false);
 }
 
 int HQETRadiativeDecayer::modeNumber(bool & cc,tcPDPtr parent,
-  				  const tPDVector & children) const {
+				     const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;
@@ -131,12 +122,12 @@ int HQETRadiativeDecayer::modeNumber(bool & cc,tcPDPtr parent,
   cc=false;
   do {
     if(id   ==incoming_[ix]) {
-      if((id1   ==outgoingH_[ix]&&id2   ==outgoingL_[ix])||
-    	 (id2   ==outgoingH_[ix]&&id1   ==outgoingL_[ix])) imode=ix;
+      if((id1   ==outgoing_[ix]&&id2 == ParticleID::gamma)||
+    	 (id2   ==outgoing_[ix]&&id1 == ParticleID::gamma)) imode=ix;
     }
     if(idbar==incoming_[ix]) {
-      if((id1bar==outgoingH_[ix]&&id2bar==outgoingL_[ix])||
-    	 (id2bar==outgoingH_[ix]&&id1bar==outgoingL_[ix])) {
+      if((id1bar==outgoing_[ix]&&id2bar==ParticleID::gamma)||
+    	 (id2bar==outgoing_[ix]&&id1bar==ParticleID::gamma)) {
     	imode=ix;
     	cc=true;
       }
@@ -183,9 +174,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 
 // matrix elememt for the process
 double HQETRadiativeDecayer::me2(const int, const Particle & part,
-  			      const tPDVector & outgoing,
-  			      const vector<Lorentz5Momentum> & momenta,
-  			      MEOption meopt) const {
+				 const tPDVector & ,
+				 const vector<Lorentz5Momentum> & momenta,
+				 MEOption meopt) const {
   if(!ME()) {
     if(abs(type_[imode()])==1 || abs(type_[imode()])==2) {
       ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin1)));
@@ -205,8 +196,7 @@ double HQETRadiativeDecayer::me2(const int, const Particle & part,
     }
   }
   // calculate the matrix element
-  Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-					     momenta[1].mass());
+  // double test(0.);
   if(abs(type_[imode()])==1 || abs(type_[imode()])==2) {
     // get the polarization vectors
     vecOut_.resize(3);
@@ -214,41 +204,22 @@ double HQETRadiativeDecayer::me2(const int, const Particle & part,
       if(ix==1) continue;
       vecOut_[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
     }
-    // calculate coupling A
-    InvEnergy A;
-    Energy mQ;
-    double eq(1./3.), eQ(2./3.);
-    if(abs(part.id())==423 || abs(part.id())==523) {
-      eq = -2./3.;
-    }
-    if(abs(type_[imode()])==7) { //i.e. for the c quarks
-      mQ = getParticleData(ParticleID::c)->mass();
-    }
-    else { //i.e. for the b quarks
-      eQ = -1./3.;
-      mQ = getParticleData(ParticleID::b)->mass();
-    }
-    if(part.id()<0) {
-      eq *= -1.;
-      eQ *= -1.;
-    }
-    A = eQ/4./mQ*sqrt(SM().alphaEM(sqr(mQ)))+Ch_/Lambda_*eq*sqrt(SM().alphaEM(sqr(Lambda_)));
-    //calculate ME
-    InvEnergy2 fact = 4.*sqrt(8.*M_PI)*A*sqrt(momenta[0].mass()/part.mass())/part.mass();
+    // calculate ME
+    InvEnergy2 fact = coupling_[imode()]*sqrt(momenta[0].mass()/part.mass())/part.mass();
     for(unsigned int ix=0;ix<3;++ix) {
+      LorentzVector<complex<Energy2> > v0 = epsilon(part.momentum(),momenta[1],vecIn_[ix]);
       for(unsigned int iy=0;iy<3;++iy) {
         if(iy==1) {
-          (*ME())(ix,iy,0) = 0.;
+          (*ME())(ix,0,iy) = 0.;
         }
         else {
-	         (*ME())(ix,iy,0) = Complex(fact*epsilon(vecOut_[iy],momenta[1],vecIn_[ix])
-                      *part.momentum());
+	  (*ME())(ix,0,iy) = Complex(fact*vecOut_[iy].dot(v0));
         }
       }
     }
     // analytic test of the answer
-    //test = 32.*M_PI*sqr(A)*momenta[0].mass()/part.mass()/3.
-    //     *sqr(sqr(part.mass())-sqr(momenta[0].mass()))/sqr(part.mass());
+    // test = 0.5*sqr(coupling_[imode()])*momenta[0].mass()/part.mass()/3.
+    //   *sqr(sqr(part.mass())-sqr(momenta[0].mass()))/sqr(part.mass());
   }
   else {
     assert(false);
@@ -256,61 +227,56 @@ double HQETRadiativeDecayer::me2(const int, const Particle & part,
   double output = ME()->contract(rho_).real();
   // testing
   // double ratio = (output-test)/(output+test);
-  // generator()->log() << "testing matrix element for " << part.PDGName() << " -> "
-  // 		     << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
-  // 		     << output << " " << test << " " << ratio << endl;
-  // isospin factors
-  if(abs(outgoing[1]->id())==ParticleID::pi0) {
-    output *= type_[imode()]>0 ? 0.5 : 0.125*sqr(deltaEta_);
-  }
+  // cout << "testing matrix element for " << part.PDGName() << " -> "
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << output << " " << test << " " << ratio << " " << output/test << endl;
   // return the answer
   return output;
 }
 
 bool HQETRadiativeDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 				      double & coupling) const {
-  // int imode(-1);
-  // int id(dm.parent()->id());
-  // int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
-  // ParticleMSet::const_iterator pit(dm.products().begin());
-  // int id1((**pit).id());
-  // int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  // ++pit;
-  // int id2((**pit).id());
-  // int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
-  // unsigned int ix(0); bool order(false);
-  // do {
-  //   if(id   ==incoming_[ix]) {
-  //     if(id1==outgoingH_[ix]&&id2==outgoingL_[ix]) {
-  // 	imode=ix;
-  // 	order=true;
-  //     }
-  //     if(id2==outgoingH_[ix]&&id1==outgoingL_[ix]) {
-  // 	imode=ix;
-  // 	order=false;
-  //     }
-  //   }
-  //   if(idbar==incoming_[ix]&&imode<0) {
-  //     if(id1bar==outgoingH_[ix]&&id2bar==outgoingL_[ix]) {
-  // 	imode=ix;
-  // 	order=true;
-  //     }
-  //     if(id2bar==outgoingH_[ix]&&id1bar==outgoingL_[ix]) {
-  // 	imode=ix;
-  // 	order=false;
-  //     }
-  //   }
-  //   ++ix;
-  // }
-  // while(ix<incoming_.size()&&imode<0);
-  // coupling=_coupling[imode]*dm.parent()->mass();
-  // mecode=7;
-  // return order;
+  int imode(-1);
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
+  ++pit;
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
+  unsigned int ix(0); bool order(false);
+  do {
+    if(id   ==incoming_[ix]) {
+      if(id1==outgoing_[ix]&&id2==ParticleID::gamma) {
+  	imode=ix;
+  	order=true;
+      }
+      if(id2==outgoing_[ix]&&id1==ParticleID::gamma) {
+  	imode=ix;
+  	order=false;
+      }
+    }
+    if(idbar==incoming_[ix]&&imode<0) {
+      if(id1bar==outgoing_[ix]&&id2bar==ParticleID::gamma) {
+  	imode=ix;
+  	order=true;
+      }
+      if(id2bar==outgoing_[ix]&&id1bar==ParticleID::gamma) {
+  	imode=ix;
+  	order=false;
+      }
+    }
+    ++ix;
+  }
+  while(ix<incoming_.size()&&imode<0);
+  coupling=abs(coupling_[imode]*dm.parent()->mass());
+  mecode=18;
+  return order;
 }
 
 void HQETRadiativeDecayer::dataBaseOutput(ofstream & output,
   				       bool header) const {
-                   cerr<<"gets is dataBaseOutput\n";
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
@@ -318,9 +284,47 @@ void HQETRadiativeDecayer::dataBaseOutput(ofstream & output,
   // couplings
   output << "newdef " << name() << ":Ch     " << Ch_         << "\n";
   output << "newdef " << name() << ":Lambda " << Lambda_/GeV << "\n";
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode "
+	   << incoming_[ix] << " " << outgoing_[ix] << " "
+	   << type_[ix] << " " << maxWeight_[ix] << "\n";
+  }
   if(header) output << "\n\" where BINARY ThePEGName=\""
   		    << fullName() << "\";" << endl;
-  for(unsigned int ix=0;ix<incoming_.size();++ix) {
-    output << "newdef " << name() << ":MaxWeight " << ix << " " << maxWeight_[ix] << "\n";
-  }
+}
+
+string HQETRadiativeDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(int(pData->iSpin())%2!=1)
+    return "Incoming particle with id " + std::to_string(in) + "does not integer spin";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0 && pData->iSpin()!=PDT::Spin1)
+    return "First outgoing particle with id " + std::to_string(out) + "does not have spin 0/1";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int itype = stoi(stype);  
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  type_.push_back(itype);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }

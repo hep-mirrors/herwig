@@ -620,7 +620,6 @@ string HQETStrongDecayer::setUpDecayMode(string arg) {
     return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
   if(pData->iSpin()!=PDT::Spin0 && pData->iSpin()!=PDT::Spin1)
     return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 0/1";
-  out.first = stoi(stype);
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   out.second = stoi(stype);

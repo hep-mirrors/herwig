@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 11:22:30 on the 7/5/2022.
+# from the Herwig Particles Database at 13:26:23 on the 8/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -214,27 +214,30 @@ newdef /Herwig/Particles/a_0-:Mass_generator a_0+mass
 #
 create Herwig::GenericMassGenerator  D*0mass
 newdef D*0mass:Particle /Herwig/Particles/D*0 
-newdef D*0mass:BreitWignerShape 0
-newdef D*0mass:MaximumWeight 0.97283
-newdef D*0mass:NGenerate 100
+newdef /Herwig/Masses/D*0mass:BreitWignerShape 0
+newdef /Herwig/Masses/D*0mass:MaximumWeight 0.968212
+newdef /Herwig/Masses/D*0mass:NGenerate 100
+newdef /Herwig/Masses/D*0mass:WidthOption 0
 
 newdef /Herwig/Particles/D*0:Mass_generator D*0mass
 newdef /Herwig/Particles/D*bar0:Mass_generator D*0mass
 #
 create Herwig::GenericMassGenerator  D*+mass
 newdef D*+mass:Particle /Herwig/Particles/D*+ 
-newdef D*+mass:BreitWignerShape 0
-newdef D*+mass:MaximumWeight 0.980146
-newdef D*+mass:NGenerate 100
+newdef /Herwig/Masses/D*+mass:BreitWignerShape 0
+newdef /Herwig/Masses/D*+mass:MaximumWeight 0.968216
+newdef /Herwig/Masses/D*+mass:NGenerate 100
+newdef /Herwig/Masses/D*+mass:WidthOption 0
 
 newdef /Herwig/Particles/D*+:Mass_generator D*+mass
 newdef /Herwig/Particles/D*-:Mass_generator D*+mass
 #
 create Herwig::GenericMassGenerator  B*+mass
 newdef B*+mass:Particle /Herwig/Particles/B*+ 
-newdef B*+mass:BreitWignerShape 0
-newdef B*+mass:MaximumWeight 0.968222
-newdef B*+mass:NGenerate 100
+newdef /Herwig/Masses/B*+mass:BreitWignerShape 0
+newdef /Herwig/Masses/B*+mass:MaximumWeight 0.968196
+newdef /Herwig/Masses/B*+mass:NGenerate 100
+newdef /Herwig/Masses/B*+mass:WidthOption 0
 
 newdef /Herwig/Particles/B*+:Mass_generator B*+mass
 newdef /Herwig/Particles/B*-:Mass_generator B*+mass
@@ -251,27 +254,30 @@ newdef /Herwig/Particles/a_2+:Mass_generator a_2+mass
 #
 create Herwig::GenericMassGenerator  B*0mass
 newdef B*0mass:Particle /Herwig/Particles/B*0 
-newdef B*0mass:BreitWignerShape 0
-newdef B*0mass:MaximumWeight 0.9682
-newdef B*0mass:NGenerate 100
+newdef /Herwig/Masses/B*0mass:BreitWignerShape 0
+newdef /Herwig/Masses/B*0mass:MaximumWeight 0.968196
+newdef /Herwig/Masses/B*0mass:NGenerate 100
+newdef /Herwig/Masses/B*0mass:WidthOption 0
 
 newdef /Herwig/Particles/B*bar0:Mass_generator B*0mass
 newdef /Herwig/Particles/B*0:Mass_generator B*0mass
 #
 create Herwig::GenericMassGenerator  D_s*mass
 newdef D_s*mass:Particle /Herwig/Particles/D_s*+ 
-newdef D_s*mass:BreitWignerShape 0
-newdef D_s*mass:MaximumWeight 0.968825
-newdef D_s*mass:NGenerate 100
+newdef /Herwig/Masses/D_s*mass:BreitWignerShape 0
+newdef /Herwig/Masses/D_s*mass:MaximumWeight 0.968206
+newdef /Herwig/Masses/D_s*mass:NGenerate 100
+newdef /Herwig/Masses/D_s*mass:WidthOption 0
 
 newdef /Herwig/Particles/D_s*+:Mass_generator D_s*mass
 newdef /Herwig/Particles/D_s*-:Mass_generator D_s*mass
 #
 create Herwig::GenericMassGenerator  B_s*mass
 newdef B_s*mass:Particle /Herwig/Particles/B_s*0 
-newdef B_s*mass:BreitWignerShape 0
-newdef B_s*mass:MaximumWeight 0.968198
-newdef B_s*mass:NGenerate 100
+newdef /Herwig/Masses/B_s*mass:BreitWignerShape 0
+newdef /Herwig/Masses/B_s*mass:MaximumWeight 0.968196
+newdef /Herwig/Masses/B_s*mass:NGenerate 100
+newdef /Herwig/Masses/B_s*mass:WidthOption 0
 
 newdef /Herwig/Particles/B_s*bar0:Mass_generator B_s*mass
 newdef /Herwig/Particles/B_s*0:Mass_generator B_s*mass

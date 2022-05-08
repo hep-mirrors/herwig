@@ -877,8 +877,12 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     break;
     // T3 -> TP
   case 16: gam = 8.*pow(pcm2/m02,2)/15.;
+    break;
     // T -> TP
   case 17: gam = pcm2/16./m02;
+    break;
+    // V -> P gamma (heavy quark)
+  case  18: gam = pcm2/12./m02*m1/q;
     break;
     // unknown
   default:
