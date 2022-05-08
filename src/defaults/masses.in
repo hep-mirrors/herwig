@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 13:26:23 on the 8/5/2022.
+# from the Herwig Particles Database at 18:3:22 on the 8/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -320,18 +320,20 @@ newdef /Herwig/Particles/D*_2-:Mass_generator D_2+mass
 #
 create Herwig::GenericMassGenerator  B_2+mass
 newdef B_2+mass:Particle /Herwig/Particles/B_2+ 
-newdef B_2+mass:BreitWignerShape 0
-newdef B_2+mass:MaximumWeight 1.02695
-newdef B_2+mass:NGenerate 100
+newdef /Herwig/Masses/B_2+mass:BreitWignerShape 0
+newdef /Herwig/Masses/B_2+mass:MaximumWeight 0.938521
+newdef /Herwig/Masses/B_2+mass:NGenerate 100
+newdef /Herwig/Masses/B_2+mass:WidthOption 0
 
 newdef /Herwig/Particles/B_2-:Mass_generator B_2+mass
 newdef /Herwig/Particles/B_2+:Mass_generator B_2+mass
 #
 create Herwig::GenericMassGenerator  B_20mass
 newdef B_20mass:Particle /Herwig/Particles/B_20 
-newdef B_20mass:BreitWignerShape 0
-newdef B_20mass:MaximumWeight 1.02694
-newdef B_20mass:NGenerate 100
+newdef /Herwig/Masses/B_20mass:BreitWignerShape 0
+newdef /Herwig/Masses/B_20mass:MaximumWeight 0.938521
+newdef /Herwig/Masses/B_20mass:NGenerate 100
+newdef /Herwig/Masses/B_20mass:WidthOption 0
 
 newdef /Herwig/Particles/B_20:Mass_generator B_20mass
 newdef /Herwig/Particles/B_2bar0:Mass_generator B_20mass
@@ -356,9 +358,10 @@ newdef /Herwig/Particles/B_c2+:Mass_generator B_c2+mass
 #
 create Herwig::GenericMassGenerator  D_s2+mass
 newdef D_s2+mass:Particle /Herwig/Particles/D_s2+ 
-newdef D_s2+mass:BreitWignerShape 0
-newdef D_s2+mass:MaximumWeight 1.08663
-newdef D_s2+mass:NGenerate 100
+newdef /Herwig/Masses/D_s2+mass:BreitWignerShape 0
+newdef /Herwig/Masses/D_s2+mass:MaximumWeight 0.897806
+newdef /Herwig/Masses/D_s2+mass:NGenerate 100
+newdef /Herwig/Masses/D_s2+mass:WidthOption 0
 
 newdef /Herwig/Particles/D_s2+:Mass_generator D_s2+mass
 newdef /Herwig/Particles/D_s2-:Mass_generator D_s2+mass

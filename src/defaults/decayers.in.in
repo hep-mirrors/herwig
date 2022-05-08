@@ -1380,102 +1380,102 @@ insert TauEtaPiPi:Weights 6 0.0645809
 insert TauEtaPiPi:Weights 7 0.0373083
 insert TauEtaPiPi:Weights 8 0.0381665
 #
-create Herwig::HQETStrongDecayer  HQETMeson
-newdef HQETMeson:Iteration 10
-newdef HQETMeson:Ntry 500
-newdef HQETMeson:Points 10000
-newdef HQETMeson:GenerateIntermediates 0 
-newdef HQETMeson:fPi    130.2
-newdef HQETMeson:g      0.566
-newdef HQETMeson:h      0.544
-newdef HQETMeson:hp     0.413
-newdef HQETMeson:k      0.407
-newdef HQETMeson:kp     0.242
-newdef HQETMeson:gtilde 0.283
-newdef HQETMeson:Lambda 1
-newdef HQETMeson:psiL   0
-newdef HQETMeson:psiS   0.041
-newdef HQETMeson:DeltaEta 0.0228833
-do HQETMeson:SetUpDecayMode 413 421 211 1.31861
-do HQETMeson:SetUpDecayMode 413 411 111 1.31029
-do HQETMeson:SetUpDecayMode 423 421 111 1.33047
-do HQETMeson:SetUpDecayMode 433 431 111 0.00421025
-do HQETMeson:SetUpDecayMode 415 411 111 2.88287
-do HQETMeson:SetUpDecayMode 415 421 211 2.95662
-do HQETMeson:SetUpDecayMode 425 411 -211 1.94659
-do HQETMeson:SetUpDecayMode 425 421 111 2.03457
-do HQETMeson:SetUpDecayMode 435 411 311 2.42643
-do HQETMeson:SetUpDecayMode 435 421 321 2.42032
-do HQETMeson:SetUpDecayMode 415 413 111 3.41396
-do HQETMeson:SetUpDecayMode 415 423 211 2.69729
-do HQETMeson:SetUpDecayMode 425 413 -211 2.34226
-do HQETMeson:SetUpDecayMode 425 423 111 1.87924
-do HQETMeson:SetUpDecayMode 435 413 311 1.75845
-do HQETMeson:SetUpDecayMode 435 423 321 1.31503
-do HQETMeson:SetUpDecayMode 10413 413 111 4.52314
-do HQETMeson:SetUpDecayMode 10413 423 211 3.47116
-do HQETMeson:SetUpDecayMode 10423 413 -211 5.22341
-do HQETMeson:SetUpDecayMode 10423 423 111 4.3453
-do HQETMeson:SetUpDecayMode 10433 413 311 1.57906
-do HQETMeson:SetUpDecayMode 10433 423 321 1.43562
-do HQETMeson:SetUpDecayMode 10411 411 111 6.57442
-do HQETMeson:SetUpDecayMode 10411 421 211 6.61319
-do HQETMeson:SetUpDecayMode 10421 411 -211 6.5581
-do HQETMeson:SetUpDecayMode 10421 421 111 6.65623
-do HQETMeson:SetUpDecayMode 10431 431 111 0.23295
-do HQETMeson:SetUpDecayMode 20413 413 111 5.06988
-do HQETMeson:SetUpDecayMode 20413 423 211 3.89552
-do HQETMeson:SetUpDecayMode 20423 413 -211 4.7005
-do HQETMeson:SetUpDecayMode 20423 423 111 3.81833
-do HQETMeson:SetUpDecayMode 20433 433 111 0.312448
-do HQETMeson:SetUpDecayMode 100411 423 211 0.702697
-do HQETMeson:SetUpDecayMode 100411 413 111 0.459932
-do HQETMeson:SetUpDecayMode 100421 413 -211 0.91423
-do HQETMeson:SetUpDecayMode 100421 423 111 0.353773
-do HQETMeson:SetUpDecayMode 100431 413 311 0.312344
-do HQETMeson:SetUpDecayMode 100431 423 321 0.268127
-do HQETMeson:SetUpDecayMode 100413 421 211 0.529936
-do HQETMeson:SetUpDecayMode 100413 411 111 0.262229
-do HQETMeson:SetUpDecayMode 100423 411 -211 0.522623
-do HQETMeson:SetUpDecayMode 100423 421 111 0.265886
-do HQETMeson:SetUpDecayMode 100433 411 311 0.425155
-do HQETMeson:SetUpDecayMode 100433 421 321 0.439374
-do HQETMeson:SetUpDecayMode 100413 423 211 0.709016
-do HQETMeson:SetUpDecayMode 100413 413 111 0.466036
-do HQETMeson:SetUpDecayMode 100423 413 -211 0.927575
-do HQETMeson:SetUpDecayMode 100423 423 111 0.356375
-do HQETMeson:SetUpDecayMode 100433 413 311 0.555473
-do HQETMeson:SetUpDecayMode 100433 423 321 0.439498
-do HQETMeson:SetUpDecayMode 20415 423 211 0.875288
-do HQETMeson:SetUpDecayMode 20415 413 111 0.567836
-do HQETMeson:SetUpDecayMode 20425 413 -211 1.1261
-do HQETMeson:SetUpDecayMode 20425 423 111 0.441275
-do HQETMeson:SetUpDecayMode 20435 413 311 1.0999
-do HQETMeson:SetUpDecayMode 20435 423 321 0.889948
-do HQETMeson:SetUpDecayMode 417 421 211 0.725507
-do HQETMeson:SetUpDecayMode 417 411 111 0.354557
-do HQETMeson:SetUpDecayMode 427 411 -211 0.704963
-do HQETMeson:SetUpDecayMode 427 421 111 0.364866
-do HQETMeson:SetUpDecayMode 437 411 311 0.604124
-do HQETMeson:SetUpDecayMode 437 421 321 0.637948
-do HQETMeson:SetUpDecayMode 417 423 211 0.400638
-do HQETMeson:SetUpDecayMode 417 413 111 0.259993
-do HQETMeson:SetUpDecayMode 427 413 -211 0.517613
-do HQETMeson:SetUpDecayMode 427 423 111 0.201602
-do HQETMeson:SetUpDecayMode 437 413 311 0.331208
-do HQETMeson:SetUpDecayMode 437 423 321 0.266494
-do HQETMeson:SetUpDecayMode 30413 421 211 0.756428
-do HQETMeson:SetUpDecayMode 30413 411 111 0.371794
-do HQETMeson:SetUpDecayMode 30423 411 -211 0.742232
-do HQETMeson:SetUpDecayMode 30423 421 111 0.378897
-do HQETMeson:SetUpDecayMode 30433 411 311 0.834109
-do HQETMeson:SetUpDecayMode 30433 421 321 0.857459
-do HQETMeson:SetUpDecayMode 30413 423 211 0.216795
-do HQETMeson:SetUpDecayMode 30413 413 111 0.141882
-do HQETMeson:SetUpDecayMode 30423 413 -211 0.283003
-do HQETMeson:SetUpDecayMode 30423 423 111 0.108743
-do HQETMeson:SetUpDecayMode 30433 413 311 0.288347
-do HQETMeson:SetUpDecayMode 30433 423 321 0.224403
+create Herwig::HQETStrongDecayer  CharmMeson
+newdef CharmMeson:Iteration 10
+newdef CharmMeson:Ntry 500
+newdef CharmMeson:Points 10000
+newdef CharmMeson:GenerateIntermediates 0 
+newdef CharmMeson:fPi    130.2
+newdef CharmMeson:g      0.566
+newdef CharmMeson:h      0.544
+newdef CharmMeson:hp     0.413
+newdef CharmMeson:k      0.407
+newdef CharmMeson:kp     0.242
+newdef CharmMeson:gtilde 0.283
+newdef CharmMeson:Lambda 1
+newdef CharmMeson:psiL   0
+newdef CharmMeson:psiS   0.041
+newdef CharmMeson:DeltaEta 0.0228833
+do CharmMeson:SetUpDecayMode 413 421 211 1.31861
+do CharmMeson:SetUpDecayMode 413 411 111 1.31029
+do CharmMeson:SetUpDecayMode 423 421 111 1.33047
+do CharmMeson:SetUpDecayMode 433 431 111 0.00421025
+do CharmMeson:SetUpDecayMode 415 411 111 2.88287
+do CharmMeson:SetUpDecayMode 415 421 211 2.95662
+do CharmMeson:SetUpDecayMode 425 411 -211 1.94659
+do CharmMeson:SetUpDecayMode 425 421 111 2.03457
+do CharmMeson:SetUpDecayMode 435 411 311 2.42643
+do CharmMeson:SetUpDecayMode 435 421 321 2.42032
+do CharmMeson:SetUpDecayMode 415 413 111 3.41396
+do CharmMeson:SetUpDecayMode 415 423 211 2.69729
+do CharmMeson:SetUpDecayMode 425 413 -211 2.34226
+do CharmMeson:SetUpDecayMode 425 423 111 1.87924
+do CharmMeson:SetUpDecayMode 435 413 311 1.75845
+do CharmMeson:SetUpDecayMode 435 423 321 1.31503
+do CharmMeson:SetUpDecayMode 10413 413 111 4.52314
+do CharmMeson:SetUpDecayMode 10413 423 211 3.47116
+do CharmMeson:SetUpDecayMode 10423 413 -211 5.22341
+do CharmMeson:SetUpDecayMode 10423 423 111 4.3453
+do CharmMeson:SetUpDecayMode 10433 413 311 1.57906
+do CharmMeson:SetUpDecayMode 10433 423 321 1.43562
+do CharmMeson:SetUpDecayMode 10411 411 111 6.57442
+do CharmMeson:SetUpDecayMode 10411 421 211 6.61319
+do CharmMeson:SetUpDecayMode 10421 411 -211 6.5581
+do CharmMeson:SetUpDecayMode 10421 421 111 6.65623
+do CharmMeson:SetUpDecayMode 10431 431 111 0.23295
+do CharmMeson:SetUpDecayMode 20413 413 111 5.06988
+do CharmMeson:SetUpDecayMode 20413 423 211 3.89552
+do CharmMeson:SetUpDecayMode 20423 413 -211 4.7005
+do CharmMeson:SetUpDecayMode 20423 423 111 3.81833
+do CharmMeson:SetUpDecayMode 20433 433 111 0.312448
+do CharmMeson:SetUpDecayMode 100411 423 211 0.702697
+do CharmMeson:SetUpDecayMode 100411 413 111 0.459932
+do CharmMeson:SetUpDecayMode 100421 413 -211 0.91423
+do CharmMeson:SetUpDecayMode 100421 423 111 0.353773
+do CharmMeson:SetUpDecayMode 100431 413 311 0.312344
+do CharmMeson:SetUpDecayMode 100431 423 321 0.268127
+do CharmMeson:SetUpDecayMode 100413 421 211 0.529936
+do CharmMeson:SetUpDecayMode 100413 411 111 0.262229
+do CharmMeson:SetUpDecayMode 100423 411 -211 0.522623
+do CharmMeson:SetUpDecayMode 100423 421 111 0.265886
+do CharmMeson:SetUpDecayMode 100433 411 311 0.425155
+do CharmMeson:SetUpDecayMode 100433 421 321 0.439374
+do CharmMeson:SetUpDecayMode 100413 423 211 0.709016
+do CharmMeson:SetUpDecayMode 100413 413 111 0.466036
+do CharmMeson:SetUpDecayMode 100423 413 -211 0.927575
+do CharmMeson:SetUpDecayMode 100423 423 111 0.356375
+do CharmMeson:SetUpDecayMode 100433 413 311 0.555473
+do CharmMeson:SetUpDecayMode 100433 423 321 0.439498
+do CharmMeson:SetUpDecayMode 20415 423 211 0.875288
+do CharmMeson:SetUpDecayMode 20415 413 111 0.567836
+do CharmMeson:SetUpDecayMode 20425 413 -211 1.1261
+do CharmMeson:SetUpDecayMode 20425 423 111 0.441275
+do CharmMeson:SetUpDecayMode 20435 413 311 1.0999
+do CharmMeson:SetUpDecayMode 20435 423 321 0.889948
+do CharmMeson:SetUpDecayMode 417 421 211 0.725507
+do CharmMeson:SetUpDecayMode 417 411 111 0.354557
+do CharmMeson:SetUpDecayMode 427 411 -211 0.704963
+do CharmMeson:SetUpDecayMode 427 421 111 0.364866
+do CharmMeson:SetUpDecayMode 437 411 311 0.604124
+do CharmMeson:SetUpDecayMode 437 421 321 0.637948
+do CharmMeson:SetUpDecayMode 417 423 211 0.400638
+do CharmMeson:SetUpDecayMode 417 413 111 0.259993
+do CharmMeson:SetUpDecayMode 427 413 -211 0.517613
+do CharmMeson:SetUpDecayMode 427 423 111 0.201602
+do CharmMeson:SetUpDecayMode 437 413 311 0.331208
+do CharmMeson:SetUpDecayMode 437 423 321 0.266494
+do CharmMeson:SetUpDecayMode 30413 421 211 0.756428
+do CharmMeson:SetUpDecayMode 30413 411 111 0.371794
+do CharmMeson:SetUpDecayMode 30423 411 -211 0.742232
+do CharmMeson:SetUpDecayMode 30423 421 111 0.378897
+do CharmMeson:SetUpDecayMode 30433 411 311 0.834109
+do CharmMeson:SetUpDecayMode 30433 421 321 0.857459
+do CharmMeson:SetUpDecayMode 30413 423 211 0.216795
+do CharmMeson:SetUpDecayMode 30413 413 111 0.141882
+do CharmMeson:SetUpDecayMode 30423 413 -211 0.283003
+do CharmMeson:SetUpDecayMode 30423 423 111 0.108743
+do CharmMeson:SetUpDecayMode 30433 413 311 0.288347
+do CharmMeson:SetUpDecayMode 30433 423 321 0.224403
 #
 create Herwig::HQETRadiativeDecayer  HQETMesonEM
 newdef HQETMesonEM:Iteration 10
@@ -21500,6 +21500,53 @@ insert Tau2Kaon:Weights 0 0.505259
 insert Tau2Kaon:Weights 1 0.43015
 insert Tau2Kaon:Weights 2 0.064591
 newdef Tau2Kaon:WeakCurrent TwoKaonCzyzCurrent
+#
+create Herwig::HQETStrongDecayer  BottomMeson
+newdef BottomMeson:Iteration 10
+newdef BottomMeson:Ntry 500
+newdef BottomMeson:Points 10000
+newdef BottomMeson:GenerateIntermediates 0 
+newdef BottomMeson:fPi    130.2
+newdef BottomMeson:g      0.566
+newdef BottomMeson:h      0.544
+newdef BottomMeson:hp     0.413
+newdef BottomMeson:k      0.407
+newdef BottomMeson:kp     0.242
+newdef BottomMeson:gtilde 0.283
+newdef BottomMeson:Lambda 1
+newdef BottomMeson:psiL   0
+newdef BottomMeson:psiS   0.041
+newdef BottomMeson:DeltaEta 0.0228833
+do BottomMeson:SetUpDecayMode 515 511 111 1.95802
+do BottomMeson:SetUpDecayMode 515 521 -211 1.9329
+do BottomMeson:SetUpDecayMode 525 511 211 1.87623
+do BottomMeson:SetUpDecayMode 525 521 111 1.91432
+do BottomMeson:SetUpDecayMode 535 511 -311 1.54908
+do BottomMeson:SetUpDecayMode 535 521 -321 1.80933
+do BottomMeson:SetUpDecayMode 515 513 111 1.97116
+do BottomMeson:SetUpDecayMode 515 523 -211 1.93093
+do BottomMeson:SetUpDecayMode 525 513 211 1.87396
+do BottomMeson:SetUpDecayMode 525 523 111 1.913
+do BottomMeson:SetUpDecayMode 535 513 -311 1.35449
+do BottomMeson:SetUpDecayMode 535 523 -321 2.22418
+do BottomMeson:SetUpDecayMode 10513 513 111 7.62316
+do BottomMeson:SetUpDecayMode 10513 523 -211 7.51603
+do BottomMeson:SetUpDecayMode 10523 513 211 8.21482
+do BottomMeson:SetUpDecayMode 10523 523 111 8.32594
+do BottomMeson:SetUpDecayMode 10533 513 -311 1.05995
+do BottomMeson:SetUpDecayMode 10533 523 -321 1.51482
+do BottomMeson:SetUpDecayMode 10511 511 111 6.05498
+do BottomMeson:SetUpDecayMode 10511 521 -211 6.04809
+do BottomMeson:SetUpDecayMode 10521 511 211 6.03197
+do BottomMeson:SetUpDecayMode 10521 521 111 6.06396
+do BottomMeson:SetUpDecayMode 10531 511 -311 6.94284
+do BottomMeson:SetUpDecayMode 10531 521 -321 7.28808
+do BottomMeson:SetUpDecayMode 20513 513 111 7.60088
+do BottomMeson:SetUpDecayMode 20513 523 -211 7.57955
+do BottomMeson:SetUpDecayMode 20523 513 211 7.57639
+do BottomMeson:SetUpDecayMode 20523 523 111 7.6011
+do BottomMeson:SetUpDecayMode 20533 513 -311 9.14945
+do BottomMeson:SetUpDecayMode 20533 523 -321 9.64881
 #
 create Herwig::EtaPiPiFermionsDecayer  EtapipiFermions
 newdef EtapipiFermions:Iteration 1
