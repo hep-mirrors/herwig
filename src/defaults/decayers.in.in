@@ -20214,129 +20214,14 @@ create Herwig::OniumToOniumPiPiDecayer  OniumPiPi
 newdef OniumPiPi:Iteration 1
 newdef OniumPiPi:Ntry 500
 newdef OniumPiPi:Points 10000
-newdef OniumPiPi:GenerateIntermediates 0
-newdef OniumPiPi:Incoming 0 200553
-newdef OniumPiPi:Outgoing 0 553
-newdef OniumPiPi:Coupling 0 3.92e-06
-newdef OniumPiPi:ReA 0 1
-newdef OniumPiPi:ImA 0 0
-newdef OniumPiPi:ReB 0 -2.523
-newdef OniumPiPi:ImB 0 1.189
-newdef OniumPiPi:ReC 0 0
-newdef OniumPiPi:ImC 0 0
-newdef OniumPiPi:Incoming 1 200553
-newdef OniumPiPi:Outgoing 1 100553
-newdef OniumPiPi:Coupling 1 0.000311
-newdef OniumPiPi:ReA 1 1
-newdef OniumPiPi:ImA 1 0
-newdef OniumPiPi:ReB 1 -0.395
-newdef OniumPiPi:ImB 1 0.001
-newdef OniumPiPi:ReC 1 0
-newdef OniumPiPi:ImC 1 0
-newdef OniumPiPi:Incoming 2 100553
-newdef OniumPiPi:Outgoing 2 553
-newdef OniumPiPi:Coupling 2 6.14e-05
-newdef OniumPiPi:ReA 2 1
-newdef OniumPiPi:ImA 2 0
-newdef OniumPiPi:ReB 2 -0.753
-newdef OniumPiPi:ImB 2 0
-newdef OniumPiPi:ReC 2 0
-newdef OniumPiPi:ImC 2 0
-newdef OniumPiPi:Incoming 3 300553
-newdef OniumPiPi:Outgoing 3 553
-newdef OniumPiPi:Coupling 3 1.77e-06
-newdef OniumPiPi:ReA 3 1
-newdef OniumPiPi:ImA 3 0
-newdef OniumPiPi:ReB 3 0
-newdef OniumPiPi:ImB 3 0
-newdef OniumPiPi:ReC 3 0
-newdef OniumPiPi:ImC 3 0
-newdef OniumPiPi:Incoming 4 300553
-newdef OniumPiPi:Outgoing 4 100553
-newdef OniumPiPi:Coupling 4 6.88e-05
-newdef OniumPiPi:ReA 4 1
-newdef OniumPiPi:ImA 4 0
-newdef OniumPiPi:ReB 4 -2.35
-newdef OniumPiPi:ImB 4 0.55
-newdef OniumPiPi:ReC 4 0
-newdef OniumPiPi:ImC 4 0
-newdef OniumPiPi:Incoming 5 100443
-newdef OniumPiPi:Outgoing 5 443
-newdef OniumPiPi:Coupling 5 6.62e-05
-newdef OniumPiPi:ReA 5 1
-newdef OniumPiPi:ImA 5 0
-newdef OniumPiPi:ReB 5 -0.336
-newdef OniumPiPi:ImB 5 0
-newdef OniumPiPi:ReC 5 0
-newdef OniumPiPi:ImC 5 0
-newdef OniumPiPi:Incoming 6 30443
-newdef OniumPiPi:Outgoing 6 443
-newdef OniumPiPi:Coupling 6 2.06e-05
-newdef OniumPiPi:ReA 6 1
-newdef OniumPiPi:ImA 6 0
-newdef OniumPiPi:ReB 6 0
-newdef OniumPiPi:ImB 6 0
-newdef OniumPiPi:ReC 6 0
-newdef OniumPiPi:ImC 6 0
-newdef OniumPiPi:Incoming 7 9000553
-newdef OniumPiPi:Outgoing 7 553
-newdef OniumPiPi:Coupling 7 6.88e-05
-newdef OniumPiPi:ReA 7 1
-newdef OniumPiPi:ImA 7 0
-newdef OniumPiPi:ReB 7 -2.35
-newdef OniumPiPi:ImB 7 0.55
-newdef OniumPiPi:ReC 7 0
-newdef OniumPiPi:ImC 7 0
-newdef OniumPiPi:Incoming 8 9000553
-newdef OniumPiPi:Outgoing 8 100553
-newdef OniumPiPi:Coupling 8 6.88e-05
-newdef OniumPiPi:ReA 8 1
-newdef OniumPiPi:ImA 8 0
-newdef OniumPiPi:ReB 8 -2.35
-newdef OniumPiPi:ImB 8 0.55
-newdef OniumPiPi:ReC 8 0
-newdef OniumPiPi:ImC 8 0
-newdef OniumPiPi:Incoming 9 9000553
-newdef OniumPiPi:Outgoing 9 200553
-newdef OniumPiPi:Coupling 9 6.88e-05
-newdef OniumPiPi:ReA 9 1
-newdef OniumPiPi:ImA 9 0
-newdef OniumPiPi:ReB 9 -2.35
-newdef OniumPiPi:ImB 9 0.55
-newdef OniumPiPi:ReC 9 0
-newdef OniumPiPi:ImC 9 0
-newdef OniumPiPi:Incoming 10 9000553
-newdef OniumPiPi:Outgoing 10 10553
-newdef OniumPiPi:Coupling 10 6.88e-05
-newdef OniumPiPi:ReA 10 1
-newdef OniumPiPi:ImA 10 0
-newdef OniumPiPi:ReB 10 -2.35
-newdef OniumPiPi:ImB 10 0.55
-newdef OniumPiPi:ReC 10 0
-newdef OniumPiPi:ImC 10 0
-newdef OniumPiPi:Incoming 11 9000553
-newdef OniumPiPi:Outgoing 11 110553
-newdef OniumPiPi:Coupling 11 6.88e-05
-newdef OniumPiPi:ReA 11 1
-newdef OniumPiPi:ImA 11 0
-newdef OniumPiPi:ReB 11 -2.35
-newdef OniumPiPi:ImB 11 0.55
-newdef OniumPiPi:ReC 11 0
-newdef OniumPiPi:ImC 11 0
-newdef OniumPiPi:MaxWeight 0 4.26075
-newdef OniumPiPi:MaxWeight 1 4.82302
-newdef OniumPiPi:MaxWeight 2 2.40535
-newdef OniumPiPi:MaxWeight 3 2.36975
-newdef OniumPiPi:MaxWeight 4 3.26611
-newdef OniumPiPi:MaxWeight 5 3.64848
-newdef OniumPiPi:MaxWeight 6 2.94445
-newdef OniumPiPi:MaxWeight 7 2.98196
-newdef OniumPiPi:MaxWeight 8 5.1262
-newdef OniumPiPi:MaxWeight 9 5.45035
-newdef OniumPiPi:MaxWeight 10 3.04451
-newdef OniumPiPi:MaxWeight 11 3.08418
-newdef OniumPiPi:MaxWeight 12 2.60132
-newdef OniumPiPi:MaxWeight 13 3.2421
+newdef OniumPiPi:GenerateIntermediates 0 
+do OniumPiPi:SetUpDecayMode 200553 553    3.92e-06 1 0 -2.523 1.189 0 0 4.26075  4.82302
+do OniumPiPi:SetUpDecayMode 200553 100553 0.000311 1 0 -0.395 0.001 0 0	2.40535  2.36975
+do OniumPiPi:SetUpDecayMode 100553 553    6.14e-05 1 0 -0.753 0     0 0	3.26611  3.64848
+do OniumPiPi:SetUpDecayMode 300553 553    1.77e-06 1 0  0     0     0 0	2.94445  2.98196
+do OniumPiPi:SetUpDecayMode 300553 100553 6.88e-05 1 0 -2.35  0.55  0 0	5.1262   5.45035
+do OniumPiPi:SetUpDecayMode 100443 443    6.62e-05 1 0 -0.336 0     0 0	3.04451 3.08418 
+do OniumPiPi:SetUpDecayMode 30443  443    2.06e-05 1 0  0     0     0 0	2.60132 3.2421  
 #
 create Herwig::TauDecayer  Tau2K1Pi
 newdef Tau2K1Pi:Iteration 10
