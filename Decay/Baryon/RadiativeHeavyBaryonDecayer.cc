@@ -7,7 +7,8 @@
 #include "RadiativeHeavyBaryonDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -17,100 +18,31 @@ using namespace Herwig;
 void RadiativeHeavyBaryonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
   if(initialize()) {
-    _maxweight.clear();
+    maxWeight_.clear();
     for(unsigned int ix=0;ix<numberModes();++ix) {
-      if(mode(ix)) _maxweight.push_back(mode(ix)->maxWeight());
-      else         _maxweight.push_back(1.);
+      if(mode(ix)) maxWeight_.push_back(mode(ix)->maxWeight());
+      else         maxWeight_.push_back(1.);
     }
   }
-}
-
-RadiativeHeavyBaryonDecayer::RadiativeHeavyBaryonDecayer() {
-  // Xi_c' to Xi_c
-  _incoming.push_back(4312);_outgoingB.push_back(4132);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.1004e-5/MeV);
-  _incoming.push_back(4322);_outgoingB.push_back(4232);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(9.4102e-5/MeV);
-  // Xi_b' to Xi_b
-  _incoming.push_back(5312);_outgoingB.push_back(5132);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.1004e-5/MeV);
-  _incoming.push_back(5322);_outgoingB.push_back(5232);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(9.4102e-5/MeV);
-  // sigma_c*+ to Lambda_c+
-  _incoming.push_back(4214);_outgoingB.push_back(4122);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.76e-4/MeV);
-  // sigma_b*+ to Lambda_b+
-  _incoming.push_back(5214);_outgoingB.push_back(5122);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.76e-4/MeV);
-  // Xi_c* to Xi_c
-  _incoming.push_back(4314);_outgoingB.push_back(4132);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(0.374e-4/MeV);
-  _incoming.push_back(4324);_outgoingB.push_back(4232);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.2486e-4/MeV);
-  // Xi_b* to Xi_b
-  _incoming.push_back(5314);_outgoingB.push_back(5132);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.0132e-4/MeV);
-  _incoming.push_back(5324);_outgoingB.push_back(5232);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.2486e-4/MeV);
-  // sigma_c+ to Lambda_c+
-  _incoming.push_back(4212);_outgoingB.push_back(4122);_maxweight.push_back(0.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.088e-4/MeV);
-  // sigma_b+ to Lambda_b+
-  _incoming.push_back(5212);_outgoingB.push_back(5122);_maxweight.push_back(0.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.088e-4/MeV);
-  // sigma_c* to sigma_c
-  _incoming.push_back(4224);_outgoingB.push_back(4222);_maxweight.push_back(0.008);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 3.337e-4/MeV);
-  _incoming.push_back(4214);_outgoingB.push_back(4212);_maxweight.push_back(0.003);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 0.834e-4/MeV);
-  _incoming.push_back(4114);_outgoingB.push_back(4112);_maxweight.push_back(0.0012);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-1.688e-4/MeV);
-  // Xi_c* to Xi'_c
-  _incoming.push_back(4314);_outgoingB.push_back(4312);_maxweight.push_back(0.012);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-6.110e-4/MeV);
-  _incoming.push_back(4324);_outgoingB.push_back(4322);_maxweight.push_back(0.006);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-3.607e-4/MeV);
-  // Omega_c* to Omega_c
-  _incoming.push_back(4334);_outgoingB.push_back(4332);_maxweight.push_back(2.4);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 1.055e-3/MeV);
-  // sigma_b* to sigma_b
-  _incoming.push_back(5224);_outgoingB.push_back(5222);_maxweight.push_back(0.06);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 9.945e-4/MeV);
-  _incoming.push_back(5214);_outgoingB.push_back(5212);_maxweight.push_back(0.004);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 2.486e-4/MeV);
-  _incoming.push_back(5114);_outgoingB.push_back(5112);_maxweight.push_back(0.015);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-4.973e-4/MeV);
-  // Xi_b* to Xi'_b
-  _incoming.push_back(5314);_outgoingB.push_back(5312);_maxweight.push_back(0.007);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-4.371e-4/MeV);
-  _incoming.push_back(5324);_outgoingB.push_back(5322);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 3.088e-4/MeV);
-  // Omega_b* to Omega_b
-  _incoming.push_back(5334);_outgoingB.push_back(5332);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-3.769e-4/MeV);
-  // initial size of the arrays
-  _initsize=_incoming.size();
-  // intermediates
-  generateIntermediates(false);
 }
 
 void RadiativeHeavyBaryonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // check the parameters are consistent
-  unsigned int isize(_incoming.size());
-  if(isize!=_outgoingB.size() ||isize!=_maxweight.size()||isize!=_m1coupling.size()||
-     isize!=_e1coupling.size()||isize!=_modetype.size())
+  unsigned int isize(incoming_.size());
+  if(isize!=outgoing_.size() ||isize!=maxWeight_.size()||isize!=M1Coupling_.size()||
+     isize!=E1Coupling_.size()||isize!=modeType_.size())
     throw InitException() << "Inconsistent parameters in "
 			  << "RadiativeHeavyBaryonDecayer::doinit()" 
 			  << Exception::abortnow;
   // the decay modes
   tPDPtr photon = getParticleData(ParticleID::gamma);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr    in  =  getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoingB[ix]),photon};
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr    in  =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix]),photon};
     PhaseSpaceModePtr mode;
     if(in&&out[0]) {
-      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      mode = new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     }
     else {
       mode = PhaseSpaceModePtr();
@@ -133,28 +65,28 @@ int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
   else {return imode;}
   unsigned int ix(0);
   do {
-    if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]) {
+    if(     id0== incoming_[ix]&&ibaryon== outgoing_[ix]) {
       imode=ix;
       cc=false;
     }
-    else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]) {
+    else if(id0==-incoming_[ix]&&ibaryon==-outgoing_[ix]) {
       imode=ix;
       cc=true;
     }
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   return imode;
 }
 
 void RadiativeHeavyBaryonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_m1coupling,1./GeV) << ounit(_e1coupling,1./GeV2) 
-     << _incoming << _outgoingB << _modetype << _maxweight;
+  os << ounit(M1Coupling_,1./GeV) << ounit(E1Coupling_,1./GeV2) 
+     << incoming_ << outgoing_ << modeType_ << maxWeight_;
 }
 
 void RadiativeHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_m1coupling,1./GeV) >> iunit(_e1coupling,1./GeV2) 
-     >> _incoming >> _outgoingB >> _modetype >> _maxweight;
+  is >> iunit(M1Coupling_,1./GeV) >> iunit(E1Coupling_,1./GeV2) 
+     >> incoming_ >> outgoing_ >> modeType_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -179,77 +111,38 @@ void RadiativeHeavyBaryonDecayer::Init() {
      "Phys.\\ Lett.\\  B {\\bf 448} (1999) 143 [arXiv:hep-ph/9811370].\n"
      "%%CITATION = PHLTA,B448,143;%%\n");
 
-  static ParVector<RadiativeHeavyBaryonDecayer,InvEnergy> interfaceM1Coupling
-    ("M1Coupling",
-     "The coupling for the M1 modes",
-     &RadiativeHeavyBaryonDecayer::_m1coupling, 
-     1./MeV, -1, ZERO, ZERO, ZERO,
-     false, false, false);
+  static Command<RadiativeHeavyBaryonDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, outgoing baryons, type of decay, M1(1/MeV) and E1(1/MeV2) couplings and max weight for a decay",
+     &RadiativeHeavyBaryonDecayer::setUpDecayMode, false);
 
-  static ParVector<RadiativeHeavyBaryonDecayer,InvEnergy2> interfaceE1Coupling
-    ("E1Coupling",
-     "The coupling for the E1 modes",
-     &RadiativeHeavyBaryonDecayer::_e1coupling,
-     1./MeV/MeV, -1,  ZERO, ZERO, ZERO,
-     false, false, false);
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHeavyBaryonDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code of the incoming baryon",
-     &RadiativeHeavyBaryonDecayer::_incoming, -1, 0, 0, 1000000,
-     false, false, true);
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceOutgoingB
+    ("OutgoingB","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHeavyBaryonDecayer,int> interfaceOutgoingB
-    ("OutgoingB",
-     "The PDG code of the outgoing baryon",
-     &RadiativeHeavyBaryonDecayer::_outgoingB, -1, 0, 0, 1000000,
-     false, false, true);
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceModeType
+    ("ModeType","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceM1Coupling
+    ("M1Coupling","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHeavyBaryonDecayer,int> interfaceModeType
-    ("ModeType",
-     "The type of mode. 0 is E1, 1 is M1",
-     &RadiativeHeavyBaryonDecayer::_modetype, -1, 0, 0, 2,
-     false, false, true);
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceE1Coupling
+    ("E1Coupling","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHeavyBaryonDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &RadiativeHeavyBaryonDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+  static Deleted<RadiativeHeavyBaryonDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in RadiativeHeavyBaryonDecayer have been deleted, please use SetUpDecayMode");
 }
 
 void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":M1Coupling " 
-	     << ix << " " << _m1coupling[ix]*MeV << "\n";
-      output << "newdef " << name() << ":E1Coupling " 
-	     << ix << " " << _e1coupling[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":Incoming " 
-	     << ix << " " << _incoming[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingB " 
-	     << ix << " " << _outgoingB[ix] << "\n";
-      output << "newdef " << name() << ":ModeType " 
-	     << ix << " " << _modetype[ix] << "\n";
-      output << "newdef " << name() << ":MaxWeight " 
-	     << ix << " " << _maxweight[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":M1Coupling " 
-	     << ix << " " << _m1coupling[ix]*MeV << "\n";
-      output << "insert " << name() << ":E1Coupling " 
-	     << ix << " " << _e1coupling[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":Incoming " 
-	     << ix << " " << _incoming[ix] << "\n";
-      output << "insert " << name() << ":OutgoingB " 
-	     << ix << " " << _outgoingB[ix] << "\n";
-      output << "insert " << name() << ":ModeType " 
-	     << ix << " " << _modetype[ix] << "\n";
-      output << "insert " << name() << ":MaxWeight " 
-	     << ix << " " << _maxweight[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode "
+	   << incoming_[ix] << " " << outgoing_[ix] << " " << " " << modeType_[ix]
+	   << M1Coupling_[ix]*MeV << " " << E1Coupling_[ix]*MeV2 << " "
+	   << " " << maxWeight_[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
@@ -260,20 +153,20 @@ void RadiativeHeavyBaryonDecayer::halfHalfVectorCoupling(int imode,Energy m0,Ene
 							 Complex& A2,Complex& B1,
 							 Complex& B2) const {
   useMe();
-  if(_modetype[imode]==0) {
-    B1=-0.5*(sqr(m0) - sqr(m1))*_e1coupling[imode];
-    B2=-    (m0+m1)*(m0+m1)*_e1coupling[imode];
+  if(modeType_[imode]==0) {
+    B1=-0.5*(sqr(m0) - sqr(m1))*E1Coupling_[imode];
+    B2=-    (m0+m1)*(m0+m1)*E1Coupling_[imode];
     A1=0.;
     A2=0.;
   }
-  else if(_modetype[imode]==1) {
-    A1=-2.*(m0+m1)*_m1coupling[imode];
-    A2= 4.*(m0+m1)*_m1coupling[imode];
+  else if(modeType_[imode]==1) {
+    A1=-2.*(m0+m1)*M1Coupling_[imode];
+    A2= 4.*(m0+m1)*M1Coupling_[imode];
     B1=0.;
     B2=0.;
   }
   else {
-    throw Exception() << "Unknown type of mode " << _modetype[imode] 
+    throw Exception() << "Unknown type of mode " << modeType_[imode] 
 				 << " in RadiativeHeavyBaryonDecayer::"
 				 << "halfHalfVectorCoupling()" << Exception::abortnow;
   }
@@ -286,26 +179,73 @@ void RadiativeHeavyBaryonDecayer::threeHalfHalfVectorCoupling(int imode,Energy m
 							      Complex& B2,
 							      Complex& B3) const {
   useMe();
-  if(_modetype[imode]==0) {
-    A1=-0.5*(m0*m0 - m1*m1)*_e1coupling[imode];
-    A3=-    (m0+m1)*(m0+m1)*_e1coupling[imode];    
+  if(modeType_[imode]==0) {
+    A1=-0.5*(m0*m0 - m1*m1)*E1Coupling_[imode];
+    A3=-    (m0+m1)*(m0+m1)*E1Coupling_[imode];    
     A2=0.;
     B1=0.;
     B2=0.;
     B3=0.;
   }
-  else if(_modetype[imode]==1) {
-    B1=-(m0+m1)*_m1coupling[imode];
-    B2= (m0+m1)*_m1coupling[imode];
+  else if(modeType_[imode]==1) {
+    B1=-(m0+m1)*M1Coupling_[imode];
+    B2= (m0+m1)*M1Coupling_[imode];
     B3=0.;
     A1=0.;
     A2=0.;
     A3=0.;
   }
   else {
-    throw Exception() << "Unknown type of mode " << _modetype[imode] 
+    throw Exception() << "Unknown type of mode " << modeType_[imode] 
 				 << " in RadiativeHeavyBaryonDecayer::"
 				 << "threeHalfHalfVectorCoupling()" 
 				 << Exception::abortnow;
   }
+}
+
+string RadiativeHeavyBaryonDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half && pData->iSpin()!=PDT::Spin3Half)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1/2 or 3/2";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  long out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "Outgoing particle with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Outgoing particle with id " + std::to_string(out) + "does not have spin 1/2";
+  // type of mode
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int itype = stoi(stype);
+  // M1 coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  InvEnergy m1 = stof(stype)/MeV;
+  // E1 coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  InvEnergy2 e1 = stof(stype)/MeV2;
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  modeType_.push_back(itype);
+  M1Coupling_.push_back(m1);
+  E1Coupling_.push_back(e1);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }
