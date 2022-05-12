@@ -142,7 +142,7 @@ void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) 
     output << "do " << name() << ":SetUpDecayMode "
 	   << incoming_[ix] << " " << outgoing_[ix] << " " << " " << modeType_[ix]
 	   << M1Coupling_[ix]*MeV << " " << E1Coupling_[ix]*MeV2 << " "
-	   << " " << maxWeight_[ix] << "\n";
+	   << maxWeight_[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

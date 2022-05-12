@@ -21778,6 +21778,24 @@ do Spin3PP:SetUpDecayMode 317 321 -211 1.3 6.13277
 do Spin3PP:SetUpDecayMode 337 321 -321 1.83 6.56579
 do Spin3PP:SetUpDecayMode 337 310 130 1.83 2.10003
 #
+create Herwig::RadiativeDoublyHeavyBaryonDecayer  RadiativeDoublyHeavy
+newdef RadiativeDoublyHeavy:Iteration 1
+newdef RadiativeDoublyHeavy:Ntry 500
+newdef RadiativeDoublyHeavy:Points 10000
+newdef RadiativeDoublyHeavy:GenerateIntermediates 0 
+do RadiativeDoublyHeavy:SetUpDecayMode 4414 4412 0.134 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 4424 4422 0.121 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 4434 4432 0.0412 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5514 5512 0.0111 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5524 5522 0.0256 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5534 5532 0.00858 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5414 5142 0.0213 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5424 5242 0.0305 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5434 5342 0.0175 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5412 5142 0.00615 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5422 5242 0.00615 1.
+do RadiativeDoublyHeavy:SetUpDecayMode 5432 5342 0.00600 1.
+#
 create Herwig::TauDecayer  Tau1K2Pi
 newdef Tau1K2Pi:Iteration 10
 newdef Tau1K2Pi:Ntry 500

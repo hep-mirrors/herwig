@@ -251,17 +251,17 @@ decaymode Omega_c*0->Omega_c0,gamma; 1 1 /Herwig/Decays/HeavyGamma
 #
 decaymode Omega_c*bar0->Omega_cbar0,gamma; 1 1 /Herwig/Decays/HeavyGamma
 #
-decaymode Xi_cc*+->Xi_cc+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_cc*+->Xi_cc+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_cc*-->Xibar_cc-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_cc*-->Xibar_cc-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xi_cc*++->Xi_cc++,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_cc*++->Xi_cc++,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_cc*--->Xibar_cc--,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_cc*--->Xibar_cc--,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omega_cc*+->Omega_cc+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omega_cc*+->Omega_cc+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omegabar_cc*-->Omegabar_cc-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omegabar_cc*-->Omegabar_cc-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
 decaymode Sigma_b*-->Lambda_b0,pi-; 1 1 /Herwig/Decays/HeavyStrong
 #
@@ -291,29 +291,29 @@ decaymode Omega_b*-->Omega_b-,gamma; 1 1 /Herwig/Decays/HeavyGamma
 #
 decaymode Omega_b*bar+->Omega_bbar+,gamma; 1 1 /Herwig/Decays/HeavyGamma
 #
-decaymode Xi_bb*-->Xi_bb-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bb*-->Xi_bb-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bb*+->Xibar_bb+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bb*+->Xibar_bb+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xi_bb*0->Xi_bb0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bb*0->Xi_bb0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bb*0->Xibar_bb0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bb*0->Xibar_bb0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omega_bb*-->Omega_bb-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omega_bb*-->Omega_bb-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omegabar_bb*+->Omegabar_bb+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omegabar_bb*+->Omegabar_bb+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xi_bc*0->Xi_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bc*0->Xi_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bc*0->Xibar_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bc*0->Xibar_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xi_bc*+->Xi_bc+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bc*+->Xi_bc+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bc*-->Xibar_bc-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bc*-->Xibar_bc-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omega_bc*0->Omega_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omega_bc*0->Omega_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omegabar_bc*0->Omegabar_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omegabar_bc*0->Omegabar_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
 # the (56,0^+_0)  40 multiplet
 #
@@ -1128,17 +1128,17 @@ decaymode Omega_bbar+->tau+,nu_tau,ubar=ss_1bar; 0.0003 1 /Herwig/Decays/WeakPar
 decaymode Omega_bbar+->sbar=u,ubar=ss_1bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
 decaymode Omega_bbar+->dbar=c,ubar=ss_1bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
 #
-decaymode Xi_bc'0->Xi_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bc'0->Xi_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bc'0->Xibar_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bc'0->Xibar_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xi_bc'+->Xi_bc+,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xi_bc'+->Xi_bc+,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Xibar_bc'-->Xibar_bc-,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Xibar_bc'-->Xibar_bc-,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omega_bc'0->Omega_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omega_bc'0->Omega_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
-decaymode Omegabar_bc'0->Omegabar_bc0,gamma; 1 1 /Herwig/Decays/DecayME0
+decaymode Omegabar_bc'0->Omegabar_bc0,gamma; 1 1 /Herwig/Decays/RadiativeDoublyHeavy
 #
 # the (56,0^+_2)  40 multiplet
 #
