@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the width generators for Herwig outputted
-# from the Herwig++ Particles Database at 18:3:22 on the 8/5/2022.
+# from the Herwig++ Particles Database at 13:7:17 on the 12/5/2022.
 #
 create Herwig::GenericWidthGenerator  rho+width
 newdef rho+width:Particle /Herwig/Particles/rho+ 
@@ -77524,4 +77524,280 @@ insert phi2170Width:NumberofEntries 1 117
 insert phi2170Width:NumberofEntries 2 171
 
 newdef /Herwig/Particles/phi(2170):Width_generator phi2170Width
+#
+create Herwig::BaryonWidthGenerator  Xi_cc*+Width
+newdef Xi_cc*+Width:Particle /Herwig/Particles/Xi_cc*+ 
+
+newdef Xi_cc*+Width:Prefactor 1
+newdef Xi_cc*+Width:BRNormalize 1
+newdef Xi_cc*+Width:BRMinimum 0.01
+newdef Xi_cc*+Width:Points 50
+newdef Xi_cc*+Width:InterpolationOrder 1
+insert Xi_cc*+Width:MEtype 0 1
+insert Xi_cc*+Width:MEcode 0 106
+insert Xi_cc*+Width:MEcoupling 0 0.576277
+insert Xi_cc*+Width:ModeOn 0 1
+insert Xi_cc*+Width:MinimumMasses 0 3.62155
+insert Xi_cc*+Width:MEmass1 0 3.62155
+insert Xi_cc*+Width:MEmass2 0 0
+insert Xi_cc*+Width:DecayModes 0 Xi_cc*+->Xi_cc+,gamma; 
+insert Xi_cc*+Width:NumberofEntries 0 0
+insert Xi_cc*+Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_cc*+Width:ModeLocation 0 0
+
+newdef /Herwig/Particles/Xibar_cc*-:Width_generator Xi_cc*+Width
+newdef /Herwig/Particles/Xi_cc*+:Width_generator Xi_cc*+Width
+#
+create Herwig::BaryonWidthGenerator  Xi_cc*++Width
+newdef Xi_cc*++Width:Particle /Herwig/Particles/Xi_cc*++ 
+
+newdef Xi_cc*++Width:Prefactor 1
+newdef Xi_cc*++Width:BRNormalize 1
+newdef Xi_cc*++Width:BRMinimum 0.01
+newdef Xi_cc*++Width:Points 50
+newdef Xi_cc*++Width:InterpolationOrder 1
+insert Xi_cc*++Width:MEtype 0 1
+insert Xi_cc*++Width:MEcode 0 106
+insert Xi_cc*++Width:MEcoupling 0 0.576094
+insert Xi_cc*++Width:ModeOn 0 1
+insert Xi_cc*++Width:MinimumMasses 0 3.62155
+insert Xi_cc*++Width:MEmass1 0 3.62155
+insert Xi_cc*++Width:MEmass2 0 0
+insert Xi_cc*++Width:DecayModes 0 Xi_cc*++->Xi_cc++,gamma; 
+insert Xi_cc*++Width:NumberofEntries 0 0
+insert Xi_cc*++Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_cc*++Width:ModeLocation 0 1
+
+newdef /Herwig/Particles/Xi_cc*++:Width_generator Xi_cc*++Width
+newdef /Herwig/Particles/Xibar_cc*--:Width_generator Xi_cc*++Width
+#
+create Herwig::BaryonWidthGenerator  Omega_cc*+Width
+newdef Omega_cc*+Width:Particle /Herwig/Particles/Omega_cc*+ 
+
+newdef Omega_cc*+Width:Prefactor 1
+newdef Omega_cc*+Width:BRNormalize 1
+newdef Omega_cc*+Width:BRMinimum 0.01
+newdef Omega_cc*+Width:Points 50
+newdef Omega_cc*+Width:InterpolationOrder 1
+insert Omega_cc*+Width:MEtype 0 1
+insert Omega_cc*+Width:MEcode 0 106
+insert Omega_cc*+Width:MEcoupling 0 0.577367
+insert Omega_cc*+Width:ModeOn 0 1
+insert Omega_cc*+Width:MinimumMasses 0 3.778
+insert Omega_cc*+Width:MEmass1 0 3.778
+insert Omega_cc*+Width:MEmass2 0 0
+insert Omega_cc*+Width:DecayModes 0 Omega_cc*+->Omega_cc+,gamma; 
+insert Omega_cc*+Width:NumberofEntries 0 0
+insert Omega_cc*+Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Omega_cc*+Width:ModeLocation 0 2
+
+newdef /Herwig/Particles/Omega_cc*+:Width_generator Omega_cc*+Width
+newdef /Herwig/Particles/Omegabar_cc*-:Width_generator Omega_cc*+Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bb*-Width
+newdef Xi_bb*-Width:Particle /Herwig/Particles/Xi_bb*- 
+
+newdef Xi_bb*-Width:Prefactor 1
+newdef Xi_bb*-Width:BRNormalize 1
+newdef Xi_bb*-Width:BRMinimum 0.01
+newdef Xi_bb*-Width:Points 50
+newdef Xi_bb*-Width:InterpolationOrder 1
+insert Xi_bb*-Width:MEtype 0 1
+insert Xi_bb*-Width:MEcode 0 106
+insert Xi_bb*-Width:MEcoupling 0 0.579634
+insert Xi_bb*-Width:ModeOn 0 1
+insert Xi_bb*-Width:MinimumMasses 0 10.202
+insert Xi_bb*-Width:MEmass1 0 10.202
+insert Xi_bb*-Width:MEmass2 0 0
+insert Xi_bb*-Width:DecayModes 0 Xi_bb*-->Xi_bb-,gamma; 
+insert Xi_bb*-Width:NumberofEntries 0 0
+insert Xi_bb*-Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bb*-Width:ModeLocation 0 3
+
+newdef /Herwig/Particles/Xibar_bb*+:Width_generator Xi_bb*-Width
+newdef /Herwig/Particles/Xi_bb*-:Width_generator Xi_bb*-Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bb*0Width
+newdef Xi_bb*0Width:Particle /Herwig/Particles/Xi_bb*0 
+
+newdef Xi_bb*0Width:Prefactor 1
+newdef Xi_bb*0Width:BRNormalize 1
+newdef Xi_bb*0Width:BRMinimum 0.01
+newdef Xi_bb*0Width:Points 50
+newdef Xi_bb*0Width:InterpolationOrder 1
+insert Xi_bb*0Width:MEtype 0 1
+insert Xi_bb*0Width:MEcode 0 106
+insert Xi_bb*0Width:MEcoupling 0 0.577562
+insert Xi_bb*0Width:ModeOn 0 1
+insert Xi_bb*0Width:MinimumMasses 0 10.202
+insert Xi_bb*0Width:MEmass1 0 10.202
+insert Xi_bb*0Width:MEmass2 0 0
+insert Xi_bb*0Width:DecayModes 0 Xi_bb*0->Xi_bb0,gamma; 
+insert Xi_bb*0Width:NumberofEntries 0 0
+insert Xi_bb*0Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bb*0Width:ModeLocation 0 4
+
+newdef /Herwig/Particles/Xi_bb*0:Width_generator Xi_bb*0Width
+newdef /Herwig/Particles/Xibar_bb*0:Width_generator Xi_bb*0Width
+#
+create Herwig::BaryonWidthGenerator  Omega_bb*-Width
+newdef Omega_bb*-Width:Particle /Herwig/Particles/Omega_bb*- 
+
+newdef Omega_bb*-Width:Prefactor 1
+newdef Omega_bb*-Width:BRNormalize 1
+newdef Omega_bb*-Width:BRMinimum 0.01
+newdef Omega_bb*-Width:Points 50
+newdef Omega_bb*-Width:InterpolationOrder 1
+insert Omega_bb*-Width:MEtype 0 1
+insert Omega_bb*-Width:MEcode 0 106
+insert Omega_bb*-Width:MEcoupling 0 0.577371
+insert Omega_bb*-Width:ModeOn 0 1
+insert Omega_bb*-Width:MinimumMasses 0 10.359
+insert Omega_bb*-Width:MEmass1 0 10.359
+insert Omega_bb*-Width:MEmass2 0 0
+insert Omega_bb*-Width:DecayModes 0 Omega_bb*-->Omega_bb-,gamma; 
+insert Omega_bb*-Width:NumberofEntries 0 0
+insert Omega_bb*-Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Omega_bb*-Width:ModeLocation 0 5
+
+newdef /Herwig/Particles/Omega_bb*-:Width_generator Omega_bb*-Width
+newdef /Herwig/Particles/Omegabar_bb*+:Width_generator Omega_bb*-Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bc*0Width
+newdef Xi_bc*0Width:Particle /Herwig/Particles/Xi_bc*0 
+
+newdef Xi_bc*0Width:Prefactor 1
+newdef Xi_bc*0Width:BRNormalize 1
+newdef Xi_bc*0Width:BRMinimum 0.01
+newdef Xi_bc*0Width:Points 50
+newdef Xi_bc*0Width:InterpolationOrder 1
+insert Xi_bc*0Width:MEtype 0 1
+insert Xi_bc*0Width:MEcode 0 106
+insert Xi_bc*0Width:MEcoupling 0 0.578043
+insert Xi_bc*0Width:ModeOn 0 1
+insert Xi_bc*0Width:MinimumMasses 0 6.933
+insert Xi_bc*0Width:MEmass1 0 6.933
+insert Xi_bc*0Width:MEmass2 0 0
+insert Xi_bc*0Width:DecayModes 0 Xi_bc*0->Xi_bc0,gamma; 
+insert Xi_bc*0Width:NumberofEntries 0 0
+insert Xi_bc*0Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bc*0Width:ModeLocation 0 6
+
+newdef /Herwig/Particles/Xi_bc*0:Width_generator Xi_bc*0Width
+newdef /Herwig/Particles/Xibar_bc*0:Width_generator Xi_bc*0Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bc*+Width
+newdef Xi_bc*+Width:Particle /Herwig/Particles/Xi_bc*+ 
+
+newdef Xi_bc*+Width:Prefactor 1
+newdef Xi_bc*+Width:BRNormalize 1
+newdef Xi_bc*+Width:BRMinimum 0.01
+newdef Xi_bc*+Width:Points 50
+newdef Xi_bc*+Width:InterpolationOrder 1
+insert Xi_bc*+Width:MEtype 0 1
+insert Xi_bc*+Width:MEcode 0 106
+insert Xi_bc*+Width:MEcoupling 0 0.57681
+insert Xi_bc*+Width:ModeOn 0 1
+insert Xi_bc*+Width:MinimumMasses 0 6.933
+insert Xi_bc*+Width:MEmass1 0 6.933
+insert Xi_bc*+Width:MEmass2 0 0
+insert Xi_bc*+Width:DecayModes 0 Xi_bc*+->Xi_bc+,gamma; 
+insert Xi_bc*+Width:NumberofEntries 0 0
+insert Xi_bc*+Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bc*+Width:ModeLocation 0 7
+
+newdef /Herwig/Particles/Xibar_bc*-:Width_generator Xi_bc*+Width
+newdef /Herwig/Particles/Xi_bc*+:Width_generator Xi_bc*+Width
+#
+create Herwig::BaryonWidthGenerator  Omega_bc*0Width
+newdef Omega_bc*0Width:Particle /Herwig/Particles/Omega_bc*0 
+
+newdef Omega_bc*0Width:Prefactor 1
+newdef Omega_bc*0Width:BRNormalize 1
+newdef Omega_bc*0Width:BRMinimum 0.01
+newdef Omega_bc*0Width:Points 50
+newdef Omega_bc*0Width:InterpolationOrder 1
+insert Omega_bc*0Width:MEtype 0 1
+insert Omega_bc*0Width:MEcode 0 106
+insert Omega_bc*0Width:MEcoupling 0 0.575926
+insert Omega_bc*0Width:ModeOn 0 1
+insert Omega_bc*0Width:MinimumMasses 0 7.088
+insert Omega_bc*0Width:MEmass1 0 7.088
+insert Omega_bc*0Width:MEmass2 0 0
+insert Omega_bc*0Width:DecayModes 0 Omega_bc*0->Omega_bc0,gamma; 
+insert Omega_bc*0Width:NumberofEntries 0 0
+insert Omega_bc*0Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Omega_bc*0Width:ModeLocation 0 8
+
+newdef /Herwig/Particles/Omegabar_bc*0:Width_generator Omega_bc*0Width
+newdef /Herwig/Particles/Omega_bc*0:Width_generator Omega_bc*0Width
+#
+create Herwig::BaryonWidthGenerator  Omega_bc'0Width
+newdef Omega_bc'0Width:Particle /Herwig/Particles/Omega_bc'0 
+
+newdef Omega_bc'0Width:Prefactor 1
+newdef Omega_bc'0Width:BRNormalize 1
+newdef Omega_bc'0Width:BRMinimum 0.01
+newdef Omega_bc'0Width:Points 50
+newdef Omega_bc'0Width:InterpolationOrder 1
+insert Omega_bc'0Width:MEtype 0 1
+insert Omega_bc'0Width:MEcode 0 102
+insert Omega_bc'0Width:MEcoupling 0 0.99948
+insert Omega_bc'0Width:ModeOn 0 1
+insert Omega_bc'0Width:MinimumMasses 0 7.088
+insert Omega_bc'0Width:MEmass1 0 7.088
+insert Omega_bc'0Width:MEmass2 0 0
+insert Omega_bc'0Width:DecayModes 0 Omega_bc'0->Omega_bc0,gamma; 
+insert Omega_bc'0Width:NumberofEntries 0 0
+insert Omega_bc'0Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Omega_bc'0Width:ModeLocation 0 11
+
+newdef /Herwig/Particles/Omega_bc'0:Width_generator Omega_bc'0Width
+newdef /Herwig/Particles/Omegabar_bc'0:Width_generator Omega_bc'0Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bc'0Width
+newdef Xi_bc'0Width:Particle /Herwig/Particles/Xi_bc'0 
+
+newdef Xi_bc'0Width:Prefactor 1
+newdef Xi_bc'0Width:BRNormalize 1
+newdef Xi_bc'0Width:BRMinimum 0.01
+newdef Xi_bc'0Width:Points 50
+newdef Xi_bc'0Width:InterpolationOrder 1
+insert Xi_bc'0Width:MEtype 0 1
+insert Xi_bc'0Width:MEcode 0 102
+insert Xi_bc'0Width:MEcoupling 0 1.00029
+insert Xi_bc'0Width:ModeOn 0 1
+insert Xi_bc'0Width:MinimumMasses 0 6.933
+insert Xi_bc'0Width:MEmass1 0 6.933
+insert Xi_bc'0Width:MEmass2 0 0
+insert Xi_bc'0Width:DecayModes 0 Xi_bc'0->Xi_bc0,gamma; 
+insert Xi_bc'0Width:NumberofEntries 0 0
+insert Xi_bc'0Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bc'0Width:ModeLocation 0 9
+
+newdef /Herwig/Particles/Xi_bc'0:Width_generator Xi_bc'0Width
+newdef /Herwig/Particles/Xibar_bc'0:Width_generator Xi_bc'0Width
+#
+create Herwig::BaryonWidthGenerator  Xi_bc'+Width
+newdef Xi_bc'+Width:Particle /Herwig/Particles/Xi_bc'+ 
+
+newdef Xi_bc'+Width:Prefactor 1
+newdef Xi_bc'+Width:BRNormalize 1
+newdef Xi_bc'+Width:BRMinimum 0.01
+newdef Xi_bc'+Width:Points 50
+newdef Xi_bc'+Width:InterpolationOrder 1
+insert Xi_bc'+Width:MEtype 0 1
+insert Xi_bc'+Width:MEcode 0 102
+insert Xi_bc'+Width:MEcoupling 0 1.00029
+insert Xi_bc'+Width:ModeOn 0 1
+insert Xi_bc'+Width:MinimumMasses 0 6.933
+insert Xi_bc'+Width:MEmass1 0 6.933
+insert Xi_bc'+Width:MEmass2 0 0
+insert Xi_bc'+Width:DecayModes 0 Xi_bc'+->Xi_bc+,gamma; 
+insert Xi_bc'+Width:NumberofEntries 0 0
+insert Xi_bc'+Width:BaryonDecayers 0 /Herwig/Decays/RadiativeDoublyHeavy
+insert Xi_bc'+Width:ModeLocation 0 10
+
+newdef /Herwig/Particles/Xi_bc'+:Width_generator Xi_bc'+Width
+newdef /Herwig/Particles/Xibar_bc'-:Width_generator Xi_bc'+Width
 #
