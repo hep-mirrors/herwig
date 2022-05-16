@@ -119,7 +119,8 @@ int EtaPiPiFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // check number of external particles
   if(children.size()!=4){return imode;}
   // check the outgoing particles
-  unsigned int npip(0),npim(0),nl(0),il(0);
+  unsigned int npip(0),npim(0),nl(0);
+  int il(0);
   tPDVector::const_iterator pit = children.begin();
   int id;
   for(;pit!=children.end();++pit) {
