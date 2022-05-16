@@ -21,6 +21,7 @@ VectorMesonPScalarFermionsDecayer.h \
 VectorMesonVectorPScalarDecayer.h  \
 VectorMesonVectorScalarDecayer.h  \
 VectorMesonVectorVectorDecayer.h  \
+VectorMesonTensorVectorDecayer.h \
 PseudoVectorMesonVectorVectorDecayer.h  \
 OniumToOniumPiPiDecayer.h \
 f1RhoPiPiDecayer.h \
@@ -40,8 +41,8 @@ VectorMesonPScalarFermionsDecayer.cc \
 VectorMesonVectorPScalarDecayer.cc   \
 VectorMesonVectorScalarDecayer.cc    \
 VectorMesonVectorVectorDecayer.cc    \
+VectorMesonTensorVectorDecayer.cc    \
 PseudoVectorMesonVectorVectorDecayer.cc  \
 OniumToOniumPiPiDecayer.cc           \
 f1RhoPiPiDecayer.cc                  \
 f1FourPiDecayer.cc
-

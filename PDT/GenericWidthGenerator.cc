@@ -884,6 +884,13 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     // V -> P gamma (heavy quark)
   case  18: gam = pcm2/12./m02*m1/q;
     break;
+    // S -> SS (T->TS and T->VV)
+  case  19: gam = 5./24./q2*m02;
+    if (m2==ZERO) gam*=2./3.;
+    break;
+    // A -> VV
+  case 20: gam = 1./12.;
+    break;
     // unknown
   default:
     throw Exception() << "Unknown type of mode " << MEcode_[imode] 

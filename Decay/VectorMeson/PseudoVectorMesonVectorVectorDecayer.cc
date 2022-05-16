@@ -228,7 +228,7 @@ double PseudoVectorMesonVectorVectorDecayer::me2(const int,const Particle & part
 }
 
 bool PseudoVectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-						    double & coupling) const {
+							 double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
@@ -264,7 +264,7 @@ bool PseudoVectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,in
   }
   while(ix<incoming_.size()&&imode<0);
   coupling = coupling_[imode]; 
-  mecode = 5;
+  mecode = 20;
   return order; 
 }
 
