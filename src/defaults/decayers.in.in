@@ -19961,6 +19961,26 @@ do HeavyGamma:SetUpDecayMode 5314 5312 1 -0.0004371 0 0.00938573
 do HeavyGamma:SetUpDecayMode 5324 5322 1 0.0003088 0 0.00506067
 do HeavyGamma:SetUpDecayMode 5334 5332 1 -0.0003769 0 1.67242
 #
+create Herwig::VectorMesonTensorVectorDecayer  VTV
+newdef VTV:Iteration 1
+newdef VTV:Ntry 1000
+newdef VTV:Points 10000
+newdef VTV:GenerateIntermediates 0 
+do VTV:SetUpDecayMode 100443 445 22 0.261 1.81532
+do VTV:SetUpDecayMode 100553 555 22 0.22 1.61337
+do VTV:SetUpDecayMode 200553 555 22 0.343 1.60543
+do VTV:SetUpDecayMode 200553 100555 22 0.278 1.62572
+do VTV:SetUpDecayMode 100543 545 22 0.932 1.60201
+do VTV:SetUpDecayMode 443 225 22 0.00569 1.97513
+do VTV:SetUpDecayMode 443 225 223 0.00875 6.58074
+do VTV:SetUpDecayMode 443 335 22 0.00286 4.9067
+do VTV:SetUpDecayMode 443 335 333 0.0037 8.55267
+do VTV:SetUpDecayMode 100443 225 22 0.00447 2.02213
+do VTV:SetUpDecayMode 100443 225 223 0.0037 6.54684
+do VTV:SetUpDecayMode 100443 335 333 0.00158 9.75511
+do VTV:SetUpDecayMode 553 225 22 0.00187 2.09182
+do VTV:SetUpDecayMode 553 335 22 0.000958 5.81227
+#
 create Herwig::ScalarVectorVectorDecayer  SVV
 newdef SVV:Iteration 1
 newdef SVV:Ntry 2000
@@ -22058,6 +22078,5 @@ newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
 newdef D0KmPipPi0CLEO:Rho1700Phase 171
 newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
 newdef D0KmPipPi0CLEO:K1680MinusPhase 103
-#
 @LOAD_EVTGEN_DECAYER@
 
