@@ -22,6 +22,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
 # BELLE b->s gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
+# BABAR b->s gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I769107
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1123662
 # BES D -> K, pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
