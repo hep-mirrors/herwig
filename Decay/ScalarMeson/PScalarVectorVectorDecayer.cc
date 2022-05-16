@@ -59,17 +59,29 @@ void PScalarVectorVectorDecayer::doinit() {
 
 int PScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					   const tPDVector & children) const {
-  cc = false;
   if(children.size()!=2) return -1;
-  int id(parent->id());
+  int id0(parent->id());
+  int id0bar = parent->CC() ? parent->CC()->id() : id0;
   int id1(children[0]->id());
+  int id1bar = children[0]->CC() ? children[0]->CC()->id() : id1;
   int id2(children[1]->id());
+  int id2bar = children[1]->CC() ? children[1]->CC()->id() : id2;
   unsigned int ix(0);
   int imode(-1);
   do {
-    if(incoming_[ix]==id) {
+    if(incoming_[ix]==id0) {
       if((id1==outgoing_[ix].first&&id2==outgoing_[ix].second)||
-	 (id2==outgoing_[ix].first&&id1==outgoing_[ix].second)) imode=ix;
+	 (id2==outgoing_[ix].first&&id1==outgoing_[ix].second)) {
+	imode=ix;
+	cc=false;
+      }
+    }
+    if(id0bar==incoming_[ix]&&imode<0) {
+      if((id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second)||
+	 (id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second)) {
+	imode=ix;
+	cc=true;
+      }
     }
     ++ix;
   }
@@ -175,21 +187,42 @@ bool PScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype
 					       double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
+  ++pit;
   int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
+  bool order(true);
   do {
-    if(incoming_[ix]==id) {
-      if((id1==outgoing_[ix].first&&id2==outgoing_[ix].second)||
-	 (id2==outgoing_[ix].first&&id1==outgoing_[ix].second)) imode=ix;
+    if(id   ==incoming_[ix]) {
+      if(id1==outgoing_[ix].first&&id2==outgoing_[ix].second) {
+	imode=ix;
+	order=true;
+      }
+      if(id2==outgoing_[ix].first&&id1==outgoing_[ix].second) {
+	imode=ix;
+	order=false;
+      }
+    }
+    if(idbar==incoming_[ix]&&imode<0) {
+      if(id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second) {
+	imode=ix;
+	order=true;
+      }
+      if(id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second) {
+	imode=ix;
+	order=false;
+      }
     }
     ++ix;
   }
   while(imode<0&&ix<incoming_.size());
   coupling=coupling_[imode]*dm.parent()->mass();
   itype = 3;
-  return id1==outgoing_[imode].first&&id2==outgoing_[imode].second;
+  return order;
 }
 
 // output the setup info for the particle database
