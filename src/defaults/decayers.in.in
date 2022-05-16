@@ -19979,6 +19979,12 @@ do SVV:SetUpDecayMode 10111 113 223 13.9 8.
 do SVV:SetUpDecayMode 10211 213 223 13.9 8.
 do SVV:SetUpDecayMode 10441 223 223 0.0397 11.5
 do SVV:SetUpDecayMode 10111 22 22 3.12 1.32957
+do SVV:SetUpDecayMode 10551 553 22 0.29 1.11692
+do SVV:SetUpDecayMode 110551 553 22 0.121 1.11335
+do SVV:SetUpDecayMode 110551 100553 22 0.517 1.14139
+do SVV:SetUpDecayMode 210551 553 22 0.0717 1.10623
+do SVV:SetUpDecayMode 210551 100553 22 0.1 1.11241
+do SVV:SetUpDecayMode 210551 200553 22 0.272 1.15405
 #
 create Herwig::a1SimpleDecayer  a1Simple
 newdef a1Simple:Iteration 5
