@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 18:9:48 on the 17/5/2022.
+# from the Herwig Particles Database at 19:7:41 on the 17/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -2404,6 +2404,14 @@ do TVV:SetUpDecayMode 200555 130553 22 0.0462 1.62772
 do TVV:SetUpDecayMode 100555 30553 22 0.0393 1.6272
 do TVV:SetUpDecayMode 120555 20553 22 0.161 1.60282
 do TVV:SetUpDecayMode 120555 120553 22 0.573 1.60593
+#
+create Herwig::TensorMesonSpin3VectorDecayer  T3V
+newdef T3V:Iteration 1
+newdef T3V:Ntry 2000
+newdef T3V:Points 10000
+newdef T3V:GenerateIntermediates 0
+do T3V:SetUpDecayMode 100555 557 22 0.273 1.62766
+do T3V:SetUpDecayMode 200555 100557 22 0.341 1.62976
 #
 create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1

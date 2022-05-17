@@ -891,8 +891,12 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     // A -> VV
   case 20: gam = 1./12.;
     break;
-    // Rank3 -> TV
+    // Rank3 -> T V
   case 21: gam = 0.125*m02/q2;
+    if (m2==ZERO) gam*=2./3.;
+    break;
+    // T -> Rank3 V
+  case 22: gam = 7./40.*m02/q2;
     if (m2==ZERO) gam*=2./3.;
     break;
     // unknown

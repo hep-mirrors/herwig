@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the Spin3MesonTensorVectorDecayer class.
+// functions of the TensorMesonSpin3VectorDecayer class.
 //
 
-#include "Spin3MesonTensorVectorDecayer.h"
+#include "TensorMesonSpin3VectorDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Command.h"
@@ -24,7 +24,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void Spin3MesonTensorVectorDecayer::doinitrun() {
+void TensorMesonSpin3VectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<incoming_.size();++ix)
@@ -32,12 +32,12 @@ void Spin3MesonTensorVectorDecayer::doinitrun() {
   }
 }
 
-void Spin3MesonTensorVectorDecayer::doinit() {
+void TensorMesonSpin3VectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=incoming_.size();
   if(isize!=outgoing_.size()||isize!=maxWeight_.size()||isize!=coupling_.size())
-    throw InitException() << "Inconsistent parameters Spin3MesonTensorVectorDecayer" 
+    throw InitException() << "Inconsistent parameters TensorMesonSpin3VectorDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
   vector<double> wgt(0);
@@ -54,7 +54,7 @@ void Spin3MesonTensorVectorDecayer::doinit() {
   }
 }
 
-int Spin3MesonTensorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
+int TensorMesonSpin3VectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
 						const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
@@ -84,33 +84,33 @@ int Spin3MesonTensorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-void Spin3MesonTensorVectorDecayer::persistentOutput(PersistentOStream & os) const  {
+void TensorMesonSpin3VectorDecayer::persistentOutput(PersistentOStream & os) const  {
   os << incoming_ << outgoing_ << maxWeight_ << ounit(coupling_,GeV);
 }
 
-void Spin3MesonTensorVectorDecayer::persistentInput(PersistentIStream & is, int)  {
+void TensorMesonSpin3VectorDecayer::persistentInput(PersistentIStream & is, int)  {
   is >> incoming_ >> outgoing_ >> maxWeight_ >> iunit(coupling_,GeV);
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<Spin3MesonTensorVectorDecayer,DecayIntegrator>
-describeHerwigSpin3MesonTensorVectorDecayer("Herwig::Spin3MesonTensorVectorDecayer", "HwTMDecay.so");
+DescribeClass<TensorMesonSpin3VectorDecayer,DecayIntegrator>
+describeHerwigTensorMesonSpin3VectorDecayer("Herwig::TensorMesonSpin3VectorDecayer", "HwTMDecay.so");
 
-void Spin3MesonTensorVectorDecayer::Init() {
+void TensorMesonSpin3VectorDecayer::Init() {
 
-  static ClassDocumentation<Spin3MesonTensorVectorDecayer> documentation
-    ("The Spin3MesonTensorVectorDecayer class is designed for the decay"
+  static ClassDocumentation<TensorMesonSpin3VectorDecayer> documentation
+    ("The TensorMesonSpin3VectorDecayer class is designed for the decay"
      " of a tensor meson to a tensor and pseudoscalar mesons.");
 
-    static Command<Spin3MesonTensorVectorDecayer> interfaceSetUpDecayMode
+    static Command<TensorMesonSpin3VectorDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
      "Set up the particles, coupling(GeV) and max weight for a decay",
-     &Spin3MesonTensorVectorDecayer::setUpDecayMode, false);
+     &TensorMesonSpin3VectorDecayer::setUpDecayMode, false);
 
 }
 
-string Spin3MesonTensorVectorDecayer::setUpDecayMode(string arg) {
+string TensorMesonSpin3VectorDecayer::setUpDecayMode(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
@@ -119,8 +119,8 @@ string Spin3MesonTensorVectorDecayer::setUpDecayMode(string arg) {
   tcPDPtr pData = getParticleData(in);
   if(!pData)
     return "Incoming particle with id " + std::to_string(in) + "does not exist";
-  if(pData->iSpin()!=PDT::Spin3)
-    return "Incoming particle with id " + std::to_string(in) + "does not have spin 3";
+  if(pData->iSpin()!=PDT::Spin2)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 2";
   // and outgoing particles
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
@@ -129,8 +129,8 @@ string Spin3MesonTensorVectorDecayer::setUpDecayMode(string arg) {
   pData = getParticleData(out.first);
   if(!pData)
     return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
-  if(pData->iSpin()!=PDT::Spin2)
-    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 2";
+  if(pData->iSpin()!=PDT::Spin3)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 3";
   out.first = stoi(stype);
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
@@ -157,38 +157,38 @@ string Spin3MesonTensorVectorDecayer::setUpDecayMode(string arg) {
   return "";
 }
 
-void Spin3MesonTensorVectorDecayer::
+void TensorMesonSpin3VectorDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
-  Rank3TensorWaveFunction::constructSpinInfo(rank3_,const_ptr_cast<tPPtr>(&part),
-					     incoming,true,false);
+  TensorWaveFunction::constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
   // set up the spin information for the decay products
-  TensorWaveFunction::constructSpinInfo(tensors_,decay[0],
-					outgoing,true,false);
+  Rank3TensorWaveFunction::constructSpinInfo(rank3_,decay[0],
+					     outgoing,true,false);
   VectorWaveFunction::constructSpinInfo(vectors_,decay[1],outgoing,true,
 					decay[1]->id()==ParticleID::gamma);
 }
 
 // matrix elememt for the process
-double Spin3MesonTensorVectorDecayer::me2(const int,const Particle & part,
+double TensorMesonSpin3VectorDecayer::me2(const int,const Particle & part,
 					    const tPDVector & outgoing,
 					    const vector<Lorentz5Momentum> & momenta,
 					    MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3,PDT::Spin2,PDT::Spin1)));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin3,PDT::Spin1)));
   // check for photons
   bool photon(outgoing[1]->id()==ParticleID::gamma);
   // stuff for incoming particle
   if(meopt==Initialize) {
-    rho_ = RhoDMatrix(PDT::Spin3);
-    Rank3TensorWaveFunction::
-      calculateWaveFunctions(rank3_,rho_,const_ptr_cast<tPPtr>(&part),
-  			     incoming,false);
+    rho_ = RhoDMatrix(PDT::Spin2);
+    TensorWaveFunction::
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
+			     incoming,false);
   }
-  tensors_.resize(5);
-  TensorWaveFunction twave(momenta[0],outgoing[0],Helicity::outgoing);
-  for(unsigned int ihel=0;ihel<5;++ihel) {
-    twave.reset(ihel,tensor_phase);
-    tensors_[ihel] = twave.wave();
+  rank3_.resize(7);
+  Rank3TensorWaveFunction twave(momenta[0],outgoing[0],Helicity::outgoing);
+  for(unsigned int ihel=0;ihel<7;++ihel) {
+    twave.reset(ihel);
+    rank3_[ihel] = twave.wave();
   }
   vectors_.resize(3);
   for(unsigned int ix=0;ix<3;++ix) {
@@ -196,31 +196,31 @@ double Spin3MesonTensorVectorDecayer::me2(const int,const Particle & part,
     vectors_[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
   }
   // calculate the matrix element
-  Energy2 denom[2] = {part.momentum()*momenta[0]-part.mass()*momenta[0].mass(),
-		      part.momentum()*momenta[1]-part.mass()*momenta[1].mass()};
+  Energy2 denom[2] = {part.momentum()*momenta[0]-part.mass()      *momenta[0].mass(),
+   		      momenta[0]     *momenta[1]-momenta[0].mass()*momenta[1].mass()};
   double fact(coupling_[imode()]/part.mass());
-  for(unsigned int ih0=0;ih0<7;++ih0) {
+  for(unsigned int ih1=0;ih1<7;++ih1) {
     for(unsigned int ih2=0;ih2<3;++ih2) {
       if(ih2==1 && photon) {
-	for(unsigned int ih1=0;ih1<5;++ih1)  (*ME())(ih0,ih1,ih2)=0.;
+  	for(unsigned int ih0=0;ih0<5;++ih0)  (*ME())(ih0,ih1,ih2)=0.;
       }
       else {
 	LorentzPolarizationVector v0  = vectors_[ih2] - momenta[1]*momenta[0].dot(vectors_[ih2])/denom[1];
-	LorentzTensor<double>     t0  = rank3_[ih0].dot(v0,0);
-	LorentzPolarizationVectorE v1 = t0.postDot(momenta[0]);
-	Complex d1 = v1*momenta[0]/denom[0];
-	for(unsigned int ih1=0;ih1<5;++ih1) {
-	  LorentzPolarizationVectorE v2 = tensors_[ih1].postDot(momenta[1]);
-	  Complex d2 = v2*momenta[1]/denom[0];
-	  (*ME())(ih0,ih1,ih2) = fact*(t0*tensors_[ih1] - 2.*v1.dot(v2)/denom[0]+d1*d2);
+	LorentzTensor<double>     t0  = rank3_[ih1].dot(v0,0);
+	LorentzPolarizationVectorE v1 = t0.postDot(momenta[1]);
+	Complex d1 = v1*momenta[1]/denom[0];
+	for(unsigned int ih0=0;ih0<5;++ih0) {
+	  LorentzPolarizationVectorE v2 = tensors_[ih0].postDot(momenta[0]);
+	  Complex d2 = v2*momenta[0]/denom[0];
+	  (*ME())(ih0,ih1,ih2) = fact*(t0*tensors_[ih0] - 2.*v1.dot(v2)/denom[0]+d1*d2);
 	}
       }
     }
   }
   double output = ME()->contract(rho_).real();
   // test of the answer
-  // double test = sqr(fact);
-  // if(photon) test *=2./3.;
+  double test = 7./5.*sqr(fact);
+  if(photon) test *=2./3.;
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << output << " " << test << " " << (output-test)/(output+test) << endl;
@@ -228,7 +228,7 @@ double Spin3MesonTensorVectorDecayer::me2(const int,const Particle & part,
   return output;
 }
 
-bool Spin3MesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+bool TensorMesonSpin3VectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 						  double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
@@ -265,11 +265,11 @@ bool Spin3MesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mec
   }
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode]/dm.parent()->mass();
-  mecode=21;
+  mecode=22;
   return order;
 }
 
-void Spin3MesonTensorVectorDecayer::dataBaseOutput(ofstream & output,
+void TensorMesonSpin3VectorDecayer::dataBaseOutput(ofstream & output,
 						   bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

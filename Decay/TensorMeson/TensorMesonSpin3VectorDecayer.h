@@ -6,10 +6,10 @@
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_Spin3MesonTensorVectorDecayer_H
-#define HERWIG_Spin3MesonTensorVectorDecayer_H
+#ifndef HERWIG_TensorMesonSpin3VectorDecayer_H
+#define HERWIG_TensorMesonSpin3VectorDecayer_H
 //
-// This is the declaration of the Spin3MesonTensorVectorDecayer class.
+// This is the declaration of the TensorMesonSpin3VectorDecayer class.
 //
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -20,12 +20,12 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>Spin3MesonTensorVectorDecayer</code> class is designed for the decay
- *  of a rank 3 tensor meson to a tensor and a vector via matrix element which takes the form
- *  \f[ \mathcal{M} =  g \epsilon^{\alpha_1\alpha_2\alpha_3}\epsilon_1^{\beta_1\beta_2} 
+ *  The <code>TensorMesonSpin3VectorDecayer</code> class is designed for the decay
+ *  of a tensor meson to a rank 3 tensor and a vector via matrix element which takes the form
+ *  \f[ \mathcal{M} =  g \epsilon_1^{\alpha_1\alpha_2\alpha_3}\epsilon_0^{\beta_1\beta_2}
  *   (g_{\alpha_1\beta_1} - \frac{p_{1\alpha_1}p_{0\beta_1}}{p_0\cdot p_1-m_0m_1})
  *   (g_{\alpha_2\beta_2} - \frac{p_{1\alpha_2}p_{0\beta_2}}{p_0\cdot p_1-m_0m_1})
- *   (g_{\alpha_3\gamma } - \frac{p_{2\alpha_3}p_{0\gamma }}{p_0\cdot p_2-m_0m_2})\f]
+ *   (g_{\alpha_3\gamma } - \frac{p_{2\alpha_3}p_{1\gamma }}{p_0\cdot p_1-m_0m_1})\f]
  *  where \f$\epsilon^{\mu\nu\rho}\f$ is the polarization tensor of the decaying 
  *  meson, $p_{1,2}$ are the momenta of the decay products and \f$g\f$ is the coupling.
  *
@@ -39,11 +39,11 @@ using namespace ThePEG;
  *
  * @see DecayIntegrator
  *
- * @see \ref Spin3MesonTensorVectorDecayerInterfaces "The interfaces"
- * defined for Spin3MesonTensorVectorDecayer.
+ * @see \ref TensorMesonSpin3VectorDecayerInterfaces "The interfaces"
+ * defined for TensorMesonSpin3VectorDecayer.
  * 
  */
-class Spin3MesonTensorVectorDecayer: public DecayIntegrator {
+class TensorMesonSpin3VectorDecayer: public DecayIntegrator {
 
 public:
 
@@ -155,7 +155,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Spin3MesonTensorVectorDecayer & operator=(const Spin3MesonTensorVectorDecayer &) = delete;
+  TensorMesonSpin3VectorDecayer & operator=(const TensorMesonSpin3VectorDecayer &) = delete;
   
 public:
 
@@ -211,4 +211,4 @@ private:
 
 }
 
-#endif /* HERWIG_Spin3MesonTensorVectorDecayer_H */
+#endif /* HERWIG_TensorMesonSpin3VectorDecayer_H */
