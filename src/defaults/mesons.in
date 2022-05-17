@@ -523,9 +523,9 @@ setup omega'' 30223 omega'' 1.67 0.315 0.63 0 0 0 3 0
 create ThePEG::ParticleData phi(2170)
 setup phi(2170) 30333 phi(2170) 2.159 0.137 0.411 0 0 0 3 0 
 create ThePEG::ParticleData psi(3770)
-setup psi(3770) 30443 psi(3770) 3.7711 0.023 0.1305 0 0 0 3 0 
-newdef psi(3770):WidthLoCut 0.031
-newdef psi(3770):WidthUpCut 0.23
+setup psi(3770) 30443 psi(3770) 3.7737 0.0272 0.0816 0 0 0 3 0 
+newdef psi(3770):WidthLoCut 0.0272
+newdef psi(3770):WidthUpCut 0.136
 create ThePEG::ParticleData Upsilon_1(1D)
 setup Upsilon_1(1D) 30553 Upsilon_1(1D) 10.1551 3.56E-5 0.000356 0 0 0 3 0 
 create ThePEG::ParticleData K''*+
