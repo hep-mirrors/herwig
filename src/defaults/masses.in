@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 11:9:21 on the 17/5/2022.
+# from the Herwig Particles Database at 13:28:43 on the 17/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -349,9 +349,10 @@ newdef /Herwig/Particles/B_s20:Mass_generator B_s20mass
 #
 create Herwig::GenericMassGenerator  B_c2+mass
 newdef B_c2+mass:Particle /Herwig/Particles/B_c2+ 
-newdef B_c2+mass:BreitWignerShape 0
-newdef B_c2+mass:MaximumWeight 0.968592
-newdef B_c2+mass:NGenerate 100
+newdef /Herwig/Masses/B_c2+mass:BreitWignerShape 0
+newdef /Herwig/Masses/B_c2+mass:MaximumWeight 0.968201
+newdef /Herwig/Masses/B_c2+mass:NGenerate 100
+newdef /Herwig/Masses/B_c2+mass:WidthOption 0
 
 newdef /Herwig/Particles/B_c2-:Mass_generator B_c2+mass
 newdef /Herwig/Particles/B_c2+:Mass_generator B_c2+mass
@@ -2001,9 +2002,10 @@ newdef /Herwig/Particles/Upsilon(5S):Mass_generator Upsilon5Smass
 create Herwig::GenericMassGenerator  psi_2_1Dmass
 newdef psi_2_1Dmass:Particle /Herwig/Particles/psi_2(1D) 
 newdef /Herwig/Masses/psi_2_1Dmass:BreitWignerShape 0
-newdef /Herwig/Masses/psi_2_1Dmass:MaximumWeight 0.968233
+newdef /Herwig/Masses/psi_2_1Dmass:MaximumWeight 0.968289
 newdef /Herwig/Masses/psi_2_1Dmass:NGenerate 100
 newdef /Herwig/Masses/psi_2_1Dmass:WidthOption 0
+
 newdef /Herwig/Particles/psi_2(1D):Mass_generator psi_2_1Dmass
 #
 create Herwig::GenericMassGenerator  D_0(2550)0Mass

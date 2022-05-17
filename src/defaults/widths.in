@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the width generators for Herwig outputted
-# from the Herwig++ Particles Database at 11:9:21 on the 17/5/2022.
+# from the Herwig++ Particles Database at 13:28:43 on the 17/5/2022.
 #
 create Herwig::GenericWidthGenerator  rho+width
 newdef rho+width:Particle /Herwig/Particles/rho+ 
@@ -17314,15 +17314,124 @@ newdef B_c2+width:BRNormalize 1
 newdef B_c2+width:BRMinimum 0.01
 newdef B_c2+width:Points 50
 newdef B_c2+width:InterpolationOrder 1
-insert B_c2+width:MEtype 0 1
-insert B_c2+width:MEcode 0 8
-insert B_c2+width:MEcoupling 0 29.6224
+insert B_c2+width:MEtype 0 2
+insert B_c2+width:MEcode 0 0
+insert B_c2+width:MEcoupling 0 115.603
 insert B_c2+width:ModeOn 0 1
-insert B_c2+width:MinimumMasses 0 6.286
-insert B_c2+width:MEmass1 0 6.286
+insert B_c2+width:MinimumMasses 0 6.321
+insert B_c2+width:MEmass1 0 6.321
 insert B_c2+width:MEmass2 0 0
-insert B_c2+width:DecayModes 0 B_c2+->B_c+,gamma; 
-insert B_c2+width:NumberofEntries 0 0
+insert B_c2+width:DecayModes 0 B_c2+->B_c*+,gamma; 
+insert B_c2+width:InterpolationMasses 0 6.7821022
+insert B_c2+width:InterpolationMasses 1 6.7821361
+insert B_c2+width:InterpolationMasses 2 6.78217
+insert B_c2+width:InterpolationMasses 3 6.7822039
+insert B_c2+width:InterpolationMasses 4 6.7822378
+insert B_c2+width:InterpolationMasses 5 6.7822716
+insert B_c2+width:InterpolationMasses 6 6.7823055
+insert B_c2+width:InterpolationMasses 7 6.7823394
+insert B_c2+width:InterpolationMasses 8 6.7823733
+insert B_c2+width:InterpolationMasses 9 6.7824071
+insert B_c2+width:InterpolationMasses 10 6.782441
+insert B_c2+width:InterpolationMasses 11 6.7824749
+insert B_c2+width:InterpolationMasses 12 6.7825088
+insert B_c2+width:InterpolationMasses 13 6.7825427
+insert B_c2+width:InterpolationMasses 14 6.7825765
+insert B_c2+width:InterpolationMasses 15 6.7826104
+insert B_c2+width:InterpolationMasses 16 6.7826443
+insert B_c2+width:InterpolationMasses 17 6.7826782
+insert B_c2+width:InterpolationMasses 18 6.782712
+insert B_c2+width:InterpolationMasses 19 6.7827459
+insert B_c2+width:InterpolationMasses 20 6.7827798
+insert B_c2+width:InterpolationMasses 21 6.7828137
+insert B_c2+width:InterpolationMasses 22 6.7828476
+insert B_c2+width:InterpolationMasses 23 6.7828814
+insert B_c2+width:InterpolationMasses 24 6.7829153
+insert B_c2+width:InterpolationMasses 25 6.7829492
+insert B_c2+width:InterpolationMasses 26 6.7829831
+insert B_c2+width:InterpolationMasses 27 6.7830169
+insert B_c2+width:InterpolationMasses 28 6.7830508
+insert B_c2+width:InterpolationMasses 29 6.7830847
+insert B_c2+width:InterpolationMasses 30 6.7831186
+insert B_c2+width:InterpolationMasses 31 6.7831524
+insert B_c2+width:InterpolationMasses 32 6.7831863
+insert B_c2+width:InterpolationMasses 33 6.7832202
+insert B_c2+width:InterpolationMasses 34 6.7832541
+insert B_c2+width:InterpolationMasses 35 6.783288
+insert B_c2+width:InterpolationMasses 36 6.7833218
+insert B_c2+width:InterpolationMasses 37 6.7833557
+insert B_c2+width:InterpolationMasses 38 6.7833896
+insert B_c2+width:InterpolationMasses 39 6.7834235
+insert B_c2+width:InterpolationMasses 40 6.7834573
+insert B_c2+width:InterpolationMasses 41 6.7834912
+insert B_c2+width:InterpolationMasses 42 6.7835251
+insert B_c2+width:InterpolationMasses 43 6.783559
+insert B_c2+width:InterpolationMasses 44 6.7835929
+insert B_c2+width:InterpolationMasses 45 6.7836267
+insert B_c2+width:InterpolationMasses 46 6.7836606
+insert B_c2+width:InterpolationMasses 47 6.7836945
+insert B_c2+width:InterpolationMasses 48 6.7837284
+insert B_c2+width:InterpolationMasses 49 6.7837622
+insert B_c2+width:InterpolationMasses 50 6.7837961
+insert B_c2+width:InterpolationMasses 51 6.78383
+insert B_c2+width:InterpolationMasses 52 6.7838639
+insert B_c2+width:InterpolationMasses 53 6.7838978
+insert B_c2+width:InterpolationWidths 0 7.1412201e-07
+insert B_c2+width:InterpolationWidths 1 7.1426712e-07
+insert B_c2+width:InterpolationWidths 2 7.1441225e-07
+insert B_c2+width:InterpolationWidths 3 7.145574e-07
+insert B_c2+width:InterpolationWidths 4 7.1470257e-07
+insert B_c2+width:InterpolationWidths 5 7.1484775e-07
+insert B_c2+width:InterpolationWidths 6 7.1499296e-07
+insert B_c2+width:InterpolationWidths 7 7.1513818e-07
+insert B_c2+width:InterpolationWidths 8 7.1528342e-07
+insert B_c2+width:InterpolationWidths 9 7.1542868e-07
+insert B_c2+width:InterpolationWidths 10 7.1557395e-07
+insert B_c2+width:InterpolationWidths 11 7.1571925e-07
+insert B_c2+width:InterpolationWidths 12 7.1586456e-07
+insert B_c2+width:InterpolationWidths 13 7.1600989e-07
+insert B_c2+width:InterpolationWidths 14 7.1615523e-07
+insert B_c2+width:InterpolationWidths 15 7.163006e-07
+insert B_c2+width:InterpolationWidths 16 7.1644598e-07
+insert B_c2+width:InterpolationWidths 17 7.1659139e-07
+insert B_c2+width:InterpolationWidths 18 7.1673681e-07
+insert B_c2+width:InterpolationWidths 19 7.1688224e-07
+insert B_c2+width:InterpolationWidths 20 7.170277e-07
+insert B_c2+width:InterpolationWidths 21 7.1717317e-07
+insert B_c2+width:InterpolationWidths 22 7.1731866e-07
+insert B_c2+width:InterpolationWidths 23 7.1746417e-07
+insert B_c2+width:InterpolationWidths 24 7.176097e-07
+insert B_c2+width:InterpolationWidths 25 7.1775525e-07
+insert B_c2+width:InterpolationWidths 26 7.1790081e-07
+insert B_c2+width:InterpolationWidths 27 7.1804639e-07
+insert B_c2+width:InterpolationWidths 28 7.1819199e-07
+insert B_c2+width:InterpolationWidths 29 7.1833761e-07
+insert B_c2+width:InterpolationWidths 30 7.1848325e-07
+insert B_c2+width:InterpolationWidths 31 7.186289e-07
+insert B_c2+width:InterpolationWidths 32 7.1877457e-07
+insert B_c2+width:InterpolationWidths 33 7.1892026e-07
+insert B_c2+width:InterpolationWidths 34 7.1906597e-07
+insert B_c2+width:InterpolationWidths 35 7.192117e-07
+insert B_c2+width:InterpolationWidths 36 7.1935744e-07
+insert B_c2+width:InterpolationWidths 37 7.195032e-07
+insert B_c2+width:InterpolationWidths 38 7.1964898e-07
+insert B_c2+width:InterpolationWidths 39 7.1979478e-07
+insert B_c2+width:InterpolationWidths 40 7.1994059e-07
+insert B_c2+width:InterpolationWidths 41 7.2008643e-07
+insert B_c2+width:InterpolationWidths 42 7.2023228e-07
+insert B_c2+width:InterpolationWidths 43 7.2037815e-07
+insert B_c2+width:InterpolationWidths 44 7.2052404e-07
+insert B_c2+width:InterpolationWidths 45 7.2066995e-07
+insert B_c2+width:InterpolationWidths 46 7.2081587e-07
+insert B_c2+width:InterpolationWidths 47 7.2096181e-07
+insert B_c2+width:InterpolationWidths 48 7.2110777e-07
+insert B_c2+width:InterpolationWidths 49 7.2125375e-07
+insert B_c2+width:InterpolationWidths 50 7.2139975e-07
+insert B_c2+width:InterpolationWidths 51 7.2154576e-07
+insert B_c2+width:InterpolationWidths 52 7.2169179e-07
+insert B_c2+width:InterpolationWidths 53 7.2183784e-07
+insert B_c2+width:NumberofEntries 0 54
+
 newdef /Herwig/Particles/B_c2-:Width_generator B_c2+width
 newdef /Herwig/Particles/B_c2+:Width_generator B_c2+width
 #
@@ -73133,7 +73242,12 @@ newdef psi_2_1DWidth:BRMinimum 0.01
 newdef psi_2_1DWidth:Points 50
 newdef psi_2_1DWidth:InterpolationOrder 1
 
-insert psi_2_1DWidth:MEtype 0 0
+newdef psi_2_1DWidth:Prefactor 1
+newdef psi_2_1DWidth:BRNormalize 1
+newdef psi_2_1DWidth:BRMinimum 0.01
+newdef psi_2_1DWidth:Points 50
+newdef psi_2_1DWidth:InterpolationOrder 1
+insert psi_2_1DWidth:MEtype 0 2
 insert psi_2_1DWidth:MEtype 1 0
 insert psi_2_1DWidth:MEtype 2 0
 insert psi_2_1DWidth:MEtype 3 0
@@ -73143,7 +73257,7 @@ insert psi_2_1DWidth:MEcode 1 0
 insert psi_2_1DWidth:MEcode 2 0
 insert psi_2_1DWidth:MEcode 3 0
 insert psi_2_1DWidth:MEcode 4 0
-insert psi_2_1DWidth:MEcoupling 0 0.486
+insert psi_2_1DWidth:MEcoupling 0 81.0608
 insert psi_2_1DWidth:MEcoupling 1 0.1893
 insert psi_2_1DWidth:MEcoupling 2 0.122
 insert psi_2_1DWidth:MEcoupling 3 0.108
@@ -73155,10 +73269,10 @@ insert psi_2_1DWidth:ModeOn 3 1
 insert psi_2_1DWidth:ModeOn 4 1
 insert psi_2_1DWidth:MinimumMasses 0 3.50176
 insert psi_2_1DWidth:MinimumMasses 1 3.37512
-insert psi_2_1DWidth:MinimumMasses 2 9.91051
+insert psi_2_1DWidth:MinimumMasses 2 3.5356
 insert psi_2_1DWidth:MinimumMasses 3 0
 insert psi_2_1DWidth:MinimumMasses 4 3.36594
-insert psi_2_1DWidth:MEmass1 0 0
+insert psi_2_1DWidth:MEmass1 0 3.51066
 insert psi_2_1DWidth:MEmass1 1 0
 insert psi_2_1DWidth:MEmass1 2 0
 insert psi_2_1DWidth:MEmass1 3 0
@@ -73170,14 +73284,123 @@ insert psi_2_1DWidth:MEmass2 3 0
 insert psi_2_1DWidth:MEmass2 4 0
 insert psi_2_1DWidth:DecayModes 0 psi_2(1D)->chi_c1,gamma; 
 insert psi_2_1DWidth:DecayModes 1 psi_2(1D)->Jpsi,pi+,pi-; 
-insert psi_2_1DWidth:DecayModes 2 psi_2(1D)->chi_b2,gamma; 
+insert psi_2_1DWidth:DecayModes 2 psi_2(1D)->chi_c2,gamma; 
 insert psi_2_1DWidth:DecayModes 3 psi_2(1D)->g,g,g; 
 insert psi_2_1DWidth:DecayModes 4 psi_2(1D)->Jpsi,pi0,pi0; 
-insert psi_2_1DWidth:NumberofEntries 0 0
-insert psi_2_1DWidth:NumberofEntries 1 0
-insert psi_2_1DWidth:NumberofEntries 2 0
-insert psi_2_1DWidth:NumberofEntries 3 0
-insert psi_2_1DWidth:NumberofEntries 4 0
+insert psi_2_1DWidth:InterpolationMasses 0 3.8156959
+insert psi_2_1DWidth:InterpolationMasses 1 3.815998
+insert psi_2_1DWidth:InterpolationMasses 2 3.8163
+insert psi_2_1DWidth:InterpolationMasses 3 3.816602
+insert psi_2_1DWidth:InterpolationMasses 4 3.8169041
+insert psi_2_1DWidth:InterpolationMasses 5 3.8172061
+insert psi_2_1DWidth:InterpolationMasses 6 3.8175082
+insert psi_2_1DWidth:InterpolationMasses 7 3.8178102
+insert psi_2_1DWidth:InterpolationMasses 8 3.8181122
+insert psi_2_1DWidth:InterpolationMasses 9 3.8184143
+insert psi_2_1DWidth:InterpolationMasses 10 3.8187163
+insert psi_2_1DWidth:InterpolationMasses 11 3.8190184
+insert psi_2_1DWidth:InterpolationMasses 12 3.8193204
+insert psi_2_1DWidth:InterpolationMasses 13 3.8196224
+insert psi_2_1DWidth:InterpolationMasses 14 3.8199245
+insert psi_2_1DWidth:InterpolationMasses 15 3.8202265
+insert psi_2_1DWidth:InterpolationMasses 16 3.8205286
+insert psi_2_1DWidth:InterpolationMasses 17 3.8208306
+insert psi_2_1DWidth:InterpolationMasses 18 3.8211327
+insert psi_2_1DWidth:InterpolationMasses 19 3.8214347
+insert psi_2_1DWidth:InterpolationMasses 20 3.8217367
+insert psi_2_1DWidth:InterpolationMasses 21 3.8220388
+insert psi_2_1DWidth:InterpolationMasses 22 3.8223408
+insert psi_2_1DWidth:InterpolationMasses 23 3.8226429
+insert psi_2_1DWidth:InterpolationMasses 24 3.8229449
+insert psi_2_1DWidth:InterpolationMasses 25 3.8232469
+insert psi_2_1DWidth:InterpolationMasses 26 3.823549
+insert psi_2_1DWidth:InterpolationMasses 27 3.823851
+insert psi_2_1DWidth:InterpolationMasses 28 3.8241531
+insert psi_2_1DWidth:InterpolationMasses 29 3.8244551
+insert psi_2_1DWidth:InterpolationMasses 30 3.8247571
+insert psi_2_1DWidth:InterpolationMasses 31 3.8250592
+insert psi_2_1DWidth:InterpolationMasses 32 3.8253612
+insert psi_2_1DWidth:InterpolationMasses 33 3.8256633
+insert psi_2_1DWidth:InterpolationMasses 34 3.8259653
+insert psi_2_1DWidth:InterpolationMasses 35 3.8262673
+insert psi_2_1DWidth:InterpolationMasses 36 3.8265694
+insert psi_2_1DWidth:InterpolationMasses 37 3.8268714
+insert psi_2_1DWidth:InterpolationMasses 38 3.8271735
+insert psi_2_1DWidth:InterpolationMasses 39 3.8274755
+insert psi_2_1DWidth:InterpolationMasses 40 3.8277776
+insert psi_2_1DWidth:InterpolationMasses 41 3.8280796
+insert psi_2_1DWidth:InterpolationMasses 42 3.8283816
+insert psi_2_1DWidth:InterpolationMasses 43 3.8286837
+insert psi_2_1DWidth:InterpolationMasses 44 3.8289857
+insert psi_2_1DWidth:InterpolationMasses 45 3.8292878
+insert psi_2_1DWidth:InterpolationMasses 46 3.8295898
+insert psi_2_1DWidth:InterpolationMasses 47 3.8298918
+insert psi_2_1DWidth:InterpolationMasses 48 3.8301939
+insert psi_2_1DWidth:InterpolationMasses 49 3.8304959
+insert psi_2_1DWidth:InterpolationMasses 50 3.830798
+insert psi_2_1DWidth:InterpolationMasses 51 3.8311
+insert psi_2_1DWidth:InterpolationMasses 52 3.831402
+insert psi_2_1DWidth:InterpolationMasses 53 3.8317041
+insert psi_2_1DWidth:InterpolationWidths 0 4.1346567e-06
+insert psi_2_1DWidth:InterpolationWidths 1 4.1458223e-06
+insert psi_2_1DWidth:InterpolationWidths 2 4.1570059e-06
+insert psi_2_1DWidth:InterpolationWidths 3 4.1682076e-06
+insert psi_2_1DWidth:InterpolationWidths 4 4.1794274e-06
+insert psi_2_1DWidth:InterpolationWidths 5 4.1906652e-06
+insert psi_2_1DWidth:InterpolationWidths 6 4.2019212e-06
+insert psi_2_1DWidth:InterpolationWidths 7 4.2131952e-06
+insert psi_2_1DWidth:InterpolationWidths 8 4.2244873e-06
+insert psi_2_1DWidth:InterpolationWidths 9 4.2357976e-06
+insert psi_2_1DWidth:InterpolationWidths 10 4.247126e-06
+insert psi_2_1DWidth:InterpolationWidths 11 4.2584725e-06
+insert psi_2_1DWidth:InterpolationWidths 12 4.2698372e-06
+insert psi_2_1DWidth:InterpolationWidths 13 4.2812199e-06
+insert psi_2_1DWidth:InterpolationWidths 14 4.2926209e-06
+insert psi_2_1DWidth:InterpolationWidths 15 4.30404e-06
+insert psi_2_1DWidth:InterpolationWidths 16 4.3154773e-06
+insert psi_2_1DWidth:InterpolationWidths 17 4.3269327e-06
+insert psi_2_1DWidth:InterpolationWidths 18 4.3384063e-06
+insert psi_2_1DWidth:InterpolationWidths 19 4.3498981e-06
+insert psi_2_1DWidth:InterpolationWidths 20 4.3614082e-06
+insert psi_2_1DWidth:InterpolationWidths 21 4.3729364e-06
+insert psi_2_1DWidth:InterpolationWidths 22 4.3844828e-06
+insert psi_2_1DWidth:InterpolationWidths 23 4.3960475e-06
+insert psi_2_1DWidth:InterpolationWidths 24 4.4076303e-06
+insert psi_2_1DWidth:InterpolationWidths 25 4.4192314e-06
+insert psi_2_1DWidth:InterpolationWidths 26 4.4308508e-06
+insert psi_2_1DWidth:InterpolationWidths 27 4.4424884e-06
+insert psi_2_1DWidth:InterpolationWidths 28 4.4541442e-06
+insert psi_2_1DWidth:InterpolationWidths 29 4.4658184e-06
+insert psi_2_1DWidth:InterpolationWidths 30 4.4775107e-06
+insert psi_2_1DWidth:InterpolationWidths 31 4.4892214e-06
+insert psi_2_1DWidth:InterpolationWidths 32 4.5009504e-06
+insert psi_2_1DWidth:InterpolationWidths 33 4.5126976e-06
+insert psi_2_1DWidth:InterpolationWidths 34 4.5244631e-06
+insert psi_2_1DWidth:InterpolationWidths 35 4.536247e-06
+insert psi_2_1DWidth:InterpolationWidths 36 4.5480492e-06
+insert psi_2_1DWidth:InterpolationWidths 37 4.5598697e-06
+insert psi_2_1DWidth:InterpolationWidths 38 4.5717085e-06
+insert psi_2_1DWidth:InterpolationWidths 39 4.5835656e-06
+insert psi_2_1DWidth:InterpolationWidths 40 4.5954411e-06
+insert psi_2_1DWidth:InterpolationWidths 41 4.607335e-06
+insert psi_2_1DWidth:InterpolationWidths 42 4.6192472e-06
+insert psi_2_1DWidth:InterpolationWidths 43 4.6311777e-06
+insert psi_2_1DWidth:InterpolationWidths 44 4.6431267e-06
+insert psi_2_1DWidth:InterpolationWidths 45 4.655094e-06
+insert psi_2_1DWidth:InterpolationWidths 46 4.6670797e-06
+insert psi_2_1DWidth:InterpolationWidths 47 4.6790838e-06
+insert psi_2_1DWidth:InterpolationWidths 48 4.6911063e-06
+insert psi_2_1DWidth:InterpolationWidths 49 4.7031472e-06
+insert psi_2_1DWidth:InterpolationWidths 50 4.7152066e-06
+insert psi_2_1DWidth:InterpolationWidths 51 4.7272843e-06
+insert psi_2_1DWidth:InterpolationWidths 52 4.7393805e-06
+insert psi_2_1DWidth:InterpolationWidths 53 4.7514951e-06
+insert psi_2_1DWidth:NumberofEntries 0 54
+insert psi_2_1DWidth:NumberofEntries 1 54
+insert psi_2_1DWidth:NumberofEntries 2 54
+insert psi_2_1DWidth:NumberofEntries 3 54
+insert psi_2_1DWidth:NumberofEntries 4 54
+
 newdef /Herwig/Particles/psi_2(1D):Width_generator psi_2_1DWidth
 #
 create Herwig::HeavyMesonWidthGenerator  D_s3*(2860)+Width

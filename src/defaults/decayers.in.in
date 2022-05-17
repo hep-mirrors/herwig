@@ -2340,7 +2340,6 @@ do TensorVP:SetUpDecayMode 115 22 111 0.551 1.7
 do TensorVP:SetUpDecayMode 315 223 311 11.66 40.
 do TensorVP:SetUpDecayMode 325 223 321 11.66 40.
 do TensorVP:SetUpDecayMode 325 22 321 0.553 1.9
-do TensorVP:SetUpDecayMode 545 22 541 0.651 1.63579
 do TensorVP:SetUpDecayMode 325 113 321 10.14 7.09367
 do TensorVP:SetUpDecayMode 325 213 311 14.33 6.86114
 do TensorVP:SetUpDecayMode 315 113 311 10.14 6.65245
@@ -2392,6 +2391,21 @@ do TVV:SetUpDecayMode 315 -213 323 16.7 33.5317
 do TVV:SetUpDecayMode 325 113 323 12.5 43.344
 do TVV:SetUpDecayMode 325 213 313 17.8 40.1134
 do TVV:SetUpDecayMode 445 223 223 0.0408 12.9271
+do TVV:SetUpDecayMode 545 543 22 0.577 1.60427
+do TVV:SetUpDecayMode 10555 10553 22 0.674 1.71503
+do TVV:SetUpDecayMode 10545 10543 22 0.747 1.60339
+do TVV:SetUpDecayMode 10545 20543 22 0.776 1.60319
+do TVV:SetUpDecayMode 20545 10543 22 0.785 1.60435
+do TVV:SetUpDecayMode 20545 20543 22 0.814 1.60065
+do TVV:SetUpDecayMode 20445 20443 22 0.826 1.69493
+do TVV:SetUpDecayMode 20555 20553 22 0.649 1.6045
+do TVV:SetUpDecayMode 200555 553 22 0.127 1.59418
+do TVV:SetUpDecayMode 200555 100553 22 0.182 1.59974
+do TVV:SetUpDecayMode 200555 200553 22 0.558 1.61541
+do TVV:SetUpDecayMode 200555 130553 22 0.0462 1.62772
+do TVV:SetUpDecayMode 100555 30553 22 0.0393 1.6272
+do TVV:SetUpDecayMode 120555 20553 22 0.161 1.60282
+do TVV:SetUpDecayMode 120555 120553 22 0.573 1.60593
 #
 create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1
@@ -19998,6 +20012,8 @@ do VTV:SetUpDecayMode 130553 555 22 0.0224 1.60475
 do VTV:SetUpDecayMode 130553 100555 22 0.0766 1.61267
 do VTV:SetUpDecayMode 30543 545 22 0.692 1.60605
 do VTV:SetUpDecayMode 110553 10555 22 0.257 1.61525
+do VTV:SetUpDecayMode 120553 20555 22 0.224 1.67225
+do VTV:SetUpDecayMode 220553 120555 22 0.273 1.61934
 #
 create Herwig::ScalarVectorVectorDecayer  SVV
 newdef SVV:Iteration 1
@@ -20030,6 +20046,10 @@ do SVV:SetUpDecayMode 100441 10443 22 0.326 2.05629
 do SVV:SetUpDecayMode 110551 30553 22 0.153 1.22153
 do SVV:SetUpDecayMode 210551 130553 22 0.201 1.21858
 do SVV:SetUpDecayMode 10541 543 22 0.286 1.09678
+do SVV:SetUpDecayMode 100541 10543 22 0.56 1.10508
+do SVV:SetUpDecayMode 100541 20543 22 0.615 1.10454
+do SVV:SetUpDecayMode 9010221 22 22 0.0049 1.51007
+do SVV:SetUpDecayMode 9000111 22 22 0.00369 1.47195
 #
 create Herwig::a1SimpleDecayer  a1Simple
 newdef a1Simple:Iteration 5
@@ -21409,6 +21429,8 @@ do AVV:SetUpDecayMode 100543 10543 22 0.146 1.6
 do AVV:SetUpDecayMode 100543 20543 22 0.16 1.60222
 do AVV:SetUpDecayMode 10543 543 22 0.0755 1.60226
 do AVV:SetUpDecayMode 20543 543 22 0.0315 1.60654
+do AVV:SetUpDecayMode 120553 30553 22 0.0172 1.60582
+do AVV:SetUpDecayMode 220553 130553 22 0.0207 1.61951
 #
 create Herwig::HQETStrongDecayer  BottomMeson
 newdef BottomMeson:Iteration 10
