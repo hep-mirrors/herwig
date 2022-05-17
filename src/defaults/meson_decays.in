@@ -1944,7 +1944,7 @@ decaymode chi_c2(2P)->D+,D-; 0.4709 1 /Herwig/Decays/Tensor2PScalar
 decaymode chi_b2(2P)->g,g; 0.81157 1 /Herwig/Decays/QDecayME0
 decaymode chi_b2(2P)->Upsilon(2S),gamma; 0.089 1 /Herwig/Decays/TVV
 decaymode chi_b2(2P)->Upsilon,gamma; 0.066 1 /Herwig/Decays/TVV
-decaymode chi_b2(2P)->Upsilon_3(1D),gamma; 0.0142 1 /Herwig/Decays/DecayME0
+decaymode chi_b2(2P)->Upsilon_3(1D),gamma; 0.0142 1 /Herwig/Decays/T3V
 decaymode chi_b2(2P)->omega,Upsilon; 0.011 1 /Herwig/Decays/TVV
 decaymode chi_b2(2P)->chi_b2,pi+,pi-; 0.0034 1 /Herwig/Decays/DecayME0
 decaymode chi_b2(2P)->Upsilon_2(1D),gamma; 0.0029 1 /Herwig/Decays/DecayME0
@@ -2040,7 +2040,7 @@ decaymode chi_b2(3P)->g,g; 0.8404 1 /Herwig/Decays/QDecayME0
 decaymode chi_b2(3P)->Upsilon(3S),gamma; 0.0827 1 /Herwig/Decays/TVV
 decaymode chi_b2(3P)->Upsilon,gamma; 0.026 1 /Herwig/Decays/TVV
 decaymode chi_b2(3P)->Upsilon(2S),gamma; 0.0258 1 /Herwig/Decays/TVV
-decaymode chi_b2(3P)->Upsilon_3(2D),gamma; 0.0206 1 /Herwig/Decays/DecayME0
+decaymode chi_b2(3P)->Upsilon_3(2D),gamma; 0.0206 1 /Herwig/Decays/T3V
 decaymode chi_b2(3P)->Upsilon_2(2D),gamma; 0.0042 1 /Herwig/Decays/DecayME0
 decaymode chi_b2(3P)->Upsilon_1(2D),gamma; 0.0003 1 /Herwig/Decays/TVV
 #
