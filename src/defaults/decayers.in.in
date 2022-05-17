@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 13:26:23 on the 8/5/2022.
+# from the Herwig Particles Database at 18:9:48 on the 17/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -20182,6 +20182,16 @@ do OniumPiPi:SetUpDecayMode 300553 100553 6.88e-05 1 0 -2.35  0.55  0 0	5.1262  
 do OniumPiPi:SetUpDecayMode 100443 443    6.62e-05 1 0 -0.336 0     0 0	3.04451 3.08418 
 do OniumPiPi:SetUpDecayMode 30443  443    2.06e-05 1 0  0     0     0 0	2.60132 3.2421  
 #
+create Herwig::Spin3MesonTensorVectorDecayer  Spin3TV
+newdef Spin3TV:Iteration 1
+newdef Spin3TV:Ntry 500
+newdef Spin3TV:Points 10000
+newdef Spin3TV:GenerateIntermediates 0 
+do Spin3TV:SetUpDecayMode 547 545 22 0.867 1.60331
+do Spin3TV:SetUpDecayMode 557 555 22 0.626 1.60704
+do Spin3TV:SetUpDecayMode 100557 555 22 0.18 1.60953
+do Spin3TV:SetUpDecayMode 100557 100555 22 0.63 1.60791
+#
 create Herwig::TauDecayer  Tau2K1Pi
 newdef Tau2K1Pi:Iteration 10
 newdef Tau2K1Pi:Ntry 500
@@ -21430,7 +21440,7 @@ do AVV:SetUpDecayMode 20543 543 22 0.0315 1.60654
 do AVV:SetUpDecayMode 120553 30553 22 0.0172 1.60582
 do AVV:SetUpDecayMode 220553 130553 22 0.0207 1.61951
 #
-create Herwig::HQETStrongDecayer  BottomMeson
+create  Herwig::HQETStrongDecayer  BottomMeson
 newdef BottomMeson:Iteration 10
 newdef BottomMeson:Ntry 500
 newdef BottomMeson:Points 10000
@@ -22137,4 +22147,5 @@ newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
 newdef D0KmPipPi0CLEO:Rho1700Phase 171
 newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
 newdef D0KmPipPi0CLEO:K1680MinusPhase 103
+#
 @LOAD_EVTGEN_DECAYER@
