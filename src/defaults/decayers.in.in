@@ -805,6 +805,8 @@ do VectorVP:SetUpDecayMode 100553 553 221 0.000804 1.71743
 do VectorVP:SetUpDecayMode 100543 22 541 0.000123 1.59954
 do VectorVP:SetUpDecayMode 200553 22 551 3.23e-05 2.10347
 do VectorVP:SetUpDecayMode 443 22 9020221 9.33e-07 4.67138
+do VectorVP:SetUpDecayMode 300553 553 221 0.00101 2.85334
+do VectorVP:SetUpDecayMode 300553 553 331 0.00214 5.56012
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -9702,6 +9704,7 @@ do ScalarSS:SetUpDecayMode 10531 521 -321 12170 1.1278
 do ScalarSS:SetUpDecayMode 10441 9010221 9010221 84 1.31568
 do ScalarSS:SetUpDecayMode 10311 311 221 5973 1.25177
 do ScalarSS:SetUpDecayMode 10321 321 221 5973 1.25638
+do ScalarSS:SetUpDecayMode 10441 10221 10331 488 2.37167
 #
 create Herwig::PScalarPScalarVectorDecayer  PPVDecayer
 newdef PPVDecayer:Iteration 1
@@ -9885,6 +9888,11 @@ do VVSDecayer:SetUpDecayMode 30543 22 10541 0.39 1.60559
 do VVSDecayer:SetUpDecayMode 100543 22 10541 0.943 1.61644
 do VVSDecayer:SetUpDecayMode 110553 22 551 0.0263 2.16152
 do VVSDecayer:SetUpDecayMode 110553 22 100551 0.187 2.42924
+do VVSDecayer:SetUpDecayMode 30213 213 9000221 4.043 14.5531
+do VVSDecayer:SetUpDecayMode 30113 113 9000221 4.043 16.3508
+do VVSDecayer:SetUpDecayMode 100223 223 9000221 4.82 25.6739
+do VVSDecayer:SetUpDecayMode 100443 223 10331 0.000894 6.75282
+do VVSDecayer:SetUpDecayMode 300553 10553 221 0.118 2.82317
 #
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
@@ -20034,6 +20042,14 @@ do VTV:SetUpDecayMode 30543 545 22 0.692 1.60605
 do VTV:SetUpDecayMode 110553 10555 22 0.257 1.61525
 do VTV:SetUpDecayMode 120553 20555 22 0.224 1.67225
 do VTV:SetUpDecayMode 220553 120555 22 0.273 1.61934
+do VTV:SetUpDecayMode 443 325 -323 0.00762 6.97145
+do VTV:SetUpDecayMode 443 315 -313 0.00762 6.65196
+do VTV:SetUpDecayMode 100443 325 -323 0.00343 11.1829
+do VTV:SetUpDecayMode 100443 315 -313 0.00343 10.2958
+do VTV:SetUpDecayMode 443 115 113 0.00785 5.44984
+do VTV:SetUpDecayMode 443 215 -213 0.00785 5.47947
+do VTV:SetUpDecayMode 100443 115 113 0.00235 6.97004
+do VTV:SetUpDecayMode 100443 215 -213 0.00235 6.31133
 #
 create Herwig::ScalarVectorVectorDecayer  SVV
 newdef SVV:Iteration 1
@@ -21461,6 +21477,8 @@ do AVV:SetUpDecayMode 10543 543 22 0.0755 1.60226
 do AVV:SetUpDecayMode 20543 543 22 0.0315 1.60654
 do AVV:SetUpDecayMode 120553 30553 22 0.0172 1.60582
 do AVV:SetUpDecayMode 220553 130553 22 0.0207 1.61951
+do AVV:SetUpDecayMode 20443 313 -313 0.00603 20.3751
+do AVV:SetUpDecayMode 20443 323 -323 0.00603 27.4378
 #
 create  Herwig::HQETStrongDecayer  BottomMeson
 newdef BottomMeson:Iteration 10
