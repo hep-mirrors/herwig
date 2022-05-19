@@ -2413,6 +2413,20 @@ newdef T3V:GenerateIntermediates 0
 do T3V:SetUpDecayMode 100555 557 22 0.273 1.62766
 do T3V:SetUpDecayMode 200555 100557 22 0.341 1.62976
 #
+create Herwig::PseudoTensorMesonTensorVectorDecayer  PTTV
+newdef PTTV:Iteration 1
+newdef PTTV:Ntry 2000
+newdef PTTV:Points 10000
+newdef PTTV:GenerateIntermediates 0
+do PTTV:SetUpDecayMode 20555 555 22 1.44 1.6272
+do PTTV:SetUpDecayMode 100555 20555 22 1.65 1.73643
+do PTTV:SetUpDecayMode 120555 555 22 0.202 1.61196
+do PTTV:SetUpDecayMode 120555 100555 22 2.14 1.6433
+do PTTV:SetUpDecayMode 200555 120555 22 2.57 1.68093
+do PTTV:SetUpDecayMode 20545 545 22 3.9 1.60931
+do PTTV:SetUpDecayMode 10545 545 22 3.79 1.60887
+do PTTV:SetUpDecayMode 20445 445 22 1.99 2.01395
+#
 create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1
 newdef ISGW:Ntry 500
