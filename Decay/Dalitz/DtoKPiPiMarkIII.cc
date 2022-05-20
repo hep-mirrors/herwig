@@ -21,6 +21,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 
@@ -101,7 +102,7 @@ void DtoKPiPiMarkIII::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<DtoKPiPiMarkIII,DecayIntegrator>
-describeHerwigDtoKPiPiMarkIII("Herwig::DtoKPiPiMarkIII", "HwSMDecay.so");
+describeHerwigDtoKPiPiMarkIII("Herwig::DtoKPiPiMarkIII", "HwDalitzDecay.so");
 
 void DtoKPiPiMarkIII::Init() {
 

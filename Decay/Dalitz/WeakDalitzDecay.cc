@@ -32,7 +32,7 @@ void WeakDalitzDecay::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<WeakDalitzDecay,DecayIntegrator>
-describeHerwigWeakDalitzDecay("Herwig::WeakDalitzDecay", "HwSMDecay.so");
+describeHerwigWeakDalitzDecay("Herwig::WeakDalitzDecay", "HwDalitzDecay.so");
 
 void WeakDalitzDecay::Init() {
 

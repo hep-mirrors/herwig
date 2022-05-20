@@ -48,7 +48,7 @@ IBPtr CLEOD0toKmPipPi0::fullclone() const {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
-describeHerwigCLEOD0toKmPipPi0("Herwig::CLEOD0toKmPipPi0", "HwSMDecay.so");
+describeHerwigCLEOD0toKmPipPi0("Herwig::CLEOD0toKmPipPi0", "HwDalitzDecay.so");
 
 void CLEOD0toKmPipPi0::persistentOutput(PersistentOStream & os) const {
   os << ounit(mK14300_,GeV) << ounit(wK14300_,GeV) << ounit(mK1680_,GeV) << ounit(wK1680_,GeV)

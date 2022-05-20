@@ -228,7 +228,7 @@ void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<DtoKPiPiE691,DecayIntegrator>
-describeHerwigDtoKPiPiE691("Herwig::DtoKPiPiE691", "HwSMDecay.so");
+describeHerwigDtoKPiPiE691("Herwig::DtoKPiPiE691", "HwDalitzDecay.so");
 
 void DtoKPiPiE691::Init() {
 

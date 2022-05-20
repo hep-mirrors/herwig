@@ -73,7 +73,7 @@ void FOCUSDptoKmPipPip::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<FOCUSDptoKmPipPip,WeakDalitzDecay>
-describeHerwigFOCUSDptoKmPipPip("Herwig::FOCUSDptoKmPipPip", "HwSMDecay.so");
+describeHerwigFOCUSDptoKmPipPip("Herwig::FOCUSDptoKmPipPip", "HwDalitzDecay.so");
 
 void FOCUSDptoKmPipPip::Init() {
 
