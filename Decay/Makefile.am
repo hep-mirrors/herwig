@@ -1,5 +1,5 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson HeavyMeson Perturbative \
-	  WeakCurrents ScalarMeson TensorMeson Partonic General Radiation
+	  WeakCurrents ScalarMeson TensorMeson Dalitz Partonic General Radiation
 
 if HAVE_EVTGEN
 SUBDIRS += EvtGen
@@ -209,6 +209,19 @@ $(AM_CPPFLAGS) -I$(srcdir)/ScalarMeson
 
 nodist_HwSMDecay_la_SOURCES = \
 ScalarMeson/SMDecayer__all.cc
+
+##################
+
+pkglib_LTLIBRARIES += HwDalitzDecay.la
+
+HwDalitzDecay_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 14:0:0
+
+HwDalitzDecay_la_CPPFLAGS = \
+$(AM_CPPFLAGS) -I$(srcdir)/Dalitz
+
+nodist_HwDalitzDecay_la_SOURCES = \
+Dalitz/DalitzDecay__all.cc
 
 ##################
 

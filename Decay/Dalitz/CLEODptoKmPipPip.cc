@@ -61,7 +61,7 @@ void CLEODptoKmPipPip::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<CLEODptoKmPipPip,WeakDalitzDecay>
-describeHerwigCLEODptoKmPipPip("Herwig::CLEODptoKmPipPip", "HwSMDecay.so");
+describeHerwigCLEODptoKmPipPip("Herwig::CLEODptoKmPipPip", "HwDalitzDecay.so");
 
 void CLEODptoKmPipPip::Init() {
 
