@@ -23,7 +23,7 @@ thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      : {},
              "EtaPi" : {}, "4Pi"       : {}, "EtaEta"  : {}, "EtaOmega" : {},
              "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
-             "EtaPiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
+             "EtaPiPi"      : {}, "EtaPrimePiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
              "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
              "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
 # pi+pi-
@@ -100,6 +100,8 @@ analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01
                                             "d09-x01-y01","d09-x01-y02",
                                             "d10-x01-y01","d10-x01-y02",
                                             "d11-x01-y01"]
+# eta' pipi
+analyses["EtaPrimePiPi"]["BELLE_2018_I1672149"] = ["d01-x01-y01","d02-x01-y01"]
 # 6 meson final-states
 analyses["6m"]["ARGUS_1996_I403304"] = [ "d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 # list the analysis if required and quit()
