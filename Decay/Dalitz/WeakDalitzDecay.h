@@ -52,8 +52,7 @@ struct DalitzResonance {
   /**
    *  The children
    */
-  unsigned int daughter1;
-  unsigned int daughter2;
+  unsigned int daughter1,daughter2;
 
   /**
    *   The spectactor
