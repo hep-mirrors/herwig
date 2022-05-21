@@ -89,9 +89,9 @@ void WeakDalitzDecay::doinitrun() {
 }
 
 double WeakDalitzDecay::me2(const int ichan, const Particle & part,
-			 const tPDVector & ,
-			 const vector<Lorentz5Momentum> & momenta,
-			 MEOption meopt) const {
+			    const tPDVector & ,
+			    const vector<Lorentz5Momentum> & momenta,
+			    MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
