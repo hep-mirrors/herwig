@@ -35,18 +35,18 @@ void FOCUSDptoKmPipPip::doinit() {
   WeakDalitzDecay::doinit();
   static const double degtorad = Constants::pi/180.;
   // create the resonances
-  addResonance(DalitzResonance(getParticleData(-313    ), 0.896 *GeV,0.0503*GeV,0,1,2, 1.   *0.5  ,   0.          ));
-  addResonance(DalitzResonance(getParticleData(-313    ), 0.896 *GeV,0.0503*GeV,0,2,1, 1.   *0.5  ,   0.          ));
-  addResonance(DalitzResonance(getParticleData(-100313 ), 1.414 *GeV,0.232 *GeV,0,1,2, 0.12 *0.5  , 350.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-100313 ), 1.414 *GeV,0.232 *GeV,0,2,1, 0.12 *0.5  , 350.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-30313  ), 1.717 *GeV,0.322 *GeV,0,1,2, 0.36 *0.5  ,   3.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-30313  ), 1.717 *GeV,0.322 *GeV,0,2,1, 0.36 *0.5  ,   3.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-315    ), 1.4324*GeV,0.109 *GeV,0,1,2, 0.17 *0.375, 319.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-315    ), 1.4324*GeV,0.109 *GeV,0,2,1, 0.17 *0.375, 319.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-10311  ), 1.461 *GeV,0.177 *GeV,0,1,2, 1.13       ,  36.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-10311  ), 1.461 *GeV,0.177 *GeV,0,2,1, 1.13       ,  36.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-9000311), 0.856 *GeV,0.464 *GeV,0,1,2, 1.28       , 199.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-9000311), 0.856 *GeV,0.464 *GeV,0,2,1, 1.28       , 199.0*degtorad));
+  addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 0.896 *GeV,0.0503*GeV,0,1,2, 1.   *0.5  ,   0.          ));
+  addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 0.896 *GeV,0.0503*GeV,0,2,1, 1.   *0.5  ,   0.          ));
+  addResonance(DalitzResonance(-100313 ,ResonanceType::Spin1     , 1.414 *GeV,0.232 *GeV,0,1,2, 0.12 *0.5  , 350.0*degtorad));
+  addResonance(DalitzResonance(-100313 ,ResonanceType::Spin1     , 1.414 *GeV,0.232 *GeV,0,2,1, 0.12 *0.5  , 350.0*degtorad));
+  addResonance(DalitzResonance(-30313  ,ResonanceType::Spin1     , 1.717 *GeV,0.322 *GeV,0,1,2, 0.36 *0.5  ,   3.0*degtorad));
+  addResonance(DalitzResonance(-30313  ,ResonanceType::Spin1     , 1.717 *GeV,0.322 *GeV,0,2,1, 0.36 *0.5  ,   3.0*degtorad));
+  addResonance(DalitzResonance(-315    ,ResonanceType::Spin2     , 1.4324*GeV,0.109 *GeV,0,1,2, 0.17 *0.375, 319.0*degtorad));
+  addResonance(DalitzResonance(-315    ,ResonanceType::Spin2     , 1.4324*GeV,0.109 *GeV,0,2,1, 0.17 *0.375, 319.0*degtorad));
+  addResonance(DalitzResonance(-10311  ,ResonanceType::Spin0Gauss, 1.461 *GeV,0.177 *GeV,0,1,2, 1.13       ,  36.0*degtorad));
+  addResonance(DalitzResonance(-10311  ,ResonanceType::Spin0Gauss, 1.461 *GeV,0.177 *GeV,0,2,1, 1.13       ,  36.0*degtorad));
+  addResonance(DalitzResonance(-9000311,ResonanceType::Spin0Gauss, 0.856 *GeV,0.464 *GeV,0,1,2, 1.28       , 199.0*degtorad));
+  addResonance(DalitzResonance(-9000311,ResonanceType::Spin0Gauss, 0.856 *GeV,0.464 *GeV,0,2,1, 1.28       , 199.0*degtorad));
   // D+ -> K- pi+ pi+
   createMode(getParticleData(ParticleID::Dplus),
 	     {getParticleData(ParticleID::Kminus),
@@ -177,7 +177,7 @@ Complex FOCUSDptoKmPipPip::amplitude(int ichan) const {
     imax=imin+1;
   }
   for(unsigned int ix=imin;ix<imax;++ix) {
-    output += resAmp(ix,true);
+    output += resAmp(ix);
   }
   if(ichan<0) {
     output += 2.*1.47*Complex(cos(5.672320068981571),sin(5.672320068981571));

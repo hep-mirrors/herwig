@@ -6,90 +6,10 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+#include "DalitzResonance.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
-
-/**
- *  Struct to contain the properties of the intermediate 
- */
-struct DalitzResonance {
-
-  /**
-   *  Default constructor
-   */
-  DalitzResonance() {}
-
-  /**
-   *  Constructor specifiying the parameters
-   */
-  DalitzResonance(tPDPtr res, Energy m, Energy w,
-		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double mag, double phi)
-    : resonance(res), mass(m),width(w),
-      daughter1(d1),daughter2(d2),spectator(s),
-      amp(mag*exp(Complex(0,phi)))
-  {}
-
-  /**
-   *  Resonant particle
-   */
-  tPDPtr resonance;
-
-  /**
-   *  Mass of the resonance
-   */
-  Energy mass;
-
-  /**
-   *  Width of the resonance
-   */
-  Energy width;
-
-  /**
-   *  The children
-   */
-  unsigned int daughter1,daughter2;
-
-  /**
-   *   The spectactor
-   */
-  unsigned int spectator;
-
-  /**
-   *  The amplitude
-   */
-  Complex amp;
-};
-
-/** 
- * Output operator to allow the structure to be persistently written
- * @param os The output stream
- * @param x The resonance
- */
-inline PersistentOStream & operator<<(PersistentOStream & os, 
-				      const DalitzResonance  & x) {
-  os << x.resonance << ounit(x.mass,GeV) << ounit(x.width,GeV)
-     << x.daughter1 << x.daughter2 << x.spectator
-     << x.amp;
-  return os;
-}
-
-/** 
- * Input operator to allow the structure to be persistently read
- * @param is The input stream
- * @param x The resonance
- */
-  inline PersistentIStream & operator>>(PersistentIStream & is, 
-					DalitzResonance  & x) {
-  is >> x.resonance >> iunit(x.mass,GeV) >> iunit(x.width,GeV)
-     >> x.daughter1 >> x.daughter2 >> x.spectator
-     >> x.amp;
-  return is;
-}
   
   
 /**
@@ -181,7 +101,7 @@ protected:
   /**
    * Calculate the amplitude for the ith resonance
    */
-  Complex resAmp(unsigned int i,bool gauss=false) const;
+  Complex resAmp(unsigned int i) const;
 
   /**
    *  Access to the resonances

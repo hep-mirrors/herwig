@@ -369,29 +369,29 @@ void CLEOD0toK0PipPim::doinit() {
   // non-resonant amplitude
   cNR_ = aNR_*Complex(cos(phiNR_*degtorad),sin(phiNR_*degtorad));
   // resonances
-  addResonance(DalitzResonance(getParticleData(    323),mK892_  , wK892_  ,0,1,2,-aKstarp_     , phiKstarp_*degtorad));
-  addResonance(DalitzResonance(getParticleData(    113),mrho_   , wrho_   ,1,2,0,-arho_        , phirho_   *degtorad));
-  addResonance(DalitzResonance(getParticleData(    223),momega_ , womega_ ,1,2,0,-aomega_      , phiomega_ *degtorad));
-  addResonance(DalitzResonance(getParticleData(   -323),mK892_  , wK892_  ,0,2,1,-aKstarm_     , phiKstarm_*degtorad));
-  addResonance(DalitzResonance(getParticleData(9010221),mf980_  , wf980_  ,1,2,0, af980_/GeV2  , phif980_  *degtorad));
-  addResonance(DalitzResonance(getParticleData(    225),mf2_    , wf2_    ,1,2,0, af2_*GeV2    , phif2_    *degtorad));
-  addResonance(DalitzResonance(getParticleData(  10221),mf1370_ , wf1370_ ,1,2,0, af1370_/GeV2 , phif1370_ *degtorad));
-  addResonance(DalitzResonance(getParticleData( -10321),mK14300_, wK14300_,0,2,1, aK14300_/GeV2, phiK14300_*degtorad));
-  addResonance(DalitzResonance(getParticleData(   -325),mK14302_, wK14302_,0,2,1, aK14302_*GeV2, phiK14302_*degtorad));
-  addResonance(DalitzResonance(getParticleData( -30323),mK1680_ , wK1680_ ,0,2,1,-aK1680_      , phiK1680_ *degtorad));
+  addResonance(DalitzResonance(    323,ResonanceType::Spin1,mK892_  , wK892_  ,0,1,2,-aKstarp_     , phiKstarp_*degtorad));
+  addResonance(DalitzResonance(    113,ResonanceType::Spin1,mrho_   , wrho_   ,1,2,0,-arho_        , phirho_   *degtorad));
+  addResonance(DalitzResonance(    223,ResonanceType::Spin1,momega_ , womega_ ,1,2,0,-aomega_      , phiomega_ *degtorad));
+  addResonance(DalitzResonance(   -323,ResonanceType::Spin1,mK892_  , wK892_  ,0,2,1,-aKstarm_     , phiKstarm_*degtorad));
+  addResonance(DalitzResonance(9010221,ResonanceType::Spin0,mf980_  , wf980_  ,1,2,0, af980_/GeV2  , phif980_  *degtorad));
+  addResonance(DalitzResonance(    225,ResonanceType::Spin2,mf2_    , wf2_    ,1,2,0, af2_*GeV2    , phif2_    *degtorad));
+  addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf1370_ , wf1370_ ,1,2,0, af1370_/GeV2 , phif1370_ *degtorad));
+  addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK14300_, wK14300_,0,2,1, aK14300_/GeV2, phiK14300_*degtorad));
+  addResonance(DalitzResonance(   -325,ResonanceType::Spin2,mK14302_, wK14302_,0,2,1, aK14302_*GeV2, phiK14302_*degtorad));
+  addResonance(DalitzResonance( -30323,ResonanceType::Spin1,mK1680_ , wK1680_ ,0,2,1,-aK1680_      , phiK1680_ *degtorad));
   // D0 -> Kbar0 pi+ pi-
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::K_S0),
-		 getParticleData(ParticleID::piplus),
-		 getParticleData(ParticleID::piminus)});
+	      getParticleData(ParticleID::piplus),
+	      getParticleData(ParticleID::piminus)});
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::K_L0),
-		 getParticleData(ParticleID::piplus),
-		 getParticleData(ParticleID::piminus)});
+	      getParticleData(ParticleID::piplus),
+	      getParticleData(ParticleID::piminus)});
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::Kbar0),
-		 getParticleData(ParticleID::piplus),
-		 getParticleData(ParticleID::piminus)});
+	      getParticleData(ParticleID::piplus),
+	      getParticleData(ParticleID::piminus)});
 }
 
 void CLEOD0toK0PipPim::doinitrun() {
@@ -435,7 +435,7 @@ Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
     if(ix==0 && imode()!=0) {
       if(imode()==1) output -= resAmp(ix);
     }
-    else if(resonances()[ix].resonance->id()!=9010221) {
+    else if(resonances()[ix].id!=9010221) {
       output += resAmp(ix);
     }
     // special treatment (Flatte) for f0(980)

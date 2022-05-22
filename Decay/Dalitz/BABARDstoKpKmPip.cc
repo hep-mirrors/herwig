@@ -243,14 +243,14 @@ void BABARDstoKpKmPip::Init() {
 void BABARDstoKpKmPip::doinit() {
   WeakDalitzDecay::doinit();
   // resonances
-  addResonance(DalitzResonance(getParticleData(   -313),mKStar_   , wKStar_   ,1,2,0, aKStar_   , phiKStar_ ));
+  addResonance(DalitzResonance(   -313,ResonanceType::Spin1  ,mKStar_   , wKStar_   ,1,2,0, aKStar_   , phiKStar_ ));
   // N.B. - sign w.r.t. paper to get right interference sign
-  addResonance(DalitzResonance(getParticleData(    333),mPhi_     , wPhi_     ,0,1,2,-aPhi_     , phiPhi_   ));
-  addResonance(DalitzResonance(getParticleData(9010221),mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_));
-  addResonance(DalitzResonance(getParticleData( -10311),mK0_      , wK0_      ,1,2,0, aK0_      , phiK0_    ));
-  addResonance(DalitzResonance(getParticleData(  10331),mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_));
-  addResonance(DalitzResonance(getParticleData(  10221),mf0_1370_ , wf0_1370_ ,0,1,2, af0_1370_ , phif0_1370_));
-  // // Ds+ -> K+ K- pi+
+  addResonance(DalitzResonance(    333,ResonanceType::Spin1  ,mPhi_     , wPhi_     ,0,1,2,-aPhi_     , phiPhi_   ));
+  addResonance(DalitzResonance(9010221,ResonanceType::BABARf0,mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_));
+  addResonance(DalitzResonance( -10311,ResonanceType::Spin0  ,mK0_      , wK0_      ,1,2,0, aK0_      , phiK0_    ));
+  addResonance(DalitzResonance(  10331,ResonanceType::Spin0  ,mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_));
+  addResonance(DalitzResonance(  10221,ResonanceType::Spin0  ,mf0_1370_ , wf0_1370_ ,0,1,2, af0_1370_ , phif0_1370_));
+  // Ds+ -> K+ K- pi+
   createMode(getParticleData(ParticleID::D_splus),
   	     {getParticleData(ParticleID::Kplus),
 	      getParticleData(ParticleID::Kminus),
