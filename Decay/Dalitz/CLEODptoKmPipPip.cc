@@ -30,21 +30,21 @@ void CLEODptoKmPipPip::doinit() {
   WeakDalitzDecay::doinit();
   static const double degtorad = Constants::pi/180.;
   // create the resonances
-  addResonance(DalitzResonance(getParticleData(-313    ), 896  *MeV, 50.3*MeV,0,1,2,-1.   ,   0.          ));
-  addResonance(DalitzResonance(getParticleData(-313    ), 896  *MeV, 50.3*MeV,0,2,1,-1.   ,   0.          ));
-  addResonance(DalitzResonance(getParticleData(-10311  ),1463  *MeV,163.8*MeV,0,1,2,3.   ,  49.7*degtorad));
-  addResonance(DalitzResonance(getParticleData(-10311  ),1463  *MeV,163.8*MeV,0,2,1,3.   ,  49.7*degtorad));
-  addResonance(DalitzResonance(getParticleData(-315    ),1432.4*MeV,  109*MeV,0,1,2,0.962, -29.9*degtorad));
-  addResonance(DalitzResonance(getParticleData(-315    ),1432.4*MeV,  109*MeV,0,2,1,0.962, -29.9*degtorad));
-  addResonance(DalitzResonance(getParticleData(-30313  ),1717  *MeV,  322*MeV,0,1,2,-6.5  ,  29.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-30313  ),1717  *MeV,  322*MeV,0,2,1,-6.5  ,  29.0*degtorad));
-  addResonance(DalitzResonance(getParticleData(-9000311), 809  *MeV,  470*MeV,0,1,2,5.01 ,-163.7*degtorad));
-  addResonance(DalitzResonance(getParticleData(-9000311), 809  *MeV,  470*MeV,0,2,1,5.01 ,-163.7*degtorad));
+  addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 896  *MeV, 50.3*MeV,0,1,2,-1.   ,   0.          ));
+  addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 896  *MeV, 50.3*MeV,0,2,1,-1.   ,   0.          ));
+  addResonance(DalitzResonance(-10311  ,ResonanceType::Spin0Gauss,1463  *MeV,163.8*MeV,0,1,2,3.   ,  49.7*degtorad));
+  addResonance(DalitzResonance(-10311  ,ResonanceType::Spin0Gauss,1463  *MeV,163.8*MeV,0,2,1,3.   ,  49.7*degtorad));
+  addResonance(DalitzResonance(-315    ,ResonanceType::Spin2     ,1432.4*MeV,  109*MeV,0,1,2,0.962, -29.9*degtorad));
+  addResonance(DalitzResonance(-315    ,ResonanceType::Spin2     ,1432.4*MeV,  109*MeV,0,2,1,0.962, -29.9*degtorad));
+  addResonance(DalitzResonance(-30313  ,ResonanceType::Spin1     ,1717  *MeV,  322*MeV,0,1,2,-6.5  ,  29.0*degtorad));
+  addResonance(DalitzResonance(-30313  ,ResonanceType::Spin1     ,1717  *MeV,  322*MeV,0,2,1,-6.5  ,  29.0*degtorad));
+  addResonance(DalitzResonance(-9000311,ResonanceType::Spin0Gauss, 809  *MeV,  470*MeV,0,1,2,5.01 ,-163.7*degtorad));
+  addResonance(DalitzResonance(-9000311,ResonanceType::Spin0Gauss, 809  *MeV,  470*MeV,0,2,1,5.01 ,-163.7*degtorad));
   // D+ -> K- pi+ pi+
   createMode(getParticleData(ParticleID::Dplus),
 	     {getParticleData(ParticleID::Kminus),
-		 getParticleData(ParticleID::piplus),
-		 getParticleData(ParticleID::piplus)});
+	      getParticleData(ParticleID::piplus),
+	      getParticleData(ParticleID::piplus)});
 }
 
 void CLEODptoKmPipPip::doinitrun() {
@@ -100,7 +100,7 @@ Complex CLEODptoKmPipPip::amplitude(int ichan) const {
   }
   for(unsigned int ix=imin;ix<imax;++ix) {
     if(ix==2 || ix==3 || ix==8 || ix==9) {
-      output += resAmp(ix,true);
+      output += resAmp(ix);
     }
     else
       output += resAmp(ix);

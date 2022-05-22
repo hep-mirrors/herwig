@@ -122,15 +122,20 @@ void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
   }
   unsigned int ix=0;
   for(DalitzResonance res : resonances_) {
-    mode->addChannel((PhaseSpaceChannel(mode),0,res.resonance,0,res.spectator+1,1,res.daughter1+1,1,res.daughter2+1));
-    resetIntermediate(res.resonance,res.mass,res.width);
-    ++ix;
+    tPDPtr resonance = getParticleData(res.id);
+    if(resonance) {
+      mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,res.spectator+1,1,res.daughter1+1,1,res.daughter2+1));
+      resetIntermediate(resonance,res.mass,res.width);
+      ++ix;
+    }
   }
   addMode(mode);
 }
 
-Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
+Complex WeakDalitzDecay::resAmp(unsigned int i) const {
+  static const Complex ii = Complex(0.,1.);
   Complex output = resonances_[i].amp;
+  if (resonances_[i].type==ResonanceType::NonResonant) return output;
   // locations of the outgoing particles
   const unsigned int &d1 = resonances_[i].daughter1;
   const unsigned int &d2 = resonances_[i].daughter2;
@@ -141,47 +146,53 @@ Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
   // momenta for the resonance decay
   // off-shell
   Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
+  if(resonances_[i].type==ResonanceType::BABARf0) {
+    double rho = 2.*pAB/m2_[d1][d2];
+    output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-
+		    ii*resonances_[i].mass*resonances_[i].width*rho);
+    return output;
+  }
   //  on-shell
   Energy  pR=sqrt(0.25*sqr(    mR*mR        -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/mR;
-  // for the D decay
-  Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
-  Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
   // Blatt-Weisskopf factors
   double fR=1, fD=1;
   unsigned int power(1);
-  double r1A(rResonance_*pR),r1B(rResonance_*pAB );
-  double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
-  // mass for thre denominator
-  Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
-  // Blatt-Weisskopf factors and spin piece
-  switch (resonances_[i].resonance->iSpin()) {
-  case PDT::Spin0:
-    if(gauss) {
+  if(resonances_[i].type!=ResonanceType::Spin0) {
+    // for the D decay
+    Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
+    Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
+    double r1A(rResonance_*pR),r1B(rResonance_*pAB );
+    double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
+    // mass for thre denominator
+    Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
+    // Blatt-Weisskopf factors and spin piece
+    switch (resonances_[i].type) {
+    case ResonanceType::Spin0Gauss:
       fR = exp(-(r1B-r1A)/12.);
       fD = exp(-(r2B-r2A)/12.);
+      break;
+    case ResonanceType::Spin1:
+      fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
+      fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
+      power=3;
+      output *= fR*fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
+		       + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/GeV2;
+      break;
+    case ResonanceType::Spin2:
+      fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
+      fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
+      power=5;
+      output *= fR*fD/GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
+				  (sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
+				  (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
+      break;
+    default :
+      assert(false);
     }
-    break;
-  case PDT::Spin1:
-    fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
-    fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
-    power=3;
-    output *= fR*fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
-		  + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/GeV2;
-    break;
-  case PDT::Spin2:
-    fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
-    fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
-    power=5;
-    output *= fR*fD/GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
-				(sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
-				(sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
-    break;
-  default :
-    assert(false);
   }
   // multiply by Breit-Wigner piece and return
   Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-  return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*Complex(0.,1.));
+  return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
 }
 
 void WeakDalitzDecay::dataBaseOutput(ofstream & output, bool header) const {
