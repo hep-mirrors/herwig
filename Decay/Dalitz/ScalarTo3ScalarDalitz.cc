@@ -18,7 +18,7 @@
 using namespace Herwig;
 
 ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, bool useResonanceMass)
-  : rParent_(rP), useResonanceMass_(useResonanceMass), maxWgt_(1.),
+  : rParent_(rP), useResonanceMass_(useResonanceMass), useAllK0_(false), maxWgt_(1.),
     channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
   // intermediates
   generateIntermediates(true);
@@ -34,12 +34,12 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
   os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV)
-     << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_;
+     << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_ << useAllK0_;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
   is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV)
-     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_;
+     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_ >> useAllK0_;
 }
 
 // The following static variable is needed for the type
@@ -107,6 +107,21 @@ void ScalarTo3ScalarDalitz::Init() {
      "No",
      "Use the correct kinematic mass",
      false);
+
+  static Switch<ScalarTo3ScalarDalitz,bool> interfaceUseAllK0
+    ("UseAllK0",
+     "Use all K0 mesons when matching the mode",
+     &ScalarTo3ScalarDalitz::useAllK0_, false, false, false);
+  static SwitchOption interfaceUseAllK0No
+    (interfaceUseAllK0,
+     "No",
+     "Just use the identified state",
+     false);
+  static SwitchOption interfaceUseAllK0Yes
+    (interfaceUseAllK0,
+     "Yes",
+     "Use all the states",
+     true);
 
 }
 
@@ -275,6 +290,7 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
   DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
+  output << "newdef " << name() << ":UseAllK0 " << useAllK0_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
   for(unsigned int ix=0;ix<weights_.size();++ix) {
     output << "insert " << name() << ":Weights "
@@ -380,19 +396,23 @@ int ScalarTo3ScalarDalitz::modeNumber(bool & cc,tcPDPtr parent,
   // ids of the outgoing particles
   map<long,unsigned int> ids;
   for(unsigned int iy=0;iy<3;++iy) {
-    if(ids.find(outgoing_[iy])!=ids.end())
-      ids[outgoing_[iy]]+=1;
+    long id = outgoing_[iy];
+    if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
+    if(ids.find(id)!=ids.end())
+      ids[id]+=1;
     else
-      ids[outgoing_[iy]]+=1;
+      ids[id]+=1;
   }
   if(incoming_==parent->id()) {
     bool found=true;
     map<long,unsigned int> ids2;
     for(unsigned int iy=0;iy<children.size();++iy) {
-      if(ids2.find(children[iy]->id())!=ids2.end())
-	ids2[children[iy]->id()]+=1;
+    long id = children[iy]->id();
+    if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
+      if(ids2.find(id)!=ids2.end())
+	ids2[id]+=1;
       else
-	ids2[children[iy]->id()] =1;
+	ids2[id] =1;
     }
     for (const auto& kv : ids2) {
       if(ids.find(kv.first)==ids.end() ||
@@ -411,10 +431,11 @@ int ScalarTo3ScalarDalitz::modeNumber(bool & cc,tcPDPtr parent,
     map<long,unsigned int> ids2;
     for(unsigned int iy=0;iy<3;++iy) {
       tPDPtr part = children[iy]->CC() ? children[iy]->CC() : children[iy];
-      if(ids2.find(part->id())!=ids2.end())
-	ids2[part->id()]+=1;
+      long id = part->id();
+      if(ids2.find(id)!=ids2.end())
+	ids2[id]+=1;
       else
-	ids2[part->id()]+=1;
+	ids2[id]+=1;
     }
     bool found=true;
     for (const auto& kv : ids2) {
