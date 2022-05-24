@@ -13,7 +13,7 @@ DalitzResonance.h\
 DtoKPiPiE691.h \
 FOCUSDptoKmPipPip.h \
 DtoKPiPiMarkIII.h \
-WeakDalitzDecay.h\
+ScalarTo3ScalarDalitz.h\
 CLEODptoKmPipPip.h\
 CLEOD0toKmPipPi0.h\
 CLEOD0toK0PipPim.h\
@@ -25,7 +25,7 @@ ALL_CC_FILES = \
 DtoKPiPiE691.cc\
 FOCUSDptoKmPipPip.cc\
 DtoKPiPiMarkIII.cc \
-WeakDalitzDecay.cc\
+ScalarTo3ScalarDalitz.cc\
 CLEODptoKmPipPip.cc\
 CLEOD0toKmPipPi0.cc\
 CLEOD0toK0PipPim.cc\

@@ -16,7 +16,7 @@
 using namespace Herwig;
 
 BABAREtactoKpKmEta::BABAREtactoKpKmEta() :
-  WeakDalitzDecay(0./GeV,1.5/GeV,false),
+  ScalarTo3ScalarDalitz(0./GeV,1.5/GeV,false),
   mf0_1500_(1505*MeV), wf0_1500_(109*MeV),
   mf0_1710_(1720*MeV), wf0_1710_(135*MeV),
   mK0_1430_(1438*MeV), wK0_1430_(210*MeV),
@@ -73,7 +73,7 @@ void BABAREtactoKpKmEta::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<BABAREtactoKpKmEta,WeakDalitzDecay>
+DescribeClass<BABAREtactoKpKmEta,ScalarTo3ScalarDalitz>
 describeHerwigBABAREtactoKpKmEta("Herwig::BABAREtactoKpKmEta", "HwDalitzDecay.so");
 
 void BABAREtactoKpKmEta::Init() {
@@ -262,7 +262,7 @@ void BABAREtactoKpKmEta::Init() {
 }
 
 void BABAREtactoKpKmEta::doinit() {
-  WeakDalitzDecay::doinit();
+  ScalarTo3ScalarDalitz::doinit();
   // resonances
   addResonance(DalitzResonance(9030221,ResonanceType::Spin0,mf0_1500_ , wf0_1500_ ,0,1,2, af0_1500_ , phif0_1500_));
   addResonance(DalitzResonance(  10331,ResonanceType::Spin0,mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_));
@@ -307,7 +307,7 @@ int BABAREtactoKpKmEta::modeNumber(bool & cc,tcPDPtr parent,
 void BABAREtactoKpKmEta::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
-  WeakDalitzDecay::dataBaseOutput(output,false);
+  ScalarTo3ScalarDalitz::dataBaseOutput(output,false);
   // output << "newdef " << name() << ":KStarMass"  <<  mKStar_/GeV << "\n";
   // output << "newdef " << name() << ":KStarWidth"  <<  wKStar_/GeV << "\n";
   // output << "newdef " << name() << ":PhiMass"  <<  mPhi_/GeV << "\n";

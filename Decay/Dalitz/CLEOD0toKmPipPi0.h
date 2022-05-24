@@ -5,7 +5,7 @@
 // This is the declaration of the CLEOD0toKmPipPi0 class.
 //
 
-#include "WeakDalitzDecay.h"
+#include "ScalarTo3ScalarDalitz.h"
 
 namespace Herwig {
 
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref CLEOD0toKmPipPi0Interfaces "The interfaces"
  * defined for CLEOD0toKmPipPi0.
  */
-class CLEOD0toKmPipPi0: public WeakDalitzDecay {
+class CLEOD0toKmPipPi0: public ScalarTo3ScalarDalitz {
 
 public:
 

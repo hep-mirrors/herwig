@@ -15,7 +15,7 @@
 
 using namespace Herwig;
 
-CLEODptoKmPipPip::CLEODptoKmPipPip() : WeakDalitzDecay(5./GeV,1.5/GeV,false)
+CLEODptoKmPipPip::CLEODptoKmPipPip() : ScalarTo3ScalarDalitz(5./GeV,1.5/GeV,false)
 {}
 
 IBPtr CLEODptoKmPipPip::clone() const {
@@ -27,7 +27,7 @@ IBPtr CLEODptoKmPipPip::fullclone() const {
 }
 
 void CLEODptoKmPipPip::doinit() {
-  WeakDalitzDecay::doinit();
+  ScalarTo3ScalarDalitz::doinit();
   static const double degtorad = Constants::pi/180.;
   // create the resonances
   addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 896  *MeV, 50.3*MeV,0,1,2,-1.   ,   0.          ));
@@ -48,7 +48,7 @@ void CLEODptoKmPipPip::doinit() {
 }
 
 void CLEODptoKmPipPip::doinitrun() {
-  WeakDalitzDecay::doinitrun();
+  ScalarTo3ScalarDalitz::doinitrun();
 }
 
 void CLEODptoKmPipPip::persistentOutput(PersistentOStream & os) const {
@@ -60,7 +60,7 @@ void CLEODptoKmPipPip::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<CLEODptoKmPipPip,WeakDalitzDecay>
+DescribeClass<CLEODptoKmPipPip,ScalarTo3ScalarDalitz>
 describeHerwigCLEODptoKmPipPip("Herwig::CLEODptoKmPipPip", "HwDalitzDecay.so");
 
 void CLEODptoKmPipPip::Init() {

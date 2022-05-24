@@ -17,7 +17,7 @@
 
 using namespace Herwig;
 
-BABARDstoKpKmPip::BABARDstoKpKmPip() : WeakDalitzDecay(3./GeV,1.5/GeV,false),
+BABARDstoKpKmPip::BABARDstoKpKmPip() : ScalarTo3ScalarDalitz(3./GeV,1.5/GeV,false),
 				       mKStar_(895.6*MeV), wKStar_(45.1*MeV),
 				       mPhi_(1019.455*MeV), wPhi_(4.26*MeV),
 				       mf0_980_(0.922*GeV),wf0_980_(0.24*GeV),
@@ -62,7 +62,7 @@ void BABARDstoKpKmPip::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<BABARDstoKpKmPip,WeakDalitzDecay>
+DescribeClass<BABARDstoKpKmPip,ScalarTo3ScalarDalitz>
 describeHerwigBABARDstoKpKmPip("Herwig::BABARDstoKpKmPip", "HwDalitzDecay.so");
 
 void BABARDstoKpKmPip::Init() {
@@ -225,7 +225,7 @@ void BABARDstoKpKmPip::Init() {
 }
 
 void BABARDstoKpKmPip::doinit() {
-  WeakDalitzDecay::doinit();
+  ScalarTo3ScalarDalitz::doinit();
   // resonances
   addResonance(DalitzResonance(   -313,ResonanceType::Spin1  ,mKStar_   , wKStar_   ,1,2,0, aKStar_   , phiKStar_ ));
   // N.B. - sign w.r.t. paper to get right interference sign
@@ -271,7 +271,7 @@ int BABARDstoKpKmPip::modeNumber(bool & cc,tcPDPtr parent,
 void BABARDstoKpKmPip::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
-  WeakDalitzDecay::dataBaseOutput(output,false);
+  ScalarTo3ScalarDalitz::dataBaseOutput(output,false);
   output << "newdef " << name() << ":KStarMass"  <<  mKStar_/GeV << "\n";
   output << "newdef " << name() << ":KStarWidth"  <<  wKStar_/GeV << "\n";
   output << "newdef " << name() << ":PhiMass"  <<  mPhi_/GeV << "\n";

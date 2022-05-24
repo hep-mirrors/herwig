@@ -5,7 +5,7 @@
 // This is the declaration of the BABAREtactoKpKmEta class.
 //
 
-#include "WeakDalitzDecay.h"
+#include "ScalarTo3ScalarDalitz.h"
 
 namespace Herwig {
 
@@ -17,7 +17,7 @@ using namespace ThePEG;
  * @see \ref BABAREtactoKpKmEtaInterfaces "The interfaces"
  * defined for BABAREtactoKpKmEta.
  */
-class BABAREtactoKpKmEta: public WeakDalitzDecay {
+class BABAREtactoKpKmEta: public ScalarTo3ScalarDalitz {
 
 public:
 

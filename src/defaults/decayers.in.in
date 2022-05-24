@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 19:7:41 on the 17/5/2022.
+# from the Herwig Particles Database at 9:26:47 on the 24/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -808,6 +808,62 @@ do VectorVP:SetUpDecayMode 200553 22 551 3.23e-05 2.10347
 do VectorVP:SetUpDecayMode 443 22 9020221 9.33e-07 4.67138
 do VectorVP:SetUpDecayMode 300553 553 221 0.00101 2.85334
 do VectorVP:SetUpDecayMode 300553 553 331 0.00214 5.56012
+#
+create Herwig::ScalarTo3ScalarDalitz  DpKmPipPipCLEO
+newdef DpKmPipPipCLEO:Iteration 10
+newdef DpKmPipPipCLEO:Ntry 500
+newdef DpKmPipPipCLEO:Points 10000
+newdef DpKmPipPipCLEO:GenerateIntermediates 1 
+newdef DpKmPipPipCLEO:ParentRadius 5
+newdef DpKmPipPipCLEO:ResonanceRadius 1.5
+newdef DpKmPipPipCLEO:MaximumWeight 3.23008e+11
+insert DpKmPipPipCLEO:Weights 0 0.122363
+insert DpKmPipPipCLEO:Weights 1 0.12191
+insert DpKmPipPipCLEO:Weights 2 0.0940997
+insert DpKmPipPipCLEO:Weights 3 0.0915046
+insert DpKmPipPipCLEO:Weights 4 0.0649267
+insert DpKmPipPipCLEO:Weights 5 0.0628349
+insert DpKmPipPipCLEO:Weights 6 0.0656603
+insert DpKmPipPipCLEO:Weights 7 0.0688308
+insert DpKmPipPipCLEO:Weights 8 0.151479
+insert DpKmPipPipCLEO:Weights 9 0.15639
+do DpKmPipPipCLEO:AddChannel 0 0 0 0 0 1 2 10.4652 -0.321141
+do DpKmPipPipCLEO:AddChannel -313 3 0.896 0.0503 0 1 2 1 -3.14159
+do DpKmPipPipCLEO:AddChannel -313 3 0.896 0.0503 0 2 1 1 -3.14159
+do DpKmPipPipCLEO:AddChannel -10311 31 1.463 0.1638 0 1 2 3 0.867429
+do DpKmPipPipCLEO:AddChannel -10311 31 1.463 0.1638 0 2 1 3 0.867429
+do DpKmPipPipCLEO:AddChannel -315 5 1.4324 0.109 0 1 2 0.962 -0.521853
+do DpKmPipPipCLEO:AddChannel -315 5 1.4324 0.109 0 2 1 0.962 -0.521853
+do DpKmPipPipCLEO:AddChannel -30313 3 1.717 0.322 0 1 2 6.5 -2.63545
+do DpKmPipPipCLEO:AddChannel -30313 3 1.717 0.322 0 2 1 6.5 -2.63545
+do DpKmPipPipCLEO:AddChannel -9000311 31 0.809 0.47 0 1 2 5.01 -2.8571
+do DpKmPipPipCLEO:AddChannel -9000311 31 0.809 0.47 0 2 1 5.01 -2.8571
+do DpKmPipPipCLEO:SetExternal 411 -321 211 211
+
+#
+create Herwig::ScalarTo3ScalarDalitz  DpKmPipPipE691
+newdef DpKmPipPipE691:Iteration 10
+newdef DpKmPipPipE691:Ntry 500
+newdef DpKmPipPipE691:Points 10000
+newdef DpKmPipPipE691:GenerateIntermediates 1 
+newdef DpKmPipPipE691:ParentRadius 0
+newdef DpKmPipPipE691:ResonanceRadius 0
+newdef DpKmPipPipE691:MaximumWeight 1.86647e+09
+insert DpKmPipPipE691:Weights 0 0.189309
+insert DpKmPipPipE691:Weights 1 0.198072
+insert DpKmPipPipE691:Weights 2 0.195665
+insert DpKmPipPipE691:Weights 3 0.197668
+insert DpKmPipPipE691:Weights 4 0.110717
+insert DpKmPipPipE691:Weights 5 0.108568
+do DpKmPipPipE691:AddChannel 0 0 0 0 0 1 2 1.41421 0
+do DpKmPipPipE691:AddChannel -313 13 0.8961 0.0505 0 1 2 0.78 -1.0472
+do DpKmPipPipE691:AddChannel -313 13 0.8961 0.0505 0 2 1 0.78 -1.0472
+do DpKmPipPipE691:AddChannel -10311 11 1.429 0.287 0 1 2 0.53 2.30383
+do DpKmPipPipE691:AddChannel -10311 11 1.429 0.287 0 2 1 0.53 2.30383
+do DpKmPipPipE691:AddChannel -30313 13 1.714 0.323 0 1 2 0.47 -0.890118
+do DpKmPipPipE691:AddChannel -30313 13 1.714 0.323 0 2 1 0.47 -0.890118
+do DpKmPipPipE691:SetExternal 411 -321 211 211
+
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -2422,7 +2478,7 @@ create Herwig::PseudoTensorMesonTensorVectorDecayer  PTTV
 newdef PTTV:Iteration 1
 newdef PTTV:Ntry 2000
 newdef PTTV:Points 10000
-newdef PTTV:GenerateIntermediates 0
+newdef PTTV:GenerateIntermediates 0 
 do PTTV:SetUpDecayMode 20555 555 22 1.44 1.6272
 do PTTV:SetUpDecayMode 100555 20555 22 1.65 1.73643
 do PTTV:SetUpDecayMode 120555 555 22 0.202 1.61196

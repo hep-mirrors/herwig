@@ -16,7 +16,7 @@
 
 using namespace Herwig;
 
-CLEOD0toKmPipPi0::CLEOD0toKmPipPi0() : WeakDalitzDecay(5./GeV,1.5/GeV,true) {
+CLEOD0toKmPipPi0::CLEOD0toKmPipPi0() : ScalarTo3ScalarDalitz(5./GeV,1.5/GeV,true) {
   // masses and widths
   mrho_     =  770   *MeV; wrho_     = 150.7 *MeV;
   mK892_    =  891.5 *MeV; wK892_    =  50   *MeV;
@@ -47,7 +47,7 @@ IBPtr CLEOD0toKmPipPi0::fullclone() const {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
+DescribeClass<CLEOD0toKmPipPi0,ScalarTo3ScalarDalitz>
 describeHerwigCLEOD0toKmPipPi0("Herwig::CLEOD0toKmPipPi0", "HwDalitzDecay.so");
 
 void CLEOD0toKmPipPi0::persistentOutput(PersistentOStream & os) const {
@@ -248,7 +248,7 @@ void CLEOD0toKmPipPi0::Init() {
 }
 
 void CLEOD0toKmPipPi0::doinit() {
-  WeakDalitzDecay::doinit();
+  ScalarTo3ScalarDalitz::doinit();
   static const double degtorad = Constants::pi/180.;  
   // non-resonant amplitude
   cNR_ = aNR_*Complex(cos(phiNR_*degtorad),sin(phiNR_*degtorad));
@@ -268,7 +268,7 @@ void CLEOD0toKmPipPi0::doinit() {
 }
 
 void CLEOD0toKmPipPi0::doinitrun() {
-  WeakDalitzDecay::doinitrun();
+  ScalarTo3ScalarDalitz::doinitrun();
 }
 
 int CLEOD0toKmPipPi0::modeNumber(bool & cc,tcPDPtr parent,
@@ -310,7 +310,7 @@ Complex CLEOD0toKmPipPi0::amplitude(int ichan) const {
 void CLEOD0toKmPipPi0::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
-  WeakDalitzDecay::dataBaseOutput(output,false);
+  ScalarTo3ScalarDalitz::dataBaseOutput(output,false);
   output << "newdef " << name() << ":K_01430Mass "        << mK14300_/MeV  << "\n";
   output << "newdef " << name() << ":K_01430Width "       << wK14300_/MeV  << "\n";
   output << "newdef " << name() << ":Kstar1680Mass "      << mK1680_/MeV   << "\n";
