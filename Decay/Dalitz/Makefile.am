@@ -16,7 +16,6 @@ DtoKPiPiMarkIII.h \
 ScalarTo3ScalarDalitz.h\
 CLEOD0toKmPipPi0.h\
 CLEOD0toK0PipPim.h\
-BABARDstoKpKmPip.h\
 BABAREtactoKpKmEta.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -27,5 +26,4 @@ DtoKPiPiMarkIII.cc \
 ScalarTo3ScalarDalitz.cc\
 CLEOD0toKmPipPi0.cc\
 CLEOD0toK0PipPim.cc\
-BABARDstoKpKmPip.cc\
 BABAREtactoKpKmEta.cc
