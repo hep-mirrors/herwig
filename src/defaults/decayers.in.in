@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 9:26:47 on the 24/5/2022.
+# from the Herwig Particles Database at 10:4:23 on the 24/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -863,6 +863,29 @@ do DpKmPipPipE691:AddChannel -10311 11 1.429 0.287 0 2 1 0.53 2.30383
 do DpKmPipPipE691:AddChannel -30313 13 1.714 0.323 0 1 2 0.47 -0.890118
 do DpKmPipPipE691:AddChannel -30313 13 1.714 0.323 0 2 1 0.47 -0.890118
 do DpKmPipPipE691:SetExternal 411 -321 211 211
+
+#
+create Herwig::ScalarTo3ScalarDalitz  DstoKpKmPipBABAR
+newdef DstoKpKmPipBABAR:Iteration 5
+newdef DstoKpKmPipBABAR:Ntry 500
+newdef DstoKpKmPipBABAR:Points 100000
+newdef DstoKpKmPipBABAR:GenerateIntermediates 1 
+newdef DstoKpKmPipBABAR:ParentRadius 3
+newdef DstoKpKmPipBABAR:ResonanceRadius 1.5
+newdef DstoKpKmPipBABAR:MaximumWeight 1.96562e+10
+insert DstoKpKmPipBABAR:Weights 0 0.277177
+insert DstoKpKmPipBABAR:Weights 1 0.293496
+insert DstoKpKmPipBABAR:Weights 2 0.140435
+insert DstoKpKmPipBABAR:Weights 3 0.0714531
+insert DstoKpKmPipBABAR:Weights 4 0.141085
+insert DstoKpKmPipBABAR:Weights 5 0.0763539
+do DstoKpKmPipBABAR:AddChannel -313 3 0.8956 0.0451 1 2 0 1 0
+do DstoKpKmPipBABAR:AddChannel 333 3 1.01945 0.00426 0 1 2 1.15 -0.251593
+do DstoKpKmPipBABAR:AddChannel 9010221 21 0.92 0.24 0 1 2 2.67 1.56
+do DstoKpKmPipBABAR:AddChannel -10311 1 1.425 0.27 1 2 0 1.14 2.55
+do DstoKpKmPipBABAR:AddChannel 10331 1 1.72 0.135 0 1 2 0.65 1.36
+do DstoKpKmPipBABAR:AddChannel 10221 1 1.22 0.21 0 1 2 0.46 -0.45
+do DstoKpKmPipBABAR:SetExternal 431 321 -321 211
 
 #
 create Herwig::TauDecayer  Tau2Leptons
