@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 10:4:23 on the 24/5/2022.
+# from the Herwig Particles Database at 14:28:58 on the 24/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -886,6 +886,25 @@ do DstoKpKmPipBABAR:AddChannel -10311 1 1.425 0.27 1 2 0 1.14 2.55
 do DstoKpKmPipBABAR:AddChannel 10331 1 1.72 0.135 0 1 2 0.65 1.36
 do DstoKpKmPipBABAR:AddChannel 10221 1 1.22 0.21 0 1 2 0.46 -0.45
 do DstoKpKmPipBABAR:SetExternal 431 321 -321 211
+
+#
+create Herwig::ScalarTo3ScalarDalitz  D0KmPipPi0E691
+newdef D0KmPipPi0E691:Iteration 10
+newdef D0KmPipPi0E691:Ntry 500
+newdef D0KmPipPi0E691:Points 10000
+newdef D0KmPipPi0E691:GenerateIntermediates 1 
+newdef D0KmPipPi0E691:ParentRadius 0
+newdef D0KmPipPi0E691:ResonanceRadius 0
+newdef D0KmPipPi0E691:ResonanceMass 0
+newdef D0KmPipPi0E691:MaximumWeight 6.62438e+09
+insert D0KmPipPi0E691:Weights 0 0.222738
+insert D0KmPipPi0E691:Weights 1 0.221507
+insert D0KmPipPi0E691:Weights 2 0.555754
+do D0KmPipPi0E691:AddChannel 0 0 0 0 0 1 2 1 0
+do D0KmPipPi0E691:AddChannel -313 13 0.8961 0.0505 1 0 2 3.19 2.9147
+do D0KmPipPi0E691:AddChannel -323 13 0.89159 0.0498 0 2 1 2.96 -1.95477
+do D0KmPipPi0E691:AddChannel 213 13 0.7681 0.1515 1 2 0 8.56 0.698132
+do D0KmPipPi0E691:SetExternal 421 -321 211 111
 
 #
 create Herwig::TauDecayer  Tau2Leptons
@@ -22226,49 +22245,32 @@ do Vector2BaryonsHalf:SetUpDecayMode 100443 3222 -3222 0.00194199600339 0.002882
 do Vector2BaryonsHalf:SetUpDecayMode 100443 3312 -3312 0.000327664954147 0.00108249234586 0. 2.   
 do Vector2BaryonsHalf:SetUpDecayMode 100443 3322 -3322 0.000664382626732 0.00102912698738 0. 2. 
 #
-create Herwig::CLEOD0toKmPipPi0  D0KmPipPi0CLEO
+create Herwig::ScalarTo3ScalarDalitz  D0KmPipPi0CLEO
 newdef D0KmPipPi0CLEO:Iteration 10
 newdef D0KmPipPi0CLEO:Ntry 500
-newdef D0KmPipPi0CLEO:Points 100000
+newdef D0KmPipPi0CLEO:Points 10000
 newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
 newdef D0KmPipPi0CLEO:ParentRadius 5
 newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
-newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
-insert D0KmPipPi0CLEO:Weights 0 0.279469
-insert D0KmPipPi0CLEO:Weights 1 0.14109
-insert D0KmPipPi0CLEO:Weights 2 0.0801408
-insert D0KmPipPi0CLEO:Weights 3 0.093447
-insert D0KmPipPi0CLEO:Weights 4 0.166967
-insert D0KmPipPi0CLEO:Weights 5 0.0844772
-insert D0KmPipPi0CLEO:Weights 6 0.154409
-newdef D0KmPipPi0CLEO:K_01430Mass 1412
-newdef D0KmPipPi0CLEO:K_01430Width 294
-newdef D0KmPipPi0CLEO:Kstar1680Mass 1717
-newdef D0KmPipPi0CLEO:Kstar1680Width 322
-newdef D0KmPipPi0CLEO:rho1700Mass 1700
-newdef D0KmPipPi0CLEO:rho1700Width 240
-newdef D0KmPipPi0CLEO:Kstar0892Mass 896.1
-newdef D0KmPipPi0CLEO:Kstar0892Width 50.5
-newdef D0KmPipPi0CLEO:KstarPlus892Mass 891.5
-newdef D0KmPipPi0CLEO:KstarPlus892Width 50
-newdef D0KmPipPi0CLEO:RhoMass 770
-newdef D0KmPipPi0CLEO:RhoWidth 150.7
-newdef D0KmPipPi0CLEO:NonResonantAmplitude 1.75
-newdef D0KmPipPi0CLEO:NonResonantPhase 31.2
-newdef D0KmPipPi0CLEO:RhoAmplitude 1
-newdef D0KmPipPi0CLEO:RhoPhase 0
-newdef D0KmPipPi0CLEO:KStarMinusAmplitude 0.44
-newdef D0KmPipPi0CLEO:KStarMinusPhase 163
-newdef D0KmPipPi0CLEO:KStar0Amplitude 0.39
-newdef D0KmPipPi0CLEO:KStar0Phase -0.2
-newdef D0KmPipPi0CLEO:K_0MinusAmplitude 0.77
-newdef D0KmPipPi0CLEO:K_0MinusPhase 55.5
-newdef D0KmPipPi0CLEO:K_00Amplitude 0.85
-newdef D0KmPipPi0CLEO:K_00Phase 166
-newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
-newdef D0KmPipPi0CLEO:Rho1700Phase 171
-newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
-newdef D0KmPipPi0CLEO:K1680MinusPhase 103
+newdef D0KmPipPi0CLEO:ResonanceMass 1
+newdef D0KmPipPi0CLEO:MaximumWeight 1.5069e+10
+insert D0KmPipPi0CLEO:Weights 0 0.27933
+insert D0KmPipPi0CLEO:Weights 1 0.139113
+insert D0KmPipPi0CLEO:Weights 2 0.0791496
+insert D0KmPipPi0CLEO:Weights 3 0.0865894
+insert D0KmPipPi0CLEO:Weights 4 0.173267
+insert D0KmPipPi0CLEO:Weights 5 0.0888929
+insert D0KmPipPi0CLEO:Weights 6 0.153658
+do D0KmPipPi0CLEO:AddChannel 0 0 0 0 0 1 2 1.75 0.544543
+do D0KmPipPi0CLEO:AddChannel 213 3 0.77 0.1507 2 1 0 1 0
+do D0KmPipPi0CLEO:AddChannel -323 3 0.8915 0.05 2 0 1 0.44 2.84489
+do D0KmPipPi0CLEO:AddChannel -313 3 0.8961 0.0505 1 0 2 0.39 -0.00349066
+do D0KmPipPi0CLEO:AddChannel -10321 1 1.412 0.294 2 0 1 0.77 0.959931
+do D0KmPipPi0CLEO:AddChannel -10311 1 1.412 0.294 1 0 2 0.85 2.89725
+do D0KmPipPi0CLEO:AddChannel 30213 3 1.7 0.24 2 1 0 2.5 2.98451
+do D0KmPipPi0CLEO:AddChannel -30323 3 1.717 0.322 2 0 1 2.5 1.79769
+do D0KmPipPi0CLEO:SetExternal 421 -321 211 111
+
 #
 @LOAD_EVTGEN_DECAYER@
 
