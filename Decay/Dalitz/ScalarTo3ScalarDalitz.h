@@ -207,6 +207,11 @@ private:
    *  Choice of the mass to use in the denominator of the expressions
    */
   bool useResonanceMass_;
+
+  /**
+   *  Take all \f$K_0\f$ mesnos to be the same
+   */
+  bool useAllK0_;
   
 private:
   
