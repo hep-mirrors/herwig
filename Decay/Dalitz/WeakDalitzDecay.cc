@@ -6,6 +6,7 @@
 
 #include "WeakDalitzDecay.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -16,22 +17,33 @@
 using namespace Herwig;
 
 WeakDalitzDecay::WeakDalitzDecay(InvEnergy rP, InvEnergy rR, bool useResonanceMass)
-  : rParent_(rP), rResonance_(rR), useResonanceMass_(useResonanceMass), maxWgt_(1.)
-{}
+  : rParent_(rP), rResonance_(rR), useResonanceMass_(useResonanceMass), maxWgt_(1.),
+    channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
+  // intermediates
+  generateIntermediates(true);
+}
+
+IBPtr WeakDalitzDecay::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr WeakDalitzDecay::fullclone() const {
+  return new_ptr(*this);
+}
 
 void WeakDalitzDecay::persistentOutput(PersistentOStream & os) const {
-  os << resonances_ << maxWgt_ << weights_
-     << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV);
+  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV)
+     << channel1_ << channel2_ << incoming_ << outgoing_;
 }
 
 void WeakDalitzDecay::persistentInput(PersistentIStream & is, int) {
-  is >> resonances_ >> maxWgt_ >> weights_
-     >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV);
+  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV)
+     >> channel1_ >> channel2_ >> incoming_ >> outgoing_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<WeakDalitzDecay,DecayIntegrator>
+DescribeClass<WeakDalitzDecay,DecayIntegrator>
 describeHerwigWeakDalitzDecay("Herwig::WeakDalitzDecay", "HwDalitzDecay.so");
 
 void WeakDalitzDecay::Init() {
@@ -40,8 +52,18 @@ void WeakDalitzDecay::Init() {
     ("The WeakDalitzDecay class provides a base class for "
      "weak three-body decays of bottom and charm mesons");
 
-  static Parameter<WeakDalitzDecay,InvEnergy> interfaceDRadius
-    ("DRadius",
+  static Command<WeakDalitzDecay> interfaceSetExternal
+    ("SetExternal",
+     "Set the external particles for the decay mode",
+     &WeakDalitzDecay::setExternal, false);
+  
+  static Command<WeakDalitzDecay> interfaceAddChannel
+    ("AddChannel",
+     "Add a channel for the description of the matrix element",
+     &WeakDalitzDecay::addChannel, false);
+
+  static Parameter<WeakDalitzDecay,InvEnergy> interfaceParentRadius
+    ("ParentRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
      &WeakDalitzDecay::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
@@ -64,6 +86,19 @@ void WeakDalitzDecay::Init() {
      "The weights for the different channels for the phase-space integration",
      &WeakDalitzDecay::weights_, -1, 1.0, 0.0, 1.0,
      false, false, Interface::limited);
+  
+  static Parameter<WeakDalitzDecay,int> interfaceChannel1
+    ("Channel1",
+     "The first allowed channel, for debugging/calculation of fit fractions only",
+     &WeakDalitzDecay::channel1_, -1, -1, 100,
+     false, false, Interface::limited);
+  
+  static Parameter<WeakDalitzDecay,int> interfaceChannel2
+    ("Channel2",
+     "The first allowed channel, for debugging/calculation of fit fractions only",
+     &WeakDalitzDecay::channel2_, -1, -1, 100,
+     false, false, Interface::limited);
+
 }
 
 void WeakDalitzDecay::
@@ -76,6 +111,13 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 void WeakDalitzDecay::doinit() {
+  if(incoming_!=0) {
+    tPDPtr in = getParticleData(incoming_);
+    vector<tPDPtr> out = {getParticleData(outgoing_[0]),
+			  getParticleData(outgoing_[1]),
+			  getParticleData(outgoing_[2])};
+    createMode(in,out);
+  }
   DecayIntegrator::doinit();
 }
 
@@ -92,6 +134,7 @@ double WeakDalitzDecay::me2(const int ichan, const Particle & part,
 			    const tPDVector & ,
 			    const vector<Lorentz5Momentum> & momenta,
 			    MEOption meopt) const {
+  static const Complex ii(0.,1.);
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
@@ -108,10 +151,19 @@ double WeakDalitzDecay::me2(const int ichan, const Particle & part,
       m2_[iy][ix]=m2_[ix][iy];
     }
   }
-  // compute the amplitude (in inherited class)
-  Complex amp = amplitude(ichan);
+  // compute the amplitude
+  Complex amp(0.);
+  int iloc=-1;
+  for(int ix=0;ix<int(resonances().size());++ix) {
+    ++iloc;
+    if(channel1_>=0) {
+      if(ix!=channel1_ && ix!=channel2_) continue;
+    }
+    if(ichan>=0&&ichan!=iloc) continue;
+    amp += resAmp(ix);
+  }
   // now compute the matrix element
-  (*ME())(0,0,0,0)=amp;
+  (*ME())(0,0,0,0) = amp;
   return norm(amp);
 }
 
@@ -157,7 +209,8 @@ Complex WeakDalitzDecay::resAmp(unsigned int i) const {
   // Blatt-Weisskopf factors
   double fR=1, fD=1;
   unsigned int power(1);
-  if(resonances_[i].type!=ResonanceType::Spin0) {
+  if(resonances_[i].type!=ResonanceType::Spin0 &&
+     resonances_[i].type!=ResonanceType::Spin0E691) {
     // for the D decay
     Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
     Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
@@ -165,48 +218,199 @@ Complex WeakDalitzDecay::resAmp(unsigned int i) const {
     double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
     // mass for thre denominator
     Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
+    // denominator for the older form of the amplitude
+    Energy2 denom = GeV2;
+    if (resonances_[i].type/10 == 1 ) { 
+      Energy2 pa2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mOut_[d1])+sqr(mOut_[d2])) + sqr(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(m2_[d1][d2]));
+      Energy2 pc2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mD_      )+sqr(mOut_[sp])) + sqr(sqr(mD_      )-sqr(mOut_[sp]))/sqr(m2_[d1][d2]));
+      denom = 4.*sqrt(pa2*pc2);
+    }
     // Blatt-Weisskopf factors and spin piece
     switch (resonances_[i].type) {
     case ResonanceType::Spin0Gauss:
       fR = exp(-(r1B-r1A)/12.);
       fD = exp(-(r2B-r2A)/12.);
       break;
-    case ResonanceType::Spin1:
+    case ResonanceType::Spin1: case ResonanceType::Spin1E691 :
       fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
       fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
       power=3;
       output *= fR*fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
-		       + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/GeV2;
+		       + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/denom;
       break;
-    case ResonanceType::Spin2:
+    case ResonanceType::Spin2: case ResonanceType::Spin2E691:
       fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
       fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
       power=5;
-      output *= fR*fD/GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
-				  (sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
-				  (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
+      output *= fR*fD/sqr(denom)*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
+				   (sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
+				   (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
       break;
     default :
       assert(false);
     }
   }
   // multiply by Breit-Wigner piece and return
-  Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-  return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+  if (resonances_[i].type/10 == 1 ) {
+    return output*sqrt(0.5*wR/GeV/Constants::pi)*GeV/(m2_[d1][d2]-mR-complex<Energy>(ZERO,0.5*wR));
+  }
+  else {
+    Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
+    return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+  }
 }
 
 void WeakDalitzDecay::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "newdef " << name() << ":DRadius " << rParent_*GeV << "\n";
+  output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":ResonanceRadius " << rResonance_*GeV << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
   for(unsigned int ix=0;ix<weights_.size();++ix) {
     output << "insert " << name() << ":Weights "
 	   << ix << " " << weights_[ix] << "\n";
   }
+  for(unsigned int ix=0;ix<resonances_.size();++ix) {
+    output << "do " << name() << ":AddChannel "
+	   << resonances_[ix].id << " " << oenum(resonances_[ix].type) << " "
+	   << resonances_[ix].mass/GeV << " " << resonances_[ix].width/GeV << " "
+	   << resonances_[ix].daughter1 << " " << resonances_[ix].daughter2 << " "
+	   << resonances_[ix].spectator << " " 
+	   << abs(resonances_[ix].amp) << " " << arg(resonances_[ix].amp) << "\n"; 
+  }
+  output << "do " << name() << ":SetExternal " << incoming_;
+  for(unsigned int ix=0;ix<3;++ix) output << " " << outgoing_[ix];
+  output << "\n";
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
   }
+}
+
+string WeakDalitzDecay::addChannel(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long id = stoi(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  ResonanceType::Type type = static_cast<ResonanceType::Type>(stoi(stype));
+  // mass and width
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  Energy mass = stof(stype)*GeV;
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  Energy width = stof(stype)*GeV;
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int d1 = stoi(stype);
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int d2 = stoi(stype);
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int sp = stoi(stype);
+  // magnitude and phase
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double mag = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double phi = stof(stype);
+  resonances_.push_back(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi));
+  // success
+  return "";
+}
+
+string WeakDalitzDecay::setExternal(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long id = stoi(stype);
+  tPDPtr in = getParticleData(id);
+  if(!in)
+    return "Incoming particle with id " + std::to_string(id) + "does not exist";
+  if(in->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(id) + "does not have spin 0";
+  tPDVector out;
+  for(unsigned int ix=0;ix<3;++ix) {
+    string stype = StringUtils::car(arg);
+    arg          = StringUtils::cdr(arg);
+    long in = stoi(stype);
+    tPDPtr pData = getParticleData(in);
+    if(!pData)
+      return "Outgoing particle with id " + std::to_string(in) + "does not exist";
+    if(pData->iSpin()!=PDT::Spin0)
+      return "Outgoing particle with id " + std::to_string(in) + "does not have spin 0";
+    out.push_back(pData);
+  }
+  incoming_ = in->id();
+  outgoing_ = {out[0]->id(),out[1]->id(),out[2]->id()};
+  // success
+  return "";
+}
+
+int WeakDalitzDecay::modeNumber(bool & cc,tcPDPtr parent,
+				const tPDVector & children) const {
+  // must be three decay products
+  if(children.size()!=3) return -1;
+  // ids of the outgoing particles
+  map<long,unsigned int> ids;
+  for(unsigned int iy=0;iy<3;++iy) {
+    if(ids.find(outgoing_[iy])!=ids.end())
+      ids[outgoing_[iy]]+=1;
+    else
+      ids[outgoing_[iy]]+=1;
+  }
+  if(incoming_==parent->id()) {
+    bool found=true;
+    map<long,unsigned int> ids2;
+    for(unsigned int iy=0;iy<children.size();++iy) {
+      if(ids2.find(children[iy]->id())!=ids2.end())
+	ids2[children[iy]->id()]+=1;
+      else
+	ids2[children[iy]->id()] =1;
+    }
+    for (const auto& kv : ids2) {
+      if(ids.find(kv.first)==ids.end() ||
+	 ids[kv.first]!=kv.second) {
+	found=false;
+	break;
+      }
+    }
+    if (found) {
+      cc = false;
+      return 0;
+    }
+  }
+  if( (!parent->CC() && incoming_==parent->id()) ||
+      ( parent->CC() && incoming_==parent->CC()->id()) ) {
+    map<long,unsigned int> ids2;
+    for(unsigned int iy=0;iy<3;++iy) {
+      tPDPtr part = children[iy]->CC() ? children[iy]->CC() : children[iy];
+      if(ids2.find(part->id())!=ids2.end())
+	ids2[part->id()]+=1;
+      else
+	ids2[part->id()]+=1;
+    }
+    bool found=true;
+    for (const auto& kv : ids2) {
+      if(ids.find(kv.first)==ids.end() ||
+	 ids[kv.first]!=kv.second) {
+	found=false;
+	break;
+      }
+    }
+    if (found) {
+      cc = true;
+      return 0;
+    }
+  }
+  return -1;
 }

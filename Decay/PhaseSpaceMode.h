@@ -213,6 +213,12 @@ public :
    * @return A pointer to the ParticleData object.
    */
   tPDVector outgoing() const {return outgoing_;}
+  
+  /**
+   * Access to the outging particles.
+   * @return A pointer to the ParticleData object.
+   */
+  tPDVector outgoingCC() const {return outgoingCC_;}
 
   /**
    * Number of outgoing particles.

@@ -97,13 +97,6 @@ protected:
   virtual void doinit();
   //@}
 
-protected:
-
-  /**
-   *  Calculate the amplitude
-   */
-  virtual Complex amplitude(int ichan) const;
-
 private:
 
   /**

@@ -22,7 +22,8 @@ namespace ResonanceType {
  */
 enum Type {NonResonant=0,
 	   Spin0=1,Spin1=3,Spin2=5,
-	   BABARf0=11, Spin0Gauss=12,
+	   Spin0E691=11,Spin1E691=13,Spin2E691=15,
+	   BABARf0=21, Spin0Gauss=31,
 	   SpecialSpin0=-1,SpecialSpin1=-3,SpecialSpin2=-5};
 
 }
