@@ -16,7 +16,7 @@
 using namespace Herwig;
 
 BABAREtactoKpKmEta::BABAREtactoKpKmEta() :
-  WeakDalitzDecay(1.5/GeV,1.5/GeV,false),
+  WeakDalitzDecay(0./GeV,1.5/GeV,false),
   mf0_1500_(1505*MeV), wf0_1500_(109*MeV),
   mf0_1710_(1720*MeV), wf0_1710_(135*MeV),
   mK0_1430_(1438*MeV), wK0_1430_(210*MeV),
@@ -25,16 +25,15 @@ BABAREtactoKpKmEta::BABAREtactoKpKmEta() :
   mf2_1525_(1525*MeV), wf2_1525_(73*MeV),
   mf0_1370_(1350*MeV),wf0_1370_(265*MeV),
   mf0_980_(0.922*GeV),wf0_980_(0.24*GeV),
-  af0_1500_(1.), phif0_1500_( 0. ),
-  af0_1710_(1.), phif0_1710_( 2.2),
-  aK0_1430_(1.), phiK0_1430_( 2.3),
-  af0_2200_(1.), phif0_2200_( 2.1),
-  aK0_1950_(1.), phiK0_1950_(-0.2),
-  af2_1525_(1.), phif2_1525_( 1.0),
-  af0_1370_(1.), phif0_1370_( 0.9),
-  af0_980_ (1.), phif0_980_ (-0.3),
-  aNR_     (1.), phiNR_     (-1.2),
-  channel1_(-1), channel2_(-1)  {
+  af0_1500_(1.    ), phif0_1500_( 0. ),
+  af0_1710_(0.754 ), phif0_1710_( 2.2),
+  aK0_1430_(0.792 ), phiK0_1430_( 2.3),
+  af0_2200_(1.685 ), phif0_2200_( 2.1),
+  aK0_1950_(0.339 ), phiK0_1950_(-0.2),
+  af2_1525_(0.0729), phif2_1525_( 1.0),
+  af0_1370_(0.734 ), phif0_1370_( 0.9),
+  af0_980_ (1.386 ), phif0_980_ (-0.3),
+  aNR_     (1.787 ), phiNR_     (-1.2) {
   // intermediates
   generateIntermediates(true);
 }
@@ -56,7 +55,7 @@ void BABAREtactoKpKmEta::persistentOutput(PersistentOStream & os) const {
      << aK0_1430_ << phiK0_1430_ << af0_2200_ << phif0_2200_
      << aK0_1950_ << phiK0_1950_ << af2_1525_ << phif2_1525_
      << af0_1370_ << phif0_1370_ << af0_980_  << phif0_980_
-     << aNR_ << phiNR_ << channel1_ << channel2_;
+     << aNR_ << phiNR_;
 }
 
 void BABAREtactoKpKmEta::persistentInput(PersistentIStream & is, int) {
@@ -68,7 +67,7 @@ void BABAREtactoKpKmEta::persistentInput(PersistentIStream & is, int) {
      >> aK0_1430_ >> phiK0_1430_ >> af0_2200_ >> phif0_2200_
      >> aK0_1950_ >> phiK0_1950_ >> af2_1525_ >> phif2_1525_
      >> af0_1370_ >> phif0_1370_ >> af0_980_  >> phif0_980_
-     >> aNR_ >> phiNR_ >> channel1_ >> channel2_;
+     >> aNR_ >> phiNR_;
 }
 
 
@@ -260,17 +259,6 @@ void BABAREtactoKpKmEta::Init() {
   //  *  Non-resonant phase
   //  */
   // double phiNR_;
-  static Parameter<BABAREtactoKpKmEta,int> interfaceChannel1
-    ("Channel1",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &BABAREtactoKpKmEta::channel1_, -1, -1, 5,
-     false, false, Interface::limited);
-  
-  static Parameter<BABAREtactoKpKmEta,int> interfaceChannel2
-    ("Channel2",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &BABAREtactoKpKmEta::channel2_, -1, -1, 5,
-     false, false, Interface::limited);
 }
 
 void BABAREtactoKpKmEta::doinit() {
@@ -278,11 +266,17 @@ void BABAREtactoKpKmEta::doinit() {
   // resonances
   addResonance(DalitzResonance(9030221,ResonanceType::Spin0,mf0_1500_ , wf0_1500_ ,0,1,2, af0_1500_ , phif0_1500_));
   addResonance(DalitzResonance(  10331,ResonanceType::Spin0,mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_));
-  addResonance(DalitzResonance(  10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_));
-  addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_));
+  //addResonance(DalitzResonance(  10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_));
+  //addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_));
+  addResonance(DalitzResonance(  10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_));
+  addResonance(DalitzResonance( -10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mf0_2200_ , wf0_2200_ ,0,1,2, af0_2200_ , phif0_2200_));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,0,2,1, aK0_1950_ , phiK0_1950_));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,1,2,0, aK0_1950_ , phiK0_1950_));
   addResonance(DalitzResonance(    335,ResonanceType::Spin2,mf2_1525_ , wf2_1525_ ,0,1,2, af2_1525_ , phif2_1525_));
   addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf0_1370_ , wf0_1370_ ,0,1,2, af0_1370_ , phif0_1370_));
-  addResonance(DalitzResonance(9010221,ResonanceType::Spin0,mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_ ));
+  addResonance(DalitzResonance(9010221,ResonanceType::BABARf0    ,mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_ ));
+  addResonance(DalitzResonance(      0,ResonanceType::NonResonant,      ZERO, ZERO      ,0,1,2, aNR_      , phiNR_     ));
   // eta_c -> K+ K- eta
   createMode(getParticleData(ParticleID::eta_c),
   	     {getParticleData(ParticleID::Kplus),
@@ -308,43 +302,6 @@ int BABAREtactoKpKmEta::modeNumber(bool & cc,tcPDPtr parent,
   }
   if (nKp == 1 && nKm == 1 && nEta==1) return  0;
   else                                 return -1;
-}
-
-Complex BABAREtactoKpKmEta::amplitude(int ichan) const {
-  Complex output(0.);
-  static const Complex ii(0.,1.);
-  int imin=0, imax(resonances().size());
-  if(ichan>=0) {
-    imin=ichan;
-    imax=imin+1;
-  }
-  for(int ix=imin;ix<imax;++ix) {
-    if(channel1_>=0) {
-      if(ix!=channel1_ && ix!=channel2_) continue;
-    }
-    // all resonances bar f0(980)
-    if(ix!=6) {
-      output += resAmp(ix);
-    }
-    // special treatment for f0(980)
-    else {
-      const Energy & mAB = mInv(resonances()[ix].daughter1,resonances()[ix].daughter2);
-      const Energy & mK  = mOut(resonances()[ix].daughter1);
-      double rho = 2.*Kinematics::pstarTwoBodyDecay(mAB,mK,mK)/mAB;
-      output += resonances()[ix].amp*GeV2/
-  	(sqr(resonances()[ix].mass)-sqr(mAB)-ii*resonances()[ix].mass*resonances()[ix].width*rho);
-    }
-  }
-  // return if in the phase allocation
-  if(ichan>=0) return output;
-  // now for the channels where we don't have the resonances
-
-
-
-  if(channel1_<0 || channel1_==10 || channel2_==10)
-    output += aNR_*exp(ii*phiNR_);
-  // return the outout
-  return output;
 }
 
 void BABAREtactoKpKmEta::dataBaseOutput(ofstream & output, bool header) const {

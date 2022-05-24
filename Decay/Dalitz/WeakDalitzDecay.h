@@ -27,6 +27,15 @@ public:
    * The default constructor.
    */
   WeakDalitzDecay(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV, bool useResonanceMass=false);
+  
+  /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param parent The decaying particle
+   * @param children The decay products
+   */
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -54,6 +63,16 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string addChannel(string arg);
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setExternal(string arg);
 
 public:
 
@@ -83,6 +102,23 @@ public:
 
 protected:
 
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
   /**
    *  Add a new resonance
    */
@@ -96,7 +132,9 @@ protected:
   /**
    *  Calculate the amplitude
    */
-  virtual Complex amplitude(int ichan) const = 0;
+  virtual Complex amplitude(int ) const {
+    return 0.;
+  }
 
   /**
    * Calculate the amplitude for the ith resonance
@@ -218,6 +256,21 @@ private :
    *  Spin density matrix
    */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Control over channels to check fit fractions
+   */
+  int channel1_, channel2_;
+
+  /**
+   *  The incoming particle
+   */
+  long incoming_;
+
+  /**
+   *  The outgoing pairtcles
+   */
+  array<long,3> outgoing_;
 };
 
 }

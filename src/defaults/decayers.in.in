@@ -21223,7 +21223,7 @@ newdef D0K0PipPimCLEO:Iteration 10
 newdef D0K0PipPimCLEO:Ntry 500
 newdef D0K0PipPimCLEO:Points 100000
 newdef D0K0PipPimCLEO:GenerateIntermediates 1 
-newdef D0K0PipPimCLEO:DRadius 5
+newdef D0K0PipPimCLEO:ParentRadius 5
 newdef D0K0PipPimCLEO:ResonanceRadius 1.5
 newdef D0K0PipPimCLEO:MaximumWeight 4.0e+10
 insert D0K0PipPimCLEO:Weights 0 0.0315344
@@ -22152,7 +22152,7 @@ newdef D0KmPipPi0CLEO:Iteration 10
 newdef D0KmPipPi0CLEO:Ntry 500
 newdef D0KmPipPi0CLEO:Points 100000
 newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
-newdef D0KmPipPi0CLEO:DRadius 5
+newdef D0KmPipPi0CLEO:ParentRadius 5
 newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
 newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
 insert D0KmPipPi0CLEO:Weights 0 0.279469

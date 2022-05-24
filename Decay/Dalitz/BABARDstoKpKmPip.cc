@@ -29,8 +29,7 @@ BABARDstoKpKmPip::BABARDstoKpKmPip() : WeakDalitzDecay(3./GeV,1.5/GeV,false),
 				       af0_980_(2.67),phif0_980_(1.56),
 				       aK0_(1.14), phiK0_(2.55),
 				       af0_1710_(0.65), phif0_1710_(1.36),
-				       af0_1370_(0.46), phif0_1370_(-0.45),
-				       channel1_(-1), channel2_(-1) {
+				       af0_1370_(0.46), phif0_1370_(-0.45) {
   // intermediates
   generateIntermediates(true);
 }
@@ -49,8 +48,7 @@ void BABARDstoKpKmPip::persistentOutput(PersistentOStream & os) const {
      << ounit(mf0_1710_,GeV) << ounit(wf0_1710_,GeV) << ounit(mf0_1370_,GeV) << ounit(wf0_1370_,GeV) 
      << aKStar_ << phiKStar_ << aPhi_ << phiPhi_
      << af0_980_ << phif0_980_ << aK0_ << phiK0_
-     << af0_1710_ << phif0_1710_ << af0_1370_ << phif0_1370_
-     << channel1_ << channel2_;
+     << af0_1710_ << phif0_1710_ << af0_1370_ << phif0_1370_;
 }
 
 void BABARDstoKpKmPip::persistentInput(PersistentIStream & is, int) {
@@ -59,8 +57,7 @@ void BABARDstoKpKmPip::persistentInput(PersistentIStream & is, int) {
      >> iunit(mf0_1710_,GeV) >> iunit(wf0_1710_,GeV) >> iunit(mf0_1370_,GeV) >> iunit(wf0_1370_,GeV) 
      >> aKStar_ >> phiKStar_ >> aPhi_ >> phiPhi_
      >> af0_980_ >> phif0_980_ >> aK0_ >> phiK0_
-     >> af0_1710_ >> phif0_1710_ >> af0_1370_ >> phif0_1370_
-     >> channel1_ >> channel2_;
+     >> af0_1710_ >> phif0_1710_ >> af0_1370_ >> phif0_1370_;
 }
 
 // The following static variable is needed for the type
@@ -225,19 +222,6 @@ void BABARDstoKpKmPip::Init() {
      "The phase for the phi channel in radians",
     &BABARDstoKpKmPip::phif0_1370_, -0.45, -Constants::pi, Constants::pi,
      false, false, Interface::limited);
-  
-  static Parameter<BABARDstoKpKmPip,int> interfaceChannel1
-    ("Channel1",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &BABARDstoKpKmPip::channel1_, -1, -1, 5,
-     false, false, Interface::limited);
-  
-  static Parameter<BABARDstoKpKmPip,int> interfaceChannel2
-    ("Channel2",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &BABARDstoKpKmPip::channel2_, -1, -1, 5,
-     false, false, Interface::limited);
-
 }
 
 void BABARDstoKpKmPip::doinit() {
@@ -282,34 +266,6 @@ int BABARDstoKpKmPip::modeNumber(bool & cc,tcPDPtr parent,
   }
   else
     return -1;
-}
-
-Complex BABARDstoKpKmPip::amplitude(int ichan) const {
-  Complex output(0.);
-  static const Complex ii(0.,1.);
-  int imin=0, imax(resonances().size());
-  if(ichan>=0) {
-    imin=ichan;
-    imax=imin+1;
-  }
-  for(int ix=imin;ix<imax;++ix) {
-    if(channel1_>=0) {
-      if(ix!=channel1_ && ix!=channel2_) continue;
-    }
-    // all resonances bar f0(980)
-    if(ix!=2) {
-      output += resAmp(ix);
-    }
-    // special treatment for f0(980)
-    else {
-      const Energy & mAB = mInv(resonances()[ix].daughter1,resonances()[ix].daughter2);
-      const Energy & mK  = mOut(resonances()[ix].daughter1);
-      double rho = 2.*Kinematics::pstarTwoBodyDecay(mAB,mK,mK)/mAB;
-      output += resonances()[ix].amp*GeV2/
-	(sqr(resonances()[ix].mass)-sqr(mAB)-ii*resonances()[ix].mass*resonances()[ix].width*rho);
-    }
-  }
-  return output;
 }
 
 void BABARDstoKpKmPip::dataBaseOutput(ofstream & output, bool header) const {
