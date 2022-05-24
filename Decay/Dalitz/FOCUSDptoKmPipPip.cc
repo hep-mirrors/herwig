@@ -17,7 +17,7 @@
 
 using namespace Herwig;
 
-FOCUSDptoKmPipPip::FOCUSDptoKmPipPip() : WeakDalitzDecay(5./GeV,1.5/GeV),
+FOCUSDptoKmPipPip::FOCUSDptoKmPipPip() : ScalarTo3ScalarDalitz(5./GeV,1.5/GeV),
 					 g1_(0.31072*GeV), g2_(-0.02323*GeV),
 					 beta_(3.389*GeV), theta_(286), gamma_({304,126,211}),
 					 c1_({1.655,0.780,-0.954}), c2_(17.182), c3_(0.734)
@@ -32,7 +32,7 @@ IBPtr FOCUSDptoKmPipPip::fullclone() const {
 }
 
 void FOCUSDptoKmPipPip::doinit() {
-  WeakDalitzDecay::doinit();
+  ScalarTo3ScalarDalitz::doinit();
   static const double degtorad = Constants::pi/180.;
   // create the resonances
   addResonance(DalitzResonance(-313    ,ResonanceType::Spin1     , 0.896 *GeV,0.0503*GeV,0,1,2, 1.   *0.5  ,   0.          ));
@@ -55,7 +55,7 @@ void FOCUSDptoKmPipPip::doinit() {
 }
 
 void FOCUSDptoKmPipPip::doinitrun() {
-  WeakDalitzDecay::doinitrun();
+  ScalarTo3ScalarDalitz::doinitrun();
 }
 
 void FOCUSDptoKmPipPip::persistentOutput(PersistentOStream & os) const {
@@ -72,7 +72,7 @@ void FOCUSDptoKmPipPip::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<FOCUSDptoKmPipPip,WeakDalitzDecay>
+DescribeClass<FOCUSDptoKmPipPip,ScalarTo3ScalarDalitz>
 describeHerwigFOCUSDptoKmPipPip("Herwig::FOCUSDptoKmPipPip", "HwDalitzDecay.so");
 
 void FOCUSDptoKmPipPip::Init() {

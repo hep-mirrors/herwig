@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the WeakDalitzDecay class.
+// functions of the ScalarTo3ScalarDalitz class.
 //
 
-#include "WeakDalitzDecay.h"
+#include "ScalarTo3ScalarDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -16,92 +16,92 @@
 
 using namespace Herwig;
 
-WeakDalitzDecay::WeakDalitzDecay(InvEnergy rP, InvEnergy rR, bool useResonanceMass)
+ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, InvEnergy rR, bool useResonanceMass)
   : rParent_(rP), rResonance_(rR), useResonanceMass_(useResonanceMass), maxWgt_(1.),
     channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
   // intermediates
   generateIntermediates(true);
 }
 
-IBPtr WeakDalitzDecay::clone() const {
+IBPtr ScalarTo3ScalarDalitz::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr WeakDalitzDecay::fullclone() const {
+IBPtr ScalarTo3ScalarDalitz::fullclone() const {
   return new_ptr(*this);
 }
 
-void WeakDalitzDecay::persistentOutput(PersistentOStream & os) const {
+void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
   os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV)
      << channel1_ << channel2_ << incoming_ << outgoing_;
 }
 
-void WeakDalitzDecay::persistentInput(PersistentIStream & is, int) {
+void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
   is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV)
      >> channel1_ >> channel2_ >> incoming_ >> outgoing_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<WeakDalitzDecay,DecayIntegrator>
-describeHerwigWeakDalitzDecay("Herwig::WeakDalitzDecay", "HwDalitzDecay.so");
+DescribeClass<ScalarTo3ScalarDalitz,DecayIntegrator>
+describeHerwigScalarTo3ScalarDalitz("Herwig::ScalarTo3ScalarDalitz", "HwDalitzDecay.so");
 
-void WeakDalitzDecay::Init() {
+void ScalarTo3ScalarDalitz::Init() {
 
-  static ClassDocumentation<WeakDalitzDecay> documentation
-    ("The WeakDalitzDecay class provides a base class for "
+  static ClassDocumentation<ScalarTo3ScalarDalitz> documentation
+    ("The ScalarTo3ScalarDalitz class provides a base class for "
      "weak three-body decays of bottom and charm mesons");
 
-  static Command<WeakDalitzDecay> interfaceSetExternal
+  static Command<ScalarTo3ScalarDalitz> interfaceSetExternal
     ("SetExternal",
      "Set the external particles for the decay mode",
-     &WeakDalitzDecay::setExternal, false);
+     &ScalarTo3ScalarDalitz::setExternal, false);
   
-  static Command<WeakDalitzDecay> interfaceAddChannel
+  static Command<ScalarTo3ScalarDalitz> interfaceAddChannel
     ("AddChannel",
      "Add a channel for the description of the matrix element",
-     &WeakDalitzDecay::addChannel, false);
+     &ScalarTo3ScalarDalitz::addChannel, false);
 
-  static Parameter<WeakDalitzDecay,InvEnergy> interfaceParentRadius
+  static Parameter<ScalarTo3ScalarDalitz,InvEnergy> interfaceParentRadius
     ("ParentRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
-     &WeakDalitzDecay::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
+     &ScalarTo3ScalarDalitz::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
-  static Parameter<WeakDalitzDecay,InvEnergy> interfaceResonanceRadius
+  static Parameter<ScalarTo3ScalarDalitz,InvEnergy> interfaceResonanceRadius
     ("ResonanceRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the"
      "intermediate resonances",
-     &WeakDalitzDecay::rResonance_, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
+     &ScalarTo3ScalarDalitz::rResonance_, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
-  static Parameter<WeakDalitzDecay,double> interfaceMaximumWeight
+  static Parameter<ScalarTo3ScalarDalitz,double> interfaceMaximumWeight
     ("MaximumWeight",
      "The maximum weight for the phase-space sampling",
-     &WeakDalitzDecay::maxWgt_, 1.0, 0.0, 1e20,
+     &ScalarTo3ScalarDalitz::maxWgt_, 1.0, 0.0, 1e20,
      false, false, Interface::limited);
 
-  static ParVector<WeakDalitzDecay,double> interfaceWeights
+  static ParVector<ScalarTo3ScalarDalitz,double> interfaceWeights
     ("Weights",
      "The weights for the different channels for the phase-space integration",
-     &WeakDalitzDecay::weights_, -1, 1.0, 0.0, 1.0,
+     &ScalarTo3ScalarDalitz::weights_, -1, 1.0, 0.0, 1.0,
      false, false, Interface::limited);
   
-  static Parameter<WeakDalitzDecay,int> interfaceChannel1
+  static Parameter<ScalarTo3ScalarDalitz,int> interfaceChannel1
     ("Channel1",
      "The first allowed channel, for debugging/calculation of fit fractions only",
-     &WeakDalitzDecay::channel1_, -1, -1, 100,
+     &ScalarTo3ScalarDalitz::channel1_, -1, -1, 100,
      false, false, Interface::limited);
   
-  static Parameter<WeakDalitzDecay,int> interfaceChannel2
+  static Parameter<ScalarTo3ScalarDalitz,int> interfaceChannel2
     ("Channel2",
      "The first allowed channel, for debugging/calculation of fit fractions only",
-     &WeakDalitzDecay::channel2_, -1, -1, 100,
+     &ScalarTo3ScalarDalitz::channel2_, -1, -1, 100,
      false, false, Interface::limited);
 
 }
 
-void WeakDalitzDecay::
+void ScalarTo3ScalarDalitz::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   // set up the spin information for the decay products
   ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
@@ -110,7 +110,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
     ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
 }
 
-void WeakDalitzDecay::doinit() {
+void ScalarTo3ScalarDalitz::doinit() {
   if(incoming_!=0) {
     tPDPtr in = getParticleData(incoming_);
     vector<tPDPtr> out = {getParticleData(outgoing_[0]),
@@ -121,7 +121,7 @@ void WeakDalitzDecay::doinit() {
   DecayIntegrator::doinit();
 }
 
-void WeakDalitzDecay::doinitrun() {
+void ScalarTo3ScalarDalitz::doinitrun() {
   DecayIntegrator::doinitrun();
   weights_.resize(mode(0)->channels().size());
   maxWgt_ = mode(0)->maxWeight();
@@ -130,7 +130,7 @@ void WeakDalitzDecay::doinitrun() {
   }
 }
 
-double WeakDalitzDecay::me2(const int ichan, const Particle & part,
+double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
 			    const tPDVector & ,
 			    const vector<Lorentz5Momentum> & momenta,
 			    MEOption meopt) const {
@@ -167,7 +167,7 @@ double WeakDalitzDecay::me2(const int ichan, const Particle & part,
   return norm(amp);
 }
 
-void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
+void ScalarTo3ScalarDalitz::createMode(tPDPtr in, tPDVector out) {
   PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,maxWgt_));
   if(weights_.size()!=resonances_.size()) {
     weights_=vector<double>(resonances_.size(),1./double(resonances_.size()));
@@ -184,7 +184,7 @@ void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
   addMode(mode);
 }
 
-Complex WeakDalitzDecay::resAmp(unsigned int i) const {
+Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   static const Complex ii = Complex(0.,1.);
   Complex output = resonances_[i].amp;
   if (resonances_[i].type==ResonanceType::NonResonant) return output;
@@ -260,7 +260,7 @@ Complex WeakDalitzDecay::resAmp(unsigned int i) const {
   }
 }
 
-void WeakDalitzDecay::dataBaseOutput(ofstream & output, bool header) const {
+void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
@@ -287,7 +287,7 @@ void WeakDalitzDecay::dataBaseOutput(ofstream & output, bool header) const {
   }
 }
 
-string WeakDalitzDecay::addChannel(string arg) {
+string ScalarTo3ScalarDalitz::addChannel(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
@@ -327,7 +327,7 @@ string WeakDalitzDecay::addChannel(string arg) {
   return "";
 }
 
-string WeakDalitzDecay::setExternal(string arg) {
+string ScalarTo3ScalarDalitz::setExternal(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
@@ -356,7 +356,7 @@ string WeakDalitzDecay::setExternal(string arg) {
   return "";
 }
 
-int WeakDalitzDecay::modeNumber(bool & cc,tcPDPtr parent,
+int ScalarTo3ScalarDalitz::modeNumber(bool & cc,tcPDPtr parent,
 				const tPDVector & children) const {
   // must be three decay products
   if(children.size()!=3) return -1;

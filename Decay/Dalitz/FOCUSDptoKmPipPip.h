@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/Decay/FormFactors/KMatrix.h"
-#include "WeakDalitzDecay.h"
+#include "ScalarTo3ScalarDalitz.h"
 
 namespace Herwig {
 
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref FOCUSDptoKmPipPipInterfaces "The interfaces"
  * defined for FOCUSDptoKmPipPip.
  */
-class FOCUSDptoKmPipPip: public WeakDalitzDecay {
+class FOCUSDptoKmPipPip: public ScalarTo3ScalarDalitz {
 
 public:
 

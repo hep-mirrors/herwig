@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_WeakDalitzDecay_H
-#define Herwig_WeakDalitzDecay_H
+#ifndef Herwig_ScalarTo3ScalarDalitz_H
+#define Herwig_ScalarTo3ScalarDalitz_H
 //
-// This is the declaration of the WeakDalitzDecay class.
+// This is the declaration of the ScalarTo3ScalarDalitz class.
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
@@ -13,20 +13,20 @@ using namespace ThePEG;
   
   
 /**
- * The WeakDalitzDecay class provides a base class for the implementation
+ * The ScalarTo3ScalarDalitz class provides a base class for the implementation
  * of weak three-body decays of bottom and charm mesons
  *
- * @see \ref WeakDalitzDecayInterfaces "The interfaces"
- * defined for WeakDalitzDecay.
+ * @see \ref ScalarTo3ScalarDalitzInterfaces "The interfaces"
+ * defined for ScalarTo3ScalarDalitz.
  */
-class WeakDalitzDecay: public DecayIntegrator {
+class ScalarTo3ScalarDalitz: public DecayIntegrator {
   
 public:
 
   /**
    * The default constructor.
    */
-  WeakDalitzDecay(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV, bool useResonanceMass=false);
+  ScalarTo3ScalarDalitz(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV, bool useResonanceMass=false);
   
   /**
    * Which of the possible decays is required
@@ -184,7 +184,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  WeakDalitzDecay & operator=(const WeakDalitzDecay &) = delete;
+  ScalarTo3ScalarDalitz & operator=(const ScalarTo3ScalarDalitz &) = delete;
 
 private:
 
@@ -275,4 +275,4 @@ private :
 
 }
 
-#endif /* Herwig_WeakDalitzDecay_H */
+#endif /* Herwig_ScalarTo3ScalarDalitz_H */

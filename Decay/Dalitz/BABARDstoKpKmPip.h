@@ -5,7 +5,7 @@
 // This is the declaration of the BABARDstoKpKmPip class.
 //
 
-#include "WeakDalitzDecay.h"
+#include "ScalarTo3ScalarDalitz.h"
 
 namespace Herwig {
 
@@ -17,7 +17,7 @@ using namespace ThePEG;
  * @see \ref BABARDstoKpKmPipInterfaces "The interfaces"
  * defined for BABARDstoKpKmPip.
  */
-class BABARDstoKpKmPip: public WeakDalitzDecay {
+class BABARDstoKpKmPip: public ScalarTo3ScalarDalitz {
 
 public:
 
