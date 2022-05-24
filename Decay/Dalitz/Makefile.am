@@ -14,7 +14,6 @@ DtoKPiPiE691.h \
 FOCUSDptoKmPipPip.h \
 DtoKPiPiMarkIII.h \
 ScalarTo3ScalarDalitz.h\
-CLEOD0toKmPipPi0.h\
 CLEOD0toK0PipPim.h\
 BABAREtactoKpKmEta.h
 
@@ -24,6 +23,5 @@ DtoKPiPiE691.cc\
 FOCUSDptoKmPipPip.cc\
 DtoKPiPiMarkIII.cc \
 ScalarTo3ScalarDalitz.cc\
-CLEOD0toKmPipPi0.cc\
 CLEOD0toK0PipPim.cc\
 BABAREtactoKpKmEta.cc

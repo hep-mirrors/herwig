@@ -7,6 +7,7 @@
 #include "ScalarTo3ScalarDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -33,12 +34,12 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
   os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV)
-     << channel1_ << channel2_ << incoming_ << outgoing_;
+     << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
   is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV)
-     >> channel1_ >> channel2_ >> incoming_ >> outgoing_;
+     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_;
 }
 
 // The following static variable is needed for the type
@@ -98,6 +99,21 @@ void ScalarTo3ScalarDalitz::Init() {
      "The first allowed channel, for debugging/calculation of fit fractions only",
      &ScalarTo3ScalarDalitz::channel2_, -1, -1, 100,
      false, false, Interface::limited);
+
+  static Switch<ScalarTo3ScalarDalitz,bool> interfaceResonanceMass
+    ("ResonanceMass",
+     "Whether to use the kinematic mass or the resonance pole mass for the denominator in kinematic expressions",
+     &ScalarTo3ScalarDalitz::useResonanceMass_, false, false, false);
+  static SwitchOption interfaceResonanceMassYes
+    (interfaceResonanceMass,
+     "Yes",
+     "Use the resonance mass, to be avoided only use if do in experimental fit",
+     true);
+  static SwitchOption interfaceResonanceMassNo
+    (interfaceResonanceMass,
+     "No",
+     "Use the correct kinematic mass",
+     false);
 
 }
 
@@ -266,6 +282,7 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
   DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":ResonanceRadius " << rResonance_*GeV << "\n";
+  output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
   for(unsigned int ix=0;ix<weights_.size();++ix) {
     output << "insert " << name() << ":Weights "
@@ -315,6 +332,8 @@ string ScalarTo3ScalarDalitz::addChannel(string arg) {
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   int sp = stoi(stype);
+  if (sp==d1 || sp ==d2 || d1 == d2)
+    return "Daughters and spectator must all be different not " + std::to_string(d1) + ", " + std::to_string(d2) + ", " + std::to_string(sp);
   // magnitude and phase
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
