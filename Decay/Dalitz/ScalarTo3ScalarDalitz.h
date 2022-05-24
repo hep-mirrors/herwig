@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  ScalarTo3ScalarDalitz(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV, bool useResonanceMass=false);
+  ScalarTo3ScalarDalitz(InvEnergy rP=5./GeV, bool useResonanceMass=false);
   
   /**
    * Which of the possible decays is required
@@ -196,11 +196,6 @@ private:
    *   For the decaying particles
    */
   InvEnergy rParent_;
-
-  /**
-   *  For the intermediate resonances
-   */
-  InvEnergy rResonance_;
   //@}
 
   /**

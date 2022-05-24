@@ -42,10 +42,10 @@ struct DalitzResonance {
    */
   DalitzResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double mag, double phi)
+		  double mag, double phi, InvEnergy rr)
     : id(pid), type(rtype), mass(m),width(w),
-    daughter1(d1),daughter2(d2),spectator(s),
-    amp(mag*exp(Complex(0,phi)))
+      daughter1(d1),daughter2(d2),spectator(s),
+      amp(mag*exp(Complex(0,phi))), R(rr)
   {}
 
   /**
@@ -82,6 +82,11 @@ struct DalitzResonance {
    *  The amplitude
    */
   Complex amp;
+
+  /**
+   *  Radius for the Ballt-Weisskopf formfactor
+   */
+  InvEnergy R;
 };
 
 
@@ -94,7 +99,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 				      const DalitzResonance  & x) {
   os << x.id << oenum(x.type) << ounit(x.mass,GeV) << ounit(x.width,GeV)
      << x.daughter1 << x.daughter2 << x.spectator
-     << x.amp;
+     << x.amp << ounit(x.R,1./GeV);
   return os;
 }
 
@@ -107,7 +112,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 				      DalitzResonance  & x) {
   is >> x.id >> ienum(x.type) >> iunit(x.mass,GeV) >> iunit(x.width,GeV)
      >> x.daughter1 >> x.daughter2 >> x.spectator
-     >> x.amp;
+     >> x.amp >> iunit(x.R,1./GeV);
   return is;
 }
 }

@@ -17,7 +17,7 @@
 
 using namespace Herwig;
 
-CLEOD0toK0PipPim::CLEOD0toK0PipPim() : ScalarTo3ScalarDalitz(5./GeV,1.5/GeV,true) {
+CLEOD0toK0PipPim::CLEOD0toK0PipPim() : ScalarTo3ScalarDalitz(5./GeV,true) {
   // amplitudes and phases for D0 -> K0pi+pi-
   aKstarp_   = 0.11     ; phiKstarp_ = 321;
   arho_      = 1.00     ; phirho_    =   0;
@@ -369,16 +369,16 @@ void CLEOD0toK0PipPim::doinit() {
   // non-resonant amplitude
   cNR_ = aNR_*Complex(cos(phiNR_*degtorad),sin(phiNR_*degtorad));
   // resonances
-  addResonance(DalitzResonance(    323,ResonanceType::Spin1,mK892_  , wK892_  ,0,1,2,-aKstarp_     , phiKstarp_*degtorad));
-  addResonance(DalitzResonance(    113,ResonanceType::Spin1,mrho_   , wrho_   ,1,2,0,-arho_        , phirho_   *degtorad));
-  addResonance(DalitzResonance(    223,ResonanceType::Spin1,momega_ , womega_ ,1,2,0,-aomega_      , phiomega_ *degtorad));
-  addResonance(DalitzResonance(   -323,ResonanceType::Spin1,mK892_  , wK892_  ,0,2,1,-aKstarm_     , phiKstarm_*degtorad));
-  addResonance(DalitzResonance(9010221,ResonanceType::Spin0,mf980_  , wf980_  ,1,2,0, af980_/GeV2  , phif980_  *degtorad));
-  addResonance(DalitzResonance(    225,ResonanceType::Spin2,mf2_    , wf2_    ,1,2,0, af2_*GeV2    , phif2_    *degtorad));
-  addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf1370_ , wf1370_ ,1,2,0, af1370_/GeV2 , phif1370_ *degtorad));
-  addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK14300_, wK14300_,0,2,1, aK14300_/GeV2, phiK14300_*degtorad));
-  addResonance(DalitzResonance(   -325,ResonanceType::Spin2,mK14302_, wK14302_,0,2,1, aK14302_*GeV2, phiK14302_*degtorad));
-  addResonance(DalitzResonance( -30323,ResonanceType::Spin1,mK1680_ , wK1680_ ,0,2,1,-aK1680_      , phiK1680_ *degtorad));
+  addResonance(DalitzResonance(    323,ResonanceType::Spin1,mK892_  , wK892_  ,0,1,2,-aKstarp_     , phiKstarp_*degtorad,1.5/GeV));
+  addResonance(DalitzResonance(    113,ResonanceType::Spin1,mrho_   , wrho_   ,1,2,0,-arho_        , phirho_   *degtorad,1.5/GeV));
+  addResonance(DalitzResonance(    223,ResonanceType::Spin1,momega_ , womega_ ,1,2,0,-aomega_      , phiomega_ *degtorad,1.5/GeV));
+  addResonance(DalitzResonance(   -323,ResonanceType::Spin1,mK892_  , wK892_  ,0,2,1,-aKstarm_     , phiKstarm_*degtorad,1.5/GeV));
+  addResonance(DalitzResonance(9010221,ResonanceType::Spin0,mf980_  , wf980_  ,1,2,0, af980_/GeV2  , phif980_  *degtorad,1.5/GeV));
+  addResonance(DalitzResonance(    225,ResonanceType::Spin2,mf2_    , wf2_    ,1,2,0, af2_*GeV2    , phif2_    *degtorad,1.5/GeV));
+  addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf1370_ , wf1370_ ,1,2,0, af1370_/GeV2 , phif1370_ *degtorad,1.5/GeV));
+  addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK14300_, wK14300_,0,2,1, aK14300_/GeV2, phiK14300_*degtorad,1.5/GeV));
+  addResonance(DalitzResonance(   -325,ResonanceType::Spin2,mK14302_, wK14302_,0,2,1, aK14302_*GeV2, phiK14302_*degtorad,1.5/GeV));
+  addResonance(DalitzResonance( -30323,ResonanceType::Spin1,mK1680_ , wK1680_ ,0,2,1,-aK1680_      , phiK1680_ *degtorad,1.5/GeV));
   // D0 -> Kbar0 pi+ pi-
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::K_S0),
