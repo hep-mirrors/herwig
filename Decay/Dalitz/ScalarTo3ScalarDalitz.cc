@@ -17,8 +17,8 @@
 
 using namespace Herwig;
 
-ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, InvEnergy rR, bool useResonanceMass)
-  : rParent_(rP), rResonance_(rR), useResonanceMass_(useResonanceMass), maxWgt_(1.),
+ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, bool useResonanceMass)
+  : rParent_(rP), useResonanceMass_(useResonanceMass), maxWgt_(1.),
     channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
   // intermediates
   generateIntermediates(true);
@@ -33,12 +33,12 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 }
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
-  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV)
+  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV)
      << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
-  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV)
+  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV)
      >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_;
 }
 
@@ -67,13 +67,6 @@ void ScalarTo3ScalarDalitz::Init() {
     ("ParentRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
      &ScalarTo3ScalarDalitz::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
-     false, false, Interface::limited);
-
-  static Parameter<ScalarTo3ScalarDalitz,InvEnergy> interfaceResonanceRadius
-    ("ResonanceRadius",
-     "The radius parameter for the Blatt-Weisskopf form-factor for the"
-     "intermediate resonances",
-     &ScalarTo3ScalarDalitz::rResonance_, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
   static Parameter<ScalarTo3ScalarDalitz,double> interfaceMaximumWeight
@@ -230,7 +223,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     // for the D decay
     Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
     Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-    double r1A(rResonance_*pR),r1B(rResonance_*pAB );
+    double r1A(resonances_[i].R*pR),r1B(resonances_[i].R*pAB );
     double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
     // mass for thre denominator
     Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
@@ -281,7 +274,6 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
-  output << "newdef " << name() << ":ResonanceRadius " << rResonance_*GeV << "\n";
   output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
   for(unsigned int ix=0;ix<weights_.size();++ix) {
@@ -294,7 +286,8 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
 	   << resonances_[ix].mass/GeV << " " << resonances_[ix].width/GeV << " "
 	   << resonances_[ix].daughter1 << " " << resonances_[ix].daughter2 << " "
 	   << resonances_[ix].spectator << " " 
-	   << abs(resonances_[ix].amp) << " " << arg(resonances_[ix].amp) << "\n"; 
+	   << abs(resonances_[ix].amp) << " " << arg(resonances_[ix].amp) << " "
+	   << resonances_[ix].R*GeV << "\n"; 
   }
   output << "do " << name() << ":SetExternal " << incoming_;
   for(unsigned int ix=0;ix<3;++ix) output << " " << outgoing_[ix];
@@ -341,7 +334,12 @@ string ScalarTo3ScalarDalitz::addChannel(string arg) {
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   double phi = stof(stype);
-  resonances_.push_back(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi));
+  // radius
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  InvEnergy r = stof(stype)/GeV;
+  // add to list
+  resonances_.push_back(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r));
   // success
   return "";
 }

@@ -16,7 +16,7 @@
 using namespace Herwig;
 
 BABAREtactoKpKmEta::BABAREtactoKpKmEta() :
-  ScalarTo3ScalarDalitz(0./GeV,1.5/GeV,false),
+  ScalarTo3ScalarDalitz(0./GeV,false),
   mf0_1500_(1505*MeV), wf0_1500_(109*MeV),
   mf0_1710_(1720*MeV), wf0_1710_(135*MeV),
   mK0_1430_(1438*MeV), wK0_1430_(210*MeV),
@@ -264,19 +264,19 @@ void BABAREtactoKpKmEta::Init() {
 void BABAREtactoKpKmEta::doinit() {
   ScalarTo3ScalarDalitz::doinit();
   // resonances
-  addResonance(DalitzResonance(9030221,ResonanceType::Spin0,mf0_1500_ , wf0_1500_ ,0,1,2, af0_1500_ , phif0_1500_));
-  addResonance(DalitzResonance(  10331,ResonanceType::Spin0,mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_));
-  //addResonance(DalitzResonance(  10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_));
-  //addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_));
-  addResonance(DalitzResonance(  10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_));
-  addResonance(DalitzResonance( -10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_));
-  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mf0_2200_ , wf0_2200_ ,0,1,2, af0_2200_ , phif0_2200_));
-  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,0,2,1, aK0_1950_ , phiK0_1950_));
-  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,1,2,0, aK0_1950_ , phiK0_1950_));
-  addResonance(DalitzResonance(    335,ResonanceType::Spin2,mf2_1525_ , wf2_1525_ ,0,1,2, af2_1525_ , phif2_1525_));
-  addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf0_1370_ , wf0_1370_ ,0,1,2, af0_1370_ , phif0_1370_));
-  addResonance(DalitzResonance(9010221,ResonanceType::BABARf0    ,mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_ ));
-  addResonance(DalitzResonance(      0,ResonanceType::NonResonant,      ZERO, ZERO      ,0,1,2, aNR_      , phiNR_     ));
+  addResonance(DalitzResonance(9030221,ResonanceType::Spin0,mf0_1500_ , wf0_1500_ ,0,1,2, af0_1500_ , phif0_1500_,1.5/GeV));
+  addResonance(DalitzResonance(  10331,ResonanceType::Spin0,mf0_1710_ , wf0_1710_ ,0,1,2, af0_1710_ , phif0_1710_,1.5/GeV));
+  //addResonance(DalitzResonance(  10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_,1.5/GeV));
+  //addResonance(DalitzResonance( -10321,ResonanceType::Spin0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_,1.5/GeV));
+  addResonance(DalitzResonance(  10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,0,2,1, aK0_1430_ , phiK0_1430_,1.5/GeV));
+  addResonance(DalitzResonance( -10321,ResonanceType::BABARf0,mK0_1430_ , wK0_1430_ ,1,2,0, aK0_1430_ , phiK0_1430_,1.5/GeV));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mf0_2200_ , wf0_2200_ ,0,1,2, af0_2200_ , phif0_2200_,1.5/GeV));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,0,2,1, aK0_1950_ , phiK0_1950_,1.5/GeV));
+  addResonance(DalitzResonance(      0,ResonanceType::Spin0,mK0_1950_ , wK0_1950_ ,1,2,0, aK0_1950_ , phiK0_1950_,1.5/GeV));
+  addResonance(DalitzResonance(    335,ResonanceType::Spin2,mf2_1525_ , wf2_1525_ ,0,1,2, af2_1525_ , phif2_1525_,1.5/GeV));
+  addResonance(DalitzResonance(  10221,ResonanceType::Spin0,mf0_1370_ , wf0_1370_ ,0,1,2, af0_1370_ , phif0_1370_,1.5/GeV));
+  addResonance(DalitzResonance(9010221,ResonanceType::BABARf0    ,mf0_980_  , wf0_980_  ,0,1,2, af0_980_  , phif0_980_ ,1.5/GeV));
+  addResonance(DalitzResonance(      0,ResonanceType::NonResonant,      ZERO, ZERO      ,0,1,2, aNR_      , phiNR_     ,1.5/GeV));
   // eta_c -> K+ K- eta
   createMode(getParticleData(ParticleID::eta_c),
   	     {getParticleData(ParticleID::Kplus),
