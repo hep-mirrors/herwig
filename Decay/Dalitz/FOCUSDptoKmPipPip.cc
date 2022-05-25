@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 FOCUSDptoKmPipPip::FOCUSDptoKmPipPip() : ScalarTo3ScalarDalitz(5./GeV),
 					 g1_(0.31072*GeV), g2_(-0.02323*GeV),

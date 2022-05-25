@@ -11,13 +11,11 @@ DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 DalitzResonance.h\
 FOCUSDptoKmPipPip.h \
-DtoKPiPiMarkIII.h \
 ScalarTo3ScalarDalitz.h\
 BABAREtactoKpKmEta.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 FOCUSDptoKmPipPip.cc\
-DtoKPiPiMarkIII.cc \
 ScalarTo3ScalarDalitz.cc\
 BABAREtactoKpKmEta.cc
