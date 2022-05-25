@@ -168,6 +168,10 @@ create Herwig::HalfHalfOneEWSplitFn QtoQWZSplitFn
 newdef QtoQWZSplitFn:InteractionType EW
 newdef QtoQWZSplitFn:ColourStructure EW
 
+create Herwig::HalfHalfOneEWSplitFn LtoLWZSplitFn
+newdef LtoLWZSplitFn:InteractionType EW
+newdef LtoLWZSplitFn:ColourStructure EW
+
 create Herwig::HalfHalfZeroEWSplitFn QtoQHSplitFn
 newdef QtoQHSplitFn:InteractionType EW
 newdef QtoQHSplitFn:ColourStructure EW
@@ -214,7 +218,10 @@ set QtoQWZSudakov:SplittingFunction QtoQWZSplitFn
 set QtoQWZSudakov:Alpha AlphaEW
 set QtoQWZSudakov:PDFmax 1.9
 
-cp QtoQWZSudakov LtoLWZSudakov
+cp SudakovCommon LtoLWZSudakov
+set LtoLWZSudakov:SplittingFunction LtoLWZSplitFn
+set LtoLWZSudakov:Alpha AlphaEW
+set LtoLWZSudakov:PDFmax 1.9
 
 cp SudakovCommon QtoQHSudakov
 set QtoQHSudakov:SplittingFunction QtoQHSplitFn
@@ -399,6 +406,20 @@ do SplittingGenerator:AddInitialSplitting u->d,W+; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting c->s,W+; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting d->u,W-; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting s->c,W-; QtoQWZSudakov
+
+do SplittingGenerator:AddFinalSplitting e-->e-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting mu-->mu-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting tau-->tau-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_e->nu_e,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_mu->nu_mu,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_tau->nu_tau,Z0; LtoLWZSudakov
+
+do SplittingGenerator:AddFinalSplitting e-->nu_e,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting mu-->nu_mu,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting tau-->nu_tau,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_e->e-,W+; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_mu->mu-,W+; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_tau->tau-,W+; LtoLWZSudakov
 
 do SplittingGenerator:AddFinalSplitting c->c,h0; QtoQHSudakov
 do SplittingGenerator:AddFinalSplitting b->b,h0; QtoQHSudakov
