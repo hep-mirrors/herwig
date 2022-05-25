@@ -175,11 +175,6 @@ private:
    */
   Energy weakMassCut_;
 
-  /**
-   *  Cut off or decays via the weak current
-   */
-  Energy weakMassCut_;
-
 };
 
 }
