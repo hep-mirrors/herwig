@@ -161,6 +161,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Powheg/Makefile
 		MatrixElement/Gamma/Makefile
 		MatrixElement/Reweighters/Makefile
+		MatrixElement/EW/Makefile
 		MatrixElement/Matchbox/Makefile
 		MatrixElement/Matchbox/Base/Makefile
 		MatrixElement/Matchbox/Utility/Makefile

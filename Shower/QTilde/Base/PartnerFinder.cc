@@ -18,7 +18,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "ThePEG/Repository/UseRandom.h" 
+#include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -36,8 +36,8 @@ namespace {
     return a->isFinalState();
   }
 
-  // return colour line pointer 
-  inline Ptr<ThePEG::ColourLine>::transient_pointer  
+  // return colour line pointer
+  inline Ptr<ThePEG::ColourLine>::transient_pointer
   CL(const tShowerParticlePtr a, unsigned int index=0) {
     return a->colourInfo()->colourLines().empty() ? ThePEG::tColinePtr() :
       const_ptr_cast<ThePEG::tColinePtr>(a->colourInfo()->colourLines()[index]);
@@ -48,7 +48,7 @@ namespace {
   CLSIZE(const tShowerParticlePtr a) {
     return a->colourInfo()->colourLines().size();
   }
-  
+
   inline Ptr<ThePEG::ColourLine>::transient_pointer
   ACL(const tShowerParticlePtr a, unsigned int index=0) {
     return a->colourInfo()->antiColourLines().empty() ?  ThePEG::tColinePtr() :
@@ -142,10 +142,21 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
   else if(type==ShowerInteraction::QED) {
     setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
   }
-  else {
+  else if(type==ShowerInteraction::EW) {
+    setInitialEWEvolutionScales(particles,isDecayCase,false);
+  }
+  else if(type==ShowerInteraction::QEDQCD) {
     setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
     setInitialQEDEvolutionScales(particles,isDecayCase,false);
   }
+  else if(type==ShowerInteraction::ALL) {
+    setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+    setInitialQEDEvolutionScales(particles,isDecayCase,false);
+    setInitialEWEvolutionScales(particles,isDecayCase,false);
+  }
+  else
+    assert(false);
+  // \todo EW scales here
   // print out for debugging
   if(Debug::level>=10) {
     for(ShowerParticleVector::const_iterator cit = particles.begin();
@@ -156,9 +167,9 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
       for(vector<ShowerParticle::EvolutionPartner>::const_iterator it= (**cit).partners().begin();
 	  it!=(**cit).partners().end();++it) {
 	generator()->log() << static_cast<long>(it->type) << " "
-			   << it->weight << " " 
-			   << it->scale/GeV << " " 
- 			   << *(it->partner) 
+			   << it->weight << " "
+			   << it->scale/GeV << " "
+ 			   << *(it->partner)
 			   << "\n";
       }
     }
@@ -171,13 +182,13 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
                                                  const bool setPartners) {
   // Loop over  particles  and consider only coloured particles which don't
   // have already their colour partner fixed and that don't have children
-  // (the latter requirement is relaxed in the case isDecayCase is true). 
-  // Build a map which has as key one of these particles (i.e. a pointer 
+  // (the latter requirement is relaxed in the case isDecayCase is true).
+  // Build a map which has as key one of these particles (i.e. a pointer
   // to a ShowerParticle object) and as a corresponding value the vector
   // of all its possible *normal* candidate colour partners, defined as follows:
-  //  --- have colour, and no children (this is not required in the case 
+  //  --- have colour, and no children (this is not required in the case
   //      isDecayCase is true);
-  //  --- if both are initial (incoming) state particles, then the (non-null) colourLine() 
+  //  --- if both are initial (incoming) state particles, then the (non-null) colourLine()
   //      of one of them must match the (non-null) antiColourLine() of the other.
   //  --- if one is an initial (incoming) state particle and the other is
   //      a final (outgoing) state particle,  then both must have the
@@ -187,107 +198,92 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
   // without candidate colour partners, and that we will be treated a part later
   // (this means that no modifications of the following loop is needed!
 
-	for ( const auto & sp : particles ) {
-		  // Skip colourless particles
-      if(!sp->data().coloured()) continue;
-			// find the partners
-      auto partners = findQCDPartners(sp,particles);
-      // must have a partner
-      if(partners.empty()) {
-				throw Exception() << "`Failed to make colour connections in " 
-                          << "PartnerFinder::setQCDInitialEvolutionScales"
-                          << *sp
-                          << Exception::eventerror;
+  for ( const auto & sp : particles ) {
+    // Skip colourless particles
+    if(!sp->data().coloured()) continue;
+    // find the partners
+    auto partners = findQCDPartners(sp,particles);
+    // must have a partner
+    if(partners.empty()) {
+      throw Exception() << "`Failed to make colour connections in "
+			<< "PartnerFinder::setQCDInitialEvolutionScales"
+			<< *sp
+			<< Exception::eventerror;
+    }
+    // Calculate the evolution scales for all possible pairs of of particles
+    vector<pair<Energy,Energy> > scales;
+    int position = -1;
+    for(size_t ix=0; ix< partners.size(); ++ix) {
+      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(sp, partners[ix].second),isDecayCase));
+      if (!setPartners && partners[ix].second) position = ix;
+    }
+    assert(setPartners || position >= 0);
+
+    // set partners if required
+    if (setPartners) {
+      // In the case of more than one candidate colour partners,
+      //	       there are now two approaches to choosing the partner. The
+      //	       first method is based on two assumptions:
+      //               1) the choice of which is the colour partner is done
+      //                  *randomly* between the available candidates.
+      //               2) the choice of which is the colour partner is done
+      //                  *independently* from each particle: in other words,
+      //                  if for a particle "i" its selected colour partner is
+      //                  the particle "j", then the colour partner of "j"
+      //                  does not have to be necessarily "i".
+      // 	      The second method always chooses the furthest partner
+      //	      for hard gluons and gluinos.
+      // random choice
+      if( partnerMethod_ == 0 ) {
+	// random choice of partner
+	position = UseRandom::irnd(partners.size());
       }
-      // Calculate the evolution scales for all possible pairs of of particles
-			vector<pair<Energy,Energy> > scales;
-			int position = -1;
-			for(size_t ix=0; ix< partners.size(); ++ix) {
-					scales.push_back(
-					  calculateInitialEvolutionScales(
-					      ShowerPPair(sp, partners[ix].second),
-							  isDecayCase
-						)
-					);
-					if (!setPartners && partners[ix].second) position = ix; 
-			}
-			assert(setPartners || position >= 0);
-
-			// set partners if required
-			if (setPartners) {
-	      // In the case of more than one candidate colour partners,
-	      //	       there are now two approaches to choosing the partner. The
-	      //	       first method is based on two assumptions:
-	      //               1) the choice of which is the colour partner is done
-	      //                  *randomly* between the available candidates.
-	      //               2) the choice of which is the colour partner is done
-	      //                  *independently* from each particle: in other words,
-	      //                  if for a particle "i" its selected colour partner is  
-	      //                  the particle "j", then the colour partner of "j" 
-	      //                  does not have to be necessarily "i".
-	      // 	      The second method always chooses the furthest partner
-	      //	      for hard gluons and gluinos.
-	      // random choice
-	      if( partnerMethod_ == 0 ) {
-					// random choice of partner
-					position = UseRandom::irnd(partners.size());
-	      }
-	      // take the one with largest angle
-	      else if (partnerMethod_ == 1 ) {
-					if (sp->perturbative() == 1 && 
-		    			sp->dataPtr()->iColour()==PDT::Colour8 ) {
-		  			assert(partners.size()==2);
-		  			// Determine largest angle
-		  			double maxAngle(0.);
-		  			for(unsigned int ix=0;ix<partners.size();++ix) {
-		    			double angle = sp->momentum().vect().
-		      										angle(partners[ix].second->momentum().vect());
-		    			if(angle>maxAngle) {
-		      			maxAngle = angle;
-		      			position = ix;
-		    			}
-		  			}
-					}
-					else position = UseRandom::irnd(partners.size());
-	      }
-	      else assert(false);
-		    // set the evolution partner
-		    sp->partner(partners[position].second);
-			}
-
-
-      // primary partner set, set the others and do the scale
-		  for(size_t ix=0; ix<partners.size(); ++ix) {
-          sp->addPartner(
-             ShowerParticle::EvolutionPartner(
-              partners[ix].second,
-					    1.,
-					    partners[ix].first,
-					    scales[ix].first
-					  )
-					);
+      // take the one with largest angle
+      else if (partnerMethod_ == 1 ) {
+	if (sp->perturbative() == 1 &&
+	    sp->dataPtr()->iColour()==PDT::Colour8 ) {
+	  assert(partners.size()==2);
+	  // Determine largest angle
+	  double maxAngle(0.);
+	  for(unsigned int ix=0;ix<partners.size();++ix) {
+	    double angle = sp->momentum().vect().
+	      angle(partners[ix].second->momentum().vect());
+	    if(angle>maxAngle) {
+	      maxAngle = angle;
+	      position = ix;
+	    }
+	  }
+	}
+	else position = UseRandom::irnd(partners.size());
       }
+      else assert(false);
+      // set the evolution partner
+      sp->partner(partners[position].second);
+    }
 
-      // set scales for all interactions to that of the partner, default
-      Energy scale = scales[position].first;
-      for(unsigned int ix=0;ix<partners.size();++ix) {
-				if(partners[ix].first==ShowerPartnerType::QCDColourLine) {
-	  			sp->scales().QCD_c = 
-	    			sp->scales().QCD_c_noAO = 
-	    			(scaleChoice_==0 ? scale : scales[ix].first);
-				}
-				else if(partners[ix].first==ShowerPartnerType::QCDAntiColourLine) {
-	  			sp->scales().QCD_ac = 
-	    			sp->scales().QCD_ac_noAO =
-	    			(scaleChoice_==0 ? scale : scales[ix].first);
-				}
-				else assert(false);
+    // primary partner set, set the others and do the scale
+    for(size_t ix=0; ix<partners.size(); ++ix) {
+      sp->addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,1.,partners[ix].first,
+						      scales[ix].first));
+    }
+
+    // set scales for all interactions to that of the partner, default
+    Energy scale = scales[position].first;
+    for(unsigned int ix=0;ix<partners.size();++ix) {
+      if(partners[ix].first==ShowerPartnerType::QCDColourLine) {
+	sp->scales().QCD_c =
+	  sp->scales().QCD_c_noAO =
+	  (scaleChoice_==0 ? scale : scales[ix].first);
       }
+      else if(partners[ix].first==ShowerPartnerType::QCDAntiColourLine) {
+	sp->scales().QCD_ac =
+	  sp->scales().QCD_ac_noAO =
+	  (scaleChoice_==0 ? scale : scales[ix].first);
+      }
+      else assert(false);
+    }
   }
 }
-
-
-
 
 void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
@@ -295,11 +291,11 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
   // loop over all the particles
   for(const auto & sp : particles) {
     // not charged or photon continue
-    if(!sp->dataPtr()->charged()) continue;
+    if(!sp->dataPtr()->charged() && sp->dataPtr()->id()!=ParticleID::gamma) continue;
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(sp,particles,isDecayCase);
     if(partners.empty()) {
-      throw Exception() << "Failed to find partner in " 
+      throw Exception() << "Failed to find partner in "
 			<< "PartnerFinder::setQEDInitialEvolutionScales"
 			<< *sp << Exception::eventerror;
     }
@@ -334,9 +330,9 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       }
     }
     // must have a partner
-    if(position<0) throw Exception() << "Failed to find partner in " 
+    if(position<0) throw Exception() << "Failed to find partner in "
 				 << "PartnerFinder::setQEDInitialEvolutionScales"
-				 << *sp << Exception::eventerror; 
+				 << *sp << Exception::eventerror;
     // Calculate the evolution scales for all possible pairs of of particles
     vector<pair<Energy,Energy> > scales;
     for(unsigned int ix=0;ix< partners.size();++ix) {
@@ -358,12 +354,11 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 
 pair<Energy,Energy> PartnerFinder::
 calculateInitialEvolutionScales(const ShowerPPair &particlePair,
-                                const bool isDecayCase) {
+                                const bool isDecayCase, int key) {
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
-
-  if(FS1 && FS2)
-    return calculateFinalFinalScales(particlePair.first->momentum(),
-                                     particlePair.second->momentum());
+  if(FS1 && FS2){
+    return calculateFinalFinalScales(particlePair.first->momentum(),particlePair.second->momentum(), key);
+  }
   else if(FS1 && !FS2) {
     pair<Energy,Energy> rval = calculateInitialFinalScales(particlePair.second->momentum(),
                                                            particlePair.first->momentum(),
@@ -376,7 +371,7 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     return calculateInitialInitialScales(particlePair.first->momentum(),particlePair.second->momentum());
 }
 
-vector< pair<ShowerPartnerType, tShowerParticlePtr> > 
+vector< pair<ShowerPartnerType, tShowerParticlePtr> >
 PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles) {
   vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners;
@@ -424,7 +419,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
   // if we haven't found any partners look for RPV
   if (partners.empty()) {
     // special for RPV
-    tColinePtr col = CL(particle); 
+    tColinePtr col = CL(particle);
     if(FS(particle)&&col&&col->sourceNeighbours().first) {
       tColinePair cpair = col->sourceNeighbours();
       for(const auto & sp : particles) {
@@ -467,12 +462,12 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
   return partners;
 }
 
-vector< pair<double, tShowerParticlePtr> > 
+vector< pair<double, tShowerParticlePtr> >
 PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector & particles,
 			       const bool isDecayCase) {
   vector< pair<double, tShowerParticlePtr> > partners;
-  const double pcharge = 
+  const double pcharge =
     particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
   vector< pair<double, tShowerParticlePtr> > photons;
   for (const auto & sp : particles) {
@@ -493,16 +488,96 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
     // only keep positive dipoles
     if (charge<0.) partners.push_back({ -charge, sp });
   }
-  if (particle->id()==ParticleID::gamma && partners.empty()) {
+  if (particle->id()==ParticleID::gamma && partners.empty())
     return photons;
+  return partners;
+}
+
+void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &particles,
+						const bool isDecayCase,
+						const bool setPartners) {
+  // loop over all the particles
+  for(ShowerParticleVector::const_iterator cit = particles.begin();
+      cit != particles.end(); ++cit) {
+    // if not weakly interacting continue
+    if( !weaklyInteracting( (**cit).dataPtr()))
+      continue;
+    // find the potential partners
+    vector<pair<double,tShowerParticlePtr> > partners = findEWPartners(*cit,particles,isDecayCase);
+    if(partners.empty()) {
+      throw Exception() << "Failed to find partner in "
+  			<< "PartnerFinder::setEWInitialEvolutionScales"
+  			<< (**cit) << Exception::eventerror;
+    }
+    // calculate the probabilities
+    double prob(0.);
+    for(unsigned int ix=0;ix<partners.size();++ix) prob += partners[ix].first;
+    // normalise
+    for(unsigned int ix=0;ix<partners.size();++ix) partners[ix].first /= prob;
+    // set the partner if required
+    int position(-1);
+    // use QCD partner if set
+    if(!setPartners&&(*cit)->partner()) {
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+  	if((*cit)->partner()==partners[ix].second) {
+  	  position = ix;
+  	  break;
+  	}
+      }
+    }
+    // set the partner
+    if(setPartners||!(*cit)->partner()||position<0) {
+      prob = UseRandom::rnd();
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+  	if(partners[ix].first>prob) {
+  	  position = ix;
+  	  break;
+  	}
+  	prob -= partners[ix].first;
+      }
+      if(position>=0&&(setPartners||!(*cit)->partner())) {
+  	(*cit)->partner(partners[position].second);
+      }
+    }
+    // must have a partner
+    if(position<0) throw Exception() << "Failed to find partner in "
+  				 << "PartnerFinder::setEWInitialEvolutionScales"
+  				 << (**cit) << Exception::eventerror;
+    // Calculate the evolution scales for all possible pairs of of particles
+    vector<pair<Energy,Energy> > scales;
+    for(unsigned int ix=0;ix< partners.size();++ix) {
+      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+							isDecayCase, 0));
+    }
+    // store all the possible partners
+    for(unsigned int ix=0;ix<partners.size();++ix) {
+      (**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
+  							  partners[ix].first,
+  							  ShowerPartnerType::EW,
+  							  scales[ix].first));
+    }
+    // set scales
+    (**cit).scales().EW      = scales[position].first;
+  }
+}
+
+vector< pair<double, tShowerParticlePtr> >
+PartnerFinder::findEWPartners(tShowerParticlePtr particle,
+			       const ShowerParticleVector &particles,
+			       const bool isDecayCase ) {
+  vector< pair<double, tShowerParticlePtr> > partners;
+  for(ShowerParticlePtr partner : particles) {
+    if(particle==partner || !weaklyInteracting(partner->dataPtr()))
+      continue;
+    partners.push_back(make_pair(1.,partner));
   }
   return partners;
 }
 
-pair<Energy,Energy> 
+pair<Energy,Energy>
 PartnerFinder::calculateFinalFinalScales(
         const Lorentz5Momentum & p1,
-        const Lorentz5Momentum & p2) 
+        const Lorentz5Momentum & p2, int key)
 {
   static const double eps=1e-7;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
@@ -528,44 +603,61 @@ PartnerFinder::calculateFinalFinalScales(
     }
     c = 0.;
   }
-  // KMH & PR - 16 May 2008 - swapped lambda calculation from 
-  // double lam=2.*p1.vect().mag()/Q; to sqrt(kallen(1,b,c)), 
+  // KMH & PR - 16 May 2008 - swapped lambda calculation from
+  // double lam=2.*p1.vect().mag()/Q; to sqrt(kallen(1,b,c)),
   // which should be identical for p1 & p2 onshell in their COM
   // but in the inverse construction for the Nason method, this
-  // was not the case, leading to misuse. 
+  // was not the case, leading to misuse.
   const double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
                    *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
-  // symmetric case
-  return { sqrt(0.5*Q2*(1.+b-c+lam)), sqrt(0.5*Q2*(1.-b+c+lam)) };
-}
 
+  Energy firstQ, secondQ;
+  double kappab(0.), kappac(0.);
+  //key = 0; // symmetric case pre-selection
+  switch(key) {
+  case 0: // symmetric case
+    firstQ  = sqrt(0.5*Q2*(1.+b-c+lam));
+    secondQ = sqrt(0.5*Q2*(1.-b+c+lam));
+    break;
+  case 1: // maximum emission from both legs
+    kappab=4.*(1.-2.*sqrt(c)-b+c);
+    kappac=4.*(1.-2.*sqrt(b)-c+b);
+    firstQ  = sqrt(Q2*kappab);
+    secondQ = sqrt(Q2*kappac);
+    break;
+  default:
+    assert(false);
+  }
+  // calculate the scales
+  return pair<Energy,Energy>(firstQ, secondQ);
+}
 
 pair<Energy,Energy>
 PartnerFinder::calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lorentz5Momentum& pc,
-			    const bool isDecayCase) {
-  if(!isDecayCase) { 
+					   const bool isDecayCase) {
+  if(!isDecayCase) {
     // In this case from JHEP 12(2003)045 we find the conditions
     // ktilde_b = (1+c) and ktilde_c = (1+2c)
     // We also find that c = m_c^2/Q^2. The process is a+b->c where
     // particle a is not colour connected (considered as a colour singlet).
-    // Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and 
+    // Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and
     // q_c = sqrt(Q^2+2 m_c^2)
     // We also assume that the first particle in the pair is the initial
-    // state particle and the second is the final state one c 
+    // state particle and the second is the final state one c
     const Energy2  mc2 = sqr(pc.mass());
     const Energy2  Q2  = -(pb-pc).m2();
     return { sqrt(Q2+mc2), sqrt(Q2+2*mc2) };
   }
-  else {    
+  else {
     // In this case from JHEP 12(2003)045 we find, for the decay
     // process b->c+a(neutral), the condition
-    // (ktilde_b-1)*(ktilde_c-c)=(1/4)*sqr(1-a+c+lambda). 
+    // (ktilde_b-1)*(ktilde_c-c)=(1/4)*sqr(1-a+c+lambda).
     // We also assume that the first particle in the pair is the initial
     // state particle (b) and the second is the final state one (c).
-    //  - We find maximal phase space coverage through emissions from 
+    //  - We find maximal phase space coverage through emissions from
     //    c if we set ktilde_c = 4.*(sqr(1.-sqrt(a))-c)
     //  - We find the most 'symmetric' way to populate the phase space
-    //    occurs for (ktilde_b-1)=(ktilde_c-c)=(1/2)*(1-a+c+lambda) 
+    //    occurs for (ktilde_b-1)=(ktilde_c-c)=(1/2)*(1-a+c+lambda)
     //  - We find the most 'smooth' way to populate the phase space
     //    occurs for...
     Energy2 mb2(sqr(pb.mass()));
@@ -574,8 +666,24 @@ PartnerFinder::calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lor
     double lambda   = 1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c;
     lambda = sqrt(max(lambda,0.));
     const double PROD     = 0.25*sqr(1. - a + c + lambda);
-    const double ktilde_c = 0.5*(1-a+c+lambda) + c ;
-    const double ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    int key = 0;
+    double ktilde_b, ktilde_c, cosi = 0.;
+    switch (key) {
+    case 0: // the 'symmetric' choice
+      ktilde_c = 0.5*(1-a+c+lambda) + c ;
+      ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+      break;
+    case 1: // the 'maximal' choice
+      ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
+      ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+      break;
+    case 2: // the 'smooth' choice
+      c = max(c,1.*GeV2/mb2);
+      cosi = (sqr(1-sqrt(c))-a)/lambda;
+      ktilde_b = 2.0/(1.0-cosi);
+      ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
+      break;
+    }
     return { sqrt(mb2*ktilde_b), sqrt(mb2*ktilde_c) };
   }
 }

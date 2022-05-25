@@ -27,7 +27,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-BasicConsistency::BasicConsistency() 
+BasicConsistency::BasicConsistency()
   : _epsmom(ZERO),_checkquark(true), _checkcharge(true),
     _checkcluster(true), _checkBR(true),
     _absolutemomentumtolerance(1*MeV), _relativemomentumtolerance(1e-5)
@@ -45,31 +45,31 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   bool writeEvent=false;
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
-    
+
   int charge(-event->incoming().first->dataPtr()->iCharge()
 	     -event->incoming().second->dataPtr()->iCharge());
 
-  Lorentz5Momentum 
+  Lorentz5Momentum
     ptotal(-event->incoming().first->momentum()
 	   -event->incoming().second->momentum());
 
   const Energy beamenergy = ptotal.m();
 
-  for(set<tcPPtr>::const_iterator it = particles.begin(); 
+  for(set<tcPPtr>::const_iterator it = particles.begin();
       it != particles.end(); ++it) {
     if (_checkquark && (*it)->coloured()) {
-      cerr << "Had quarks in final state in event " 
-	   << event->number()  
+      cerr << "Had quarks in final state in event "
+	   << event->number()
 	   << '\n';
-      generator()->log() << "Had quarks in final state in event " 
+      generator()->log() << "Had quarks in final state in event "
 			 << event->number() << '\n';
       writeEvent = true;
     }
     else if( _checkcluster && (**it).id()==ParticleID::Cluster) {
-      cerr << "Had clusters in final state in event " 
-	   << event->number()  
+      cerr << "Had clusters in final state in event "
+	   << event->number()
 	   << '\n';
-      generator()->log() << "Had clusters in final state in event " 
+      generator()->log() << "Had clusters in final state in event "
 			 << event->number()  << '\n';
       writeEvent = true;
     }
@@ -95,9 +95,9 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	test = (*it)->lifeLength();
 	break;
       }
-      problem |= ! ( isfinite(double(test.x()/mm)) && 
-                     isfinite(double(test.y()/mm)) && 
-                     isfinite(double(test.z()/mm)) && 
+      problem |= ! ( isfinite(double(test.x()/mm)) &&
+                     isfinite(double(test.y()/mm)) &&
+                     isfinite(double(test.z()/mm)) &&
                      isfinite(double(test.t()/mm)) );
     }
     if(problem) {
@@ -106,19 +106,19 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 			 << (*it)->labVertex()/mm << "\n"
 			 << (*it)->decayVertex()/mm << "\n"
 			 << (*it)->labDecayVertex()/mm << "\n"
-			 << (*it)->lifeLength()/mm << "\n"; 
+			 << (*it)->lifeLength()/mm << "\n";
     }
   }
-  
+
   if ( _checkcharge && charge != 0 ) {
-    cerr << "\nCharge imbalance by " 
-	 << charge 
-	 << "in event " 
-	 << event->number()  
+    cerr << "\nCharge imbalance by "
+	 << charge
+	 << " in event "
+	 << event->number()
 	 << '\n';
-    generator()->log() << "Charge imbalance by " 
-		       << charge 
-		       << "in event " 
+    generator()->log() << "Charge imbalance by "
+		       << charge
+		       << " in event "
 		       << event->number() << '\n';
     writeEvent = true;
   }
@@ -127,9 +127,9 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   Energy ee  = ptotal.e();
 
   if (std::isnan(double(mag/MeV))) {
-    cerr << "\nMomentum is 'nan'; " << ptotal/MeV 
+    cerr << "\nMomentum is 'nan'; " << ptotal/MeV
 	 << " MeV in event " << event->number() << '\n';
-    generator()->log() <<"\nMomentum is 'nan'; " << ptotal/MeV 
+    generator()->log() <<"\nMomentum is 'nan'; " << ptotal/MeV
 		       << " MeV in event " << event->number() << '\n';
     writeEvent = true;
   }
@@ -138,9 +138,9 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 				 _relativemomentumtolerance * beamenergy );
 
   if (abs(mag) > epsilonmax || abs(ee) > epsilonmax) {
-    cerr << "\nMomentum imbalance by " << ptotal/MeV 
+    cerr << "\nMomentum imbalance by " << ptotal/MeV
 	 << " MeV in event " << event->number() << '\n';
-    generator()->log() <<"\nMomentum imbalance by " << ptotal/MeV 
+    generator()->log() <<"\nMomentum imbalance by " << ptotal/MeV
 		       << " MeV in event " << event->number() << '\n';
     writeEvent = true;
   }
@@ -163,7 +163,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   particles.clear();
 
   event->select(inserter(particles), ThePEG::AllSelector());
-  for(set<tcPPtr>::const_iterator it = particles.begin(); 
+  for(set<tcPPtr>::const_iterator it = particles.begin();
       it != particles.end(); ++it) {
     bool problem=false;
     LorentzDistance test;
@@ -193,7 +193,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 			 << (*it)->labVertex()/mm << "\n"
 			 << (*it)->decayVertex()/mm << "\n"
 			 << (*it)->labDecayVertex()/mm << "\n"
-			 << (*it)->lifeLength()/mm << "\n"; 
+			 << (*it)->lifeLength()/mm << "\n";
       writeEvent=true;
     }
   }
@@ -302,7 +302,7 @@ void BasicConsistency::Init() {
 
 void BasicConsistency::dofinish() {
   AnalysisHandler::dofinish();
-  cout << "\nBasicConsistency: maximum 4-momentum violation: " 
+  cout << "\nBasicConsistency: maximum 4-momentum violation: "
        << ANSI::blue
        << _epsmom/MeV << " MeV\n"
        << ANSI::reset;
@@ -320,8 +320,8 @@ void BasicConsistency::doinitrun() {
       if((**dit).on()) total +=(**dit).brat();
     }
     if(abs(total-1.)>eps) {
-      cerr << "Warning: Total BR for " 
-	   << it->second->PDGName() 
+      cerr << "Warning: Total BR for "
+	   << it->second->PDGName()
 	   << " does not add up to 1. sum = " << total << "\n";
     }
   }

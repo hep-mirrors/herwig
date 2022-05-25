@@ -54,7 +54,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
   _nReWeight(100), _reWeight(false),
-  interaction_(ShowerInteraction::Both),
+  interaction_(ShowerInteraction::QEDQCD),
   _trunc_Mode(true), _hardEmission(1),
   _softOpt(2), _hardPOWHEG(false), muPt(ZERO)
 {}
@@ -270,7 +270,7 @@ void QTildeShowerHandler::Init() {
   static Switch<QTildeShowerHandler,ShowerInteraction> interfaceInteractions
     ("Interactions",
      "The interactions to be used in the shower",
-     &QTildeShowerHandler::interaction_, ShowerInteraction::Both, false, false);
+     &QTildeShowerHandler::interaction_, ShowerInteraction::QEDQCD, false, false);
   static SwitchOption interfaceInteractionsQCD
     (interfaceInteractions,
      "QCD",
@@ -281,11 +281,21 @@ void QTildeShowerHandler::Init() {
      "QED",
      "Only QEd radiation",
      ShowerInteraction::QED);
-  static SwitchOption interfaceInteractionsQCDandQED
+  static SwitchOption interfaceInteractionEWOnly
     (interfaceInteractions,
-     "QCDandQED",
-     "Both QED and QCD radiation",
-     ShowerInteraction::Both);
+     "EWOnly",
+     "Only EW",
+     ShowerInteraction::EW);
+  static SwitchOption interfaceInteractionQEDQCD
+    (interfaceInteractions,
+     "QEDQCD",
+     "QED and QCD",
+     ShowerInteraction::QEDQCD);
+  static SwitchOption interfaceInteractionALL
+    (interfaceInteractions,
+     "ALL",
+     "QED, QCD and EW",
+     ShowerInteraction::ALL);
   
   static Deleted<QTildeShowerHandler> delReconstructionOption
     ("ReconstructionOption", "The old reconstruction option switch has been replaced with"
@@ -1016,6 +1026,9 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 	}
 	else if(type==ShowerPartnerType::QCDAntiColourLine) {
 	  tooHard |= particles[ix]->scales().QCD_ac_noAO<hardScale;
+	}
+	else if(type==ShowerPartnerType::EW) {
+	  tooHard |= particles[ix]->scales().EW<hardScale;
 	}
       }
     }
@@ -2080,12 +2093,13 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   else {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
       if(particlesToShower[ix]->progenitor()->isFinalState()) {
-        if(particlesToShower[ix]->progenitor()->dataPtr()->stable()){
+        if(particlesToShower[ix]->progenitor()->dataPtr()->stable()) {
           auto dm=  ShowerHandler::currentHandler()->retConstituentMasses()?
-          particlesToShower[ix]->progenitor()->dataPtr()->constituentMass():
-          particlesToShower[ix]->progenitor()->dataPtr()->mass();
+	    particlesToShower[ix]->progenitor()->dataPtr()->constituentMass():
+	    particlesToShower[ix]->progenitor()->dataPtr()->mass();
           minmass += dm;
-        }else
+	}
+        else
 	  minmass += particlesToShower[ix]->progenitor()->mass();
       }
       else {

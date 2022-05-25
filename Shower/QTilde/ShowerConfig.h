@@ -69,6 +69,8 @@ using namespace ThePEG;
       return ShowerInteraction::QCD;
     else if (partner==ShowerPartnerType::QED)
       return ShowerInteraction::QED;
+    else if(partner==ShowerPartnerType::EW)
+      return ShowerInteraction::EW;
     else
       return ShowerInteraction::UNDEFINED;
   }
@@ -77,7 +79,7 @@ using namespace ThePEG;
    *  typedef to pair the SudakovFormFactor and the particles in a branching
    */
   struct BranchingElement {
-    
+
     /**
      *  Constructor
      */ 

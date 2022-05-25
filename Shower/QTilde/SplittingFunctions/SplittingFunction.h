@@ -34,7 +34,7 @@ using namespace ThePEG;
 			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
 			SextetSextetOctet    = 5,
 			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
-			NeutralChargedCharged=-3};
+			NeutralChargedCharged=-3,EW=-4};
 
 /** \ingroup Shower
  *
@@ -111,6 +111,9 @@ public:
 	  fact *= abs(double(ids[1]->iColour()));
 	return fact;
       }
+      else if(_colourStructure==EW) {
+	return 1.;
+      }
       else {
 	assert(false);
 	return 0.;
@@ -147,6 +150,7 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
 		   const bool mass, const RhoDMatrix & rho) const = 0;
@@ -169,6 +173,7 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
 			const bool mass, const RhoDMatrix & rho) const = 0;
