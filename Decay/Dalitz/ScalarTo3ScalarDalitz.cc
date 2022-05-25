@@ -14,12 +14,14 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 
 ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, bool useResonanceMass)
-  : rParent_(rP),
-    f0gpi_(0.09), f0gK_(0.02), 
+  : rParent_(rP), f0gpi_(0.09), f0gK_(0.02), 
     useResonanceMass_(useResonanceMass), useAllK0_(false), maxWgt_(1.),
     channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
   // intermediates
@@ -205,7 +207,7 @@ void ScalarTo3ScalarDalitz::createMode(tPDPtr in, tPDVector out) {
     tPDPtr resonance = getParticleData(res.id);
     if(resonance) {
       mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,res.spectator+1,1,res.daughter1+1,1,res.daughter2+1));
-      resetIntermediate(resonance,res.mass,res.width);
+      resetIntermediate(resonance,res.mass,abs(res.width));
       ++ix;
     }
   }
@@ -239,6 +241,11 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
     complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
     output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-ii*resonances_[i].mass*(Gamma_pi+Gamma_K));
+    return output;
+  }
+  else if (resonances_[i].type==ResonanceType::Spin0Complex) {
+    complex<Energy> sR(resonances_[i].mass,resonances_[i].width);
+    output *= GeV2/(sqr(sR)-sqr(m2_[d1][d2]));
     return output;
   }
   //  on-shell
@@ -447,6 +454,7 @@ int ScalarTo3ScalarDalitz::modeNumber(bool & cc,tcPDPtr parent,
     for(unsigned int iy=0;iy<3;++iy) {
       tPDPtr part = children[iy]->CC() ? children[iy]->CC() : children[iy];
       long id = part->id();
+      if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
       if(ids2.find(id)!=ids2.end())
 	ids2[id]+=1;
       else

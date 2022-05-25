@@ -140,7 +140,7 @@ decaymode D0->phi,gamma; 2.4E-5 1 /Herwig/Decays/DecayME0
 #
 do D+:SelectDecayModes none
 #
-decaymode D+->Kbar0,pi+,pi0; 0.14 1 /Herwig/Decays/DtoKPiPiMarkIII
+decaymode D+->Kbar0,pi+,pi0; 0.14 1 /Herwig/Decays/DpKbar0PipPi0BES
 decaymode D+->K-,pi+,pi+; 0.0951 1 /Herwig/Decays/DpKmPipPipCLEO
 decaymode D+->Kbar0,e+,nu_e; 0.0892 1 /Herwig/Decays/ISGW2
 decaymode D+->Kbar0,mu+,nu_mu; 0.0865 1 /Herwig/Decays/ISGW2
@@ -353,7 +353,7 @@ decaymode Dbar0->phi,gamma; 2.4E-5 1 /Herwig/Decays/DecayME0
 #
 do D-:SelectDecayModes none
 #
-decaymode D-->K0,pi-,pi0; 0.14 1 /Herwig/Decays/DtoKPiPiMarkIII
+decaymode D-->K0,pi-,pi0; 0.14 1 /Herwig/Decays/DpKbar0PipPi0BES
 decaymode D-->K+,pi-,pi-; 0.0951 1 /Herwig/Decays/DpKmPipPipCLEO
 decaymode D-->K0,e-,nu_ebar; 0.0892 1 /Herwig/Decays/ISGW2
 decaymode D-->K0,mu-,nu_mubar; 0.0865 1 /Herwig/Decays/ISGW2
