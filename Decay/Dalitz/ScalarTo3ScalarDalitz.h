@@ -46,10 +46,10 @@ public:
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(const int ichan,const Particle & part,
-	     const tPDVector & outgoing,
-	     const vector<Lorentz5Momentum> & momenta,
-	     MEOption meopt) const;
+  virtual double me2(const int ichan,const Particle & part,
+		     const tPDVector & outgoing,
+		     const vector<Lorentz5Momentum> & momenta,
+		     MEOption meopt) const;
 
   /**
    *   Construct the SpinInfos for the particles produced in the decay
@@ -132,8 +132,18 @@ protected:
   /**
    *  Calculate the amplitude
    */
-  virtual Complex amplitude(int ) const {
-    return 0.;
+  virtual Complex amplitude(int ichan) const {
+    Complex amp(0.);
+    int iloc=-1;
+    for(int ix=0;ix<int(resonances().size());++ix) {
+      ++iloc;
+      if(channel1_>=0) {
+	if(ix!=channel1_ && ix!=channel2_) continue;
+      }
+      if(ichan>=0&&ichan!=iloc) continue;
+      amp += resAmp(ix);
+    }
+    return amp;
   }
 
   /**
@@ -196,6 +206,21 @@ private:
    *   For the decaying particles
    */
   InvEnergy rParent_;
+  //@}
+  
+  /**
+   *  Parameters for the \f$f_0(980)\f$
+   */
+  //@{
+  /**
+   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  double f0gpi_;
+
+  /**
+   * \f$g_K\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  double f0gK_;
   //@}
 
   /**

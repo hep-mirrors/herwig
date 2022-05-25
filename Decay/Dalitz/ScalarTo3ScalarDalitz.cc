@@ -18,7 +18,9 @@
 using namespace Herwig;
 
 ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, bool useResonanceMass)
-  : rParent_(rP), useResonanceMass_(useResonanceMass), useAllK0_(false), maxWgt_(1.),
+  : rParent_(rP),
+    f0gpi_(0.09), f0gK_(0.02), 
+    useResonanceMass_(useResonanceMass), useAllK0_(false), maxWgt_(1.),
     channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
   // intermediates
   generateIntermediates(true);
@@ -33,12 +35,12 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 }
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
-  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV)
+  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << f0gpi_ << f0gK_
      << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_ << useAllK0_;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
-  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV)
+  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> f0gpi_ >> f0gK_ 
      >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_ >> useAllK0_;
 }
 
@@ -67,6 +69,18 @@ void ScalarTo3ScalarDalitz::Init() {
     ("ParentRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
      &ScalarTo3ScalarDalitz::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<ScalarTo3ScalarDalitz,double> interfacegPi
+    ("f0gPi",
+     "The g_pi coupling for the f_0(980) width",
+     &ScalarTo3ScalarDalitz::f0gpi_, 0.09, 0.0, 1.,
+     false, false, Interface::limited);
+
+  static Parameter<ScalarTo3ScalarDalitz,double> interfacegK
+    ("f0gK",
+     "The g_K coupling for the f_0(980) width",
+     &ScalarTo3ScalarDalitz::f0gK_, 0.02, 0.0, 1.,
      false, false, Interface::limited);
 
   static Parameter<ScalarTo3ScalarDalitz,double> interfaceMaximumWeight
@@ -175,18 +189,8 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
       m2_[iy][ix]=m2_[ix][iy];
     }
   }
-  // compute the amplitude
-  Complex amp(0.);
-  int iloc=-1;
-  for(int ix=0;ix<int(resonances().size());++ix) {
-    ++iloc;
-    if(channel1_>=0) {
-      if(ix!=channel1_ && ix!=channel2_) continue;
-    }
-    if(ichan>=0&&ichan!=iloc) continue;
-    amp += resAmp(ix);
-  }
   // now compute the matrix element
+  Complex amp = amplitude(ichan);
   (*ME())(0,0,0,0) = amp;
   return norm(amp);
 }
@@ -226,6 +230,15 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     double rho = 2.*pAB/m2_[d1][d2];
     output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-
 		    ii*resonances_[i].mass*resonances_[i].width*rho);
+    return output;
+  }
+  else if (resonances_[i].type==ResonanceType::Flattef0) {
+    Energy mpi = getParticleData(211)->mass();
+    Energy mK  = getParticleData(321)->mass();
+    Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(m2_[d1][d2])-sqr(mpi));
+    Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
+    complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
+    output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-ii*resonances_[i].mass*(Gamma_pi+Gamma_K));
     return output;
   }
   //  on-shell
@@ -290,6 +303,8 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
   DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
+  output << "newdef " << name() << ":f0gPi "      << f0gpi_   << "\n";
+  output << "newdef " << name() << ":f0gK "       << f0gK_    << "\n";
   output << "newdef " << name() << ":UseAllK0 " << useAllK0_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
   for(unsigned int ix=0;ix<weights_.size();++ix) {

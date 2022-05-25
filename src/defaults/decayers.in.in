@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 19:7:19 on the 24/5/2022.
+# from the Herwig Particles Database at 11:58:26 on the 25/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -899,6 +899,58 @@ do D0KmPipPi0E691:AddChannel -313 13 0.8961 0.0505 1 0 2 3.19 2.9147 0
 do D0KmPipPi0E691:AddChannel -323 13 0.89159 0.0498 0 2 1 2.96 -1.95477 0
 do D0KmPipPi0E691:AddChannel 213 13 0.7681 0.1515 1 2 0 8.56 0.698132 0
 do D0KmPipPi0E691:SetExternal 421 -321 211 111
+#
+create Herwig::ScalarTo3ScalarDalitz   D0KL0PipPimCLEO
+newdef D0KL0PipPimCLEO:Iteration 10
+newdef D0KL0PipPimCLEO:Ntry 500
+newdef D0KL0PipPimCLEO:Points 10000
+newdef D0KL0PipPimCLEO:GenerateIntermediates 1 
+newdef D0KL0PipPimCLEO:ParentRadius 5
+newdef D0KL0PipPimCLEO:ResonanceMass 1
+newdef D0KL0PipPimCLEO:f0gPi 0.09
+newdef D0KL0PipPimCLEO:f0gK 0.02
+newdef D0KL0PipPimCLEO:UseAllK0 0
+newdef D0KL0PipPimCLEO:MaximumWeight 3.24345e+10
+insert D0KL0PipPimCLEO:Weights 0 0.0414772
+insert D0KL0PipPimCLEO:Weights 1 0.132285
+insert D0KL0PipPimCLEO:Weights 2 0.0588933
+insert D0KL0PipPimCLEO:Weights 3 0.308645
+insert D0KL0PipPimCLEO:Weights 4 0.0546762
+insert D0KL0PipPimCLEO:Weights 5 0.107295
+insert D0KL0PipPimCLEO:Weights 6 0.112617
+insert D0KL0PipPimCLEO:Weights 7 0.0661828
+insert D0KL0PipPimCLEO:Weights 8 0.0490123
+insert D0KL0PipPimCLEO:Weights 9 0.0689157
+do D0KL0PipPimCLEO:AddChannel 0 0 0 0 0 1 2 1.1 -0.349066 1.5
+do D0KL0PipPimCLEO:AddChannel 323 3 0.89166 0.0508 1 0 2 0.11 2.46091 1.5
+do D0KL0PipPimCLEO:AddChannel 113 3 0.7693 0.1502 2 1 0 1 0 1.5
+do D0KL0PipPimCLEO:AddChannel 223 3 0.78257 0.00844 2 1 0 0.037 1.98968 1.5
+do D0KL0PipPimCLEO:AddChannel -323 3 0.89166 0.0508 2 0 1 1.56 2.61799 1.5
+do D0KL0PipPimCLEO:AddChannel 9010221 41 0.977 0.05 2 1 0 0.34 -3.00197 1.5
+do D0KL0PipPimCLEO:AddChannel 225 5 1.2754 0.1851 2 1 0 0.7 -0.907571 1.5
+do D0KL0PipPimCLEO:AddChannel 10221 1 1.31 0.272 2 1 0 1.8 1.48353 1.5
+do D0KL0PipPimCLEO:AddChannel -10321 1 1.412 0.294 2 0 1 2 0.0523599 1.5
+do D0KL0PipPimCLEO:AddChannel -325 5 1.4256 0.0985 2 0 1 1 -0.436333 1.5
+do D0KL0PipPimCLEO:AddChannel -30323 3 1.717 0.322 2 0 1 5.6 3.03687 1.5
+do D0KL0PipPimCLEO:SetExternal 421 130 211 -211
+#
+create Herwig::ScalarTo3ScalarDalitz   D0Kbar0PipPimE691
+newdef D0Kbar0PipPimE691:Iteration 10
+newdef D0Kbar0PipPimE691:Ntry 500
+newdef D0Kbar0PipPimE691:Points 10000
+newdef D0Kbar0PipPimE691:GenerateIntermediates 1 
+newdef D0Kbar0PipPimE691:ParentRadius 0
+newdef D0Kbar0PipPimE691:ResonanceMass 0
+newdef D0Kbar0PipPimE691:f0gPi 0.09
+newdef D0Kbar0PipPimE691:f0gK 0.02
+newdef D0Kbar0PipPimE691:UseAllK0 0
+newdef D0Kbar0PipPimE691:MaximumWeight 1.01099e+09
+insert D0Kbar0PipPimE691:Weights 0 0.545204
+insert D0Kbar0PipPimE691:Weights 1 0.454796
+do D0Kbar0PipPimE691:AddChannel 0 0 0 0 0 1 2 1 0 0
+do D0Kbar0PipPimE691:AddChannel -323 13 0.89159 0.0498 2 0 1 2.31 1.90241 0
+do D0Kbar0PipPimE691:AddChannel 213 13 0.7681 0.1515 2 1 0 1.59 -2.14675 0
+do D0Kbar0PipPimE691:SetExternal 421 -311 211 -211
 #
 create Herwig::TauDecayer  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
@@ -21307,121 +21359,39 @@ newdef HQETFormFactor:R1         1.417
 newdef HQETFormFactor:R2         0.836
 newdef HQET:FormFactor HQETFormFactor 
 #
-create Herwig::CLEOD0toK0PipPim  D0K0PipPimCLEO
-newdef D0K0PipPimCLEO:Iteration 10
-newdef D0K0PipPimCLEO:Ntry 500
-newdef D0K0PipPimCLEO:Points 100000
-newdef D0K0PipPimCLEO:GenerateIntermediates 1 
-newdef D0K0PipPimCLEO:ParentRadius 5
-newdef D0K0PipPimCLEO:MaximumWeight 4.0e+10
-insert D0K0PipPimCLEO:Weights 0 0.0315344
-insert D0K0PipPimCLEO:Weights 1 0.143317
-insert D0K0PipPimCLEO:Weights 2 0.0614656
-insert D0K0PipPimCLEO:Weights 3 0.316689
-insert D0K0PipPimCLEO:Weights 4 0.0334101
-insert D0K0PipPimCLEO:Weights 5 0.108971
-insert D0K0PipPimCLEO:Weights 6 0.112036
-insert D0K0PipPimCLEO:Weights 7 0.070267
-insert D0K0PipPimCLEO:Weights 8 0.0527859
-insert D0K0PipPimCLEO:Weights 9 0.0695232
-newdef D0K0PipPimCLEO:RhoMass 769.3
-newdef D0K0PipPimCLEO:RhoWidth 150.2
-newdef D0K0PipPimCLEO:OmegaMass 782.57
-newdef D0K0PipPimCLEO:OmegaWidth 8.44
-newdef D0K0PipPimCLEO:f980Mass 977
-newdef D0K0PipPimCLEO:f980Width 50
-newdef D0K0PipPimCLEO:gPi 0.09
-newdef D0K0PipPimCLEO:gK 0.02
-newdef D0K0PipPimCLEO:f0Option 1
-newdef D0K0PipPimCLEO:f_2Mass 1275.4
-newdef D0K0PipPimCLEO:f_2Width 185.1
-newdef D0K0PipPimCLEO:f1370Mass 1310
-newdef D0K0PipPimCLEO:f1370Width 272
-newdef D0K0PipPimCLEO:KstarMass 891.66
-newdef D0K0PipPimCLEO:KstarWidth 50.8
-newdef D0K0PipPimCLEO:K_01430Mass 1412
-newdef D0K0PipPimCLEO:K_01430Width 294
-newdef D0K0PipPimCLEO:K_21430Mass 1425.6
-newdef D0K0PipPimCLEO:K_21430Width 98.5
-newdef D0K0PipPimCLEO:Kstar1680Mass 1717
-newdef D0K0PipPimCLEO:Kstar1680Width 322
-newdef D0K0PipPimCLEO:KStarPlusAmplitude 0.11
-newdef D0K0PipPimCLEO:KStarPlusPhase 321
-newdef D0K0PipPimCLEO:RhoAmplitude 1
-newdef D0K0PipPimCLEO:RhoPhase 0
-newdef D0K0PipPimCLEO:OmegaAmplitude 0.037
-newdef D0K0PipPimCLEO:OmegaPhase 114
-newdef D0K0PipPimCLEO:KStarMinusAmplitude 1.56
-newdef D0K0PipPimCLEO:KStarMinusPhase 150
-newdef D0K0PipPimCLEO:f980Amplitude 0.34
-newdef D0K0PipPimCLEO:f980Phase 188
-newdef D0K0PipPimCLEO:f2Amplitude 0.7
-newdef D0K0PipPimCLEO:f2Phase 308
-newdef D0K0PipPimCLEO:f1370Amplitude 1.8
-newdef D0K0PipPimCLEO:f1370Phase 85
-newdef D0K0PipPimCLEO:KK_0MinusAmplitude 2
-newdef D0K0PipPimCLEO:KK_0MinusPhase 3
-newdef D0K0PipPimCLEO:KK_2MinusAmplitude 1
-newdef D0K0PipPimCLEO:KK_2MinusPhase 335
-newdef D0K0PipPimCLEO:K1680MinusAmplitude 5.6
-newdef D0K0PipPimCLEO:K1680MinusPhase 174
-newdef D0K0PipPimCLEO:NonResonantAmplitude 1.1
-newdef D0K0PipPimCLEO:NonResonantPhase 340
-#
-create Herwig::DtoKPiPiE691  DKPiPiE691
-newdef DKPiPiE691:Iteration 10
-newdef DKPiPiE691:Ntry 500
-newdef DKPiPiE691:Points 10000
-newdef DKPiPiE691:GenerateIntermediates 1 
-newdef DKPiPiE691:KmPipPipNonResonantMagnitude 1
-newdef DKPiPiE691:KmPipPipNonResonantPhase     0
-newdef DKPiPiE691:KmPipPipK892Magnitude        0.78
-newdef DKPiPiE691:KmPipPipK892Phase            -60
-newdef DKPiPiE691:KmPipPipK1430Magnitude       0.53
-newdef DKPiPiE691:KmPipPipK1430Phase           132
-newdef DKPiPiE691:KmPipPipK1680Magnitude       0.47
-newdef DKPiPiE691:KmPipPipK1680Phase           -51
-newdef DKPiPiE691:KmPipPi0NonResonantMagnitude 1
-newdef DKPiPiE691:KmPipPi0NonResonantPhase     0
-newdef DKPiPiE691:KmPipPi0K8920Magnitude       3.19
-newdef DKPiPiE691:KmPipPi0K8920Phase           167
-newdef DKPiPiE691:KmPipPi0K892mMagnitude       2.96
-newdef DKPiPiE691:KmPipPi0K892mPhase           -112
-newdef DKPiPiE691:KmPipPi0RhoMagnitude         8.56
-newdef DKPiPiE691:KmPipPi0RhoPhase             40
-newdef DKPiPiE691:K0PipPimNonResonantMagnitude 1
-newdef DKPiPiE691:K0PipPimNonResonantPhase     0
-newdef DKPiPiE691:K0PipPimK892Magnitude        2.31
-newdef DKPiPiE691:K0PipPimK892Phase            109
-newdef DKPiPiE691:K0PipPimRhoMagnitude         1.59
-newdef DKPiPiE691:K0PipPimRhoPhase             -123
-newdef DKPiPiE691:LocalParameters 1
-newdef DKPiPiE691:K8920Mass      0.8961
-newdef DKPiPiE691:K8920Width     0.0505
-newdef DKPiPiE691:K892MinusMass  0.89159
-newdef DKPiPiE691:K892MinusWidth 0.0498
-newdef DKPiPiE691:K1680Mass      1.714
-newdef DKPiPiE691:K1680Width     0.323
-newdef DKPiPiE691:K1430Mass      1.429
-newdef DKPiPiE691:K1430Width     0.287
-newdef DKPiPiE691:Rho0Mass       0.7681
-newdef DKPiPiE691:Rho0Width      0.1515
-newdef DKPiPiE691:RhoPlusMass    0.7681
-newdef DKPiPiE691:RhoPlusWidth   0.1515
-insert DKPiPiE691:MaximumWeights 0 1.76526e+09
-insert DKPiPiE691:MaximumWeights 1 6.09945e+09
-insert DKPiPiE691:MaximumWeights 2 1.02351e+09
-insert DKPiPiE691:Weights 0 0.192843
-insert DKPiPiE691:Weights 1 0.198588
-insert DKPiPiE691:Weights 2 0.108339
-insert DKPiPiE691:Weights 3 0.114322
-insert DKPiPiE691:Weights 4 0.192924
-insert DKPiPiE691:Weights 5 0.192984
-insert DKPiPiE691:Weights 6 0.226201
-insert DKPiPiE691:Weights 7 0.217755
-insert DKPiPiE691:Weights 8 0.556044
-insert DKPiPiE691:Weights 9 0.453208
-insert DKPiPiE691:Weights 10 0.546792
+create Herwig::ScalarTo3ScalarDalitz  D0KS0PipPimCLEO
+newdef D0KS0PipPimCLEO:Iteration 10
+newdef D0KS0PipPimCLEO:Ntry 500
+newdef D0KS0PipPimCLEO:Points 10000
+newdef D0KS0PipPimCLEO:GenerateIntermediates 1 
+newdef D0KS0PipPimCLEO:ParentRadius 5
+newdef D0KS0PipPimCLEO:ResonanceMass 1
+newdef D0KS0PipPimCLEO:f0gPi 0.09
+newdef D0KS0PipPimCLEO:f0gK 0.02
+newdef D0KS0PipPimCLEO:UseAllK0 0
+newdef D0KS0PipPimCLEO:MaximumWeight 3.18487e+10
+insert D0KS0PipPimCLEO:Weights 0 0.0287531
+insert D0KS0PipPimCLEO:Weights 1 0.136229
+insert D0KS0PipPimCLEO:Weights 2 0.0573937
+insert D0KS0PipPimCLEO:Weights 3 0.317639
+insert D0KS0PipPimCLEO:Weights 4 0.0555278
+insert D0KS0PipPimCLEO:Weights 5 0.105507
+insert D0KS0PipPimCLEO:Weights 6 0.111167
+insert D0KS0PipPimCLEO:Weights 7 0.06818
+insert D0KS0PipPimCLEO:Weights 8 0.0517682
+insert D0KS0PipPimCLEO:Weights 9 0.067835
+do D0KS0PipPimCLEO:AddChannel 0 0 0 0 0 1 2 1.1 -0.349066 1.5
+do D0KS0PipPimCLEO:AddChannel 323 3 0.89166 0.0508 1 0 2 0.11 -0.680678 1.5
+do D0KS0PipPimCLEO:AddChannel 113 3 0.7693 0.1502 2 1 0 1 0 1.5
+do D0KS0PipPimCLEO:AddChannel 223 3 0.78257 0.00844 2 1 0 0.037 1.98968 1.5
+do D0KS0PipPimCLEO:AddChannel -323 3 0.89166 0.0508 2 0 1 1.56 2.61799 1.5
+do D0KS0PipPimCLEO:AddChannel 9010221 41 0.977 0.05 2 1 0 0.34 -3.00197 1.5
+do D0KS0PipPimCLEO:AddChannel 225 5 1.2754 0.1851 2 1 0 0.7 -0.907571 1.5
+do D0KS0PipPimCLEO:AddChannel 10221 1 1.31 0.272 2 1 0 1.8 1.48353 1.5
+do D0KS0PipPimCLEO:AddChannel -10321 1 1.412 0.294 2 0 1 2 0.0523599 1.5
+do D0KS0PipPimCLEO:AddChannel -325 5 1.4256 0.0985 2 0 1 1 -0.436333 1.5
+do D0KS0PipPimCLEO:AddChannel -30323 3 1.717 0.322 2 0 1 5.6 3.03687 1.5
+do D0KS0PipPimCLEO:SetExternal 421 310 211 -211
 #
 create Herwig::DtoKPiPiMarkIII  DtoKPiPiMarkIII
 newdef DtoKPiPiMarkIII:Iteration 10
