@@ -25,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  VectorTo3PseudoScalarDalitz()
+  VectorTo3PseudoScalarDalitz() : useResonanceMass_(true)
   {}
 
   /**
@@ -123,6 +123,30 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+  
+  /**
+   *  Calculate the amplitude
+   */
+  virtual Complex amplitude(int ichan) const {
+    Complex amp(0.);
+    int iloc=-1;
+    for(int ix=0;ix<int(resonances().size());++ix) {
+      ++iloc;
+      if(channel1()>=0) {
+	if(ix!=channel1() && ix!=channel2()) continue;
+      }
+      if(ichan>=0&&ichan!=iloc) continue;
+      amp += resAmp(ix);
+    }
+    return amp;
+  }
+
+  /**
+   * Calculate the amplitude for the ith resonance
+   */
+  Complex resAmp(unsigned int i) const;
+
 private:
 
   /**
@@ -132,7 +156,31 @@ private:
   VectorTo3PseudoScalarDalitz & operator=(const VectorTo3PseudoScalarDalitz &) = delete;
 
 private:
-  
+
+  /**
+   *  Factor for numerator of the Breit-Wigner
+   */
+  bool useResonanceMass_;
+
+  /**
+   *   Storage of the kinematics
+   */
+  //@{
+  /**
+   *   Mass of the parent
+   */
+  mutable Energy mD_;
+
+  /**
+   *   Masses of the children
+   */
+  mutable Energy mOut_[3];
+
+  /**
+   *   Masses of the children
+   */
+  mutable Energy m2_[3][3];
+  //@}
   /**
    *  Storage of polarization vectors to try and increase
    *  speed
