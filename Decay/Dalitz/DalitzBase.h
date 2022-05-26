@@ -121,6 +121,11 @@ protected:
   const InvEnergy & parentRadius() const {
     return rParent_;
   }
+
+  /**
+   *  Weights for the phase-space channels
+   */
+  const vector<double> & weights() const {return weights_;}
       
 protected:
 

@@ -6,6 +6,7 @@
 
 #include "VectorTo3PseudoScalarDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -15,7 +16,8 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/PDT/DecayMode.h"
+#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -28,11 +30,12 @@ IBPtr VectorTo3PseudoScalarDalitz::fullclone() const {
 }
 
 void VectorTo3PseudoScalarDalitz::persistentOutput(PersistentOStream & os) const {
+  os >> useResonanceMass_;
 }
 
 void VectorTo3PseudoScalarDalitz::persistentInput(PersistentIStream & is, int) {
+  is << useResonanceMass_;
 }
-
 
 // The following static variable is needed for the type
 // description system in ThePEG.
@@ -44,6 +47,21 @@ void VectorTo3PseudoScalarDalitz::Init() {
   static ClassDocumentation<VectorTo3PseudoScalarDalitz> documentation
     ("The VectorTo3PseudoScalarDalitz class provides a base class "
      "for the decay of vector mesons to 3 pseudoscalar mesons");
+
+  static Switch<VectorTo3PseudoScalarDalitz,bool> interfaceUseResonanceMass
+    ("UseResonanceMass",
+     "Use the resonance mass squared as the numerator of the Breit-Wigner propagator",
+     &VectorTo3PseudoScalarDalitz::useResonanceMass_, true, false, false);
+  static SwitchOption interfaceUseResonanceMassYes
+    (interfaceUseResonanceMass,
+     "Yes",
+     "Use the resonance mass",
+     true);
+  static SwitchOption interfaceUseResonanceMassNo
+    (interfaceUseResonanceMass,
+     "No",
+     "Don't use the resonance mass",
+     false);
 
 }
 
@@ -68,150 +86,83 @@ double VectorTo3PseudoScalarDalitz::me2(const int ichan, const Particle & part,
   						const_ptr_cast<tPPtr>(&part),
   						incoming,false);
   }
+  // set the kinematics
+  mD_ = part.mass();
+  for(unsigned int ix=0;ix<momenta.size();++ix) {
+    mOut_[ix]=momenta[ix].mass();
+    for(unsigned int iy=ix+1;iy<momenta.size();++iy) {
+      m2_[ix][iy]=(momenta[ix]+momenta[iy]).m();
+      m2_[iy][ix]=m2_[ix][iy];
+    }
+  }
+  // now compute the matrix element
+  Complex amp = amplitude(ichan);
+  // polarization vector piece
+  LorentzPolarizationVector 
+    scalar=epsilon(momenta[0],momenta[1],momenta[2])/GeV/GeV2;
   // compute the matrix element
-  // // work out the prefactor
-  // complex<InvEnergy2> pre(ZERO);
-  // Complex resfact,ii(0.,1.);
-  // if(ichan<0){pre=_ccoupling[imode()][3];}
-  // Energy pcm;
-  // // work out the direct invariant masses needed
-  // Energy mrho0(sqrt(momenta[1].m2(momenta[2])));
-  // Energy mrhop(sqrt(momenta[1].m2(momenta[0])));
-  // Energy mrhom(sqrt(momenta[2].m2(momenta[0])));
-  // // contribution of the resonances
-  // int ichannow(-3);
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   ichannow+=3;
-  //   if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
-  //      (ix==2 && _rho3wgt[imode()]>0.)) {
-  //     if(ichan<0) {
-  // 	// rho0 contribution
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-  // 	resfact = _rhomass2[imode()][ix]/
-  // 	  (mrho0*mrho0-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-  // 	// rho+ contribution
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-  // 	resfact+= _rhomass2[imode()][ix]/
-  // 	  (mrhop*mrhop-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-  // 	// rho- contribution
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-  // 	resfact+= _rhomass2[imode()][ix]/
-  // 	  (mrhom*mrhom-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-  // 	// add the contribution
-  //     }
-  //     else if(ichan==ichannow) {
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-  // 	resfact = _rhomass2[imode()][ix]/
-  // 	  (mrho0*mrho0-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-  //     }
-  //     else if(ichan==ichannow+1) {
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-  // 	resfact+= _rhomass2[imode()][ix]/
-  // 	  (mrhop*mrhop-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-  //     }
-  //     else if(ichan==ichannow+2) {
-  // 	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-  // 	resfact+= _rhomass2[imode()][ix]/
-  // 	  (mrhom*mrhom-_rhomass2[imode()][ix]
-  // 	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-  //     }
-  //     pre += resfact * _ccoupling[imode()][ix];
-  //     ichannow+=3;
-  //   }
-  // }
-  // // polarization vector piece
-  // LorentzPolarizationVector 
-  //   scalar=_coupling[imode()]*pre*epsilon(momenta[0],
-  // 					  momenta[1],
-  // 					  momenta[2]);
-  // // compute the matrix element
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   (*ME())(ix,0,0,0)=scalar.dot(vectors_[ix]);
-  // }
-  // // return the answer
-  // return ME()->contract(_rho).real();
+  for(unsigned int ix=0;ix<3;++ix) {
+    (*ME())(ix,0,0,0) = amp*scalar.dot(vectors_[ix]);
+  }
+  // return the answer
+  return (ME()->contract(rho_)).real();
 }
 
 double VectorTo3PseudoScalarDalitz::
-threeBodyMatrixElement(const int imode, const Energy2 q2,
+threeBodyMatrixElement(const int , const Energy2 q2,
 		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, const 
-		       Energy , const Energy , const Energy ) const {
-  // Lorentz5Momentum p1,p2,p3; Energy2 ee1,ee2,ee3;Energy pp1,pp2,pp3;
-  // Energy q(sqrt(q2));
-  // Energy2 mpi2c(_mpic*_mpic),mpi20(_mpi0*_mpi0);
-  // p1.setE(0.5*(q2+mpi20-s1)/q); ee1=p1.e()*p1.e(); pp1=sqrt(ee1-mpi20);
-  // p2.setE(0.5*(q2+mpi2c-s2)/q); ee2=p2.e()*p2.e(); pp2=sqrt(ee2-mpi2c);
-  // p3.setE(0.5*(q2+mpi2c-s3)/q); ee3=p3.e()*p3.e(); pp3=sqrt(ee3-mpi2c);
-  // // take momentum of 1 parallel to z axis
-  // p1.setX(ZERO);p1.setY(ZERO);p1.setZ(pp1);
-  // // construct 2 
-  // double cos2(0.5*(ee1+ee2-ee3-mpi20)/pp1/pp2);
-  // p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(ZERO); p2.setZ(-pp2*cos2);
-  // // construct 3
-  // double cos3(0.5*(ee1-ee2+ee3-mpi20)/pp1/pp3);
-  // p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(ZERO); p3.setZ(-pp3*cos3); 
-  // // compute the prefactor
-  // complex<InvEnergy2> pre(_ccoupling[imode][3]);
-  // Complex resfact,ii(0.,1.);
-  // // rho0 contribution
-  // Energy pcm,mrho1(sqrt(s1)),mrho2(sqrt(s2)),mrho3(sqrt(s3));
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   // rho0 contribution
-  //   pcm = Kinematics::pstarTwoBodyDecay(mrho1,_mpic,_mpic);
-  //   resfact = _rhomass2[imode][ix]/(mrho1*mrho1-_rhomass2[imode][ix]
-  // 				    +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho1);
-  //   // rho+ contribution
-  //   pcm = Kinematics::pstarTwoBodyDecay(mrho2,_mpic,_mpi0);
-  //   resfact+= _rhomass2[imode][ix]/(mrho2*mrho3-_rhomass2[imode][ix]
-  // 				    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho2);
-  //   // rho- contribution
-  //   pcm = Kinematics::pstarTwoBodyDecay(mrho3,_mpic,_mpi0);
-  //   resfact+= _rhomass2[imode][ix]/(mrho3*mrho3-_rhomass2[imode][ix]
-  // 				    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho3);
-  //   // add the contribution
-  //   pre+=resfact *_ccoupling[imode][ix];
-  // }
-  // LorentzPolarizationVector current =
-  //   _coupling[imode]*(pre*epsilon(p1,p2,p3));
-  // Complex temp(current.dot(current.conjugate()));
-  // return -temp.real()/3.;
+		       Energy m1, const Energy m2, const Energy m3) const {
+  mD_ = sqrt(q2);
+  mOut_[0] = m1;
+  mOut_[1] = m2;
+  mOut_[2] = m3;
+  m2_[0][1]=m2_[1][0]=sqrt(s3);
+  m2_[0][2]=m2_[2][0]=sqrt(s2);
+  m2_[1][2]=m2_[2][1]=sqrt(s1);
+  // now compute the matrix element
+  // amplitide
+  Complex amp = amplitude(0);
+  // epsilon piece
+  Energy6 kin = 1./12.*(-(sqr(q2)*sqr(m2)) - sqr(m1)*pow<4,1>(m3) - 
+			(sqr(s3) + (sqr(m1) - s3)*(sqr(m2) - s3))*s3 + 
+			sqr(m3)*(-pow<4,1>(m1) + (s3-sqr(m2))*s3 + sqr(m1)*(sqr(m2) + 2*s3)) + 
+			q2*(-pow<4,1>(m2) + sqr(m1)*(sqr(m2) + sqr(m3) - s3) + s3*(-sqr(m3) + s3) + 
+			    sqr(m2)*(sqr(m3) + 2*s3)));
+  return amp.real()*kin/GeV2/GeV2/GeV2;
 } 
 
 WidthCalculatorBasePtr 
-VectorTo3PseudoScalarDalitz::threeBodyMEIntegrator(const DecayMode & dm) const {
+VectorTo3PseudoScalarDalitz::threeBodyMEIntegrator(const DecayMode & ) const {
   int imode=0;
   // construct the integrator
   vector<double> inweights;
+  vector<int> intype;
+  vector<Energy> inmass,inwidth;
   inweights.reserve(resonances().size());
+  intype.reserve(resonances().size());
+  inmass.reserve(resonances().size());
+  inwidth.reserve(resonances().size());
   int iloc=-1;
+  vector<double> inpow(2,0.0);
   for(unsigned int ix=0;ix<resonances().size();++ix) {
     tPDPtr resonance = getParticleData(resonances()[ix].id);
     if(resonance) {
       ++iloc;
-  //     mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,resonances()[ix].spectator+1,1,resonances()[ix].daughter1+1,1,resonances()[ix].daughter2+1));
-  //     resetIntermediate(resonance,resonances()[ix].mass,abs(resonances()[ix].width));
-  //     ++ix;
+      inweights.push_back(weights()[iloc]);
+      inmass.push_back(resonances()[ix].mass);
+      inwidth.push_back(abs(resonances()[ix].width));
+      intype.push_back(resonances()[ix].spectator+1);
     }
-    }
-    
-//   vector<double> inweights(3,1./3.);
-//   vector<int> intype;intype.push_back(1);intype.push_back(2);intype.push_back(3);
-//   Energy mrho(getParticleData(ParticleID::rhoplus)->mass());
-//   Energy wrho(getParticleData(ParticleID::rhoplus)->width());
-//   vector<Energy> inmass(3,mrho);
-//   vector<Energy> inwidth(3,wrho);
-//   vector<double> inpow(2,0.0);
-//   //tcDecayIntegratorPtr decayer(this);
-//   WidthCalculatorBasePtr output(
-//     new_ptr(ThreeBodyAllOnCalculator<VectorTo3PseudoScalarDalitz>
-// 	    (inweights,intype,inmass,inwidth,inpow,
-// 	     *this,imode,_mpi0,_mpic,_mpic)));
-//   return output;
+  }
+  tcDecayIntegratorPtr decayer(this);
+  WidthCalculatorBasePtr output(
+    new_ptr(ThreeBodyAllOnCalculator<VectorTo3PseudoScalarDalitz>
+  	    (inweights,intype,inmass,inwidth,inpow,
+  	     *this,imode,
+	     mode(0)->outgoing()[0]->mass(),
+	     mode(0)->outgoing()[1]->mass(),
+	     mode(0)->outgoing()[2]->mass())));
+  return output;
 }
 
 void VectorTo3PseudoScalarDalitz::dataBaseOutput(ofstream & output,
@@ -221,4 +172,54 @@ void VectorTo3PseudoScalarDalitz::dataBaseOutput(ofstream & output,
   DalitzBase::dataBaseOutput(output,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" 
    		    << fullName() << "\";" << endl;}
+}
+
+Complex VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
+  // can't have a scalar here on spin/parity grounds
+  assert(resonances()[i].type%10!=1);
+  // shouldn't have E691 stuff either
+  assert(resonances()[i].type%10!=1);
+  // amplitude
+  static const Complex ii = Complex(0.,1.);
+  Complex output = resonances()[i].amp;
+  if (resonances()[i].type==ResonanceType::NonResonant) return output;
+  // locations of the outgoing particles
+  const unsigned int &d1 = resonances()[i].daughter1;
+  const unsigned int &d2 = resonances()[i].daughter2;
+  const unsigned int &sp = resonances()[i].spectator;
+  // mass and width of the resonance
+  const Energy & mR = resonances()[i].mass ;
+  const Energy & wR = resonances()[i].width;
+  // momenta for the resonance decay
+  // off-shell
+  Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
+  //  on-shell
+  Energy  pR=sqrt(0.25*sqr(    mR*mR        -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/mR;
+  // Blatt-Weisskopf factors
+  double fR=1, fD=1;
+  unsigned int power(1);
+  // for the D decay
+  Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
+  Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
+  double r1A(resonances()[i].R*pR),r1B(resonances()[i].R*pAB );
+  double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
+  // Blatt-Weisskopf factors and spin piece
+  switch (resonances()[i].type) {
+  case ResonanceType::Spin1:
+    fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
+    fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
+    power=3;
+    output *= fR*fD;
+    break;
+  case ResonanceType::Spin2:
+    fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
+    fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
+    power=5;
+    output *= fR*fD;
+    break;
+  default :
+    assert(false);
+  }
+  Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
+  return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
 }
