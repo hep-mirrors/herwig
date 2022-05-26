@@ -13,6 +13,8 @@ DalitzResonance.h\
 DalitzBase.h\
 FOCUSDptoKmPipPip.h \
 ScalarTo3ScalarDalitz.h\
+VectorTo3PseudoScalarDalitz.h\
+VectorMeson3PionDecayer.h\
 BABAREtactoKpKmEta.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -20,4 +22,6 @@ ALL_CC_FILES = \
 DalitzBase.cc\
 FOCUSDptoKmPipPip.cc\
 ScalarTo3ScalarDalitz.cc\
+VectorTo3PseudoScalarDalitz.cc\
+VectorMeson3PionDecayer.cc\
 BABAREtactoKpKmEta.cc
