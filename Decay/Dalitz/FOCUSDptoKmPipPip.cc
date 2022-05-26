@@ -19,8 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-FOCUSDptoKmPipPip::FOCUSDptoKmPipPip() : ScalarTo3ScalarDalitz(5./GeV),
-					 g1_(0.31072*GeV), g2_(-0.02323*GeV),
+FOCUSDptoKmPipPip::FOCUSDptoKmPipPip() : g1_(0.31072*GeV), g2_(-0.02323*GeV),
 					 beta_(3.389*GeV), theta_(286), gamma_({304,126,211}),
 					 c1_({1.655,0.780,-0.954}), c2_(17.182), c3_(0.734)
 {}

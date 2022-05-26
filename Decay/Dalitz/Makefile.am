@@ -10,12 +10,14 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 DalitzResonance.h\
+DalitzBase.h\
 FOCUSDptoKmPipPip.h \
 ScalarTo3ScalarDalitz.h\
 BABAREtactoKpKmEta.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
+DalitzBase.cc\
 FOCUSDptoKmPipPip.cc\
 ScalarTo3ScalarDalitz.cc\
 BABAREtactoKpKmEta.cc
