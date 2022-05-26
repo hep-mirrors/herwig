@@ -267,7 +267,7 @@ void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<VectorMeson3PionDecayer,DecayIntegrator>
-describeHerwigVectorMeson3PionDecayer("Herwig::VectorMeson3PionDecayer", "HwVMDecay.so");
+describeHerwigVectorMeson3PionDecayer("Herwig::VectorMeson3PionDecayer", "HwDalitzDecay.so");
 
 void VectorMeson3PionDecayer::Init() {
 
