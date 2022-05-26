@@ -16,7 +16,6 @@
 using namespace Herwig;
 
 BABAREtactoKpKmEta::BABAREtactoKpKmEta() :
-  ScalarTo3ScalarDalitz(0./GeV,false),
   mf0_1500_(1505*MeV), wf0_1500_(109*MeV),
   mf0_1710_(1720*MeV), wf0_1710_(135*MeV),
   mK0_1430_(1438*MeV), wK0_1430_(210*MeV),

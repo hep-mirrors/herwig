@@ -5,8 +5,7 @@
 // This is the declaration of the ScalarTo3ScalarDalitz class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "DalitzResonance.h"
+#include "DalitzBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -19,23 +18,16 @@ using namespace ThePEG;
  * @see \ref ScalarTo3ScalarDalitzInterfaces "The interfaces"
  * defined for ScalarTo3ScalarDalitz.
  */
-class ScalarTo3ScalarDalitz: public DecayIntegrator {
+class ScalarTo3ScalarDalitz: public DalitzBase {
   
 public:
 
   /**
    * The default constructor.
    */
-  ScalarTo3ScalarDalitz(InvEnergy rP=5./GeV, bool useResonanceMass=false);
-  
-  /**
-   * Which of the possible decays is required
-   * @param cc Is this mode the charge conjugate
-   * @param parent The decaying particle
-   * @param children The decay products
-   */
-  virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const tPDVector & children) const;
+  ScalarTo3ScalarDalitz() : f0gpi_(0.09), f0gK_(0.02), 
+			    useResonanceMass_(false)
+  {}
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -63,16 +55,6 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
-
-  /**
-   *   Set the parameters for a decay mode
-   */
-  string addChannel(string arg);
-
-  /**
-   *   Set the parameters for a decay mode
-   */
-  string setExternal(string arg);
 
 public:
 
@@ -118,17 +100,7 @@ protected:
   //@}
 
 protected:
-
-  /**
-   *  Add a new resonance
-   */
-  void addResonance(const DalitzResonance & R) {resonances_.push_back(R);}
-
-  /**
-   *  Set up the phase-space
-   */
-  void createMode(tPDPtr in, tPDVector out);
-
+  
   /**
    *  Calculate the amplitude
    */
@@ -137,8 +109,8 @@ protected:
     int iloc=-1;
     for(int ix=0;ix<int(resonances().size());++ix) {
       ++iloc;
-      if(channel1_>=0) {
-	if(ix!=channel1_ && ix!=channel2_) continue;
+      if(channel1()>=0) {
+	if(ix!=channel1() && ix!=channel2()) continue;
       }
       if(ichan>=0&&ichan!=iloc) continue;
       amp += resAmp(ix);
@@ -150,11 +122,6 @@ protected:
    * Calculate the amplitude for the ith resonance
    */
   Complex resAmp(unsigned int i) const;
-
-  /**
-   *  Access to the resonances
-   */
-  const vector<DalitzResonance> & resonances() const {return resonances_;}
 
   /**
    *  Access to the invariants
@@ -169,24 +136,6 @@ protected:
   const Energy & mOut(unsigned int i) const {
     return mOut_[i];
   }
-  
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-  //@}
 
 private:
 
@@ -197,16 +146,6 @@ private:
   ScalarTo3ScalarDalitz & operator=(const ScalarTo3ScalarDalitz &) = delete;
 
 private:
-
-  /**
-   *   The radii for the Blatt-Weisskopf form factors
-   */
-  //@{
-  /**
-   *   For the decaying particles
-   */
-  InvEnergy rParent_;
-  //@}
   
   /**
    *  Parameters for the \f$f_0(980)\f$
@@ -224,35 +163,9 @@ private:
   //@}
 
   /**
-   *  Vector containing the intermediate resonances
-   */
-  vector<DalitzResonance> resonances_;
-
-  /**
    *  Choice of the mass to use in the denominator of the expressions
    */
   bool useResonanceMass_;
-
-  /**
-   *  Take all \f$K_0\f$ mesnos to be the same
-   */
-  bool useAllK0_;
-  
-private:
-  
-  /**
-   *   Parameters for the phase-space sampling
-   */
-  //@{
-  /**
-   *  Maximum weight for the decay
-   */
-  double maxWgt_;
-
-  /**
-   *  Weights for the phase-space channels
-   */
-  vector<double> weights_;
   //@}
   
 private :
@@ -280,22 +193,7 @@ private :
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
-
-  /**
-   *  Control over channels to check fit fractions
-   */
-  int channel1_, channel2_;
-
-  /**
-   *  The incoming particle
-   */
-  long incoming_;
-
-  /**
-   *  The outgoing pairtcles
-   */
-  array<long,3> outgoing_;
+  mutable RhoDMatrix rho_;
 };
 
 }

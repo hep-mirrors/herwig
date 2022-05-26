@@ -6,7 +6,7 @@
 
 #include "ScalarTo3ScalarDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -14,19 +14,10 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
-
-ScalarTo3ScalarDalitz::ScalarTo3ScalarDalitz(InvEnergy rP, bool useResonanceMass)
-  : rParent_(rP), f0gpi_(0.09), f0gK_(0.02), 
-    useResonanceMass_(useResonanceMass), useAllK0_(false), maxWgt_(1.),
-    channel1_(-1), channel2_(-1), incoming_(0), outgoing_({0,0,0}) {
-  // intermediates
-  generateIntermediates(true);
-}
 
 IBPtr ScalarTo3ScalarDalitz::clone() const {
   return new_ptr(*this);
@@ -37,18 +28,16 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 }
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
-  os << resonances_ << maxWgt_ << weights_ << ounit(rParent_,1./GeV) << f0gpi_ << f0gK_
-     << channel1_ << channel2_ << incoming_ << outgoing_ << useResonanceMass_ << useAllK0_;
+  os << f0gpi_ << f0gK_ << useResonanceMass_ ;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
-  is >> resonances_ >> maxWgt_ >> weights_ >> iunit(rParent_,1./GeV) >> f0gpi_ >> f0gK_ 
-     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useResonanceMass_ >> useAllK0_;
+  is >> f0gpi_ >> f0gK_ >> useResonanceMass_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarTo3ScalarDalitz,DecayIntegrator>
+DescribeClass<ScalarTo3ScalarDalitz,DalitzBase>
 describeHerwigScalarTo3ScalarDalitz("Herwig::ScalarTo3ScalarDalitz", "HwDalitzDecay.so");
 
 void ScalarTo3ScalarDalitz::Init() {
@@ -56,22 +45,6 @@ void ScalarTo3ScalarDalitz::Init() {
   static ClassDocumentation<ScalarTo3ScalarDalitz> documentation
     ("The ScalarTo3ScalarDalitz class provides a base class for "
      "weak three-body decays of bottom and charm mesons");
-
-  static Command<ScalarTo3ScalarDalitz> interfaceSetExternal
-    ("SetExternal",
-     "Set the external particles for the decay mode",
-     &ScalarTo3ScalarDalitz::setExternal, false);
-  
-  static Command<ScalarTo3ScalarDalitz> interfaceAddChannel
-    ("AddChannel",
-     "Add a channel for the description of the matrix element",
-     &ScalarTo3ScalarDalitz::addChannel, false);
-
-  static Parameter<ScalarTo3ScalarDalitz,InvEnergy> interfaceParentRadius
-    ("ParentRadius",
-     "The radius parameter for the Blatt-Weisskopf form-factor for the D",
-     &ScalarTo3ScalarDalitz::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
-     false, false, Interface::limited);
   
   static Parameter<ScalarTo3ScalarDalitz,double> interfacegPi
     ("f0gPi",
@@ -83,30 +56,6 @@ void ScalarTo3ScalarDalitz::Init() {
     ("f0gK",
      "The g_K coupling for the f_0(980) width",
      &ScalarTo3ScalarDalitz::f0gK_, 0.02, 0.0, 1.,
-     false, false, Interface::limited);
-
-  static Parameter<ScalarTo3ScalarDalitz,double> interfaceMaximumWeight
-    ("MaximumWeight",
-     "The maximum weight for the phase-space sampling",
-     &ScalarTo3ScalarDalitz::maxWgt_, 1.0, 0.0, 1e20,
-     false, false, Interface::limited);
-
-  static ParVector<ScalarTo3ScalarDalitz,double> interfaceWeights
-    ("Weights",
-     "The weights for the different channels for the phase-space integration",
-     &ScalarTo3ScalarDalitz::weights_, -1, 1.0, 0.0, 1.0,
-     false, false, Interface::limited);
-  
-  static Parameter<ScalarTo3ScalarDalitz,int> interfaceChannel1
-    ("Channel1",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &ScalarTo3ScalarDalitz::channel1_, -1, -1, 100,
-     false, false, Interface::limited);
-  
-  static Parameter<ScalarTo3ScalarDalitz,int> interfaceChannel2
-    ("Channel2",
-     "The first allowed channel, for debugging/calculation of fit fractions only",
-     &ScalarTo3ScalarDalitz::channel2_, -1, -1, 100,
      false, false, Interface::limited);
 
   static Switch<ScalarTo3ScalarDalitz,bool> interfaceResonanceMass
@@ -124,21 +73,6 @@ void ScalarTo3ScalarDalitz::Init() {
      "Use the correct kinematic mass",
      false);
 
-  static Switch<ScalarTo3ScalarDalitz,bool> interfaceUseAllK0
-    ("UseAllK0",
-     "Use all K0 mesons when matching the mode",
-     &ScalarTo3ScalarDalitz::useAllK0_, false, false, false);
-  static SwitchOption interfaceUseAllK0No
-    (interfaceUseAllK0,
-     "No",
-     "Just use the identified state",
-     false);
-  static SwitchOption interfaceUseAllK0Yes
-    (interfaceUseAllK0,
-     "Yes",
-     "Use all the states",
-     true);
-
 }
 
 void ScalarTo3ScalarDalitz::
@@ -148,26 +82,6 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 					incoming,true);
   for(unsigned int ix=0;ix<3;++ix)
     ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-}
-
-void ScalarTo3ScalarDalitz::doinit() {
-  if(incoming_!=0) {
-    tPDPtr in = getParticleData(incoming_);
-    vector<tPDPtr> out = {getParticleData(outgoing_[0]),
-			  getParticleData(outgoing_[1]),
-			  getParticleData(outgoing_[2])};
-    createMode(in,out);
-  }
-  DecayIntegrator::doinit();
-}
-
-void ScalarTo3ScalarDalitz::doinitrun() {
-  DecayIntegrator::doinitrun();
-  weights_.resize(mode(0)->channels().size());
-  maxWgt_ = mode(0)->maxWeight();
-  for(unsigned int iz=0;iz<mode(0)->channels().size();++iz) {
-    weights_[iz]=mode(0)->channels()[iz].weight();
-  }
 }
 
 double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
@@ -180,7 +94,7 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // set the kinematics
   mD_ = part.mass();
@@ -197,54 +111,37 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
   return norm(amp);
 }
 
-void ScalarTo3ScalarDalitz::createMode(tPDPtr in, tPDVector out) {
-  PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,maxWgt_));
-  if(weights_.size()!=resonances_.size()) {
-    weights_=vector<double>(resonances_.size(),1./double(resonances_.size()));
-  }
-  unsigned int ix=0;
-  for(DalitzResonance res : resonances_) {
-    tPDPtr resonance = getParticleData(res.id);
-    if(resonance) {
-      mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,res.spectator+1,1,res.daughter1+1,1,res.daughter2+1));
-      resetIntermediate(resonance,res.mass,abs(res.width));
-      ++ix;
-    }
-  }
-  addMode(mode);
-}
-
 Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   static const Complex ii = Complex(0.,1.);
-  Complex output = resonances_[i].amp;
-  if (resonances_[i].type==ResonanceType::NonResonant) return output;
+  Complex output = resonances()[i].amp;
+  if (resonances()[i].type==ResonanceType::NonResonant) return output;
   // locations of the outgoing particles
-  const unsigned int &d1 = resonances_[i].daughter1;
-  const unsigned int &d2 = resonances_[i].daughter2;
-  const unsigned int &sp = resonances_[i].spectator;
+  const unsigned int &d1 = resonances()[i].daughter1;
+  const unsigned int &d2 = resonances()[i].daughter2;
+  const unsigned int &sp = resonances()[i].spectator;
   // mass and width of the resonance
-  const Energy & mR = resonances_[i].mass ;
-  const Energy & wR = resonances_[i].width;
+  const Energy & mR = resonances()[i].mass ;
+  const Energy & wR = resonances()[i].width;
   // momenta for the resonance decay
   // off-shell
   Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
-  if(resonances_[i].type==ResonanceType::BABARf0) {
+  if(resonances()[i].type==ResonanceType::BABARf0) {
     double rho = 2.*pAB/m2_[d1][d2];
-    output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-
-		    ii*resonances_[i].mass*resonances_[i].width*rho);
+    output *= GeV2/(sqr(resonances()[i].mass)-sqr(m2_[d1][d2])-
+		    ii*resonances()[i].mass*resonances()[i].width*rho);
     return output;
   }
-  else if (resonances_[i].type==ResonanceType::Flattef0) {
+  else if (resonances()[i].type==ResonanceType::Flattef0) {
     Energy mpi = getParticleData(211)->mass();
     Energy mK  = getParticleData(321)->mass();
     Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(m2_[d1][d2])-sqr(mpi));
     Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
     complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
-    output *= GeV2/(sqr(resonances_[i].mass)-sqr(m2_[d1][d2])-ii*resonances_[i].mass*(Gamma_pi+Gamma_K));
+    output *= GeV2/(sqr(resonances()[i].mass)-sqr(m2_[d1][d2])-ii*resonances()[i].mass*(Gamma_pi+Gamma_K));
     return output;
   }
-  else if (resonances_[i].type==ResonanceType::Spin0Complex) {
-    complex<Energy> sR(resonances_[i].mass,resonances_[i].width);
+  else if (resonances()[i].type==ResonanceType::Spin0Complex) {
+    complex<Energy> sR(resonances()[i].mass,resonances()[i].width);
     output *= GeV2/(sqr(sR)-sqr(m2_[d1][d2]));
     return output;
   }
@@ -253,24 +150,24 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   // Blatt-Weisskopf factors
   double fR=1, fD=1;
   unsigned int power(1);
-  if(resonances_[i].type!=ResonanceType::Spin0 &&
-     resonances_[i].type!=ResonanceType::Spin0E691) {
+  if(resonances()[i].type!=ResonanceType::Spin0 &&
+     resonances()[i].type!=ResonanceType::Spin0E691) {
     // for the D decay
     Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
     Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-    double r1A(resonances_[i].R*pR),r1B(resonances_[i].R*pAB );
-    double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
+    double r1A(resonances()[i].R*pR),r1B(resonances()[i].R*pAB );
+    double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
     // mass for thre denominator
     Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
     // denominator for the older form of the amplitude
     Energy2 denom = GeV2;
-    if (resonances_[i].type/10 == 1 ) { 
+    if (resonances()[i].type/10 == 1 ) { 
       Energy2 pa2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mOut_[d1])+sqr(mOut_[d2])) + sqr(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(m2_[d1][d2]));
       Energy2 pc2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mD_      )+sqr(mOut_[sp])) + sqr(sqr(mD_      )-sqr(mOut_[sp]))/sqr(m2_[d1][d2]));
       denom = 4.*sqrt(pa2*pc2);
     }
     // Blatt-Weisskopf factors and spin piece
-    switch (resonances_[i].type) {
+    switch (resonances()[i].type) {
     case ResonanceType::Spin0Gauss:
       fR = exp(-(r1B-r1A)/12.);
       fD = exp(-(r2B-r2A)/12.);
@@ -295,7 +192,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     }
   }
   // multiply by Breit-Wigner piece and return
-  if (resonances_[i].type/10 == 1 ) {
+  if (resonances()[i].type/10 == 1 ) {
     return output*sqrt(0.5*wR/GeV/Constants::pi)*GeV/(m2_[d1][d2]-mR-complex<Energy>(ZERO,0.5*wR));
   }
   else {
@@ -306,172 +203,13 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
 
 void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
-  output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
+  // parameters for the DalitzBase base class
+  DalitzBase::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
   output << "newdef " << name() << ":f0gPi "      << f0gpi_   << "\n";
   output << "newdef " << name() << ":f0gK "       << f0gK_    << "\n";
-  output << "newdef " << name() << ":UseAllK0 " << useAllK0_ << "\n";
-  output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
-  for(unsigned int ix=0;ix<weights_.size();++ix) {
-    output << "insert " << name() << ":Weights "
-	   << ix << " " << weights_[ix] << "\n";
-  }
-  for(unsigned int ix=0;ix<resonances_.size();++ix) {
-    output << "do " << name() << ":AddChannel "
-	   << resonances_[ix].id << " " << oenum(resonances_[ix].type) << " "
-	   << resonances_[ix].mass/GeV << " " << resonances_[ix].width/GeV << " "
-	   << resonances_[ix].daughter1 << " " << resonances_[ix].daughter2 << " "
-	   << resonances_[ix].spectator << " " 
-	   << abs(resonances_[ix].amp) << " " << arg(resonances_[ix].amp) << " "
-	   << resonances_[ix].R*GeV << "\n"; 
-  }
-  output << "do " << name() << ":SetExternal " << incoming_;
-  for(unsigned int ix=0;ix<3;++ix) output << " " << outgoing_[ix];
   output << "\n";
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
   }
-}
-
-string ScalarTo3ScalarDalitz::addChannel(string arg) {
-  // parse first bit of the string
-  string stype = StringUtils::car(arg);
-  arg          = StringUtils::cdr(arg);
-  // extract PDG code for the incoming particle
-  long id = stoi(stype);
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  ResonanceType::Type type = static_cast<ResonanceType::Type>(stoi(stype));
-  // mass and width
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  Energy mass = stof(stype)*GeV;
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  Energy width = stof(stype)*GeV;
-  // children
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  int d1 = stoi(stype);
-  // children
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  int d2 = stoi(stype);
-  // children
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  int sp = stoi(stype);
-  if (sp==d1 || sp ==d2 || d1 == d2)
-    return "Daughters and spectator must all be different not " + std::to_string(d1) + ", " + std::to_string(d2) + ", " + std::to_string(sp);
-  // magnitude and phase
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  double mag = stof(stype);
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  double phi = stof(stype);
-  // radius
-  stype = StringUtils::car(arg);
-  arg   = StringUtils::cdr(arg);
-  InvEnergy r = stof(stype)/GeV;
-  // add to list
-  resonances_.push_back(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r));
-  // success
-  return "";
-}
-
-string ScalarTo3ScalarDalitz::setExternal(string arg) {
-  // parse first bit of the string
-  string stype = StringUtils::car(arg);
-  arg          = StringUtils::cdr(arg);
-  // extract PDG code for the incoming particle
-  long id = stoi(stype);
-  tPDPtr in = getParticleData(id);
-  if(!in)
-    return "Incoming particle with id " + std::to_string(id) + "does not exist";
-  if(in->iSpin()!=PDT::Spin0)
-    return "Incoming particle with id " + std::to_string(id) + "does not have spin 0";
-  tPDVector out;
-  for(unsigned int ix=0;ix<3;++ix) {
-    string stype = StringUtils::car(arg);
-    arg          = StringUtils::cdr(arg);
-    long in = stoi(stype);
-    tPDPtr pData = getParticleData(in);
-    if(!pData)
-      return "Outgoing particle with id " + std::to_string(in) + "does not exist";
-    if(pData->iSpin()!=PDT::Spin0)
-      return "Outgoing particle with id " + std::to_string(in) + "does not have spin 0";
-    out.push_back(pData);
-  }
-  incoming_ = in->id();
-  outgoing_ = {out[0]->id(),out[1]->id(),out[2]->id()};
-  // success
-  return "";
-}
-
-int ScalarTo3ScalarDalitz::modeNumber(bool & cc,tcPDPtr parent,
-				const tPDVector & children) const {
-  // must be three decay products
-  if(children.size()!=3) return -1;
-  // ids of the outgoing particles
-  map<long,unsigned int> ids;
-  for(unsigned int iy=0;iy<3;++iy) {
-    long id = outgoing_[iy];
-    if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
-    if(ids.find(id)!=ids.end())
-      ids[id]+=1;
-    else
-      ids[id]+=1;
-  }
-  if(incoming_==parent->id()) {
-    bool found=true;
-    map<long,unsigned int> ids2;
-    for(unsigned int iy=0;iy<children.size();++iy) {
-    long id = children[iy]->id();
-    if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
-      if(ids2.find(id)!=ids2.end())
-	ids2[id]+=1;
-      else
-	ids2[id] =1;
-    }
-    for (const auto& kv : ids2) {
-      if(ids.find(kv.first)==ids.end() ||
-	 ids[kv.first]!=kv.second) {
-	found=false;
-	break;
-      }
-    }
-    if (found) {
-      cc = false;
-      return 0;
-    }
-  }
-  if( (!parent->CC() && incoming_==parent->id()) ||
-      ( parent->CC() && incoming_==parent->CC()->id()) ) {
-    map<long,unsigned int> ids2;
-    for(unsigned int iy=0;iy<3;++iy) {
-      tPDPtr part = children[iy]->CC() ? children[iy]->CC() : children[iy];
-      long id = part->id();
-      if(useAllK0_ && (id==130 || id==310 || id==311 || id==-311)) id=130; 
-      if(ids2.find(id)!=ids2.end())
-	ids2[id]+=1;
-      else
-	ids2[id]+=1;
-    }
-    bool found=true;
-    for (const auto& kv : ids2) {
-      if(ids.find(kv.first)==ids.end() ||
-	 ids[kv.first]!=kv.second) {
-	found=false;
-	break;
-      }
-    }
-    if (found) {
-      cc = true;
-      return 0;
-    }
-  }
-  return -1;
 }
