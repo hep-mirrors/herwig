@@ -25,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  VectorTo3PseudoScalarDalitz() : useResonanceMass_(true)
+  VectorTo3PseudoScalarDalitz() : coupling_(1./GeV)
   {}
 
   /**
@@ -128,8 +128,8 @@ protected:
   /**
    *  Calculate the amplitude
    */
-  virtual Complex amplitude(int ichan) const {
-    Complex amp(0.);
+  virtual complex<InvEnergy2> amplitude(int ichan) const {
+    complex<InvEnergy2> amp(ZERO);
     int iloc=-1;
     for(int ix=0;ix<int(resonances().size());++ix) {
       ++iloc;
@@ -145,7 +145,7 @@ protected:
   /**
    * Calculate the amplitude for the ith resonance
    */
-  Complex resAmp(unsigned int i) const;
+  complex<InvEnergy2> resAmp(unsigned int i) const;
 
 private:
 
@@ -158,9 +158,9 @@ private:
 private:
 
   /**
-   *  Factor for numerator of the Breit-Wigner
+   *  Coupling for the normalisation of the mode
    */
-  bool useResonanceMass_;
+  InvEnergy coupling_;
 
   /**
    *   Storage of the kinematics
@@ -181,6 +181,7 @@ private:
    */
   mutable Energy m2_[3][3];
   //@}
+  
   /**
    *  Storage of polarization vectors to try and increase
    *  speed

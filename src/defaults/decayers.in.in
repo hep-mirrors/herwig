@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 17:35:19 on the 25/5/2022.
+# from the Herwig Particles Database at 20:40:39 on the 26/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -1861,49 +1861,22 @@ do VectorVPff:SetUpDecayMode 333 111 13  0.0120094 2 113 0.7758 0.1503 3.16628 0
 do VectorVPff:SetUpDecayMode 443 221 11  0.0643 2 443 3.0969 9.29e-05 2.34926 0.189627
 do VectorVPff:SetUpDecayMode 443 221 13  0.0643 2 443 3.0969 9.29e-05 0.420516 0.200787
 #
-create Herwig::VectorMeson3PionDecayer  Vector3Pion
-newdef Vector3Pion:Iteration 5
-newdef Vector3Pion:Ntry 500
-newdef Vector3Pion:Points 10000
-newdef Vector3Pion:GenerateIntermediates 1
-newdef Vector3Pion:Incoming 0 223
-newdef Vector3Pion:Coupling 0 178.71
-newdef Vector3Pion:DirectCoupling 0 0
-newdef Vector3Pion:Rho2Coupling 0 0
-newdef Vector3Pion:Rho3Coupling 0 0
-newdef Vector3Pion:DirectPhase 0 0
-newdef Vector3Pion:Rho2Phase 0 0
-newdef Vector3Pion:Rho3Phase 0 0
-newdef Vector3Pion:MaxWeight 0 16.
-newdef Vector3Pion:Rho1Weight 0 0.333333
-newdef Vector3Pion:Rho2Weight 0 -1
-newdef Vector3Pion:Rho3Weight 0 -1
-newdef Vector3Pion:Rho1Mass 0 0.7755
-newdef Vector3Pion:Rho2Mass 0 1.459
-newdef Vector3Pion:Rho3Mass 0 1.72
-newdef Vector3Pion:Rho1Width 0 0.1494
-newdef Vector3Pion:Rho2Width 0 0.147
-newdef Vector3Pion:Rho3Width 0 0.25
-newdef Vector3Pion:DefaultParameters 0 1
-newdef Vector3Pion:Incoming 1 333
-newdef Vector3Pion:Coupling 1 8.788
-newdef Vector3Pion:DirectCoupling 1 0.78
-newdef Vector3Pion:Rho2Coupling 1 0
-newdef Vector3Pion:Rho3Coupling 1 0
-newdef Vector3Pion:DirectPhase 1 -2.47
-newdef Vector3Pion:Rho2Phase 1 0
-newdef Vector3Pion:Rho3Phase 1 0
-newdef Vector3Pion:MaxWeight 1 16.
-newdef Vector3Pion:Rho1Weight 1 0.333333
-newdef Vector3Pion:Rho2Weight 1 -1
-newdef Vector3Pion:Rho3Weight 1 -1
-newdef Vector3Pion:Rho1Mass 1 0.7758
-newdef Vector3Pion:Rho2Mass 1 1.45
-newdef Vector3Pion:Rho3Mass 1 1.7
-newdef Vector3Pion:Rho1Width 1 0.1439
-newdef Vector3Pion:Rho2Width 1 0.31
-newdef Vector3Pion:Rho3Width 1 0.24
-newdef Vector3Pion:DefaultParameters 1 0
+create Herwig::VectorTo3PseudoScalarDalitz  OmegaDalitz
+newdef OmegaDalitz:Coupling 178.71
+newdef OmegaDalitz:Iteration 5
+newdef OmegaDalitz:Ntry 500
+newdef OmegaDalitz:Points 100000
+newdef OmegaDalitz:GenerateIntermediates 1 
+newdef OmegaDalitz:ParentRadius 0
+newdef OmegaDalitz:UseAllK0 0
+newdef OmegaDalitz:MaximumWeight 6.94037
+insert OmegaDalitz:Weights 0 0.333826
+insert OmegaDalitz:Weights 1 0.334815
+insert OmegaDalitz:Weights 2 0.331359
+do OmegaDalitz:AddChannel 213 3 0.7758 0.1503 0 2 1 1 0 0
+do OmegaDalitz:AddChannel -213 3 0.7758 0.1503 1 2 0 1 0 0
+do OmegaDalitz:AddChannel 113 3 0.7758 0.1503 0 1 2 1 0 0
+do OmegaDalitz:SetExternal 223 211 -211 111
 #
 create Herwig::a1ThreePionCLEODecayer  a1CLEO
 newdef a1CLEO:Iteration 5
@@ -21579,6 +21552,24 @@ do AVV:SetUpDecayMode 120553 30553 22 0.0172 1.60582
 do AVV:SetUpDecayMode 220553 130553 22 0.0207 1.61951
 do AVV:SetUpDecayMode 20443 313 -313 0.00603 20.3751
 do AVV:SetUpDecayMode 20443 323 -323 0.00603 27.4378
+#
+create Herwig::VectorTo3PseudoScalarDalitz  PhiDalitz
+newdef PhiDalitz:Coupling 8.788
+newdef PhiDalitz:Iteration 5
+newdef PhiDalitz:Ntry 500
+newdef PhiDalitz:Points 100000
+newdef PhiDalitz:GenerateIntermediates 1 
+newdef PhiDalitz:ParentRadius 0
+newdef PhiDalitz:UseAllK0 0
+newdef PhiDalitz:MaximumWeight 8.38399
+insert PhiDalitz:Weights 0 0.333557
+insert PhiDalitz:Weights 1 0.332802
+insert PhiDalitz:Weights 2 0.333641
+do PhiDalitz:AddChannel 0 0 0 0 0 1 3 1.29597 0.671593 0
+do PhiDalitz:AddChannel 213 3 0.7758 0.1439 0 2 1 1 0 0
+do PhiDalitz:AddChannel -213 3 0.7758 0.1439 1 2 0 1 0 0
+do PhiDalitz:AddChannel 113 3 0.7758 0.1439 0 1 2 1 0 0
+do PhiDalitz:SetExternal 333 211 -211 111
 #
 create  Herwig::HQETStrongDecayer  BottomMeson
 newdef BottomMeson:Iteration 10

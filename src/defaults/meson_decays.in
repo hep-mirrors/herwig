@@ -277,7 +277,7 @@ decaymode rho0->pi+,pi-,pi0,pi0; 1.6E-5 1 /Herwig/Decays/Mambo
 decaymode rho-->pi-,pi0; 0.99955 1 /Herwig/Decays/Vector2Meson
 decaymode rho-->pi-,gamma; 0.00045 1 /Herwig/Decays/VectorVP
 #
-decaymode omega->pi+,pi-,pi0; 0.897637 1 /Herwig/Decays/Vector3Pion
+decaymode omega->pi+,pi-,pi0; 0.897637 1 /Herwig/Decays/OmegaDalitz
 decaymode omega->pi0,gamma; 0.085494 1 /Herwig/Decays/VectorVP
 decaymode omega->pi+,pi-; 0.0153 1 /Herwig/Decays/Vector2Meson
 decaymode omega->pi0,e-,e+; 0.00077 1 /Herwig/Decays/VectorVPff
@@ -289,7 +289,7 @@ decaymode omega->pi0,pi0,gamma; 6.7E-5 1 /Herwig/Decays/DecayME0
 #
 decaymode phi->K+,K-; 0.492008 1 /Herwig/Decays/Vector2Meson
 decaymode phi->K_L0,K_S0; 0.340007 1 /Herwig/Decays/Vector2Meson
-decaymode phi->pi+,pi-,pi0; 0.1524 1 /Herwig/Decays/Vector3Pion
+decaymode phi->pi+,pi-,pi0; 0.1524 1 /Herwig/Decays/PhiDalitz
 decaymode phi->eta,gamma; 0.01303 1 /Herwig/Decays/VectorVP
 decaymode phi->pi0,gamma; 0.00132 1 /Herwig/Decays/VectorVP
 decaymode phi->f_0,gamma; 0.000322 1 /Herwig/Decays/VVSDecayer

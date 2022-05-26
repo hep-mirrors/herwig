@@ -105,11 +105,11 @@ void DalitzBase::doinit() {
 			  getParticleData(outgoing_[2])};
     createMode(in,out);
   }
-  DalitzBase::doinit();
+  DecayIntegrator::doinit();
 }
 
 void DalitzBase::doinitrun() {
-  DalitzBase::doinitrun();
+  DecayIntegrator::doinitrun();
   weights_.resize(mode(0)->channels().size());
   maxWgt_ = mode(0)->maxWeight();
   for(unsigned int iz=0;iz<mode(0)->channels().size();++iz) {
@@ -137,7 +137,7 @@ void DalitzBase::createMode(tPDPtr in, tPDVector out) {
 void DalitzBase::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DalitzBase base class
-  DalitzBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":UseAllK0 " << useAllK0_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
@@ -219,8 +219,6 @@ string DalitzBase::setExternal(string arg) {
   tPDPtr in = getParticleData(id);
   if(!in)
     return "Incoming particle with id " + std::to_string(id) + "does not exist";
-  if(in->iSpin()!=PDT::Spin0)
-    return "Incoming particle with id " + std::to_string(id) + "does not have spin 0";
   tPDVector out;
   for(unsigned int ix=0;ix<3;++ix) {
     string stype = StringUtils::car(arg);
@@ -229,8 +227,6 @@ string DalitzBase::setExternal(string arg) {
     tPDPtr pData = getParticleData(in);
     if(!pData)
       return "Outgoing particle with id " + std::to_string(in) + "does not exist";
-    if(pData->iSpin()!=PDT::Spin0)
-      return "Outgoing particle with id " + std::to_string(in) + "does not have spin 0";
     out.push_back(pData);
   }
   incoming_ = in->id();
