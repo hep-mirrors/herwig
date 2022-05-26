@@ -6,7 +6,7 @@
 
 #include "VectorTo3PseudoScalarDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -30,11 +30,11 @@ IBPtr VectorTo3PseudoScalarDalitz::fullclone() const {
 }
 
 void VectorTo3PseudoScalarDalitz::persistentOutput(PersistentOStream & os) const {
-  os >> useResonanceMass_;
+  os << ounit(coupling_,1./GeV);
 }
 
 void VectorTo3PseudoScalarDalitz::persistentInput(PersistentIStream & is, int) {
-  is << useResonanceMass_;
+  is >> iunit(coupling_,1./GeV);
 }
 
 // The following static variable is needed for the type
@@ -48,20 +48,11 @@ void VectorTo3PseudoScalarDalitz::Init() {
     ("The VectorTo3PseudoScalarDalitz class provides a base class "
      "for the decay of vector mesons to 3 pseudoscalar mesons");
 
-  static Switch<VectorTo3PseudoScalarDalitz,bool> interfaceUseResonanceMass
-    ("UseResonanceMass",
-     "Use the resonance mass squared as the numerator of the Breit-Wigner propagator",
-     &VectorTo3PseudoScalarDalitz::useResonanceMass_, true, false, false);
-  static SwitchOption interfaceUseResonanceMassYes
-    (interfaceUseResonanceMass,
-     "Yes",
-     "Use the resonance mass",
-     true);
-  static SwitchOption interfaceUseResonanceMassNo
-    (interfaceUseResonanceMass,
-     "No",
-     "Don't use the resonance mass",
-     false);
+  static Parameter<VectorTo3PseudoScalarDalitz,InvEnergy> interfaceCouopling
+    ("Coupling",
+     "The coupling for the normalisation of the mode",
+     &VectorTo3PseudoScalarDalitz::coupling_, 1./GeV, 1./GeV, 0./GeV, 1000./GeV,
+     false, false, Interface::limited);
 
 }
 
@@ -96,13 +87,12 @@ double VectorTo3PseudoScalarDalitz::me2(const int ichan, const Particle & part,
     }
   }
   // now compute the matrix element
-  Complex amp = amplitude(ichan);
+  complex<InvEnergy2> amp = amplitude(ichan);
   // polarization vector piece
-  LorentzPolarizationVector 
-    scalar=epsilon(momenta[0],momenta[1],momenta[2])/GeV/GeV2;
+  LorentzVector<complex<Energy3> > scalar = epsilon(momenta[0],momenta[1],momenta[2]);
   // compute the matrix element
   for(unsigned int ix=0;ix<3;++ix) {
-    (*ME())(ix,0,0,0) = amp*scalar.dot(vectors_[ix]);
+    (*ME())(ix,0,0,0) = Complex(coupling_*amp*scalar.dot(vectors_[ix]));
   }
   // return the answer
   return (ME()->contract(rho_)).real();
@@ -121,14 +111,13 @@ threeBodyMatrixElement(const int , const Energy2 q2,
   m2_[1][2]=m2_[2][1]=sqrt(s1);
   // now compute the matrix element
   // amplitide
-  Complex amp = amplitude(0);
+  complex<InvEnergy2> amp = amplitude(-1);
   // epsilon piece
-  Energy6 kin = 1./12.*(-(sqr(q2)*sqr(m2)) - sqr(m1)*pow<4,1>(m3) - 
-			(sqr(s3) + (sqr(m1) - s3)*(sqr(m2) - s3))*s3 + 
-			sqr(m3)*(-pow<4,1>(m1) + (s3-sqr(m2))*s3 + sqr(m1)*(sqr(m2) + 2*s3)) + 
-			q2*(-pow<4,1>(m2) + sqr(m1)*(sqr(m2) + sqr(m3) - s3) + s3*(-sqr(m3) + s3) + 
-			    sqr(m2)*(sqr(m3) + 2*s3)));
-  return amp.real()*kin/GeV2/GeV2/GeV2;
+  Energy6 kin = (pow<4,1>(m1)*(-2*(sqr(m2) + sqr(m3)) + s1) + pow<4,1>(m2)*(-2*sqr(m3) + s2) +
+		 s3*(pow<4,1>(m3) + s1*s2 - sqr(m3)*(s1 + s2 + s3)) - 
+     sqr(m1)*(2*pow<4,1>(m2) + 2*pow<4,1>(m3) + sqr(m2)*(4*sqr(m3) - 3*(s1 + s2) - s3) + s1*(s1 + s2 + s3) - 
+        sqr(m3)*(3*s1 + s2 + 3*s3)) - sqr(m2)*(2*pow<4,1>(m3) + s2*(s1 + s2 + s3) - sqr(m3)*(s1 + 3*(s2 + s3))))/12.;
+  return norm(amp*coupling_*GeV*GeV2)*kin/GeV2/GeV2/GeV2;
 } 
 
 WidthCalculatorBasePtr 
@@ -168,13 +157,14 @@ VectorTo3PseudoScalarDalitz::threeBodyMEIntegrator(const DecayMode & ) const {
 void VectorTo3PseudoScalarDalitz::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header){output << "update decayers set parameters=\"";}
+  output << "newdef " << name() << ":Coupling " << coupling_*GeV << "\n";
   // parameters for the DalitzBase base class
   DalitzBase::dataBaseOutput(output,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" 
    		    << fullName() << "\";" << endl;}
 }
 
-Complex VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
+complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   // can't have a scalar here on spin/parity grounds
   assert(resonances()[i].type%10!=1);
   // shouldn't have E691 stuff either
@@ -182,7 +172,7 @@ Complex VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   // amplitude
   static const Complex ii = Complex(0.,1.);
   Complex output = resonances()[i].amp;
-  if (resonances()[i].type==ResonanceType::NonResonant) return output;
+  if (resonances()[i].type==ResonanceType::NonResonant) return output/GeV2;
   // locations of the outgoing particles
   const unsigned int &d1 = resonances()[i].daughter1;
   const unsigned int &d2 = resonances()[i].daughter2;
@@ -221,5 +211,5 @@ Complex VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
     assert(false);
   }
   Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-  return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+  return output/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
 }
