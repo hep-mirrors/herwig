@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 20:40:39 on the 26/5/2022.
+# from the Herwig Particles Database at 19:26:48 on the 27/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -1877,6 +1877,49 @@ do OmegaDalitz:AddChannel 213 3 0.7758 0.1503 0 2 1 1 0 0
 do OmegaDalitz:AddChannel -213 3 0.7758 0.1503 1 2 0 1 0 0
 do OmegaDalitz:AddChannel 113 3 0.7758 0.1503 0 1 2 1 0 0
 do OmegaDalitz:SetExternal 223 211 -211 111
+#
+create Herwig::ScalarTo3ScalarDalitz  D0PipPimPi0BABAR
+newdef D0PipPimPi0BABAR:Iteration 10
+newdef D0PipPimPi0BABAR:Ntry 500
+newdef D0PipPimPi0BABAR:Points 10000
+newdef D0PipPimPi0BABAR:GenerateIntermediates 1 
+newdef D0PipPimPi0BABAR:ParentRadius 5
+newdef D0PipPimPi0BABAR:ResonanceMass 0
+newdef D0PipPimPi0BABAR:f0gPi 0.09
+newdef D0PipPimPi0BABAR:f0gK 0.02
+newdef D0PipPimPi0BABAR:UseAllK0 0
+newdef D0PipPimPi0BABAR:MaximumWeight 1.28406e+10
+insert D0PipPimPi0BABAR:Weights 0 0.106501
+insert D0PipPimPi0BABAR:Weights 1 0.0749621
+insert D0PipPimPi0BABAR:Weights 2 0.0659099
+insert D0PipPimPi0BABAR:Weights 3 0.0497893
+insert D0PipPimPi0BABAR:Weights 4 0.0518287
+insert D0PipPimPi0BABAR:Weights 5 0.0857863
+insert D0PipPimPi0BABAR:Weights 6 0.0755188
+insert D0PipPimPi0BABAR:Weights 7 0.0815353
+insert D0PipPimPi0BABAR:Weights 8 0.123214
+insert D0PipPimPi0BABAR:Weights 9 0.0482051
+insert D0PipPimPi0BABAR:Weights 10 0.0721906
+insert D0PipPimPi0BABAR:Weights 11 0.0679255
+insert D0PipPimPi0BABAR:Weights 12 0.0370233
+insert D0PipPimPi0BABAR:Weights 13 0.0596098
+do D0PipPimPi0BABAR:AddChannel 213 3 0.7755 0.1494 2 0 1 1 0 1.5
+do D0PipPimPi0BABAR:AddChannel 113 3 0.7755 0.1494 0 1 2 0.588 0.282743 1.5
+do D0PipPimPi0BABAR:AddChannel -213 3 0.7755 0.1494 1 2 0 0.714 -0.0349066 1.5
+do D0PipPimPi0BABAR:AddChannel 100213 3 1.459 0.4 2 0 1 0.21 -2.54818 1.5
+do D0PipPimPi0BABAR:AddChannel 100113 3 1.459 0.4 0 1 2 0.33 0.174533 1.5
+do D0PipPimPi0BABAR:AddChannel -100213 3 1.459 0.4 1 2 0 0.82 0.279253 1.5
+do D0PipPimPi0BABAR:AddChannel 30213 3 1.72 0.25 2 0 1 2.25 -0.296706 1.5
+do D0PipPimPi0BABAR:AddChannel 30113 3 1.72 0.25 0 1 2 2.51 -0.296706 1.5
+do D0PipPimPi0BABAR:AddChannel -30213 3 1.72 0.25 1 2 0 2 -0.872665 1.5
+do D0PipPimPi0BABAR:AddChannel 9010211 1 0.98 0.07 0 1 2 0.015 -1.02974 1.5
+do D0PipPimPi0BABAR:AddChannel 10221 1 1.35 0.35 0 1 2 0.063 2.72271 1.5
+do D0PipPimPi0BABAR:AddChannel 9030221 1 1.507 0.109 0 1 2 0.058 0.20944 1.5
+do D0PipPimPi0BABAR:AddChannel 10331 1 1.718 0.137 0 1 2 0.112 0.890118 1.5
+do D0PipPimPi0BABAR:AddChannel 225 5 1.2754 0.1852 0 1 2 1.04 -2.98451 1.5
+do D0PipPimPi0BABAR:AddChannel 9000221 1 0.4 0.6 0 1 2 0.069 0.139626 1.5
+do D0PipPimPi0BABAR:AddChannel 0 0 0 0 0 1 2 0.57 -0.191986 0
+do D0PipPimPi0BABAR:SetExternal 421 211 -211 111
 #
 create Herwig::a1ThreePionCLEODecayer  a1CLEO
 newdef a1CLEO:Iteration 5

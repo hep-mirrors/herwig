@@ -225,7 +225,6 @@ bool PseudoTensorMesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,in
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode];
   mecode=23;
-  cerr << "testing in the MEcode " << order << "\n";
   return order;
 }
 
