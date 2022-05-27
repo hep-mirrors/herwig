@@ -552,8 +552,10 @@ decaymode h'_1->K*bar0,K0; 0.25 1 /Herwig/Decays/VVSDecayer
 decaymode h'_1->K*0,Kbar0; 0.25 1 /Herwig/Decays/VVSDecayer
 decaymode h'_1->K*+,K-; 0.25 1 /Herwig/Decays/VVSDecayer
 #
-decaymode h_c->g,g,g; 0.6 1 /Herwig/Decays/QDecayME130
-decaymode h_c->eta_c,gamma; 0.4 1 /Herwig/Decays/VVSDecayer
+decaymode h_c->eta_c,gamma; 0.5 1 /Herwig/Decays/VVSDecayer
+decaymode h_c->g,g,g; 0.49803 1 /Herwig/Decays/QDecayME130
+decaymode h_c->eta,gamma; 0.0015 1 /Herwig/Decays/VVSDecayer
+decaymode h_c->eta',gamma; 0.00047 1 /Herwig/Decays/VVSDecayer
 #
 decaymode h_b->eta_b,gamma; 0.52 1 /Herwig/Decays/VVSDecayer
 decaymode h_b->g,g,g; 0.462 1 /Herwig/Decays/QDecayME130

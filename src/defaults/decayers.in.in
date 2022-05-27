@@ -10032,6 +10032,8 @@ do VVSDecayer:SetUpDecayMode 30113 113 9000221 4.043 16.3508
 do VVSDecayer:SetUpDecayMode 100223 223 9000221 4.82 25.6739
 do VVSDecayer:SetUpDecayMode 100443 223 10331 0.000894 6.75282
 do VVSDecayer:SetUpDecayMode 300553 10553 221 0.118 2.82317
+do VVSDecayer:SetUpDecayMode 10443 22 221 0.00283 1.60273
+do VVSDecayer:SetUpDecayMode 10443 22 331 0.00172 1.65219
 #
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 

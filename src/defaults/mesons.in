@@ -193,7 +193,7 @@ setup h_1 10223 h_1 1.166 0.375 0.375 0 0 0 3 0
 create ThePEG::ParticleData h'_1
 setup h'_1 10333 h'_1 1.416 0.09 0.18 0 0 0 3 0 
 create ThePEG::ParticleData h_c
-setup h_c 10443 h_c 3.52593 0.0009 0.009 0 0 0 3 0 
+setup h_c 10443 h_c 3.52538 0.0007 0.007 0 0 0 3 0
 create ThePEG::ParticleData h_b
 setup h_b 10553 h_b 9.8993 8.94E-5 0.000894 0 0 0 3 0 
 create ThePEG::ParticleData K_1+

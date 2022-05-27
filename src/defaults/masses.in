@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 13:28:43 on the 17/5/2022.
+# from the Herwig Particles Database at 16:35:37 on the 27/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -40,9 +40,10 @@ newdef /Herwig/Particles/K*_2bar0:Mass_generator K_20mass
 #
 create Herwig::GenericMassGenerator  omegamass
 newdef omegamass:Particle /Herwig/Particles/omega 
-newdef omegamass:BreitWignerShape 0
-newdef omegamass:MaximumWeight 1.03521
-newdef omegamass:NGenerate 100
+newdef /Herwig/Masses/omegamass:BreitWignerShape 0
+newdef /Herwig/Masses/omegamass:MaximumWeight 0.873846
+newdef /Herwig/Masses/omegamass:NGenerate 100
+newdef /Herwig/Masses/omegamass:WidthOption 0
 
 newdef /Herwig/Particles/omega:Mass_generator omegamass
 #
@@ -110,7 +111,7 @@ newdef /Herwig/Particles/f'_2:Mass_generator f'_2mass
 create Herwig::GenericMassGenerator  phimass
 newdef phimass:Particle /Herwig/Particles/phi 
 newdef /Herwig/Masses/phimass:BreitWignerShape 0
-newdef /Herwig/Masses/phimass:MaximumWeight 0.963591
+newdef /Herwig/Masses/phimass:MaximumWeight 0.146851
 newdef /Herwig/Masses/phimass:NGenerate 100
 newdef /Herwig/Masses/phimass:WidthOption 0
 
@@ -840,41 +841,46 @@ newdef /Herwig/Particles/Jpsi:Mass_generator jpsimass
 #
 create Herwig::GenericMassGenerator  Upsilon1Smass
 newdef Upsilon1Smass:Particle /Herwig/Particles/Upsilon 
-newdef Upsilon1Smass:BreitWignerShape 0
-newdef Upsilon1Smass:MaximumWeight 0.968197
-newdef Upsilon1Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon1Smass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon1Smass:MaximumWeight 0.968198
+newdef /Herwig/Masses/Upsilon1Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon1Smass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon:Mass_generator Upsilon1Smass
 #
 create Herwig::GenericMassGenerator  Upsilon2Smass
 newdef Upsilon2Smass:Particle /Herwig/Particles/Upsilon(2S) 
-newdef Upsilon2Smass:BreitWignerShape 0
-newdef Upsilon2Smass:MaximumWeight 0.968271
-newdef Upsilon2Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon2Smass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon2Smass:MaximumWeight 0.968197
+newdef /Herwig/Masses/Upsilon2Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon2Smass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon(2S):Mass_generator Upsilon2Smass
 #
 create Herwig::GenericMassGenerator  Upsilon3Smass
 newdef Upsilon3Smass:Particle /Herwig/Particles/Upsilon(3S) 
-newdef Upsilon3Smass:BreitWignerShape 0
-newdef Upsilon3Smass:MaximumWeight 0.968239
-newdef Upsilon3Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon3Smass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon3Smass:MaximumWeight 0.968196
+newdef /Herwig/Masses/Upsilon3Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon3Smass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon(3S):Mass_generator Upsilon3Smass
 #
 create Herwig::GenericMassGenerator  Upsilon4Smass
 newdef Upsilon4Smass:Particle /Herwig/Particles/Upsilon(4S) 
-newdef Upsilon4Smass:BreitWignerShape 0
-newdef Upsilon4Smass:MaximumWeight 0.837485
-newdef Upsilon4Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon4Smass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon4Smass:MaximumWeight 0.837354
+newdef /Herwig/Masses/Upsilon4Smass:NGenerate 100
+newdef /Herwig/Masses/Upsilon4Smass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon(4S):Mass_generator Upsilon4Smass
 #
 create Herwig::GenericMassGenerator  h_cmass
 newdef h_cmass:Particle /Herwig/Particles/h_c 
-newdef h_cmass:BreitWignerShape 0
-newdef h_cmass:MaximumWeight 0.969198
-newdef h_cmass:NGenerate 100
+newdef /Herwig/Masses/h_cmass:BreitWignerShape 0
+newdef /Herwig/Masses/h_cmass:MaximumWeight 0.968292
+newdef /Herwig/Masses/h_cmass:NGenerate 100
+newdef /Herwig/Masses/h_cmass:WidthOption 0
 
 newdef /Herwig/Particles/h_c:Mass_generator h_cmass
 #
@@ -896,9 +902,10 @@ newdef /Herwig/Particles/chi_c0:Mass_generator chi_c0mass
 #
 create Herwig::GenericMassGenerator  chi_b01Pmass
 newdef chi_b01Pmass:Particle /Herwig/Particles/chi_b0 
-newdef chi_b01Pmass:BreitWignerShape 0
-newdef chi_b01Pmass:MaximumWeight 0.968236
-newdef chi_b01Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b01Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b01Pmass:MaximumWeight 0.968236
+newdef /Herwig/Masses/chi_b01Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b01Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b0:Mass_generator chi_b01Pmass
 #
@@ -912,17 +919,19 @@ newdef /Herwig/Particles/chi_c1:Mass_generator chi_c11Pmass
 #
 create Herwig::GenericMassGenerator  chi_b11Pmass
 newdef chi_b11Pmass:Particle /Herwig/Particles/chi_b1 
-newdef chi_b11Pmass:BreitWignerShape 0
-newdef chi_b11Pmass:MaximumWeight 0.968199
-newdef chi_b11Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b11Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b11Pmass:MaximumWeight 0.968199
+newdef /Herwig/Masses/chi_b11Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b11Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b1:Mass_generator chi_b11Pmass
 #
 create Herwig::GenericMassGenerator  chi_b21Pmass
 newdef chi_b21Pmass:Particle /Herwig/Particles/chi_b2 
-newdef chi_b21Pmass:BreitWignerShape 0
-newdef chi_b21Pmass:MaximumWeight 0.96832
-newdef chi_b21Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b21Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b21Pmass:MaximumWeight 0.968204
+newdef /Herwig/Masses/chi_b21Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b21Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b2:Mass_generator chi_b21Pmass
 #
@@ -944,9 +953,10 @@ newdef /Herwig/Particles/psi(3770):Mass_generator psi1dmass
 #
 create Herwig::GenericMassGenerator  Upsilon_1(1D)mass
 newdef Upsilon_1(1D)mass:Particle /Herwig/Particles/Upsilon_1(1D) 
-newdef Upsilon_1(1D)mass:BreitWignerShape 0
-newdef Upsilon_1(1D)mass:MaximumWeight 0.968204
-newdef Upsilon_1(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_1(1D)mass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon_1(1D)mass:MaximumWeight 0.968197
+newdef /Herwig/Masses/Upsilon_1(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_1(1D)mass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon_1(1D):Mass_generator Upsilon_1(1D)mass
 #
@@ -960,9 +970,10 @@ newdef /Herwig/Particles/eta_c(2S):Mass_generator eta_c2Smass
 #
 create Herwig::GenericMassGenerator  eta_b2Smass
 newdef eta_b2Smass:Particle /Herwig/Particles/eta_b(2S) 
-newdef eta_b2Smass:BreitWignerShape 0
-newdef eta_b2Smass:MaximumWeight 0.968397
-newdef eta_b2Smass:NGenerate 100
+newdef /Herwig/Masses/eta_b2Smass:BreitWignerShape 0
+newdef /Herwig/Masses/eta_b2Smass:MaximumWeight 0.968394
+newdef /Herwig/Masses/eta_b2Smass:NGenerate 100
+newdef /Herwig/Masses/eta_b2Smass:WidthOption 0
 
 newdef /Herwig/Particles/eta_b(2S):Mass_generator eta_b2Smass
 #
@@ -984,25 +995,28 @@ newdef /Herwig/Particles/eta(1405):Mass_generator eta'''mass
 #
 create Herwig::GenericMassGenerator  chi_b02Pmass
 newdef chi_b02Pmass:Particle /Herwig/Particles/chi_b0(2P) 
-newdef chi_b02Pmass:BreitWignerShape 0
-newdef chi_b02Pmass:MaximumWeight 0.968239
-newdef chi_b02Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b02Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b02Pmass:MaximumWeight 0.968237
+newdef /Herwig/Masses/chi_b02Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b02Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b0(2P):Mass_generator chi_b02Pmass
 #
 create Herwig::GenericMassGenerator  chi_b12Pmass
 newdef chi_b12Pmass:Particle /Herwig/Particles/chi_b1(2P) 
-newdef chi_b12Pmass:BreitWignerShape 0
-newdef chi_b12Pmass:MaximumWeight 0.9682
-newdef chi_b12Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b12Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b12Pmass:MaximumWeight 0.968199
+newdef /Herwig/Masses/chi_b12Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b12Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b1(2P):Mass_generator chi_b12Pmass
 #
 create Herwig::GenericMassGenerator  chi_b22Pmass
 newdef chi_b22Pmass:Particle /Herwig/Particles/chi_b2(2P) 
-newdef chi_b22Pmass:BreitWignerShape 0
-newdef chi_b22Pmass:MaximumWeight 0.968429
-newdef chi_b22Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b22Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b22Pmass:MaximumWeight 0.968204
+newdef /Herwig/Masses/chi_b22Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_b22Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b2(2P):Mass_generator chi_b22Pmass
 #
@@ -1797,17 +1811,19 @@ newdef /Herwig/Particles/eta'_2:Mass_generator eta'_2Mass
 #
 create Herwig::GenericMassGenerator  Upsilon_2(1D)mass
 newdef Upsilon_2(1D)mass:Particle /Herwig/Particles/Upsilon_2(1D) 
-newdef Upsilon_2(1D)mass:BreitWignerShape 0
-newdef Upsilon_2(1D)mass:MaximumWeight 0.968375
-newdef Upsilon_2(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_2(1D)mass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon_2(1D)mass:MaximumWeight 0.968197
+newdef /Herwig/Masses/Upsilon_2(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_2(1D)mass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon_2(1D):Mass_generator Upsilon_2(1D)mass
 #
 create Herwig::GenericMassGenerator  Upsilon_3(1D)mass
 newdef Upsilon_3(1D)mass:Particle /Herwig/Particles/Upsilon_3(1D) 
-newdef Upsilon_3(1D)mass:BreitWignerShape 0
-newdef Upsilon_3(1D)mass:MaximumWeight 0.968196
-newdef Upsilon_3(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_3(1D)mass:BreitWignerShape 0
+newdef /Herwig/Masses/Upsilon_3(1D)mass:MaximumWeight 0.968197
+newdef /Herwig/Masses/Upsilon_3(1D)mass:NGenerate 100
+newdef /Herwig/Masses/Upsilon_3(1D)mass:WidthOption 0
 
 newdef /Herwig/Particles/Upsilon_3(1D):Mass_generator Upsilon_3(1D)mass
 #
@@ -1837,49 +1853,55 @@ newdef /Herwig/Particles/Upsilon_3(2D):Mass_generator Upsilon_3(2D)Mass
 #
 create Herwig::GenericMassGenerator  chi_b03PMass
 newdef chi_b03PMass:Particle /Herwig/Particles/chi_b0(3P) 
-newdef chi_b03PMass:BreitWignerShape 0
-newdef chi_b03PMass:MaximumWeight 0.968229
-newdef chi_b03PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b03PMass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b03PMass:MaximumWeight 0.968228
+newdef /Herwig/Masses/chi_b03PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b03PMass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b0(3P):Mass_generator chi_b03PMass
 #
 create Herwig::GenericMassGenerator  chi_b13PMass
 newdef chi_b13PMass:Particle /Herwig/Particles/chi_b1(3P) 
-newdef chi_b13PMass:BreitWignerShape 0
-newdef chi_b13PMass:MaximumWeight 0.968199
-newdef chi_b13PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b13PMass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b13PMass:MaximumWeight 0.968199
+newdef /Herwig/Masses/chi_b13PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b13PMass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b1(3P):Mass_generator chi_b13PMass
 #
 create Herwig::GenericMassGenerator  chi_b23PMass
 newdef chi_b23PMass:Particle /Herwig/Particles/chi_b2(3P) 
-newdef chi_b23PMass:BreitWignerShape 0
-newdef chi_b23PMass:MaximumWeight 0.968203
-newdef chi_b23PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b23PMass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_b23PMass:MaximumWeight 0.968202
+newdef /Herwig/Masses/chi_b23PMass:NGenerate 100
+newdef /Herwig/Masses/chi_b23PMass:WidthOption 0
 
 newdef /Herwig/Particles/chi_b2(3P):Mass_generator chi_b23PMass
 #
 create Herwig::GenericMassGenerator  eta_b(3S)Mass
 newdef eta_b(3S)Mass:Particle /Herwig/Particles/eta_b(3S) 
-newdef eta_b(3S)Mass:BreitWignerShape 0
-newdef eta_b(3S)Mass:MaximumWeight 0.968325
-newdef eta_b(3S)Mass:NGenerate 100
+newdef /Herwig/Masses/eta_b(3S)Mass:BreitWignerShape 0
+newdef /Herwig/Masses/eta_b(3S)Mass:MaximumWeight 0.968322
+newdef /Herwig/Masses/eta_b(3S)Mass:NGenerate 100
+newdef /Herwig/Masses/eta_b(3S)Mass:WidthOption 0
 
 newdef /Herwig/Particles/eta_b(3S):Mass_generator eta_b(3S)Mass
 #
 create Herwig::GenericMassGenerator  h_b(2P)Mass
 newdef h_b(2P)Mass:Particle /Herwig/Particles/h_b(2P) 
-newdef h_b(2P)Mass:BreitWignerShape 0
-newdef h_b(2P)Mass:MaximumWeight 0.968199
-newdef h_b(2P)Mass:NGenerate 100
+newdef /Herwig/Masses/h_b(2P)Mass:BreitWignerShape 0
+newdef /Herwig/Masses/h_b(2P)Mass:MaximumWeight 0.968199
+newdef /Herwig/Masses/h_b(2P)Mass:NGenerate 100
+newdef /Herwig/Masses/h_b(2P)Mass:WidthOption 0
 
 newdef /Herwig/Particles/h_b(2P):Mass_generator h_b(2P)Mass
 #
 create Herwig::GenericMassGenerator  eta_b2(1D)Mass
 newdef eta_b2(1D)Mass:Particle /Herwig/Particles/eta_b2 
-newdef eta_b2(1D)Mass:BreitWignerShape 0
-newdef eta_b2(1D)Mass:MaximumWeight 0.968197
-newdef eta_b2(1D)Mass:NGenerate 100
+newdef /Herwig/Masses/eta_b2(1D)Mass:BreitWignerShape 0
+newdef /Herwig/Masses/eta_b2(1D)Mass:MaximumWeight 0.968197
+newdef /Herwig/Masses/eta_b2(1D)Mass:NGenerate 100
+newdef /Herwig/Masses/eta_b2(1D)Mass:WidthOption 0
 
 newdef /Herwig/Particles/eta_b2:Mass_generator eta_b2(1D)Mass
 #
@@ -1997,6 +2019,7 @@ newdef /Herwig/Masses/Upsilon5Smass:BreitWignerShape 0
 newdef /Herwig/Masses/Upsilon5Smass:MaximumWeight 0.938139
 newdef /Herwig/Masses/Upsilon5Smass:NGenerate 100
 newdef /Herwig/Masses/Upsilon5Smass:WidthOption 0
+
 newdef /Herwig/Particles/Upsilon(5S):Mass_generator Upsilon5Smass
 #
 create Herwig::GenericMassGenerator  psi_2_1Dmass
