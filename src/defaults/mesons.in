@@ -554,9 +554,9 @@ create ThePEG::ParticleData D_s1*(2860)-
 setup D_s1*(2860)- -30433 D_s1*(2860)- 2.86 0.159 0.318 0 -3 0 3 0 
 makeanti D_s1*(2860)- D_s1*(2860)+
 create ThePEG::ParticleData B_c(1D)*+
-setup B_c(1D)*+  30543 B_c(1D)*+ 7.028 0.0001 0.001 0  3 0 3 0
+setup B_c(1D)*+  30543 B_c(1D)*+ 7.028 9.35E-5 0.000935 0  3 0 3 0
 create ThePEG::ParticleData B_c(1D)*-
-setup B_c(1D)*- -30543 B_c(1D)*- 7.028 0.0001 0.001 0 -3 0 3 0
+setup B_c(1D)*- -30543 B_c(1D)*- 7.028 9.35E-5 0.000935 0 -3 0 3 0
 makeanti B_c(1D)*- B_c(1D)*+
 #
 # the 1^3D_2 multiplet
@@ -645,9 +645,9 @@ create ThePEG::ParticleData D_s3*(2860)-
 setup D_s3*(2860)- -437 D_s3*(2860)- 2.8605 0.053 0.159 0 -3 0 7 0 
 makeanti D_s3*(2860)- D_s3*(2860)+
 create ThePEG::ParticleData B_c3(1D)*+
-setup B_c3(1D)*+  547 B_c3(1D)*+ 7.045 0.0001 0.001 0  3 0 7 0
+setup B_c3(1D)*+  547 B_c3(1D)*+ 7.045 8.23E-5 0.000823 0  3 0 7 0
 create ThePEG::ParticleData B_c3(1D)*-
-setup B_c3(1D)*- -547 B_c3(1D)*- 7.045 0.0001 0.001 0 -3 0 7 0
+setup B_c3(1D)*- -547 B_c3(1D)*- 7.045 8.23E-5 0.000823 0 -3 0 7 0
 makeanti B_c3(1D)*- B_c3(1D)*+
 #
 # the 1^3F_4 multiplet
