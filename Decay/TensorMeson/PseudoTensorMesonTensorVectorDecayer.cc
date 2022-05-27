@@ -187,7 +187,7 @@ double PseudoTensorMesonTensorVectorDecayer::me2(const int,const Particle & part
 }
 
 bool PseudoTensorMesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-						   double & coupling) const {
+							 double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
   int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
@@ -203,21 +203,21 @@ bool PseudoTensorMesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,in
     if(id   ==incoming_[ix]) {
       if(id1==outgoing_[ix].second&&id2==outgoing_[ix].first) {
 	imode=ix;
-	order=true;
+	order=false;
       }
       if(id2==outgoing_[ix].second&&id1==outgoing_[ix].first) {
 	imode=ix;
-	order=false;
+	order=true;
       }
     }
     if(idbar==incoming_[ix]&&imode<0) {
       if(id1bar==outgoing_[ix].second&&id2bar==outgoing_[ix].first) {
 	imode=ix;
-	order=true;
+	order=false;
       }
       if(id2bar==outgoing_[ix].second&&id1bar==outgoing_[ix].first) {
 	imode=ix;
-	order=false;
+	order=true;
       }
     }
     ++ix;
@@ -225,6 +225,7 @@ bool PseudoTensorMesonTensorVectorDecayer::twoBodyMEcode(const DecayMode & dm,in
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode];
   mecode=23;
+  cerr << "testing in the MEcode " << order << "\n";
   return order;
 }
 
