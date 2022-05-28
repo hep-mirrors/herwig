@@ -2586,6 +2586,7 @@ do TVV:SetUpDecayMode 200555 130553 22 0.0462 1.62772
 do TVV:SetUpDecayMode 100555 30553 22 0.0393 1.6272
 do TVV:SetUpDecayMode 120555 20553 22 0.161 1.60282
 do TVV:SetUpDecayMode 120555 120553 22 0.573 1.60593
+do TVV:SetUpDecayMode 100445 22 22 0.0121 1.75628
 #
 create Herwig::TensorMesonSpin3VectorDecayer  T3V
 newdef T3V:Iteration 1
