@@ -1940,8 +1940,9 @@ decaymode chi_b1(2P)->chi_b1,pi0,pi0; 0.00303 1 /Herwig/Decays/DecayME0
 # the 2^3P_2 multiplet
 #
 #
-decaymode chi_c2(2P)->D0,Dbar0; 0.5291 1 /Herwig/Decays/Tensor2PScalar
-decaymode chi_c2(2P)->D+,D-; 0.4709 1 /Herwig/Decays/Tensor2PScalar
+decaymode chi_c2(2P)->D0,Dbar0; 0.529097 1 /Herwig/Decays/Tensor2PScalar
+decaymode chi_c2(2P)->D+,D-; 0.470897 1 /Herwig/Decays/Tensor2PScalar
+decaymode chi_c2(2P)->gamma,gamma; 6.0E-6 1 /Herwig/Decays/TVV
 #
 decaymode chi_b2(2P)->g,g; 0.81157 1 /Herwig/Decays/QDecayME0
 decaymode chi_b2(2P)->Upsilon(2S),gamma; 0.089 1 /Herwig/Decays/TVV

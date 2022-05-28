@@ -539,7 +539,6 @@ bool HQETStrongDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
     mecode = out.first->iSpin()==PDT::Spin0 ? 105 : 106;
   }
   else if(itemp==10000  && dm.parent()->iSpin()==PDT::Spin0) {
-    assert(out.first->iSpin()!=PDT::Spin0);
     mecode = 107;
   }
   else if(itemp==30000  && dm.parent()->iSpin()==PDT::Spin1) {

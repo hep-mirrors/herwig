@@ -300,9 +300,9 @@ makeanti D_0*bar0 D_0*0
 newdef D_0*bar0:WidthLoCut 0.229
 newdef D_0*bar0:WidthUpCut 0.687
 create ThePEG::ParticleData D_s0+
-setup D_s0+ 10431 D_s0+ 2.3173 2.32E-5 0.000232 0 3 0 1 0 
+setup D_s0+ 10431 D_s0+ 2.3178 2.32E-5 0.000232 0 3 0 1 0 
 create ThePEG::ParticleData D_s0-
-setup D_s0- -10431 D_s0- 2.3173 2.32E-5 0.000232 0 -3 0 1 0 
+setup D_s0- -10431 D_s0- 2.3178 2.32E-5 0.000232 0 -3 0 1 0 
 makeanti D_s0- D_s0+
 create ThePEG::ParticleData B*_00
 setup B*_00 10511 B*_00 5.726 0.14 0.28 0 0 0 1 0 
