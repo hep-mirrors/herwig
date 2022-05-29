@@ -1599,10 +1599,11 @@ decaymode eta(1475)->K*bar0,K0; 0.25 1 /Herwig/Decays/PPVDecayer
 decaymode eta(1475)->K*0,Kbar0; 0.25 1 /Herwig/Decays/PPVDecayer
 decaymode eta(1475)->K*+,K-; 0.25 1 /Herwig/Decays/PPVDecayer
 #
-decaymode eta_c(2S)->g,g; 0.9752 1 /Herwig/Decays/QDecayME0
+decaymode eta_c(2S)->g,g; 0.97501 1 /Herwig/Decays/QDecayME0
 decaymode eta_c(2S)->eta_c,pi+,pi-; 0.0125 1 /Herwig/Decays/DecayME0
 decaymode eta_c(2S)->eta_c,pi0,pi0; 0.0063 1 /Herwig/Decays/DecayME0
 decaymode eta_c(2S)->h_c,gamma; 0.006 1 /Herwig/Decays/SVV
+decaymode eta_c(2S)->gamma,gamma; 0.00019 1 /Herwig/Decays/PVV
 #
 decaymode eta_b(2S)->g,g; 0.9943 1 /Herwig/Decays/QDecayME0
 decaymode eta_b(2S)->h_b,gamma; 0.0057 1 /Herwig/Decays/SVV

@@ -2017,6 +2017,7 @@ do PVV:SetUpDecayMode 441 22 22 0.00521 1.10127
 do PVV:SetUpDecayMode 441 323 -323 0.0308 5.0763
 do PVV:SetUpDecayMode 441 313 -313 0.0308 5.22846
 do PVV:SetUpDecayMode 100541 543 22 0.0757 1.10098
+do PVV:SetUpDecayMode 100441 22 22 0.00212 1.10241
 #
 create Herwig::PScalarVectorFermionsDecayer  PVff
 newdef PVff:Iteration 1
