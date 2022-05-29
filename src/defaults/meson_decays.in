@@ -2121,21 +2121,22 @@ decaymode Upsilon(5S)->tau-,tau+; 8.0E-6 1 /Herwig/Decays/Vector2Leptons
 # The meson which are not part of a multiplet
 #
 #
-decaymode f_0(1500)->pi+,pi-; 0.232667 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->sigma,sigma; 0.127426 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->pi0,pi0; 0.116333 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->pi'-,pi+; 0.081683 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->pi'0,pi0; 0.081683 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->pi'+,pi-; 0.081683 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->eta,eta; 0.051 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->K0,Kbar0; 0.043 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->K+,K-; 0.043 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1500)->rho+,rho-; 0.042475 1 /Herwig/Decays/SVV
-decaymode f_0(1500)->rho0,rho0; 0.021238 1 /Herwig/Decays/SVV
-decaymode f_0(1500)->a_1-,pi+; 0.019604 1 /Herwig/Decays/PPVDecayer
-decaymode f_0(1500)->a_10,pi0; 0.019604 1 /Herwig/Decays/PPVDecayer
-decaymode f_0(1500)->a_1+,pi-; 0.019604 1 /Herwig/Decays/PPVDecayer
-decaymode f_0(1500)->eta,eta'; 0.019 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->pi+,pi-; 0.23 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->rho+,rho-; 0.159412 1 /Herwig/Decays/SVV
+decaymode f_0(1500)->sigma,sigma; 0.12688 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->pi0,pi0; 0.115 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->rho0,rho0; 0.079707 1 /Herwig/Decays/SVV
+decaymode f_0(1500)->eta,eta; 0.06 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->K+,K-; 0.0425 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->eta,eta'; 0.022 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->K_L0,K_L0; 0.02125 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->K_S0,K_S0; 0.02125 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->a_1-,pi+; 0.021147 1 /Herwig/Decays/PPVDecayer
+decaymode f_0(1500)->a_10,pi0; 0.021147 1 /Herwig/Decays/PPVDecayer
+decaymode f_0(1500)->a_1+,pi-; 0.021147 1 /Herwig/Decays/PPVDecayer
+decaymode f_0(1500)->pi'-,pi+; 0.01952 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->pi'0,pi0; 0.01952 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1500)->pi'+,pi-; 0.01952 1 /Herwig/Decays/ScalarSS
 #
 decaymode sigma->pi+,pi-; 0.666667 1 /Herwig/Decays/ScalarSS
 decaymode sigma->pi0,pi0; 0.333333 1 /Herwig/Decays/ScalarSS
