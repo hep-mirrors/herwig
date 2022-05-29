@@ -18,7 +18,7 @@
 using namespace Herwig;
 
 HeavyMesonWidthGenerator::HeavyMesonWidthGenerator() 
-  : fPi_(130.2*MeV), g_(0.566), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242), gtilde_(0.283),
+  : fPi_(130.2*MeV), g_(0.566), gp_(0.189), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242), gtilde_(0.283),
     psiL_(0.), psiS_(0.041), Lambda_(1.*GeV), couplingsSet_(false)
 {}
 
@@ -31,12 +31,12 @@ IBPtr HeavyMesonWidthGenerator::fullclone() const {
 }
 
 void HeavyMesonWidthGenerator::persistentOutput(PersistentOStream & os) const {
-  os << ounit(fPi_,MeV) << g_ << h_ << hp_ << k_ << kp_ << gtilde_
+  os << ounit(fPi_,MeV) << g_ << gp_ << h_ << hp_ << k_ << kp_ << gtilde_
      << psiL_ << psiS_ << ounit(Lambda_,GeV) << couplingsSet_;
 }
 
 void HeavyMesonWidthGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(fPi_,MeV) >> g_ >> h_ >> hp_ >> k_ >> kp_ >> gtilde_
+  is >> iunit(fPi_,MeV) >> g_ >> gp_ >> h_ >> hp_ >> k_ >> kp_ >> gtilde_
      >> psiL_ >> psiS_ >> iunit(Lambda_,GeV) >> couplingsSet_;
 }
 
@@ -61,6 +61,12 @@ void HeavyMesonWidthGenerator::Init() {
     ("g",
      "The coupling for 1S (0-,1-) decays",
      &HeavyMesonWidthGenerator::g_, 0.566, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<HeavyMesonWidthGenerator,double> interfacegp
+    ("gp",
+     "The coupling for 1S (0+,1+) decays",
+     &HeavyMesonWidthGenerator::gp_, 0.189, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<HeavyMesonWidthGenerator,double> interfaceh
@@ -120,6 +126,7 @@ void HeavyMesonWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr decayer,
     if(!couplingsSet_) {
       fPi_    = strong->fPi_   ;
       g_      = strong->g_     ;
+      gp_     = strong->gp_    ;
       h_      = strong->h_     ;
       hp_     = strong->hp_    ;
       k_      = strong->k_     ;
@@ -140,6 +147,7 @@ void HeavyMesonWidthGenerator::dataBaseOutput(ofstream & output, bool header) {
   // info from this class
   output << "newdef " << name() << ":fPi    " << fPi_/MeV    << "\n";
   output << "newdef " << name() << ":g      " << g_          << "\n";
+  output << "newdef " << name() << ":gp     " << gp_         << "\n";
   output << "newdef " << name() << ":h      " << h_          << "\n";
   output << "newdef " << name() << ":hp     " << hp_         << "\n";
   output << "newdef " << name() << ":k      " << k_          << "\n";
@@ -226,6 +234,17 @@ Energy HeavyMesonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1
   }
   else if(mecode==116) {
     test = 8.*sqr(gtilde_)*m1*sqr(pcm)/3./sqr(fPi_)/q;
+  }
+  else if(mecode==117) {
+    long id = abs(particle()->id());
+    double psi = (id%100)/10!=3 ? psiL_ : psiS_;
+    unsigned int itemp = abs(id)-abs(id)%1000;
+    double mix1(cos(psi)),mix2(sin(psi));
+    if(itemp==20000) {
+      swap(mix1,mix2);
+      mix1 *=-1.;
+    }
+    test = 4.*sqr(gp_*mix2)*m1*sqr(pcm)/3./sqr(fPi_)/q;
   }
   else
     assert(false);

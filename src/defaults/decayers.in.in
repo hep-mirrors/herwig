@@ -808,6 +808,7 @@ do VectorVP:SetUpDecayMode 200553 22 551 3.23e-05 2.10347
 do VectorVP:SetUpDecayMode 443 22 9020221 9.33e-07 4.67138
 do VectorVP:SetUpDecayMode 300553 553 221 0.00101 2.85334
 do VectorVP:SetUpDecayMode 300553 553 331 0.00214 5.56012
+do VectorVP:SetUpDecayMode 20433 22 10431 0.000145 1.60398
 #
 create Herwig::ScalarTo3ScalarDalitz  DpKmPipPipCLEO
 newdef DpKmPipPipCLEO:Iteration 10
@@ -1560,6 +1561,7 @@ newdef CharmMeson:Points 10000
 newdef CharmMeson:GenerateIntermediates 0 
 newdef CharmMeson:fPi    130.2
 newdef CharmMeson:g      0.566
+newdef CharmMeson:gp     0.189
 newdef CharmMeson:h      0.544
 newdef CharmMeson:hp     0.413
 newdef CharmMeson:k      0.407
@@ -1649,6 +1651,7 @@ do CharmMeson:SetUpDecayMode 30423 413 -211 0.283003
 do CharmMeson:SetUpDecayMode 30423 423 111 0.108743
 do CharmMeson:SetUpDecayMode 30433 413 311 0.288347
 do CharmMeson:SetUpDecayMode 30433 423 321 0.224403
+do CharmMeson:SetUpDecayMode 20433 10431 111 0.104478
 #
 create Herwig::HQETRadiativeDecayer  HQETMesonEM
 newdef HQETMesonEM:Iteration 10
@@ -21598,6 +21601,7 @@ do AVV:SetUpDecayMode 120553 30553 22 0.0172 1.60582
 do AVV:SetUpDecayMode 220553 130553 22 0.0207 1.61951
 do AVV:SetUpDecayMode 20443 313 -313 0.00603 20.3751
 do AVV:SetUpDecayMode 20443 323 -323 0.00603 27.4378
+do AVV:SetUpDecayMode 20433 433 22 0.018 1.72015
 #
 create Herwig::VectorTo3PseudoScalarDalitz  PhiDalitz
 newdef PhiDalitz:Coupling 8.788

@@ -127,6 +127,11 @@ private:
   double g_;
 
   /**
+   *  Coupling for decays within the \f$(0^+,1^+)\f$ multiplet
+   */
+  double gp_;
+
+  /**
    *  Coupling for decays from the \f$(0^+ ,1^+)\f$ multiplet
    */
   double h_;

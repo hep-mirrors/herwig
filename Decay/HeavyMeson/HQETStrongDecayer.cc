@@ -24,7 +24,7 @@
 using namespace Herwig;
 
 HQETStrongDecayer::HQETStrongDecayer()
-  : fPi_(130.2*MeV), g_(0.566), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242), gtilde_(0.283),
+  : fPi_(130.2*MeV), g_(0.566), gp_(0.189), h_(0.544), hp_(0.413), k_(0.407), kp_(0.242), gtilde_(0.283),
     psiL_(0.), psiS_(0.041), deltaEta_(1./43.7), Lambda_(1.*GeV)
 {}
 
@@ -67,13 +67,13 @@ IBPtr HQETStrongDecayer::fullclone() const {
 }
 
 void HQETStrongDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(fPi_,MeV) << g_ << h_ << hp_ << k_ << kp_ << gtilde_
+  os << ounit(fPi_,MeV) << g_ << gp_ << h_ << hp_ << k_ << kp_ << gtilde_
      << psiL_ << psiS_ << deltaEta_ << ounit(Lambda_,GeV)
      << incoming_ << outgoing_ << maxWeight_;
 }
 
 void HQETStrongDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(fPi_,MeV) >> g_ >> h_ >> hp_ >> k_ >> kp_ >> gtilde_
+  is >> iunit(fPi_,MeV) >> g_ >> gp_ >> h_ >> hp_ >> k_ >> kp_ >> gtilde_
      >> psiL_ >> psiS_ >> deltaEta_ >> iunit(Lambda_,GeV)
      >> incoming_ >> outgoing_ >> maxWeight_;
 }
@@ -98,6 +98,12 @@ void HQETStrongDecayer::Init() {
     ("g",
      "The coupling for 1S (0-,1-) decays",
      &HQETStrongDecayer::g_, 0.566, 0.0, 1.0,
+     false, false, Interface::limited);
+  
+  static Parameter<HQETStrongDecayer,double> interfacegp
+    ("gp",
+     "The coupling for 1P (0+,1+) decays",
+     &HQETStrongDecayer::gp_, 0.189, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<HQETStrongDecayer,double> interfaceh
@@ -333,14 +339,14 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
   }
   // 1+ from (1+,2+) or (0+,1+)
   else if((itemp==10000||itemp==20000)  && part.data().iSpin()==PDT::Spin1) {
+    // mixing
+    double psi = (abs(part.id())%100)/10!=3 ? psiL_ : psiS_;
+    double m1(cos(psi)),m2(sin(psi));
+    if(itemp==20000) {
+      swap(m1,m2);
+      m1 *=-1.;
+    }
     if(outgoing[0]->iSpin()==PDT::Spin1) {
-      // mixing
-      double psi = (abs(part.id())%100)/10!=3 ? psiL_ : psiS_;
-      double m1(cos(psi)),m2(sin(psi));
-      if(itemp==20000) {
-	swap(m1,m2);
-	m1 *=-1.;
-      }
       InvEnergy2 A = -2.*sqrt(2.*momenta[0].mass()/3./part.mass())*hp_*m1/fPi_/Lambda_;
       double     B = -h_*m2/1/fPi_*sqrt(momenta[0].mass()/part.mass())/part.mass()*
 	(sqr(part.mass())-sqr(momenta[0].mass())+sqr(momenta[1].mass()));
@@ -354,6 +360,14 @@ double HQETStrongDecayer::me2(const int, const Particle & part,
       // analytic test of the answer
       test = (3.*sqr(A*part.mass()*sqr(pcm)) +sqr(B)/3.*(3.*sqr(momenta[0].mass())+sqr(pcm))
 	      -A*B*sqr(pcm)*(sqr(part.mass())+sqr(momenta[0].mass())-sqr(momenta[1].mass())))/sqr(momenta[0].mass());
+    }
+    else if(outgoing[0]->iSpin()==PDT::Spin0) {
+      InvEnergy fact = -2.*gp_*m2/fPi_*sqrt(momenta[0].mass()/part.mass());
+      for(unsigned int ix=0;ix<3;++ix) {
+	(*ME())(ix,0,0) = Complex(fact*(vecIn_[ix]*momenta[1]));
+      }
+      // analytic test of the answer
+      test = 4.*sqr(gp_*m2)*momenta[0].mass()*sqr(pcm)/3./sqr(fPi_)/part.mass();
     }
     else
       assert(false);
@@ -532,8 +546,12 @@ bool HQETStrongDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
     mecode = out.first->iSpin()==PDT::Spin0 ? 102 : 103;
   }
   else if((itemp==10000||itemp==20000)  && dm.parent()->iSpin()==PDT::Spin1) {
-    assert(out.first->iSpin()!=PDT::Spin0);
-    mecode = 104;
+    if(out.first->iSpin()==PDT::Spin1)
+      mecode = 104;
+    else if(out.first->iSpin()==PDT::Spin0)
+      mecode = 117;
+    else
+      assert(false);
   }
   else if(itemp==0      && dm.parent()->iSpin()==PDT::Spin2) {
     mecode = out.first->iSpin()==PDT::Spin0 ? 105 : 106;
@@ -580,6 +598,7 @@ void HQETStrongDecayer::dataBaseOutput(ofstream & output,
   // couplings
   output << "newdef " << name() << ":fPi    " << fPi_/MeV    << "\n";
   output << "newdef " << name() << ":g      " << g_          << "\n";
+  output << "newdef " << name() << ":gp     " << gp_         << "\n";
   output << "newdef " << name() << ":h      " << h_          << "\n";
   output << "newdef " << name() << ":hp     " << hp_         << "\n";
   output << "newdef " << name() << ":k      " << k_          << "\n";
