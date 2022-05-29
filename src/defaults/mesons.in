@@ -838,7 +838,7 @@ setup Upsilon(5S) 9000553 Upsilon(5S) 10.8852 0.037 0.185 0 0 0 3 0
 # The meson which are not part of a multiplet
 #
 create ThePEG::ParticleData f_0(1500)
-setup f_0(1500) 9030221 f_0(1500) 1.507 0.109 0.327 0 0 0 1 0 
+setup f_0(1500) 9030221 f_0(1500) 1.506 0.112 0.336 0 0 0 1 0 
 newdef f_0(1500):VariableRatio 1
 create ThePEG::ParticleData sigma
 setup sigma 9000221 sigma 0.86 0.88 1.155 0 0 0 1 0 
