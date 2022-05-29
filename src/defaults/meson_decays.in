@@ -649,11 +649,12 @@ decaymode a'_0+->pi+,eta; 0.07734 1 /Herwig/Decays/ScalarSS
 decaymode a'_0+->K+,Kbar0; 0.068059 1 /Herwig/Decays/ScalarSS
 decaymode a'_0+->pi+,eta'; 0.027069 1 /Herwig/Decays/ScalarSS
 #
-decaymode a'_00->omega,rho0; 0.827531 1 /Herwig/Decays/SVV
+decaymode a'_00->omega,rho0; 0.82753 1 /Herwig/Decays/SVV
 decaymode a'_00->pi0,eta; 0.07734 1 /Herwig/Decays/ScalarSS
 decaymode a'_00->K-,K+; 0.034029 1 /Herwig/Decays/ScalarSS
-decaymode a'_00->Kbar0,K0; 0.034029 1 /Herwig/Decays/ScalarSS
 decaymode a'_00->pi0,eta'; 0.027069 1 /Herwig/Decays/ScalarSS
+decaymode a'_00->K_L0,K_L0; 0.017015 1 /Herwig/Decays/ScalarSS
+decaymode a'_00->K_S0,K_S0; 0.017015 1 /Herwig/Decays/ScalarSS
 decaymode a'_00->gamma,gamma; 2.0E-6 1 /Herwig/Decays/SVV
 #
 decaymode a'_0-->omega,rho-; 0.827532 1 /Herwig/Decays/SVV
@@ -668,19 +669,22 @@ decaymode f'_0->pi+,pi-; 0.052606 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->pi'-,pi+; 0.050424 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->pi'0,pi0; 0.050424 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->pi'+,pi-; 0.050424 1 /Herwig/Decays/ScalarSS
-decaymode f'_0->K0,Kbar0; 0.026364 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->K+,K-; 0.026364 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->pi0,pi0; 0.026303 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->a_1-,pi+; 0.017091 1 /Herwig/Decays/PPVDecayer
 decaymode f'_0->a_10,pi0; 0.017091 1 /Herwig/Decays/PPVDecayer
 decaymode f'_0->a_1+,pi-; 0.017091 1 /Herwig/Decays/PPVDecayer
+decaymode f'_0->K_L0,K_L0; 0.013182 1 /Herwig/Decays/ScalarSS
+decaymode f'_0->K_S0,K_S0; 0.013182 1 /Herwig/Decays/ScalarSS
 decaymode f'_0->eta,eta; 0.001455 1 /Herwig/Decays/ScalarSS
 #
-decaymode f_0(1710)->K0,Kbar0; 0.316456 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1710)->K+,K-; 0.316456 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1710)->eta,eta; 0.303797 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1710)->pi+,pi-; 0.042194 1 /Herwig/Decays/ScalarSS
-decaymode f_0(1710)->pi0,pi0; 0.021097 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->K+,K-; 0.2923976 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->eta,eta; 0.2807017 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->K_L0,K_L0; 0.1461988 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->K_S0,K_S0; 0.1461988 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->pi+,pi-; 0.0896686 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->pi0,pi0; 0.0448343 1 /Herwig/Decays/ScalarSS
+decaymode f_0(1710)->gamma,gamma; 2.0E-7 1 /Herwig/Decays/SVV
 #
 decaymode chi_c0->g,g; 0.788568 1 /Herwig/Decays/QDecayME0
 decaymode chi_c0->f'_0,f_0(1710); 0.026 1 /Herwig/Decays/ScalarSS
@@ -693,7 +697,6 @@ decaymode chi_c0->K_1bar0,K0; 0.01 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->K_10,Kbar0; 0.01 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->K_1+,K-; 0.01 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->pi-,pi+,pi-,pi+; 0.00739 1 /Herwig/Decays/Mambo
-decaymode chi_c0->K0,Kbar0; 0.0054 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->K+,K-; 0.0054 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->pi+,pi-; 0.0048 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->K-,K*0,pi+; 0.0044 1 /Herwig/Decays/DecayME0
@@ -701,6 +704,8 @@ decaymode chi_c0->Kbar0,K*+,pi-; 0.0044 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->K0,K*-,pi+; 0.0044 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->K+,K*bar0,pi-; 0.0044 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->pi+,pi-,K+,K-; 0.00277 1 /Herwig/Decays/Mambo
+decaymode chi_c0->K_L0,K_L0; 0.0027 1 /Herwig/Decays/ScalarSS
+decaymode chi_c0->K_S0,K_S0; 0.0027 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->pi0,pi0; 0.0024 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->K*_00,K*_0bar0; 0.002363 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->K*_0+,K*_0-; 0.002363 1 /Herwig/Decays/ScalarSS
@@ -2144,12 +2149,14 @@ decaymode sigma->pi0,pi0; 0.333333 1 /Herwig/Decays/ScalarSS
 decaymode f_0->pi+,pi-; 0.493994 1 /Herwig/Decays/ScalarSS
 decaymode f_0->pi0,pi0; 0.247 1 /Herwig/Decays/ScalarSS
 decaymode f_0->K+,K-; 0.139 1 /Herwig/Decays/ScalarSS
-decaymode f_0->K0,Kbar0; 0.12 1 /Herwig/Decays/ScalarSS
+decaymode f_0->K_L0,K_L0; 0.06 1 /Herwig/Decays/ScalarSS
+decaymode f_0->K_S0,K_S0; 0.06 1 /Herwig/Decays/ScalarSS
 decaymode f_0->gamma,gamma; 6.0E-6 1 /Herwig/Decays/SVV
 #
 decaymode a_00->eta,pi0; 0.906997 1 /Herwig/Decays/ScalarSS
 decaymode a_00->K+,K-; 0.049 1 /Herwig/Decays/ScalarSS
-decaymode a_00->K0,Kbar0; 0.044 1 /Herwig/Decays/ScalarSS
+decaymode a_00->K_L0,K_L0; 0.022 1 /Herwig/Decays/ScalarSS
+decaymode a_00->K_S0,K_S0; 0.022 1 /Herwig/Decays/ScalarSS
 decaymode a_00->gamma,gamma; 3.0E-6 1 /Herwig/Decays/SVV
 #
 decaymode a_0+->eta,pi+; 0.907 1 /Herwig/Decays/ScalarSS

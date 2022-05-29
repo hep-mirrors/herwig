@@ -258,7 +258,7 @@ makeanti a'_0- a'_0+
 create ThePEG::ParticleData f'_0
 setup f'_0 10221 f'_0 1.395 0.275 0.275 0 0 0 1 0 
 create ThePEG::ParticleData f_0(1710)
-setup f_0(1710) 10331 f_0(1710) 1.718 0.137 0.411 0 0 0 1 0 
+setup f_0(1710) 10331 f_0(1710) 1.704 0.123 0.369 0 0 0 1 0 
 create ThePEG::ParticleData chi_c0
 setup chi_c0 10441 chi_c0 3.41476 0.0104 0.104 0 0 0 1 0 
 create ThePEG::ParticleData chi_b0
