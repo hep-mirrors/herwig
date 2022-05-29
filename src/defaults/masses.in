@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 12:28:35 on the 29/5/2022.
+# from the Herwig Particles Database at 12:45:37 on the 29/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -2349,6 +2349,11 @@ newdef /Herwig/Particles/B_c2(H)-:Mass_generator B_c2(H)+mass
 #
 create Herwig::GenericMassGenerator  B_c3+mass
 newdef B_c3+mass:Particle /Herwig/Particles/B_c3(1D)*+ 
+newdef /Herwig/Masses/B_c3+mass:BreitWignerShape 0
+newdef /Herwig/Masses/B_c3+mass:MaximumWeight 0.968201
+newdef /Herwig/Masses/B_c3+mass:NGenerate 100
+newdef /Herwig/Masses/B_c3+mass:WidthOption 0
+
 newdef /Herwig/Particles/B_c3(1D)*+:Mass_generator B_c3+mass
 newdef /Herwig/Particles/B_c3(1D)*-:Mass_generator B_c3+mass
 #
