@@ -2,22 +2,24 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 18:29:46 on the 29/5/2022.
+# from the Herwig Particles Database at 19:29:12 on the 29/5/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
-newdef rho+mass:BreitWignerShape 0
-newdef rho+mass:MaximumWeight 1.11837
-newdef rho+mass:NGenerate 100
+newdef /Herwig/Masses/rho+mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho+mass:MaximumWeight 0.98019
+newdef /Herwig/Masses/rho+mass:NGenerate 100
+newdef /Herwig/Masses/rho+mass:WidthOption 0
 
 newdef /Herwig/Particles/rho+:Mass_generator rho+mass
 newdef /Herwig/Particles/rho-:Mass_generator rho+mass
 #
 create Herwig::GenericMassGenerator  rho0mass
 newdef rho0mass:Particle /Herwig/Particles/rho0 
-newdef rho0mass:BreitWignerShape 0
-newdef rho0mass:MaximumWeight 1.12012
-newdef rho0mass:NGenerate 100
+newdef /Herwig/Masses/rho0mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho0mass:MaximumWeight 0.980189
+newdef /Herwig/Masses/rho0mass:NGenerate 100
+newdef /Herwig/Masses/rho0mass:WidthOption 0
 
 newdef /Herwig/Particles/rho0:Mass_generator rho0mass
 #
@@ -708,17 +710,19 @@ newdef /Herwig/Particles/K'bar0:Mass_generator K'0mass
 #
 create Herwig::GenericMassGenerator  rho'0mass
 newdef rho'0mass:Particle /Herwig/Particles/rho'0 
-newdef rho'0mass:BreitWignerShape 0
-newdef rho'0mass:MaximumWeight 1.31229
-newdef rho'0mass:NGenerate 100
+newdef /Herwig/Masses/rho'0mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho'0mass:MaximumWeight 0.81183
+newdef /Herwig/Masses/rho'0mass:NGenerate 100
+newdef /Herwig/Masses/rho'0mass:WidthOption 0
 
 newdef /Herwig/Particles/rho'0:Mass_generator rho'0mass
 #
 create Herwig::GenericMassGenerator  rho'+mass
 newdef rho'+mass:Particle /Herwig/Particles/rho'+ 
-newdef rho'+mass:BreitWignerShape 0
-newdef rho'+mass:MaximumWeight 1.311
-newdef rho'+mass:NGenerate 100
+newdef /Herwig/Masses/rho'+mass:BreitWignerShape 0
+newdef /Herwig/Masses/rho'+mass:MaximumWeight 0.811832
+newdef /Herwig/Masses/rho'+mass:NGenerate 100
+newdef /Herwig/Masses/rho'+mass:WidthOption 0
 
 newdef /Herwig/Particles/rho'+:Mass_generator rho'+mass
 newdef /Herwig/Particles/rho'-:Mass_generator rho'+mass

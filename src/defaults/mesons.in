@@ -706,11 +706,11 @@ makeanti B_c(2S)- B_c(2S)+
 # the 2^3S_1 multiplet
 #
 create ThePEG::ParticleData rho'+
-setup rho'+ 100213 rho'+ 1.459 0.147 0.294 0 3 0 3 0 
+setup rho'+ 100213 rho'+ 1.465 0.4 0.4 0 3 0 3 0 
 create ThePEG::ParticleData rho'0
-setup rho'0 100113 rho'0 1.459 0.147 0.294 0 0 0 3 0 
+setup rho'0 100113 rho'0 1.465 0.4 0.4 0 0 0 3 0 
 create ThePEG::ParticleData rho'-
-setup rho'- -100213 rho'- 1.459 0.147 0.294 0 -3 0 3 0 
+setup rho'- -100213 rho'- 1.465 0.4 0.4 0 -3 0 3 0 
 makeanti rho'- rho'+
 create ThePEG::ParticleData omega'
 setup omega' 100223 omega' 1.425 0.215 0.3225 0 0 0 3 0 
