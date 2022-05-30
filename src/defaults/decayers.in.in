@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 13:6:51 on the 30/5/2022.
+# from the Herwig Particles Database at 20:3:10 on the 30/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -1099,6 +1099,82 @@ do D0KS0Pi0Pi0CLEO:SetExternal 421 310 111 111
 newdef D0KS0Pi0Pi0CLEO:ResonanceMass 0
 newdef D0KS0Pi0Pi0CLEO:f0gPi 0.354
 newdef D0KS0Pi0Pi0CLEO:f0gK 1.416
+#
+create Herwig::ScalarTo3ScalarDalitz  DsPipPipPimE791
+newdef DsPipPipPimE791:Iteration 5
+newdef DsPipPipPimE791:Ntry 500
+newdef DsPipPipPimE791:Points 1000000
+newdef DsPipPipPimE791:GenerateIntermediates 1 
+newdef DsPipPipPimE791:ParentRadius 5
+newdef DsPipPipPimE791:UseAllK0 0
+newdef DsPipPipPimE791:MaximumWeight 1.20875e+11
+insert DsPipPipPimE791:Weights 0 0.129082
+insert DsPipPipPimE791:Weights 1 0.128399
+insert DsPipPipPimE791:Weights 2 0.0631886
+insert DsPipPipPimE791:Weights 3 0.0628385
+insert DsPipPipPimE791:Weights 4 0.107453
+insert DsPipPipPimE791:Weights 5 0.107244
+insert DsPipPipPimE791:Weights 6 0.108624
+insert DsPipPipPimE791:Weights 7 0.109055
+insert DsPipPipPimE791:Weights 8 0.0920572
+insert DsPipPipPimE791:Weights 9 0.092059
+do DsPipPipPimE791:AddChannel 9010221 41 0.977 0.044 1 0 2 1 0 1.5
+do DsPipPipPimE791:AddChannel 9010221 41 0.977 0.044 2 0 1 1 0 1.5
+do DsPipPipPimE791:AddChannel 0 0 0 0 1 0 2 0.723 0.0174533 1.5
+do DsPipPipPimE791:AddChannel 113 3 0.77 0.1507 1 0 2 0.29 1.90241 1.5
+do DsPipPipPimE791:AddChannel 113 3 0.77 0.1507 2 0 1 0.29 1.90241 1.5
+do DsPipPipPimE791:AddChannel 225 5 1.275 0.1855 1 0 2 1.075 2.32129 1.5
+do DsPipPipPimE791:AddChannel 225 5 1.275 0.1855 2 0 1 1.075 2.32129 1.5
+do DsPipPipPimE791:AddChannel 10221 1 1.434 0.172 1 0 2 2.225 -2.82743 1.5
+do DsPipPipPimE791:AddChannel 10221 1 1.434 0.172 2 0 1 2.225 -2.82743 1.5
+do DsPipPipPimE791:AddChannel 100113 3 1.465 0.31 1 0 2 1.107 2.82743 1.5
+do DsPipPipPimE791:AddChannel 100113 3 1.465 0.31 2 0 1 1.107 2.82743 1.5
+do DsPipPipPimE791:SetExternal 431 -211 211 211
+newdef DsPipPipPimE791:ResonanceMass 0
+newdef DsPipPipPimE791:f0gPi 0.09
+newdef DsPipPipPimE791:f0gK 0.02
+
+
+#
+create Herwig::ScalarTo3ScalarDalitz  DpPipPipPimE791
+newdef DpPipPipPimE791:Iteration 5
+newdef DpPipPipPimE791:Ntry 500
+newdef DpPipPipPimE791:Points 1000000
+newdef DpPipPipPimE791:GenerateIntermediates 1 
+newdef DpPipPipPimE791:ParentRadius 5
+newdef DpPipPipPimE791:UseAllK0 0
+newdef DpPipPipPimE791:MaximumWeight 2.30173e+11
+insert DpPipPipPimE791:Weights 0 0.108915
+insert DpPipPipPimE791:Weights 1 0.109195
+insert DpPipPipPimE791:Weights 2 0.0703236
+insert DpPipPipPimE791:Weights 3 0.0697646
+insert DpPipPipPimE791:Weights 4 0.0627842
+insert DpPipPipPimE791:Weights 5 0.0622657
+insert DpPipPipPimE791:Weights 6 0.0764879
+insert DpPipPipPimE791:Weights 7 0.075971
+insert DpPipPipPimE791:Weights 8 0.0879886
+insert DpPipPipPimE791:Weights 9 0.088209
+insert DpPipPipPimE791:Weights 10 0.0940022
+insert DpPipPipPimE791:Weights 11 0.0940933
+do DpPipPipPimE791:AddChannel 113 3 0.77 0.1507 1 0 2 1 0 1.5
+do DpPipPipPimE791:AddChannel 113 3 0.77 0.1507 2 0 1 1 0 1.5
+do DpPipPipPimE791:AddChannel 0 0 0 0 1 0 2 3.98 -2.14152 1.5
+do DpPipPipPimE791:AddChannel 9010221 41 0.977 0.044 0 1 2 0.427 2.87979 1.5
+do DpPipPipPimE791:AddChannel 9010221 41 0.977 0.044 0 2 1 0.427 2.87979 1.5
+do DpPipPipPimE791:AddChannel 225 5 1.275 0.1855 1 0 2 2.032 1.00007 1.5
+do DpPipPipPimE791:AddChannel 225 5 1.275 0.1855 2 0 1 2.032 1.00007 1.5
+do DpPipPipPimE791:AddChannel 10221 1 1.434 0.172 1 0 2 0.789 1.83958 1.5
+do DpPipPipPimE791:AddChannel 10221 1 1.434 0.172 2 0 1 0.789 1.83958 1.5
+do DpPipPipPimE791:AddChannel 100113 3 1.465 0.31 1 0 2 0.736 -0.71384 1.5
+do DpPipPipPimE791:AddChannel 100113 3 1.465 0.31 2 0 1 0.736 -0.71384 1.5
+do DpPipPipPimE791:AddChannel 9000221 1 0.478 0.324 0 1 2 2.281 -2.69304 1.5
+do DpPipPipPimE791:AddChannel 9000221 1 0.478 0.324 0 2 1 2.281 -2.69304 1.5
+do DpPipPipPimE791:SetExternal 411 -211 211 211
+newdef DpPipPipPimE791:ResonanceMass 0
+newdef DpPipPipPimE791:f0gPi 0.09
+newdef DpPipPipPimE791:f0gK 0.02
+
+
 #
 create Herwig::TauDecayer  Tau3Pion
 newdef Tau3Pion:Iteration 10
