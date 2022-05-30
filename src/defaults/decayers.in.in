@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 19:26:48 on the 27/5/2022.
+# from the Herwig Particles Database at 13:6:51 on the 30/5/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -1066,6 +1066,39 @@ do D0KmPipPi0MarkIII:AddChannel 213 3 0.77 0.1533 1 2 0 1 0 25.3387
 do D0KmPipPi0MarkIII:AddChannel -323 3 0.8921 0.0511 0 2 1 0.4018 2.68781 10.1355
 do D0KmPipPi0MarkIII:AddChannel -313 3 0.8695 0.0502 0 1 2 0.4244 0.122173 10.1355
 do D0KmPipPi0MarkIII:SetExternal 421 -321 211 111
+#
+create Herwig::ScalarTo3ScalarDalitz  D0KS0Pi0Pi0CLEO
+newdef D0KS0Pi0Pi0CLEO:Iteration 10
+newdef D0KS0Pi0Pi0CLEO:Ntry 500
+newdef D0KS0Pi0Pi0CLEO:Points 10000
+newdef D0KS0Pi0Pi0CLEO:GenerateIntermediates 1 
+newdef D0KS0Pi0Pi0CLEO:ParentRadius 5
+newdef D0KS0Pi0Pi0CLEO:UseAllK0 0
+newdef D0KS0Pi0Pi0CLEO:MaximumWeight 1.81716e+10
+insert D0KS0Pi0Pi0CLEO:Weights 0 0.0761288
+insert D0KS0Pi0Pi0CLEO:Weights 1 0.0683486
+insert D0KS0Pi0Pi0CLEO:Weights 2 0.0988559
+insert D0KS0Pi0Pi0CLEO:Weights 3 0.0979624
+insert D0KS0Pi0Pi0CLEO:Weights 4 0.16882
+insert D0KS0Pi0Pi0CLEO:Weights 5 0.167634
+insert D0KS0Pi0Pi0CLEO:Weights 6 0.0439021
+insert D0KS0Pi0Pi0CLEO:Weights 7 0.0416722
+insert D0KS0Pi0Pi0CLEO:Weights 8 0.119776
+insert D0KS0Pi0Pi0CLEO:Weights 9 0.1169
+do D0KS0Pi0Pi0CLEO:AddChannel 9000221 51 0.47 -0.22 1 2 0 0.67 2.44346 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel 9010221 41 0.965 0.05 1 2 0 1.71 0.614356 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel 10221 1 1.35 0.265 1 2 0 4.04 -0.34383 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel 225 5 1.2751 0.185 1 2 0 1.57 -1.36136 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -313 3 0.896 0.0503 1 0 2 1 0 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -313 3 0.896 0.0503 2 0 1 1 0 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -315 5 1.4324 0.109 1 0 2 0.43 2.46091 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -315 5 1.4324 0.109 2 0 1 0.43 2.46091 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -30313 3 1.717 0.322 1 0 2 5.65 0.959931 1.5
+do D0KS0Pi0Pi0CLEO:AddChannel -30313 3 1.717 0.322 2 0 1 5.65 0.959931 1.5
+do D0KS0Pi0Pi0CLEO:SetExternal 421 310 111 111
+newdef D0KS0Pi0Pi0CLEO:ResonanceMass 0
+newdef D0KS0Pi0Pi0CLEO:f0gPi 0.354
+newdef D0KS0Pi0Pi0CLEO:f0gK 1.416
 #
 create Herwig::TauDecayer  Tau3Pion
 newdef Tau3Pion:Iteration 10
