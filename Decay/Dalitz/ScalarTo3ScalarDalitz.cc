@@ -49,13 +49,13 @@ void ScalarTo3ScalarDalitz::Init() {
   static Parameter<ScalarTo3ScalarDalitz,double> interfacegPi
     ("f0gPi",
      "The g_pi coupling for the f_0(980) width",
-     &ScalarTo3ScalarDalitz::f0gpi_, 0.09, 0.0, 1.,
+     &ScalarTo3ScalarDalitz::f0gpi_, 0.09, 0.0, 10.,
      false, false, Interface::limited);
 
   static Parameter<ScalarTo3ScalarDalitz,double> interfacegK
     ("f0gK",
      "The g_K coupling for the f_0(980) width",
-     &ScalarTo3ScalarDalitz::f0gK_, 0.02, 0.0, 1.,
+     &ScalarTo3ScalarDalitz::f0gK_, 0.02, 0.0, 10.,
      false, false, Interface::limited);
 
   static Switch<ScalarTo3ScalarDalitz,bool> interfaceResonanceMass
@@ -132,7 +132,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     return output;
   }
   else if (resonances()[i].type==ResonanceType::Flattef0) {
-    Energy mpi = getParticleData(211)->mass();
+    Energy mpi = getParticleData(111)->mass();
     Energy mK  = getParticleData(321)->mass();
     Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(m2_[d1][d2])-sqr(mpi));
     Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
