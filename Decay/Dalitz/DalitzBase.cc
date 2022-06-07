@@ -123,11 +123,11 @@ void DalitzBase::createMode(tPDPtr in, tPDVector out) {
     weights_=vector<double>(resonances_.size(),1./double(resonances_.size()));
   }
   unsigned int ix=0;
-  for(DalitzResonance res : resonances_) {
-    tPDPtr resonance = getParticleData(res.id);
+  for(DalitzResonancePtr res : resonances_) {
+    tPDPtr resonance = getParticleData(res->id);
     if(resonance) {
-      mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,res.spectator+1,1,res.daughter1+1,1,res.daughter2+1));
-      resetIntermediate(resonance,res.mass,abs(res.width));
+      mode->addChannel((PhaseSpaceChannel(mode),0,resonance,0,res->spectator+1,1,res->daughter1+1,1,res->daughter2+1));
+      resetIntermediate(resonance,res->mass,abs(res->width));
       ++ix;
     }
   }
@@ -147,12 +147,12 @@ void DalitzBase::dataBaseOutput(ofstream & output, bool header) const {
   }
   for(unsigned int ix=0;ix<resonances_.size();++ix) {
     output << "do " << name() << ":AddChannel "
-	   << resonances_[ix].id << " " << oenum(resonances_[ix].type) << " "
-	   << resonances_[ix].mass/GeV << " " << resonances_[ix].width/GeV << " "
-	   << resonances_[ix].daughter1 << " " << resonances_[ix].daughter2 << " "
-	   << resonances_[ix].spectator << " " 
-	   << abs(resonances_[ix].amp) << " " << arg(resonances_[ix].amp) << " "
-	   << resonances_[ix].R*GeV << "\n"; 
+	   << resonances_[ix]->id << " " << oenum(resonances_[ix]->type) << " "
+	   << resonances_[ix]->mass/GeV << " " << resonances_[ix]->width/GeV << " "
+	   << resonances_[ix]->daughter1 << " " << resonances_[ix]->daughter2 << " "
+	   << resonances_[ix]->spectator << " " 
+	   << abs(resonances_[ix]->amp) << " " << arg(resonances_[ix]->amp) << " "
+	   << resonances_[ix]->R*GeV << "\n"; 
   }
   output << "do " << name() << ":SetExternal " << incoming_;
   for(unsigned int ix=0;ix<3;++ix) output << " " << outgoing_[ix];
@@ -205,7 +205,7 @@ string DalitzBase::addChannel(string arg) {
   arg   = StringUtils::cdr(arg);
   InvEnergy r = stof(stype)/GeV;
   // add to list
-  resonances_.push_back(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r));
+  resonances_.push_back(new_ptr(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r)));
   // success
   return "";
 }

@@ -1,22 +1,18 @@
 // -*- C++ -*-
+#ifndef Herwig_DalitzResonance_H
+#define Herwig_DalitzResonance_H
 //
-// DalitzResonance.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2018 The Herwig Collaboration
+// This is the declaration of the DalitzResonance class.
 //
-// Herwig is licenced under version 3 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_DalitzResonance_H
-#define HERWIG_DalitzResonance_H
 
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Utilities/EnumIO.h"
+#include "ThePEG/Config/ThePEG.h"
+#include "DalitzResonance.fh"
 
 namespace Herwig {
-using namespace ThePEG;
-namespace ResonanceType {
 
+using namespace ThePEG;
+
+namespace ResonanceType {
 /**
  *  Enum for the type of resonace
  */
@@ -27,13 +23,19 @@ enum Type {NonResonant=0,
 	   SpecialSpin0=-1,SpecialSpin1=-3,SpecialSpin2=-5};
 
 }
-/**
- *  Struct to contain the properties of the intermediate 
- */
-struct DalitzResonance {
 
+/**
+ * The DalitzResonance class provides a container class for
+ * information on resonances in multi-body dalitz decays.
+ */
+class DalitzResonance: public Base {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   *  Default constructor
+   * The default constructor.
    */
   DalitzResonance() {}
 
@@ -47,6 +49,48 @@ struct DalitzResonance {
       daughter1(d1),daughter2(d2),spectator(s),
       amp(mag*exp(Complex(0,phi))), R(rr)
   {}
+
+  /**
+   * The destructor.
+   */
+  virtual ~DalitzResonance();
+  //@}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+private:
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  DalitzResonance & operator=(const DalitzResonance &) = delete;
+
+public:
 
   /**
    *  PID of resonant particle
@@ -87,34 +131,9 @@ struct DalitzResonance {
    *  Radius for the Ballt-Weisskopf formfactor
    */
   InvEnergy R;
+  
 };
 
-
-/** 
- * Output operator to allow the structure to be persistently written
- * @param os The output stream
- * @param x The resonance
- */
-inline PersistentOStream & operator<<(PersistentOStream & os, 
-				      const DalitzResonance  & x) {
-  os << x.id << oenum(x.type) << ounit(x.mass,GeV) << ounit(x.width,GeV)
-     << x.daughter1 << x.daughter2 << x.spectator
-     << x.amp << ounit(x.R,1./GeV);
-  return os;
 }
 
-/** 
- * Input operator to allow the structure to be persistently read
- * @param is The input stream
- * @param x The resonance
- */
-inline PersistentIStream & operator>>(PersistentIStream & is, 
-				      DalitzResonance  & x) {
-  is >> x.id >> ienum(x.type) >> iunit(x.mass,GeV) >> iunit(x.width,GeV)
-     >> x.daughter1 >> x.daughter2 >> x.spectator
-     >> x.amp >> iunit(x.R,1./GeV);
-  return is;
-}
-}
-
-#endif
+#endif /* Herwig_DalitzResonance_H */

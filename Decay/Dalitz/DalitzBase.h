@@ -89,7 +89,7 @@ protected:
   /**
    *  Add a new resonance
    */
-  void addResonance(const DalitzResonance & R) {resonances_.push_back(R);}
+  void addResonance(const DalitzResonancePtr & R) {resonances_.push_back(R);}
 
   /**
    *  Set up the phase-space
@@ -99,7 +99,7 @@ protected:
   /**
    *  Access to the resonances
    */
-  const vector<DalitzResonance> & resonances() const {return resonances_;}
+  const vector<DalitzResonancePtr> & resonances() const {return resonances_;}
 
   /**
    *   Access to the first channel
@@ -173,7 +173,7 @@ private:
   /**
    *  Vector containing the intermediate resonances
    */
-  vector<DalitzResonance> resonances_;
+  vector<DalitzResonancePtr> resonances_;
   
   /**
    *   Parameters for the phase-space sampling
