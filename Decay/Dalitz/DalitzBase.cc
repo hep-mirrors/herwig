@@ -16,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
+#include "FlatteResonance.h"
 
 using namespace Herwig;
 
@@ -146,13 +147,9 @@ void DalitzBase::dataBaseOutput(ofstream & output, bool header) const {
 	   << ix << " " << weights_[ix] << "\n";
   }
   for(unsigned int ix=0;ix<resonances_.size();++ix) {
-    output << "do " << name() << ":AddChannel "
-	   << resonances_[ix]->id << " " << oenum(resonances_[ix]->type) << " "
-	   << resonances_[ix]->mass/GeV << " " << resonances_[ix]->width/GeV << " "
-	   << resonances_[ix]->daughter1 << " " << resonances_[ix]->daughter2 << " "
-	   << resonances_[ix]->spectator << " " 
-	   << abs(resonances_[ix]->amp) << " " << arg(resonances_[ix]->amp) << " "
-	   << resonances_[ix]->R*GeV << "\n"; 
+    output << "do " << name() << ":AddChannel ";
+    resonances_[ix]->dataBaseOutput(output);
+    output << "\n";
   }
   output << "do " << name() << ":SetExternal " << incoming_;
   for(unsigned int ix=0;ix<3;++ix) output << " " << outgoing_[ix];
@@ -204,8 +201,23 @@ string DalitzBase::addChannel(string arg) {
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
   InvEnergy r = stof(stype)/GeV;
-  // add to list
-  resonances_.push_back(new_ptr(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r)));
+  // special for flate
+  if (type==ResonanceType::Flattef0) {
+    // Flatte parameters
+    // magnitude and phase
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double fpi = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double fK  = stof(stype);
+    // add to list
+    resonances_.push_back(new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK)));
+  }
+  // otherwise add to list
+  else {
+    resonances_.push_back(new_ptr(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r)));
+  }
   // success
   return "";
 }
