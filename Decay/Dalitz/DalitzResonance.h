@@ -7,20 +7,20 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "DalitzResonance.fh"
-
+#include <cassert>
 namespace Herwig {
 
 using namespace ThePEG;
 
 namespace ResonanceType {
+
 /**
  *  Enum for the type of resonace
  */
 enum Type {NonResonant=0,
 	   Spin0=1,Spin1=3,Spin2=5,
 	   Spin0E691=11,Spin1E691=13,Spin2E691=15,
-	   BABARf0=21, Spin0Gauss=31, Flattef0=41, Spin0Complex=51,
-	   SpecialSpin0=-1,SpecialSpin1=-3,SpecialSpin2=-5};
+	   BABARf0=21, Spin0Gauss=31, Flattef0=41, Spin0Complex=51};
 
 }
 
@@ -49,12 +49,14 @@ public:
       daughter1(d1),daughter2(d2),spectator(s),
       amp(mag*exp(Complex(0,phi))), R(rr)
   {}
+  //@}
+
+public:
 
   /**
-   * The destructor.
+   *  Return the Breit-Wigner times the form factor
    */
-  virtual ~DalitzResonance();
-  //@}
+  Complex BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const;
 
 public:
 

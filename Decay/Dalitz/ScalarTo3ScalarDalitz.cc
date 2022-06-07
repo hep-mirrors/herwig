@@ -112,53 +112,29 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
 }
 
 Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
-  static const Complex ii = Complex(0.,1.);
   Complex output = resonances()[i]->amp;
   if (resonances()[i]->type==ResonanceType::NonResonant) return output;
+  // mass of the resonance
+  const Energy & mR = resonances()[i]->mass ;
   // locations of the outgoing particles
   const unsigned int &d1 = resonances()[i]->daughter1;
   const unsigned int &d2 = resonances()[i]->daughter2;
   const unsigned int &sp = resonances()[i]->spectator;
-  // mass and width of the resonance
-  const Energy & mR = resonances()[i]->mass ;
-  const Energy & wR = resonances()[i]->width;
-  // momenta for the resonance decay
-  // off-shell
-  Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
-  if(resonances()[i]->type==ResonanceType::BABARf0) {
-    double rho = 2.*pAB/m2_[d1][d2];
-    output *= GeV2/(sqr(resonances()[i]->mass)-sqr(m2_[d1][d2])-
-		    ii*resonances()[i]->mass*resonances()[i]->width*rho);
+  // compute the Breit-Wigner times resonance form factor piece
+  output *= resonances()[i]->BreitWigner(m2_[d1][d2],mOut_[d1],mOut_[d2]);
+  // spin zero is done now
+  if(resonances()[i]->type%10==1 && resonances()[i]->type != ResonanceType::Spin0Gauss) {
     return output;
   }
-  else if (resonances()[i]->type==ResonanceType::Flattef0) {
-    Energy mpi = getParticleData(111)->mass();
-    Energy mK  = getParticleData(321)->mass();
-    Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(m2_[d1][d2])-sqr(mpi));
-    Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
-    complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
-    output *= GeV2/(sqr(resonances()[i]->mass)-sqr(m2_[d1][d2])-ii*resonances()[i]->mass*(Gamma_pi+Gamma_K));
-    return output;
-  }
-  else if (resonances()[i]->type==ResonanceType::Spin0Complex) {
-    complex<Energy> sR(resonances()[i]->mass,resonances()[i]->width);
-    output *= GeV2/(sqr(sR)-sqr(m2_[d1][d2]));
-    return output;
-  }
-  //  on-shell
-  Energy  pR=sqrt(0.25*sqr(    mR*mR        -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/mR;
-  // Blatt-Weisskopf factors
-  double fR=1, fD=1;
-  unsigned int power(1);
-  if(resonances()[i]->type!=ResonanceType::Spin0 &&
-     resonances()[i]->type!=ResonanceType::Spin0E691) {
+  // spin piece x Blatt-Weisskopf for parent 
+  else {
+    double fD=1;
     // for the D decay
     Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
     Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-    double r1A(resonances()[i]->R*pR),r1B(resonances()[i]->R*pAB );
     double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
     // mass for thre denominator
-    Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
+    Energy mDen = useResonanceMass_ ? resonances()[i]->mass : m2_[d1][d2];
     // denominator for the older form of the amplitude
     Energy2 denom = GeV2;
     if (resonances()[i]->type/10 == 1 ) { 
@@ -169,35 +145,24 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     // Blatt-Weisskopf factors and spin piece
     switch (resonances()[i]->type) {
     case ResonanceType::Spin0Gauss:
-      fR = exp(-(r1B-r1A)/12.);
       fD = exp(-(r2B-r2A)/12.);
+      output *= fD;
       break;
     case ResonanceType::Spin1: case ResonanceType::Spin1E691 :
-      fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
       fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
-      power=3;
-      output *= fR*fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
-		       + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/denom;
+      output *= fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
+		    + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/denom;
       break;
     case ResonanceType::Spin2: case ResonanceType::Spin2E691:
-      fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
       fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
-      power=5;
-      output *= fR*fD/sqr(denom)*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
-				   (sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
-				   (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
+      output *= fD/sqr(denom)*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
+				(sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
+				(sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
       break;
     default :
       assert(false);
     }
-  }
-  // multiply by Breit-Wigner piece and return
-  if (resonances()[i]->type/10 == 1 ) {
-    return output*sqrt(0.5*wR/GeV/Constants::pi)*GeV/(m2_[d1][d2]-mR-complex<Energy>(ZERO,0.5*wR));
-  }
-  else {
-    Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-    return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+    return output;
   }
 }
 
