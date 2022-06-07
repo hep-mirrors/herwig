@@ -25,8 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  ScalarTo3ScalarDalitz() : f0gpi_(0.09), f0gK_(0.02), 
-			    useResonanceMass_(false)
+  ScalarTo3ScalarDalitz() : useResonanceMass_(false)
   {}
 
   /**
@@ -146,21 +145,6 @@ private:
   ScalarTo3ScalarDalitz & operator=(const ScalarTo3ScalarDalitz &) = delete;
 
 private:
-  
-  /**
-   *  Parameters for the \f$f_0(980)\f$
-   */
-  //@{
-  /**
-   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
-   */
-  double f0gpi_;
-
-  /**
-   * \f$g_K\f$ coupling for the \f$f_0(980)\f$ width
-   */
-  double f0gK_;
-  //@}
 
   /**
    *  Choice of the mass to use in the denominator of the expressions
