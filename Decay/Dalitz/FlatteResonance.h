@@ -1,34 +1,20 @@
 // -*- C++ -*-
-#ifndef Herwig_DalitzResonance_H
-#define Herwig_DalitzResonance_H
+#ifndef Herwig_FlatteResonance_H
+#define Herwig_FlatteResonance_H
 //
-// This is the declaration of the DalitzResonance class.
+// This is the declaration of the FlatteResonance class.
 //
 
-#include "ThePEG/Config/ThePEG.h"
-#include "DalitzResonance.fh"
-#include <cassert>
+#include "DalitzResonance.h"
+
 namespace Herwig {
 
 using namespace ThePEG;
 
-namespace ResonanceType {
-
 /**
- *  Enum for the type of resonace
+ * The FlatteResonance class implements the Flatte line-shape for resonances in Dalitz decays.
  */
-enum Type {NonResonant=0,
-	   Spin0=1,Spin1=3,Spin2=5,
-	   Spin0E691=11,Spin1E691=13,Spin2E691=15,
-	   BABARf0=21, Spin0Gauss=31, Flattef0=41, Spin0Complex=51};
-
-}
-
-/**
- * The DalitzResonance class provides a container class for
- * information on resonances in multi-body dalitz decays.
- */
-class DalitzResonance: public Base {
+class FlatteResonance: public DalitzResonance {
 
 public:
 
@@ -37,17 +23,16 @@ public:
   /**
    * The default constructor.
    */
-  DalitzResonance() {}
+  FlatteResonance() {}
 
   /**
    *  Constructor specifiying the parameters
    */
-  DalitzResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
+  FlatteResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double mag, double phi, InvEnergy rr)
-    : id(pid), type(rtype), mass(m),width(w),
-      daughter1(d1),daughter2(d2),spectator(s),
-      amp(mag*exp(Complex(0,phi))), R(rr)
+		  double mag, double phi, InvEnergy rr, double fpi, double fK)
+    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
+      gpi_(fpi),gK_(fK)
   {}
   //@}
 
@@ -95,52 +80,27 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DalitzResonance & operator=(const DalitzResonance &) = delete;
+  FlatteResonance & operator=(const FlatteResonance &) = delete;
 
-public:
-
+private:
+   
   /**
-   *  PID of resonant particle
+   *  Parameters for the \f$f_0(980)\f$
    */
-  long id;
-
+  //@{
   /**
-   *  Type of the resonance
+   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
    */
-  ResonanceType::Type type;
-
-  /**
-   *  Mass of the resonance
-   */
-  Energy mass;
-
-  /**
-   *  Width of the resonance
-   */
-  Energy width;
-
-  /**
-   *  The children
-   */
-  unsigned int daughter1,daughter2;
-
-  /**
-   *   The spectactor
-   */
-  unsigned int spectator;
-
-  /**
-   *  The amplitude
-   */
-  Complex amp;
-
-  /**
-   *  Radius for the Ballt-Weisskopf formfactor
-   */
-  InvEnergy R;
+  double gpi_;
   
+  /**
+   * \f$g_K\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  double gK_;
+  //@}
+
 };
 
 }
 
-#endif /* Herwig_DalitzResonance_H */
+#endif /* Herwig_FlatteResonance_H */

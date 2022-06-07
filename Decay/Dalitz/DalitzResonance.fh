@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DalitzResonance class.
+//
+#ifndef Herwig_DalitzResonance_FH
+#define Herwig_DalitzResonance_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class DalitzResonance;
+
+ThePEG_DECLARE_POINTERS(Herwig::DalitzResonance,DalitzResonancePtr);
+
+}
+
+#endif
