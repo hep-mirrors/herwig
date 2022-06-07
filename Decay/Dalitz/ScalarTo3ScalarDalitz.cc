@@ -113,35 +113,35 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
 
 Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   static const Complex ii = Complex(0.,1.);
-  Complex output = resonances()[i].amp;
-  if (resonances()[i].type==ResonanceType::NonResonant) return output;
+  Complex output = resonances()[i]->amp;
+  if (resonances()[i]->type==ResonanceType::NonResonant) return output;
   // locations of the outgoing particles
-  const unsigned int &d1 = resonances()[i].daughter1;
-  const unsigned int &d2 = resonances()[i].daughter2;
-  const unsigned int &sp = resonances()[i].spectator;
+  const unsigned int &d1 = resonances()[i]->daughter1;
+  const unsigned int &d2 = resonances()[i]->daughter2;
+  const unsigned int &sp = resonances()[i]->spectator;
   // mass and width of the resonance
-  const Energy & mR = resonances()[i].mass ;
-  const Energy & wR = resonances()[i].width;
+  const Energy & mR = resonances()[i]->mass ;
+  const Energy & wR = resonances()[i]->width;
   // momenta for the resonance decay
   // off-shell
   Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
-  if(resonances()[i].type==ResonanceType::BABARf0) {
+  if(resonances()[i]->type==ResonanceType::BABARf0) {
     double rho = 2.*pAB/m2_[d1][d2];
-    output *= GeV2/(sqr(resonances()[i].mass)-sqr(m2_[d1][d2])-
-		    ii*resonances()[i].mass*resonances()[i].width*rho);
+    output *= GeV2/(sqr(resonances()[i]->mass)-sqr(m2_[d1][d2])-
+		    ii*resonances()[i]->mass*resonances()[i]->width*rho);
     return output;
   }
-  else if (resonances()[i].type==ResonanceType::Flattef0) {
+  else if (resonances()[i]->type==ResonanceType::Flattef0) {
     Energy mpi = getParticleData(111)->mass();
     Energy mK  = getParticleData(321)->mass();
     Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(m2_[d1][d2])-sqr(mpi));
     Energy2 arg = 0.25*sqr(m2_[d1][d2])-sqr(mK);
     complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
-    output *= GeV2/(sqr(resonances()[i].mass)-sqr(m2_[d1][d2])-ii*resonances()[i].mass*(Gamma_pi+Gamma_K));
+    output *= GeV2/(sqr(resonances()[i]->mass)-sqr(m2_[d1][d2])-ii*resonances()[i]->mass*(Gamma_pi+Gamma_K));
     return output;
   }
-  else if (resonances()[i].type==ResonanceType::Spin0Complex) {
-    complex<Energy> sR(resonances()[i].mass,resonances()[i].width);
+  else if (resonances()[i]->type==ResonanceType::Spin0Complex) {
+    complex<Energy> sR(resonances()[i]->mass,resonances()[i]->width);
     output *= GeV2/(sqr(sR)-sqr(m2_[d1][d2]));
     return output;
   }
@@ -150,24 +150,24 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   // Blatt-Weisskopf factors
   double fR=1, fD=1;
   unsigned int power(1);
-  if(resonances()[i].type!=ResonanceType::Spin0 &&
-     resonances()[i].type!=ResonanceType::Spin0E691) {
+  if(resonances()[i]->type!=ResonanceType::Spin0 &&
+     resonances()[i]->type!=ResonanceType::Spin0E691) {
     // for the D decay
     Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
     Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-    double r1A(resonances()[i].R*pR),r1B(resonances()[i].R*pAB );
+    double r1A(resonances()[i]->R*pR),r1B(resonances()[i]->R*pAB );
     double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
     // mass for thre denominator
     Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
     // denominator for the older form of the amplitude
     Energy2 denom = GeV2;
-    if (resonances()[i].type/10 == 1 ) { 
+    if (resonances()[i]->type/10 == 1 ) { 
       Energy2 pa2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mOut_[d1])+sqr(mOut_[d2])) + sqr(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(m2_[d1][d2]));
       Energy2 pc2 = 0.25*(sqr(m2_[d1][d2])-2.*(sqr(mD_      )+sqr(mOut_[sp])) + sqr(sqr(mD_      )-sqr(mOut_[sp]))/sqr(m2_[d1][d2]));
       denom = 4.*sqrt(pa2*pc2);
     }
     // Blatt-Weisskopf factors and spin piece
-    switch (resonances()[i].type) {
+    switch (resonances()[i]->type) {
     case ResonanceType::Spin0Gauss:
       fR = exp(-(r1B-r1A)/12.);
       fD = exp(-(r2B-r2A)/12.);
@@ -192,7 +192,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     }
   }
   // multiply by Breit-Wigner piece and return
-  if (resonances()[i].type/10 == 1 ) {
+  if (resonances()[i]->type/10 == 1 ) {
     return output*sqrt(0.5*wR/GeV/Constants::pi)*GeV/(m2_[d1][d2]-mR-complex<Energy>(ZERO,0.5*wR));
   }
   else {

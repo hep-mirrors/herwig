@@ -134,13 +134,13 @@ VectorTo3PseudoScalarDalitz::threeBodyMEIntegrator(const DecayMode & ) const {
   int iloc=-1;
   vector<double> inpow(2,0.0);
   for(unsigned int ix=0;ix<resonances().size();++ix) {
-    tPDPtr resonance = getParticleData(resonances()[ix].id);
+    tPDPtr resonance = getParticleData(resonances()[ix]->id);
     if(resonance) {
       ++iloc;
       inweights.push_back(weights()[iloc]);
-      inmass.push_back(resonances()[ix].mass);
-      inwidth.push_back(abs(resonances()[ix].width));
-      intype.push_back(resonances()[ix].spectator+1);
+      inmass.push_back(resonances()[ix]->mass);
+      inwidth.push_back(abs(resonances()[ix]->width));
+      intype.push_back(resonances()[ix]->spectator+1);
     }
   }
   tcDecayIntegratorPtr decayer(this);
@@ -166,20 +166,20 @@ void VectorTo3PseudoScalarDalitz::dataBaseOutput(ofstream & output,
 
 complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   // can't have a scalar here on spin/parity grounds
-  assert(resonances()[i].type%10!=1);
+  assert(resonances()[i]->type%10!=1);
   // shouldn't have E691 stuff either
-  assert(resonances()[i].type%10!=1);
+  assert(resonances()[i]->type%10!=1);
   // amplitude
   static const Complex ii = Complex(0.,1.);
-  Complex output = resonances()[i].amp;
-  if (resonances()[i].type==ResonanceType::NonResonant) return output/GeV2;
+  Complex output = resonances()[i]->amp;
+  if (resonances()[i]->type==ResonanceType::NonResonant) return output/GeV2;
   // locations of the outgoing particles
-  const unsigned int &d1 = resonances()[i].daughter1;
-  const unsigned int &d2 = resonances()[i].daughter2;
-  const unsigned int &sp = resonances()[i].spectator;
+  const unsigned int &d1 = resonances()[i]->daughter1;
+  const unsigned int &d2 = resonances()[i]->daughter2;
+  const unsigned int &sp = resonances()[i]->spectator;
   // mass and width of the resonance
-  const Energy & mR = resonances()[i].mass ;
-  const Energy & wR = resonances()[i].width;
+  const Energy & mR = resonances()[i]->mass ;
+  const Energy & wR = resonances()[i]->width;
   // momenta for the resonance decay
   // off-shell
   Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
@@ -191,10 +191,10 @@ complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   // for the D decay
   Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
   Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-  double r1A(resonances()[i].R*pR),r1B(resonances()[i].R*pAB );
+  double r1A(resonances()[i]->R*pR),r1B(resonances()[i]->R*pAB );
   double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
   // Blatt-Weisskopf factors and spin piece
-  switch (resonances()[i].type) {
+  switch (resonances()[i]->type) {
   case ResonanceType::Spin1:
     fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
     fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
