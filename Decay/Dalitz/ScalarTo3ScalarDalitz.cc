@@ -28,11 +28,11 @@ IBPtr ScalarTo3ScalarDalitz::fullclone() const {
 }
 
 void ScalarTo3ScalarDalitz::persistentOutput(PersistentOStream & os) const {
-  os << f0gpi_ << f0gK_ << useResonanceMass_ ;
+  os << useResonanceMass_ ;
 }
 
 void ScalarTo3ScalarDalitz::persistentInput(PersistentIStream & is, int) {
-  is >> f0gpi_ >> f0gK_ >> useResonanceMass_;
+  is >> useResonanceMass_;
 }
 
 // The following static variable is needed for the type
@@ -45,18 +45,6 @@ void ScalarTo3ScalarDalitz::Init() {
   static ClassDocumentation<ScalarTo3ScalarDalitz> documentation
     ("The ScalarTo3ScalarDalitz class provides a base class for "
      "weak three-body decays of bottom and charm mesons");
-  
-  static Parameter<ScalarTo3ScalarDalitz,double> interfacegPi
-    ("f0gPi",
-     "The g_pi coupling for the f_0(980) width",
-     &ScalarTo3ScalarDalitz::f0gpi_, 0.09, 0.0, 10.,
-     false, false, Interface::limited);
-
-  static Parameter<ScalarTo3ScalarDalitz,double> interfacegK
-    ("f0gK",
-     "The g_K coupling for the f_0(980) width",
-     &ScalarTo3ScalarDalitz::f0gK_, 0.02, 0.0, 10.,
-     false, false, Interface::limited);
 
   static Switch<ScalarTo3ScalarDalitz,bool> interfaceResonanceMass
     ("ResonanceMass",
@@ -171,8 +159,6 @@ void ScalarTo3ScalarDalitz::dataBaseOutput(ofstream & output, bool header) const
   // parameters for the DalitzBase base class
   DalitzBase::dataBaseOutput(output,false);
   output << "newdef " << name() << ":ResonanceMass " << useResonanceMass_ << "\n";
-  output << "newdef " << name() << ":f0gPi "      << f0gpi_   << "\n";
-  output << "newdef " << name() << ":f0gK "       << f0gK_    << "\n";
   output << "\n";
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
