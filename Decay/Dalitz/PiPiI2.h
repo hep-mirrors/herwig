@@ -1,34 +1,20 @@
 // -*- C++ -*-
-#ifndef Herwig_DalitzResonance_H
-#define Herwig_DalitzResonance_H
+#ifndef Herwig_PiPiI2_H
+#define Herwig_PiPiI2_H
 //
-// This is the declaration of the DalitzResonance class.
+// This is the declaration of the PiPiI2 class.
 //
 
-#include "ThePEG/Config/ThePEG.h"
-#include "DalitzResonance.fh"
-#include <cassert>
+#include "DalitzResonance.h"
+
 namespace Herwig {
 
 using namespace ThePEG;
 
-namespace ResonanceType {
-
 /**
- *  Enum for the type of resonace
+ * The PiPiI2 class provides an implementation of the \f$I=2\f$ s-eave for \f$\pi\pi\f$.
  */
-enum Type {NonResonant=0,
-	   Spin0=1,Spin1=3,Spin2=5,
-	   Spin0E691=11,Spin1E691=13,Spin2E691=15,
-	   BABARf0=21, Spin0Gauss=31, Flattef0=41, Spin0Complex=51, Spin0MIPWA=-1, PiPiI2=-11};
-
-}
-
-/**
- * The DalitzResonance class provides a container class for
- * information on resonances in multi-body dalitz decays.
- */
-class DalitzResonance: public Base {
+class PiPiI2: public DalitzResonance {
 
 public:
 
@@ -37,19 +23,20 @@ public:
   /**
    * The default constructor.
    */
-  DalitzResonance() {}
+  PiPiI2() {};
 
   /**
    *  Constructor specifiying the parameters
    */
-  DalitzResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
-		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double mag, double phi, InvEnergy rr)
-    : id(pid), type(rtype), mass(m),width(w),
-      daughter1(d1),daughter2(d2),spectator(s),
-      amp(mag*exp(Complex(0,phi))), R(rr)
+  PiPiI2(long pid, ResonanceType::Type rtype, Energy m, Energy w,
+	 unsigned int d1, unsigned int d2, unsigned int s,
+	 double mag, double phi, InvEnergy rr,
+	 InvEnergy a, InvEnergy2 b, InvEnergy4 c, InvEnergy6 d,
+	 Energy mmin, Energy mmax, double deta)
+    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
+      a_(a),b_(b),c_(c),d_(d),
+      mmin_(mmin), mmax_(mmax), deltaEta_(deta)
   {}
-  //@}
 
 public:
 
@@ -95,52 +82,56 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DalitzResonance & operator=(const DalitzResonance &) = delete;
+  PiPiI2 & operator=(const PiPiI2 &) = delete;
 
-public:
-
-  /**
-   *  PID of resonant particle
-   */
-  long id;
+private :
 
   /**
-   *  Type of the resonance
+   *  Parameters for \f$\delta^2_0\f$
    */
-  ResonanceType::Type type;
-
+  //@{
   /**
-   *  Mass of the resonance
+   *  Parameter \f$a\f$
    */
-  Energy mass;
-
-  /**
-   *  Width of the resonance
-   */
-  Energy width;
-
-  /**
-   *  The children
-   */
-  unsigned int daughter1,daughter2;
-
-  /**
-   *   The spectactor
-   */
-  unsigned int spectator;
-
-  /**
-   *  The amplitude
-   */
-  Complex amp;
-
-  /**
-   *  Radius for the Ballt-Weisskopf formfactor
-   */
-  InvEnergy R;
+  InvEnergy a_;
   
+  /**
+   *  Parameter \f$b\f$
+   */
+  InvEnergy2 b_;
+  
+  /**
+   *  Parameter \f$c\f$
+   */
+  InvEnergy4 c_;
+  
+  /**
+   *  Parameter \f$d\f$
+   */
+  InvEnergy6 d_;
+  //@}
+
+  /**
+   *  Parameters for \f$\eta^_0\f$
+   */
+  //@{
+  /**
+   *  Minimum mass
+   */
+  Energy mmin_;
+  
+  /**
+   *  Maximum mass
+   */
+  Energy mmax_;
+
+  /**
+   *   \f$\Delta\eta\f$ 
+   */
+  double deltaEta_;
+  //@}
 };
 
 }
 
-#endif /* Herwig_DalitzResonance_H */
+#endif /* Herwig_PiPiI2_H */

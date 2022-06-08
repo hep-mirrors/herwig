@@ -13,6 +13,7 @@ DalitzResonance.h\
 DalitzResonance.fh\
 FlatteResonance.h\
 MIPWA.h\
+PiPiI2.h\
 DalitzBase.h\
 FOCUSDptoKmPipPip.h \
 ScalarTo3ScalarDalitz.h\
@@ -24,6 +25,7 @@ ALL_CC_FILES = \
 DalitzResonance.cc\
 FlatteResonance.cc\
 MIPWA.cc\
+PiPiI2.cc\
 DalitzBase.cc\
 FOCUSDptoKmPipPip.cc\
 ScalarTo3ScalarDalitz.cc\

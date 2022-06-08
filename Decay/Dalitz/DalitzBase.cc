@@ -18,6 +18,7 @@
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "FlatteResonance.h"
 #include "MIPWA.h"
+#include "PiPiI2.h"
 
 using namespace Herwig;
 
@@ -215,6 +216,7 @@ string DalitzBase::addChannel(string arg) {
     // add to list
     resonances_.push_back(new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK)));
   }
+  // MIPWA
   else if(type==ResonanceType::Spin0MIPWA) {
     // no of entries in table
     stype = StringUtils::car(arg);
@@ -237,6 +239,32 @@ string DalitzBase::addChannel(string arg) {
       phase2.push_back(pp);
     }
     resonances_.push_back(new_ptr(MIPWA(id,type,mass,width,d1,d2,sp,mag,phi,r,en,mag2,phase2)));
+  }
+  // I=2 pipi
+  else if(type==ResonanceType::PiPiI2) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy a = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy2 b = stof(stype)/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy4 c = stof(stype)/GeV2/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy6 d = stof(stype)/GeV2/GeV2/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mmin = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mmax = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double dEta=stof(stype);
+    resonances_.push_back(new_ptr(PiPiI2(id,type,mass,width,d1,d2,sp,mag,phi,r,
+					 a,b,c,d,mmin,mmax,dEta)));
   }
   // otherwise add to list
   else {
