@@ -12,6 +12,7 @@ ALL_H_FILES = \
 DalitzResonance.h\
 DalitzResonance.fh\
 FlatteResonance.h\
+MIPWA.h\
 DalitzBase.h\
 FOCUSDptoKmPipPip.h \
 ScalarTo3ScalarDalitz.h\
@@ -22,6 +23,7 @@ DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 DalitzResonance.cc\
 FlatteResonance.cc\
+MIPWA.cc\
 DalitzBase.cc\
 FOCUSDptoKmPipPip.cc\
 ScalarTo3ScalarDalitz.cc\

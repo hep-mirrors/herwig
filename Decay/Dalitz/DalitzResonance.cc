@@ -77,13 +77,16 @@ Complex DalitzResonance::BreitWigner(const Energy & mAB, const Energy & mA, cons
     switch (type) {
     case ResonanceType::Spin0Gauss:
       fR = exp(-(r1B-r1A)/12.);
+      // cerr << "testing scalar B " <<   exp(+r1A/12.) << "\n";
       break;
     case ResonanceType::Spin1: case ResonanceType::Spin1E691 :
       fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
+      // cerr << "testing vector B " << sqrt(1. + sqr(r1A))   << "\n";
       power=3;
       break;
     case ResonanceType::Spin2: case ResonanceType::Spin2E691:
       fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
+      // cerr << "testing tensor B " <<  sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))))  << "\n";
       power=5;
       break;
     default :

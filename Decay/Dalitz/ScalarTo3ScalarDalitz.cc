@@ -111,7 +111,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
   // compute the Breit-Wigner times resonance form factor piece
   output *= resonances()[i]->BreitWigner(m2_[d1][d2],mOut_[d1],mOut_[d2]);
   // spin zero is done now
-  if(resonances()[i]->type%10==1 && resonances()[i]->type != ResonanceType::Spin0Gauss) {
+  if(abs(resonances()[i]->type)%10==1 && resonances()[i]->type != ResonanceType::Spin0Gauss) {
     return output;
   }
   // spin piece x Blatt-Weisskopf for parent 
@@ -134,15 +134,18 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
     switch (resonances()[i]->type) {
     case ResonanceType::Spin0Gauss:
       fD = exp(-(r2B-r2A)/12.);
+      // cerr << "testing scalar " << i << " " << mR/GeV << " " << exp(r2A/12.) << "\n";
       output *= fD;
       break;
     case ResonanceType::Spin1: case ResonanceType::Spin1E691 :
       fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
+      // cerr << "testing vector " << i << " " << mR/GeV << " " << sqrt(1. + sqr(r2A))  << "\n";
       output *= fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
 		    + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/denom;
       break;
     case ResonanceType::Spin2: case ResonanceType::Spin2E691:
       fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
+      // cerr << "testing tensor  " << i << " " << mR/GeV << " " <<  sqrt( (9. + sqr(r2A)*(3.+sqr(r2A)))) << "\n";
       output *= fD/sqr(denom)*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
 				(sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
 				(sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
