@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "FlatteResonance.h"
+#include "MIPWA.h"
 
 using namespace Herwig;
 
@@ -213,6 +214,29 @@ string DalitzBase::addChannel(string arg) {
     double fK  = stof(stype);
     // add to list
     resonances_.push_back(new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK)));
+  }
+  else if(type==ResonanceType::Spin0MIPWA) {
+    // no of entries in table
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    int nn = stoi(stype);
+    vector<Energy> en; en.reserve(nn);
+    vector<double> mag2,phase2; mag2.reserve(nn); phase2.reserve(nn);
+    for(int ix=0;ix<nn;++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      Energy ee = stof(stype)*GeV;
+      en.push_back(ee);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double mm=stof(stype);
+      mag2.push_back(mm);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double pp=stof(stype);
+      phase2.push_back(pp);
+    }
+    resonances_.push_back(new_ptr(MIPWA(id,type,mass,width,d1,d2,sp,mag,phi,r,en,mag2,phase2)));
   }
   // otherwise add to list
   else {

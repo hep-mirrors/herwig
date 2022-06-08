@@ -1058,7 +1058,7 @@ insert D0KmPipPi0MarkIII:Weights 2 0.314774
 do D0KmPipPi0MarkIII:AddChannel 0 0 0 0 0 1 2 2.0693 0.907571 0
 do D0KmPipPi0MarkIII:AddChannel 213 3 0.77 0.1533 1 2 0 1 0 25.3387
 do D0KmPipPi0MarkIII:AddChannel -323 3 0.8921 0.0511 0 2 1 0.4018 2.68781 10.1355
-do D0KmPipPi0MarkIII:AddChannel -313 3 0.8695 0.0502 0 1 2 0.4244 0.122173 10.1355
+do D0KmPipPi0MarkIII:AddChannel -313 3 0.8921 0.0511 0 1 2 0.4244 0.122173 10.1355
 do D0KmPipPi0MarkIII:SetExternal 421 -321 211 111
 #
 create Herwig::ScalarTo3ScalarDalitz  D0KS0Pi0Pi0CLEO
@@ -21523,8 +21523,8 @@ do DpKbar0PipPi0MarkIII:SetExternal 411 -311 211 111
 #
 create Herwig::ScalarTo3ScalarDalitz  DpKmPipPipMarkIII
 do /Herwig/Decays/DpKmPipPipMarkIII:AddChannel    0   0  0.     0.     0 1 2 1.  0. 0. 
-do /Herwig/Decays/DpKmPipPipMarkIII:AddChannel -313   3  0.8695 0.0502 1 0 2 0.04749 1.8325957145940461 10.1355 
-do /Herwig/Decays/DpKmPipPipMarkIII:AddChannel -313   3  0.8695 0.0502 2 0 1 0.04749 1.8325957145940461 10.1355 
+do /Herwig/Decays/DpKmPipPipMarkIII:AddChannel -313   3  0.8921 0.0511 1 0 2 0.04749 1.8325957145940461 10.1355 
+do /Herwig/Decays/DpKmPipPipMarkIII:AddChannel -313   3  0.8921 0.0511 2 0 1 0.04749 1.8325957145940461 10.1355 
 set /Herwig/Decays/DpKmPipPipMarkIII:Initialize 1
 set /Herwig/Decays/DpKmPipPipMarkIII:DatabaseOutput 1
 set /Herwig/Decays/DpKmPipPipMarkIII:ParentRadius 0
