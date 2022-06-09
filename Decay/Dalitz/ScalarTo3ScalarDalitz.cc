@@ -18,6 +18,7 @@
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 IBPtr ScalarTo3ScalarDalitz::clone() const {
   return new_ptr(*this);

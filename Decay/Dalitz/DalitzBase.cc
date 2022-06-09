@@ -6,6 +6,7 @@
 
 #include "DalitzBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Command.h"
@@ -19,19 +20,21 @@
 #include "FlatteResonance.h"
 #include "MIPWA.h"
 #include "PiPiI2.h"
+#include "DalitzKMatrix.h"
 
 using namespace Herwig;
 
 void DalitzBase::persistentOutput(PersistentOStream & os) const {
   os << ounit(rParent_,1./GeV) << resonances_ << maxWgt_ << weights_ 
-     << channel1_ << channel2_ << incoming_ << outgoing_ << useAllK0_;
+     << channel1_ << channel2_ << incoming_ << outgoing_ << useAllK0_
+     << kMatrix_;
 }
 
 void DalitzBase::persistentInput(PersistentIStream & is, int) {
   is >> iunit(rParent_,1./GeV) >> resonances_ >> maxWgt_ >> weights_ 
-     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useAllK0_;
+     >> channel1_ >> channel2_ >> incoming_ >> outgoing_ >> useAllK0_
+     >> kMatrix_;
 }
-
 
 // The following static variable is needed for the type
 // description system in ThePEG.
@@ -98,6 +101,11 @@ void DalitzBase::Init() {
      "Use all the states",
      true);
 
+  static RefVector<DalitzBase,KMatrix> interfaceKMatrices
+    ("KMatrices",
+     "Any K-matrices needed to simulate the decay",
+     &DalitzBase::kMatrix_, -1, false, false, true, false, false);
+
 }
 
 void DalitzBase::doinit() {
@@ -112,6 +120,13 @@ void DalitzBase::doinit() {
 }
 
 void DalitzBase::doinitrun() {
+  if(!kMatrix_.empty()) {
+    for(unsigned int ix=0;ix<resonances().size();++ix) {
+      Ptr<Herwig::DalitzKMatrix>::transient_pointer mat =
+	dynamic_ptr_cast<Ptr<Herwig::DalitzKMatrix>::transient_pointer>(resonances()[ix]);
+      if(mat) mat->setKMatrix(kMatrix_[mat->imatrix()]);
+    }
+  }
   DecayIntegrator::doinitrun();
   weights_.resize(mode(0)->channels().size());
   maxWgt_ = mode(0)->maxWeight();
@@ -144,6 +159,9 @@ void DalitzBase::dataBaseOutput(ofstream & output, bool header) const {
   output << "newdef " << name() << ":ParentRadius " << rParent_*GeV << "\n";
   output << "newdef " << name() << ":UseAllK0 " << useAllK0_ << "\n";
   output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
+  for(unsigned int ix=0;ix<kMatrix_.size();++ix) {
+    output << "insert " << name() << ":KMatrices " << ix << " " << kMatrix_[ix]->fullName() << "\n";
+  }
   for(unsigned int ix=0;ix<weights_.size();++ix) {
     output << "insert " << name() << ":Weights "
 	   << ix << " " << weights_[ix] << "\n";
@@ -160,7 +178,6 @@ void DalitzBase::dataBaseOutput(ofstream & output, bool header) const {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
   }
 }
-
 
 string DalitzBase::addChannel(string arg) {
   // parse first bit of the string
@@ -265,6 +282,47 @@ string DalitzBase::addChannel(string arg) {
     double dEta=stof(stype);
     resonances_.push_back(new_ptr(PiPiI2(id,type,mass,width,d1,d2,sp,mag,phi,r,
 					 a,b,c,d,mmin,mmax,dEta)));
+  }
+  // K-matrix
+  else if(type==ResonanceType::KMatrix) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int imat = stoi(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int chan = stoi(stype);
+    assert(imat<=kMatrix_.size());
+    // expansion point for the constants terms
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy2 sc = GeV2*stof(stype);
+    vector<pair<double,double> > beta;
+    // first loop over the coefficients of the poles
+    for(unsigned int ix=0;ix<kMatrix_[imat]->poles().size();++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double b = stof(stype);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      beta.push_back(make_pair(b,stof(stype)));
+    }
+    // now over the power series for the different channels
+    vector<pair<double,vector<double > > > coeffs(kMatrix_[imat]->numberOfChannels());
+    for(unsigned int ix=0;ix<kMatrix_[imat]->numberOfChannels();++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      unsigned int nterms = stoi(stype);
+      for(unsigned int iy=0;iy<nterms;++iy) {
+	stype = StringUtils::car(arg);
+	arg   = StringUtils::cdr(arg);
+	coeffs[ix].second.push_back(stof(stype));
+      }
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      coeffs[ix].first = stof(stype);
+    }
+    // finally make the channel
+    resonances_.push_back(new_ptr(DalitzKMatrix(id,type,mass,width,d1,d2,sp,mag,phi,r,imat,chan,sc,beta,coeffs)));
   }
   // otherwise add to list
   else {

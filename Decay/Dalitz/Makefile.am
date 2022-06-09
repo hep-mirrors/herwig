@@ -14,8 +14,8 @@ DalitzResonance.fh\
 FlatteResonance.h\
 MIPWA.h\
 PiPiI2.h\
+DalitzKMatrix.h\
 DalitzBase.h\
-FOCUSDptoKmPipPip.h \
 ScalarTo3ScalarDalitz.h\
 VectorTo3PseudoScalarDalitz.h\
 BABAREtactoKpKmEta.h
@@ -26,8 +26,8 @@ DalitzResonance.cc\
 FlatteResonance.cc\
 MIPWA.cc\
 PiPiI2.cc\
+DalitzKMatrix.cc\
 DalitzBase.cc\
-FOCUSDptoKmPipPip.cc\
 ScalarTo3ScalarDalitz.cc\
 VectorTo3PseudoScalarDalitz.cc\
 BABAREtactoKpKmEta.cc

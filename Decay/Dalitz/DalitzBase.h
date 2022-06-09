@@ -6,6 +6,7 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/FormFactors/KMatrix.h"
 #include "DalitzResonance.h"
 
 namespace Herwig {
@@ -174,6 +175,11 @@ private:
    *  Vector containing the intermediate resonances
    */
   vector<DalitzResonancePtr> resonances_;
+  
+  /**
+   *  Any \f$K\f$-matrices for the decay
+   */
+  vector<KMatrixPtr> kMatrix_;
   
   /**
    *   Parameters for the phase-space sampling

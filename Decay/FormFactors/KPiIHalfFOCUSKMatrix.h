@@ -105,11 +105,6 @@ private:
   vector<double> C11_,C22_,C12_;
 
   /**
-   *  Couplings for the resonances
-   */
-  vector<Energy> g_;
-
-  /**
    *   Adler zero position
    */
   Energy2 sHalf_;
