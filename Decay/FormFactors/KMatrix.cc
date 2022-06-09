@@ -19,17 +19,20 @@
 using namespace Herwig;
 
 KMatrix::KMatrix(FlavourInfo flavour, vector<Channels> channels,
-		 vector<Energy2> poles) : flavour_(flavour), channels_(channels), poles_(poles)
+		 vector<Energy2> poles, vector<vector<Energy> > g)
+  : flavour_(flavour), channels_(channels), poles_(poles), g_(g)
 {}
 
 void KMatrix::persistentOutput(PersistentOStream & os) const {
-  os << ounit(poles_,GeV2) << ounit(mPiPlus_,GeV) << ounit(mPi0_,GeV)
+  os << ounit(poles_,GeV2) << ounit(g_,GeV)
+     << ounit(mPiPlus_,GeV) << ounit(mPi0_,GeV)
      << ounit(mKPlus_,GeV) << ounit(mK0_,GeV) << ounit(mEta_,GeV)
      << ounit(mEtaPrime_,GeV);
 }
 
 void KMatrix::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(poles_,GeV2) >> iunit(mPiPlus_,GeV) >> iunit(mPi0_,GeV)
+  is >> iunit(poles_,GeV2) >> iunit(g_,GeV)
+     >> iunit(mPiPlus_,GeV) >> iunit(mPi0_,GeV)
      >> iunit(mKPlus_,GeV) >> iunit(mK0_,GeV) >> iunit(mEta_,GeV)
      >> iunit(mEtaPrime_,GeV);
 }
@@ -112,10 +115,11 @@ amplitudes(Energy2 s, ublas::vector<Complex> pVector, bool multiplyByPoles) cons
   ublas::matrix<Complex> m = fact*I-ii*prod(K(s,multiplyByPoles),rho(s));
   // inverse matrix
   ublas::matrix<Complex> inverse = ublas::identity_matrix<Complex>(m.size1());
-  // just a number
+  // 1x1 just a number
   if(m.size1()==1) {
     inverse(0,0) = 1./m(0,0);
   }
+  // compute the inverse
   else {
     // create a permutation matrix for the LU-factorization
     ublas::permutation_matrix<std::size_t>  pm(m.size1());
@@ -125,7 +129,7 @@ amplitudes(Energy2 s, ublas::vector<Complex> pVector, bool multiplyByPoles) cons
       cerr << "problem with factorization\n";
       exit(1);
     }
-    // backsubstitute to get the inverse
+    // back substitute to get the inverse
     ublas::lu_substitute(m, pm, inverse);
   }
   // compute the amplitudes

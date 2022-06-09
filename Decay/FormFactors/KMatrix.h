@@ -37,7 +37,8 @@ public:
    */
   KMatrix(FlavourInfo flavour=FlavourInfo(),
 	  vector<Channels> channels=vector<Channels>(),
-	  vector<Energy2> poles=vector<Energy2>());
+	  vector<Energy2> poles=vector<Energy2>(),
+	  vector<vector<Energy> > g=vector<vector<Energy> >());
 
   /**
    *   The quantum numbers of the K-matrix
@@ -47,9 +48,9 @@ public:
   };
 
   /**
-   *  Compute the K-matrix for a given scale
+   * Compute the K-matrix for a given scale
    * @param s The scale
-   * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
+   * @param Whether or not to multiply by \f$\prod_i(1-s/m^2_i)\f$ to regularise the poles
    */
   virtual ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) const = 0;
 
@@ -64,12 +65,22 @@ public:
   const vector<Energy2> & poles() const {return poles_;}
 
   /**
-   *  Compute the amplitdes given the \f$P\f$-vector
-   * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
+   *  Access the couplings of the poles
+   */
+  const vector<vector<Energy> > & poleCouplings() const {return g_;}
+
+  /**
+   * Compute the amplitdes given the \f$P\f$-vector
+   * @param Whether or not to multiply by \f$\prod_i(1-s/m^2_i)\f$ to regularise the poles
    */
   virtual ublas::vector<Complex>
   amplitudes(Energy2 s, ublas::vector<Complex> pVector,
 	     bool multiplyByPoles=false) const;
+
+  /**
+   *  The number of channels
+   */
+  unsigned int numberOfChannels() {return channels_.size();}
   
 public:
 
@@ -134,6 +145,11 @@ private:
    */
   vector<Energy2> poles_;
 
+  /**
+   *  Couplings for the resonances
+   */
+  vector<vector<Energy> > g_;
+
 private:
 
   /**
@@ -146,7 +162,7 @@ private:
   Energy mPiPlus_;
 
   /**
-   *   The neutra; pion mass
+   *   The neutral pion mass
    */
   Energy mPi0_;
 
