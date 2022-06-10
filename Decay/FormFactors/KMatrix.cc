@@ -79,26 +79,31 @@ ublas::matrix<Complex> KMatrix::rho(Energy2 s) const {
   ublas::diagonal_matrix<Complex> rho(msize,msize);
   for(unsigned int iChan=0;iChan<msize;++iChan) {
     double val(0);
+    Energy m1,m2;
     switch (channels_[iChan]) {
     case PiPi:
-      val=kallen(s,mPiPlus_,mPiPlus_);
+      m1=m2=mPiPlus_;
       break;
     case KPi:
-      val=kallen(s,mKPlus_,mPiPlus_);
+      m1 = mKPlus_;
+      m2 = mPiPlus_;
       break;
     case KEta:
-      val=kallen(s,mKPlus_,mEta_);
+      m1 = mKPlus_;
+      m2 = mEta_;
       break;
     case KEtaPrime:
-      val=kallen(s,mKPlus_,mEtaPrime_);
+      m1 = mKPlus_;
+      m2 = mEtaPrime_;
       break;
     default:
       assert(false);
     }
-    if(val>=0)
+    val=kallen(s,m1,m2);
+    if(s>sqr(m1+m2))
       rho(iChan,iChan) = sqrt(val);
     else
-      rho(iChan,iChan) = Complex(0.,1.)*sqrt(-val);
+      rho(iChan,iChan) = Complex(0.,1.)*sqrt(abs(val));
   }
   return rho;
 }

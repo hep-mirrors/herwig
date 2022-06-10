@@ -23,9 +23,9 @@ KPiIHalfFOCUSKMatrix::KPiIHalfFOCUSKMatrix()
 	    vector<Energy2>({1.7919*GeV2}),
 	    vector<vector<Energy> >(1,vector<Energy>({0.31072*GeV,-0.02323*GeV}))),
     C11_({0.79299,-0.15099,0.00811}),
-    C22_({0.15040,-0.038266,0.0022596}),
-    C12_({0.17054,-0.0219,0.00085655}),
-	    sHalf_(0.23*GeV2)
+    C22_({0.17054,-0.0219,0.00085655}),
+    C12_({0.15040,-0.038266,0.0022596}),
+    sHalf_(0.23*GeV2)
 {}
 
 IBPtr KPiIHalfFOCUSKMatrix::clone() const {
