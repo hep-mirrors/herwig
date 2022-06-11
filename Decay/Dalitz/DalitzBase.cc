@@ -21,6 +21,7 @@
 #include "MIPWA.h"
 #include "PiPiI2.h"
 #include "DalitzKMatrix.h"
+#include "DalitzLASS.h"
 
 using namespace Herwig;
 
@@ -323,6 +324,30 @@ string DalitzBase::addChannel(string arg) {
     }
     // finally make the channel
     resonances_.push_back(new_ptr(DalitzKMatrix(id,type,mass,width,d1,d2,sp,mag,phi,r,imat,chan,sc,beta,coeffs)));
+  }
+  // LASS
+  else if(type==ResonanceType::LASS) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double FNR = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double phiNR = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double FRes = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double phiRes = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy ascat = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy reff = stof(stype)/GeV;
+    // finally make the channel
+    resonances_.push_back(new_ptr(DalitzLASS(id,type,mass,width,d1,d2,sp,mag,phi,r,
+					     FNR,phiNR,FRes,phiRes,ascat,reff)));
   }
   // otherwise add to list
   else {
