@@ -44,6 +44,8 @@ void DalitzResonance::Init() {
 
 Complex DalitzResonance::BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const {
   static const Complex ii = Complex(0.,1.);
+  // non-resonant pieces
+  if(abs(type)/10==10) return 1.;
   // momenta for the resonance decay
   // off-shell
   Energy pAB=sqrt(0.25*sqr(sqr(mAB) -sqr(mA)-sqr(mB)) - sqr(mA*mB))/mAB;
