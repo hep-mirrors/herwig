@@ -30,6 +30,7 @@ CzyzNucleonFormFactor.h \
 KornerKurodaFormFactor.h \
 KPiIThreeHalfFOCUSKMatrix.h \
 KPiIHalfFOCUSKMatrix.h\
+PiPiAnisovichKMatrix.h\
 AnalyticOmnesFunction.h\
 ExperimentalOmnesFunction.h
 
@@ -56,5 +57,6 @@ CzyzNucleonFormFactor.cc \
 KornerKurodaFormFactor.cc \
 KPiIThreeHalfFOCUSKMatrix.cc \
 KPiIHalfFOCUSKMatrix.cc\
+PiPiAnisovichKMatrix.cc\
 AnalyticOmnesFunction.cc\
 ExperimentalOmnesFunction.cc

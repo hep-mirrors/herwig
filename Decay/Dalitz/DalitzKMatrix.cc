@@ -16,11 +16,11 @@
 using namespace Herwig;
 
 void DalitzKMatrix::persistentOutput(PersistentOStream & os) const {
-  os << kMatrix_ << channel_ << imat_ << ounit(sc_,GeV2) << beta_ << coeffs_;
+  os << kMatrix_ << channel_ << imat_ << ounit(sc_,GeV2) << expType_ << beta_ << coeffs_;
 }
 
 void DalitzKMatrix::persistentInput(PersistentIStream & is, int) {
-  is >> kMatrix_ >> channel_ >> imat_ >> iunit(sc_,GeV2) >> beta_ >> coeffs_;
+  is >> kMatrix_ >> channel_ >> imat_ >> iunit(sc_,GeV2) >> expType_ >> beta_ >> coeffs_;
 }
 
 // The following static variable is needed for the type
@@ -34,6 +34,7 @@ void DalitzKMatrix::Init() {
     ("The DalitzKMatrix class allows the use of \f$K\f$-matrices in Dalitz decays");
 
 }
+
 Complex DalitzKMatrix::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
   Energy2 s = sqr(mAB);
   double sHat = (s-sc_)/GeV2;
@@ -56,8 +57,13 @@ Complex DalitzKMatrix::BreitWigner(const Energy & mAB, const Energy & , const En
       fact *= 1. - s/kMatrix_->poles()[iz];
     // then the polynomial piece
     double poly=coeffs_[ix].second[0];
-    for(unsigned int iz=1;iz<coeffs_[ix].second.size();++iz)
-      poly += coeffs_[ix].second[iz]*pow(sHat,iz);
+    if(expType_==0) {
+      for(unsigned int iz=1;iz<coeffs_[ix].second.size();++iz)
+	poly += coeffs_[ix].second[iz]*pow(sHat,iz);
+    }
+    else {
+      poly *= (GeV2-sc_)/(s-sc_);
+    }
     // store the answer
     pVector[ix]=val+fact*poly;
   }

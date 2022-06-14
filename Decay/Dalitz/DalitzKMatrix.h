@@ -32,11 +32,11 @@ public:
 		unsigned int d1, unsigned int d2, unsigned int s,
 		double mag, double phi, InvEnergy rr,
 		unsigned int imat, unsigned int chan,
-		Energy2 sc,
+		Energy2 sc, unsigned int itype,
 		vector<pair<double,double> > beta,
 		vector<pair<double,vector<double > > > coeffs)
     : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
-      imat_(imat), channel_(chan), sc_(sc), coeffs_(coeffs) {
+      imat_(imat), channel_(chan), sc_(sc), expType_(itype), coeffs_(coeffs) {
     beta_.clear();
     for(unsigned int ix=0;ix<beta.size();++ix) {
       beta_.push_back(beta[ix].first*exp(Complex(0.,beta[ix].second)));
@@ -127,6 +127,11 @@ private:
    *  Coefficients of the poles
    */
   vector<Complex> beta_;
+
+  /**
+   *  Type of expansion
+   */
+  unsigned int expType_;
 
   /**
    *  Coefficients for the series expansion
