@@ -84,6 +84,16 @@ ublas::matrix<Complex> KMatrix::rho(Energy2 s) const {
     case PiPi:
       m1=m2=mPiPlus_;
       break;
+    case KK:
+      m1 = m2 = mKPlus_;
+      break;
+    case EtaEta:
+      m1 = m2 = mEta_;
+      break;
+    case EtaEtaPrime:
+      m1= mEta_;
+      m2 = mEtaPrime_;
+      break;
     case KPi:
       m1 = mKPlus_;
       m2 = mPiPlus_;
@@ -96,6 +106,8 @@ ublas::matrix<Complex> KMatrix::rho(Energy2 s) const {
       m1 = mKPlus_;
       m2 = mEtaPrime_;
       break;
+    case FourPi:
+      m1 = m2 = 2.*mPiPlus_;
     default:
       assert(false);
     }

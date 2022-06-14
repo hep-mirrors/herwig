@@ -28,7 +28,7 @@ public:
   /**
    * Enum for the possible channels
    */
-  enum Channels { PiPi, KPi, KEta, KEtaPrime};
+  enum Channels { PiPi, KPi, KEta, KEtaPrime, KK, EtaEta,EtaEtaPrime,FourPi};
 
 public:
 

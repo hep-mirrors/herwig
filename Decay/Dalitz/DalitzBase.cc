@@ -297,6 +297,10 @@ string DalitzBase::addChannel(string arg) {
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
     Energy2 sc = GeV2*stof(stype);
+    // type of expansion
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int itype= stoi(stype);
     vector<pair<double,double> > beta;
     // first loop over the coefficients of the poles
     for(unsigned int ix=0;ix<kMatrix_[imat]->poles().size();++ix) {
@@ -323,7 +327,7 @@ string DalitzBase::addChannel(string arg) {
       coeffs[ix].first = stof(stype);
     }
     // finally make the channel
-    resonances_.push_back(new_ptr(DalitzKMatrix(id,type,mass,width,d1,d2,sp,mag,phi,r,imat,chan,sc,beta,coeffs)));
+    resonances_.push_back(new_ptr(DalitzKMatrix(id,type,mass,width,d1,d2,sp,mag,phi,r,imat,chan,sc,itype,beta,coeffs)));
   }
   // LASS
   else if(type==ResonanceType::LASS) {
