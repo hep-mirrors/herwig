@@ -9,6 +9,7 @@
 #include "Herwig/Decay/IsoSpin.h"
 #include "KMatrix.fh"
 #include <boost/numeric/ublas/matrix.hpp>
+#include "Herwig/Utilities/Interpolator.h"
 
 namespace Herwig {
 namespace ublas = boost::numeric::ublas;
@@ -185,6 +186,41 @@ private:
    *  The \f$\eta^\prime\f$ mass
    */
   Energy mEtaPrime_;
+  //@}
+
+  /**
+   *  Parameters for the four piojn phase space
+   */
+  //@{
+  /**
+   *  Initialize the table
+   */
+  bool initTable_;
+  
+  /**
+   *   Matching constant
+   */
+  double rho0_;
+
+  /**
+   *  Power
+   */
+  unsigned int n_;
+
+  /**
+   *   Energy values for interpolator
+   */
+  vector<Energy2> en_;
+
+  /**
+   *  \f$\rho\f$ values
+   */
+  vector<double> rho_;
+
+  /**
+   *  The interpolator
+   */
+  mutable Interpolator<double,Energy2>::Ptr inter_; 
   //@}
 };
 
