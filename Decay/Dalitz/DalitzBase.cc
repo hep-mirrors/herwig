@@ -125,7 +125,17 @@ void DalitzBase::doinitrun() {
     for(unsigned int ix=0;ix<resonances().size();++ix) {
       Ptr<Herwig::DalitzKMatrix>::transient_pointer mat =
 	dynamic_ptr_cast<Ptr<Herwig::DalitzKMatrix>::transient_pointer>(resonances()[ix]);
-      if(mat) mat->setKMatrix(kMatrix_[mat->imatrix()]);
+      if(mat) {
+	mat->setKMatrix(kMatrix_[mat->imatrix()]);
+	// Energy2 s=3.*GeV2;
+	// Complex amp = resonances()[ix]->BreitWigner(sqrt(s),0.139*GeV,0.139*GeV);
+	// Energy2 s=0.5*GeV2;
+	// while(s<3.5*GeV2) {
+	//   Complex amp = resonances()[ix]->BreitWigner(sqrt(s),0.139*GeV,0.139*GeV);
+	//   cerr << s/GeV2 << " " << abs(amp) << "\n";
+	//   s+=0.01*GeV2;
+	// }
+      }
     }
   }
   DecayIntegrator::doinitrun();
@@ -222,7 +232,9 @@ string DalitzBase::addChannel(string arg) {
   arg   = StringUtils::cdr(arg);
   InvEnergy r = stof(stype)/GeV;
   // special for flate
-  if (type==ResonanceType::Flattef0) {
+  if (type==ResonanceType::Flattef0 ||
+      type==ResonanceType::Flattea0 ||
+      type==ResonanceType::FlatteKstar0) {
     // Flatte parameters
     // magnitude and phase
     stype = StringUtils::car(arg);
@@ -292,7 +304,7 @@ string DalitzBase::addChannel(string arg) {
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
     unsigned int chan = stoi(stype);
-    assert(imat<=kMatrix_.size());
+    assert(imat<kMatrix_.size());
     // expansion point for the constants terms
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);

@@ -19,7 +19,7 @@ PiPiAnisovichKMatrix::PiPiAnisovichKMatrix()
   : KMatrix(FlavourInfo(IsoSpin::IZero,IsoSpin::I3Unknown,
 			Strangeness::Zero,Charm::Zero,
 			Beauty::Zero),
-	    vector<Channels>({KMatrix::PiPi,KMatrix::KK,KMatrix::EtaEta,KMatrix::EtaEtaPrime,KMatrix::FourPi}),
+	    vector<Channels>({KMatrix::PiPi,KMatrix::KK,KMatrix::FourPi,KMatrix::EtaEta,KMatrix::EtaEtaPrime}),
 	    vector<Energy2>({sqr(0.65100*GeV), sqr(1.20720*GeV), sqr(1.56122*GeV), sqr(1.21257*GeV), sqr(1.81746*GeV) }),
 	    vector<vector<Energy> >({{0.24844*GeV,-0.52523*GeV,0.00000*GeV,-0.38878*GeV,-0.36397*GeV},
 				     {0.91779*GeV,0.55427*GeV,0.00000*GeV,0.38705*GeV,0.29448*GeV},
@@ -84,8 +84,7 @@ boost::numeric::ublas::matrix<double> PiPiAnisovichKMatrix::K(Energy2 s, bool mu
       for(unsigned int iy=ix;iy<5;++iy)
 	output(ix,iy) += term*poleCouplings()[im][ix]*poleCouplings()[im][iy];
   }
-  for(unsigned int iy=0;iy<5;++iy)
-    output(0,iy) += coeff*f1a_[iy];
+  for(unsigned int iy=0;iy<5;++iy) output(0,iy) += coeff*f1a_[iy];
   for(unsigned int ix=0;ix<5;++ix)
     for(unsigned int iy=ix+1;iy<5;++iy)
       output(iy,ix)=output(ix,iy);

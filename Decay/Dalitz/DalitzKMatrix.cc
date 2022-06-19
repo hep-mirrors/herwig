@@ -52,7 +52,7 @@ Complex DalitzKMatrix::BreitWigner(const Energy & mAB, const Energy & , const En
       }
       val +=piece;
     }
-    Complex fact=exp(Complex(0.,coeffs_[ix].first));;
+    Complex fact=exp(Complex(0.,coeffs_[ix].first));
     for(unsigned int iz=0;iz<kMatrix_->poles().size();++iz)
       fact *= 1. - s/kMatrix_->poles()[iz];
     // then the polynomial piece
