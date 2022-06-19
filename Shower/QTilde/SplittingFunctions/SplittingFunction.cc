@@ -167,7 +167,7 @@ void SplittingFunction::persistentInput(PersistentIStream & is, int) {
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,
                                          tShowerParticlePtr second,
-					 ShowerPartnerType partnerType,
+					                               ShowerPartnerType partnerType,
                                          const bool back) const {
   if(_colourStructure==TripletTripletOctet) {
     if(!back) {
@@ -504,34 +504,36 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
   else if(_colourStructure == NeutralChargedCharged ) {
     if(!back) {
       if(first->dataPtr()->coloured()) {
-	ColinePtr newline=new_ptr(ColourLine());
-	if(first->dataPtr()->iColour()==PDT::Colour3) {
-	  newline->addColoured    (first );
-	  newline->addAntiColoured(second);
-	}
-	else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
-	  newline->addColoured    (second);
-	  newline->addAntiColoured(first );
-	}
-	else if(parent->dataPtr()->coloured()||
-		first ->dataPtr()->coloured()||
-		second->dataPtr()->coloured())
-	  assert(false);
+  ColinePtr newline=new_ptr(ColourLine());
+  if(first->dataPtr()->iColour()==PDT::Colour3) {
+    newline->addColoured    (first );
+    newline->addAntiColoured(second);
+  }
+  else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
+    newline->addColoured    (second);
+    newline->addAntiColoured(first );
+  }
+  else if(parent->dataPtr()->coloured()||
+    first ->dataPtr()->coloured()||
+    second->dataPtr()->coloured())
+    assert(false);
       }
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(),
-				     first->antiColourLine());
+             first->antiColourLine());
       // gamma -> q qbar
       if(cfirst.first) {
-	cfirst.first->addAntiColoured(second);
+  cfirst.first->addAntiColoured(second);
       }
       // gamma -> qbar q
       else if(cfirst.second) {
-	cfirst.second->addColoured(second);
+  cfirst.second->addColoured(second);
       }
-      else
-	assert(false);
+      else if(parent->dataPtr()->coloured()||
+        first ->dataPtr()->coloured()||
+        second->dataPtr()->coloured())
+  assert(false);
     }
   }
   else if(_colourStructure == EW) {
