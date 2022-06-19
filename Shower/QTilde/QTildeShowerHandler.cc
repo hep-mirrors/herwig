@@ -54,7 +54,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
   _nReWeight(100), _reWeight(false),
-  interaction_(ShowerInteraction::QEDQCD),
+  interaction_(ShowerInteraction::ALL),
   _trunc_Mode(true), _hardEmission(1),
   _softOpt(2), _hardPOWHEG(false), muPt(ZERO)
 {}
@@ -281,7 +281,7 @@ void QTildeShowerHandler::Init() {
   static Switch<QTildeShowerHandler,ShowerInteraction> interfaceInteractions
     ("Interactions",
      "The interactions to be used in the shower",
-     &QTildeShowerHandler::interaction_, ShowerInteraction::QEDQCD, false, false);
+     &QTildeShowerHandler::interaction_, ShowerInteraction::ALL, false, false);
   static SwitchOption interfaceInteractionsQCD
     (interfaceInteractions,
      "QCD",
