@@ -150,7 +150,7 @@ Complex ScalarTo3ScalarDalitz::resAmp(unsigned int i) const {
       // cerr << "testing scalar " << i << " " << mR/GeV << " " << exp(r2A/12.) << "\n";
       output *= fD;
       break;
-    case ResonanceType::Spin1: case ResonanceType::Spin1E691 :
+    case ResonanceType::Spin1: case ResonanceType::Spin1E691 : case ResonanceType::Spin1GS : 
       fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
       // cerr << "testing vector " << i << " " << mR/GeV << " " << sqrt(1. + sqr(r2A))  << "\n";
       break;

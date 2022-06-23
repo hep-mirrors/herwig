@@ -7,6 +7,8 @@
 #include "KMatrix.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -22,7 +24,7 @@ using namespace Herwig;
 KMatrix::KMatrix(FlavourInfo flavour, vector<Channels> channels,
 		 vector<Energy2> poles, vector<vector<Energy> > g)
   : flavour_(flavour), channels_(channels), poles_(poles), g_(g),
-    initTable_(false), rho0_(0.), n_(3),
+    initTable_(false), rho0_(0.), n_(3.),
     en_({0.311678*GeV2, 0.321678*GeV2, 0.331678*GeV2, 0.341678*GeV2, 0.351678*GeV2, 0.361678*GeV2, 0.371678*GeV2,
 	 0.381678*GeV2, 0.391678*GeV2, 0.401678*GeV2, 0.411678*GeV2, 0.421678*GeV2, 0.431678*GeV2, 0.441678*GeV2,
 	 0.451678*GeV2, 0.461678*GeV2, 0.471678*GeV2, 0.481678*GeV2, 0.491678*GeV2, 0.501678*GeV2, 0.511678*GeV2,
@@ -86,6 +88,22 @@ void KMatrix::Init() {
      "No",
      "Don't initialize the table",
      false);
+
+    static Parameter<KMatrix,double> interfacePower
+    ("Power",
+     "Power for the 4 pion phase space",
+     &KMatrix::n_, 3.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Command<KMatrix> interfaceSetPoles
+    ("SetPoles",
+     "Set the values of the poles",
+     &KMatrix::setPoles, false);
+
+  static Command<KMatrix> interfaceSetCouplings
+    ("SetCouplings",
+     "Set the values of the couplings",
+     &KMatrix::setCouplings, false);
 
 }
 
@@ -268,4 +286,41 @@ amplitudes(Energy2 s, ublas::vector<Complex> pVector, bool multiplyByPoles) cons
   }
   // compute the amplitudes
   return prod(inverse,pVector);
+}
+
+string KMatrix::setPoles(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  unsigned int npole = stoi(stype);
+  poles_.resize(npole);
+  for(unsigned int ix=0;ix<npole;++ix) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    poles_[ix] = stof(stype)*GeV2;
+  }
+  // success
+  return "";
+}
+
+string KMatrix::setCouplings(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  unsigned int npole = stoi(stype);
+  // parse second bit of the string
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  unsigned int nchannel = stoi(stype);
+  g_.resize(npole);
+  for(unsigned int ix=0;ix<npole;++ix) {
+    g_[ix].resize(nchannel);
+    for(unsigned int iy=0;iy<nchannel;++iy) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      g_[ix][iy] = stof(stype)*GeV;
+    }
+  }
+  // success
+  return "";
 }

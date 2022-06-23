@@ -5313,8 +5313,8 @@ insert DpKpKbar0Pi0BES:Weights 2 0.164972
 insert DpKpKbar0Pi0BES:Weights 3 0.284066
 do DpKpKbar0Pi0BES:AddChannel 323 3 0.89167 0.0514 0 2 1 1 0 1.5
 do DpKpKbar0Pi0BES:AddChannel -313 3 0.89555 0.0473 1 2 0 0.41 -0.314159 1.5
-do DpKpKbar0Pi0BES:AddChannel -10311 -31 1.441 0.193 0 2 1 2.02 2.44346 1.5 0.96 0.00174533 1 -1.91463 0.113 -33.8
-do DpKpKbar0Pi0BES:AddChannel -10311 -31 1.441 0.193 1 2 0 3.14 -3.03164 1.5 0.96 0.00174533 1 -1.91463 0.113 -33.8
+do DpKpKbar0Pi0BES:AddChannel -10311 -31 1.441 0.193 0 2 1 2.02 2.44346 1.5 0 0.96 0.00174533 1 -1.91463 0.113 -33.8
+do DpKpKbar0Pi0BES:AddChannel -10311 -31 1.441 0.193 1 2 0 3.14 -3.03164 1.5 0 0.96 0.00174533 1 -1.91463 0.113 -33.8
 do DpKpKbar0Pi0BES:SetExternal 411 321 310 111
 newdef DpKpKbar0Pi0BES:ResonanceMass 0
 
@@ -5379,6 +5379,7 @@ newdef DsPipPipPimBABAR:ResonanceMass 0
 
 #
 create Herwig::ScalarTo3ScalarDalitz  DsPipPipPimFOCUS
+create Herwig::PiPiAnisovichKMatrix /Herwig/Decays/FOCUSPiPiAnisovichKMatrix
 newdef DsPipPipPimFOCUS:Iteration 5
 newdef DsPipPipPimFOCUS:Ntry 500
 newdef DsPipPipPimFOCUS:Points 100000
@@ -5386,7 +5387,7 @@ newdef DsPipPipPimFOCUS:GenerateIntermediates 1
 newdef DsPipPipPimFOCUS:ParentRadius 5
 newdef DsPipPipPimFOCUS:UseAllK0 0
 newdef DsPipPipPimFOCUS:MaximumWeight 4.9007e+08
-insert DsPipPipPimFOCUS:KMatrices 0 /Herwig/Decays/PiPiAnisovichKMatrix
+insert DsPipPipPimFOCUS:KMatrices 0 /Herwig/Decays/FOCUSPiPiAnisovichKMatrix
 insert DsPipPipPimFOCUS:Weights 0 0.181819
 insert DsPipPipPimFOCUS:Weights 1 0.181611
 insert DsPipPipPimFOCUS:Weights 2 0.167905

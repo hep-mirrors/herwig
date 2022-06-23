@@ -16,11 +16,11 @@
 using namespace Herwig;
 
 void DalitzLASS::persistentOutput(PersistentOStream & os) const {
-  os << FNR_ << phiNR_ << FRes_ << phiRes_
+  os << opt_ << FNR_ << phiNR_ << FRes_ << phiRes_
      << ounit(aScat_,1./GeV) << ounit(rEff_,1./GeV);
 }
 void DalitzLASS::persistentInput(PersistentIStream & is, int) {
-  is >> FNR_ >> phiNR_ >> FRes_ >> phiRes_
+  is >> opt_ >> FNR_ >> phiNR_ >> FRes_ >> phiRes_
      >> iunit(aScat_,1./GeV) >> iunit(rEff_,1./GeV);
 }
 
@@ -49,7 +49,16 @@ Complex DalitzLASS::BreitWigner(const Energy & mAB, const Energy & mA, const Ene
   Energy Gamma  = width*(pAB/pR)*mass/mAB;
   double Rphase = atan(mass*Gamma/(sqr(mass)-sqr(mAB)));
   // return the result
-  return double(mAB/pAB)*(FNR_*sin(NRphase)*exp(ii*NRphase) +FRes_*sin(Rphase)*exp(ii*(Rphase+phiRes_+2.*NRphase)));
+  // BABar/BES and hopefully right form
+  if (opt_==0) {
+    return double(mAB/pAB)*(FNR_*sin(NRphase)*exp(ii*NRphase) +FRes_*sin(Rphase)*exp(ii*(Rphase+phiRes_+2.*NRphase)));
+  }
+  // BELLE form
+  else if(opt_==1) {
+    return (FNR_*sin(NRphase)*exp(ii*NRphase) +FRes_*sin(Rphase)*exp(ii*(Rphase+phiRes_+2.*NRphase)));
+  }
+  else
+    assert(false);
 }
 
 void DalitzLASS::dataBaseOutput(ofstream & output) {

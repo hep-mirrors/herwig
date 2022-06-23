@@ -28,10 +28,10 @@ public:
    */
   DalitzLASS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 	     unsigned int d1, unsigned int d2, unsigned int s,
-	     double mag, double phi, InvEnergy rr,
+	     double mag, double phi, InvEnergy rr, unsigned int iopt,
 	     double FNR, double phiNR, double Fres, double phiRes,
 	     InvEnergy aScat, InvEnergy rEff)
-    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
+    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr), opt_(iopt),
       FNR_(FNR), phiNR_(phiNR), FRes_(Fres), phiRes_(phiRes),
       aScat_(aScat), rEff_(rEff)
   {}
@@ -83,6 +83,11 @@ private:
   DalitzLASS & operator=(const DalitzLASS &) = delete;
 
 private:
+
+  /**
+   *  Option for the form of the function
+   */
+  unsigned int opt_;
 
   /**
    *  Parameters
