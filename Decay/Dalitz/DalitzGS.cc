@@ -21,7 +21,10 @@ DalitzGS::DalitzGS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		   unsigned int d1, unsigned int d2, unsigned int s,
 		   double mag, double phi, InvEnergy rr)
     : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr) {
-  mpi_ = CurrentGenerator::current().getParticleData(211)->mass();
+  if (CurrentGenerator::isVoid())
+    mpi_=0.13957061*GeV;
+  else
+    mpi_ = CurrentGenerator::current().getParticleData(211)->mass();
   hres_ = Resonance::Hhat(sqr(mass),mass,width,mpi_,mpi_);
   dh_   = Resonance::dHhatds(mass,width,mpi_,mpi_);
   h0_   = Resonance::H(ZERO,mass,width,mpi_,mpi_,dh_,hres_);
@@ -49,6 +52,10 @@ void DalitzGS::Init() {
 
 }
 
-Complex DalitzGS::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
-  return GeV2/sqr(mass)*Resonance::BreitWignerGS(sqr(mAB),mass,width,mpi_,mpi_,h0_,dh_,hres_);
+Complex DalitzGS::BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const {
+  Energy pAB=sqrt(0.25*sqr(sqr(mAB) -sqr(mA)-sqr(mB)) - sqr(mA*mB))/mAB;
+  Energy  pR=sqrt(0.25*sqr( mass*mass - sqr(mA) - sqr(mB)) - sqr(mA*mB))/mass;
+  double r1A(R*pR),r1B(R*pAB);
+  double fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
+  return fR*GeV2/sqr(mass)*Resonance::BreitWignerGS(sqr(mAB),mass,width,mpi_,mpi_,h0_,dh_,hres_);
 }

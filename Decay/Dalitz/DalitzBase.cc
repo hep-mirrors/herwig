@@ -22,6 +22,7 @@
 #include "PiPiI2.h"
 #include "DalitzKMatrix.h"
 #include "DalitzLASS.h"
+#include "DalitzGS.h"
 
 using namespace Herwig;
 
@@ -345,6 +346,9 @@ string DalitzBase::addChannel(string arg) {
   else if(type==ResonanceType::LASS) {
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
+    unsigned int iopt = stoi(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
     double FNR = stof(stype);
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
@@ -362,8 +366,12 @@ string DalitzBase::addChannel(string arg) {
     arg   = StringUtils::cdr(arg);
     InvEnergy reff = stof(stype)/GeV;
     // finally make the channel
-    resonances_.push_back(new_ptr(DalitzLASS(id,type,mass,width,d1,d2,sp,mag,phi,r,
+    resonances_.push_back(new_ptr(DalitzLASS(id,type,mass,width,d1,d2,sp,mag,phi,r,iopt,
 					     FNR,phiNR,FRes,phiRes,ascat,reff)));
+  }
+  // GS form
+  else if(type==ResonanceType::Spin1GS) {
+    resonances_.push_back(new_ptr(DalitzGS(id,type,mass,width,d1,d2,sp,mag,phi,r)));
   }
   // otherwise add to list
   else {

@@ -40,7 +40,7 @@ void FlatteResonance::dataBaseOutput(ofstream & output) {
   output << " " << g1_ << " " << g2_; 
 }
 
-Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
+Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const {
   static const Complex ii = Complex(0.,1.);
   Energy mpi = CurrentGenerator::current().getParticleData(111)->mass();
   Energy mK  = CurrentGenerator::current().getParticleData(321)->mass();
@@ -53,7 +53,7 @@ Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & , const 
   else if(type==ResonanceType::Flattea0) {
     Energy meta = CurrentGenerator::current().getParticleData(221)->mass();
     Energy2 q2=sqr(mAB);
-    Energy Gamma_pi = g1_*0.5/mAB*sqrt((q2-(sqr(mpi+meta)))*(q2-(sqr(mpi-meta))));
+    Energy Gamma_pi = mAB>meta+mpi ? g1_*0.5/mAB*sqrt((q2-sqr(mpi+meta))*(q2-sqr(mpi-meta))) : ZERO;
     Energy2 arg = 0.25*sqr(mAB)-sqr(mK);
     complex<Energy> Gamma_K  = arg>=ZERO ? g2_*sqrt(arg) : g2_*ii*sqrt(-arg);
     return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_K));

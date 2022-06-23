@@ -82,6 +82,16 @@ public:
    *  The number of channels
    */
   unsigned int numberOfChannels() {return channels_.size();}
+
+  /**
+   *   Set the couplings
+   */
+  string setCouplings(string arg);
+
+  /**
+   *   Set the pole values
+   */
+  string setPoles(string arg);
   
 public:
 
@@ -205,7 +215,7 @@ private:
   /**
    *  Power
    */
-  unsigned int n_;
+  double n_;
 
   /**
    *   Energy values for interpolator

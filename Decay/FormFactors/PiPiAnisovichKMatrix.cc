@@ -6,6 +6,8 @@
 
 #include "PiPiAnisovichKMatrix.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -58,8 +60,39 @@ describeHerwigPiPiAnisovichKMatrix("Herwig::PiPiAnisovichKMatrix", "HwFormFactor
 void PiPiAnisovichKMatrix::Init() {
 
   static ClassDocumentation<PiPiAnisovichKMatrix> documentation
-    ("There is no documentation for the PiPiAnisovichKMatrix class");
+    ("The PiPiAnisovichKMatrix class implements the K matrix pararmeterization from Eur.Phys.J.A 16 (2003) 229-258",
+     "The K-matrix parameterization of Anisovich and Sarantsev \\cite{Anisovich:2002ij} was used.",
+     "\bibitem{Anisovich:2002ij}\n"
+     "V.~V.~Anisovich and A.~V.~Sarantsev,"
+     "%``K matrix analysis of the (I J**(PC) = 00++)-wave in the mass region below 1900 MeV,''\n"
+     "Eur. Phys. J. A \\textbf{16} (2003), 229-258\n"
+     "doi:10.1140/epja/i2002-10068-x\n"
+     "[arXiv:hep-ph/0204328 [hep-ph]].\n"
+     "%170 citations counted in INSPIRE as of 20 Jun 2022\n");
+  
+  static Parameter<PiPiAnisovichKMatrix,Energy2> interfaces0Scatt
+    ("s0Scatt",
+     "The s0 parameters for scattering",
+     &PiPiAnisovichKMatrix::s0Scatt_, GeV2, -3.30564*GeV2, -100.0*GeV2, 100.0*GeV2,
+     false, false, Interface::limited);
 
+  static ParVector<PiPiAnisovichKMatrix,double> interfaceF1A
+    ("F1A",
+     "The non-pole coefficients",
+     &PiPiAnisovichKMatrix::f1a_, 5, 1.0, -100, 100.,
+     false, false, Interface::limited);
+
+  static Parameter<PiPiAnisovichKMatrix,double> interfacesA
+    ("sA",
+     "The sA parameter",
+     &PiPiAnisovichKMatrix::sA_, 1., -10., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<PiPiAnisovichKMatrix,double> interfacesA0
+    ("sA0",
+     "The sA0 parameter",
+     &PiPiAnisovichKMatrix::sA0_, -0.2, -10., 10.0,
+     false, false, Interface::limited);
 }
 
 boost::numeric::ublas::matrix<double> PiPiAnisovichKMatrix::K(Energy2 s, bool multiplyByPoles) const {
