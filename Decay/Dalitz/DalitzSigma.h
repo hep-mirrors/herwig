@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_DalitzGS_H
-#define Herwig_DalitzGS_H
+#ifndef Herwig_DalitzSigma_H
+#define Herwig_DalitzSigma_H
 //
-// This is the declaration of the DalitzGS class.
+// This is the declaration of the DalitzSigma class.
 //
 
 #include "DalitzResonance.h"
@@ -12,10 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The DalitzGS class implements the  Gounaris-Sakurai form of the propagator
- *
+ * The DalitzSigma class implements the model of Zou and Bugg for the sigma resonance.
  */
-class DalitzGS: public DalitzResonance {
+class DalitzSigma: public DalitzResonance {
 
 public:
 
@@ -24,14 +23,19 @@ public:
   /**
    * The default constructor.
    */
-  DalitzGS() {}
+  DalitzSigma()
+  {}
 
   /**
    *  Constructor with parameters
    */
-  DalitzGS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
-	   unsigned int d1, unsigned int d2, unsigned int s,
-	   double mag, double phi, InvEnergy rr);
+  DalitzSigma(long pid, ResonanceType::Type rtype, Energy m, Energy w,
+	      unsigned int d1, unsigned int d2, unsigned int s,
+	      double mag, double phi, InvEnergy rr,
+	      Energy2 a, Energy b1, InvEnergy b2, Energy g4pi)
+    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
+      a_(a), b1_(b1),b2_(b2), g4Pi_(g4pi)
+  {}
 
 public:
 
@@ -72,34 +76,48 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DalitzGS & operator=(const DalitzGS &) = delete;
+  DalitzSigma & operator=(const DalitzSigma &) = delete;
 
-private:
+private :
+
+  /**
+   *  Four pion phase-space
+   */
+  double rho4pi(const Energy2 &s,const Energy & mpi) const {
+    static const InvEnergy2 c1(3.5/GeV2);
+    static const Energy2    c2(2.8*GeV2);
+    return sqrt(1.-16.*sqr(mpi)/s)/(1.+exp(c1*(c2-s)));
+  }
   
-  /**
-   *  Pion mass
-   */
-  Energy mpi_;
+private:
 
   /**
-   * The function \f$\frac{\\hat{H}}{dq^2}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
+   *  Parameters of the propagator form
    */
-  double dh_;
+  //@{
+  /**
+   *  \f$a\f$ parameter
+   */
+  Energy2 a_;
 
   /**
-   * The function \f$\\hat{H}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
+   *  \f$b_1\f$ parameter
    */
-  Energy2 hres_;
+  Energy b1_;
 
   /**
-   * The \f$H(0)\f$ parameter  for the GS form of the
-   *  Breit-Wigner
+   *  \f$b_2\f$ parameter
    */
-  Energy2 h0_;
+  InvEnergy b2_;
+
+  /**
+   *  Four pion coupling
+   */
+  Energy g4Pi_;
+  //@}
+  
 };
 
 }
 
-#endif /* Herwig_DalitzGS_H */
+#endif /* Herwig_DalitzSigma_H */
