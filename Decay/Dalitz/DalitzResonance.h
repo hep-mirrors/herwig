@@ -21,6 +21,7 @@ enum Type {NonResonant=0,
 	   Spin0=1,Spin1=3,Spin2=5,
 	   Spin0E691=11,Spin1E691=13,Spin2E691=15,
 	   BABARf0=21, Spin0Gauss=31, Flattef0=41, Spin0Complex=51, Flattea0=61, FlatteKstar0=71,
+	   Sigma=81,
 	   Spin1GS=23,
 	   Spin0NonResonant=101, Spin1NonResonant=103, Spin2NonResonant=105,
 	   Spin0MIPWA=-1, PiPiI2=-11, KMatrix=-21, LASS=-31};

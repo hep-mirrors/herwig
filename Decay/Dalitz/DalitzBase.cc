@@ -23,6 +23,7 @@
 #include "DalitzKMatrix.h"
 #include "DalitzLASS.h"
 #include "DalitzGS.h"
+#include "DalitzSigma.h"
 
 using namespace Herwig;
 
@@ -368,6 +369,22 @@ string DalitzBase::addChannel(string arg) {
     // finally make the channel
     resonances_.push_back(new_ptr(DalitzLASS(id,type,mass,width,d1,d2,sp,mag,phi,r,iopt,
 					     FNR,phiNR,FRes,phiRes,ascat,reff)));
+  }
+  // Bugg sigma form
+  else if(type==ResonanceType::Sigma) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy2 a = stof(stype)*GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy b1 = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy b2 = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy g4pi = stof(stype)*GeV;
+    resonances_.push_back(new_ptr(DalitzSigma(id,type,mass,width,d1,d2,sp,mag,phi,r,a,b1,b2,g4pi)));
   }
   // GS form
   else if(type==ResonanceType::Spin1GS) {

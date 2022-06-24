@@ -40,7 +40,7 @@ void FlatteResonance::dataBaseOutput(ofstream & output) {
   output << " " << g1_ << " " << g2_; 
 }
 
-Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const {
+Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
   static const Complex ii = Complex(0.,1.);
   Energy mpi = CurrentGenerator::current().getParticleData(111)->mass();
   Energy mK  = CurrentGenerator::current().getParticleData(321)->mass();

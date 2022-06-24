@@ -17,6 +17,7 @@ PiPiI2.h\
 DalitzKMatrix.h\
 DalitzLASS.h\
 DalitzGS.h\
+DalitzSigma.h\
 DalitzBase.h\
 ScalarTo3ScalarDalitz.h\
 VectorTo3PseudoScalarDalitz.h
@@ -30,6 +31,7 @@ PiPiI2.cc\
 DalitzKMatrix.cc\
 DalitzLASS.cc\
 DalitzGS.cc\
+DalitzSigma.cc\
 DalitzBase.cc\
 ScalarTo3ScalarDalitz.cc\
 VectorTo3PseudoScalarDalitz.cc
