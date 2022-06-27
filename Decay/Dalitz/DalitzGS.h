@@ -31,7 +31,7 @@ public:
    */
   DalitzGS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 	   unsigned int d1, unsigned int d2, unsigned int s,
-	   double mag, double phi, InvEnergy rr);
+	   double mag, double phi, InvEnergy rr, Energy mpi);
 
 public:
 

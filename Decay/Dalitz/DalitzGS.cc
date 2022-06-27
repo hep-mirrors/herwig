@@ -19,12 +19,8 @@ using namespace Herwig;
 
 DalitzGS::DalitzGS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		   unsigned int d1, unsigned int d2, unsigned int s,
-		   double mag, double phi, InvEnergy rr)
-    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr) {
-  if (CurrentGenerator::isVoid())
-    mpi_=0.13957061*GeV;
-  else
-    mpi_ = CurrentGenerator::current().getParticleData(211)->mass();
+		   double mag, double phi, InvEnergy rr, Energy mpi)
+  : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr), mpi_(mpi) {
   hres_ = Resonance::Hhat(sqr(mass),mass,width,mpi_,mpi_);
   dh_   = Resonance::dHhatds(mass,width,mpi_,mpi_);
   h0_   = Resonance::H(ZERO,mass,width,mpi_,mpi_,dh_,hres_);

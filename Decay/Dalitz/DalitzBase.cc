@@ -388,7 +388,10 @@ string DalitzBase::addChannel(string arg) {
   }
   // GS form
   else if(type==ResonanceType::Spin1GS) {
-    resonances_.push_back(new_ptr(DalitzGS(id,type,mass,width,d1,d2,sp,mag,phi,r)));
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mpi = stof(stype)*GeV;
+    resonances_.push_back(new_ptr(DalitzGS(id,type,mass,width,d1,d2,sp,mag,phi,r,mpi)));
   }
   // otherwise add to list
   else {
