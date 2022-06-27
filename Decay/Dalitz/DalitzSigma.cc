@@ -36,6 +36,10 @@ void DalitzSigma::Init() {
 
 }
 
+void DalitzSigma::dataBaseOutput(ofstream & output) {
+  DalitzResonance::dataBaseOutput(output);
+  output << " " << a_/GeV2 << " " << b1_/GeV << " " << b2_*GeV << " " << g4Pi_/GeV;
+}
 
 Complex DalitzSigma::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
   static const Complex II(0.,1.);
