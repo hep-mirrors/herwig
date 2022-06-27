@@ -44,6 +44,11 @@ public:
    */
   virtual Complex BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const;
 
+  /**
+   *  Output the parameters
+   */
+  virtual void dataBaseOutput(ofstream & output);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

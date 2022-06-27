@@ -63,6 +63,6 @@ Complex DalitzLASS::BreitWigner(const Energy & mAB, const Energy & mA, const Ene
 
 void DalitzLASS::dataBaseOutput(ofstream & output) {
   DalitzResonance::dataBaseOutput(output);
-  output << " " << FNR_ << " " << phiNR_ << " " << FRes_ << " " << phiRes_
+  output << " " << " " << opt_ << " " << FNR_ << " " << phiNR_ << " " << FRes_ << " " << phiRes_
 	 << " " << aScat_*GeV << " " << rEff_*GeV;
 }
