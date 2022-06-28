@@ -8,6 +8,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "DalitzResonance.fh"
 #include <cassert>
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -66,6 +67,11 @@ public:
    */
   virtual void dataBaseOutput(ofstream & output);
 
+  /**
+   *  Read the parameters for a Dalitz resonance
+   */
+  static DalitzResonancePtr readResonance(string arg, string & error);
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */

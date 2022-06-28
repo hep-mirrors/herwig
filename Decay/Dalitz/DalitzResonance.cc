@@ -13,6 +13,13 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
+#include "FlatteResonance.h"
+#include "MIPWA.h"
+#include "PiPiI2.h"
+#include "DalitzKMatrix.h"
+#include "DalitzLASS.h"
+#include "DalitzGS.h"
+#include "DalitzSigma.h"
 
 using namespace Herwig;
 
@@ -112,4 +119,222 @@ void DalitzResonance::dataBaseOutput(ofstream & output) {
 	 << spectator << " " 
 	 << abs(amp) << " " << arg(amp) << " "
 	 << R*GeV; 
+}
+
+DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long id = stoi(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  ResonanceType::Type type = static_cast<ResonanceType::Type>(stoi(stype));
+  // mass and width
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  Energy mass = stof(stype)*GeV;
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  Energy width = stof(stype)*GeV;
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int d1 = stoi(stype);
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int d2 = stoi(stype);
+  // children
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int sp = stoi(stype);
+  if (sp==d1 || sp ==d2 || d1 == d2) {
+    error =  "Daughters and spectator must all be different not " + std::to_string(d1) + ", " + std::to_string(d2) + ", " + std::to_string(sp);
+    return DalitzResonancePtr();
+  }
+  // magnitude and phase
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double mag = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double phi = stof(stype);
+  // radius
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  InvEnergy r = stof(stype)/GeV;
+  // special for flate
+  if (type==ResonanceType::Flattef0 ||
+      type==ResonanceType::Flattea0 ||
+      type==ResonanceType::FlatteKstar0) {
+    // Flatte parameters
+    // magnitude and phase
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double fpi = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double fK  = stof(stype);
+    // add to list
+    return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
+  }
+  // MIPWA
+  else if(type==ResonanceType::Spin0MIPWA) {
+    // no of entries in table
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    int nn = stoi(stype);
+    vector<Energy> en; en.reserve(nn);
+    vector<double> mag2,phase2; mag2.reserve(nn); phase2.reserve(nn);
+    for(int ix=0;ix<nn;++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      Energy ee = stof(stype)*GeV;
+      en.push_back(ee);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double mm=stof(stype);
+      mag2.push_back(mm);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double pp=stof(stype);
+      phase2.push_back(pp);
+    }
+    return new_ptr(MIPWA(id,type,mass,width,d1,d2,sp,mag,phi,r,en,mag2,phase2));
+  }
+  // I=2 pipi
+  else if(type==ResonanceType::PiPiI2) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy a = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy2 b = stof(stype)/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy4 c = stof(stype)/GeV2/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy6 d = stof(stype)/GeV2/GeV2/GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mmin = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mmax = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double dEta=stof(stype);
+    return new_ptr(PiPiI2(id,type,mass,width,d1,d2,sp,mag,phi,r,
+			  a,b,c,d,mmin,mmax,dEta));
+  }
+  // K-matrix
+  else if(type==ResonanceType::KMatrix) {
+    // no of poles
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int npole= stoi(stype);
+    // no of channels
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    // matrix location
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int imat = stoi(stype);
+    // this channel
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int chan = stoi(stype);
+    // expansion point for the constants terms
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy2 sc = GeV2*stof(stype);
+    // type of expansion
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int itype= stoi(stype);
+    vector<pair<double,double> > beta;
+    unsigned int nchannels= stoi(stype);
+    // first loop over the coefficients of the poles
+    for(unsigned int ix=0;ix<npole;++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      double b = stof(stype);
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      beta.push_back(make_pair(b,stof(stype)));
+    }
+    // now over the power series for the different channels
+    vector<pair<double,vector<double > > > coeffs(nchannels);
+    for(unsigned int ix=0;ix<nchannels;++ix) {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      unsigned int nterms = stoi(stype);
+      for(unsigned int iy=0;iy<nterms;++iy) {
+    	stype = StringUtils::car(arg);
+    	arg   = StringUtils::cdr(arg);
+    	coeffs[ix].second.push_back(stof(stype));
+      }
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      coeffs[ix].first = stof(stype);
+    }
+    // finally make the channel
+    return new_ptr(DalitzKMatrix(id,type,mass,width,d1,d2,sp,mag,phi,r,imat,chan,sc,itype,beta,coeffs));
+  }
+  // LASS
+  else if(type==ResonanceType::LASS) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    unsigned int iopt = stoi(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double FNR = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double phiNR = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double FRes = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double phiRes = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy ascat = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy reff = stof(stype)/GeV;
+    // finally make the channel
+    return new_ptr(DalitzLASS(id,type,mass,width,d1,d2,sp,mag,phi,r,iopt,
+			      FNR,phiNR,FRes,phiRes,ascat,reff));
+  }
+  // Bugg sigma form
+  else if(type==ResonanceType::Sigma) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy2 a = stof(stype)*GeV2;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy b1 = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    InvEnergy b2 = stof(stype)/GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy g4pi = stof(stype)*GeV;
+    return new_ptr(DalitzSigma(id,type,mass,width,d1,d2,sp,mag,phi,r,a,b1,b2,g4pi));
+  }
+  // GS form
+  else if(type==ResonanceType::Spin1GS) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy mpi = stof(stype)*GeV;
+    return new_ptr(DalitzGS(id,type,mass,width,d1,d2,sp,mag,phi,r,mpi));
+  }
+  // otherwise add to list
+  else {
+    return new_ptr(DalitzResonance(id,type,mass,width,d1,d2,sp,mag,phi,r));
+  }
 }
