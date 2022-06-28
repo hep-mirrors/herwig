@@ -58,14 +58,6 @@ Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & , const 
     complex<Energy> Gamma_K  = arg>=ZERO ? g2_*sqrt(arg) : g2_*ii*sqrt(-arg);
     return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_K));
   }
-  else if(type==ResonanceType::FlatteKstar0) {
-    Energy metaP = CurrentGenerator::current().getParticleData(331)->mass();
-    Energy2 q2=sqr(mAB);
-    Energy Gamma_pi = g1_*0.5/mAB*sqrt((q2-(sqr(mpi+mK)))*(q2-(sqr(mpi-mK))));
-    Energy2 arg = 0.5/q2*(q2-(sqr(mK+metaP)))*(q2-(sqr(mK-metaP)));
-    complex<Energy> Gamma_eta  = mAB>mK+metaP ? g2_*sqrt(arg) : g2_*ii*sqrt(abs(arg));
-    return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_eta));
-  }
   else {
     assert(false);
   }

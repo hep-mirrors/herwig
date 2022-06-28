@@ -48,6 +48,11 @@ void DalitzGS::Init() {
 
 }
 
+void DalitzGS::dataBaseOutput(ofstream & output) {
+  DalitzResonance::dataBaseOutput(output);
+  output << " " << mpi_/GeV;
+}
+
 Complex DalitzGS::BreitWigner(const Energy & mAB, const Energy & mA, const Energy & mB) const {
   Energy pAB=sqrt(0.25*sqr(sqr(mAB) -sqr(mA)-sqr(mB)) - sqr(mA*mB))/mAB;
   Energy  pR=sqrt(0.25*sqr( mass*mass - sqr(mA) - sqr(mB)) - sqr(mA*mB))/mass;

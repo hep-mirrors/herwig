@@ -73,7 +73,9 @@ Complex DalitzKMatrix::BreitWigner(const Energy & mAB, const Energy & , const En
 
 void DalitzKMatrix::dataBaseOutput(ofstream & output) {
   DalitzResonance::dataBaseOutput(output);
-  output << " " << imat_ << " " << channel_ << " " << sc_/GeV2 << " " << expType_;
+  output << " " << kMatrix_->poles().size()
+	 << " " << kMatrix_->numberOfChannels() << " "
+	 << imat_ << " " << channel_ << " " << sc_/GeV2 << " " << expType_;
   for(unsigned int ix=0;ix<beta_.size();++ix)
     output << " " << abs(beta_[ix]) << " " << arg(beta_[ix]);
   for(unsigned int ix=0;ix<coeffs_.size();++ix) {

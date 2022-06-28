@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "FlatteResonance.h"
+#include "FlatteResonance2.h"
 #include "MIPWA.h"
 #include "PiPiI2.h"
 #include "DalitzKMatrix.h"
@@ -60,19 +61,14 @@ Complex DalitzResonance::BreitWigner(const Energy & mAB, const Energy & mA, cons
     double rho = 2.*pAB/mAB;
     return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*width*rho);
   }
-  else if (type==ResonanceType::Flattef0) {
-    assert(false);
-    // Energy mpi = getParticleData(111)->mass();
-    // Energy mK  = getParticleData(321)->mass();
-    // Energy Gamma_pi = f0gpi_*sqrt(0.25*sqr(mAB)-sqr(mpi));
-    // Energy2 arg = 0.25*sqr(mAB)-sqr(mK);
-    // complex<Energy> Gamma_K  = arg>=ZERO ? f0gK_*sqrt(arg) : f0gK_*ii*sqrt(-arg);
-    // output *= GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_K));
-    // return output;
-  }
   else if (type==ResonanceType::Spin0Complex) {
     complex<Energy> sR(mass,width);
     return GeV2/(sqr(sR)-sqr(mAB));
+  }
+  else if (type==ResonanceType::Flattef0  ||
+	   type==ResonanceType::Flattea0 ||
+	   type==ResonanceType::Flatte2Kstar0) {
+    assert(false);
   }
   //  on-shell
   Energy  pR=sqrt(0.25*sqr( mass*mass - sqr(mA) - sqr(mB)) - sqr(mA*mB))/mass;
@@ -166,8 +162,7 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
   InvEnergy r = stof(stype)/GeV;
   // special for flate
   if (type==ResonanceType::Flattef0 ||
-      type==ResonanceType::Flattea0 ||
-      type==ResonanceType::FlatteKstar0) {
+      type==ResonanceType::Flattea0) {
     // Flatte parameters
     // magnitude and phase
     stype = StringUtils::car(arg);
@@ -178,6 +173,18 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
     double fK  = stof(stype);
     // add to list
     return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
+  }
+  else if(type==ResonanceType::Flatte2Kstar0) {
+    // Flatte parameters
+    // magnitude and phase
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy fpi = stof(stype)*GeV;
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    Energy fK  = stof(stype)*GeV;
+    // add to list
+    return new_ptr(FlatteResonance2(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
   }
   // MIPWA
   else if(type==ResonanceType::Spin0MIPWA) {
@@ -238,6 +245,7 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
     // no of channels
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
+    unsigned int nchannels= stoi(stype);
     // matrix location
     stype = StringUtils::car(arg);
     arg   = StringUtils::cdr(arg);
@@ -255,7 +263,6 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
     arg   = StringUtils::cdr(arg);
     unsigned int itype= stoi(stype);
     vector<pair<double,double> > beta;
-    unsigned int nchannels= stoi(stype);
     // first loop over the coefficients of the poles
     for(unsigned int ix=0;ix<npole;++ix) {
       stype = StringUtils::car(arg);
