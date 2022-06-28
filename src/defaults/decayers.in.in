@@ -10435,13 +10435,13 @@ newdef DsPipPi0EtaBES:Points 100000
 newdef DsPipPi0EtaBES:GenerateIntermediates 1 
 newdef DsPipPi0EtaBES:ParentRadius 3
 newdef DsPipPi0EtaBES:UseAllK0 0
-newdef DsPipPi0EtaBES:MaximumWeight 1.5816e+10
-insert DsPipPi0EtaBES:Weights 0 0.511938
-insert DsPipPi0EtaBES:Weights 1 0.244104
-insert DsPipPi0EtaBES:Weights 2 0.243958
+newdef DsPipPi0EtaBES:MaximumWeight 1.51603e+10
+insert DsPipPi0EtaBES:Weights 0 0.520644
+insert DsPipPi0EtaBES:Weights 1 0.239311
+insert DsPipPi0EtaBES:Weights 2 0.240046
 do DsPipPi0EtaBES:AddChannel 213 3 0.77511 0.1491 0 1 2 1 0 1.5
-do DsPipPi0EtaBES:AddChannel 9000211 61 0.99 0.24 0 2 1 0.659 2.794 1.5 0.237 0.189
-do DsPipPi0EtaBES:AddChannel 9000211 61 0.99 0.24 1 2 0 0.659 -0.347593 1.5 0.237 0.189
+do DsPipPi0EtaBES:AddChannel 9000211 61 0.99 0.24 0 2 1 1.421 2.794 1.5 0.584 0.511
+do DsPipPi0EtaBES:AddChannel 9000211 61 0.99 0.24 1 2 0 1.421 -0.347593 1.5 0.584 0.511
 do DsPipPi0EtaBES:AddChannel 0 103 0 0 0 1 2 1.238 0.612 0
 do DsPipPi0EtaBES:SetExternal 431 211 111 221
 newdef DsPipPi0EtaBES:ResonanceMass 0
@@ -23079,26 +23079,24 @@ newdef D0KS0KpKmBABAR:Points 100000
 newdef D0KS0KpKmBABAR:GenerateIntermediates 1 
 newdef D0KS0KpKmBABAR:ParentRadius 5
 newdef D0KS0KpKmBABAR:UseAllK0 0
-newdef D0KS0KpKmBABAR:MaximumWeight 8.89547e+08
-insert D0KS0KpKmBABAR:Weights 0 0.248959
-insert D0KS0KpKmBABAR:Weights 1 0.342361
-insert D0KS0KpKmBABAR:Weights 2 0.106006
-insert D0KS0KpKmBABAR:Weights 3 0.0697648
-insert D0KS0KpKmBABAR:Weights 4 0.0676553
-insert D0KS0KpKmBABAR:Weights 5 0.0629899
-insert D0KS0KpKmBABAR:Weights 6 0.0546656
-insert D0KS0KpKmBABAR:Weights 7 0.0475984
-do D0KS0KpKmBABAR:AddChannel 9000111 61 0.999 0.1 1 2 0 1 0 1.5 0.21 0.582
+newdef D0KS0KpKmBABAR:MaximumWeight 9.19001e+08
+insert D0KS0KpKmBABAR:Weights 0 0.249044
+insert D0KS0KpKmBABAR:Weights 1 0.335059
+insert D0KS0KpKmBABAR:Weights 2 0.107772
+insert D0KS0KpKmBABAR:Weights 3 0.0711498
+insert D0KS0KpKmBABAR:Weights 4 0.0685624
+insert D0KS0KpKmBABAR:Weights 5 0.0640033
+insert D0KS0KpKmBABAR:Weights 6 0.0557078
+insert D0KS0KpKmBABAR:Weights 7 0.0487022
+do D0KS0KpKmBABAR:AddChannel 9000111 61 0.999 0.1 1 2 0 1 0 1.5 0.324 0.537
 do D0KS0KpKmBABAR:AddChannel 333 3 1.01955 0.0046 1 2 0 0.415 -0.977 1.5
 do D0KS0KpKmBABAR:AddChannel 10211 1 1.474 0.265 0 1 2 1.656 1.66 1.5
-do D0KS0KpKmBABAR:AddChannel 9000211 61 0.999 0.1 0 1 2 0.635 -2.91 1.5 0.21 0.582
+do D0KS0KpKmBABAR:AddChannel 9000211 61 0.999 0.1 0 1 2 0.635 -2.91 1.5 0.324 0.537
 do D0KS0KpKmBABAR:AddChannel 10111 1 1.474 0.265 1 2 0 1.455 -1.93 1.5
 do D0KS0KpKmBABAR:AddChannel 10221 1 1.434 0.173 1 2 0 0.334 0.2 1.5
 do D0KS0KpKmBABAR:AddChannel 225 5 1.2751 0.185 1 2 0 0.851 0.06 1.5
-do D0KS0KpKmBABAR:AddChannel -9000211 61 0.999 0.1 0 2 1 0.125 2.47 1.5 0.21 0.582
+do D0KS0KpKmBABAR:AddChannel -9000211 61 0.999 0.1 0 2 1 0.125 2.47 1.5 0.324 0.537
 do D0KS0KpKmBABAR:SetExternal 421 310 321 -321
 newdef D0KS0KpKmBABAR:ResonanceMass 0
-
-
 #
 @LOAD_EVTGEN_DECAYER@

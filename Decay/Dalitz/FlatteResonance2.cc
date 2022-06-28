@@ -52,6 +52,7 @@ Complex FlatteResonance2::BreitWigner(const Energy & mAB, const Energy & , const
   static const Complex ii = Complex(0.,1.);
   Energy mpi = CurrentGenerator::current().getParticleData(111)->mass();
   Energy mK  = CurrentGenerator::current().getParticleData(321)->mass();
+  Energy2 q2=sqr(mAB);
   if(type==ResonanceType::Flattef0) {
     assert(false);
   //   Energy Gamma_pi = g1_*sqrt(0.25*sqr(mAB)-sqr(mpi));
@@ -59,18 +60,15 @@ Complex FlatteResonance2::BreitWigner(const Energy & mAB, const Energy & , const
   //   complex<Energy> Gamma_K  = arg>=ZERO ? g2_*sqrt(arg) : g2_*ii*sqrt(-arg);
   //   return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_K));
   }
-  else if(type==ResonanceType::Flattea0) {
-    assert(false);
-    // Energy meta = CurrentGenerator::current().getParticleData(221)->mass();
-    // Energy2 q2=sqr(mAB);
-    // Energy Gamma_pi = mAB>meta+mpi ? g1_*0.5/mAB*sqrt((q2-sqr(mpi+meta))*(q2-sqr(mpi-meta))) : ZERO;
-    // Energy2 arg = 0.25*sqr(mAB)-sqr(mK);
-    // complex<Energy> Gamma_K  = arg>=ZERO ? g2_*sqrt(arg) : g2_*ii*sqrt(-arg);
-    // return GeV2/(sqr(mass)-sqr(mAB)-ii*mass*(Gamma_pi+Gamma_K));
+  else if(type==ResonanceType::Flatte2a0) {
+    Energy meta = CurrentGenerator::current().getParticleData(221)->mass();
+    complex<Energy2> MGamma = sqr(g1_)*sqrt(max(0.,rho2(q2,meta,mpi)));
+    double arg = rho2(q2,mK,mK);
+    MGamma += mAB>2.*mK ? sqr(g2_)*sqrt(arg) : sqr(g2_)*ii*sqrt(abs(arg));
+    return GeV2/(sqr(mass)-sqr(mAB)-ii*MGamma);
   }
   else if(type==ResonanceType::Flatte2Kstar0) {
     Energy metaP = CurrentGenerator::current().getParticleData(331)->mass();
-    Energy2 q2=sqr(mAB);
     complex<Energy2> MGamma = sqr(g1_)*sqrt(max(0.,rho2(q2,mK,mpi)));
     double arg = rho2(q2,mK,metaP);
     MGamma += mAB>mK+metaP ? sqr(g2_)*sqrt(arg) : sqr(g2_)*ii*sqrt(abs(arg));
