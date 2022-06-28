@@ -1107,10 +1107,10 @@ do DpKmPipPipFOCUSKMatrix:AddChannel -30313 3 1.717 0.322 0 1 2 0.548 1.97222 1.
 do DpKmPipPipFOCUSKMatrix:AddChannel -30313 3 1.717 0.322 0 2 1 0.548 1.97222 1.5
 do DpKmPipPipFOCUSKMatrix:AddChannel -315 5 1.4324 0.109 0 1 2 0.0759 -1.11701 1.5
 do DpKmPipPipFOCUSKMatrix:AddChannel -315 5 1.4324 0.109 0 2 1 0.0759 -1.11701 1.5
-do /Herwig/Decays/DpKmPipPipFOCUSKMatrix:AddChannel -10311   -21  1.461  0.177 0 1 2   1. 0. 1.5 2 2 0 0 2. 0 3.389 4.991641660703782 3 1.655 0.780 -0.954 5.305800926062762 1 17.182 2.199114857512855
-do /Herwig/Decays/DpKmPipPipFOCUSKMatrix:AddChannel -10311   -21  1.461  0.177 0 2 1   1. 0. 1.5 2 2 0 0 2. 0 3.389 4.991641660703782 3 1.655 0.780 -0.954 5.305800926062762 1 17.182 2.199114857512855
-do DpKmPipPipFOCUSKMatrix:AddChannel 0 -21 0 0 0 1 2 0 1 1 0 1.5 1 0 2. 0 1 0.734 3.68264
-do DpKmPipPipFOCUSKMatrix:AddChannel 0 -21 0 0 0 2 1 0 1 1 0 1.5 1 0 2. 0 1 0.734 3.68264
+do /Herwig/Decays/DpKmPipPipFOCUSKMatrix:AddChannel -10311   -21  1.461  0.177 0 1 2   1. 0. 1.5 1 2 0 0 2. 0 3.389 4.991641660703782 3 1.655 0.780 -0.954 5.305800926062762 1 17.182 2.199114857512855
+do /Herwig/Decays/DpKmPipPipFOCUSKMatrix:AddChannel -10311   -21  1.461  0.177 0 2 1   1. 0. 1.5 1 2 0 0 2. 0 3.389 4.991641660703782 3 1.655 0.780 -0.954 5.305800926062762 1 17.182 2.199114857512855
+do DpKmPipPipFOCUSKMatrix:AddChannel 0 -21 0 0 0 1 2 1 0 1.5 0 1 1 0 2. 0 1 0.734 3.68264
+do DpKmPipPipFOCUSKMatrix:AddChannel 0 -21 0 0 0 2 1 1 0 1.5 0 1 1 0 2. 0 1 0.734 3.68264
 do DpKmPipPipFOCUSKMatrix:SetExternal 411 -321 211 211
 newdef DpKmPipPipFOCUSKMatrix:ResonanceMass 0
 
@@ -2136,27 +2136,25 @@ newdef DsKpPipPimBES:Points 100000
 newdef DsKpPipPimBES:GenerateIntermediates 1 
 newdef DsKpPipPimBES:ParentRadius 5
 newdef DsKpPipPimBES:UseAllK0 0
-newdef DsKpPipPimBES:MaximumWeight 4.4876e+10
-insert DsKpPipPimBES:Weights 0 0.164005
-insert DsKpPipPimBES:Weights 1 0.102429
-insert DsKpPipPimBES:Weights 2 0.139341
-insert DsKpPipPimBES:Weights 3 0.111803
-insert DsKpPipPimBES:Weights 4 0.0996234
-insert DsKpPipPimBES:Weights 5 0.203389
-insert DsKpPipPimBES:Weights 6 0.0887327
-insert DsKpPipPimBES:Weights 7 0.0906773
+newdef DsKpPipPimBES:MaximumWeight 4.46194e+10
+insert DsKpPipPimBES:Weights 0 0.165305
+insert DsKpPipPimBES:Weights 1 0.102218
+insert DsKpPipPimBES:Weights 2 0.136976
+insert DsKpPipPimBES:Weights 3 0.113278
+insert DsKpPipPimBES:Weights 4 0.0994944
+insert DsKpPipPimBES:Weights 5 0.200912
+insert DsKpPipPimBES:Weights 6 0.0902555
+insert DsKpPipPimBES:Weights 7 0.0915606
 do DsKpPipPimBES:AddChannel 113 23 0.77526 0.1474 1 2 0 1 0 3 0.13957061
 do DsKpPipPimBES:AddChannel 100113 23 1.465 0.4 1 2 0 7.44893 2.72 3 0.13957061
-do DsKpPipPimBES:AddChannel 9000221 81 0.9264 0.3 1 2 0 4.11088 0.98 3 1.082 0.5843 1.6663 0.
+do DsKpPipPimBES:AddChannel 9000221 81 0.9264 0.3 1 2 0 4.11088 0.98 3 1.082 0.5843 1.6663 0
 do DsKpPipPimBES:AddChannel 9010221 41 0.965 0.5 1 2 0 1.37073 -1.26319 3 0.354 1.492
 do DsKpPipPimBES:AddChannel 10221 1 1.35 0.265 1 2 0 3.72645 -0.253185 3
 do DsKpPipPimBES:AddChannel 313 3 0.8955 0.0514 0 2 1 1.06671 3.03 3
 do DsKpPipPimBES:AddChannel 100313 3 1.414 0.232 0 2 1 1.59255 -0.663185 3
-do DsKpPipPimBES:AddChannel 10311 71 1.4712 0.294 0 2 1 4.3861 1.89 3 0.505 0.213
+do DsKpPipPimBES:AddChannel 10311 71 1.4712 0.178 0 2 1 2.8353 1.89 3 0.5468 0.23
 do DsKpPipPimBES:SetExternal 431 321 211 -211
 newdef DsKpPipPimBES:ResonanceMass 0
-
-
 #
 create Herwig::ScalarTo3ScalarDalitz  DsKpPipPimFOCUS
 newdef DsKpPipPimFOCUS:Iteration 5
@@ -5510,23 +5508,21 @@ newdef DsKpKmPipBES:Points 100000
 newdef DsKpKmPipBES:GenerateIntermediates 1 
 newdef DsKpKmPipBES:ParentRadius 5
 newdef DsKpKmPipBES:UseAllK0 0
-newdef DsKpKmPipBES:MaximumWeight 1.92176e+10
-insert DsKpKmPipBES:Weights 0 0.270881
-insert DsKpKmPipBES:Weights 1 0.273883
-insert DsKpKmPipBES:Weights 2 0.143144
-insert DsKpKmPipBES:Weights 3 0.0918293
-insert DsKpKmPipBES:Weights 4 0.141329
-insert DsKpKmPipBES:Weights 5 0.0789339
+newdef DsKpKmPipBES:MaximumWeight 1.92226e+10
+insert DsKpKmPipBES:Weights 0 0.271191
+insert DsKpKmPipBES:Weights 1 0.27439
+insert DsKpKmPipBES:Weights 2 0.143114
+insert DsKpKmPipBES:Weights 3 0.0908046
+insert DsKpKmPipBES:Weights 4 0.141826
+insert DsKpKmPipBES:Weights 5 0.0786757
 do DsKpKmPipBES:AddChannel -313 3 0.89555 0.0473 1 2 0 1 0 3
 do DsKpKmPipBES:AddChannel 333 3 1.01946 0.004249 0 1 2 1.09 -0.0631855 3
 do DsKpKmPipBES:AddChannel 9010221 21 0.919 0.272 0 1 2 2.88 1.62841 3
-do DsKpKmPipBES:AddChannel -10311 71 1.4666 0.27 1 2 0 1.26 2.91 3 0.278 0.0492
+do DsKpKmPipBES:AddChannel -10311 71 1.4712 0.178 1 2 0 1.26 2.91 3 0.5468 0.23
 do DsKpKmPipBES:AddChannel 10331 1 1.704 0.123 0 1 2 0.79 1.02 3
 do DsKpKmPipBES:AddChannel 10221 1 1.35 0.265 0 1 2 0.58 0.59 3
 do DsKpKmPipBES:SetExternal 431 321 -321 211
 newdef DsKpKmPipBES:ResonanceMass 0
-
-
 #
 create Herwig::PScalarLeptonNeutrinoDecayer  PScalarlnu
 newdef PScalarlnu:Iteration 1

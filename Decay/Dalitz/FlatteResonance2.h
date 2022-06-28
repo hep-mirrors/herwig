@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_DalitzGS_H
-#define Herwig_DalitzGS_H
+#ifndef Herwig_FlatteResonance2_H
+#define Herwig_FlatteResonance2_H
 //
-// This is the declaration of the DalitzGS class.
+// This is the declaration of the FlatteResonance2 class.
 //
 
 #include "DalitzResonance.h"
@@ -12,10 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The DalitzGS class implements the  Gounaris-Sakurai form of the propagator
- *
+ * The FlatteResonance2 class implements the Flatte line-shape for resonances in Dalitz decays.
  */
-class DalitzGS: public DalitzResonance {
+class FlatteResonance2: public DalitzResonance {
 
 public:
 
@@ -24,14 +23,18 @@ public:
   /**
    * The default constructor.
    */
-  DalitzGS() {}
+  FlatteResonance2() {}
 
   /**
-   *  Constructor with parameters
+   *  Constructor specifiying the parameters
    */
-  DalitzGS(long pid, ResonanceType::Type rtype, Energy m, Energy w,
-	   unsigned int d1, unsigned int d2, unsigned int s,
-	   double mag, double phi, InvEnergy rr, Energy mpi);
+  FlatteResonance2(long pid, ResonanceType::Type rtype, Energy m, Energy w,
+		  unsigned int d1, unsigned int d2, unsigned int s,
+		  double mag, double phi, InvEnergy rr, Energy f1, Energy f2)
+    : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
+      g1_(f1),g2_(f2)
+  {}
+  //@}
 
 public:
 
@@ -77,34 +80,27 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DalitzGS & operator=(const DalitzGS &) = delete;
+  FlatteResonance2 & operator=(const FlatteResonance2 &) = delete;
 
 private:
+   
+  /**
+   *  Parameters for the \f$f_0(980)\f$
+   */
+  //@{
+  /**
+   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  Energy g1_;
   
   /**
-   *  Pion mass
+   * \f$g_K\f$ coupling for the \f$f_0(980)\f$ width
    */
-  Energy mpi_;
+  Energy g2_;
+  //@}
 
-  /**
-   * The function \f$\frac{\\hat{H}}{dq^2}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
-   */
-  double dh_;
-
-  /**
-   * The function \f$\\hat{H}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
-   */
-  Energy2 hres_;
-
-  /**
-   * The \f$H(0)\f$ parameter  for the GS form of the
-   *  Breit-Wigner
-   */
-  Energy2 h0_;
 };
 
 }
 
-#endif /* Herwig_DalitzGS_H */
+#endif /* Herwig_FlatteResonance2_H */
