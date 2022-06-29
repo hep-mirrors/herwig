@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 10:47:0 on the 27/6/2022.
+# from the Herwig Particles Database at 14:47:42 on the 29/6/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -23109,6 +23109,31 @@ do D0KS0KpKmBABAR:AddChannel 225 5 1.2751 0.185 1 2 0 0.851 0.06 1.5
 do D0KS0KpKmBABAR:AddChannel -9000211 61 0.999 0.1 0 2 1 0.125 2.47 1.5 0.324 0.537
 do D0KS0KpKmBABAR:SetExternal 421 310 321 -321
 newdef D0KS0KpKmBABAR:ResonanceMass 0
+#
+create Herwig::ScalarTo3ScalarDalitz  D0KpKmPi0BABAR
+newdef D0KpKmPi0BABAR:Iteration 10
+newdef D0KpKmPi0BABAR:Ntry 500
+newdef D0KpKmPi0BABAR:Points 10000
+newdef D0KpKmPi0BABAR:GenerateIntermediates 1 
+newdef D0KpKmPi0BABAR:ParentRadius 5
+newdef D0KpKmPi0BABAR:UseAllK0 0
+newdef D0KpKmPi0BABAR:MaximumWeight 1.16865e+10
+insert D0KpKmPi0BABAR:Weights 0 0.343357
+insert D0KpKmPi0BABAR:Weights 1 0.126398
+insert D0KpKmPi0BABAR:Weights 2 0.16327
+insert D0KpKmPi0BABAR:Weights 3 0.0882327
+insert D0KpKmPi0BABAR:Weights 4 0.161081
+insert D0KpKmPi0BABAR:Weights 5 0.117661
+do D0KpKmPi0BABAR:AddChannel 323 3 0.89166 0.0508 0 2 1 1 0 1.5
+do D0KpKmPi0BABAR:AddChannel 10321 -31 1.414 0.29 0 2 1 3.78 -2.58309 1.5  2 0 0 1 0 1.95 1.76
+do D0KpKmPi0BABAR:AddChannel 333 3 1.01956 0.00426 1 0 2 0.73 0.314159 1.5
+do D0KpKmPi0BABAR:AddChannel 9010221 41 0.965 0.05 1 0 2 2.51 -1.06116 1.5 0.406 0.833
+do D0KpKmPi0BABAR:AddChannel -323 3 0.89166 0.0508 2 1 0 0.597 -0.595157 1.5
+do D0KpKmPi0BABAR:AddChannel -10321 -31 1.414 0.29 2 1 0 0.887 1.89194 1.5  2 0 0 1 0 1.95 1.76
+do D0KpKmPi0BABAR:SetExternal 421 321 -321 111
+newdef D0KpKmPi0BABAR:ResonanceMass 0
+
+
 #
 @LOAD_EVTGEN_DECAYER@
 
