@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_FlatteResonance2_H
-#define Herwig_FlatteResonance2_H
+#ifndef Herwig_FlatteResonance_H
+#define Herwig_FlatteResonance_H
 //
-// This is the declaration of the FlatteResonance2 class.
+// This is the declaration of the FlatteResonance class.
 //
 
 #include "DalitzResonance.h"
@@ -12,9 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The FlatteResonance2 class implements the Flatte line-shape for resonances in Dalitz decays.
+ * The FlatteResonance class implements the Flatte line-shape for resonances in Dalitz decays.
  */
-class FlatteResonance2: public DalitzResonance {
+class FlatteResonance: public DalitzResonance {
 
 public:
 
@@ -23,12 +23,12 @@ public:
   /**
    * The default constructor.
    */
-  FlatteResonance2() {}
+  FlatteResonance() {}
 
   /**
    *  Constructor specifiying the parameters
    */
-  FlatteResonance2(long pid, ResonanceType::Type rtype, Energy m, Energy w,
+  FlatteResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		  unsigned int d1, unsigned int d2, unsigned int s,
 		  double mag, double phi, InvEnergy rr, Energy f1, Energy f2)
     : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
@@ -80,7 +80,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FlatteResonance2 & operator=(const FlatteResonance2 &) = delete;
+  FlatteResonance & operator=(const FlatteResonance &) = delete;
 
 private:
    
@@ -103,4 +103,4 @@ private:
 
 }
 
-#endif /* Herwig_FlatteResonance2_H */
+#endif /* Herwig_FlatteResonance_H */
