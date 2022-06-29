@@ -13,7 +13,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
-#include "FlatteResonance2.h"
+#include "FlatteResonance.h"
 #include "MIPWA.h"
 #include "PiPiI2.h"
 #include "DalitzKMatrix.h"
@@ -64,9 +64,9 @@ Complex DalitzResonance::BreitWigner(const Energy & mAB, const Energy & mA, cons
     complex<Energy> sR(mass,width);
     return GeV2/(sqr(sR)-sqr(mAB));
   }
-  else if (type==ResonanceType::Flatte2f0  ||
-	   type==ResonanceType::Flatte2a0 ||
-	   type==ResonanceType::Flatte2Kstar0) {
+  else if (type==ResonanceType::Flattef0  ||
+	   type==ResonanceType::Flattea0 ||
+	   type==ResonanceType::FlatteKstar0) {
     assert(false);
   }
   //  on-shell
@@ -160,9 +160,9 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
   arg   = StringUtils::cdr(arg);
   InvEnergy r = stof(stype)/GeV;
   // special for flate
-  if( type==ResonanceType::Flatte2f0 ||
-      type==ResonanceType::Flatte2a0 ||
-      type==ResonanceType::Flatte2Kstar0) {
+  if( type==ResonanceType::Flattef0 ||
+      type==ResonanceType::Flattea0 ||
+      type==ResonanceType::FlatteKstar0) {
     // Flatte parameters
     // magnitude and phase
     stype = StringUtils::car(arg);
@@ -172,7 +172,7 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
     arg   = StringUtils::cdr(arg);
     Energy fK  = stof(stype)*GeV;
     // add to list
-    return new_ptr(FlatteResonance2(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
+    return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
   }
   // MIPWA
   else if(type==ResonanceType::Spin0MIPWA) {

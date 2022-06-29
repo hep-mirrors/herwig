@@ -4,7 +4,7 @@
 // functions of the FlatteResonance class.
 //
 
-#include "FlatteResonance2.h"
+#include "FlatteResonance.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -15,27 +15,27 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
-void FlatteResonance2::persistentOutput(PersistentOStream & os) const {
+void FlatteResonance::persistentOutput(PersistentOStream & os) const {
   os << ounit(g1_,GeV) << ounit(g2_,GeV);
 }
 
-void FlatteResonance2::persistentInput(PersistentIStream & is, int) {
+void FlatteResonance::persistentInput(PersistentIStream & is, int) {
   is >> iunit(g1_,GeV) >> iunit(g2_,GeV);
 }
 
 //The following static variable is needed for the type
 // description system in ThePEG. 
-DescribeClass<FlatteResonance2,DalitzResonance>
-describeHerwigFlatteResonance2("Herwig::FlatteResonance2", "HwDalitzDecay.so");
+DescribeClass<FlatteResonance,DalitzResonance>
+describeHerwigFlatteResonance("Herwig::FlatteResonance", "HwDalitzDecay.so");
 
-void FlatteResonance2::Init() {
+void FlatteResonance::Init() {
 
-  static ClassDocumentation<FlatteResonance2> documentation
-    ("The FlatteResonance2 class implements the Flatte lineshape for Dalitz decays.");
+  static ClassDocumentation<FlatteResonance> documentation
+    ("The FlatteResonance class implements the Flatte lineshape for Dalitz decays.");
 
 }
 
-void FlatteResonance2::dataBaseOutput(ofstream & output) {
+void FlatteResonance::dataBaseOutput(ofstream & output) {
   DalitzResonance::dataBaseOutput(output);
   output << " " << g1_/GeV << " " << g2_/GeV; 
 }
@@ -48,25 +48,25 @@ double rho2(const Energy2 & q2, const Energy & m1, const Energy & m2) {
 
 }
 
-Complex FlatteResonance2::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
+Complex FlatteResonance::BreitWigner(const Energy & mAB, const Energy & , const Energy & ) const {
   static const Complex ii = Complex(0.,1.);
   Energy mpi = CurrentGenerator::current().getParticleData(111)->mass();
   Energy mK  = CurrentGenerator::current().getParticleData(321)->mass();
   Energy2 q2=sqr(mAB);
-  if(type==ResonanceType::Flatte2f0) {
+  if(type==ResonanceType::Flattef0) {
     complex<Energy2> MGamma = sqr(g1_)*sqrt(max(0.,rho2(q2,mpi,mpi)));
     double arg = rho2(q2,mK,mK);
     MGamma += mAB>2.*mK ? sqr(g2_)*sqrt(arg) : sqr(g2_)*ii*sqrt(abs(arg));
     return GeV2/(sqr(mass)-sqr(mAB)-ii*MGamma);
   }
-  else if(type==ResonanceType::Flatte2a0) {
+  else if(type==ResonanceType::Flattea0) {
     Energy meta = CurrentGenerator::current().getParticleData(221)->mass();
     complex<Energy2> MGamma = sqr(g1_)*sqrt(max(0.,rho2(q2,meta,mpi)));
     double arg = rho2(q2,mK,mK);
     MGamma += mAB>2.*mK ? sqr(g2_)*sqrt(arg) : sqr(g2_)*ii*sqrt(abs(arg));
     return GeV2/(sqr(mass)-sqr(mAB)-ii*MGamma);
   }
-  else if(type==ResonanceType::Flatte2Kstar0) {
+  else if(type==ResonanceType::FlatteKstar0) {
     Energy metaP = CurrentGenerator::current().getParticleData(331)->mass();
     complex<Energy2> MGamma = sqr(g1_)*sqrt(max(0.,rho2(q2,mK,mpi)));
     double arg = rho2(q2,mK,metaP);
