@@ -57,6 +57,11 @@ Complex DalitzLASS::BreitWigner(const Energy & mAB, const Energy & mA, const Ene
   else if(opt_==1) {
     return (FNR_*sin(NRphase)*exp(ii*NRphase) +FRes_*sin(Rphase)*exp(ii*(Rphase+phiRes_+2.*NRphase)));
   }
+  // original LASS form
+  else if(opt_==2) {
+    double delta = Rphase+NRphase;
+    return double(mAB/pAB)*sin(delta)*exp(ii*delta);
+  }
   else
     assert(false);
 }
