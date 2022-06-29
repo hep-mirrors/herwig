@@ -13,7 +13,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
-#include "FlatteResonance.h"
 #include "FlatteResonance2.h"
 #include "MIPWA.h"
 #include "PiPiI2.h"
