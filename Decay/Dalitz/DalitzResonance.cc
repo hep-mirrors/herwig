@@ -65,7 +65,7 @@ Complex DalitzResonance::BreitWigner(const Energy & mAB, const Energy & mA, cons
     complex<Energy> sR(mass,width);
     return GeV2/(sqr(sR)-sqr(mAB));
   }
-  else if (type==ResonanceType::Flattef0  ||
+  else if (type==ResonanceType::Flatte2f0  ||
 	   type==ResonanceType::Flatte2a0 ||
 	   type==ResonanceType::Flatte2Kstar0) {
     assert(false);
@@ -161,20 +161,9 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
   arg   = StringUtils::cdr(arg);
   InvEnergy r = stof(stype)/GeV;
   // special for flate
-  if (type==ResonanceType::Flattef0) {
-    // Flatte parameters
-    // magnitude and phase
-    stype = StringUtils::car(arg);
-    arg   = StringUtils::cdr(arg);
-    double fpi = stof(stype);
-    stype = StringUtils::car(arg);
-    arg   = StringUtils::cdr(arg);
-    double fK  = stof(stype);
-    // add to list
-    return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
-  }
-  else if( type==ResonanceType::Flatte2a0 ||
-	   type==ResonanceType::Flatte2Kstar0) {
+  if( type==ResonanceType::Flatte2f0 ||
+      type==ResonanceType::Flatte2a0 ||
+      type==ResonanceType::Flatte2Kstar0) {
     // Flatte parameters
     // magnitude and phase
     stype = StringUtils::car(arg);
