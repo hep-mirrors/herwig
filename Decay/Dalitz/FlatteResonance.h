@@ -30,9 +30,9 @@ public:
    */
   FlatteResonance(long pid, ResonanceType::Type rtype, Energy m, Energy w,
 		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double mag, double phi, InvEnergy rr, Energy f1, Energy f2)
+		  double mag, double phi, InvEnergy rr, vector<Energy> f)
     : DalitzResonance(pid,rtype,m,w,d1,d2,s,mag,phi,rr),
-      g1_(f1),g2_(f2)
+      g_(f)
   {}
   //@}
 
@@ -85,19 +85,9 @@ private:
 private:
    
   /**
-   *  Parameters for the \f$f_0(980)\f$
+   * Coupling for the width
    */
-  //@{
-  /**
-   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
-   */
-  Energy g1_;
-  
-  /**
-   * \f$g_K\f$ coupling for the \f$f_0(980)\f$ width
-   */
-  Energy g2_;
-  //@}
+  vector<Energy> g_;
 
 };
 
