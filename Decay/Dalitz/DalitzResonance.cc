@@ -165,14 +165,14 @@ DalitzResonancePtr DalitzResonance::readResonance(string arg, string & error) {
       type==ResonanceType::FlatteKstar0) {
     // Flatte parameters
     // magnitude and phase
-    stype = StringUtils::car(arg);
-    arg   = StringUtils::cdr(arg);
-    Energy fpi = stof(stype)*GeV;
-    stype = StringUtils::car(arg);
-    arg   = StringUtils::cdr(arg);
-    Energy fK  = stof(stype)*GeV;
+    vector<Energy> f;
+    while (arg!="") {
+      stype = StringUtils::car(arg);
+      arg   = StringUtils::cdr(arg);
+      f.push_back( stof(stype)*GeV );
+    }
     // add to list
-    return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,fpi,fK));
+    return new_ptr(FlatteResonance(id,type,mass,width,d1,d2,sp,mag,phi,r,f));
   }
   // MIPWA
   else if(type==ResonanceType::Spin0MIPWA) {
