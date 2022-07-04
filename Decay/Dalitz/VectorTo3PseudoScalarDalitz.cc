@@ -174,9 +174,11 @@ complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   Complex output = resonances()[i]->amp;
   if (resonances()[i]->type==ResonanceType::NonResonant) return output/GeV2;
   // locations of the outgoing particles
-  const unsigned int &d1 = resonances()[i]->daughter1;
-  const unsigned int &d2 = resonances()[i]->daughter2;
-  const unsigned int &sp = resonances()[i]->spectator;
+  const int &d1 = resonances()[i]->daughter1;
+  const int &d2 = resonances()[i]->daughter2;
+  const int &sp = resonances()[i]->spectator;
+  // epsilon piece  =eps(d1,d2,sp)
+  double sign = (sp-d1)*(d1-d2)*(d2-sp)/2.;
   // mass and width of the resonance
   const Energy & mR = resonances()[i]->mass ;
   const Energy & wR = resonances()[i]->width;
@@ -206,10 +208,14 @@ complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
     fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
     power=5;
     output *= fR*fD;
+    // spin piece
+    output *= (sqr(mD_) - sqr(mOut_[sp]) + sqr(m2_[d1][d2]))/(sqr(mD_)*sqr(m2_[d1][d2]))/GeV2*
+	       ((-sqr(m2_[sp][d1]) + sqr(m2_[sp][d2]))*sqr(m2_[d1][d2]) +
+		(mD_ - mOut_[sp])*(mD_ + mOut_[sp])*(mOut_[d1] - mOut_[d2])*(mOut_[d1] + mOut_[d2]));
     break;
   default :
     assert(false);
   }
   Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-  return output/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+  return sign*output/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
 }

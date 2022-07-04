@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 10:13:27 on the 4/7/2022.
+# from the Herwig Particles Database at 20:23:15 on the 4/7/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -2242,49 +2242,6 @@ do OmegaDalitz:AddChannel 213 3 0.7758 0.1503 0 2 1 1 0 0
 do OmegaDalitz:AddChannel -213 3 0.7758 0.1503 1 2 0 1 0 0
 do OmegaDalitz:AddChannel 113 3 0.7758 0.1503 0 1 2 1 0 0
 do OmegaDalitz:SetExternal 223 211 -211 111
-#
-create Herwig::ScalarTo3ScalarDalitz  D0PipPimPi0BABAR
-newdef D0PipPimPi0BABAR:Iteration 10
-newdef D0PipPimPi0BABAR:Ntry 500
-newdef D0PipPimPi0BABAR:Points 10000
-newdef D0PipPimPi0BABAR:GenerateIntermediates 1 
-newdef D0PipPimPi0BABAR:ParentRadius 5
-newdef D0PipPimPi0BABAR:UseAllK0 0
-newdef D0PipPimPi0BABAR:MaximumWeight 1.20139e+10
-insert D0PipPimPi0BABAR:Weights 0 0.0998954
-insert D0PipPimPi0BABAR:Weights 1 0.0716971
-insert D0PipPimPi0BABAR:Weights 2 0.0808757
-insert D0PipPimPi0BABAR:Weights 3 0.0823334
-insert D0PipPimPi0BABAR:Weights 4 0.0595569
-insert D0PipPimPi0BABAR:Weights 5 0.0669702
-insert D0PipPimPi0BABAR:Weights 6 0.0921341
-insert D0PipPimPi0BABAR:Weights 7 0.0829435
-insert D0PipPimPi0BABAR:Weights 8 0.0891334
-insert D0PipPimPi0BABAR:Weights 9 0.0455144
-insert D0PipPimPi0BABAR:Weights 10 0.072181
-insert D0PipPimPi0BABAR:Weights 11 0.07131
-insert D0PipPimPi0BABAR:Weights 12 0.025525
-insert D0PipPimPi0BABAR:Weights 13 0.0599298
-do D0PipPimPi0BABAR:AddChannel 213 3 0.7755 0.1493 2 0 1 1 0 1.5
-do D0PipPimPi0BABAR:AddChannel 113 3 0.7755 0.1493 0 1 2 0.602018 0.281 1.5
-do D0PipPimPi0BABAR:AddChannel -213 3 0.7755 0.1493 1 2 0 0.732578 -0.0279 1.5
-do D0PipPimPi0BABAR:AddChannel 100213 3 1.459 0.4 2 0 1 0.80986 -0.1344 1.5
-do D0PipPimPi0BABAR:AddChannel 100113 3 1.459 0.4 0 1 2 0.243196 -1.2287 1.5
-do D0PipPimPi0BABAR:AddChannel -100213 3 1.459 0.4 1 2 0 0.771728 0.1431 1.5
-do D0PipPimPi0BABAR:AddChannel 30213 3 1.72 0.25 2 0 1 2.53429 -0.4067 1.5
-do D0PipPimPi0BABAR:AddChannel 30113 3 1.72 0.25 0 1 2 1.69986 -0.9826 1.5
-do D0PipPimPi0BABAR:AddChannel -30213 3 1.72 0.25 1 2 0 2.69767 1.3771 1.5
-do D0PipPimPi0BABAR:AddChannel 9010211 1 0.98 0.07 0 1 2 0.0804203 -1.0263 1.5
-do D0PipPimPi0BABAR:AddChannel 10221 1 1.35 0.35 0 1 2 0.282406 -0.3421 1.5
-do D0PipPimPi0BABAR:AddChannel 9030221 1 1.507 0.109 0 1 2 0.18407 0.1292 1.5
-do D0PipPimPi0BABAR:AddChannel 10331 1 1.718 0.137 0 1 2 0.377418 0.7487 1.5
-do D0PipPimPi0BABAR:AddChannel 225 5 1.2754 0.1852 0 1 2 0.323674 0.1536 1.5
-do D0PipPimPi0BABAR:AddChannel 9000221 1 0.4 0.6 0 1 2 0.344028 -0.0716 1.5
-do D0PipPimPi0BABAR:AddChannel 0 0 0 0 0 1 2 0.422573 -0.3857 0
-do D0PipPimPi0BABAR:SetExternal 421 211 -211 111
-newdef D0PipPimPi0BABAR:ResonanceMass 0
-
-
 #
 create Herwig::a1ThreePionCLEODecayer  a1CLEO
 newdef a1CLEO:Iteration 5
@@ -23890,6 +23847,41 @@ do EtacKL0KpPimBABAR:AddChannel -325 5 1.4256 0.0985 0 2 1 0.00664 -1.36319 1.5
 do EtacKL0KpPimBABAR:SetExternal 441 130 321 -211
 newdef EtacKL0KpPimBABAR:ResonanceMass 0
 
+
+#
+create Herwig::VectorTo3PseudoScalarDalitz  JpsiPipPimPi0BABAR
+newdef JpsiPipPimPi0BABAR:Coupling 178.71
+newdef JpsiPipPimPi0BABAR:Iteration 5
+newdef JpsiPipPimPi0BABAR:Ntry 500
+newdef JpsiPipPimPi0BABAR:Points 100000
+newdef JpsiPipPimPi0BABAR:GenerateIntermediates 1 
+newdef JpsiPipPimPi0BABAR:ParentRadius 1.5
+newdef JpsiPipPimPi0BABAR:UseAllK0 0
+newdef JpsiPipPimPi0BABAR:MaximumWeight 8.03937e+08
+insert JpsiPipPimPi0BABAR:Weights 0 0.175797
+insert JpsiPipPimPi0BABAR:Weights 1 0.175917
+insert JpsiPipPimPi0BABAR:Weights 2 0.15083
+insert JpsiPipPimPi0BABAR:Weights 3 0.0726852
+insert JpsiPipPimPi0BABAR:Weights 4 0.0714469
+insert JpsiPipPimPi0BABAR:Weights 5 0.0725041
+insert JpsiPipPimPi0BABAR:Weights 6 0.0733257
+insert JpsiPipPimPi0BABAR:Weights 7 0.0728376
+insert JpsiPipPimPi0BABAR:Weights 8 0.0743336
+insert JpsiPipPimPi0BABAR:Weights 9 0.0603233
+do JpsiPipPimPi0BABAR:AddChannel 213 3 0.77526 0.1478 2 0 1 1 0 1.5
+do JpsiPipPimPi0BABAR:AddChannel -213 3 0.77526 0.1478 1 2 0 1 0 1.5
+do JpsiPipPimPi0BABAR:AddChannel 113 3 0.77526 0.1478 0 1 2 1 0 1.5
+do JpsiPipPimPi0BABAR:AddChannel 100213 3 1.429 0.576 2 0 1 0.513 -2.63 1.5
+do JpsiPipPimPi0BABAR:AddChannel -100213 3 1.429 0.576 1 2 0 0.513 -2.63 1.5
+do JpsiPipPimPi0BABAR:AddChannel 100113 3 1.429 0.576 0 1 2 0.513 -2.63 1.5
+do JpsiPipPimPi0BABAR:AddChannel 30213 3 1.644 0.109 2 0 1 0.067 -0.46 1.5
+do JpsiPipPimPi0BABAR:AddChannel -30213 3 1.644 0.109 1 2 0 0.067 -0.46 1.5
+do JpsiPipPimPi0BABAR:AddChannel 30113 3 1.644 0.109 0 1 2 0.067 -0.46 1.5
+do JpsiPipPimPi0BABAR:AddChannel 0 3 2.155 0.32 2 0 1 0.042 1.7 1.5
+do JpsiPipPimPi0BABAR:AddChannel 0 3 2.155 0.32 1 2 0 0.042 1.7 1.5
+do JpsiPipPimPi0BABAR:AddChannel 0 3 2.155 0.32 0 1 2 0.042 1.7 1.5
+do JpsiPipPimPi0BABAR:AddChannel 223 3 0.78265 0.00849 0 1 2 0.013 2.78 1.5
+do JpsiPipPimPi0BABAR:SetExternal 443 211 -211 111
 
 #
 @LOAD_EVTGEN_DECAYER@
