@@ -59,7 +59,7 @@ void VectorMeson2FermionDecayer::doinit() {
 }
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
-  : _coupling(42), _incoming(42), _outgoingf(42), _outgoinga(42), _maxweight(42) {
+  : _coupling(43), _incoming(43), _outgoingf(43), _outgoinga(43), _maxweight(43) {
   // don't include intermediates
   generateIntermediates(false);
   // rho -> e+e-, mu+mu
@@ -166,6 +166,9 @@ VectorMeson2FermionDecayer::VectorMeson2FermionDecayer()
   // to lambda
   _incoming[41] = 100443; _outgoingf[41] = 3122; _outgoinga[41] = -3122; 
   _maxweight[41] = 1.7; _coupling[41] = 9.565E-4;   
+  // upsilon(5s)
+  _incoming[42] = 400553; _outgoingf[42] = 11; _outgoinga[42] = -11;
+  _coupling[42] = 1.081E-3;  _maxweight[42] = 1.7;
   // set the initial size
   _initsize=_incoming.size();
 }

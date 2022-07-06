@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() : inter_(ShowerInteraction::Both), weakMassCut_(-GeV) {
+  TwoBodyDecayConstructor() : inter_(ShowerInteraction::QEDQCD), weakMassCut_(-GeV) {
     radiationVertices_[ShowerInteraction::QCD] = map<tPDPtr,VertexBasePtr>();
     radiationVertices_[ShowerInteraction::QED] = map<tPDPtr,VertexBasePtr>();
   }
@@ -50,14 +50,14 @@ public:
    * Function used to determine allowed decaymodes
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const set<PDPtr,MassOrdering> & part);
+  virtual void DecayList(const set<PDPtr,MassOrdering> & particles);
 
   /**
    * Number of outgoing lines. Required for correct ordering.
    */
   virtual unsigned int numBodies() const { return 2; }
 
-  
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -110,12 +110,12 @@ private:
   TwoBodyDecayConstructor & operator=(const TwoBodyDecayConstructor &) = delete;
 
 private:
-  
+
   /** @name Functions to create decayers and decaymodes. */
   //@{
   /**
    * Function to create decays
-   * @param inpart Incoming particle 
+   * @param inpart Incoming particle
    * @param vert The vertex to create decays for
    * @param ilist Which list to search
    * @param iv Row number in _theExistingDecayers member
@@ -168,15 +168,15 @@ private:
   /**
    *  Which type of corrections to the decays to include
    */
-  ShowerInteraction inter_; 
+  ShowerInteraction inter_;
 
   /**
    *  Cut off or decays via the weak current
    */
   Energy weakMassCut_;
-  
+
 };
-  
+
 }
 
 #endif /* HERWIG_TwoBodyDecayConstructor_H */
