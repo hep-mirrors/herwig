@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SoftSudakov class.
+//
+#ifndef Herwig_SoftSudakov_FH
+#define Herwig_SoftSudakov_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class SoftSudakov;
+
+ThePEG_DECLARE_POINTERS(Herwig::SoftSudakov,SoftSudakovPtr);
+
+}
+
+#endif

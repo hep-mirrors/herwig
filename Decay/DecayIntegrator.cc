@@ -28,12 +28,12 @@ using namespace Herwig;
 
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
   os << modes_ << nIter_ << nPoint_ << nTry_
-     << photonGen_ << generateInter_ << ounit(eps_,GeV);
+     << photonGen_ << generateInter_ << ounit(eps_,GeV) << warnings_;
 }
 
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
   is >> modes_ >> nIter_ >> nPoint_ >> nTry_
-     >> photonGen_ >> generateInter_ >> iunit(eps_,GeV);
+     >> photonGen_ >> generateInter_ >> iunit(eps_,GeV) >> warnings_;
 }
 
 // The following static variable is needed for the type
@@ -83,6 +83,16 @@ void DecayIntegrator::Init() {
      "Yes",
      "include the intermediates",
      true);
+
+   static Switch<DecayIntegrator, bool> InterfacePhaseSpaceWarning
+     ("PhaseSpaceWarning",
+      "Switch on/off text warnings in PhaseSpaceMode class",
+      &DecayIntegrator::warnings_, true, false, false);
+   static SwitchOption on
+     (InterfacePhaseSpaceWarning,"on","turn on the warnings", true);
+   static SwitchOption off
+     (InterfacePhaseSpaceWarning,"off","turn off the warnings", false);
+
 }
 
 double DecayIntegrator::oneLoopVirtualME(unsigned int ,

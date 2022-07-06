@@ -8,3 +8,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1514251
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
+# ATLAS Z+b jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1788444
+# CMS mass spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1711625

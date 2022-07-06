@@ -97,6 +97,51 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back( ZERO);_imB.push_back( ZERO);
   _reC.push_back( ZERO);_imC.push_back( ZERO);
+  // Upsilon(5S)->Upsilon pi pi
+  _incoming.push_back(9000553);
+  _outgoing.push_back(553);
+  _maxweight.push_back(1.);
+  _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
+  // Upsilon(5S)->Upsilon(2S) pi pi
+  _incoming.push_back(9000553);
+  _outgoing.push_back(100553);
+  _maxweight.push_back(1.);
+  _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
+  // Upsilon(5S)->Upsilon(3S) pi pi
+  _incoming.push_back(9000553);
+  _outgoing.push_back(200553);
+  _maxweight.push_back(1.);
+  _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
+  // Upsilon(5S)->h_b pi pi
+  _incoming.push_back(9000553);
+  _outgoing.push_back(10553);
+  _maxweight.push_back(1.);
+  _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
+  // Upsilon(5S)->h_b(2P) pi pi
+  _incoming.push_back(9000553);
+  _outgoing.push_back(110553);
+  _maxweight.push_back(1.);
+  _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Initial size of the vectors
   _initsize=_incoming.size();
   // don'y generate the intermediates in the phase-space

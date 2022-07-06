@@ -425,7 +425,7 @@ protected:
 		       const IdList &ids, 
 		       const bool mass,
 		       const RhoDMatrix & rho,
-		       double detune) const {
+		       const double & detune) const {
     return UseRandom::rnd()>SplittingFnVetoRatio(t,ids,mass,rho,detune);
   }
   
@@ -437,7 +437,7 @@ protected:
 			      const IdList &ids,
 			      const bool mass,
 			      const RhoDMatrix & rho,
-			      double detune) const {
+			      const double & detune) const {
     return splittingFn_->ratioP(z_, t, ids,mass,rho)/detune;
   }
 

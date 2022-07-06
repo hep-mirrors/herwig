@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerBasis class.
+//
+#ifndef Herwig_ShowerBasis_FH
+#define Herwig_ShowerBasis_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class ShowerBasis;
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerBasis,ShowerBasisPtr);
+
+}
+
+#endif

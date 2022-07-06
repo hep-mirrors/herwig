@@ -1,0 +1,5 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1788444

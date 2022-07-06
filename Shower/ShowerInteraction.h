@@ -24,7 +24,9 @@ enum class ShowerInteraction {
 	UNDEFINED=-1, 
 	QCD, 
 	QED, 
-	Both 
+	QEDQCD,
+	EW,
+	ALL
 };
 
 /**
@@ -34,7 +36,8 @@ enum class ShowerPartnerType {
 	Undefined,
 	QCDColourLine,
 	QCDAntiColourLine,
-	QED
+	QED,
+	EW
 };
 
 }

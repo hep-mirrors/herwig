@@ -784,6 +784,11 @@ Herwig may not give correct results, though.
                                                                                                ps=' '.join(map(str,vertex.particles)))
                     sys.stderr.write(msg)
                     return (True,"","")
+                try:
+                    basestring
+                except NameError:
+                    basestring = str
+
                 if(isinstance(cs,basestring)) :
                     colours[cidx] = (cs,cf[cidx])
                 else :

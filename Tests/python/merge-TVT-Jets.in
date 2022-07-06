@@ -1,6 +1,6 @@
 #! @PYTHON@
 from __future__ import print_function
-import logging, sys, math
+import logging, sys, math, subprocess, time
 
 if sys.version_info[:3] < (2,4,0):
     print ( "rivet scripts require Python version >= 2.4.0... exiting")
@@ -55,59 +55,44 @@ def divide(name,numer,denom) :
         output.addPoint(x, y, (exminus,explus), (ey,ey))
     return output
 
-def fillAbove(desthisto, sourcehistosbyptmin):
-    pthigh= 1e100
-    ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
-        ptlow=pt
-        if(type(desthisto)==yoda.core.Scatter2D) :
-            for i in range(0,h.numPoints) :
-                xMin = h.points[i].x-h.points[i].xErrs.minus
-                if( xMin >= ptlow and 
-                    xMin <  pthigh ) :
-                    desthisto.addPoint(h.points[i])
-        elif(type(desthisto)==yoda.core.Profile1D) :
-            for i in range(0,h.numBins()) :
-                if(h.bins()[i].xMin()  >= ptlow and 
-                   h.bins()[i].xMin()  <  pthigh ) :
-                    desthisto.bins()[i] += h.bins()[i]
-        elif(type(desthisto)==yoda.core.Histo1D) :
-            for i in range(0,h.numBins()) :
-                if(h.bins()[i].xMin()  >= ptlow and 
-                   h.bins()[i].xMin()  <  pthigh ) :
-                    desthisto.bins()[i] += h.bins()[i]
-        elif(type(desthisto)==yoda.core.Counter) :
-                    desthisto += h
-        else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path)
-            sys.exit(1)
-        pthigh=pt
+def mergeHistos(histUE, histJet):
+    title=""
+    path=""
+    if hasattr(histUE, 'title'):
+        title=histUE.title()
+    if hasattr(histUE, 'path'):
+        path=histUE.path()
+    if(type(histUE)==yoda.core.Counter) :
+        newHisto = yoda.core.Counter(path,title)
+    elif(type(histUE)==yoda.core.Scatter2D) :
+        newHisto = yoda.core.Scatter2D(path,title)
+    elif(type(histUE)==yoda.core.Profile1D) :
+        newHisto = yoda.core.Profile1D(path,title)
+        for i in range(0,histUE.numBins()) :
+            newHisto.addBin(histUE.bins()[i].xMin(),
+                            histUE.bins()[i].xMax())
+    elif(type(histUE)==yoda.core.Histo1D) :
+        newHisto = yoda.core.HistoUE1D(path,title)
+        for i in range(0,histUE.numBins()) :
+            newHisto.addBin(histUE.bins()[i].xMin(),
+                            histUE.bins()[i].xMax())
+    else :
+        logging.error("Histogram %s is of unknown type" % hpath)
+        print (hpath,type(histUE))
+        sys.exit(1)
+    pTMerge=10.    
 
-def mergeByPt(hpath, sqrts):
-    global inhistos
-    global outhistos
-    try:
-        fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
-    except:
-        pass
-
-def useOnePt(hpath, sqrts, ptmin):
-    global inhistos
-    global outhistos
-    try:
-       ## Find best pT_min match
-        ptmins = inhistos[hpath][float(sqrts)].keys()
-        closest_ptmin = None
-        for ptm in ptmins:
-            if closest_ptmin is None or \
-                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
-                closest_ptmin = ptm
-        if closest_ptmin != float(ptmin):
-            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
-                                "using pTmin=%e instead" % closest_ptmin)
-        outhistos[hpath] =  inhistos[hpath][float(sqrts)][closest_ptmin]
-    except:
-        pass
+    if type(newHisto)==yoda.core.Profile1D or type(newHisto)==yoda.core.Histo1D  :
+        for i in range(0,newHisto.numBins()) :
+            if newHisto.bins()[i].xMin() > pTMerge :
+                newHisto.bins()[i] += histJet.bins()[i]
+            else :
+                newHisto.bins()[i] += histUE.bins()[i]
+    else :
+        print(path,title,newHisto)
+        print(histUE, histJet)
+        quit()
+    return newHisto
 
 # #######################################
 
@@ -139,496 +124,109 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
-           "-Run-II-Jets-2.yoda",\
-           "-Run-II-Jets-3.yoda","-Run-II-Jets-4.yoda","-Run-II-Jets-5.yoda",\
-           "-Run-II-Jets-6.yoda","-Run-II-Jets-7.yoda",\
-           "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
-           "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
-           "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
-           "-630-Jets-3.yoda"]
+yodafiles=[]
+for en in ["300","630","900","Run-I","Run-II"] :
+    if not opts.ue and (en == "300" or en =="900") : continue
+    energy = en
+    if en=="Run-I" : energy="1800"
+    elif en=="Run-II" : energy="1960"
+    for proc in ["Jets","DiJets"] :
+        mergeargs=["rivet-merge"]
+        for i in range(1,10) :
+            fname = "Rivet-%s-%s-%s-%s.yoda" % (args[0], en ,proc,i)
+            if(os.path.isfile(fname)) :
+                mergeargs.append(fname)
+        if len(mergeargs)==1 : continue
+        if en != "Run-I" and en!="630":
+            mergeargs.append("-a")
+            mergeargs.append("CDF_2012_NOTE10874:ENERGY=%s"%energy)
+        else :
+            mergeargs.append("-a")
+            mergeargs.append("CDF_2004_S5839831:ENERGY=%s"%energy)
+        mergeargs.append("-o")
+        mergeargs.append("Rivet-%s-%s-%s.yoda" % (args[0], en ,proc))
+        #print(" ".join(mergeargs))
+        yodafiles.append("-%s-%s.yoda" % (en ,proc))
+        p = subprocess.Popen(mergeargs)
+# need a sleep here otherwise merged files not ready
+time.sleep(5)
+
 if(opts.ue) :
-    yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,\
-                  "-300-Jets-1.yoda", "-900-Jets-1.yoda", "-300-UE.yoda", "-900-UE.yoda"]
+    yodafiles += ["-Run-II-UE.yoda", "-Run-I-UE.yoda", "-630-UE.yoda",
+                  "-300-UE.yoda", "-900-UE.yoda"]
 
 ## Get histos
-inhistos = {}
 outhistos={}
-for f in yodafiles:
-    file='Rivet-'+args[0]+f
-    if(file.find("Run-II-UE")>0) :
-        sqrts=1960
-        ptmin=0.
-    elif(file.find("Run-II-Jets-0")>0) :
-        sqrts=1960
-        ptmin=20.
-    elif(file.find("Run-II-Jets-1")>0) :
-        sqrts=1960
-        ptmin=36.
-    elif(file.find("Run-II-Jets-2")>0) :
-        sqrts=1960
-        ptmin=55.
-    elif(file.find("Run-II-Jets-3")>0) :
-        sqrts=1960
-        ptmin=75.
-    elif(file.find("Run-II-Jets-4")>0) :
-        sqrts=1960
-        ptmin=100.
-    elif(file.find("Run-II-Jets-5")>0) :
-        sqrts=1960
-        ptmin=125.
-    elif(file.find("Run-II-Jets-6")>0) :
-        ptmin=175.
-        sqrts=1960
-    elif(file.find("Run-II-Jets-7")>0) :
-        sqrts=1960
-        ptmin=265.
-    elif(file.find("300-UE")>0) :
-        sqrts=300
-        ptmin=0.
-    elif(file.find("300-Jets-1")>0) :
-        sqrts=300
-        ptmin=6.
-    elif(file.find("900-UE")>0) :
-        sqrts=900
-        ptmin=0.
-    elif(file.find("900-Jets-1")>0) :
-        sqrts=900
-        ptmin=10.
-    elif(file.find("630-UE")>0) :
-        sqrts=630
-        ptmin=0.
-    elif(file.find("630-Jets-1")>0) :
-        sqrts=630
-        ptmin=30.
-    elif(file.find("630-Jets-2")>0) :
-        sqrts=630
-        ptmin=55.
-    elif(file.find("630-Jets-3")>0) :
-        sqrts=630
-        ptmin=90.
-    elif(file.find("Run-I-UE")>0) :
-        sqrts=1800
-        ptmin=0.
-    elif(file.find("Run-I-Jets-1")>0) :
-        sqrts=1800
-        ptmin=30.
-    elif(file.find("Run-I-Jets-2")>0) :
-        sqrts=1800
-        ptmin=55.
-    elif(file.find("Run-I-Jets-3")>0) :
-        sqrts=1800
-        ptmin=80.
-    elif(file.find("Run-I-Jets-4")>0) :
-        sqrts=1800
-        ptmin=105.
-    elif(file.find("Run-I-Jets-5")>0) :
-        sqrts=1800
-        ptmin=175.
-    if not os.access(file, os.R_OK):
-        logging.error("%s can not be read" % file)
+histos_UE={}
+histos_Jets={}
+for f in yodafiles : 
+    fname='Rivet-'+args[0]+f
+    if not os.access(fname, os.R_OK):
+        logging.error("%s can not be read" % fname)
         continue
     try:
-        aos = yoda.read(file)
+        aos = yoda.read(fname)
     except:
-        logging.error("%s can not be parsed as YODA" % file)
+        logging.error("%s can not be parsed as YODA" % fname)
         continue
-    ## Get histos from this YODA file
+    ## Get histos from this YODA fname
     for aopath, ao in aos.items() :
-        if("RAW" in aopath) :continue
-        # di-jet decorrelations
-        # jet shapes
-        if(aopath.find("5992206")>0 or aopath.find("6217184")>0 or
-           aopath.find("LEADINGJETS")>0 or aopath.find("7662670")>0 or
-           aopath.find("7057202")>0 or aopath.find("6450792")>0 or
-           aopath.find("7828950")>0 or aopath.find("4751469")>0 or
-           aopath.find("5839831")>0 or aopath.find("4563131")>0 or
-           aopath.find("4517016")>0 or aopath.find("3618439")>0 or
-           aopath.find("8591881")>0 or aopath.find("1388868")>0 or
-           aopath.find("NOTE10874")>0 or aopath.find("398175")>0) :
-           if aopath not in inhistos:
-               inhistos[aopath] = {}
-           tmpE = inhistos[aopath]
-           if sqrts not in tmpE:
-               tmpE[sqrts] = {}
-           tmpP = tmpE[sqrts]
-           if ptmin not in tmpP:
-               tmpP[ptmin] = ao
-           else:
-                raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-        elif(aopath.find("8233977")>0 or aopath.find("NOTE_9936")>0 or
-             aopath.find("3905616")>0 or aopath.find("3324664")>0 or
-             aopath.find("4796047")>0 or aopath.find("1865951")>0 or
-             aopath.find("2089246")>0 or aopath.find("3108457")>0 or
-             aopath.find("3349578")>0 or aopath.find("3541940")>0 or
-             aopath.find("3214044")>0 or aopath.find("2952106")>0 or
-             aopath.find("895662")>0 ) :
-            outhistos[aopath] = ao
+        if ("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath or
+            "sumWTrig" in aopath or "totalNum" in aopath or "sumWeights" in aopath) : continue
+        path=aopath
+        if "ENERGY" in path :
+            path=path.split(":")
+            path=path[0]+"/"+path[1].split("/")[1]
+            ao.setPath(path)
+        if "CDF_2001_S4751469" in path :
+            if "d01" in path or "d02" in path or "d07" in path :
+                if "y03" in path :
+                    if "Jets" in fname : outhistos[path]=ao
+                elif opts.ue and "UE" in fname :
+                    outhistos[path]=ao
+            elif "d04" in path or "d06" in path:
+                if "Jets" in fname : outhistos[path]=ao
+            elif opts.ue and "UE" in fname :
+                    outhistos[path]=ao
+        elif "CDF_2004_S5839831" in path :
+            if "d03" in path :
+                if "Jets" in fname : outhistos[path]=ao
+            elif "d05" in path or "d06" in path or "d10" in path or "d11" in path:
+                if opts.ue and "UE" in fname : outhistos[path]=ao
+            else :
+                if opts.ue and "UE" in fname :
+                    histos_UE[path]=ao
+                elif "Jets" in fname :
+                    histos_Jets[path]=ao
+        elif "CDF_2010_S8591881_QCD" in path or "CDF_2012_NOTE10874" in path :
+            if opts.ue and "UE" in fname :
+                histos_UE[path]=ao
+            elif "Jets" in fname :
+                histos_Jets[path]=ao
         else :
-            if(aopath.find("/_EVTCOUNT")>=0 or 
-               aopath.find("/_XSEC"    )>=0 ) : continue
-            print (aopath)
-            quit()
-yodafiles=["-Run-II-Jets-8.yoda","-Run-II-Jets-9.yoda","-Run-II-Jets-10.yoda","-Run-II-Jets-11.yoda",\
-           "-Run-I-Jets-6.yoda","-Run-I-Jets-7.yoda","-Run-I-Jets-8.yoda"]
+            if path in outhistos : print("DUP",path)
+            outhistos[path]=ao
 
-for f in yodafiles:
-    file='Rivet-'+args[0]+f
-    if(file.find("Run-II-Jets-8")>0) :
-        sqrts=1960
-        ptmin=0.150
-    elif(file.find("Run-II-Jets-9")>0) :
-        sqrts=1960
-        ptmin=0.400
-    elif(file.find("Run-II-Jets-10")>0) :
-        sqrts=1960
-        ptmin=0.600
-    elif(file.find("Run-II-Jets-11")>0) :
-        sqrts=1960
-        ptmin=1.000
-    elif(file.find("Run-I-Jets-6")>0) :
-        sqrts=1800
-        ptmin=0.150
-    elif(file.find("Run-I-Jets-7")>0) :
-        sqrts=1800
-        ptmin=0.5
-    elif(file.find("Run-I-Jets-8")>0) :
-        sqrts=1800
-        ptmin=0.8
-    if not os.access(file, os.R_OK):
-        logging.error("%s can not be read" % file)
-        continue
-    try:
-        aos = yoda.read(file)
-    except:
-        logging.error("%s can not be parsed as YODA" % file)
-        continue
-    ## Get histos from this yoda file
-    for aopath, ao in aos.items() :
-        if("RAW" in aopath) :continue
-        if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
-           if aopath not in inhistos:
-               inhistos[aopath] = {}
-           tmpE = inhistos[aopath]
-           if sqrts not in tmpE:
-               tmpE[sqrts] = {}
-           tmpP = tmpE[sqrts]
-           if ptmin not in tmpP:
-               tmpP[ptmin] = ao
-           else:
-                raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-        elif(aopath.find("8093652")>0 or aopath.find("3418421")>0 or 
-             aopath.find("4266730")>0) :
-           if aopath not in inhistos:
-               inhistos[aopath] = {}
-           tmpE = inhistos[aopath]
-           if sqrts not in tmpE:
-               tmpE[sqrts] = {}
-           tmpP = tmpE[sqrts]
-           if 1000.*ptmin not in tmpP:
-               tmpP[1000.*ptmin] = ao
-           else:
-                raise Exception("A set with ptmin = %s already exists" % ( 1000.*ptmin))
-
-## Make empty output histos if needed
-for hpath,hsets in inhistos.items():
-    if( (hpath.find("6217184")>0 and hpath.find("d13-x01-y01")>0 ) or
-        hpath.find("LEADINGJETS")>0 or hpath.find("7662670")>0 or
-        hpath.find("7057202")>0 or hpath.find("6450792")>0 or
-        hpath.find("7828950")>0 or hpath.find("8566488")>0 or
-        hpath.find("8320160")>0 or hpath.find("8093652")>0 or
-        hpath.find("4751469")>0 or hpath.find("5839831")>0 or
-        hpath.find("4563131")>0 or hpath.find("4517016")>0 or
-        hpath.find("3618439")>0 or hpath.find("4266730")>0 or
-        hpath.find("3418421")>0 or hpath.find("8591881")>0 or
-        hpath.find("1388868")>0 or hpath.find("NOTE10874")>0) :
-        title=""
-        path=""
-        histo = list(list(hsets.values())[0].values())[0]
-        if hasattr(histo, 'title'):
-            title=histo.title()
-        if hasattr(histo, 'path'):
-            path=histo.path()
-        if(type(histo)==yoda.core.Counter) :
-            outhistos[hpath] = yoda.core.Counter(path,title)
-        elif(type(histo)==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(path,title)
-        elif(type(histo)==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(path,title)
-            for i in range(0,histo.numBins()) :
-                outhistos[hpath].addBin(histo.bins()[i].xMin(),
-                                        histo.bins()[i].xMax())
-        elif(type(histo)==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(path,title)
-            for i in range(0,histo.numBins()) :
-                outhistos[hpath].addBin(histo.bins()[i].xMin(),
-                                        histo.bins()[i].xMax())
-        else :
-            logging.error("Histogram %s is of unknown type" % hpath)
-            print (hpath,type(histo))
-            sys.exit(1)
-
-## Field analysis
-logging.info("Processing CDF_2001_S4751469")
-## Angular distributions in different pT bins
-if(opts.ue) :
-    useOnePt("/CDF_2001_S4751469/d01-x01-y01", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d01-x01-y02", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d02-x01-y01", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d02-x01-y02", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d01-x01-y03", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d02-x01-y03", "1800", "30")
-## Number, profile in pT_lead (True?)
-if(opts.ue) :
-    useOnePt("/CDF_2001_S4751469/d03-x01-y01", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d03-x01-y02", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d03-x01-y03", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d04-x01-y01", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d04-x01-y02", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d04-x01-y03", "1800", "30")
-## pT sums, profile in pT_lead (True?)
-if(opts.ue) :
-    useOnePt("/CDF_2001_S4751469/d05-x01-y01", "1800",  "0")
-    useOnePt("/CDF_2001_S4751469/d05-x01-y02", "1800",  "0")
-    useOnePt("/CDF_2001_S4751469/d05-x01-y03", "1800",  "0")
-useOnePt("/CDF_2001_S4751469/d06-x01-y01", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d06-x01-y02", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d06-x01-y03", "1800", "30")
-## pT distributions (use a specific pT cut run)
-if(opts.ue) :
-    useOnePt("/CDF_2001_S4751469/d07-x01-y01", "1800", "0")
-    useOnePt("/CDF_2001_S4751469/d07-x01-y02", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d07-x01-y03", "1800", "30")
-
-## Acosta analysis
-logging.info("Processing CDF_2004_S5839831")
-## Mean pT, profile in ET_lead
-mergeByPt("/CDF_2004_S5839831/d01-x01-y01", "1800")
-mergeByPt("/CDF_2004_S5839831/d01-x01-y02", "1800")
-## pT_max,min, profiles in ET_lead
-mergeByPt("/CDF_2004_S5839831/d02-x01-y01", "1800")
-mergeByPt("/CDF_2004_S5839831/d02-x01-y02", "1800")
-mergeByPt("/CDF_2004_S5839831/d02-x01-y03", "1800")
-## pT distributions (want to use a specific pT cut run)
-useOnePt("/CDF_2004_S5839831/d03-x01-y01", "1800", "30")
-useOnePt("/CDF_2004_S5839831/d03-x01-y02", "1800", "80")
-useOnePt("/CDF_2004_S5839831/d03-x01-y03", "1800", "105")
-useOnePt("/CDF_2004_S5839831/d03-x01-y04", "1800", "105")
-useOnePt("/CDF_2004_S5839831/d03-x01-y05", "1800", "175")
-## N_max,min, profiles in ET_lead
-mergeByPt("/CDF_2004_S5839831/d04-x01-y01", "1800")
-mergeByPt("/CDF_2004_S5839831/d04-x01-y02", "1800")
-## Min bias dbs (want to use min bias pT cut)
-if(opts.ue) :
-    useOnePt("/CDF_2004_S5839831/d05-x01-y01", "1800", "0")
-    useOnePt("/CDF_2004_S5839831/d06-x01-y01", "1800", "0")
-## Swiss Cheese, profile in ET_lead
-mergeByPt("/CDF_2004_S5839831/d07-x01-y01", "1800")
-mergeByPt("/CDF_2004_S5839831/d07-x01-y02", "1800")
-## pT_max,min, profiles in ET_lead
-mergeByPt("/CDF_2004_S5839831/d08-x01-y01", "630")
-mergeByPt("/CDF_2004_S5839831/d08-x01-y02", "630")
-mergeByPt("/CDF_2004_S5839831/d08-x01-y03", "630")
-## Swiss Cheese, profile in ET_lead
-mergeByPt("/CDF_2004_S5839831/d09-x01-y01", "630")
-mergeByPt("/CDF_2004_S5839831/d09-x01-y02", "630")
-## Min bias dbs (want to use min bias pT cut)
-if(opts.ue) :
-    useOnePt("/CDF_2004_S5839831/d10-x01-y01", "630", "0")
-    useOnePt("/CDF_2004_S5839831/d11-x01-y01", "630", "0")
-
-## CDF jet shape analysis
-logging.info("Processing CDF_2005_S6217184")
-useOnePt("/CDF_2005_S6217184/d01-x01-y01", "1960", "36" )
-useOnePt("/CDF_2005_S6217184/d01-x01-y02", "1960", "36" )
-useOnePt("/CDF_2005_S6217184/d01-x01-y03", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d02-x01-y01", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d02-x01-y02", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d02-x01-y03", "1960", "75" )
-useOnePt("/CDF_2005_S6217184/d03-x01-y01", "1960", "75" )
-useOnePt("/CDF_2005_S6217184/d03-x01-y02", "1960", "100")
-useOnePt("/CDF_2005_S6217184/d03-x01-y03", "1960", "100")
-useOnePt("/CDF_2005_S6217184/d04-x01-y01", "1960", "125")
-useOnePt("/CDF_2005_S6217184/d04-x01-y02", "1960", "125")
-useOnePt("/CDF_2005_S6217184/d04-x01-y03", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d05-x01-y01", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d05-x01-y02", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d05-x01-y03", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d06-x01-y01", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d06-x01-y02", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d06-x01-y03", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d07-x01-y01", "1960", "36" )
-useOnePt("/CDF_2005_S6217184/d07-x01-y02", "1960", "36" )
-useOnePt("/CDF_2005_S6217184/d07-x01-y03", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d08-x01-y01", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d08-x01-y02", "1960", "55" )
-useOnePt("/CDF_2005_S6217184/d08-x01-y03", "1960", "75" )
-useOnePt("/CDF_2005_S6217184/d09-x01-y01", "1960", "75" )
-useOnePt("/CDF_2005_S6217184/d09-x01-y02", "1960", "100")
-useOnePt("/CDF_2005_S6217184/d09-x01-y03", "1960", "100")
-useOnePt("/CDF_2005_S6217184/d10-x01-y01", "1960", "125")
-useOnePt("/CDF_2005_S6217184/d10-x01-y02", "1960", "125")
-useOnePt("/CDF_2005_S6217184/d10-x01-y03", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d11-x01-y01", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d11-x01-y02", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d11-x01-y03", "1960", "175")
-useOnePt("/CDF_2005_S6217184/d12-x01-y01", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d12-x01-y02", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d12-x01-y03", "1960", "265")
-mergeByPt("/CDF_2005_S6217184/d13-x01-y01", "1960")
-
-# CDF dijet mass spectrum
-mergeByPt("/CDF_2008_S8093652/d01-x01-y01", "1960")
-
-# ## Rick Field Run-II Leading Jets analysis
-# logging.info("Processing CDF_2008_LEADINGJETS")
-# ## charged particle density
-# mergeByPt("/CDF_2008_LEADINGJETS/d01-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d02-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d03-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d04-x01-y01", "1960")
-# ## pT sum density
-# mergeByPt("/CDF_2008_LEADINGJETS/d05-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d06-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d07-x01-y01", "1960")
-# mergeByPt("/CDF_2008_LEADINGJETS/d08-x01-y01", "1960")
-# ## mean pT
-# mergeByPt("/CDF_2008_LEADINGJETS/d09-x01-y01", "1960")
-
-## newer version
-logging.info("Processing CDF_2010_S8591881_QCD")
-mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y01", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y02", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y03", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y01", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y02", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y03", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y01", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y02", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y03", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y01", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y02", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y03", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d14-x01-y01", "1960")
-mergeByPt("/CDF_2010_S8591881_QCD/d15-x01-y01", "1960")
-
-## D0 dijet correlation analysis
-logging.info("Processing D0_2004_S5992206")
-useOnePt("/D0_2004_S5992206/d01-x02-y01", "1960", "75")
-useOnePt("/D0_2004_S5992206/d02-x02-y01", "1960", "100")
-useOnePt("/D0_2004_S5992206/d03-x02-y01", "1960", "125")
-useOnePt("/D0_2004_S5992206/d04-x02-y01", "1960", "175")
-
-## D0 incl jet cross-section analysis
-logging.info("Processing D0_2008_S7662670")
-mergeByPt("/D0_2008_S7662670/d01-x01-y01", "1960")
-mergeByPt("/D0_2008_S7662670/d02-x01-y01", "1960")
-mergeByPt("/D0_2008_S7662670/d03-x01-y01", "1960")
-mergeByPt("/D0_2008_S7662670/d04-x01-y01", "1960")
-mergeByPt("/D0_2008_S7662670/d05-x01-y01", "1960")
-mergeByPt("/D0_2008_S7662670/d06-x01-y01", "1960")
-
-mergeByPt("/D0_2010_S8566488/d01-x01-y01", "1960")
-mergeByPt("/D0_2010_S8566488/d02-x01-y01", "1960")
-mergeByPt("/D0_2010_S8566488/d03-x01-y01", "1960")
-mergeByPt("/D0_2010_S8566488/d04-x01-y01", "1960")
-mergeByPt("/D0_2010_S8566488/d05-x01-y01", "1960")
-mergeByPt("/D0_2010_S8566488/d06-x01-y01", "1960")
-
-# CDF jet cross section
-
-mergeByPt("/CDF_2001_S4563131/d01-x01-y01", "1800")
-
-mergeByPt("/CDF_2001_S4517016/d01-x01-y01", "1800")
-mergeByPt("/CDF_2001_S4517016/d02-x01-y01", "1800")
-mergeByPt("/CDF_2001_S4517016/d03-x01-y01", "1800")
-mergeByPt("/CDF_2001_S4517016/d04-x01-y01", "1800")
-
-useOnePt("/CDF_1998_S3618439/d01-x01-y01", "1800","105")
-useOnePt("/CDF_1998_S3618439/d01-x01-y02", "1800","105")
-
-mergeByPt("/CDF_2008_S7828950/d01-x01-y01", "1960")
-mergeByPt("/CDF_2008_S7828950/d02-x01-y01", "1960")
-mergeByPt("/CDF_2008_S7828950/d03-x01-y01", "1960")
-mergeByPt("/CDF_2008_S7828950/d04-x01-y01", "1960")
-mergeByPt("/CDF_2008_S7828950/d05-x01-y01", "1960")
-
-mergeByPt("/CDF_2007_S7057202/d01-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d02-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d03-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d04-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d05-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d06-x01-y01", "1960")
-mergeByPt("/CDF_2007_S7057202/d07-x01-y01", "1960")
-
-mergeByPt("/CDF_2006_S6450792/d01-x01-y01", "1960")
-
-mergeByPt("/CDF_2000_S4266730/d01-x01-y01", "1800")
-
-useOnePt("/CDF_1996_S3418421/d01-x01-y01","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y02","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y03","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y04","1800","500")
-useOnePt("/CDF_1996_S3418421/d01-x01-y05","1800","500")
-mergeByPt("/CDF_1996_S3418421/d02-x01-y01","1800")
-
-useOnePt("/D0_2009_S8320160/d01-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d02-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d03-x01-y01", "1960", "0.4" )
-useOnePt("/D0_2009_S8320160/d04-x01-y01", "1960", "0.4" )
-useOnePt("/D0_2009_S8320160/d05-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d06-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d07-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d08-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d09-x01-y01", "1960", "1.0" )
-useOnePt("/D0_2009_S8320160/d10-x01-y01", "1960", "1.0" )
-
-logging.info("Processing CDF_2015_I1388868")
-for d in range(1,25) :
-    if d <=8 :
-        energy="1960"
-    elif d <=16 :
-        energy = "900"
-    else :
-        energy = "300"
-    useOnePt("/CDF_2015_I1388868/d%02d-x01-y01" % d , energy, "0" )
-
-# D0 jet shape
-logging.info("Processing D0_1995_I398175")
-useOnePt("/D0_1995_I398175/d01-x01-y01", "1800", "30" )
-useOnePt("/D0_1995_I398175/d02-x01-y01", "1800", "55" )
-useOnePt("/D0_1995_I398175/d03-x01-y01", "1800", "105" )
-useOnePt("/D0_1995_I398175/d04-x01-y01", "1800", "105" )
-useOnePt("/D0_1995_I398175/d05-x01-y01", "1800", "30" )
-useOnePt("/D0_1995_I398175/d06-x01-y01", "1800", "55" )
-
-logging.info("CDF_2012_NOTE10874")
-mergeByPt("/CDF_2012_NOTE10874/d01-x01-y01", "300")
-mergeByPt("/CDF_2012_NOTE10874/d01-x01-y02", "900")
-mergeByPt("/CDF_2012_NOTE10874/d01-x01-y03","1960")
-mergeByPt("/CDF_2012_NOTE10874/d02-x01-y01", "300")
-mergeByPt("/CDF_2012_NOTE10874/d02-x01-y02", "900")
-mergeByPt("/CDF_2012_NOTE10874/d02-x01-y03","1960")
-mergeByPt("/CDF_2012_NOTE10874/d03-x01-y01", "300")
-mergeByPt("/CDF_2012_NOTE10874/d03-x01-y02", "900")
-mergeByPt("/CDF_2012_NOTE10874/d03-x01-y03","1960")
-
-for i in range(1,4) :
-    names = ["/CDF_2012_NOTE10874/d0%s-x01-y01" % i,
-             "/CDF_2012_NOTE10874/d0%s-x01-y02" % i,
-             "/CDF_2012_NOTE10874/d0%s-x01-y03" % i]
-    # ratio 1960/300
-    if names[0] in outhistos and names[2] in outhistos :
-        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y04" % i] = \
-        divide("/CDF_2012_NOTE10874/d0%s-x01-y04" % i,outhistos[names[2]],outhistos[names[0]])
-    # ratio 900/300
-    if names[0] in outhistos and names[1] in outhistos :
-        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y05" % i]= \
-        divide("/CDF_2012_NOTE10874/d0%s-x01-y05" % i,outhistos[names[1]],outhistos[names[0]])
-    # ratio 1960/900
-    if names[1] in outhistos and names[2] in outhistos :
-        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y06" % i]= \
-        divide("/CDF_2012_NOTE10874/d0%s-x01-y06" %i,outhistos[names[2]],outhistos[names[1]])
+# UE plots where we need to merge
+if opts.ue :
+    for key in histos_UE.keys() :
+        outhistos[key]=mergeHistos(histos_UE[key],histos_Jets[key])
+    for i in range(1,4) :
+        names = ["/CDF_2012_NOTE10874/d0%s-x01-y01" % i,
+                 "/CDF_2012_NOTE10874/d0%s-x01-y02" % i,
+                 "/CDF_2012_NOTE10874/d0%s-x01-y03" % i]
+        # ratio 1960/300
+        if names[0] in outhistos and names[2] in outhistos :
+            outhistos["/CDF_2012_NOTE10874/d0%s-x01-y04" % i] = \
+                divide("/CDF_2012_NOTE10874/d0%s-x01-y04" % i,outhistos[names[2]],outhistos[names[0]])
+        # ratio 900/300
+        if names[0] in outhistos and names[1] in outhistos :
+            outhistos["/CDF_2012_NOTE10874/d0%s-x01-y05" % i]= \
+                divide("/CDF_2012_NOTE10874/d0%s-x01-y05" % i,outhistos[names[1]],outhistos[names[0]])
+        # ratio 1960/900
+        if names[1] in outhistos and names[2] in outhistos :
+            outhistos["/CDF_2012_NOTE10874/d0%s-x01-y06" % i]= \
+                divide("/CDF_2012_NOTE10874/d0%s-x01-y06" %i,outhistos[names[2]],outhistos[names[1]])
 
 # Choose output file
 name = args[0]+"-Jets.yoda"

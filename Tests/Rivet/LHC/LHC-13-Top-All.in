@@ -3,3 +3,4 @@
 # select the analyses
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1646686
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1801434
