@@ -29,4 +29,3 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BARREL_1997_I456942
 >>>>>>> graft
 # eta -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
-
