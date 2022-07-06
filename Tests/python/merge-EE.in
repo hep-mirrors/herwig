@@ -13,20 +13,23 @@ import os, yoda, copy
 
 def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
-        for sqrts,h in sorted(sourcehistosbysqrts.items()) :
-            if(sqrts=="U1") :
-                sqrts2=9.46
-                if "LENA_1981_I164397" in desthisto.path() : sqrts2=9.4624
-            elif sqrts=="U2" :
-                sqrts2=10.02
-                if "LENA_1981_I164397" in desthisto.path() : sqrts2=10.0148
-            elif sqrts=="U4" :
-                sqrts2=10.58
+        temp={}
+        for (key,val) in sourcehistosbysqrts.items():
+            if key=="U1" :
+                sqrts=9.46
+                if "LENA_1981_I164397" in desthisto.path() : sqrts=9.4624
+            elif key=="U2" :
+                sqrts=10.02
+                if "LENA_1981_I164397" in desthisto.path() : sqrts=10.0148
+            elif key=="U4" :
+                sqrts=10.58
             else :
-                sqrts2=float(sqrts)
-            if   ("ARGUS_1989_I276860" in desthisto.path() and sqrts2==10. ) : sqrts2=9.98
-            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts2==10. ) : sqrts2=9.9903
-            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts2==9.51) : sqrts2=9.5149
+                sqrts=float(key)
+            if   ("ARGUS_1989_I276860" in desthisto.path() and sqrts==10. ) : sqrts=9.98
+            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts==10. ) : sqrts=9.9903
+            elif ( "LENA_1981_I164397" in desthisto.path() and sqrts==9.51) : sqrts=9.5149
+            temp[sqrts]=val
+        for sqrts,h in sorted(temp.items()) :
             step = 0.001
             if("TASSO_1980_I143691" in desthisto.path()) : step=0.3
             if("JADE_1979_I142874"  in desthisto.path()) : step=0.3
@@ -34,7 +37,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             for i in range(0,h.numPoints()) :
                 xmin = min(h.points()[i].xMin(),h.points()[i].x()-step)
                 xmax = max(h.points()[i].xMax(),h.points()[i].x()+step)
-                if(sqrts2>=xmin and sqrts2<=xmax) :
+                if(sqrts>=xmin and sqrts<=xmax) :
                     desthisto.addPoint(h.points()[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
@@ -115,15 +118,15 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["130","133","136","177","192",
-           "196","202","205","206","207","91" ,"91-nopi" ,\
-           "161","183","197","35" ,"36.2","172",\
-           "189","200","44","14","14.8","21.5","22","25","10",\
+yodafiles=["130","130.1","133","136","136.1","177","192",
+           "194.4","196","202","205","206","206.2","207","91" ,"91-nopi" ,\
+           "161","161.3","182.8","183","197","35" ,"36.2","172","172.3",\
+           "188.6","189","200","200.2","44","14","14.8","21.5","22","25","10",\
            "12.8","26.8","48.0","93.0",\
-           "12","13","17","27.6","27.7","29","30.2","34.5",\
-           "30.7","30","31.3","31.6","34","34.8","42.1","43.6","50","52","53.3",\
-           "55","56","57","58","59.5","60.8","60","61.4","7.7",
-           "9.4","45","66","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
+           "12","13","17","27.6","27.7","29","30.2","30.3","34.5",\
+           "30.7","30.8","30","31.2","31.3","31.6","34","34.8","42.1","43.5","43.6","50","52","53.3",\
+           "55","55.3","56","57","58","59.5","60.8","60","61.4","7.7",
+           "9.4","45","65.4","66","75.7","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
            "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
            "4.41","5.0","5.2","4.5","8.8","9.27","9.46","9.51","10.52","10.52-sym","10.54","10.58",
            "10.6","10.45","10.47"]
@@ -277,7 +280,7 @@ for f in yodafiles:
         else:
             outhistos[aopath] = ao
 
-# ## Make empty output histos if needed
+# Make empty output histos if needed
 for hpath,hsets in inhistos.items():
     if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or 
         hpath.find("5765862")>0 or hpath.find("295160" )>0 or
@@ -293,8 +296,8 @@ for hpath,hsets in inhistos.items():
         "CLEO_1985_I205668"   in hpath or
         "BABAR_2014_I1286317" in hpath or
         "LENA_1981_I164397"   in hpath):
-        if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
-           hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
+        if(hpath=="/PLUTO_1981_I165122/d01-x01-y01" or
+	   hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
         path=""
         histo = list(hsets.values())[0]
@@ -1192,7 +1195,6 @@ useOne("/ARGUS_1989_I262415/d01-x01-y02","10.00")
 useOne("/ARGUS_1989_I262415/d01-x02-y01","U1")
 useOne("/ARGUS_1989_I262415/d01-x02-y02","10.00")
 
-merge("/PLUTO_1981_I165122/d01-x01-y01")
 merge("/PLUTO_1981_I165122/d02-x01-y01")
 useOne("/PLUTO_1981_I165122/d06-x01-y01","U1")
 useOne("/PLUTO_1981_I165122/d04-x01-y01","30.2")

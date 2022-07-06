@@ -361,7 +361,10 @@ void MEPP2HiggsVBF::Init() {
 
 RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr born,
 						      ShowerInteraction inter) {
-  if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
+  // check if generating QCD radiation
+  if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return RealEmissionProcessPtr();
   pair<tPPtr,tPPtr> first,second;
   pair<tcBeamPtr,tcBeamPtr> beams;
   pair<tPPtr,tPPtr> hadrons;

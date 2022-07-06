@@ -161,7 +161,7 @@ public:
     ISTUP.resize(NUP);
     MOTHUP.resize(NUP);
     ICOLUP.resize(NUP);
-    PUP.resize(NUP, std::vector<double>(5));
+    PUP.resize(NUP);
     VTIMUP.resize(NUP);
     SPINUP.resize(NUP);
   }
@@ -231,7 +231,7 @@ public:
    * Lab frame momentum (Px, Py, Pz, E and M in GeV) for the particle
    * entries in this event.
    */
-  vector< vector<double> > PUP;
+  vector< array<double,5> > PUP;
 
   /**
    * Invariant lifetime (c*tau, distance from production to decay im

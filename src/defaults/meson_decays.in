@@ -1800,6 +1800,36 @@ decaymode Upsilon(4S)->tau-,tau+; 1.6E-5 1 /Herwig/Decays/Vector2Leptons
 # the 5^3S_1 multiplet
 #
 #
+decaymode Upsilon(5S)->B+,B-; 0.0550 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(5S)->B*+,B-; 0.0685 1 /Herwig/Decays/TensorVP
+decaymode Upsilon(5S)->B*-,B+; 0.0685 1 /Herwig/Decays/TensorVP
+decaymode Upsilon(5S)->B*+,B*-; 0.3810 1 /Herwig/Decays/VectorVV
+decaymode Upsilon(5S)->B+,B*-,pi0; 0.0365 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->B-,B*+,pi0; 0.0365 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->B*+,B*-,pi0; 0.0100 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->B+,B-,pi0,pi0; 0.0562987 1 /Herwig/Decays/Mambo
+decaymode Upsilon(5S)->B*_s00,B*_s0bar0; 0.1760 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(5S)->B_s0,B_sbar0; 0.0500 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(5S)->B_s0,B*_s0bar0; 0.0066 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(5S)->B_sbar0,B*_s00; 0.0066 1 /Herwig/Decays/Vector2Meson
+decaymode Upsilon(5S)->e-,e+; 8.3E-6 1 /Herwig/Decays/Vector2Leptons
+decaymode Upsilon(5S)->K*0,K*bar0; 1.0E-5 1 /Herwig/Decays/VectorVV
+decaymode Upsilon(5S)->Upsilon,pi+,pi-; 5.3E-3 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(5S)->Upsilon(2S),pi+,pi-; 7.8E-3 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(5S)->Upsilon(3S),pi+,pi-; 4.8E-3 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(5S)->Upsilon,K+,K-; 6.1E-4 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->eta,Upsilon_1(1D); 4.8E-3 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->h_b,pi+,pi-; 3.5E-3 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(5S)->h_b(2P),pi+,pi-; 3.5E-3 1 /Herwig/Decays/OniumPiPi
+decaymode Upsilon(5S)->chi_b0,pi+,pi-,pi0; 4.8E-3 1 /Herwig/Decays/Mambo
+decaymode Upsilon(5S)->chi_b0,omega; 3.9E-3 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->chi_b1,pi+,pi-,pi0; 1.57E-3 1 /Herwig/Decays/Mambo
+decaymode Upsilon(5S)->chi_b1,omega; 5.2E-4 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->chi_b2,pi+,pi-,pi0; 1.17E-3 1 /Herwig/Decays/Mambo
+decaymode Upsilon(5S)->chi_b2,omega; 6.0E-4 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->eta_b,omega; 1.3E-5 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(5S)->eta_b(2S),omega; 5.6E-3 1 /Herwig/Decays/DecayME0
+#
 # The meson which are not part of a multiplet
 #
 #

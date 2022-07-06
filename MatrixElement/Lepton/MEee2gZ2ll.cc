@@ -326,8 +326,10 @@ IVector MEee2gZ2ll::getReferences() {
 
 RealEmissionProcessPtr MEee2gZ2ll::generateHardest(RealEmissionProcessPtr born,
 						   ShowerInteraction inter) {
-  // check if QED switched on
-  if(inter==ShowerInteraction::QCD) return RealEmissionProcessPtr();
+  // check if generating QCD radiation
+  if(inter!=ShowerInteraction::QED && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return RealEmissionProcessPtr();
   // generate the momenta for the hard emission
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;

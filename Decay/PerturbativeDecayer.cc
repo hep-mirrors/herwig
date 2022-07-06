@@ -66,7 +66,7 @@ void PerturbativeDecayer::Init() {
     (interfaceInteractions,
      "QCDandQED",
      "Both QCD and QED",
-     ShowerInteraction::Both);
+     ShowerInteraction::QEDQCD);
 
   static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaS
     ("AlphaS",
@@ -161,7 +161,7 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   if ( !colouredParticles && inter==ShowerInteraction::QCD ) return RealEmissionProcessPtr();
   if ( ! chargedParticles && inter==ShowerInteraction::QED ) return RealEmissionProcessPtr();
   // check exactly two outgoing particles
-  if(born->bornOutgoing().size()==2) return RealEmissionProcessPtr();
+  if(born->bornOutgoing().size()!=2) return RealEmissionProcessPtr();
   // for decay b -> a c 
   // set progenitors
   PPtr cProgenitor = born->bornOutgoing()[0];
@@ -224,9 +224,9 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   pT_ = trialpT;
   // if no emission return
   if(momenta.empty()) {
-    if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QCD)
+    if(inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD || inter==ShowerInteraction::QCD)
       born->pT()[ShowerInteraction::QCD] = pTmin_;
-    if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QED)
+    if(inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD || inter==ShowerInteraction::QED)
       born->pT()[ShowerInteraction::QED] = pTmin_;
     return born;
   }
@@ -236,9 +236,9 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   }
  
   // set maximum pT for subsequent branchings
-  if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QCD)
+  if(inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD || inter==ShowerInteraction::QCD)
     born->pT()[ShowerInteraction::QCD] = pT_;
-  if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QED)
+  if(inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD || inter==ShowerInteraction::QED)
     born->pT()[ShowerInteraction::QED] = pT_;
 
   // get ParticleData objects
@@ -303,7 +303,7 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
   enhance_ = 1.;
   // identify any QCD dipoles
   if(inter==ShowerInteraction::QCD ||
-     inter==ShowerInteraction::Both) {
+     inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD ) {
     PDT::Colour bColour = bProgenitor->dataPtr()->iColour();
     PDT::Colour cColour = cProgenitor->dataPtr()->iColour();
     PDT::Colour aColour = aProgenitor->dataPtr()->iColour();
@@ -422,7 +422,7 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
     }
   }
   // QED dipoles
-  if(inter==ShowerInteraction::Both ||
+  if(inter==ShowerInteraction::ALL || inter==ShowerInteraction::QEDQCD ||
      inter==ShowerInteraction::QED) {
     const bool & bCharged = bProgenitor->dataPtr()->charged();
     const bool & cCharged = cProgenitor->dataPtr()->charged();

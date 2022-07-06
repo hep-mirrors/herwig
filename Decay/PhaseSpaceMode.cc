@@ -13,6 +13,7 @@
 
 #include "PhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -83,12 +84,14 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
 			  ncount ==0 ? DecayIntegrator::Initialize : DecayIntegrator::Calculate);
       ++ncount;
       if(wgt>maxWeight_) {
+        if(decayer->warnings()) {
 	CurrentGenerator::log() << "Resetting max weight for decay " 
 				<< inrest.PDGName() << " -> ";
 	for(tcPDPtr part : outgoing_)
 	  CurrentGenerator::log() << "  " << part->PDGName();
 	CurrentGenerator::log() << "  " << maxWeight_ << "  " << wgt 
 				<< "  " << inrest.mass()/MeV << "\n";
+      }
 	maxWeight_=wgt;
       }
     }
@@ -101,12 +104,14 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
     throw Veto();
   }
   if(ncount>=decayer->nTry_) {
+    if(decayer->warnings()) {
     CurrentGenerator::log() << "The decay " << inrest.PDGName() << " -> ";
     for(tcPDPtr part : outgoing_)
       CurrentGenerator::log() << "  " << part->PDGName();
     CurrentGenerator::log() << "  " << maxWeight_ << " " << decayer->nTry_
 			    << " is too inefficient for the particle "
 			    << inpart << "vetoing the decay \n";
+    }
     momenta.clear();
     throw Veto();
   }

@@ -1635,8 +1635,16 @@ generateHardest(RealEmissionProcessPtr born,
 		ShowerInteraction inter) {
   beams_.clear();
   partons_.clear();
-  bool QCDAllowed = inter !=ShowerInteraction::QED;
-  bool QEDAllowed = inter !=ShowerInteraction::QCD;
+  bool QCDAllowed(false),QEDAllowed(false);
+  if(inter==ShowerInteraction::QCD)
+    QCDAllowed = true;
+  else if(inter==ShowerInteraction::QED)
+    QEDAllowed = true;
+  else if(inter==ShowerInteraction::QEDQCD ||
+	  inter==ShowerInteraction::ALL) {
+    QEDAllowed = true;
+    QCDAllowed = true;
+  }
   // find the incoming particles
   // and get the particles to be showered
   ParticleVector incoming,particlesToShower;

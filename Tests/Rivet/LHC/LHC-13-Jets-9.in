@@ -7,6 +7,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1682495
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
 # ATLAS Lund plane
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1790256
+# ATLAS charged fragmentation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1740909
 # CMS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955
+# ATLAS event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1808726

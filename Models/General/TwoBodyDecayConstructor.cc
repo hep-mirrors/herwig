@@ -93,7 +93,7 @@ void TwoBodyDecayConstructor::Init() {
     (interfaceInteractions,
      "QCDandQED",
      "Both QCD and QED",
-     ShowerInteraction::Both);
+     ShowerInteraction::QEDQCD);
 
 }
 

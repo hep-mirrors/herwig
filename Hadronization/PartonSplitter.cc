@@ -213,7 +213,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
       quark = _quarkSelector.select(UseRandom::rnd());
       break;
     case 1:
-      if ( ptrGluon->momentum().m() <
+      if ( ptrGluon->mass() <
 	   2.0 *getParticle(ThePEG::ParticleID::s)->data().constituentMass() ) {
 	throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
 			  << Exception::runerror;
@@ -247,7 +247,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
     constituentQmass = ptrQ->data().constituentMass();
   }
 
- if (ptrGluon->momentum().m() < 2.0*constituentQmass) {
+ if (ptrGluon->mass() < 2.0*constituentQmass) {
     throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
 		      << Exception::eventerror;
   }

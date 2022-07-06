@@ -1,6 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-# ATLAS emu
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1734263

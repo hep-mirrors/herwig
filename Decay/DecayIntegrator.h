@@ -78,7 +78,7 @@ public:
    */
   DecayIntegrator() : nIter_(10), nPoint_(10000), nTry_(500),
 		       generateInter_(false), iMode_(-1),
-		       realME_(false), virtualME_(false), eps_(ZERO)
+		       realME_(false), virtualME_(false), eps_(ZERO), warnings_(true)
   {}
 
 public:
@@ -428,6 +428,12 @@ protected:
     return modes_[ix];
   }
   
+public:
+
+bool warnings() const {
+  return warnings_;
+}
+
 private:
 
   /**
@@ -495,6 +501,11 @@ private:
    *   Epsilon parameter for phase-space integration
    */
   Energy eps_;
+
+  /**
+   * option for turinh on/off log warnings in Phase class
+   */
+  bool warnings_;
 
 protected:
 
