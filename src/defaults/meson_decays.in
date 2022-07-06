@@ -23,7 +23,7 @@ decaymode eta->pi+,pi-,pi0; 0.229175 1 /Herwig/Decays/Etapipipi
 decaymode eta->pi+,pi-,gamma; 0.0422 1 /Herwig/Decays/Etapipigamma
 decaymode eta->e-,e+,gamma; 0.0069 1 /Herwig/Decays/PVff
 decaymode eta->mu-,mu+,gamma; 0.00031 1 /Herwig/Decays/PVff
-decaymode eta->pi+,pi-,e-,e+; 0.000268 1 /Herwig/Decays/Mambo
+decaymode eta->pi+,pi-,e-,e+; 0.000268 1 /Herwig/Decays/EtapipiFermions
 decaymode eta->pi0,gamma,gamma; 0.000256 1 /Herwig/Decays/Etapigammagamma
 decaymode eta->e-,e+,e-,e+; 2.4E-5 1 /Herwig/Decays/PScalar4f
 decaymode eta->mu-,mu+; 6.0E-6 1 /Herwig/Decays/DecayME0
@@ -692,10 +692,10 @@ decaymode chi_c0->rho-,pi+,pi0; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->rho0,pi+,pi-; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->rho+,pi-,pi0; 0.016 1 /Herwig/Decays/DecayME0
 decaymode chi_c0->Jpsi,gamma; 0.013 1 /Herwig/Decays/SVV
-decaymode chi_c0->K_1-,K+; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_1bar0,K0; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_10,Kbar0; 0.01 1 /Herwig/Decays/DecayME0
-decaymode chi_c0->K_1+,K-; 0.01 1 /Herwig/Decays/DecayME0
+decaymode chi_c0->K_1-,K+; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_1bar0,K0; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_10,Kbar0; 0.01 1 /Herwig/Decays/PPVDecayer
+decaymode chi_c0->K_1+,K-; 0.01 1 /Herwig/Decays/PPVDecayer
 decaymode chi_c0->pi-,pi+,pi-,pi+; 0.00739 1 /Herwig/Decays/Mambo
 decaymode chi_c0->K+,K-; 0.0054 1 /Herwig/Decays/ScalarSS
 decaymode chi_c0->pi+,pi-; 0.0048 1 /Herwig/Decays/ScalarSS
@@ -1263,7 +1263,7 @@ decaymode rho''0->K*bar0,K0; 0.008999 1 /Herwig/Decays/VectorVP
 decaymode rho''0->K*0,Kbar0; 0.008999 1 /Herwig/Decays/VectorVP
 decaymode rho''0->K*+,K-; 0.008999 1 /Herwig/Decays/VectorVP
 decaymode rho''0->K-,K+; 0.000936 1 /Herwig/Decays/Vector2Meson
-decaymode rho''0->Kbar0,K0; 0.000936 1 /Herwig/Decays/Vector2Meson
+decaymode rho''0->K_S0,K_L0; 0.000936 1 /Herwig/Decays/Vector2Meson
 #
 decaymode rho''-->rho-,sigma; 0.209974 1 /Herwig/Decays/VVSDecayer
 decaymode rho''-->h_1,pi-; 0.127484 1 /Herwig/Decays/VVSDecayer

@@ -1015,7 +1015,7 @@ do Vector2Meson:SetUpDecayMode 100213 111 211 2.082 1.60125
 do Vector2Meson:SetUpDecayMode 30113 211 -211 1.655 1.60103
 do Vector2Meson:SetUpDecayMode 30213 111 211 1.655 1.60314
 do Vector2Meson:SetUpDecayMode 30113 321 -321 0.194 1.61146
-do Vector2Meson:SetUpDecayMode 30113 311 -311 0.194 1.59231
+do Vector2Meson:SetUpDecayMode 30113 130 310 0.194 1.59231
 do Vector2Meson:SetUpDecayMode 30213 321 -311 0.274 1.5977
 do Vector2Meson:SetUpDecayMode 30113 100211 -211 7.828 3.96846
 do Vector2Meson:SetUpDecayMode 30213 100111 211 7.828 3.96787
@@ -10395,6 +10395,8 @@ do PPVDecayer:SetUpDecayMode 10221 -211 20213 2.68 3.30881
 do PPVDecayer:SetUpDecayMode 10221 111 20113 2.68 3.42189
 do PPVDecayer:SetUpDecayMode 9030221 -211 20213 1.147 3.21729
 do PPVDecayer:SetUpDecayMode 9030221 111 20113 1.147 3.28207
+do PPVDecayer:SetUpDecayMode 10441 321 -10323 0.023 2.
+do PPVDecayer:SetUpDecayMode 10441 311 -10313 0.023 2.
 #
 create Herwig::ScalarTo3ScalarDalitz  DsPipPi0EtaBES
 newdef DsPipPi0EtaBES:Iteration 5
