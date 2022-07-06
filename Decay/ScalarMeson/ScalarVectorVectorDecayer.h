@@ -174,7 +174,7 @@ private:
   /**
    * the coupling for the decay, \f$g\f$.
    */
-  vector<InvEnergy> coupling_;
+  vector<Energy> coupling_;
 
   /**
    * the maximum weight for the decay
