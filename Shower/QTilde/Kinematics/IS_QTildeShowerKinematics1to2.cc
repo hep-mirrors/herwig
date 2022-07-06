@@ -169,9 +169,9 @@ reconstructParent(const tShowerParticlePtr parent,
 
 void IS_QTildeShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
-  if(theLast->isFinalState()) return;
-  ShowerParticle::Parameters & last = theLast->showerParameters();
+  if(theLast->isFinalState()) return; 
   Lorentz5Momentum pVector = theLast->showerBasis()->pVector();
+  ShowerParticle::Parameters & last = theLast->showerParameters();
   Energy2 pt2 = sqr(px) + sqr(py);
   last.alpha = theLast->x();
   last.beta  = 0.5 * pt2 / last.alpha / theLast->showerBasis()->p_dot_n();

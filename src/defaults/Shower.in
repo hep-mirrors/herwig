@@ -3,7 +3,7 @@
 ############################################################
 # Setup of default parton shower
 #
-# Useful switches for users are marked near the top of 
+# Useful switches for users are marked near the top of
 # this file.
 #
 # Don't edit this file directly, but reset the switches
@@ -31,6 +31,9 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
+set AlphaQED:CouplingSource Thompson
+create Herwig::ShowerAlphaQED AlphaEW
+set AlphaEW:CouplingSource MZ
 create Herwig::PartnerFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 0
 newdef PartnerFinder:ScaleChoice 0
@@ -46,13 +49,14 @@ newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 newdef ShowerHandler:PartnerFinder PartnerFinder
 newdef ShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
+newdef ShowerHandler:Interactions QEDQCD
 newdef ShowerHandler:SpinCorrelations Yes
 newdef ShowerHandler:SoftCorrelations Singular
 
 ##################################################################
 # Intrinsic pT
 #
-# Recommended: 
+# Recommended:
 # 1.9 GeV for Tevatron W/Z production.
 # 2.1 GeV for LHC W/Z production at 10 TeV
 # 2.2 GeV for LHC W/Z production at 14 TeV
@@ -83,7 +87,7 @@ newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 newdef PowhegShowerHandler:PartnerFinder PartnerFinder
 newdef PowhegShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef PowhegShowerHandler:SplittingGenerator SplittingGenerator
-newdef PowhegShowerHandler:Interactions QCDandQED
+newdef PowhegShowerHandler:Interactions QEDQCD
 newdef PowhegShowerHandler:SpinCorrelations Yes
 newdef PowhegShowerHandler:SoftCorrelations Singular
 newdef PowhegShowerHandler:IntrinsicPtGaussian 2.2*GeV
@@ -95,8 +99,8 @@ newdef PowhegShowerHandler:EvolutionScheme DotProduct
 #############################################################
 # End of interesting user servicable section.
 #
-# Anything that follows below should only be touched if you 
-# know what you're doing. 
+# Anything that follows below should only be touched if you
+# know what you're doing.
 #
 # Really.
 #############################################################
@@ -116,6 +120,9 @@ newdef AlphaQCD:AlphaIn 0.1186
 # cut-off
 create Herwig::PTCutOff PTCutOff
 newdef PTCutOff:pTmin 0.958*GeV
+
+#
+# Now the Sudakovs
 
 # q -> q g
 create Herwig::HalfHalfOneSplitFn QtoQGSudakov
@@ -171,6 +178,7 @@ newdef GtoQQbarSudakov:AngularOrdered Yes
 newdef GtoQQbarSudakov:StrictAO Yes
 newdef GtoQQbarSudakov:InteractionType QCD
 newdef GtoQQbarSudakov:PDFmax 120.0
+
 # g -> b bbar (separate for efficenicy in ISR)
 cp GtoQQbarSudakov GtobbbarSudakov
 newdef GtobbbarSudakov:PDFmax 40000.0
@@ -212,6 +220,43 @@ newdef QtoGammaQSudakov:ColourStructure ChargedNeutralCharged
 newdef QtoGammaQSudakov:AngularOrdered Yes
 newdef QtoGammaQSudakov:StrictAO Yes
 newdef QtoGammaQSudakov:InteractionType QED
+
+create Herwig::HalfHalfOneEWSplitFn QtoQWZSudakov
+newdef QtoQWZSudakov:InteractionType EW
+newdef QtoQWZSudakov:ColourStructure EW
+newdef QtoQWZSudakov:Alpha AlphaEW
+newdef QtoQWZSudakov:PDFmax 1.9
+
+create Herwig::HalfHalfOneEWSplitFn LtoLWZSudakov
+newdef LtoLWZSudakov:InteractionType EW
+newdef LtoLWZSudakov:ColourStructure EW
+newdef LtoLWZSudakov:Alpha AlphaEW
+newdef LtoLWZSudakov:PDFmax 1.9
+
+create Herwig::HalfHalfZeroEWSplitFn  QtoQHSudakov
+newdef QtoQHSudakov:InteractionType EW
+newdef QtoQHSudakov:ColourStructure EW
+newdef QtoQHSudakov:Alpha AlphaEW
+newdef QtoQHSudakov:PDFmax 1.9
+
+create Herwig::OneOneOneEWSplitFn VtoVVSudakov
+newdef VtoVVSudakov:InteractionType EW
+newdef VtoVVSudakov:ColourStructure EW
+newdef VtoVVSudakov:Alpha AlphaQED
+
+
+create Herwig::OneOneOneQEDSplitFn GammatoWWSudakov
+newdef GammatoWWSudakov:InteractionType QED
+newdef GammatoWWSudakov:ColourStructure ChargedNeutralCharged
+newdef GammatoWWSudakov:Alpha AlphaEW
+newdef GammatoWWSudakov:PDFmax 1.9
+
+create Herwig::OneOneZeroEWSplitFn VtoVHSudakov
+newdef VtoVHSudakov:InteractionType EW
+newdef VtoVHSudakov:ColourStructure EW
+newdef VtoVHSudakov:Alpha AlphaEW
+newdef VtoVHSudakov:PDFmax 1.9
+
 #
 # Now add the final splittings
 #
@@ -308,3 +353,58 @@ do SplittingGenerator:AddInitialSplitting ubar->gamma,ubar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting sbar->gamma,sbar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting cbar->gamma,cbar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
+
+#
+#  Electroweak
+#
+do SplittingGenerator:AddFinalSplitting u->u,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting d->d,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting s->s,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting c->c,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting b->b,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting t->t,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting u->u,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting d->d,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting s->s,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting c->c,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting b->b,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting t->t,Z0; QtoQWZSudakov
+
+do SplittingGenerator:AddFinalSplitting u->d,W+; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting c->s,W+; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting d->u,W-; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting s->c,W-; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting u->d,W+; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting c->s,W+; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting d->u,W-; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting s->c,W-; QtoQWZSudakov
+
+do SplittingGenerator:AddFinalSplitting e-->e-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting mu-->mu-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting tau-->tau-,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_e->nu_e,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_mu->nu_mu,Z0; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_tau->nu_tau,Z0; LtoLWZSudakov
+
+do SplittingGenerator:AddFinalSplitting e-->nu_e,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting mu-->nu_mu,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting tau-->nu_tau,W-; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_e->e-,W+; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_mu->mu-,W+; LtoLWZSudakov
+do SplittingGenerator:AddFinalSplitting nu_tau->tau-,W+; LtoLWZSudakov
+
+do SplittingGenerator:AddFinalSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddFinalSplitting b->b,h0; QtoQHSudakov
+do SplittingGenerator:AddFinalSplitting t->t,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting b->b,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting t->t,h0; QtoQHSudakov
+
+do SplittingGenerator:AddFinalSplitting gamma->W+,W-; GammatoWWSudakov
+
+do SplittingGenerator:AddFinalSplitting Z0->W+,W-; VtoVVSudakov
+do SplittingGenerator:AddFinalSplitting W+->W+,gamma; VtoVVSudakov
+do SplittingGenerator:AddFinalSplitting W+->W+,Z0; VtoVVSudakov
+
+do SplittingGenerator:AddFinalSplitting W+->W+,h0; VtoVHSudakov
+do SplittingGenerator:AddFinalSplitting Z0->Z0,h0; VtoVHSudakov

@@ -547,7 +547,10 @@ bool DrellYanBase::softMatrixElementVeto(PPtr parent,
 
 RealEmissionProcessPtr DrellYanBase::generateHardest(RealEmissionProcessPtr born,
 						      ShowerInteraction inter) {
-  if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
+  // check if generating QCD radiation
+  if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return RealEmissionProcessPtr();
   useMe();
   // get the particles to be showered
   _beams.clear();

@@ -1,4 +1,4 @@
-dnl Process this file with autoconf to produce a configure script.
+	dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
 AC_INIT([Herwig],[devel],[herwig@projects.hepforge.org],[Herwig])
@@ -39,7 +39,7 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
 dnl modified search order
-AC_PROG_FC([gfortran g95 g77]) 
+AC_PROG_FC([gfortran g95 g77])
 dnl xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
 AC_LANG_PUSH([Fortran])
 AC_MSG_CHECKING([if the Fortran compiler ($FC) works])
@@ -149,7 +149,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/TensorMeson/Makefile
 		Decay/WeakCurrents/Makefile
 		Decay/Partonic/Makefile
-		Decay/General/Makefile	
+		Decay/General/Makefile
 		Decay/Radiation/Makefile
 		Decay/EvtGen/Makefile
 		Doc/refman.conf
@@ -165,6 +165,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Powheg/Makefile
 		MatrixElement/Gamma/Makefile
 		MatrixElement/Reweighters/Makefile
+		MatrixElement/EW/Makefile
 		MatrixElement/Matchbox/Makefile
 		MatrixElement/Matchbox/Base/Makefile
 		MatrixElement/Matchbox/Utility/Makefile
@@ -254,7 +255,7 @@ AC_CONFIG_FILES([Tests/python/merge-DIS          ],[chmod +x Tests/python/merge-
 AC_CONFIG_FILES([Tests/python/merge-EE           ],[chmod +x Tests/python/merge-EE           ])  
 AC_CONFIG_FILES([Tests/python/merge-EE-Gamma     ],[chmod +x Tests/python/merge-EE-Gamma     ])  
 AC_CONFIG_FILES([Tests/python/merge-Fixed        ],[chmod +x Tests/python/merge-Fixed        ])
-AC_CONFIG_FILES([Tests/python/merge-GammaGamma   ],[chmod +x Tests/python/merge-GammaGamma   ])  
+AC_CONFIG_FILES([Tests/python/merge-GammaGamma   ],[chmod +x Tests/python/merge-GammaGamma   ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-EW       ],[chmod +x Tests/python/merge-LHC-EW       ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-Jets     ],[chmod +x Tests/python/merge-LHC-Jets     ])  
 AC_CONFIG_FILES([Tests/python/merge-LHC-Photon   ],[chmod +x Tests/python/merge-LHC-Photon   ])  

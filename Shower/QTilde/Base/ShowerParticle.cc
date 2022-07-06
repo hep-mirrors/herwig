@@ -43,6 +43,7 @@ void ShowerParticle::vetoEmission(ShowerPartnerType, Energy scale) {
   scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
   scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
   scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
+  scales_.EW          = min(scale,scales_.EW         );
   if(spinInfo()) spinInfo()->undecay();
 }
 
@@ -370,7 +371,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   else if(this->perturbative() == 2 && !this->isFinalState()) { 
     // get the basis vectors
     Lorentz5Momentum porig;
-    //LorentzRotation rot=boostToShower(porig,showerBasis());
+    LorentzRotation rot=boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
     mapping=RhoDMatrix(spin);

@@ -28,7 +28,8 @@ enum ColourStructure {Undefined=0,
 		      OctetSinglet         = 9,
 		      ChargedChargedNeutral=-1,
 		      ChargedNeutralCharged=-2,
-		      NeutralChargedCharged=-3};
+		      NeutralChargedCharged=-3,
+		      EW=-4};
 
 /**
  *  A typedef for the BeamParticleData
@@ -294,7 +295,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
 
 private:
 

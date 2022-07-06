@@ -48,11 +48,6 @@ class VectorMeson2FermionDecayer: public DecayIntegrator {
 public:
 
   /**
-   * Default constructor.
-   */
-  VectorMeson2FermionDecayer();
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle

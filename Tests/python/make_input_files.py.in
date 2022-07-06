@@ -302,12 +302,13 @@ elif(collider=="GammaGamma") :
 # TVT
 elif(collider=="TVT") :
     process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if "Run-II" in parameterName :  process+=collider_lumi(1960.0)
-    elif "Run-I" in parameterName : process+=collider_lumi(1800.0)
-    elif "900" in parameterName :   process+=collider_lumi(900.0)
-    elif "630" in parameterName :   process+=collider_lumi(630.0)
-    elif "300" in parameterName :   process+=collider_lumi(300.0)
-
+    ecms=1960.
+    if "Run-II" in parameterName :  ecms = 1960.0
+    elif "Run-I" in parameterName : ecms = 1800.0
+    elif "900" in parameterName :   ecms = 900.0
+    elif "630" in parameterName :   ecms = 630.0
+    elif "300" in parameterName :   ecms = 300.0
+    process+=collider_lumi(ecms)
     if(simulation=="") :
         if "PromptPhoton" in parameterName :
             process+=insert_ME("MEGammaJet")
@@ -332,6 +333,7 @@ elif(collider=="TVT") :
         elif "Jets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
+<<<<<<< working copy
             if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(500.)
             elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhat_cut(900.)
             elif "Run-I-Jets-1" in parameterName :  process+=jet_kt_cut( 20.)
@@ -358,6 +360,31 @@ elif(collider=="TVT") :
             elif "630-Jets-2" in parameterName :    process+=jet_kt_cut( 40.)
             elif "630-Jets-3" in parameterName :    process+=jet_kt_cut( 75.)
             elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
+=======
+            if "DiJets" in name :
+                process +=jet_kt_cut( 30.)
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=mhat_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
+            else :
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=jet_kt_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
+>>>>>>> merge rev
         elif "Run-I-WZ" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
             process+=insert_ME("MEqq2gZ2ff","Electron")

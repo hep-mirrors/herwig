@@ -1565,6 +1565,33 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
 	assert(false);
     }
   }
+  else if(colourStructure() == EW) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(),
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(),
+				     first->antiColourLine());
+      // q -> q g
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar g
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
   else {
     assert(false);
   }
@@ -1915,6 +1942,9 @@ double Sudakov1to2FormFactor::colourFactor() const {
       if(ids_[1]->coloured())
 	fact *= abs(double(ids_[1]->iColour()));
       return fact;
+    }
+    else if(colourStructure()==EW) {
+      return 1.;
     }
     else {
       assert(false);

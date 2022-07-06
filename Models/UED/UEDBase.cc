@@ -294,18 +294,19 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
 }
 
 void UEDBase::bosonMasses(const unsigned int n) {
+  using Constants::zeta3;
+  using Constants::pi;
   // Common constants
   const Energy2 invRad2 = theInvRadius*theInvRadius;
   const double g_em2 = fixedCouplings_ ? 
-    4.*Constants::pi*alphaEMMZ() : 4.*Constants::pi*alphaEM(invRad2);
+    4.*Constants::pi*alphaEMMZ() : 4.*pi*alphaEM(invRad2);
   const double g_s2 = fixedCouplings_ ? 
-    4.*Constants::pi*alphaS()    : 4.*Constants::pi*alphaS(invRad2);
+    4.*Constants::pi*alphaS()    : 4.*pi*alphaS(invRad2);
   const double g_W2 = g_em2/sin2ThetaW();
   const double g_P2 = g_em2/(1-sin2ThetaW());
   //Should probably use a function  to calculate zeta.
-  const double zeta3 = 1.20206;
   const Energy2 nmass2 = sqr(n*theInvRadius); 
-  const double pi2 = sqr(Constants::pi);
+  const double pi2 = sqr(pi);
   const double norm = 1./16./pi2;
   const double nnlogLR = n*n*log(theLambdaR);
   long level = 5000000 + n*100000;
@@ -357,16 +358,17 @@ void UEDBase::bosonMasses(const unsigned int n) {
 }
 
 void UEDBase::fermionMasses(const unsigned int n) {
+  using Constants::pi;
   const Energy2 invRad2 = theInvRadius*theInvRadius;
   const double g_em2 = fixedCouplings_ ? 
-    4.*Constants::pi*alphaEMMZ() : 4.*Constants::pi*alphaEM(invRad2);
+    4.*pi*alphaEMMZ() : 4.*pi*alphaEM(invRad2);
   const double g_s2 = fixedCouplings_ ? 
-    4.*Constants::pi*alphaS() : 4.*Constants::pi*alphaS(invRad2); 
+    4.*pi*alphaS() : 4.*pi*alphaS(invRad2); 
   const double g_W2 = g_em2/sin2ThetaW();
   const double g_P2 = g_em2/(1-sin2ThetaW());
   const Energy nmass = n*theInvRadius;
   const Energy norm = 
-    nmass*log(theLambdaR)/16./Constants::pi/Constants::pi;
+    nmass*log(theLambdaR)/16./pi/pi;
   const Energy topMass = getParticleData(6)->mass();
   const double ht = sqrt(2)*topMass/theVeV;
   //doublets

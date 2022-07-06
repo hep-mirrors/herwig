@@ -1,6 +1,14 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.2.3 release: 2022-04-30
+
+** improved ufo2herwig tool
+
+** improved remnant handling for photon collisions
+
+** improved high-energy behaviour of default parton shower
+
 * Herwig 7.2.2 release: 2021-01-22
 
 ** support for python 3 and gcc 10

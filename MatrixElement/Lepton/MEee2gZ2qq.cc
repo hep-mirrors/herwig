@@ -544,12 +544,15 @@ MEee2gZ2qq::generateHard(RealEmissionProcessPtr born,
 			 unsigned int & iemit, unsigned int & ispect,
 			 bool applyVeto,ShowerInteraction inter) {
   vector<ShowerInteraction> interactions;
-  if(inter==ShowerInteraction::Both) {
-    interactions.push_back(ShowerInteraction::QED);
+  if(inter==ShowerInteraction::QCD)
     interactions.push_back(ShowerInteraction::QCD);
+  else if(inter==ShowerInteraction::QED)
+    interactions.push_back(ShowerInteraction::QED);
+  else if(inter==ShowerInteraction::QEDQCD ||
+	  inter==ShowerInteraction::ALL) {
+    interactions.push_back(ShowerInteraction::QCD);
+    interactions.push_back(ShowerInteraction::QED);
   }
-  else
-    interactions.push_back(inter);
   // incoming particles
   tPPtr em = born->bornIncoming()[0];
   tPPtr ep = born->bornIncoming()[1];

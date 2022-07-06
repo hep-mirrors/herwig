@@ -59,6 +59,9 @@ void SudakovFormFactor::Init() {
   static SwitchOption interfaceInteractionTypeQED
     (interfaceInteractionType,
      "QED","QED",ShowerInteraction::QED);
+  static SwitchOption interfaceInteractionTypeEW
+    (interfaceInteractionType,
+     "EW","EW",ShowerInteraction::EW);
 
   static Switch<SudakovFormFactor,bool> interfaceAngularOrdered
     ("AngularOrdered",
@@ -140,6 +143,11 @@ void SudakovFormFactor::Init() {
      "ChargedNeutralCharged",
      "q -> 0 q",
      ChargedNeutralCharged);
+  static SwitchOption interfaceColourStructureEW
+    (interfaceColourStructure,
+     "EW",
+     "q -> q W/Z, q -> q h0, V -> V' V'', V -> V H",
+     EW);
 
   static Parameter<SudakovFormFactor,double> interfacePdfMax
     ("PDFmax",
@@ -254,6 +262,9 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[0]->iCharge()!=0) return false;
     if(ids[1]->iCharge()==-ids[2]->iCharge()) return true;
     return false;
+  }
+  else if(colourStructure_==EW) {
+    return true;
   }
   else {
     assert(false);

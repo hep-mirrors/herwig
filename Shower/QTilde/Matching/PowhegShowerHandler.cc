@@ -760,7 +760,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 
   // get the ParticleData object for the new branching
   tcPDPtr particle_data = incoming ? theBranching.particles[1] : theBranching.particles[0];
- 
+
   // create clustered ProtoBranching
   ProtoBranchingPtr clusteredBranch;
 
@@ -980,6 +980,7 @@ BranchingElement PowhegShowerHandler::allowedInitialStateBranching( tProtoBranch
   //iterates over this range
   for( multimap< long, BranchingElement >::const_iterator it = location.first;
        it != location.second; ++it ) {
+    //test id for second particle in pair
     long idtest = cc ?  it->second.conjugateParticles[2]->id() : it->second.particles[2]->id();
     // does second id match the test
     if( idtest == b2->id() ) return it->second;

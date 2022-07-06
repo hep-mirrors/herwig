@@ -38,6 +38,10 @@ create Herwig::MEee2gZ2ll MEee2gZ2ll
 newdef MEee2gZ2ll:Allowed Charged
 set MEee2gZ2ll:AlphaQED /Herwig/Shower/AlphaQED
 
+# e+e- -> l+l-
+create Herwig::MEee2ff MEee2ff
+set MEee2ff:AlphaQED /Herwig/Shower/AlphaQED
+
 # e+e- -> W+W- ZZ
 create Herwig::MEee2VV MEee2VV
 
