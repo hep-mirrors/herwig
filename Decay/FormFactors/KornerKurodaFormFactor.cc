@@ -28,7 +28,7 @@ KornerKurodaFormFactor::KornerKurodaFormFactor() : includeNucleon_(true),
   c12Rho_   = {5.*o6,  1.25, 2.*o3,   0.,     2.,    0.25,   -0.5,  0., 1.};
   c12Omega_ = {   o6, -0.25, 2.*o9,2.*o3, -2.*o3, 0.25*o3,     o6,  0., 0.};
   c12Phi_   = {   0.,    0.,    o9,   o3,    -o3,   2.*o3,  4.*o3,  1., 0.};
-  mu_       = {2.792847,-1.192304,2.458,0.930949,-1.160,-1.250,-0.6507,-2.792847/3.,1.61};
+  mu_       = {2.792847,-1.192304,2.458,0.930949,-1.160,-1.250,-0.6507,-0.613,1.61};
   // set up the form factors
   addFormFactor(2212,2212,2,2,2,2,1,1);
   addFormFactor(2112,2112,2,2,2,1,1,1);
@@ -65,6 +65,15 @@ void KornerKurodaFormFactor::persistentInput(PersistentIStream & is, int) {
 }
 
 void KornerKurodaFormFactor::doinit() {
+  // adjust units from nuclear magnetrons
+  Energy mp = getParticleData(ParticleID::pplus)->mass();
+  mu_[2] *= mp/getParticleData(ParticleID::Sigmaplus)->mass();
+  mu_[3] *= mp/getParticleData(ParticleID::Sigma0)->mass();
+  mu_[4] *= mp/getParticleData(ParticleID::Sigmaminus)->mass();
+  mu_[5] *= mp/getParticleData(ParticleID::Xi0)->mass();
+  mu_[6] *= mp/getParticleData(ParticleID::Ximinus)->mass();
+  mu_[7] *= mp/getParticleData(ParticleID::Lambda0)->mass();
+  mu_[8] *= mp/getParticleData(ParticleID::Lambda0)->mass();
   for(unsigned int ix=0;ix<c1Rho_.size();++ix) {
     c2Rho_  .push_back(mu_[ix]*c12Rho_  [ix]-c1Rho_  [ix]);
     c2Omega_.push_back(mu_[ix]*c12Omega_[ix]-c1Omega_[ix]);
@@ -140,6 +149,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int ,int ,Energy,Energy,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
 			   FlavourInfo flavour,
 			   Virtuality virt) {
+  useMe();
   assert(virt==TimeLike);
   f1a = f2a = f3a = f1v = f2v = f3v = 0.;
   if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return;

@@ -53,7 +53,10 @@ ClusterFissioner::ClusterFissioner() :
   _kappa(1.0e15*GeV/meter),
   _enhanceSProb(0),
   _m0Fission(2.*GeV),
-  _massMeasure(0)
+  _massMeasure(0),
+  _probPowFactor(4.0),
+  _probShift(0.0),
+  _kinThresholdShift(1.0*sqr(GeV))
 {}
 
 IBPtr ClusterFissioner::clone() const {
@@ -73,7 +76,8 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _fissionCluster << _fissionPwtUquark << _fissionPwtDquark << _fissionPwtSquark
      << ounit(_btClM,GeV)
      << _iopRem  << ounit(_kappa, GeV/meter)
-     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure;
+     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
+     << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
@@ -85,7 +89,8 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _fissionCluster >> _fissionPwtUquark >> _fissionPwtDquark >> _fissionPwtSquark
      >> iunit(_btClM,GeV) >> _iopRem
      >> iunit(_kappa, GeV/meter)
-     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure;
+     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
+     >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
 }
 
 void ClusterFissioner::Init() {
@@ -254,6 +259,24 @@ void ClusterFissioner::Init() {
      "Cluster fission mass scale",
      &ClusterFissioner::_m0Fission, GeV, 2.0*GeV, 0.1*GeV, 50.*GeV,
      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,double> interfaceProbPowFactor
+     ("ProbablityPowerFactor",
+      "Power factor in ClausterFissioner bell probablity function",
+      &ClusterFissioner::_probPowFactor, 2.0, 1.0, 20.0,
+      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,double> interfaceProbShift
+     ("ProbablityShift",
+      "Shifts from the center in ClausterFissioner bell probablity function",
+      &ClusterFissioner::_probShift, 0.0, -10.0, 10.0,
+      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
+     ("KineticThresholdShift",
+      "Shifts from the kinetic threshold in ClausterFissioner",
+      &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
+      false, false, Interface::limited);
 
 }
 
@@ -468,7 +491,12 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       /// \todo run separate loop here?
       Mc1 = drawChildMass(Mc,m1,m2,m,exp1,soft1);
       Mc2 = drawChildMass(Mc,m2,m1,m,exp2,soft2);
-      if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+
+      bool C1 = ( Mc1*Mc1 )/( m1*m1 + 2.*m*m + _kinThresholdShift ) < 1.0 ? true : false;
+      bool C2 = ( Mc2*Mc2 )/( m2*m2 + 2.*m*m + _kinThresholdShift ) < 1.0 ? true : false;
+      bool C3 = ( Mc1*Mc1 + Mc2*Mc2 )/( Mc*Mc ) > 1.0 ? true : false;
+
+      if( C1 || C2 || C3 ) continue;
       /**************************
        * New (not present in Fortran Herwig):
        * check whether the fragment masses  Mc1  and  Mc2  are above the
@@ -827,7 +855,7 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
   // (which are not normalized probabilities) given
   // by the same weights as used in HadronsSelector for
   // the decay of clusters into two hadrons.
-  
+
   double prob_d;
   double prob_u;
   double prob_s = 0.;
@@ -860,7 +888,7 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
   default:
     assert(false);
   }
-  
+
   int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
   switch (choice) {
@@ -1085,7 +1113,13 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
 }
 
+bool ClusterFissioner::ProbablityFunction(double scale, double threshold) {
+  double cut = UseRandom::rnd(0.0,1.0);
+  return 1./(1.+pow(abs((threshold-_probShift)/scale),_probPowFactor)) > cut ? true : false;
+}
+
 bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
+
   // default
   double clpow = _clPowLight;
   Energy clmax = _clMaxLight;
@@ -1107,17 +1141,31 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
     clpow = _clPowCharm;
     clmax = _clMaxCharm;
   }
-  bool aboveCutoff = (
-		      pow(clu->mass()*UnitRemoval::InvE , clpow)
-		      >
-		      pow(clmax*UnitRemoval::InvE, clpow)
-		      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
-		      );
+
+  //some smooth probablity function to create a dynamic thershold
+  double scale     = pow(clu->mass()/GeV , clpow);
+  double threshold = pow(clmax/GeV, clpow)
+                   + pow(clu->sumConstituentMasses()/GeV, clpow);
+  bool aboveCutoff = ProbablityFunction(scale,threshold);
+
+  //regular checks
+  // bool aboveCutoff = (
+	// 	      pow(clu->mass()*UnitRemoval::InvE , clpow)
+	// 	      >
+	// 	      pow(clmax*UnitRemoval::InvE, clpow)
+	// 	      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
+	// 	      );
+
   // required test for SUSY clusters, since aboveCutoff alone
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
   static const Energy minmass
     = getParticleData(ParticleID::d)->constituentMass();
-  bool canSplitMinimally
-    = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+
+  scale     = clu->mass()/GeV;
+  threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
+
+  bool canSplitMinimally = ProbablityFunction(scale,threshold);
+  //bool canSplitMinimally = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+
   return aboveCutoff && canSplitMinimally;
 }
