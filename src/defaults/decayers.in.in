@@ -21639,7 +21639,7 @@ newdef OniumPiPi:ReB 6 0
 newdef OniumPiPi:ImB 6 0
 newdef OniumPiPi:ReC 6 0
 newdef OniumPiPi:ImC 6 0
-newdef OniumPiPi:Incoming 7 400553
+newdef OniumPiPi:Incoming 7 9000553
 newdef OniumPiPi:Outgoing 7 553
 newdef OniumPiPi:Coupling 7 6.88e-05
 newdef OniumPiPi:ReA 7 1
@@ -21648,7 +21648,7 @@ newdef OniumPiPi:ReB 7 -2.35
 newdef OniumPiPi:ImB 7 0.55
 newdef OniumPiPi:ReC 7 0
 newdef OniumPiPi:ImC 7 0
-newdef OniumPiPi:Incoming 8 400553
+newdef OniumPiPi:Incoming 8 9000553
 newdef OniumPiPi:Outgoing 8 100553
 newdef OniumPiPi:Coupling 8 6.88e-05
 newdef OniumPiPi:ReA 8 1
@@ -21657,7 +21657,7 @@ newdef OniumPiPi:ReB 8 -2.35
 newdef OniumPiPi:ImB 8 0.55
 newdef OniumPiPi:ReC 8 0
 newdef OniumPiPi:ImC 8 0
-newdef OniumPiPi:Incoming 9 400553
+newdef OniumPiPi:Incoming 9 9000553
 newdef OniumPiPi:Outgoing 9 200553
 newdef OniumPiPi:Coupling 9 6.88e-05
 newdef OniumPiPi:ReA 9 1
@@ -21666,7 +21666,7 @@ newdef OniumPiPi:ReB 9 -2.35
 newdef OniumPiPi:ImB 9 0.55
 newdef OniumPiPi:ReC 9 0
 newdef OniumPiPi:ImC 9 0
-newdef OniumPiPi:Incoming 10 400553
+newdef OniumPiPi:Incoming 10 9000553
 newdef OniumPiPi:Outgoing 10 10553
 newdef OniumPiPi:Coupling 10 6.88e-05
 newdef OniumPiPi:ReA 10 1
@@ -21675,7 +21675,7 @@ newdef OniumPiPi:ReB 10 -2.35
 newdef OniumPiPi:ImB 10 0.55
 newdef OniumPiPi:ReC 10 0
 newdef OniumPiPi:ImC 10 0
-newdef OniumPiPi:Incoming 11 400553
+newdef OniumPiPi:Incoming 11 9000553
 newdef OniumPiPi:Outgoing 11 110553
 newdef OniumPiPi:Coupling 11 6.88e-05
 newdef OniumPiPi:ReA 11 1
