@@ -1899,7 +1899,8 @@ void Sudakov1to2FormFactor::doinit() {
   SudakovFormFactor::doinit();
   assert(interactionType()!=ShowerInteraction::UNDEFINED);
   assert((colourStructure()>0&&interactionType()==ShowerInteraction::QCD) ||
-   	 (colourStructure()<0&&interactionType()==ShowerInteraction::QED) );
+	 (colourStructure()<0&&(interactionType()==ShowerInteraction::QED ||
+				interactionType()==ShowerInteraction::EW)) );
   // compute the colour factors if need
   if(colourStructure()==TripletTripletOctet) {
     colourFactor_ = 4./3.;

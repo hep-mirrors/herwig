@@ -226,36 +226,41 @@ newdef QtoQWZSudakov:InteractionType EW
 newdef QtoQWZSudakov:ColourStructure EW
 newdef QtoQWZSudakov:Alpha AlphaEW
 newdef QtoQWZSudakov:PDFmax 1.9
+newdef QtoQWZSudakov:Cutoff PTCutOff
 
 create Herwig::HalfHalfOneEWSplitFn LtoLWZSudakov
 newdef LtoLWZSudakov:InteractionType EW
 newdef LtoLWZSudakov:ColourStructure EW
 newdef LtoLWZSudakov:Alpha AlphaEW
 newdef LtoLWZSudakov:PDFmax 1.9
+newdef LtoLWZSudakov:Cutoff PTCutOff
 
 create Herwig::HalfHalfZeroEWSplitFn  QtoQHSudakov
 newdef QtoQHSudakov:InteractionType EW
 newdef QtoQHSudakov:ColourStructure EW
 newdef QtoQHSudakov:Alpha AlphaEW
 newdef QtoQHSudakov:PDFmax 1.9
+newdef QtoQHSudakov:Cutoff PTCutOff
 
 create Herwig::OneOneOneEWSplitFn VtoVVSudakov
 newdef VtoVVSudakov:InteractionType EW
 newdef VtoVVSudakov:ColourStructure EW
 newdef VtoVVSudakov:Alpha AlphaQED
-
+newdef VtoVVSudakov:Cutoff PTCutOff
 
 create Herwig::OneOneOneQEDSplitFn GammatoWWSudakov
 newdef GammatoWWSudakov:InteractionType QED
-newdef GammatoWWSudakov:ColourStructure ChargedNeutralCharged
+newdef GammatoWWSudakov:ColourStructure NeutralChargedCharged
 newdef GammatoWWSudakov:Alpha AlphaEW
 newdef GammatoWWSudakov:PDFmax 1.9
+newdef GammatoWWSudakov:Cutoff PTCutOff
 
 create Herwig::OneOneZeroEWSplitFn VtoVHSudakov
 newdef VtoVHSudakov:InteractionType EW
 newdef VtoVHSudakov:ColourStructure EW
 newdef VtoVHSudakov:Alpha AlphaEW
 newdef VtoVHSudakov:PDFmax 1.9
+newdef VtoVHSudakov:Cutoff PTCutOff
 
 #
 # Now add the final splittings
