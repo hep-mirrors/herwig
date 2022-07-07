@@ -1,0 +1,44 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.2897*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.2897*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.5792
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+decaymode Upsilon(4S)->D_s+,D_s-; 1. 1 /Herwig/Decays/DecayME0
+do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->D_s+,D_s-;
+# D_s inclusive brs
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DS
+# Dalitz plot analysis of $D_s^+$ and $D^+\to \pi^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I635446
+# Dalitz decay of $D^+$ and $D^+_s\to K^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I654030
+# Dalitz plot analysis of $D^+_s\to K^+K^-\pi^+$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I878120
+# Dalitz plot analysis of $D^+_s\to K^+K^-\pi^+$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1830524
+# Dalitz decay of $D^+_s\to K^0_S\pi^+\pi^0$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1854317
+# Dalitz plot analysis of $D_s^+\to \pi^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1909391
+# Dalitz plot analysis of $D_s^+\to \pi^+\pi^0\pi^0$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1929365
+# Dalitz decay of $D^+_s\to K^0_SK^0_S\pi^+$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1945692
+# Dalitz decay of $D_s^+\to\pi^+\pi^0\eta^\prime$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2030993
+# Dalitz decay of $D^+_s\to K^0_SK^+\pi^0$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2070086
+# Dalitz decay of $D^+_s\to K^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2084294
+# Dalitz plot analysis of $D_s^+\to \pi^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2001_I530319
+# Dalitz plot analysis of $D_s^+\to \pi^+\pi^+\pi^-$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I792597
+# Dalitz decay of $D_s^+\to\pi^+\pi^0\eta$
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724547
