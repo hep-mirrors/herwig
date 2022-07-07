@@ -27,6 +27,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I867611
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I827985
 # LHCB D hadron decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1243156
+# LHCB D_s hadron decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1414195
 # LENA thrust and mult
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
 # ARGUS thrust
