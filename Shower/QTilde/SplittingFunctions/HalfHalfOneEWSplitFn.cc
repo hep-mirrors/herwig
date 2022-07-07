@@ -39,7 +39,7 @@ describeHerwigHalfHalfOneEWSplitFn("Herwig::HalfHalfOneEWSplitFn", "HwShower.so"
 void HalfHalfOneEWSplitFn::Init() {
 
   static ClassDocumentation<HalfHalfOneEWSplitFn> documentation
-    ("The HalfHalfOneEWSplitFn class implements the splitting q->qWand q->qZ");
+    ("The HalfHalfOneEWSplitFn class implements the splitting q->qW and q->qZ");
 
 }
 
