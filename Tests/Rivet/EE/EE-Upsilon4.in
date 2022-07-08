@@ -16,7 +16,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2653028
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
 # various semileptonic decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1116411
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
@@ -25,14 +24,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
 # BABAR b->s gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I769107
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1123662
-# BES D -> K, pi semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371
 # multiplicities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
-# BES multiplicty in eta_c decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
 # kaons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
 # charm hadrons in b decays

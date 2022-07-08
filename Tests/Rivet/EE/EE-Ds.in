@@ -46,3 +46,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724547
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870322
 # D_s+ -> K^+K^-pi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1849747
+# D_s+ -> eta, eta' semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712742

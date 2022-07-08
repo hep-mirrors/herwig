@@ -24,22 +24,22 @@ setup eta_b 551 eta_b 9.3987 0.01 0.1 0 0 0 1 0
 create ThePEG::ParticleData K+
 setup K+ 321 K+ 0.493677 5.3173524656427E-17 0 3711 3 0 1 1 
 create ThePEG::ParticleData K0
-setup K0 311 K0 0.497611 1.e300  0 0 0 0 1 0 
+setup K0 311 K0 0.497611 1.0E+27 0 0 0 0 1 0 
 create ThePEG::ParticleData K-
 setup K- -321 K- 0.493677 5.3173524656427E-17 0 3711 -3 0 1 1 
 makeanti K- K+
 create ThePEG::ParticleData Kbar0
-setup Kbar0 -311 Kbar0 0.497611 1.e300  0 0 0 0 1 0 
+setup Kbar0 -311 Kbar0 0.497611 1.0E+27 0 0 0 0 1 0 
 makeanti Kbar0 K0
 create ThePEG::ParticleData D0
-setup D0 421 D0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
+setup D0 421 D0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0 
 create ThePEG::ParticleData D+
-setup D+ 411 D+ 1.86966 6.3286385503528E-13 0 0.3118 3 0 1 0
+setup D+ 411 D+ 1.86966 6.3286385503528E-13 0 0.3118 3 0 1 0 
 create ThePEG::ParticleData Dbar0
-setup Dbar0 -421 Dbar0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
+setup Dbar0 -421 Dbar0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0 
 makeanti Dbar0 D0
 create ThePEG::ParticleData D-
-setup D- -411 D- 1.86966 6.3286385503528E-13 0 0.3118 -3 0 1 0
+setup D- -411 D- 1.86966 6.3286385503528E-13 0 0.3118 -3 0 1 0 
 makeanti D- D+
 create ThePEG::ParticleData D_s+
 setup D_s+ 431 D_s+ 1.9682 1.315513E-12 0 0.15 3 0 1 0 
@@ -47,7 +47,7 @@ create ThePEG::ParticleData D_s-
 setup D_s- -431 D_s- 1.9682 1.315513E-12 0 0.15 -3 0 1 0 
 makeanti D_s- D_s+
 create ThePEG::MixedParticleData B0
-setup B0 511 B0 5.27965 4.2897163043478E-13 0 0.46 0 0 1 0
+setup B0 511 B0 5.27965 4.2897163043478E-13 0 0.46 0 0 1 0 
 newdef B0:DeltaM 3.337134e-13*GeV
 newdef B0:DeltaGamma 0.*GeV
 newdef B0:PQMagnitude 1.
@@ -193,7 +193,7 @@ setup h_1 10223 h_1 1.166 0.375 0.375 0 0 0 3 0
 create ThePEG::ParticleData h'_1
 setup h'_1 10333 h'_1 1.416 0.09 0.18 0 0 0 3 0 
 create ThePEG::ParticleData h_c
-setup h_c 10443 h_c 3.52538 0.0007 0.007 0 0 0 3 0
+setup h_c 10443 h_c 3.52538 0.0007 0.007 0 0 0 3 0 
 create ThePEG::ParticleData h_b
 setup h_b 10553 h_b 9.8993 8.94E-5 0.000894 0 0 0 3 0 
 create ThePEG::ParticleData K_1+
@@ -504,9 +504,9 @@ create ThePEG::ParticleData K_2(1770)bar0
 setup K_2(1770)bar0 -10315 K_2(1770)bar0 1.773 0.186 0.558 0 0 0 5 0 
 makeanti K_2(1770)bar0 K_2(1770)0
 create ThePEG::ParticleData B_c2(L)+
-setup B_c2(L)+ 10545 B_c2(L)+ 7.036 8.3E-5 0.00083 0  3 0 5 0
+setup B_c2(L)+ 10545 B_c2(L)+ 7.036 8.3E-5 0.00083 0 3 0 5 0 
 create ThePEG::ParticleData B_c2(L)-
-setup B_c2(L)- -10545 B_c2(L)- 7.036 8.3E-5 0.00083 0 -3 0 5 0
+setup B_c2(L)- -10545 B_c2(L)- 7.036 8.3E-5 0.00083 0 -3 0 5 0 
 makeanti B_c2(L)- B_c2(L)+
 #
 # the 1^3D_1 multiplet
@@ -519,7 +519,7 @@ create ThePEG::ParticleData rho''-
 setup rho''- -30213 rho''- 1.72 0.25 0.5 0 -3 0 3 0 
 makeanti rho''- rho''+
 create ThePEG::ParticleData omega''
-setup omega'' 30223 omega'' 1.67 0.315 0.63 0 0 0 3 0
+setup omega'' 30223 omega'' 1.67 0.315 0.63 0 0 0 3 0 
 create ThePEG::ParticleData phi(2170)
 setup phi(2170) 30333 phi(2170) 2.159 0.137 0.411 0 0 0 3 0 
 create ThePEG::ParticleData psi(3770)
@@ -554,15 +554,15 @@ create ThePEG::ParticleData D_s1*(2860)-
 setup D_s1*(2860)- -30433 D_s1*(2860)- 2.86 0.159 0.318 0 -3 0 3 0 
 makeanti D_s1*(2860)- D_s1*(2860)+
 create ThePEG::ParticleData B_c(1D)*+
-setup B_c(1D)*+  30543 B_c(1D)*+ 7.028 9.35E-5 0.000935 0  3 0 3 0
+setup B_c(1D)*+ 30543 B_c(1D)*+ 7.028 9.35E-5 0.000935 0 3 0 3 0 
 create ThePEG::ParticleData B_c(1D)*-
-setup B_c(1D)*- -30543 B_c(1D)*- 7.028 9.35E-5 0.000935 0 -3 0 3 0
+setup B_c(1D)*- -30543 B_c(1D)*- 7.028 9.35E-5 0.000935 0 -3 0 3 0 
 makeanti B_c(1D)*- B_c(1D)*+
 #
 # the 1^3D_2 multiplet
 #
 create ThePEG::ParticleData psi_2(1D)
-setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.00074 0.0074 0 0 0 5 0
+setup psi_2(1D) 20445 psi_2(1D) 3.8237 0.00074 0.0074 0 0 0 5 0 
 create ThePEG::ParticleData Upsilon_2(1D)
 setup Upsilon_2(1D) 20555 Upsilon_2(1D) 10.1637 2.8E-5 0.00028 0 0 0 5 0 
 create ThePEG::ParticleData K_2(1820)+
@@ -591,9 +591,9 @@ create ThePEG::ParticleData D_s2(2850)-
 setup D_s2(2850)- -20435 D_s2(2850)- 2.851 0.052 0.156 0 -3 0 5 0 
 makeanti D_s2(2850)- D_s2(2850)+
 create ThePEG::ParticleData B_c2(H)+
-setup B_c2(H)+ 20545 B_c2(H)+ 7.041 9.3E-5 0.00093 0  3 0 5 0
+setup B_c2(H)+ 20545 B_c2(H)+ 7.041 9.3E-5 0.00093 0 3 0 5 0 
 create ThePEG::ParticleData B_c2(H)-
-setup B_c2(H)- -20545 B_c2(H)- 7.041 9.3E-5 0.00093 0 -3 0 5 0
+setup B_c2(H)- -20545 B_c2(H)- 7.041 9.3E-5 0.00093 0 -3 0 5 0 
 makeanti B_c2(H)- B_c2(H)+
 #
 # the 1^3D_3 multiplet
@@ -616,7 +616,7 @@ setup omega_3 227 omega_3 1.667 0.168 0.336 0 0 0 7 0
 create ThePEG::ParticleData phi_3
 setup phi_3 337 phi_3 1.854 0.087 0.435 0 0 0 7 0 
 create ThePEG::ParticleData psi_3(1D)
-setup psi_3(1D) 447 psi_3(1D) 3.84271 0.0028 0.014 0 0 0 7 0
+setup psi_3(1D) 447 psi_3(1D) 3.84271 0.0028 0.014 0 0 0 7 0 
 create ThePEG::ParticleData Upsilon_3(1D)
 setup Upsilon_3(1D) 557 Upsilon_3(1D) 10.1651 2.55E-5 0.000255 0 0 0 7 0 
 create ThePEG::ParticleData K_3*+
@@ -645,9 +645,9 @@ create ThePEG::ParticleData D_s3*(2860)-
 setup D_s3*(2860)- -437 D_s3*(2860)- 2.8605 0.053 0.159 0 -3 0 7 0 
 makeanti D_s3*(2860)- D_s3*(2860)+
 create ThePEG::ParticleData B_c3(1D)*+
-setup B_c3(1D)*+  547 B_c3(1D)*+ 7.045 8.23E-5 0.000823 0  3 0 7 0
+setup B_c3(1D)*+ 547 B_c3(1D)*+ 7.045 8.23E-5 0.000823 0 3 0 7 0 
 create ThePEG::ParticleData B_c3(1D)*-
-setup B_c3(1D)*- -547 B_c3(1D)*- 7.045 8.23E-5 0.000823 0 -3 0 7 0
+setup B_c3(1D)*- -547 B_c3(1D)*- 7.045 8.23E-5 0.000823 0 -3 0 7 0 
 makeanti B_c3(1D)*- B_c3(1D)*+
 #
 # the 1^3F_4 multiplet
@@ -698,9 +698,9 @@ create ThePEG::ParticleData D_s0(2590)-
 setup D_s0(2590)- -100431 D_s0(2590)- 2.591 0.089 0.267 0 -3 0 1 0 
 makeanti D_s0(2590)- D_s0(2590)+
 create ThePEG::ParticleData B_c(2S)+
-setup B_c(2S)+ 100541 B_c(2S)+ 6.8712 6.5E-5 0.00065 0  3 0 1 0
+setup B_c(2S)+ 100541 B_c(2S)+ 6.8712 6.5E-5 0.00065 0 3 0 1 0 
 create ThePEG::ParticleData B_c(2S)-
-setup B_c(2S)- -100541 B_c(2S)- 6.8712 6.5E-5 0.00065 0 -3 0 1 0
+setup B_c(2S)- -100541 B_c(2S)- 6.8712 6.5E-5 0.00065 0 -3 0 1 0 
 makeanti B_c(2S)- B_c(2S)+
 #
 # the 2^3S_1 multiplet
@@ -748,9 +748,9 @@ create ThePEG::ParticleData D_s1*(2700)-
 setup D_s1*(2700)- -100433 D_s1*(2700)- 2.714 0.122 0.244 0 -3 0 3 0 
 makeanti D_s1*(2700)- D_s1*(2700)+
 create ThePEG::ParticleData B_c(2S)*+
-setup B_c(2S)*+  100543 B_c(2S)*+ 6.8752 7.2E-5 0.00072 0  3 0 3 0
+setup B_c(2S)*+ 100543 B_c(2S)*+ 6.8752 7.2E-5 0.00072 0 3 0 3 0 
 create ThePEG::ParticleData B_c(2S)*-
-setup B_c(2S)*- -100543 B_c(2S)*- 6.8752 7.2E-5 0.00072 0 -3 0 3 0
+setup B_c(2S)*- -100543 B_c(2S)*- 6.8752 7.2E-5 0.00072 0 -3 0 3 0 
 makeanti B_c(2S)*- B_c(2S)*+
 #
 # the 2^1P_1 multiplet

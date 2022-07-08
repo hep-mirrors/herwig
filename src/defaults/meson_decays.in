@@ -1367,18 +1367,18 @@ decaymode D_s1*(2860)-->D*-,Kbar0; 0.25781 1 /Herwig/Decays/CharmMeson
 decaymode D_s1*(2860)-->Dbar0,K-; 0.241382 1 /Herwig/Decays/CharmMeson
 decaymode D_s1*(2860)-->D-,Kbar0; 0.234809 1 /Herwig/Decays/CharmMeson
 #
-decaymode B_c(1D)*+->B*_c0+,gamma;  0.588 1 /Herwig/Decays/VVSDecayer
-decaymode B_c(1D)*+->B'_c1+,gamma;  0.299 1 /Herwig/Decays/AVV
-decaymode B_c(1D)*+->B_c1+,gamma;   0.047 1 /Herwig/Decays/AVV
+decaymode B_c(1D)*+->B*_c0+,gamma; 0.588 1 /Herwig/Decays/VVSDecayer
+decaymode B_c(1D)*+->B'_c1+,gamma; 0.299 1 /Herwig/Decays/AVV
+decaymode B_c(1D)*+->B_c1+,gamma; 0.047 1 /Herwig/Decays/AVV
 decaymode B_c(1D)*+->B_c*+,pi+,pi-; 0.031 1 /Herwig/Decays/DecayME0
-decaymode B_c(1D)*+->B_c2+,gamma;   0.019 1 /Herwig/Decays/VTV
+decaymode B_c(1D)*+->B_c2+,gamma; 0.019 1 /Herwig/Decays/VTV
 decaymode B_c(1D)*+->B_c*+,pi0,pi0; 0.016 1 /Herwig/Decays/DecayME0
 #
-decaymode B_c(1D)*-->B*_c0-,gamma;  0.588 1 /Herwig/Decays/VVSDecayer
-decaymode B_c(1D)*-->B'_c1-,gamma;  0.299 1 /Herwig/Decays/AVV
-decaymode B_c(1D)*-->B_c1-,gamma;   0.047 1 /Herwig/Decays/AVV
+decaymode B_c(1D)*-->B*_c0-,gamma; 0.588 1 /Herwig/Decays/VVSDecayer
+decaymode B_c(1D)*-->B'_c1-,gamma; 0.299 1 /Herwig/Decays/AVV
+decaymode B_c(1D)*-->B_c1-,gamma; 0.047 1 /Herwig/Decays/AVV
 decaymode B_c(1D)*-->B_c*-,pi+,pi-; 0.031 1 /Herwig/Decays/DecayME0
-decaymode B_c(1D)*-->B_c2-,gamma;   0.019 1 /Herwig/Decays/VTV
+decaymode B_c(1D)*-->B_c2-,gamma; 0.019 1 /Herwig/Decays/VTV
 decaymode B_c(1D)*-->B_c*-,pi0,pi0; 0.016 1 /Herwig/Decays/DecayME0
 #
 # the 1^3D_2 multiplet
@@ -1438,21 +1438,21 @@ decaymode D_s2(2850)+->D*+,K0; 0.482516 1 /Herwig/Decays/CharmMeson
 decaymode D_s2(2850)-->D*bar0,K-; 0.517484 1 /Herwig/Decays/CharmMeson
 decaymode D_s2(2850)-->D*-,Kbar0; 0.482516 1 /Herwig/Decays/CharmMeson
 #
-decaymode B_c2(H)+->B'_c1+,gamma;  0.689 1 /Herwig/Decays/TVV
-decaymode B_c2(H)+->B_c1+,gamma;   0.161 1 /Herwig/Decays/TVV
-decaymode B_c2(H)+->B_c2+,gamma;   0.103 1 /Herwig/Decays/PTTV
-decaymode B_c2(H)+->B_c+,pi+,pi-;  0.016 1 /Herwig/Decays/DecayME0
+decaymode B_c2(H)+->B'_c1+,gamma; 0.689 1 /Herwig/Decays/TVV
+decaymode B_c2(H)+->B_c1+,gamma; 0.161 1 /Herwig/Decays/TVV
+decaymode B_c2(H)+->B_c2+,gamma; 0.103 1 /Herwig/Decays/PTTV
+decaymode B_c2(H)+->B_c+,pi+,pi-; 0.016 1 /Herwig/Decays/DecayME0
 decaymode B_c2(H)+->B_c*+,pi+,pi-; 0.015 1 /Herwig/Decays/DecayME0
-decaymode B_c2(H)+->B_c+,pi0,pi0;  0.008 1 /Herwig/Decays/DecayME0
+decaymode B_c2(H)+->B_c+,pi0,pi0; 0.008 1 /Herwig/Decays/DecayME0
 decaymode B_c2(H)+->B_c*+,pi0,pi0; 0.008 1 /Herwig/Decays/DecayME0
 #
-decaymode B_c2(H)-->B'_c1-,gamma;  0.689 1 /Herwig/Decays/TVV
-decaymode B_c2(H)-->B_c1-,gamma;   0.161 1 /Herwig/Decays/TVV
-decaymode B_c2(H)-->B_c2-,gamma;   0.103 1 /Herwig/Decays/PTTV
-decaymode B_c2(H)-->B_c-,pi+,pi-;  0.016 1 /Herwig/Decays/DecayME0
+decaymode B_c2(H)-->B'_c1-,gamma; 0.689 1 /Herwig/Decays/TVV
+decaymode B_c2(H)-->B_c1-,gamma; 0.161 1 /Herwig/Decays/TVV
+decaymode B_c2(H)-->B_c2-,gamma; 0.103 1 /Herwig/Decays/PTTV
+decaymode B_c2(H)-->B_c-,pi+,pi-; 0.016 1 /Herwig/Decays/DecayME0
 decaymode B_c2(H)-->B_c*-,pi+,pi-; 0.015 1 /Herwig/Decays/DecayME0
 decaymode B_c2(H)-->B_c*-,pi0,pi0; 0.008 1 /Herwig/Decays/DecayME0
-decaymode B_c2(H)-->B_c-,pi0,pi0;  0.008 1 /Herwig/Decays/DecayME0
+decaymode B_c2(H)-->B_c-,pi0,pi0; 0.008 1 /Herwig/Decays/DecayME0
 #
 # the 1^3D_3 multiplet
 #
@@ -1571,11 +1571,11 @@ decaymode D_s3*(2860)-->D-,Kbar0; 0.350777 1 /Herwig/Decays/CharmMeson
 decaymode D_s3*(2860)-->D*bar0,K-; 0.143907 1 /Herwig/Decays/CharmMeson
 decaymode D_s3*(2860)-->D*-,Kbar0; 0.134876 1 /Herwig/Decays/CharmMeson
 #
-decaymode B_c3(1D)*+->B_c2+,gamma;   0.948 1 /Herwig/Decays/Spin3TV
+decaymode B_c3(1D)*+->B_c2+,gamma; 0.948 1 /Herwig/Decays/Spin3TV
 decaymode B_c3(1D)*+->B_c*+,pi+,pi-; 0.035 1 /Herwig/Decays/DecayME0
 decaymode B_c3(1D)*+->B_c*+,pi0,pi0; 0.017 1 /Herwig/Decays/DecayME0
 #
-decaymode B_c3(1D)*-->B_c2-,gamma;   0.948 1 /Herwig/Decays/Spin3TV
+decaymode B_c3(1D)*-->B_c2-,gamma; 0.948 1 /Herwig/Decays/Spin3TV
 decaymode B_c3(1D)*-->B_c*-,pi+,pi-; 0.035 1 /Herwig/Decays/DecayME0
 decaymode B_c3(1D)*-->B_c*-,pi0,pi0; 0.017 1 /Herwig/Decays/DecayME0
 #
@@ -1661,15 +1661,15 @@ decaymode D_s0(2590)-->D*-,Kbar0; 0.468545 1 /Herwig/Decays/CharmMeson
 #
 decaymode B_c(2S)+->B_c+,pi+,pi-; 0.587 1 /Herwig/Decays/DecayME0
 decaymode B_c(2S)+->B_c+,pi0,pi0; 0.294 1 /Herwig/Decays/DecayME0
-decaymode B_c(2S)+->B_c1+,gamma;  0.094 1 /Herwig/Decays/SVV
+decaymode B_c(2S)+->B_c1+,gamma; 0.094 1 /Herwig/Decays/SVV
 decaymode B_c(2S)+->B'_c1+,gamma; 0.02 1 /Herwig/Decays/SVV
-decaymode B_c(2S)+->B_c*+,gamma;  0.005 1 /Herwig/Decays/PVV
+decaymode B_c(2S)+->B_c*+,gamma; 0.005 1 /Herwig/Decays/PVV
 #
 decaymode B_c(2S)-->B_c-,pi+,pi-; 0.587 1 /Herwig/Decays/DecayME0
 decaymode B_c(2S)-->B_c-,pi0,pi0; 0.294 1 /Herwig/Decays/DecayME0
-decaymode B_c(2S)-->B_c1-,gamma;  0.094 1 /Herwig/Decays/SVV
+decaymode B_c(2S)-->B_c1-,gamma; 0.094 1 /Herwig/Decays/SVV
 decaymode B_c(2S)-->B'_c1-,gamma; 0.02 1 /Herwig/Decays/SVV
-decaymode B_c(2S)-->B_c*-,gamma;  0.005 1 /Herwig/Decays/PVV
+decaymode B_c(2S)-->B_c*-,gamma; 0.005 1 /Herwig/Decays/PVV
 #
 # the 2^3S_1 multiplet
 #
@@ -1906,19 +1906,19 @@ decaymode D_s1*(2700)-->D*-,Kbar0; 0.234107 1 /Herwig/Decays/CharmMeson
 #
 decaymode B_c(2S)*+->B_c*+,pi+,pi-; 0.531 1 /Herwig/Decays/DecayME0
 decaymode B_c(2S)*+->B_c*+,pi0,pi0; 0.265 1 /Herwig/Decays/DecayME0
-decaymode B_c(2S)*+->B_c2+,gamma;   0.08 1 /Herwig/Decays/VTV
-decaymode B_c(2S)*+->B'_c1+,gamma;  0.066 1 /Herwig/Decays/AVV
-decaymode B_c(2S)*+->B*_c0+,gamma;  0.04 1 /Herwig/Decays/VVSDecayer
-decaymode B_c(2S)*+->B_c1+,gamma;   0.01 1 /Herwig/Decays/AVV
-decaymode B_c(2S)*+->B_c+,gamma;    0.008 1 /Herwig/Decays/VectorVP
+decaymode B_c(2S)*+->B_c2+,gamma; 0.08 1 /Herwig/Decays/VTV
+decaymode B_c(2S)*+->B'_c1+,gamma; 0.066 1 /Herwig/Decays/AVV
+decaymode B_c(2S)*+->B*_c0+,gamma; 0.04 1 /Herwig/Decays/VVSDecayer
+decaymode B_c(2S)*+->B_c1+,gamma; 0.01 1 /Herwig/Decays/AVV
+decaymode B_c(2S)*+->B_c+,gamma; 0.008 1 /Herwig/Decays/VectorVP
 #
 decaymode B_c(2S)*-->B_c*-,pi+,pi-; 0.531 1 /Herwig/Decays/DecayME0
 decaymode B_c(2S)*-->B_c*-,pi0,pi0; 0.265 1 /Herwig/Decays/DecayME0
-decaymode B_c(2S)*-->B_c2-,gamma;   0.08 1 /Herwig/Decays/VTV
-decaymode B_c(2S)*-->B'_c1-,gamma;  0.066 1 /Herwig/Decays/AVV
-decaymode B_c(2S)*-->B*_c0-,gamma;  0.04 1 /Herwig/Decays/VVSDecayer
-decaymode B_c(2S)*-->B_c1-,gamma;   0.01 1 /Herwig/Decays/AVV
-decaymode B_c(2S)*-->B_c-,gamma;    0.008 1 /Herwig/Decays/VectorVP
+decaymode B_c(2S)*-->B_c2-,gamma; 0.08 1 /Herwig/Decays/VTV
+decaymode B_c(2S)*-->B'_c1-,gamma; 0.066 1 /Herwig/Decays/AVV
+decaymode B_c(2S)*-->B*_c0-,gamma; 0.04 1 /Herwig/Decays/VVSDecayer
+decaymode B_c(2S)*-->B_c1-,gamma; 0.01 1 /Herwig/Decays/AVV
+decaymode B_c(2S)*-->B_c-,gamma; 0.008 1 /Herwig/Decays/VectorVP
 #
 # the 2^1P_1 multiplet
 #

@@ -122,16 +122,16 @@ makeanti Deltabar- Delta+
 newdef Deltabar-:WidthLoCut 0.15
 newdef Deltabar-:WidthUpCut 0.585
 create ThePEG::ParticleData Delta++
-setup Delta++ 2224 Delta++ 1.232 0.117 0.3675 0 6 0 4 0
+setup Delta++ 2224 Delta++ 1.232 0.117 0.3675 0 6 0 4 0 
 newdef Delta++:WidthLoCut 0.15
 newdef Delta++:WidthUpCut 0.585
 create ThePEG::ParticleData Deltabar--
-setup Deltabar-- -2224 Deltabar-- 1.232 0.117 0.3675 0 -6 0 4 0
+setup Deltabar-- -2224 Deltabar-- 1.232 0.117 0.3675 0 -6 0 4 0 
 makeanti Deltabar-- Delta++
 newdef Deltabar--:WidthLoCut 0.15
 newdef Deltabar--:WidthUpCut 0.585
 create ThePEG::ParticleData Sigma*-
-setup Sigma*- 3114 Sigma*- 1.3872 0.0394 0.12 0 -3 0 4 0
+setup Sigma*- 3114 Sigma*- 1.3872 0.0394 0.12 0 -3 0 4 0 
 newdef Sigma*-:VariableRatio 1
 create ThePEG::ParticleData Sigma*bar+
 setup Sigma*bar+ -3114 Sigma*bar+ 1.3872 0.0394 0.12 0 3 0 4 0 
@@ -205,17 +205,17 @@ create ThePEG::ParticleData Omega_c*bar0
 setup Omega_c*bar0 -4334 Omega_c*bar0 2.7659 4.0E-5 0.0004 0 0 0 4 0 
 makeanti Omega_c*bar0 Omega_c*0
 create ThePEG::ParticleData Xi_cc*+
-setup Xi_cc*+ 4414 Xi_cc*+ 3.727 2.879E-5 0 0 3 0 4 0
+setup Xi_cc*+ 4414 Xi_cc*+ 3.727 2.879E-5 0 0 3 0 4 0 
 create ThePEG::ParticleData Xibar_cc*-
-setup Xibar_cc*- -4414 Xibar_cc*- 3.727 2.879E-5 0 0 -3 0 4 0
+setup Xibar_cc*- -4414 Xibar_cc*- 3.727 2.879E-5 0 0 -3 0 4 0 
 makeanti Xibar_cc*- Xi_cc*+
 create ThePEG::ParticleData Xi_cc*++
-setup Xi_cc*++ 4424 Xi_cc*++ 3.727 2.346E-5 0 0 6 0 4 0
+setup Xi_cc*++ 4424 Xi_cc*++ 3.727 2.346E-5 0 0 6 0 4 0 
 create ThePEG::ParticleData Xibar_cc*--
-setup Xibar_cc*-- -4424 Xibar_cc*-- 3.727 2.346E-5 0 0 -6 0 4 0
+setup Xibar_cc*-- -4424 Xibar_cc*-- 3.727 2.346E-5 0 0 -6 0 4 0 
 makeanti Xibar_cc*-- Xi_cc*++
 create ThePEG::ParticleData Omega_cc*+
-setup Omega_cc*+ 4434 Omega_cc*+ 3.872 2.11E-6 0 0 3 0 4 0
+setup Omega_cc*+ 4434 Omega_cc*+ 3.872 2.11E-6 0 0 3 0 4 0 
 create ThePEG::ParticleData Omegabar_cc*-
 setup Omegabar_cc*- -4434 Omegabar_cc*- 3.872 2.11E-6 0 0 -3 0 4 0 
 makeanti Omegabar_cc*- Omega_cc*+
@@ -250,29 +250,29 @@ create ThePEG::ParticleData Omega_b*bar+
 setup Omega_b*bar+ -5334 Omega_b*bar+ 6.10584 5.0E-6 5.0E-5 0 3 0 4 0 
 makeanti Omega_b*bar+ Omega_b*-
 create ThePEG::ParticleData Xi_bb*-
-setup Xi_bb*- 5514 Xi_bb*- 10.237 5.87E-8 0 0 -3 0 4 0
+setup Xi_bb*- 5514 Xi_bb*- 10.237 5.87E-8 0 0 -3 0 4 0 
 create ThePEG::ParticleData Xibar_bb*+
-setup Xibar_bb*+ -5514 Xibar_bb*+ 10.237 5.87E-8 0 0 3 0 4 0
+setup Xibar_bb*+ -5514 Xibar_bb*+ 10.237 5.87E-8 0 0 3 0 4 0 
 makeanti Xibar_bb*+ Xi_bb*-
 create ThePEG::ParticleData Xi_bb*0
-setup Xi_bb*0 5524 Xi_bb*0 10.237 3.1E-7 0 0 0 0 4 0
+setup Xi_bb*0 5524 Xi_bb*0 10.237 3.1E-7 0 0 0 0 4 0 
 create ThePEG::ParticleData Xibar_bb*0
-setup Xibar_bb*0 -5524 Xibar_bb*0 10.237 3.1E-7 0 0 0 0 4 0
+setup Xibar_bb*0 -5524 Xibar_bb*0 10.237 3.1E-7 0 0 0 0 4 0 
 makeanti Xibar_bb*0 Xi_bb*0
 create ThePEG::ParticleData Omega_bb*-
-setup Omega_bb*- 5534 Omega_bb*- 10.389 2.26E-8 0 0 -3 0 4 0
+setup Omega_bb*- 5534 Omega_bb*- 10.389 2.26E-8 0 0 -3 0 4 0 
 create ThePEG::ParticleData Omegabar_bb*+
-setup Omegabar_bb*+ -5534 Omegabar_bb*+ 10.389 2.26E-8  0 0 3 0 4 0 
+setup Omegabar_bb*+ -5534 Omegabar_bb*+ 10.389 2.26E-8 0 0 3 0 4 0 
 makeanti Omegabar_bb*+ Omega_bb*-
 create ThePEG::ParticleData Xi_bc*0
-setup Xi_bc*0 5414 Xi_bc*0 6.98 2.4E-7 0 0 0 0 4 0
+setup Xi_bc*0 5414 Xi_bc*0 6.98 2.4E-7 0 0 0 0 4 0 
 create ThePEG::ParticleData Xibar_bc*0
-setup Xibar_bc*0 -5414 Xibar_bc*0 6.98 2.4E-7 0 0 0 0 4 0
+setup Xibar_bc*0 -5414 Xibar_bc*0 6.98 2.4E-7 0 0 0 0 4 0 
 makeanti Xibar_bc*0 Xi_bc*0
 create ThePEG::ParticleData Xi_bc*+
-setup Xi_bc*+ 5424 Xi_bc*+ 6.98 4.9E-7 0 0 3 0 4 0
+setup Xi_bc*+ 5424 Xi_bc*+ 6.98 4.9E-7 0 0 3 0 4 0 
 create ThePEG::ParticleData Xibar_bc*-
-setup Xibar_bc*- -5424 Xibar_bc*- 6.98 4.9E-7 0 0 -3 0 4 0
+setup Xibar_bc*- -5424 Xibar_bc*- 6.98 4.9E-7 0 0 -3 0 4 0 
 makeanti Xibar_bc*- Xi_bc*+
 create ThePEG::ParticleData Omega_bc*0
 setup Omega_bc*0 5434 Omega_bc*0 7.13 1.2E-7 0 0 0 0 4 0 
@@ -367,8 +367,8 @@ setup Omega_c0 4332 Omega_c0 2.6952 2.466586875E-12 0 0.08 0 0 2 0
 create ThePEG::ParticleData Omega_cbar0
 setup Omega_cbar0 -4332 Omega_cbar0 2.6952 2.466586875E-12 0 0.08 0 0 2 0 
 makeanti Omega_cbar0 Omega_c0
-create ThePEG::ParticleData Xi_cc+ 
-setup Xi_cc+ 4412 Xi_cc+ 3.62155 4.7016190135811E-12 0 0.04197 3 0 2 0
+create ThePEG::ParticleData Xi_cc+
+setup Xi_cc+ 4412 Xi_cc+ 3.62155 4.7016190135811E-12 0 0.04197 3 0 2 0 
 create ThePEG::ParticleData Xibar_cc-
 setup Xibar_cc- -4412 Xibar_cc- 3.62155 4.7016190135811E-12 0 0.04197 -3 0 2 0 
 makeanti Xibar_cc- Xi_cc+
@@ -376,11 +376,11 @@ create ThePEG::ParticleData Xi_cc++
 setup Xi_cc++ 4422 Xi_cc++ 3.62155 2.5710351791531E-12 0 0.07675 6 0 2 0 
 create ThePEG::ParticleData Xibar_cc--
 setup Xibar_cc-- -4422 Xibar_cc-- 3.62155 2.5710351791531E-12 0 0.07675 -6 0 2 0 
-makeanti Xibar_cc-- Xi_cc++ 
+makeanti Xibar_cc-- Xi_cc++
 create ThePEG::ParticleData Omega_cc+
 setup Omega_cc+ 4432 Omega_cc+ 3.778 3.6569116011861E-12 0 0.05396 3 0 2 0 
 create ThePEG::ParticleData Omegabar_cc-
-setup Omegabar_cc- -4432 Omegabar_cc- 3.778 3.6569116011861E-12 0 0.05396 -3 0 2 0
+setup Omegabar_cc- -4432 Omegabar_cc- 3.778 3.6569116011861E-12 0 0.05396 -3 0 2 0 
 makeanti Omegabar_cc- Omega_cc+
 create ThePEG::ParticleData Lambda_b0
 setup Lambda_b0 5122 Lambda_b0 5.6196 4.4745340136054E-13 0 0.441 0 0 2 0 
@@ -428,49 +428,49 @@ create ThePEG::ParticleData Omega_bbar+
 setup Omega_bbar+ -5332 Omega_bbar+ 6.0461 4.0107103658537E-13 0 0.492 3 0 2 0 
 makeanti Omega_bbar+ Omega_b-
 create ThePEG::ParticleData Xi_bb-
-setup Xi_bb- 5512 Xi_bb- 10.202 1.2418310258024E-12 0 0.1589 -3 0 2 0
+setup Xi_bb- 5512 Xi_bb- 10.202 1.2418310258024E-12 0 0.1589 -3 0 2 0 
 create ThePEG::ParticleData Xibar_bb+
-setup Xibar_bb+ -5512 Xibar_bb+ 10.202 1.2418310258024E-12 0 0.1589 3 0 2 0
+setup Xibar_bb+ -5512 Xibar_bb+ 10.202 1.2418310258024E-12 0 0.1589 3 0 2 0 
 makeanti Xibar_bb+ Xi_bb-
 create ThePEG::ParticleData Xi_bb0
 setup Xi_bb0 5522 Xi_bb0 10.202 1.2657277100706E-12 0 0.1559 0 0 2 0 
 create ThePEG::ParticleData Xibar_bb0
-setup Xibar_bb0 -5522 Xibar_bb0 10.202 1.2657277100706E-12 0 0.1559 0 0 2 0
+setup Xibar_bb0 -5522 Xibar_bb0 10.202 1.2657277100706E-12 0 0.1559 0 0 2 0 
 makeanti Xibar_bb0 Xi_bb0
 create ThePEG::ParticleData Omega_bb-
-setup Omega_bb- 5532 Omega_bb- 10.359 1.2418310258024E-12 0 0.1589 -3 0 2 0
+setup Omega_bb- 5532 Omega_bb- 10.359 1.2418310258024E-12 0 0.1589 -3 0 2 0 
 create ThePEG::ParticleData Omegabar_bb+
 setup Omegabar_bb+ -5532 Omegabar_bb+ 10.359 1.2418310258024E-12 0 0.1589 3 0 2 0 
 makeanti Omegabar_bb+ Omega_bb-
-create ThePEG::ParticleData Xi_bc0 
-setup Xi_bc0 5142 Xi_bc0 6.933 2.9920689916603E-12 0 0.06595 0 0 2 0
+create ThePEG::ParticleData Xi_bc0
+setup Xi_bc0 5142 Xi_bc0 6.933 2.9920689916603E-12 0 0.06595 0 0 2 0 
 create ThePEG::ParticleData Xibar_bc0
-setup Xibar_bc0 -5142 Xibar_bc0 6.933 2.9920689916603E-12 0 0.06595 0 0 2 0
+setup Xibar_bc0 -5142 Xibar_bc0 6.933 2.9920689916603E-12 0 0.06595 0 0 2 0 
 makeanti Xibar_bc0 Xi_bc0
 create ThePEG::ParticleData Xi_bc+
-setup Xi_bc+ 5242 Xi_bc+ 6.933 2.7425566365532E-12 0 0.07195 3 0 2 0
+setup Xi_bc+ 5242 Xi_bc+ 6.933 2.7425566365532E-12 0 0.07195 3 0 2 0 
 create ThePEG::ParticleData Xibar_bc-
-setup Xibar_bc- -5242 Xibar_bc- 6.933 2.7425566365532E-12 0 0.07195 -3 0 2 0
+setup Xibar_bc- -5242 Xibar_bc- 6.933 2.7425566365532E-12 0 0.07195 -3 0 2 0 
 makeanti Xibar_bc- Xi_bc+
-create ThePEG::ParticleData Xi_bc'0 
-setup Xi_bc'0 5412 Xi_bc'0 6.963 1.56E-8 0 0 0 0 2 0
+create ThePEG::ParticleData Xi_bc'0
+setup Xi_bc'0 5412 Xi_bc'0 6.963 1.56E-8 0 0 0 0 2 0 
 create ThePEG::ParticleData Xibar_bc'0
-setup Xibar_bc'0 -5412 Xibar_bc'0 6.963 1.56E-8 0 0 0 0 2 0
+setup Xibar_bc'0 -5412 Xibar_bc'0 6.963 1.56E-8 0 0 0 0 2 0 
 makeanti Xibar_bc'0 Xi_bc'0
 create ThePEG::ParticleData Xi_bc'+
-setup Xi_bc'+ 5422 Xi_bc'+ 6.963 1.56E-8 0 0 3 0 2 0
+setup Xi_bc'+ 5422 Xi_bc'+ 6.963 1.56E-8 0 0 3 0 2 0 
 create ThePEG::ParticleData Xibar_bc'-
-setup Xibar_bc'- -5422 Xibar_bc'- 6.963 1.56E-8 0 0 -3 0 2 0
+setup Xibar_bc'- -5422 Xibar_bc'- 6.963 1.56E-8 0 0 -3 0 2 0 
 makeanti Xibar_bc'- Xi_bc'+
 create ThePEG::ParticleData Omega_bc0
-setup Omega_bc0 5342 Omega_bc0 7.088 3.6569116011861E-12 0 0.05396 0 0 2 0
+setup Omega_bc0 5342 Omega_bc0 7.088 3.6569116011861E-12 0 0.05396 0 0 2 0 
 create ThePEG::ParticleData Omegabar_bc0
-setup Omegabar_bc0 -5342 Omegabar_bc0 7.088 3.6569116011861E-12 0 0.05396 0 0 2 0
+setup Omegabar_bc0 -5342 Omegabar_bc0 7.088 3.6569116011861E-12 0 0.05396 0 0 2 0 
 makeanti Omegabar_bc0 Omega_bc0
 create ThePEG::ParticleData Omega_bc'0
-setup Omega_bc'0 5432 Omega_bc'0 7.116 1.26E-8 0 0 0 0 2 0
+setup Omega_bc'0 5432 Omega_bc'0 7.116 1.26E-8 0 0 0 0 2 0 
 create ThePEG::ParticleData Omegabar_bc'0
-setup Omegabar_bc'0 -5432 Omegabar_bc'0 7.116 1.26E-8 0 0 0 0 2 0
+setup Omegabar_bc'0 -5432 Omegabar_bc'0 7.116 1.26E-8 0 0 0 0 2 0 
 makeanti Omegabar_bc'0 Omega_bc'0
 #
 # the (56,0^+_2)  40 multiplet

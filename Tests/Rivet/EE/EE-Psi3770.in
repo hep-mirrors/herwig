@@ -74,3 +74,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I654030
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E691_1992_I342947
 # Dalitz plot analysis of $D\to K\pi\pi$ decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKIII_1987_I247266
+# D0 -> pi- semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
+# D0 -> pi-, K- semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
+# D+ -> K0,pi0 semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
+# D0 -> K- semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371

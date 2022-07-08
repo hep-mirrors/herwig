@@ -1,0 +1,22 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.2897*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.2897*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.5792
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+decaymode Upsilon(4S)->eta_c,eta_c; 1. 1 /Herwig/Decays/DecayME0
+do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->eta_c,eta_c;
+# BES multiplicty in eta_c decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
+# eta_c -> K+K-eta and eta_c -> K+K-pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1287632
+# eta_c -> K0_SK+- pi-+ and eta_c -> K+K-pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1403544
+#  eta_c -> K+K-eta', pi+pi-eta and pi+pi-eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2021_I1867843
