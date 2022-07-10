@@ -88,3 +88,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 # BES-III D+ -> eta semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
+# D+ -> KS0 pi+pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1714778
+# D0 -> pi0 eta eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662665
+# D0 -> K- pi+ pi0 pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1725265
