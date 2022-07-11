@@ -16,9 +16,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1113599
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
 # J/Psi -> xi0 and Sigma*0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
+# J/psi -> xi- xi+bar correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1864775
 # J/psi-> lambda anti-lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1691850
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2099126
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2071715
 # J/psi-> lambda anti-Sigma0 +cc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1121378
 # J/Psi -> xi*- xibar+
