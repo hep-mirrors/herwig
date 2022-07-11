@@ -118,7 +118,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
      << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_
-     << spinOpt_ << useConstituentMasses_;
+     << spinOpt_ << useConstituentMasses_ << tagIntermediates_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -132,7 +132,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
      >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_
-     >> spinOpt_ >> useConstituentMasses_;
+     >> spinOpt_ >> useConstituentMasses_ >> tagIntermediates_;
 }
 
 void ShowerHandler::Init() {
@@ -365,6 +365,12 @@ void ShowerHandler::Init() {
    "Don't use constituent masses.",
    false);
 
+  static Parameter<ShowerHandler,int> interfaceTagIntermediates
+    ("TagIntermediates",
+     "Tag particles after shower with the given status code; if zero, no tagging will be performed.",
+     &ShowerHandler::tagIntermediates_, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
 }
 
 Energy ShowerHandler::hardScale() const {
@@ -428,6 +434,15 @@ void ShowerHandler::cascade() {
                       << Exception::eventerror;
   }
   if(showerHardProcessVeto()) throw Veto();
+  // tag particles as after shower
+  if ( tagIntermediates_ > 0 ) {
+    ParticleSet original = newStep()->particles();
+    for ( auto p : original ) {
+      //if ( !p->data().coloured() ) continue;
+      newStep()->copyParticle(p);
+      p->status(tagIntermediates_);
+    }
+  }
   // if a non-hadron collision return (both incoming non-hadronic)
   if( ( !incomingBins.first||
         !isResolvedHadron(incomingBins.first ->particle()))&&
