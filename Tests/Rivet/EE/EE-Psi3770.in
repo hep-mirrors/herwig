@@ -22,57 +22,57 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I779705
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_D0
 # D+ inclusive 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DPLUS
-# Dalitz plot analysis of $D^0\to K^0_S\pi^+\pi^-$
+# Dalitz plot analysis of D0 -> K0_S pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2003_I633196
-# Dalitz decay of $D^0\to K^0_S\pi^0\eta$
+# Dalitz decay of D0 -> K0S pi0 eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I649917
-# Dalitz plot analysis of $D^0\to \pi^+\pi^-\pi^0$
+# Dalitz plot analysis of D0 -> pi+ pi- pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I679349
-# Dalitz plot analysis of $D^+\to K^+K^-\pi^+$
+# Dalitz plot analysis of D+ -> K+ K- pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2008_I791716
-# Dalitz plot analysis of $D^0\to K^0_SK^\pm\pi^\mp$
+# Dalitz plot analysis of D0 -> K0S K+- pi-+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2012_I1094160
-# Dalitz plot analysis of $D^+\to \pi^+\pi^+\pi^-$
+# Dalitz plot analysis of D+ -> pi+ pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2007_I749602
-# Kinematic distributions in the decay $D^+\to K^-\pi^+\pi^+$
+# # Kinematic distributions in the decay D+ -> K-pi+pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I780363
-# Dalitz plot analysis of $D^0\to K_S^0\pi^0\pi^0$
+# Dalitz plot analysis of D0 -> KS0 pi0 pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I913909
-# Dalitz plot analysis of $D^+\to K^0_S\pi^+\pi^0$
+# Dalitz plot analysis of D+ -> K0_S pi+ pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2014_I1277070
-# Dalitz plot analysis of $D^0\to K^0_SK^+K^-$
+# Dalitz plot analysis of D0 -> K0_S K+ K-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1799437
-# Dalitz plot analysis of $D^+\to K^+ K^0_S\pi^0$
+# Dalitz plot analysis of D+ -> K+ K0_Spi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1859124
-# Dalitz plot analysis of $D^0\to \pi^+\pi^-\pi^0$
+# Dalitz plot analysis of D0 -> pi+ pi- pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I747154
-# Dalitz plot analysis of $D^0\to K^+K^-\pi^0$
+# Dalitz plot analysis of D0 -> K+ K- pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I749390
-# Dalitz plot analysis of $D^0\to K^0_S\pi^+\pi^-$ and  $D^0\to K^0_SK^+K^-$
+# Dalitz plot analysis of D0 -> K0S pi+ pi- and  D0 -> K0S K+ K-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I853279
-# Dalitz plot analysis of $D^0\to \pi^+\pi^-\pi^0$
+# Dalitz plot analysis of D0 -> pi+ pi- pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2016_I1441203
-# Dalitz decay of $D^0\to K^-\pi^+\eta$
+# Dalitz decay of D0 -> K-pi+eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1785816
-# Kinematic distributions in the decay $D^0\to K^-\pi^+\pi^0$
+# # Kinematic distributions in the decay D0 -> K-pi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2001_I537154
-# Dalitz plot analysis of $D^0\to K^0_SK^\pm\pi^\mp$
+# Dalitz plot analysis of D0 -> K0S K+- pi-+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1394391
-# Dalitz plot analysis of $D^+\to \pi^+\pi^+\pi^-$
+# Dalitz plot analysis of D+ -> pi+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2001_I530320
-# Dalitz plot analysis of $D^+\to K^-\pi^+\pi^+$
+# Dalitz plot analysis of D+ -> K-pi+pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2002_I585322
-# Dalitz plot analysis of $D^+\to K^-\pi^+\pi^+$
+# Dalitz plot analysis of D+ -> K-pi+pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I750701
-# Dalitz plot analysis of $D^+\to K^+K^+K^-$
+# Dalitz plot analysis of D+ -> K+K+K-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1720423
-# Dalitz plot analysis of $D_s^+$ and $D^+\to \pi^+\pi^+\pi^-$
+# Dalitz plot analysis of D_s+ and D+ -> pi+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I635446
-# Dalitz decay of $D^+$ and $D^+_s\to K^+\pi^+\pi^-$
+# Dalitz decay of D+ and D+_s -> K+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I654030
-# Dalitz plot analysis of $D\to K\pi\pi$ decays
+# Dalitz plot analysis of D -> Kpipi decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E691_1992_I342947
-# Dalitz plot analysis of $D\to K\pi\pi$ decays
+# Dalitz plot analysis of D -> Kpipi decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKIII_1987_I247266
 # D0 -> pi- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
@@ -94,3 +94,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1714778
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662665
 # D0 -> K- pi+ pi0 pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1725265
+# D0 -> K-K-K+pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I626320
+# D0 -> K+ K- pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2012_I1086166
