@@ -286,6 +286,7 @@ analyses['6m']["BABAR_2021_I1844422" ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y
                                           "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
 analyses['6m']["BESIII_2020_I1837725" ] = ["d01-x01-y01"]
 analyses["6m"]["BABAR_2021_I1938254"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01","d05-x01-y01"]
+analyses["6m"]["CMD3_2022_I2108984"] = ["d01-x01-y01","d02-x01-y01","d02-x01-y02"]
 # other baryon processes
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 analyses['Baryon']["BESIII_2021_I1845443"  ] = ["d01-x01-y01","d02-x01-y01"]
