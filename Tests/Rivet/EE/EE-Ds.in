@@ -56,3 +56,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1845444
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
 # BESIII D_s+ -> K+ K_ pi+ pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2051683
+# CLEO D_s+ -> omega pi+ pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I822856

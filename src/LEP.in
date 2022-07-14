@@ -40,7 +40,12 @@ insert SubProcess:MatrixElements 0 MEee2gZ2qq
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2qq
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2ll
 
-
+cd /Herwig/Particles
+read defaults/HerwigBDecays.in
+set /Herwig/Decays/ISGW2:Initialize 1
+set /Herwig/Decays/ISGW2:Points 10000000
+set /Herwig/Decays/PScalarlnu:Initialize 1
+set /Herwig/Decays/PScalarlnu:Points 100000
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
