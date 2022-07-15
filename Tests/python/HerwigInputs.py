@@ -173,11 +173,17 @@ def setHardProcessWidthToZero(list1):
     res+="set /Herwig/Particles/"+i+":HardProcessWidth 0.\n"
   return res
 
-def jet_kt_cut(energy):
-    return "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=energy)
+def jet_kt_cut(ktmin,ktmax=-1.):
+    output = "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=ktmin)
+    if ktmax>0 :
+        output += "set /Herwig/Cuts/JetKtCut:MaxKT {E}*GeV\n".format(E=ktmax)
+    return output
 
-def mhatmin_cut(energy):
-    return "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=energy)
+def mhat_cut(mmin,mmax=-1):
+    output = "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=mmin)
+    if mmax>0. :
+        output += "set /Herwig/Cuts/Cuts:MHatMax {E}*GeV\n".format(E=mmax)
+    return output
 
 def mhat_minm_maxm(e1,e2,e3):
     return """\
@@ -209,3 +215,49 @@ def particlegroup(factory,name,*particles):
         )
     result.append("do /Herwig/{dir}/{fact}:EndParticleGroup".format(fact=factory,dir=directory))
     return '\n'.join(result)
+
+didaddfirstjet=False
+def addFirstJet(ptcut,ptmax=""):
+    global didaddfirstjet
+    if(didaddfirstjet):
+      logging.error("Can only add jetcut once.")
+      sys.exit(1)
+  
+    res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
+    res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
+    res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+    if(ptcut!=""):
+        res+="set /Herwig/Cuts/FirstJet:PtMin %s*GeV\n" % ptcut
+    if(ptmax!=""):
+        res+="set /Herwig/Cuts/FirstJet:PtMax %s*GeV\n" % ptmax
+    didaddfirstjet=True
+    return res
+
+didaddsecondjet=False
+def addSecondJet(ptcut):
+    global didaddsecondjet
+    if(didaddsecondjet):
+      logging.error("Can only add second jetcut once.")
+      sys.exit(1)
+    res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
+    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
+    didaddsecondjet=True
+    return res
+
+didaddjetpair=False
+def addJetPairCut(minmass,maxmass=""):
+  global didaddjetpair
+  if(didaddjetpair):
+      logging.error("Can only add second jetcut once.")
+      sys.exit(1)
+  res="""\
+create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
+set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
+set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
+insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
+set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
+""".format(mm=minmass)
+  if maxmass != "" :
+      res+= "set /Herwig/Cuts/JetPairMass:MassMin %s*GeV\n" %maxmass
+  didaddjetpair=True
+  return res

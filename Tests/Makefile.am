@@ -166,7 +166,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
 	          $(shell echo Rivet/TVT-Powheg-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
-                  $(shell echo Rivet/TVT{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.in ) \
+                  $(shell echo Rivet/TVT{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-Run-{I,II}-{Jets-{1..6},DiJets-{1..4}}.in ) \
 	          $(shell echo Rivet/TVT{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.in ) \
                   $(shell echo Rivet/TVT{,-Dipole}-{Run-I,Run-II,300,630,900}-UE.in) \
                   $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-DiJets-{1..7}-{A,B,C}.in ) \

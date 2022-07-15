@@ -14,13 +14,13 @@ decaymode Upsilon(4S)->D_s+,D_s-; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->D_s+,D_s-;
 # D_s inclusive brs
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DS
-# Dalitz plot analysis of D_s+ and D^+ -> pi+pi+pi-
+# Dalitz plot analysis of D_s+ and D+ -> pi+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I635446
-# Dalitz decay of D^+ and D_s+ -> K^+pi+pi-
+# Dalitz decay of D+ and D_s+ -> K+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I654030
-# Dalitz plot analysis of D_s+ -> K^+K^-pi+
+# Dalitz plot analysis of D_s+ -> K+K-pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I878120
-# Dalitz plot analysis of D_s+ -> K^+K^-pi+
+# Dalitz plot analysis of D_s+ -> K+K-pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1830524
 # Dalitz decay of D_s+ -> K^0_Spi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1854317
@@ -32,9 +32,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1929365
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1945692
 # Dalitz decay of D_s+ ->pi+pi0eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2030993
-# Dalitz decay of D_s+ -> K^0_SK^+pi0
+# Dalitz decay of D_s+ -> K^0_SK+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2070086
-# Dalitz decay of D_s+ -> K^+pi+pi-
+# Dalitz decay of D_s+ -> K+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2084294
 # Dalitz plot analysis of D_s+ -> pi+pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2001_I530319
@@ -44,7 +44,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I792597
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724547
 # D_s+ -> pi+pi+pi-eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870322
-# D_s+ -> K^+K^-pi+pi0
+# D_s+ -> K+K-pi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1849747
 # D_s+ -> eta, eta' semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712742
