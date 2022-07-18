@@ -189,8 +189,9 @@ VectorSpinPtr createVectorSpinInfo(ShowerParticle & particle,
   bool EWGVB(abs(particle.id())==ParticleID::Wplus||particle.id()==ParticleID::Z0);
   if(EWGVB&&mass<1E-6*MeV) {
     massless = true;
-    cerr << "Warning: ignoting the longitudinal polarization of "<< particle.id()
-         << " with mass "<< mass/GeV <<".\n";
+    if(Debug::level>=1)
+      cerr << "Warning: ignoting the longitudinal polarization of "<< particle.id()
+           << " with mass "<< mass/GeV <<".\n";
   }
 
   VectorWaveFunction wave(porig,particle.dataPtr(),dir);
