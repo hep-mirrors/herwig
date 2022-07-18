@@ -99,7 +99,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I626320
 # D0 -> K+ K- pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2012_I1086166
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I663820
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1704426
 # D0 -> K+ K- pi+ pi- and 2pi+ 2pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2017_I1519168
+# D0 -> 2pi+ 2pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I741543
 # D0 -> omega phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1900094
+D -> K pi omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1940222
