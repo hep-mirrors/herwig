@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 11:39:34 on the 13/7/2022.
+# from the Herwig Particles Database at 11:56:17 on the 15/7/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -10415,26 +10415,26 @@ newdef DsPipPi0EtaBES:ResonanceMass 0
 
 
 #
-create Herwig::ScalarTo3ScalarDalitz  DsPipPi0KS0BES
-newdef DsPipPi0KS0BES:Iteration 5
-newdef DsPipPi0KS0BES:Ntry 500
-newdef DsPipPi0KS0BES:Points 100000
-newdef DsPipPi0KS0BES:GenerateIntermediates 1 
-newdef DsPipPi0KS0BES:ParentRadius 5
-newdef DsPipPi0KS0BES:UseAllK0 1
-newdef DsPipPi0KS0BES:MaximumWeight 3.08916e+10
-insert DsPipPi0KS0BES:Weights 0 0.382473
-insert DsPipPi0KS0BES:Weights 1 0.140298
-insert DsPipPi0KS0BES:Weights 2 0.165916
-insert DsPipPi0KS0BES:Weights 3 0.145034
-insert DsPipPi0KS0BES:Weights 4 0.166279
-do DsPipPi0KS0BES:AddChannel 213 23 0.77511 0.1491 0 1 2 1 0 3 0.13957061
-do DsPipPi0KS0BES:AddChannel 100213 23 1.465 0.4 0 1 2 7.84 2.2 3 0.13957061
-do DsPipPi0KS0BES:AddChannel 313 3 0.89555 0.0473 1 2 0 0.433 0.0584074 3
-do DsPipPi0KS0BES:AddChannel 323 3 0.89167 0.0514 0 2 1 0.338 -2.94159 3
-do DsPipPi0KS0BES:AddChannel 100313 3 1.414 0.232 1 2 0 1.072 -2.94159 3
-do DsPipPi0KS0BES:SetExternal 431 211 111 310
-newdef DsPipPi0KS0BES:ResonanceMass 0
+create Herwig::ScalarTo3ScalarDalitz  DsPipPi0K0BES
+newdef DsPipPi0K0BES:Iteration 5
+newdef DsPipPi0K0BES:Ntry 500
+newdef DsPipPi0K0BES:Points 100000
+newdef DsPipPi0K0BES:GenerateIntermediates 1 
+newdef DsPipPi0K0BES:ParentRadius 5
+newdef DsPipPi0K0BES:UseAllK0 1
+newdef DsPipPi0K0BES:MaximumWeight 3.08916e+10
+insert DsPipPi0K0BES:Weights 0 0.382473
+insert DsPipPi0K0BES:Weights 1 0.140298
+insert DsPipPi0K0BES:Weights 2 0.165916
+insert DsPipPi0K0BES:Weights 3 0.145034
+insert DsPipPi0K0BES:Weights 4 0.166279
+do DsPipPi0K0BES:AddChannel 213 23 0.77511 0.1491 0 1 2 1 0 3 0.13957061
+do DsPipPi0K0BES:AddChannel 100213 23 1.465 0.4 0 1 2 7.84 2.2 3 0.13957061
+do DsPipPi0K0BES:AddChannel 313 3 0.89555 0.0473 1 2 0 0.433 0.0584074 3
+do DsPipPi0K0BES:AddChannel 323 3 0.89167 0.0514 0 2 1 0.338 -2.94159 3
+do DsPipPi0K0BES:AddChannel 100313 3 1.414 0.232 1 2 0 1.072 -2.94159 3
+do DsPipPi0K0BES:SetExternal 431 211 111 311
+newdef DsPipPi0K0BES:ResonanceMass 0
 
 
 #
@@ -22021,6 +22021,43 @@ do DpKbar0PipPi0BES:AddChannel -10311 1 1.47 0.187 2 0 1 0.658 -0.366519 1.5
 do DpKbar0PipPi0BES:AddChannel -30313 3 1.717 0.27 2 0 1 2.04 -1.82736 1.5
 do DpKbar0PipPi0BES:AddChannel -9000311 51 0.75 -0.23 2 0 1 1.06 1.6057 1.5
 do DpKbar0PipPi0BES:SetExternal 411 -311 211 111
+#
+create Herwig::ScalarTo3ScalarDalitz  DsKL0KpPi0BES
+newdef DsKL0KpPi0BES:Iteration 5
+newdef DsKL0KpPi0BES:Ntry 500
+newdef DsKL0KpPi0BES:Points 100000
+newdef DsKL0KpPi0BES:GenerateIntermediates 1
+newdef DsKL0KpPi0BES:ParentRadius 5
+newdef DsKL0KpPi0BES:UseAllK0 0
+newdef DsKL0KpPi0BES:MaximumWeight 4.44668e+10
+insert DsKL0KpPi0BES:Weights 0 0.442357
+insert DsKL0KpPi0BES:Weights 1 0.324631
+insert DsKL0KpPi0BES:Weights 2 0.132282
+insert DsKL0KpPi0BES:Weights 3 0.100731
+do DsKL0KpPi0BES:AddChannel 313 3 0.89555 0.0473 0 2 1 1 0 3
+do DsKL0KpPi0BES:AddChannel 323 3 0.89167 0.0514 1 2 0 0.676 -0.16 3
+do DsKL0KpPi0BES:AddChannel 9000211 1 1.0041 0.0972 0 1 2 1.746 -0.97 3
+do DsKL0KpPi0BES:AddChannel 100313 3 1.414 0.232 0 2 1 3.567 0.17 3
+do DsKL0KpPi0BES:AddChannel 0 1 1.817 0.097 0 1 2 4.214 -2.55 3
+do DsKL0KpPi0BES:SetExternal 431 130 321 111
+newdef DsKL0KpPi0BES:ResonanceMass 0
+#
+create Herwig::ScalarTo3ScalarDalitz  DsKL0KL0PipBES
+newdef DsKL0KL0PipBES:Iteration 5
+newdef DsKL0KL0PipBES:Ntry 500
+newdef DsKL0KL0PipBES:Points 100000
+newdef DsKL0KL0PipBES:GenerateIntermediates 1 
+newdef DsKL0KL0PipBES:ParentRadius 5
+newdef DsKL0KL0PipBES:UseAllK0 0
+newdef DsKL0KL0PipBES:MaximumWeight 2.2222e+10
+insert DsKL0KL0PipBES:Weights 0 0.323694
+insert DsKL0KL0PipBES:Weights 1 0.323191
+insert DsKL0KL0PipBES:Weights 2 0.353115
+do DsKL0KL0PipBES:AddChannel 323 3 0.89167 0.0514 0 2 1 1 0 3
+do DsKL0KL0PipBES:AddChannel 323 3 0.89167 0.0514 1 2 0 1 0 3
+do DsKL0KL0PipBES:AddChannel 10331 1 1.723 0.14 0 1 2 5.65 2.3 3
+do DsKL0KL0PipBES:SetExternal 431 130 130 211
+newdef DsKL0KL0PipBES:ResonanceMass 0
 #
 create Herwig::ScalarTo3ScalarDalitz  DpKmPipPipFOCUSIsobar
 newdef DpKmPipPipFOCUSIsobar:Iteration 10
