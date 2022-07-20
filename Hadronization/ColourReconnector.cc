@@ -202,10 +202,66 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
 }
 
 namespace {
-  inline bool hasDiquark(CluVecIt cit) {
-    for(int i = 0; i<(*cit)->numComponents(); i++) {
-        if (DiquarkMatcher::Check(*((*cit)->particle(i)->dataPtr()))) 
-            return true;
+inline bool hasDiquark(CluVecIt cit) {
+  for (int i = 0; i<(*cit)->numComponents(); i++) {
+    if (DiquarkMatcher::Check(*((*cit)->particle(i)->dataPtr())))
+      return true;
+  }
+  return false;
+}
+}
+
+
+// Implementation of the baryonic reconnection algorithm
+void ColourReconnector::_doRecoBaryonic(ClusterVector & cv) const {
+
+
+  ClusterVector newcv = cv;
+
+  ClusterVector deleted;
+  deleted.reserve(cv.size());
+
+  // try to avoid systematic errors by randomising the reconnection order
+  long (*p_irnd)(long) = UseRandom::irnd;
+  random_shuffle(newcv.begin(), newcv.end(), p_irnd);
+
+  // iterate over all clusters
+  for (CluVecIt cit = newcv.begin(); cit != newcv.end(); ++cit) {
+    //avoid clusters already containing diuarks
+    if (hasDiquark(cit)) continue;
+
+    //skip the cluster to be deleted later 3->2 cluster
+    if (find(deleted.begin(), deleted.end(), *cit) != deleted.end())
+      continue;
+
+    // Skip all found baryonic clusters, this biases the algorithm but implementing
+    // something like re-reconnection is ongoing work
+    if ((*cit)->numComponents()==3) continue;
+
+    // Find a candidate suitable for reconnection
+    CluVecIt baryonic1, baryonic2;
+    bool isBaryonicCandidate = false;
+    CluVecIt candidate = _findPartnerBaryonic(cit, newcv,
+                         isBaryonicCandidate,
+                         deleted,
+                         baryonic1, baryonic2);
+
+    // skip this cluster if no possible reconnection partner can be found
+    if (!isBaryonicCandidate && candidate==cit)
+      continue;
+
+    if (isBaryonicCandidate
+        && UseRandom::rnd() < _precoBaryonic) {
+      deleted.push_back(*baryonic2);
+
+      // Function that does the reconnection from 3 -> 2 clusters
+      ClusterPtr b1, b2;
+      _makeBaryonicClusters(*cit, *baryonic1, *baryonic2, b1, b2);
+
+      *cit = b1;
+      *baryonic1 = b2;
+
+      // Baryonic2 is easily skipped in the next loop
     }
     return false;
   }
