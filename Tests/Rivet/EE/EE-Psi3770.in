@@ -36,6 +36,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 # D+ -> K0,pi0 semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
+# D+ -> omega l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1386254
 ######### Two body decays ###################
 # D0 -> omega phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1900094
