@@ -30,4 +30,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1621266
 # psi(2S) -> xi- xi+bar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2099144
-
+# psi(2S) -> gamma chi_c correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1507887
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I832707

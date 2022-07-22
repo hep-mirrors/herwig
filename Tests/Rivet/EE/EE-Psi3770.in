@@ -30,12 +30,15 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1705754
 # D -> pi pi e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1694530
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2013_I1081165
 # D0 -> pi- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 # D0 -> pi-, K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
-# D+ -> K0,pi0 semi-leptonic
+# D+ -> K0 pi0 semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
+# D+ -> K- pi+ semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1411645
 # D+ -> omega l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1386254
 ######### Two body decays ###################

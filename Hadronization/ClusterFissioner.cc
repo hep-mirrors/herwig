@@ -1088,19 +1088,24 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
   // children clusters move.
   Lorentz5Momentum u(pClu1);
   u.boost( -pClu.boostVector() );        // boost from LAB to C frame
+  
   // the unit three-vector is then  u.vect().unit()
 
   Energy pstarChild = Kinematics::pstarTwoBodyDecay(Mclu,Mclu1,Mclu2);
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
+
+  Energy2 mag2 = u.vect().mag2();
+  InvEnergy fact = mag2>ZERO ? 1./sqrt(mag2) : 1./GeV;
+  
   Length x1 = ( 0.25*Mclu + 0.5*( pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
   Length t1 = Mclu/_kappa - x1;
-  LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
+  LorentzDistance distanceClu1( x1 * fact * u.vect(), t1 );
 
   Length x2 = (-0.25*Mclu + 0.5*(-pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
   Length t2 = Mclu/_kappa + x2;
-  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
+  LorentzDistance distanceClu2( x2 * fact * u.vect(), t2 );
 
   // Then, transform such relative positions from the parent cluster
   // reference frame to the Lab frame.
