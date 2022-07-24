@@ -170,44 +170,30 @@ complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   // shouldn't have E691 stuff either
   assert(resonances()[i]->type%10!=1);
   // amplitude
-  static const Complex ii = Complex(0.,1.);
   Complex output = resonances()[i]->amp;
   if (resonances()[i]->type==ResonanceType::NonResonant) return output/GeV2;
+  // mass of the resonance
+  const Energy & mR = resonances()[i]->mass ;
   // locations of the outgoing particles
   const int &d1 = resonances()[i]->daughter1;
   const int &d2 = resonances()[i]->daughter2;
   const int &sp = resonances()[i]->spectator;
   // epsilon piece  =eps(d1,d2,sp)
   double sign = (sp-d1)*(d1-d2)*(d2-sp)/2.;
-  // mass and width of the resonance
-  const Energy & mR = resonances()[i]->mass ;
-  const Energy & wR = resonances()[i]->width;
-  // momenta for the resonance decay
-  // off-shell
-  Energy pAB=sqrt(0.25*sqr(sqr(m2_[d1][d2]) -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/m2_[d1][d2];
-  //  on-shell
-  Energy  pR=sqrt(0.25*sqr(    mR*mR        -sqr(mOut_[d1])-sqr(mOut_[d2])) - sqr(mOut_[d1]*mOut_[d2]))/mR;
+  // compute the Breit-Wigner times resonance form factor piece
+  output *= sign*resonances()[i]->BreitWigner(m2_[d1][d2],mOut_[d1],mOut_[d2]);
   // Blatt-Weisskopf factors
-  double fR=1, fD=1;
-  unsigned int power(1);
   // for the D decay
   Energy pD  = sqrt(max(ZERO,(0.25*sqr(sqr(mD_)-sqr(mR)-sqr(mOut_[sp])) - sqr(mR*mOut_[sp]))/sqr(mD_)));
   Energy pDAB= sqrt( 0.25*sqr(sqr(mD_)-sqr(m2_[d1][d2])-sqr(mOut_[sp])) - sqr(m2_[d1][d2]*mOut_[sp]))/mD_;
-  double r1A(resonances()[i]->R*pR),r1B(resonances()[i]->R*pAB );
   double r2A(parentRadius()   *pD),r2B(parentRadius()   *pDAB);
   // Blatt-Weisskopf factors and spin piece
   switch (resonances()[i]->type) {
-  case ResonanceType::Spin1:
-    fR=sqrt( (1. + sqr(r1A)) / (1. + sqr(r1B)) );
-    fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
-    power=3;
-    output *= fR*fD;
+  case ResonanceType::Spin1: case ResonanceType::Spin1GS : 
+    output *= sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
     break;
   case ResonanceType::Spin2:
-    fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
-    fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
-    power=5;
-    output *= fR*fD;
+    output *= sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
     // spin piece
     output *= (sqr(mD_) - sqr(mOut_[sp]) + sqr(m2_[d1][d2]))/(sqr(mD_)*sqr(m2_[d1][d2]))/GeV2*
 	       ((-sqr(m2_[sp][d1]) + sqr(m2_[sp][d2]))*sqr(m2_[d1][d2]) +
@@ -216,6 +202,5 @@ complex<InvEnergy2> VectorTo3PseudoScalarDalitz::resAmp(unsigned int i) const {
   default :
     assert(false);
   }
-  Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-  return sign*output/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*ii);
+  return output/GeV2;
 }
