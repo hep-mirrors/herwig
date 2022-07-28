@@ -245,7 +245,7 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
 
 namespace {
 inline bool hasDiquark(CluVecIt cit) {
-  for (int i = 0; i<(*cit)->numComponents(); i++) {
+  for (unsigned int i = 0; i<(*cit)->numComponents(); i++) {
     if (DiquarkMatcher::Check(*((*cit)->particle(i)->dataPtr())))
       return true;
   }
