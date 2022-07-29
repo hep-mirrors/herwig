@@ -461,6 +461,24 @@ private:
    */
   int _cr2BeamClusters = 0;
 
+  /**
+   *  Option for performing Plain colour reconnection before the Statistical,
+   *  Baryonic or BaryonicMesonic algorithm is performed
+   */
+  int _prePlainCR = 0;
+
+  /**
+   *  Option for colour reconnecting Clusters only if their vertex 3-distance
+   *  is less than _maxDistance
+   */
+  int _localCR = 0;
+
+  /**
+   *  Option for colour reconnecting Clusters only if their spacetime difference
+   *  is bigger than 0
+   */
+  int _causalCR = 0;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

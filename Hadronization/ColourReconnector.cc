@@ -55,12 +55,15 @@ void ColourReconnector::rearrange(ClusterVector & clusters) {
     _doRecoPlain(clusters);
     break;
   case 1:
+    if (_prePlainCR) _doRecoPlain(clusters);
     _doRecoStatistical(clusters);
     break;
   case 2:
+    if (_prePlainCR) _doRecoPlain(clusters);
     _doRecoBaryonic(clusters);
     break;
   case 3:
+    if (_prePlainCR) _doRecoPlain(clusters);
     _doRecoBaryonicMesonic(clusters);
     break;
   }
@@ -334,21 +337,19 @@ bool ColourReconnector::_clustersFarApart( const std::vector<CluVecIt> & clu ) c
   if (Ncl==1) {
     return false;
   } else if (Ncl==2) {
-    // TODO: keep turned off all until things are more clear
-    // BUG: space-time difference compared to _maxDistance
-    // if (((*clu[0])->vertex()-(*clu[1])->vertex()).m() >_maxDistance) return true;
-    // Causal selection if desired
-    // if (((*clu[0])->vertex()-(*clu[1])->vertex()).m() >ZERO) return true;
+	// veto if Clusters further apart than _maxDistance
+	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[1])->vertex().vect()).mag() > _maxDistance) return true;
+	// veto if Clusters have negative spacetime difference 
+	if (_causalCR && ((*clu[0])->vertex()-(*clu[1])->vertex()).m() < ZERO) return true;
   } else if (Ncl==3) {
-    // TODO: keep turned off all until things are more clear
-    // BUG: space-time difference compared to _maxDistance
-    // if (((*clu[0])->vertex()-(*clu[1])->vertex()).m()> _maxDistance) return true;
-    // Causal selection if desired
-    // if (((*clu[0])->vertex()-(*clu[1])->vertex()).m()> ZERO) return true;
-    // if (((*clu[1])->vertex()-(*clu[2])->vertex()).m()> _maxDistance) return true;
-    // if (((*clu[1])->vertex()-(*clu[2])->vertex()).m()> ZERO) return true;
-    // if (((*clu[0])->vertex()-(*clu[2])->vertex()).m()> _maxDistance) return true;
-    // if (((*clu[0])->vertex()-(*clu[2])->vertex()).m()> ZERO) return true;
+	// veto if Clusters further apart than _maxDistance
+	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[1])->vertex().vect()).mag() > _maxDistance) return true;
+	if (_localCR && ((*clu[1])->vertex().vect()-(*clu[2])->vertex().vect()).mag() > _maxDistance) return true;
+	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[2])->vertex().vect()).mag() > _maxDistance) return true;
+	// veto if Clusters have negative spacetime difference 
+	if (_causalCR && ((*clu[0])->vertex()-(*clu[1])->vertex()).m() < ZERO) return true;
+	if (_causalCR && ((*clu[1])->vertex()-(*clu[2])->vertex()).m() < ZERO) return true;
+	if (_causalCR && ((*clu[0])->vertex()-(*clu[2])->vertex()).m() < ZERO) return true;
   }
 
   return false;
@@ -718,11 +719,10 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
     if ( (*cl)->isBeamCluster() && (*cit)->isBeamCluster() )
       continue;
 
-    // stop it putting far apart clusters together
-    // BUG: space-time difference compared to _maxDistance
-    // if (((**cl).vertex()-(**cit).vertex()).m() >_maxDistance)
-    // Causal selection if desired
-    // if (((**cl).vertex()-(**cit).vertex()).m() >ZERO) continue;
+	// veto if Clusters further apart than _maxDistance
+	if (_localCR && ((**cl).vertex().vect()-(**cit).vertex().vect()).mag() > _maxDistance) continue;
+	// veto if Clusters have negative spacetime difference 
+	if (_causalCR && ((**cl).vertex()-(**cit).vertex()).m() < ZERO) continue;
 
     const bool Colour8 =
       _isColour8( (*cl)->colParticle(), (*cit)->antiColParticle() )
@@ -817,11 +817,10 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
     // stop it putting beam remnants together
     if ((*cl)->isBeamCluster() && (*cit)->isBeamCluster()) continue;
 
-    // stop it putting far apart clusters together
-    // BUG: space-time difference compared to _maxDistance
-    // if (((**cl).vertex()-(**cit).vertex()).m()>_maxDistance) continue;
-    // Causal selection if desired
-    // if (((**cl).vertex()-(**cit).vertex()).m()>ZERO) continue;
+	// veto if Clusters further apart than _maxDistance
+	if (_localCR && ((**cl).vertex().vect()-(**cit).vertex().vect()).mag() > _maxDistance) continue;
+	// veto if Clusters have negative spacetime difference 
+	if (_causalCR && ((**cl).vertex()-(**cit).vertex()).m() < ZERO) continue;
 
     // momenta of the old clusters
     Lorentz5Momentum p1 = (*cl)->colParticle()->momentum() +
@@ -1426,6 +1425,9 @@ void ColourReconnector::persistentOutput(PersistentOStream & os) const {
       << ounit(_maxDistance, femtometer)
       << _octetOption
       << _cr2BeamClusters
+      << _prePlainCR
+      << _localCR
+      << _causalCR
       << _debug
       << _junctionMBCR
       ;
@@ -1451,6 +1453,9 @@ void ColourReconnector::persistentInput(PersistentIStream & is, int) {
       >> iunit(_maxDistance, femtometer)
       >> _octetOption
       >> _cr2BeamClusters
+	  >> _prePlainCR
+      >> _localCR
+      >> _causalCR
       >> _debug
       >> _junctionMBCR
       ;
@@ -1628,6 +1633,49 @@ void ColourReconnector::Init() {
   (interfaceCR2BeamClusters,
    "No",
    "If possible do not CR 2 beam clusters",
+   0);
+  static Switch<ColourReconnector, int> interfacePrePlainCR
+  ("PrePlainCR",
+   "Perform a Plain CR before another algorithm is performed",
+   &ColourReconnector::_prePlainCR, 0, true, false);
+  static SwitchOption interfacePrePlainCRYes
+  (interfacePrePlainCR,
+   "Yes",
+   "enable pre-Plain CR",
+   1);
+  static SwitchOption interfacePrePlainCRNo
+  (interfacePrePlainCR,
+   "No",
+   "disable pre-Plain CR",
+   0);
+  static Switch<ColourReconnector, int> interfaceLocalCR
+  ("LocalCR",
+   "Option for colour reconnecting only if clusters are less distant than MaxDistance",
+   &ColourReconnector::_localCR, 0, true, false);
+  static SwitchOption interfaceLocalCRYes
+  (interfaceLocalCR,
+   "Yes",
+   "activate spatial veto",
+   1);
+  static SwitchOption interfaceLocalCRNo
+  (interfaceLocalCR,
+   "No",
+   "deactivate spatial veto",
+   0);
+  static Switch<ColourReconnector, int> interfaceCausalCR
+  ("CausalCR",
+   "Option for colour reconnecting only if clusters their vertices "
+   "have a positive spacetime difference",
+   &ColourReconnector::_causalCR, 0, true, false);
+  static SwitchOption interfaceCausalCRYes
+  (interfaceCausalCR,
+   "Yes",
+   "enable causal veto",
+   1);
+  static SwitchOption interfaceCausalCRNo
+  (interfaceCausalCR,
+   "No",
+   "disable causal veto",
    0);
   static Switch<ColourReconnector, int> interfaceJunction
   ("Junction",
