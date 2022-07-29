@@ -340,6 +340,9 @@ analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-
 analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
 analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2021_I1867196"     ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["DD"]["BESIII_2020_I1784442"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2021_I1880103"     ] = ["d01-x01-y01","d02-x01-y01"]
 # BB
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]

@@ -38,3 +38,15 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1621266
 # J/psi ->  K+K-pi0 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1731057
+# J/psi -> p pbar eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1709205
+# J/psi -> p pbar omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1223625
+# J/psi -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2009_I819937
+# J/psi -> p pbar eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2001_I556330
+# J/psi -> p pbar phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1411448
+# J/psi -> p nbar pi- +cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I650381

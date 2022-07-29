@@ -35,6 +35,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2013_I1081165
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 # D0 -> pi-, K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I654843
 # D+ -> K0 pi0 semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
 # D+ -> K- pi+ semi-leptonic

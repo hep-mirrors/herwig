@@ -18,6 +18,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
 # psi(2S) -> xi*-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1747092
+# psi(2S) -> xi*0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1921775
 # MARKII  psi(2s) -> J/Psi pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1979_I144382
 # BES psi(2s) -> J/Psi pi+pi-
@@ -26,6 +28,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_1999_I507637
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1791570
 # psi(2S) -> pi+ pi- pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2005_I689969
 # psi(2S) -> pi+ pi- eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1621266
 # psi(2S) -> xi- xi+bar correlations
@@ -33,3 +36,18 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2099144
 # psi(2S) -> gamma chi_c correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1507887
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I832707
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
+# psi(2S) -> omega KS0 KS0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1921801
+# psi(2S) -> K+ K- eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1771616
+# psi(2S) -> p pbar eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1709205
+# psi(2S) -> p pbar eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1227512
+# psi(2S) -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1120737
+# psi(2S) -> Lambda Lambdabar omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2122392
+# J/psi -> p nbar pi- +cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I716589
