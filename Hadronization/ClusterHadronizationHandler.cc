@@ -50,6 +50,7 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
   const {
   os << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
+     << reshuffle_ << reshuffleMode_ << gluonMassGenerator_
      << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
      << _underlyingEventHandler << _reduceToTwoComponents;
 }
@@ -58,6 +59,7 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
 void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
   is >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
+     >> reshuffle_ >> reshuffleMode_ >> gluonMassGenerator_
      >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
      >> _underlyingEventHandler >> _reduceToTwoComponents;
 }
@@ -113,6 +115,41 @@ void ClusterHadronizationHandler::Init() {
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
 
+  static Reference<ClusterHadronizationHandler,GluonMassGenerator> interfaceGluonMassGenerator
+    ("GluonMassGenerator",
+     "Set a reference to a gluon mass generator.",
+     &ClusterHadronizationHandler::gluonMassGenerator_, false, false, true, true, false);
+
+  static Switch<ClusterHadronizationHandler,bool> interfaceReshuffle
+    ("Reshuffle",
+     "Perform reshuffling if constituent masses have not yet been included by the shower",
+     &ClusterHadronizationHandler::reshuffle_, false, false, false);
+  static SwitchOption interfaceReshuffleYes
+    (interfaceReshuffle,
+     "Global",
+     "Do reshuffle.",
+     true);
+  static SwitchOption interfaceReshuffleNo
+    (interfaceReshuffle,
+     "No",
+     "Do not reshuffle.",
+     false);
+   
+  static Switch<ClusterHadronizationHandler,int> interfaceReshuffleMode
+    ("ReshuffleMode",
+     "Which mode is used for the reshuffling to constituent masses",
+     &ClusterHadronizationHandler::reshuffleMode_, 0, false, false);
+  static SwitchOption interfaceReshuffleModeGlobal
+    (interfaceReshuffleMode,
+     "Global",
+     "Global reshuffling on all final state partons",
+     0);
+  static SwitchOption interfaceReshuffleModeColourConnected
+    (interfaceReshuffleMode,
+     "ColourConnected",
+     "Separate reshuffling for colour connected partons",
+     1);
+
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
@@ -165,20 +202,76 @@ handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
   useMe();
   currentHandler_ = this;
-  PVector currentlist(tagged.begin(),tagged.end());
+
+  PVector theList(tagged.begin(),tagged.end());
+  
+  if ( reshuffle_ ) {
+    
+    vector<PVector> reshufflelists;
+
+    if (reshuffleMode_==0){ // global reshuffling
+      reshufflelists.push_back(theList);
+    }
+    else if (reshuffleMode_==1){// colour connected reshuffling
+      splitIntoColourSinglets(theList, reshufflelists);
+    }
+
+    for (auto currentlist : reshufflelists){
+      // get available energy and energy needed for constituent mass shells
+      LorentzMomentum totalQ;
+      Energy needQ = ZERO;
+      size_t nGluons = 0; // number of gluons for which a mass need be generated
+      for ( auto p : currentlist ) {
+	totalQ += p->momentum();
+	if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
+	  ++nGluons;
+	  continue;
+	}
+	needQ += p->dataPtr()->constituentMass();
+      }
+      Energy Q = totalQ.m();
+      if ( needQ > Q )
+	throw Exception() << "cannot reshuffle to constituent mass shells" << Exception::eventerror;
+
+      // generate gluon masses if needed
+      list<Energy> gluonMasses;
+      if ( nGluons && gluonMassGenerator() )
+	gluonMasses = gluonMassGenerator()->generateMany(nGluons,Q-needQ);
+
+      // set masses for inidividual particles
+      vector<Energy> masses;
+      for ( auto p : currentlist ) {
+	if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
+	  list<Energy>::const_iterator it = gluonMasses.begin();
+	  advance(it,UseRandom::irnd(gluonMasses.size()));
+	  masses.push_back(*it);
+	  gluonMasses.erase(it);
+	} 
+	else {
+	  masses.push_back(p->dataPtr()->constituentMass());
+	}
+      }
+
+      // reshuffle to new masses
+      reshuffle(currentlist,masses);
+
+    }
+
+  }
+  
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
   Energy2 Q02 = 1.01*sqr(getParticleData(ParticleID::g)->constituentMass());
-  for(unsigned int ix=0;ix<currentlist.size();++ix) {
-    if(currentlist[ix]->scale()<Q02) currentlist[ix]->scale(Q02);
+  for(unsigned int ix=0;ix<theList.size();++ix) {
+    if(theList[ix]->scale()<Q02) theList[ix]->scale(Q02);
   }
 
   // split the gluons
-  _partonSplitter->split(currentlist);
+  _partonSplitter->split(theList);
 
   // form the clusters
   ClusterVector clusters =
-    _clusterFinder->formClusters(currentlist);
+    _clusterFinder->formClusters(theList);
   // reduce BV clusters to two components now if needed
   if(_reduceToTwoComponents)
     _clusterFinder->reduceToTwoComponents(clusters);
@@ -317,4 +410,54 @@ void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) c
     cl->colParticle()->addChild(cl);
     cl->antiColParticle()->addChild(cl);
   }
+}
+
+void ClusterHadronizationHandler::splitIntoColourSinglets(PVector copylist,
+							  vector<PVector>& reshufflelists){
+ 
+  PVector currentlist;
+  bool gluonloop;
+  PPtr firstparticle, temp;
+  reshufflelists.clear();
+ 
+  while (copylist.size()>0){
+    gluonloop=false;
+    currentlist.clear();
+ 
+    firstparticle=copylist.back();  
+    copylist.pop_back();     
+ 
+    if (!firstparticle->coloured()){
+      continue; //non-coloured particles are not included
+    }
+     
+    currentlist.push_back(firstparticle);
+ 
+    //go up the anitColourLine and check if we are in a gluon loop
+    temp=firstparticle;
+    while( temp->hasAntiColour()){
+      temp = temp->antiColourLine()->endParticle();
+      if(temp==firstparticle){
+	gluonloop=true;
+	break;
+      }
+      else{
+	currentlist.push_back(temp);
+	copylist.erase(remove(copylist.begin(),copylist.end(), temp), copylist.end());
+      }
+    }
+ 
+    //if not a gluon loop, go up the ColourLine
+    if(!gluonloop){
+      temp=firstparticle;
+      while( temp->hasColour()){
+	temp=temp->colourLine()->startParticle();
+	currentlist.push_back(temp);
+	copylist.erase(remove(copylist.begin(),copylist.end(), temp), copylist.end());
+      }
+    }
+ 
+    reshufflelists.push_back(currentlist); 
+  }
+ 
 }
