@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "Herwig/Shower/PerturbativeProcess.h"
+#include "Herwig/Utilities/Reshuffler.h"
 
 namespace Herwig {
 
@@ -29,7 +30,7 @@ using namespace ThePEG;
  * mass shells.
  *
  */
-class ConstituentReshuffler: public HandlerBase {
+class ConstituentReshuffler: public HandlerBase, public Reshuffler {
 
 public:
 
@@ -135,32 +136,6 @@ public:
                        PPtr& newPart ) ;
   
 protected:
-
-  /**
-   * The function object defining the equation
-   * to be solved.
-   */
-  struct ReshuffleEquation {
-
-    ReshuffleEquation (Energy q,
-		       PList::iterator m_begin,
-		       PList::iterator m_end)
-      : w(q), p_begin(m_begin), p_end(m_end) {}
-
-    typedef double ArgType;
-    typedef double ValType;
-
-    static double aUnit();
-    static double vUnit();
-
-    double operator() (double xi) const;
-
-    Energy w;
-
-    PList::iterator p_begin;
-    PList::iterator p_end;
-
-  };
 
   /**
    * The function object defining the equation

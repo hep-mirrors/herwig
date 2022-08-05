@@ -14,6 +14,7 @@ GaussianIntegrator.tcc \
 Statistic.h HerwigStrategy.cc HerwigStrategy.h \
 GSLIntegrator.h GSLIntegrator.tcc \
 GSLBisection.h GSLBisection.tcc GSLHelper.h \
+Reshuffler.h Reshuffler.cc \
 expm-1.h \
 HiggsLoopFunctions.h AlphaS.h
 

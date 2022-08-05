@@ -9,6 +9,7 @@ ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.fh \
 ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.fh\
+GluonMassGenerator.h GluonMassGenerator.cc \
 HadronSelector.cc HadronSelector.h HadronSelector.fh\
 Hw64Selector.cc Hw64Selector.h Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.fh\
