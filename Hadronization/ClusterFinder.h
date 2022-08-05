@@ -12,6 +12,7 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
 #include "ClusterFinder.fh"
+#include "HadronSpectrum.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -142,6 +143,11 @@ private:
    *  Force diquarks to be on-shell
    */
   bool diQuarkOnShell_;
+
+  /**
+   * The hadron spectrum to consider
+   */
+  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
 
 };
 

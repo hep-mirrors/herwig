@@ -28,8 +28,7 @@
 #include "ClusterHadronizationHandler.h"
 #include <ThePEG/EventRecord/Particle.h>
 #include <ThePEG/PDT/PDT.h>
-#include "CheckId.h"
-
+#include "ThePEG/Interface/ParMap.h"
 
 using namespace Herwig;
 
@@ -43,14 +42,16 @@ IBPtr PartonSplitter::fullclone() const {
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _quarkSelector << ounit(_gluonDistance,femtometer)
-     << _splitGluon << _splitPwtUquark << _splitPwtDquark << _splitPwtSquark
-     << _enhanceSProb << ounit(_m0,GeV) << _massMeasure;
+     << _splitGluon << _splitPwt
+     << _enhanceSProb << ounit(_m0,GeV) << _massMeasure
+     << _hadronSpectrum;
 }
 
 void PartonSplitter::persistentInput(PersistentIStream & is, int) {
   is >> _quarkSelector >> iunit(_gluonDistance,femtometer)
-     >> _splitGluon >> _splitPwtUquark >> _splitPwtDquark >> _splitPwtSquark
-     >>_enhanceSProb >> iunit(_m0,GeV) >> _massMeasure;
+     >> _splitGluon >> _splitPwt
+     >>_enhanceSProb >> iunit(_m0,GeV) >> _massMeasure
+     >> _hadronSpectrum;
 }
 
 DescribeClass<PartonSplitter,Interfaced>
@@ -68,30 +69,20 @@ void PartonSplitter::Init() {
      &PartonSplitter::_splitGluon, 0, false, false);
   static SwitchOption interfaceSplitDefault
     (interfaceSplit,
-     "ud",
-     "Normal cluster splitting where only u and d  quarks are drawn is used.",
+     "Kinematic",
+     "All kineamtically allowed quarks will contribute to gluon splitting.",
      0);
   static SwitchOption interfaceSplitAll
     (interfaceSplit,
-     "uds",
-     "Alternative cluster splitting where all light quark pairs (u, d, s) can be drawn.",
+     "Light",
+     "Alternative cluster splitting where only lighht quarks can be drawn.",
      1);
 
-  static Parameter<PartonSplitter,double> interfaceSplitPwtUquark
-    ("SplitPwtUquark",
-     "Weight for splitting in U quarks",
-     &PartonSplitter::_splitPwtUquark, 1, 0.0, 1.0,
-     false, false, Interface::limited);
-  static Parameter<PartonSplitter,double> interfaceSplitPwtDquark
-    ("SplitPwtDquark",
-     "Weight for splitting in D quarks",
-     &PartonSplitter::_splitPwtDquark, 1, 0.0, 1.0,
-     false, false, Interface::limited);
-  static Parameter<PartonSplitter,double> interfaceSplitPwtSquark
-    ("SplitPwtSquark",
-     "Weight for splitting in S quarks",
-     &PartonSplitter::_splitPwtSquark, 0.5, 0.0, 1.0,
-     false, false, Interface::limited);
+  static ParMap<PartonSplitter,double> interfaceSplitPwt
+    ("SplitPwt",
+     "The splitting weights for individual quarks.",
+     &PartonSplitter::_splitPwt, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::upperlim);
 
   static Switch<PartonSplitter,int> interfaceEnhanceSProb
     ("EnhanceSProb",
@@ -133,6 +124,12 @@ void PartonSplitter::Init() {
     "Mass scale for g->qqb strangeness enhancement",
     &PartonSplitter::_m0, GeV, 20.*GeV, 1.*GeV, 1000.*GeV,
     false, false, Interface::limited);
+  
+  static Reference<PartonSplitter,HadronSpectrum> interfaceHadronSpectrum
+    ("HadronSpectrum",
+     "Set the hadron spectrum for this parton splitter.",
+     &PartonSplitter::_hadronSpectrum, false, false, false, false, false);
+
 }
 
 void PartonSplitter::split(PVector & tagged) {
@@ -140,7 +137,7 @@ void PartonSplitter::split(PVector & tagged) {
   static bool first = true;
 
   if(first) {
-    _gluonDistance = hbarc*getParticleData(ParticleID::g)->constituentMass()/
+    _gluonDistance = hbarc*getParticleData(spectrum()->gluonId())->constituentMass()/
       ClusterHadronizationHandler::currentHandler()->minVirtuality2();
     first = false;
   }
@@ -152,12 +149,12 @@ void PartonSplitter::split(PVector & tagged) {
   }
 
   PVector newtag;
-  Energy2 Q02 = 0.99*sqr(getParticleData(ParticleID::g)->constituentMass());
+  Energy2 Q02 = 0.99*sqr(getParticleData(spectrum()->gluonId())->constituentMass());
   // Loop over all of the particles in the event.
   // Loop counter for colourSorted
   for(PVector::iterator pit = particles.begin(); pit!=particles.end(); ++pit) {
     // only considering gluons so add other particles to list of particles
-    if( (**pit).data().id() != ParticleID::g ) {
+    if( (**pit).data().id() != spectrum()->gluonId() ) {
       newtag.push_back(*pit);
       continue;
     }
@@ -206,33 +203,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
 					PPtr & ptrQ,
 					PPtr & ptrQbar){
   // select the quark flavour
-  tPDPtr quark;
-  long idNew=0;
-  switch(_splitGluon){
-    case 0:
-      quark = _quarkSelector.select(UseRandom::rnd());
-      break;
-    case 1:
-      if ( ptrGluon->mass() <
-	   2.0 *getParticle(ThePEG::ParticleID::s)->data().constituentMass() ) {
-	throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
-			  << Exception::runerror;
-      }
-      // Only allow light quarks u,d,s with the probabilities
-      double prob_d = _splitPwtDquark;
-      double prob_u = _splitPwtUquark;
-      double prob_s = _splitPwtSquark;
-
-      int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
-      switch(choice) {
-        case 0: idNew = ThePEG::ParticleID::u; break;
-        case 1: idNew = ThePEG::ParticleID::d; break;
-        case 2: idNew = ThePEG::ParticleID::s; break;
-      }
-      ptrQ = getParticle(idNew);
-      ptrQbar = getParticle(-idNew);
-  break;
-  }
+  tPDPtr quark = _quarkSelector.select(UseRandom::rnd());
   // Solve the kinematics of the two body decay  G --> Q + Qbar
   Lorentz5Momentum momentumQ;
   Lorentz5Momentum momentumQbar;
@@ -240,41 +211,50 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
   using Constants::pi;
   double phiStar = UseRandom::rnd( -pi , pi );
 
-  Energy constituentQmass;
-  if(_splitGluon==0) {
-    constituentQmass = quark->constituentMass();
-  }else{
-    constituentQmass = ptrQ->data().constituentMass();
-  }
+  Energy constituentQmass = quark->constituentMass();
 
- if (ptrGluon->mass() < 2.0*constituentQmass) {
+  if (ptrGluon->momentum().m() < 2.0*constituentQmass) {
     throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
 		      << Exception::eventerror;
   }
   Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
 			   constituentQmass, cosThetaStar, phiStar, momentumQ,
 			   momentumQbar );
+
   // Create quark and anti-quark particles of the chosen flavour
   // and set they 5-momentum (the mass is the constituent one).
-  if(_splitGluon==0) {
-    ptrQ    = new_ptr(Particle(quark      ));
-    ptrQbar = new_ptr(Particle(quark->CC()));
-  }
+  ptrQ    = new_ptr(Particle(quark      ));
+  ptrQbar = new_ptr(Particle(quark->CC()));
 
   ptrQ    ->set5Momentum( momentumQ    );
   ptrQbar ->set5Momentum( momentumQbar );
+  
 }
 
 void PartonSplitter::doinit() {
   Interfaced::doinit();
-  // calculate the probabilties for the gluon to branch into each quark type
-  // based on the available phase-space, as in fortran.
-  Energy mg=getParticleData(ParticleID::g)->constituentMass();
-  for( int ix=1; ix<6; ++ix ) {
-    PDPtr quark = getParticleData(ix);
-    Energy pcm = Kinematics::pstarTwoBodyDecay(mg,quark->constituentMass(),
-					       quark->constituentMass());
-    if(pcm>ZERO) _quarkSelector.insert(pcm/GeV,quark);
+  switch(_splitGluon){
+  case 0: {
+    // calculate the probabilties for the gluon to branch into each quark type
+    // based on the available phase-space, as in fortran.
+    Energy mg=getParticleData(spectrum()->gluonId())->constituentMass();
+    for( const long& ix : spectrum()->hadronizingQuarks() ) {
+      PDPtr quark = getParticleData(ix);
+      Energy pcm = Kinematics::pstarTwoBodyDecay(mg,quark->constituentMass(),
+						 quark->constituentMass());
+      if(pcm>ZERO) _quarkSelector.insert(pcm/GeV,quark);
+    }
+    break;
+  }
+  case 1:
+    for ( const long& ix : spectrum()->lightHadronizingQuarks() ) {
+      PDPtr quark = getParticleData(ix);
+      if (_splitPwt.find(ix) == _splitPwt.end() )
+	throw InitException() << "no split weight found for quark flavour "
+			      << ix;
+      _quarkSelector.insert(_splitPwt[ix],quark);
+    }
+    break;
   }
   if(_quarkSelector.empty())
     throw InitException() << "At least one quark must have constituent mass less "
@@ -477,26 +457,32 @@ void PartonSplitter::colourSorted(PVector& tagged) {
 }
 
 void PartonSplitter::massSplitTimeLikeGluon(tcPPtr ptrGluon,
-					PPtr & ptrQ,
-					PPtr & ptrQbar, size_t i){
+					    PPtr & ptrQ,
+					    PPtr & ptrQbar, size_t i){
+
+  // only works in the Standard Model
+  if ( ptrGluon->data().id() != ParticleID::g )
+    throw Exception() << "strange enhancement only working with Standard Model hadronization"
+		      << Exception::runerror;
+
   // select the quark flavour
   tPDPtr quark;
   long idNew=0;
 
   if ( ptrGluon->momentum().m() <
- 2.0 *getParticle(ThePEG::ParticleID::s)->data().constituentMass() ) {
-throw Exception() << "Impossible Kinematics in PartonSplitter::massSplitTimeLikeGluon()"
-    << Exception::runerror;
+       2.0 *getParticle(ThePEG::ParticleID::s)->data().constituentMass() ) {
+    throw Exception() << "Impossible Kinematics in PartonSplitter::massSplitTimeLikeGluon()"
+		      << Exception::runerror;
   }
   // Only allow light quarks u,d,s with the probabilities
-  double prob_d = _splitPwtDquark;
-  double prob_u = _splitPwtUquark;
+  double prob_d = _splitPwt[ParticleID::d];
+  double prob_u = _splitPwt[ParticleID::u];
   double prob_s = enhanceStrange(i);
   int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   switch(choice) {
-    case 0: idNew = ThePEG::ParticleID::u; break;
-    case 1: idNew = ThePEG::ParticleID::d; break;
-    case 2: idNew = ThePEG::ParticleID::s; break;
+    case 0: idNew = ParticleID::u; break;
+    case 1: idNew = ParticleID::d; break;
+    case 2: idNew = ParticleID::s; break;
   }
   ptrQ = getParticle(idNew);
   ptrQbar = getParticle(-idNew);
@@ -543,7 +529,7 @@ double PartonSplitter::enhanceStrange(size_t i){
     // If the mass is significantly smaller than the characteristic mass,
     // just set the prob to 0
     double scale = double(m2/mass2);
-    return (_maxScale < scale || scale < 0.) ? 0. : pow(_splitPwtSquark,scale);
+    return (_maxScale < scale || scale < 0.) ? 0. : pow(_splitPwt[ParticleID::s],scale);
   }
   // Exponential strangeness enhancement
   else if (_enhanceSProb == 2){
@@ -551,5 +537,6 @@ double PartonSplitter::enhanceStrange(size_t i){
     return (_maxScale < scale || scale < 0.) ? 0. : exp(-scale);
   }
   else
-    return _splitPwtSquark;
+    return _splitPwt[ParticleID::s];
 }
+

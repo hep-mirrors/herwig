@@ -18,6 +18,8 @@ setup Remnant 82 Remnant 0.00990 0.0 0.0 0.0  0 0  0  1
 mkdir /Herwig/Hadronization
 cd /Herwig/Hadronization
 
+create Herwig::StandardModelHadronSpectrum SMHadronSpectrum 
+
 create Herwig::ClusterHadronizationHandler ClusterHadHandler
 create Herwig::PartonSplitter PartonSplitter
 create Herwig::ClusterFinder ClusterFinder
@@ -37,6 +39,11 @@ newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
 newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
 newdef ClusterHadHandler:UnderlyingEventHandler NULL
 
+newdef PartonSplitter:HadronSpectrum SMHadronSpectrum
+newdef ClusterFinder:HadronSpectrum SMHadronSpectrum
+newdef ClusterFissioner:HadronSpectrum SMHadronSpectrum
+newdef ClusterDecayer:HadronSpectrum SMHadronSpectrum
+
 newdef ClusterFissioner:HadronSelector HadronSelector 
 newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
@@ -51,23 +58,26 @@ newdef ColourReconnector:OctetTreatment All
 newdef ClusterFissioner:ClMaxLight  3.649
 newdef ClusterFissioner:ClPowLight  2.780
 newdef ClusterFissioner:PSplitLight 0.899
+insert ClusterFissioner:FissionPwt 1 1.0
+insert ClusterFissioner:FissionPwt 2 1.0
+insert ClusterFissioner:FissionPwt 3 0.5
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-newdef ClusterFissioner:ClMaxBottom  3.757
-newdef ClusterFissioner:ClPowBottom  0.547
-newdef ClusterFissioner:PSplitBottom 0.625
-newdef ClusterDecayer:ClDirBottom 1
-newdef ClusterDecayer:ClSmrBottom 0.078
+insert ClusterFissioner:ClMaxHeavy 5 3.757*GeV
+insert ClusterFissioner:ClPowHeavy 5  0.547*GeV
+insert ClusterFissioner:PSplitHeavy 5 0.625*GeV
+insert ClusterDecayer:ClDirHeavy 5 1
+insert ClusterDecayer:ClSmrHeavy 5 0.078
 newdef HadronSelector:SingleHadronLimitBottom 0.000
 
 # Clustering parameters for c-quarks
-newdef ClusterFissioner:ClMaxCharm  3.950
-newdef ClusterFissioner:ClPowCharm  2.559
-newdef ClusterFissioner:PSplitCharm 0.994
-newdef ClusterDecayer:ClDirCharm 1
-newdef ClusterDecayer:ClSmrCharm  0.163
+insert ClusterFissioner:ClMaxHeavy 4 3.950
+insert ClusterFissioner:ClPowHeavy 4  2.559
+insert ClusterFissioner:PSplitHeavy 4 0.994
+insert ClusterDecayer:ClDirHeavy 4 1
+insert ClusterDecayer:ClSmrHeavy 4 0.163
 newdef HadronSelector:SingleHadronLimitCharm 0.000
 
 # Clustering parameters for exotic quarks
@@ -79,9 +89,11 @@ newdef ClusterDecayer:ClDirExotic 1
 newdef ClusterDecayer:ClSmrExotic 0.
 newdef HadronSelector:SingleHadronLimitExotic 0.
 
-# 
-newdef PartonSplitter:SplitPwtSquark 0.824135
-newdef PartonSplitter:Split uds
+#
+insert PartonSplitter:SplitPwt 1 1.0
+insert PartonSplitter:SplitPwt 2 1.0
+insert PartonSplitter:SplitPwt 3 0.824135
+newdef PartonSplitter:Split Light
 
 # 
 newdef HadronSelector:PwtDquark  1.0

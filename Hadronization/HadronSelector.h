@@ -371,6 +371,20 @@ public:
    */
   //@{
   /**
+   * Return the weight for the given flavour
+   */
+  double pwtQuark(const long& id) const {
+    switch(id) {
+    case ParticleID::d: return pwtDquark(); break;
+    case ParticleID::u: return pwtUquark(); break;
+    case ParticleID::s: return pwtSquark(); break;
+    case ParticleID::c: return pwtCquark(); break;
+    case ParticleID::b: return pwtBquark(); break;
+    }
+    return 0.;
+  }
+  
+  /**
    * The down quark weight.
    */
    double pwtDquark()  const {

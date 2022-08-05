@@ -14,6 +14,7 @@
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
 #include "ClusterDecayer.fh"
+#include "HadronSpectrum.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -56,6 +57,13 @@ public:
   void decay(const ClusterVector & clusters, tPVector & finalhadrons)
    ;
 
+  /**
+   * Return the hadron spectrum
+   */
+  Ptr<HadronSpectrum>::ptr spectrum() const {
+    return _hadronSpectrum;
+  }
+
 public:
 
   /**
@@ -89,6 +97,19 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+  
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+//@}
 
 private:
 
@@ -134,16 +155,14 @@ private:
    * Whether a cluster decays along the perturbative parton direction.
    */
   bool _clDirLight;
-  bool _clDirBottom;
-  bool _clDirCharm;
+  map<long,bool> _clDirHeavy;
   bool _clDirExotic;
 
    /**
    * The S parameter from decayIntoTwoHadrons
    */
   double _clSmrLight;
-  double _clSmrBottom;
-  double _clSmrCharm;
+  map<long,double> _clSmrHeavy;
   double _clSmrExotic;
   //@}
 
@@ -157,6 +176,11 @@ private:
    * Number of tries to generate the masses of the decay products
    */
   unsigned int _masstry;
+
+  /**
+   * The hadron spectrum to consider
+   */
+  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
 
 
 };

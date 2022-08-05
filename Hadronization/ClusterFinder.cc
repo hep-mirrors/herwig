@@ -20,11 +20,11 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/EventRecord/Collision.h>
-#include "CheckId.h"
 #include "Herwig/Utilities/EnumParticles.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include "ThePEG/Interface/Reference.h"
 
 using namespace Herwig;
 
@@ -39,17 +39,22 @@ IBPtr ClusterFinder::fullclone() const {
   return new_ptr(*this);
 }
 void ClusterFinder::persistentOutput(PersistentOStream & os) const {
-  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_;
+  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_ << _hadronSpectrum;
 }
 
 void ClusterFinder::persistentInput(PersistentIStream & is, int) {
-  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_;
+  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_ >> _hadronSpectrum;
 }
 
 void ClusterFinder::Init() {
 
   static ClassDocumentation<ClusterFinder> documentation
     ("This class is responsible of finding clusters.");
+
+  static Reference<ClusterFinder,HadronSpectrum> interfaceHadronSpectrum
+    ("HadronSpectrum",
+     "Set the hadron spectrum for this parton splitter.",
+     &ClusterFinder::_hadronSpectrum, false, false, false, false, false);
 
   static Switch<ClusterFinder,unsigned int> interfaceHeavyDiquarks
     ("HeavyDiquarks",
@@ -401,7 +406,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     tcPDPtr temp2  = vec[1]->dataPtr();
     if(!other) other = vec[2];
 
-    tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    tcPDPtr dataDiquark  = _hadronSpectrum->makeDiquark(temp1,temp2);
     
     if(!dataDiquark) 
       throw Exception() << "Could not make a diquark from"

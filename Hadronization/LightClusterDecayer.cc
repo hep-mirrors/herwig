@@ -21,7 +21,6 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Cluster.h"
-#include "CheckId.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 

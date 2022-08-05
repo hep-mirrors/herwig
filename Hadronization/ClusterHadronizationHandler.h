@@ -50,7 +50,7 @@ using namespace ThePEG;
  * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
  * defined for ClusterHadronizationHandler.
  */ 
-class ClusterHadronizationHandler: 
+class ClusterHadronizationHandler:
     public HadronizationHandler, public Reshuffler {
 
 public:
@@ -146,12 +146,53 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
 private:
 
   /**
    * Private and non-existent assignment operator.
    */
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &) = delete;
+
+  /**
+   * This is a pointer to a Herwig::PartonSplitter object.
+   */
+  map<int,PartonSplitterPtr>      _partonSplitters;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFinder object.
+   */
+  map<int,ClusterFinderPtr>       _clusterFinders;
+
+  /**
+   * This is a pointer to a Herwig::ColourReconnector object.
+   */
+  map<int,ColourReconnectorPtr>   _colourReconnectors;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFissioner object.
+   */
+  map<int,ClusterFissionerPtr>    _clusterFissioners;
+
+  /**
+   * This is a pointer to a Herwig::LightClusterDecayer object.
+   */
+  map<int,LightClusterDecayerPtr> _lightClusterDecayers;
+  
+  /**
+   * This is a pointer to a Herwig::ClusterDecayer object.
+   */
+  map<int,ClusterDecayerPtr>      _clusterDecayers; 
 
   /**
    * This is a pointer to a Herwig::PartonSplitter object.
@@ -181,7 +222,7 @@ private:
   /**
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
-  ClusterDecayerPtr      _clusterDecayer; 
+  ClusterDecayerPtr      _clusterDecayer;
 
   /**
    * Perform reshuffling to constituent masses.
@@ -225,19 +266,22 @@ private:
    */
   void _setChildren(const ClusterVector & clusters) const;
 
-   
-   /**
-    * Split the list of partons into colour connected sub-lists before reshuffling
-    */
-   void splitIntoColourSinglets(PVector thelist,
-				vector<PVector>& reshufflelists);
+  /**
+   * Split the list of partons into colour connected sub-lists before reshuffling
+   */
+  void splitIntoColourSinglets(PVector thelist,
+			       vector<PVector>& reshufflelists,
+			       int interaction);
 
+  /**
+   * Use the currently set list of handlers to hadronize the given interaction
+   */
+  string _setHandlersForInteraction(string); 
   
   /**
    *  pointer to "this", the current HadronizationHandler.
    */
   static ClusterHadronizationHandler * currentHandler_;
-
 
 };
 

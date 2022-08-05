@@ -15,4 +15,7 @@ Hw64Selector.cc Hw64Selector.h Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.fh \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.fh \
-SpinHadronizer.h SpinHadronizer.cc
+SpinHadronizer.h SpinHadronizer.cc \
+HadronSepctrum.h HadronSpectrum.cc \
+StandardModelHadronSpectrum.h StandardModelHadronSpectrum.cc
+

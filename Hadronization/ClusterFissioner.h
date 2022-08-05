@@ -13,7 +13,7 @@
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
 #include "ClusterFissioner.fh"
-#include "CheckId.h"
+#include "HadronSpectrum.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -100,6 +100,13 @@ public:
    * cluster children (see method drawChildrenMasses for details).
    */
   tPVector fission(ClusterVector & clusters, bool softUEisOn);
+
+  /**
+   * Return the hadron spectrum
+   */
+  Ptr<HadronSpectrum>::ptr spectrum() const {
+    return _hadronSpectrum;
+  }
 
 public:
 
@@ -215,73 +222,6 @@ public:
    */
   PPair produceHadron(tcPDPtr hadron, tPPtr newPtr, const Lorentz5Momentum &a,
 		      const LorentzPoint &b) const;
-
-protected:
-
-  /**
-  *  Function that returns either the cluster mass or the lambda measure
-  */
-  Energy2 clustermass(const ClusterPtr & cluster) const;
-  
-  /**
-   * Draw a new flavour for the given cluster; currently defaults to
-   * the default model
-   */
-  virtual void drawNewFlavour(PPtr& newPtr1, PPtr& newPtr2, const ClusterPtr & cluster) const {
-    if (_enhanceSProb == 0){
-      drawNewFlavour(newPtr1,newPtr2);
-    }
-    else {
-      drawNewFlavourEnhanced(newPtr1,newPtr2,clustermass(cluster));
-    }
-  }
-
-  /**
-   * Calculate the masses and possibly kinematics of the cluster
-   * fission at hand; if claculateKineamtics is perfomring non-trivial
-   * steps kinematics claulcated here will be overriden. Currentl;y resorts to the default
-   */
-  virtual pair<Energy,Energy> drawNewMasses(Energy Mc, bool soft1, bool soft2,
-					    Lorentz5Momentum& pClu1, Lorentz5Momentum& pClu2,
-					    tPPtr ptrQ1, Lorentz5Momentum& pQ1, 
-					    tPPtr, Lorentz5Momentum& pQone,
-					    tPPtr, Lorentz5Momentum& pQtwo,
-					    tPPtr ptrQ2,  Lorentz5Momentum& pQ2) const {
-
-    pair<Energy,Energy> result;
-    
-    double exp1=_pSplitLight;
-    double exp2=_pSplitLight;
-    
-    if     (CheckId::isExotic(ptrQ1->dataPtr())) exp1 = _pSplitExotic;
-    else if(CheckId::hasBottom(ptrQ1->dataPtr()))exp1 = _pSplitBottom;
-    else if(CheckId::hasCharm(ptrQ1->dataPtr())) exp1 = _pSplitCharm;
-    
-    if     (CheckId::isExotic(ptrQ2->dataPtr()))  exp2 = _pSplitExotic;
-    else if(CheckId::hasBottom(ptrQ2->dataPtr())) exp2 = _pSplitBottom;
-    else if(CheckId::hasCharm(ptrQ2->dataPtr()))  exp2 = _pSplitCharm;
-
-    result.first = drawChildMass(Mc,pQ1.mass(),pQ2.mass(),pQone.mass(),exp1,soft1);
-    result.second = drawChildMass(Mc,pQ2.mass(),pQ1.mass(),pQtwo.mass(),exp2,soft2);
-
-    pClu1.setMass(result.first);
-    pClu2.setMass(result.second);
-
-    return result;
-      
-  }
-
-  /**
-   * Calculate the final kinematics of a heavy cluster decay C->C1 +
-   * C2, if not already performed by drawNewMasses
-   */
-  virtual void calculateKinematics(const Lorentz5Momentum &pClu,
-				   const Lorentz5Momentum &p0Q1,
-				   const bool toHadron1, const bool toHadron2,
-				   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2,
-				   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb,
-				   Lorentz5Momentum &pQ2, Lorentz5Momentum &pQ2b) const;
-  
 protected:
 
   /**
@@ -302,7 +242,7 @@ protected:
    * needed for fission of a heavy cluster. Equal probabilities
    * are assumed for producing  u, d, or s pairs.
    */
-  void drawNewFlavour(PPtr& newPtrPos, PPtr& newPtrNeg) const;
+  void drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const;
 
   /**
    * Returns the new quark-antiquark pair
@@ -358,6 +298,71 @@ protected:
 
 protected:
 
+  /**
+  *  Function that returns either the cluster mass or the lambda measure
+  */
+  Energy2 clustermass(const ClusterPtr & cluster) const;
+  
+  /**
+   * Draw a new flavour for the given cluster; currently defaults to
+   * the default model
+   */
+  virtual void drawNewFlavour(PPtr& newPtr1, PPtr& newPtr2, const ClusterPtr & cluster) const {
+    if (_enhanceSProb == 0){
+      drawNewFlavour(newPtr1,newPtr2);
+    }
+    else {
+      drawNewFlavourEnhanced(newPtr1,newPtr2,clustermass(cluster));
+    }
+  }
+
+  /**
+   * Calculate the masses and possibly kinematics of the cluster
+   * fission at hand; if claculateKineamtics is perfomring non-trivial
+   * steps kinematics claulcated here will be overriden. Currentl;y resorts to the default
+   */
+  virtual pair<Energy,Energy> drawNewMasses(Energy Mc, bool soft1, bool soft2,
+					    Lorentz5Momentum& pClu1, Lorentz5Momentum& pClu2,
+					    tPPtr ptrQ1, Lorentz5Momentum& pQ1, 
+					    tPPtr, Lorentz5Momentum& pQone,
+					    tPPtr, Lorentz5Momentum& pQtwo,
+					    tPPtr ptrQ2,  Lorentz5Momentum& pQ2) const {
+
+    pair<Energy,Energy> result;
+    
+    // power for splitting
+    double exp1 = !spectrum()->isExotic(ptrQ1->dataPtr()) ? _pSplitLight : _pSplitExotic;
+    double exp2 = !spectrum()->isExotic(ptrQ2->dataPtr()) ? _pSplitLight : _pSplitExotic;
+    for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+      assert(_pSplitHeavy.find(id) != _pSplitHeavy.end());
+      if ( spectrum()->hasHeavy(id,ptrQ1->dataPtr()) ) exp1 = _pSplitHeavy.find(id)->second;
+      if ( spectrum()->hasHeavy(id,ptrQ2->dataPtr()) ) exp2 = _pSplitHeavy.find(id)->second;
+    }
+
+    result.first = drawChildMass(Mc,pQ1.mass(),pQ2.mass(),pQone.mass(),exp1,soft1);
+    result.second = drawChildMass(Mc,pQ2.mass(),pQ1.mass(),pQtwo.mass(),exp2,soft2);
+
+    pClu1.setMass(result.first);
+    pClu2.setMass(result.second);
+
+    return result;
+      
+  }
+
+  /**
+   * Calculate the final kinematics of a heavy cluster decay C->C1 +
+   * C2, if not already performed by drawNewMasses
+   */
+  virtual void calculateKinematics(const Lorentz5Momentum &pClu,
+				   const Lorentz5Momentum &p0Q1,
+				   const bool toHadron1, const bool toHadron2,
+				   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2,
+				   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb,
+				   Lorentz5Momentum &pQ2, Lorentz5Momentum &pQ2b) const;
+  
+
+protected:
+
   /** @name Access members for child classes. */
   //@{
   /**
@@ -369,27 +374,20 @@ protected:
    *  Access to soft-cluster parameter
    */
   Energy btClM() const {return _btClM;}
-
-  /**
-   *  Cluster splitting paramater for light quarks
-   */
-  double pSplitLight() const {return _pSplitLight;}
-
-  /**
-   *  Cluster splitting paramater for bottom quarks
-   */
-  double pSplitBottom() const {return _pSplitBottom;}
-
-  /**
-   *  Cluster splitting paramater for charm quarks
-   */
-  double pSplitCharm() const {return _pSplitCharm;}
-
-  /**
-   *  Cluster splitting paramater for exotic particles
-   */
-  double pSplitExotic() const {return _pSplitExotic;}
   //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+//@}
 
 private:
 
@@ -398,6 +396,13 @@ private:
    */
   bool isHeavy(tcClusterPtr );
 
+  /**
+   *  Check if can't make a hadron from the partons
+   */
+  inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+    return ! spectrum()->canBeHadron(p1->dataPtr(), p2->dataPtr());
+  }
+  
   /**
    * A pointer to a Herwig::HadronSelector object for generating hadrons.
    */
@@ -409,8 +414,7 @@ private:
    */
   //@{
   Energy _clMaxLight;
-  Energy _clMaxBottom;
-  Energy _clMaxCharm;
+  map<long,Energy> _clMaxHeavy;
   Energy _clMaxExotic;
   //@}
   /**
@@ -418,8 +422,7 @@ private:
    */
   //@{
   double _clPowLight;
-  double _clPowBottom;
-  double _clPowCharm;
+  map<long,double> _clPowHeavy;
   double _clPowExotic;
   //@}
   /**
@@ -427,15 +430,12 @@ private:
    */
   //@{
   double _pSplitLight;
-  double _pSplitBottom;
-  double _pSplitCharm;
+  map<long,double> _pSplitHeavy;
   double _pSplitExotic;
 
 
   // weights for alternaive cluster fission
-  double _fissionPwtUquark;
-  double _fissionPwtDquark;
-  double _fissionPwtSquark;
+  map<long,double> _fissionPwt;
 
   /**
   * Flag used to determine between normal cluster fission and alternative cluster fission
@@ -481,6 +481,11 @@ private:
   *  calculating
   */
   const double _maxScale = 20.;
+
+  /**
+   * The hadron spectrum to consider
+   */
+  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
 
 
 };

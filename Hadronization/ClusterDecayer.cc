@@ -21,10 +21,10 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig/Utilities/Kinematics.h"
-#include "CheckId.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 #include <ThePEG/Repository/UseRandom.h>
+#include "ThePEG/Interface/ParMap.h"
 
 using namespace Herwig;
 
@@ -33,12 +33,8 @@ describeClusterDecayer("Herwig::ClusterDecayer","Herwig.so");
 
 ClusterDecayer::ClusterDecayer() :
   _clDirLight(1),
-  _clDirBottom(1),
-  _clDirCharm(1),
   _clDirExotic(1),
   _clSmrLight(0.0),
-  _clSmrBottom(0.0),
-  _clSmrCharm(0.0),
   _clSmrExotic(0.0),
   _onshell(false),
   _masstry(20)
@@ -54,17 +50,27 @@ IBPtr ClusterDecayer::fullclone() const {
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const
 {
-  os << _hadronsSelector << _clDirLight << _clDirBottom
-     << _clDirCharm << _clDirExotic << _clSmrLight << _clSmrBottom
-     << _clSmrCharm << _clSmrExotic << _onshell << _masstry;
+  os << _hadronsSelector << _clDirLight << _clDirHeavy
+     << _clDirExotic << _clSmrLight << _clSmrHeavy
+     << _clSmrExotic << _onshell << _masstry
+     << _hadronSpectrum;
 }
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _clDirLight >> _clDirBottom
-     >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom
-     >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
+  is >> _hadronsSelector >> _clDirLight >> _clDirHeavy
+     >> _clDirExotic >> _clSmrLight >> _clSmrHeavy
+     >> _clSmrExotic >> _onshell >> _masstry
+     >> _hadronSpectrum;
 }
 
+void ClusterDecayer::doinit() {
+  Interfaced::doinit();
+  for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+    if ( _clSmrHeavy.find(id) == _clSmrHeavy.end() ||
+	 _clDirHeavy.find(id) == _clDirHeavy.end() )
+      throw InitException() << "not all parameters have been set for heavy quark cluster decay";
+  }
+}
 
 void ClusterDecayer::Init() {
 
@@ -76,6 +82,11 @@ void ClusterDecayer::Init() {
                              "A reference to the HadronSelector object",
                              &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
+
+  static Reference<ClusterDecayer,HadronSpectrum> interfaceHadronSpectrum
+    ("HadronSpectrum",
+     "Set the hadron spectrum for this parton splitter.",
+     &ClusterDecayer::_hadronSpectrum, false, false, false, false, false);
 
   //ClDir for light, Bottom, Charm and exotic (e.g Susy) quarks
 
@@ -94,38 +105,12 @@ void ClusterDecayer::Init() {
      "Isotropic",
      "Assign the direction of the meson randomly",
      false);
-
-  static Switch<ClusterDecayer,bool> interfaceClDirBottom
-    ("ClDirBottom",
-     "Cluster direction for bottom quarks",
-     &ClusterDecayer::_clDirBottom, true, false, false);
-  static SwitchOption interfaceClDirBottomPreserve
-    (interfaceClDirBottom,
-     "Preserve",
-     "Preserve the direction of the quark from the perturbative stage"
-     " as the direction of the meson produced from it",
-     true);
-  static SwitchOption interfaceClDirBottomIsotropic
-    (interfaceClDirBottom,
-     "Isotropic",
-     "Assign the direction of the meson randomly",
-     false);
-
-  static Switch<ClusterDecayer,bool> interfaceClDirCharm
-    ("ClDirCharm",
-     "Cluster direction for charm quarks",
-     &ClusterDecayer::_clDirCharm, true, false, false);
-  static SwitchOption interfaceClDirCharmPreserve
-    (interfaceClDirCharm,
-     "Preserve",
-     "Preserve the direction of the quark from the perturbative stage"
-     " as the direction of the meson produced from it",
-     true);
-  static SwitchOption interfaceClDirCharmIsotropic
-    (interfaceClDirCharm,
-     "Isotropic",
-     "Assign the direction of the meson randomly",
-     false);
+  
+  static ParMap<ClusterDecayer,bool> interfaceClDirHeavy
+    ("ClDirHeavy",
+     "Preserve the direction of the given heavy quark from the perturbative stage.",
+     &ClusterDecayer::_clDirHeavy, -1, true, false, true,
+     false, false, Interface::limited);
 
   static Switch<ClusterDecayer,bool> interfaceClDirExotic
     ("ClDirExotic",
@@ -147,13 +132,12 @@ void ClusterDecayer::Init() {
   static Parameter<ClusterDecayer,double>
     interfaceClSmrLight ("ClSmrLight", "cluster direction Gaussian smearing for light quark",
                      &ClusterDecayer::_clSmrLight, 0, 0.0 , 0.0 , 2.0,false,false,false);
+  static ParMap<ClusterDecayer,double> interfaceClSmrHeavy
+    ("ClSmrHeavy",
+     "cluster direction Gaussian smearing for heavy quarks",
+     &ClusterDecayer::_clSmrHeavy, -1, 0.0, 0.0, 2.0,
+     false, false, Interface::limited);
   static Parameter<ClusterDecayer,double>
-    interfaceClSmrBottom ("ClSmrBottom", "cluster direction Gaussian smearing for b quark",
-                     &ClusterDecayer::_clSmrBottom, 0, 0.0 , 0.0 , 2.0,false,false,false);
-static Parameter<ClusterDecayer,double>
-    interfaceClSmrCharm ("ClSmrCharm", "cluster direction Gaussian smearing for c quark",
-                     &ClusterDecayer::_clSmrCharm, 0, 0.0 , 0.0 , 2.0,false,false,false);
-static Parameter<ClusterDecayer,double>
     interfaceClSmrExotic ("ClSmrExotic", "cluster direction Gaussian smearing for exotic quark",
                      &ClusterDecayer::_clSmrExotic, 0, 0.0 , 0.0 , 2.0,false,false,false);
 
@@ -249,38 +233,31 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   bool cluDirHad2      = _clDirLight;
   double cluSmearHad2 = _clSmrLight;
 
-  if (CheckId::isExotic(ptr1data)) {
+  if (spectrum()->isExotic(ptr1data)) {
     isHad1FlavSpecial  = true;
     cluDirHad1   = _clDirExotic;
     cluSmearHad1 = _clSmrExotic;
-  }
-  else if (CheckId::hasBottom(ptr1data)) {
-    isHad1FlavSpecial  = true;
-    cluDirHad1   = _clDirBottom;
-    cluSmearHad1 = _clSmrBottom;
-  }
-  else if (CheckId::hasCharm(ptr1data)) {
-    isHad1FlavSpecial  = true;
-    cluDirHad1   = _clDirCharm;
-    cluSmearHad1 = _clSmrCharm;
+  } else {
+    for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+      if ( spectrum()->hasHeavy(id,ptr1data) ) {
+	cluDirHad1   = _clDirHeavy[id];
+	cluSmearHad1 = _clSmrHeavy[id];
+      }
+    }
   }
 
-  if (CheckId::isExotic(ptr2data)) {
+  if (spectrum()->isExotic(ptr2data)) {
     isHad2FlavSpecial  = true;
     cluDirHad2   = _clDirExotic;
     cluSmearHad2 = _clSmrExotic;
+  } else {
+    for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+      if ( spectrum()->hasHeavy(id,ptr2data) ) {
+	cluDirHad2   = _clDirHeavy[id];
+	cluSmearHad2 = _clSmrHeavy[id];
+      }
+    }
   }
-  else if (CheckId::hasBottom(ptr2data)) {
-    isHad2FlavSpecial  = true;
-    cluDirHad2   = _clDirBottom;
-    cluSmearHad2 = _clSmrBottom;
-  }
-  else if (CheckId::hasCharm(ptr2data)) {
-    isHad2FlavSpecial  = true;
-    cluDirHad2   = _clDirCharm;
-    cluSmearHad2 = _clSmrCharm;
-  }
-
 
   bool isOrigin1Perturbative = ptr->isPerturbative(0);
   bool isOrigin2Perturbative = ptr->isPerturbative(1);
