@@ -13,6 +13,7 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 ####### semileptonic decays #######################
 # B0 -> D* l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1693396
 # B0/B+ -> D l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
 # B0 -> rho,pi B+ -> rho,omega
@@ -91,3 +92,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
 # BELLE Upsilon 4S -> Upsilon 1,2S pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301
+# BELLE B+ -> phi phi K+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1841899
+# BELLE B0 -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729311
+# BELLE B0 -> KS0 K-+ pi+-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729723
