@@ -242,6 +242,7 @@ analyses['2K2Pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
 analyses['2K2Pi']["BESIII_2020_I1775344"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d05-x01-y01","d06-x01-y01"]
 analyses['2K2Pi']["BESIII_2021_I1997451"] = ["d01-x01-y01"]
+analyses['2K2Pi']["BESIII_2018_I1651451"] = ["d01-x01-y01","d01-x01-y02"]
 analyses["2K2Pi"]["BELLE_2009_I809630"  ] = ["d01-x01-y01"]
 analyses["2K2Pi"]["CMD3_2016_I1395968"  ] = ["d01-x01-y01"]
 analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
@@ -295,6 +296,7 @@ analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
 analyses['Baryon']["BESIII_2021_I1845443"  ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['Baryon']["BESIII_2021_I1859248"  ] = ["d01-x01-y01"]
 analyses["Baryon"]["BESIII_2021_I1929314"  ] = ["d01-x01-y04","d01-x01-y08"]
+analyses["Baryon"]["BESIII_2018_I1681638"  ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 # DD
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -343,6 +345,12 @@ analyses["DD"]["BESIII_2021_I1867196"     ] = ["d01-x01-y01","d02-x01-y01","d03-
 analyses["DD"]["BESIII_2020_I1784442"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2021_I1880103"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2022_I2129305"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2022_I2050468"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2017_I1600581"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2022_I2097619"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2022_I2068180"     ] = ["d01-x01-y01"]
 # BB
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
