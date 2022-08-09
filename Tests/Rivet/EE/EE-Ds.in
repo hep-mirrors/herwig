@@ -21,6 +21,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712742
 # D_s -> K+K- e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I790461
+# D_s -> f0 e+ nu_e
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2038523
 # 3-body dalitz
 # Dalitz plot analysis of D_s+ -> K+K-pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I878120
@@ -54,7 +56,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1849747
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2088218
 # D_s+ -> KS0 K- pi+ pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1845444
-# D_s+ -> pi+pi+pi-eta
+# D_s+ -> pi+ pi+ pi- eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870322
 ############## five body ##############
 # BESIII D_s+ -> K+ K_ pi+ pi+ pi-
