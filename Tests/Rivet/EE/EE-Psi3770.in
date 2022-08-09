@@ -59,8 +59,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2003_I633196
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2002_I585322
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I750701
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I780363
-# # Kinematic distributions in the decay D0 -> K-pi+pi0
+# Kinematic distributions in the decay D0 -> K-pi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2001_I537154
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I722905
 # Dalitz decay of D0 -> K0S pi0 eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I649917
 # Dalitz decay of D0 -> K-pi+eta
@@ -103,6 +104,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662665
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1714778
 # D0 -> K- pi+ pi0 pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1725265
+# D0 -> K- pi+ pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1511280
+# D+ -> KS0 pi+ pi0 pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2088337
 # D0 -> K-K-K+pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I626320
 # D0 -> K+ K- pi+ pi-
@@ -113,6 +118,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1704426
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2017_I1519168
 # D0 -> 2pi+ 2pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I741543
+# range of D+/D0 -> pion decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2102455
 ########## Spectra ##############################
 # CLEO eta, eta' phi spectra in D decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I728043
+########## psi(3770) decays ######################################
+# Lambda Lambdabar correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1974025
