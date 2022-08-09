@@ -61,8 +61,15 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
 # decays to baryon antibaryon meson
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1818254
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870388
+# chi_c1 pi+pi-eta + other modes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I732065
+# chi_c1 pi+pi-eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1490896
+# chi_c1 pi+pi-eta(')
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I929693
 # chi_c to phi phi eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1763897
 # chi_c to 4 KS0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716627
+# chi_c(1,2) -> J/psi mu+mu-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716256
