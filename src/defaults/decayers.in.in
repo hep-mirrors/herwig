@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 11:56:17 on the 15/7/2022.
+# from the Herwig Particles Database at 20:21:41 on the 11/8/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -23026,10 +23026,8 @@ do Vector2BaryonsHalf:SetUpDecayMode 100443 3122 -3122 0.000621041230885 0.00119
 do Vector2BaryonsHalf:SetUpDecayMode 100443 3212 -3212 0.000599393812308 0.000941856299908 0. 1.6
 do Vector2BaryonsHalf:SetUpDecayMode 100443 3222 -3222 0.00194199600339 0.00288222568159 0.379 15.
 do Vector2BaryonsHalf:SetUpDecayMode 100443 3312 -3312 0.00062269682478 0.0010486615740 0.667 2.
-do Vector2BaryonsHalf:SetUpDecayMode 100443 3322 -3322 0.000664382626732 0.00102912698738 0. 2.
+do Vector2BaryonsHalf:SetUpDecayMode 100443 3322 -3322 0.000664382626732 0.00102912698738 0. 2. 
 do Vector2BaryonsHalf:SetUpDecayMode 30443 3122 -3122 0.003288395355944 0.006828537525113 1.2392 0.000242397
-
-
 #
 create Herwig::ScalarTo3ScalarDalitz  D0KmPipPi0CLEO
 newdef D0KmPipPi0CLEO:Iteration 10
