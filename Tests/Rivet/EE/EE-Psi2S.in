@@ -34,6 +34,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2005_I689969
 # psi(2S) -> omega KS0 KS0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1921801
+# psi(2S) -> K+ K- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1127328
 # psi(2S) -> K+ K- eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1771616
 ########### Decay to 2 baryons + meson ####################
@@ -57,6 +59,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I716589
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1507887
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I832707
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2011_I931195
 ########### chi_c Decays ################################
 # decays to baryon antibaryon meson
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1818254

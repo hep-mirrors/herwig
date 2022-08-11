@@ -203,6 +203,8 @@ analyses["OmegaPiPi"]["CMD2_2000_I532970"   ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["DM1_1981_I166964"    ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["DM2_1992_I339265"    ] = ["d02-x01-y01"]
 analyses['OmegaPiPi']["ND_1991_I321108"     ] = ["d14-x01-y01"]
+analyses['OmegaPiPi']["BESIII_2022_I2133889"] = ["d01-x01-y01","d02-x01-y01","d02-x01-y02","d02-x01-y03",
+                                                 "d02-x01-y04","d02-x01-y05","d02-x01-y06"]
 # 5 pion 
 analyses["5Pi"]["CMD2_2000_I532970"        ] = ["d03-x01-y01"]
 analyses["5Pi"]["BABAR_2007_I758568"       ] = ["d01-x01-y01"]
