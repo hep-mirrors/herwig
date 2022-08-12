@@ -53,8 +53,9 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
 #read snippets/HepMC.in
 #set /Herwig/Analysis/HepMC:PrintEvent NNN
 
-set /Herwig/Decays/Vector2BaryonsHalf:Initialize 1
-set /Herwig/Decays/Vector2BaryonsHalf:Points 100000
+set /Herwig/Decays/BottomMeson:Initialize 1
+set /Herwig/Decays/BottomMeson:DatabaseOutput 1
+set /Herwig/Decays/BottomMeson:Points 100000
 
 ###################################################
 # Save run for later usage with 'Herwig run'
