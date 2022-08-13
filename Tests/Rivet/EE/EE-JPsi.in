@@ -50,7 +50,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2001_I556330
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1411448
 # J/psi -> p nbar pi- +cc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I650381
-# J/psi -> gamma pi+pi-eta'
+# J/psi -> gamma pi+ pi- eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2018236
+# J/psi -> gamma eta' eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2016785
+# J/psi -> e+e- pi+pi-eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1997940
 # J/psi -> phi eta eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712729

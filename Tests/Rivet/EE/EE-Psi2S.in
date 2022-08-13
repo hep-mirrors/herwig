@@ -76,3 +76,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1763897
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716627
 # chi_c(1,2) -> J/psi mu+mu-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716256
+# chi_c(1,2) -> eta' K+ K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2014_I1280710
