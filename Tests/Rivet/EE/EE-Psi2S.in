@@ -60,6 +60,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1507887
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I832707
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2011_I931195
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2033855
 ########### chi_c Decays ################################
 # decays to baryon antibaryon meson
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1818254
