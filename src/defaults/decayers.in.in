@@ -2338,6 +2338,7 @@ do PVV:SetUpDecayMode 441 323 -323 0.0308 5.0763
 do PVV:SetUpDecayMode 441 313 -313 0.0308 5.22846
 do PVV:SetUpDecayMode 100541 543 22 0.0757 1.10098
 do PVV:SetUpDecayMode 100441 22 22 0.00212 1.10241
+do PVV:SetUpDecayMode 441 223 223 0.024 15.2564
 #
 create Herwig::PScalarVectorFermionsDecayer  PVff
 newdef PVff:Iteration 1
@@ -22784,6 +22785,21 @@ newdef ExperimentalOmnesFunction2:OmnesReal 99  -0.51781
 newdef ExperimentalOmnesFunction2:OmnesImag 99  -0.310381
 newdef EtapipiFermions:OmnesFunction ExperimentalOmnesFunction2 
 #
+create Herwig::PseudoScalar2FermionsDecayer  PFF
+newdef PFF:Iteration 1
+newdef PFF:Ntry 500
+newdef PFF:Points 100000
+newdef PFF:GenerateIntermediates 0 
+do PFF:SetUpDecayMode 441 2212 -2212 0.022 1.08427
+do PFF:SetUpDecayMode 441 2112 -2112 0.022 1.08333
+do PFF:SetUpDecayMode 441 3122 -3122 0.021 1.15225
+do PFF:SetUpDecayMode 441 3222 -3222 0.031 1.15516
+do PFF:SetUpDecayMode 441 3212 -3212 0.031 1.14972
+do PFF:SetUpDecayMode 441 3112 -3112 0.031 1.14164
+do PFF:SetUpDecayMode 441 3312 -3312 0.023 1.14479
+do PFF:SetUpDecayMode 441 3322 -3322 0.023 1.16599
+
+#
 create Herwig::ScalarTo3ScalarDalitz  DsKS0KS0PipBES
 newdef DsKS0KS0PipBES:Iteration 5
 newdef DsKS0KS0PipBES:Ntry 500
@@ -23917,4 +23933,5 @@ do JpsiPipPimPi0BABAR:AddChannel 223 3 0.78265 0.00849 0 1 2 0.013 2.78 1.5
 do JpsiPipPimPi0BABAR:SetExternal 443 211 -211 111
 
 #
+
 @LOAD_EVTGEN_DECAYER@

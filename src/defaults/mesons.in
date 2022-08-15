@@ -18,7 +18,7 @@ setup eta 221 eta 0.547862 1.31E-6 1.31E-5 0 0 0 1 0
 create ThePEG::ParticleData eta'
 setup eta' 331 eta' 0.95778 0.000203 0.00203 0 0 0 1 0 
 create ThePEG::ParticleData eta_c
-setup eta_c 441 eta_c 2.9804 0.0255 0.255 0 0 0 1 0 
+setup eta_c 441 eta_c 2.9839 0.032 0.16 0 0 0 1 0 
 create ThePEG::ParticleData eta_b
 setup eta_b 551 eta_b 9.3987 0.01 0.1 0 0 0 1 0 
 create ThePEG::ParticleData K+
@@ -118,7 +118,7 @@ newdef phi:WidthUpCut 0.04249
 create ThePEG::ParticleData Jpsi
 setup Jpsi 443 Jpsi 3.096916 9.34E-5 0.000934 0 0 0 3 0 
 create ThePEG::ParticleData Upsilon
-setup Upsilon 553 Upsilon 9.4603 5.4E-5 0.00054 0 0 0 3 0 
+setup Upsilon 553 Upsilon 9.4603 5.402E-5 0.00054 0 0 0 3 0 
 create ThePEG::ParticleData K*+
 setup K*+ 323 K*+ 0.89167 0.0514 0.382 0 3 0 3 0 
 newdef K*+:WidthLoCut 0.25
@@ -348,7 +348,7 @@ setup f'_1 20333 f'_1 1.4263 0.0545 0.40875 0 0 0 3 0
 newdef f'_1:WidthLoCut 0.2725
 newdef f'_1:WidthUpCut 0.545
 create ThePEG::ParticleData chi_c1
-setup chi_c1 20443 chi_c1 3.51066 0.00089 0.0089 0 0 0 3 0 
+setup chi_c1 20443 chi_c1 3.51067 0.00084 0.0089 0 0 0 3 0 
 create ThePEG::ParticleData chi_b1
 setup chi_b1 20553 chi_b1 9.89278 7.1E-5 0.00071 0 0 0 3 0 
 create ThePEG::ParticleData K'_1+
