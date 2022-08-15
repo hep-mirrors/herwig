@@ -22,7 +22,8 @@ ScalarMesonTensorScalarDecayer.h\
 ScalarScalarScalarDecayer.h  \
 SemiLeptonicScalarDecayer.h  \
 ScalarMesonFactorizedDecayer.h \
-ScalarVectorVectorDecayer.h
+ScalarVectorVectorDecayer.h \
+PseudoScalar2FermionsDecayer.h 
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -39,4 +40,5 @@ ScalarMesonTensorScalarDecayer.cc \
 ScalarScalarScalarDecayer.cc \
 SemiLeptonicScalarDecayer.cc \
 ScalarMesonFactorizedDecayer.cc \
-ScalarVectorVectorDecayer.cc 
+ScalarVectorVectorDecayer.cc \
+PseudoScalar2FermionsDecayer.cc 
