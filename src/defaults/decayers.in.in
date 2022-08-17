@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 20:21:41 on the 11/8/2022.
+# from the Herwig Particles Database at 22:20:30 on the 17/8/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -2840,7 +2840,6 @@ do Tensor2PScalar:SetUpDecayMode 445 221 221 0.014 1.6208
 do Tensor2PScalar:SetUpDecayMode 445 221 331 0.00324 1.6488
 do Tensor2PScalar:SetUpDecayMode 445 331 331 0.00553 1.68311
 do Tensor2PScalar:SetUpDecayMode 445 130 130 0.013 1.60503
-
 #
 create Herwig::TensorMesonVectorPScalarDecayer  TensorVP
 newdef TensorVP:Iteration 1
@@ -23948,8 +23947,8 @@ do JpsiPipPimPi0BABAR:AddChannel 0 3 2.155 0.32 1 2 0 0.042 1.7 1.5
 do JpsiPipPimPi0BABAR:AddChannel 0 3 2.155 0.32 0 1 2 0.042 1.7 1.5
 do JpsiPipPimPi0BABAR:AddChannel 223 3 0.78265 0.00849 0 1 2 0.013 2.78 1.5
 do JpsiPipPimPi0BABAR:SetExternal 443 211 -211 111
-#
 
+#
 create Herwig::Scalar2FermionsDecayer  SFF
 newdef SFF:Iteration 1
 newdef SFF:Ntry 500
@@ -23964,4 +23963,5 @@ do SFF:SetUpDecayMode 10441 3112 -3112 0.01 1.08895
 do SFF:SetUpDecayMode 10441 3312 -3312 0.011 1.08653
 do SFF:SetUpDecayMode 10441 3322 -3322 0.011 1.11182
 
+#
 @LOAD_EVTGEN_DECAYER@

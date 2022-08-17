@@ -1184,8 +1184,8 @@ decaymode chi_c2->p+,pbar-,omega; 0.00036 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->omega,K+,K-; 0.000318 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->gamma,gamma; 0.000285 1 /Herwig/Decays/TVV
 decaymode chi_c2->K_3*-,K+; 0.000263 1 /Herwig/Decays/DecayME0
-decaymode chi_c2->K_3*bar0,K+; 0.000263 1 /Herwig/Decays/DecayME0
-decaymode chi_c2->K_3*0,K-; 0.000263 1 /Herwig/Decays/DecayME0
+decaymode chi_c2->K_3*bar0,K0; 0.000263 1 /Herwig/Decays/DecayME0
+decaymode chi_c2->K_3*0,Kbar0; 0.000263 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->K_3*+,K-; 0.000263 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->K+,K-,pi0; 0.000255 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->pi0,pi0,eta'; 0.00025 1 /Herwig/Decays/DecayME0
