@@ -81,3 +81,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716256
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2014_I1280710
 # chi_c 4 pi 2K 2pi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2008_I787608
+# chi_c0 pi+pi-K+K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2005_I690784
