@@ -288,14 +288,14 @@ create ThePEG::ParticleData Lambdabar0
 setup Lambdabar0 -3122 Lambdabar0 1.115683 2.5009752851711E-15 0 78.9 0 0 2 0 
 makeanti Lambdabar0 Lambda0
 create ThePEG::BeamParticleData p+
-setup p+ 2212 p+ 0.938272081 0.  0 0 3 0 2 1 
+setup p+ 2212 p+ 0.93827208816 0.  0 0 3 0 2 1 
 create ThePEG::BeamParticleData pbar-
-setup pbar- -2212 pbar- 0.938272081 0.  0 0 -3 0 2 1 
+setup pbar- -2212 pbar- 0.93827208816 0.  0 0 -3 0 2 1 
 makeanti pbar- p+
 create ThePEG::BeamParticleData n0
-setup n0 2112 n0 0.939565413 7.4852799484106E-28 0 2.6362E+14 0 0 2 1 
+setup n0 2112 n0 0.9395654205 7.4852799484106E-28 0 2.6362E+14 0 0 2 1 
 create ThePEG::BeamParticleData nbar0
-setup nbar0 -2112 nbar0 0.939565413 7.4852799484106E-28 0 2.6362E+14 0 0 2 1 
+setup nbar0 -2112 nbar0 0.9395654205 7.4852799484106E-28 0 2.6362E+14 0 0 2 1 
 makeanti nbar0 n0
 create ThePEG::ParticleData Sigma-
 setup Sigma- 3112 Sigma- 1.197449 4.4503146143437E-15 0 44.34 -3 0 2 0 
@@ -318,9 +318,9 @@ create ThePEG::ParticleData Xibar+
 setup Xibar+ -3312 Xibar+ 1.32171 4.0188788187373E-15 0 49.1 3 0 2 0 
 makeanti Xibar+ Xi-
 create ThePEG::ParticleData Xi0
-setup Xi0 3322 Xi0 1.31483 2.2655218140069E-15 0 87.1 0 0 2 0 
+setup Xi0 3322 Xi0 1.31486 2.2655218140069E-15 0 87.1 0 0 2 0 
 create ThePEG::ParticleData Xibar0
-setup Xibar0 -3322 Xibar0 1.31483 2.2655218140069E-15 0 87.1 0 0 2 0 
+setup Xibar0 -3322 Xibar0 1.31486 2.2655218140069E-15 0 87.1 0 0 2 0 
 makeanti Xibar0 Xi0
 create ThePEG::ParticleData Lambda_c+
 setup Lambda_c+ 4122 Lambda_c+ 2.28646 3.2942729549249E-12 0 0.0599 3 0 2 0 
@@ -648,9 +648,9 @@ newdef Xibar(1950)0:WidthUpCut 0.6
 # the (70,1^-_1)  40 multiplet
 #
 create ThePEG::ParticleData Lambda(1690)0
-setup Lambda(1690)0 103124 Lambda(1690)0 1.69 0.06 0.24 0 0 0 4 0 
+setup Lambda(1690)0 103124 Lambda(1690)0 1.69 0.07 0.21 0 0 0 4 0 
 create ThePEG::ParticleData Lambdabar(1690)0
-setup Lambdabar(1690)0 -103124 Lambdabar(1690)0 1.69 0.06 0.24 0 0 0 4 0 
+setup Lambdabar(1690)0 -103124 Lambdabar(1690)0 1.69 0.07 0.21 0 0 0 4 0 
 makeanti Lambdabar(1690)0 Lambda(1690)0
 create ThePEG::ParticleData p(1520)+
 setup p(1520)+ 102214 p(1520)+ 1.515 0.11 0.495 0 3 0 4 0 

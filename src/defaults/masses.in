@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 13:5:35 on the 15/8/2022.
+# from the Herwig Particles Database at 19:33:9 on the 17/8/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -936,9 +936,10 @@ newdef /Herwig/Particles/chi_b0:Mass_generator chi_b01Pmass
 #
 create Herwig::GenericMassGenerator  chi_c11Pmass
 newdef chi_c11Pmass:Particle /Herwig/Particles/chi_c1 
-newdef chi_c11Pmass:BreitWignerShape 0
-newdef chi_c11Pmass:MaximumWeight 0.968321
-newdef chi_c11Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_c11Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_c11Pmass:MaximumWeight 0.970096
+newdef /Herwig/Masses/chi_c11Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_c11Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_c1:Mass_generator chi_c11Pmass
 #
@@ -962,9 +963,10 @@ newdef /Herwig/Particles/chi_b2:Mass_generator chi_b21Pmass
 #
 create Herwig::GenericMassGenerator  chi_c21Pmass
 newdef chi_c21Pmass:Particle /Herwig/Particles/chi_c2 
-newdef chi_c21Pmass:BreitWignerShape 0
-newdef chi_c21Pmass:MaximumWeight 0.969798
-newdef chi_c21Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_c21Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_c21Pmass:MaximumWeight 0.969682
+newdef /Herwig/Masses/chi_c21Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_c21Pmass:WidthOption 0
 
 newdef /Herwig/Particles/chi_c2:Mass_generator chi_c21Pmass
 #
@@ -1005,9 +1007,10 @@ newdef /Herwig/Particles/eta_b(2S):Mass_generator eta_b2Smass
 #
 create Herwig::GenericMassGenerator  psi2smass
 newdef psi2smass:Particle /Herwig/Particles/psi(2S) 
-newdef psi2smass:BreitWignerShape 0
-newdef psi2smass:MaximumWeight 0.969726
-newdef psi2smass:NGenerate 100
+newdef /Herwig/Masses/psi2smass:BreitWignerShape 0
+newdef /Herwig/Masses/psi2smass:MaximumWeight 0.96824
+newdef /Herwig/Masses/psi2smass:NGenerate 100
+newdef /Herwig/Masses/psi2smass:WidthOption 0
 
 newdef /Herwig/Particles/psi(2S):Mass_generator psi2smass
 #

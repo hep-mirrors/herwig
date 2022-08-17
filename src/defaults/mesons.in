@@ -429,7 +429,7 @@ newdef f_2:WidthUpCut 0.1867
 create ThePEG::ParticleData f'_2
 setup f'_2 335 f'_2 1.5174 0.086 0.344 0 0 0 5 0 
 create ThePEG::ParticleData chi_c2
-setup chi_c2 445 chi_c2 3.5562 0.00206 0.0206 0 0 0 5 0 
+setup chi_c2 445 chi_c2 3.55617 0.00197 0.0206 0 0 0 5 0 
 create ThePEG::ParticleData chi_b2
 setup chi_b2 555 chi_b2 9.91221 0.00017 0.0017 0 0 0 5 0 
 create ThePEG::ParticleData K*_2+
