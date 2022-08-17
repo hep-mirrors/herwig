@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the PseudoScalar2FermionsDecayer class.
+// functions of the Scalar2FermionsDecayer class.
 //
 
-#include "PseudoScalar2FermionsDecayer.h"
+#include "Scalar2FermionsDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -19,7 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void PseudoScalar2FermionsDecayer::doinitrun() {
+void Scalar2FermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<incoming_.size();++ix) {
@@ -29,7 +29,7 @@ void PseudoScalar2FermionsDecayer::doinitrun() {
 }
 
 
-void PseudoScalar2FermionsDecayer::doinit() {
+void Scalar2FermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=coupling_.size();
@@ -51,12 +51,12 @@ void PseudoScalar2FermionsDecayer::doinit() {
   }
 }
 
-PseudoScalar2FermionsDecayer::PseudoScalar2FermionsDecayer() {
+Scalar2FermionsDecayer::Scalar2FermionsDecayer() {
   // don't include intermediates
   generateIntermediates(false);
 }
 
-int PseudoScalar2FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+int Scalar2FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					     const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
@@ -86,42 +86,42 @@ int PseudoScalar2FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-IBPtr PseudoScalar2FermionsDecayer::clone() const {
+IBPtr Scalar2FermionsDecayer::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr PseudoScalar2FermionsDecayer::fullclone() const {
+IBPtr Scalar2FermionsDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void PseudoScalar2FermionsDecayer::persistentOutput(PersistentOStream & os) const {
+void Scalar2FermionsDecayer::persistentOutput(PersistentOStream & os) const {
   os << coupling_ << incoming_ << outgoing_ << maxweight_;
 }
 
-void PseudoScalar2FermionsDecayer::persistentInput(PersistentIStream & is, int) {
+void Scalar2FermionsDecayer::persistentInput(PersistentIStream & is, int) {
   is >> coupling_ >> incoming_ >> outgoing_ >> maxweight_;
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<PseudoScalar2FermionsDecayer,DecayIntegrator>
-describeHerwigPseudoScalar2FermionsDecayer("Herwig::PseudoScalar2FermionsDecayer", "HwSMDecay.so");
+DescribeClass<Scalar2FermionsDecayer,DecayIntegrator>
+describeHerwigScalar2FermionsDecayer("Herwig::Scalar2FermionsDecayer", "HwSMDecay.so");
 
-void PseudoScalar2FermionsDecayer::Init() {
+void Scalar2FermionsDecayer::Init() {
 
-  static ClassDocumentation<PseudoScalar2FermionsDecayer> documentation
-    ("The PseudoScalar2FermionsDecayer class implements the decay of a pseudoscalar meson "
+  static ClassDocumentation<Scalar2FermionsDecayer> documentation
+    ("The Scalar2FermionsDecayer class implements the decay of a scalar meson "
      "to a fermion and antifermion.");
   
-  static Command<PseudoScalar2FermionsDecayer> interfaceSetUpDecayMode
+  static Command<Scalar2FermionsDecayer> interfaceSetUpDecayMode
     ("SetUpDecayMode",
      "Set up the particles (incoming, fermion, antifermion), coupling and max weight for a decay",
-     &PseudoScalar2FermionsDecayer::setUpDecayMode, false);
+     &Scalar2FermionsDecayer::setUpDecayMode, false);
 
 }
 
-void PseudoScalar2FermionsDecayer::
+void Scalar2FermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int iferm(0),ianti(1);
   // set up the spin information for the decay products
@@ -135,7 +135,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 
-double PseudoScalar2FermionsDecayer::me2(const int,const Particle & part,
+double Scalar2FermionsDecayer::me2(const int,const Particle & part,
 				       const tPDVector & outgoing,
 				       const vector<Lorentz5Momentum> & momenta,
 				       MEOption meopt) const {
@@ -159,14 +159,14 @@ double PseudoScalar2FermionsDecayer::me2(const int,const Particle & part,
   // now compute the ME
   for(unsigned ix=0;ix<2;++ix) {
     for(unsigned iy=0;iy<2;++iy) {
-      Complex temp = pre*wave_[ix].pseudoScalar(wavebar_[iy]);
+      Complex temp = pre*wave_[ix].scalar(wavebar_[iy]);
       if(iferm>ianti) (*ME())(0,ix,iy)=temp;
       else            (*ME())(0,iy,ix)=temp;
     }
   }
   double me = ME()->contract(rho_).real();
   // test of the matrix element
-  // double test = 2*sqr(coupling_[imode()])*(1.-sqr((momenta[0].mass()-momenta[1].mass())/part.mass()));
+  // double test = 2*sqr(coupling_[imode()])*(1.-sqr((momenta[0].mass()+momenta[1].mass())/part.mass()));
   // cerr << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
   //      << me << " " << test << " " << (me-test)/(me+test) << "\n";
@@ -174,8 +174,8 @@ double PseudoScalar2FermionsDecayer::me2(const int,const Particle & part,
   return me;
 }
 
-bool PseudoScalar2FermionsDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-						double & coupling) const {
+bool Scalar2FermionsDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+					   double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
@@ -211,13 +211,13 @@ bool PseudoScalar2FermionsDecayer::twoBodyMEcode(const DecayMode & dm,int & meco
   }
   while(ix<incoming_.size()&&imode<0);
   coupling=coupling_[imode];
-  mecode=24;
+  mecode=25;
   return order;
 }
 
 // output the setup information for the particle database
-void PseudoScalar2FermionsDecayer::dataBaseOutput(ofstream & output,
-						bool header) const {
+void Scalar2FermionsDecayer::dataBaseOutput(ofstream & output,
+					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
@@ -231,7 +231,7 @@ void PseudoScalar2FermionsDecayer::dataBaseOutput(ofstream & output,
 		    << fullName() << "\";" << endl;
 }
 
-string PseudoScalar2FermionsDecayer::setUpDecayMode(string arg) {
+string Scalar2FermionsDecayer::setUpDecayMode(string arg) {
   // parse first bit of the string
   string stype = StringUtils::car(arg);
   arg          = StringUtils::cdr(arg);
