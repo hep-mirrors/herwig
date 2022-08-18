@@ -1024,13 +1024,15 @@ decaymode Xi_bbar0->Xi_cbar0,pi0; 3.0E-5 1 /Herwig/Decays/DecayME0
 decaymode Xi_bbar0->Lambdabar0,D*bar0; 2.0E-5 1 /Herwig/Decays/BottomBaryonVector
 decaymode Xi_bbar0->Lambdabar0,Dbar0; 2.0E-5 1 /Herwig/Decays/BottomBaryonScalar
 #
-decaymode Xi_b'-->Xi_b-,gamma; 1 1 /Herwig/Decays/HeavyGamma
+decaymode Xi_b'-->Xi_b0,pi-; 0.726 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b'-->Xi_b-,pi0; 0.274 1 /Herwig/Decays/HeavyStrong
 #
-decaymode Xi_b'bar+->Xi_bbar+,gamma; 1 1 /Herwig/Decays/HeavyGamma
+decaymode Xi_b'bar+->Xi_bbar0,pi+; 0.726 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b'bar+->Xi_bbar+,pi0; 0.274 1 /Herwig/Decays/HeavyStrong
 #
-decaymode Xi_b'0->Xi_b0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+decaymode Xi_b'0->Xi_b0,pi0; 1 1 /Herwig/Decays/HeavyStrong
 #
-decaymode Xi_b'bar0->Xi_bbar0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+decaymode Xi_b'bar0->Xi_bbar0,pi0; 1 1 /Herwig/Decays/HeavyStrong
 #
 decaymode Omega_b-->s=cbar,c=ss_1; 0.2221 1 /Herwig/Decays/WeakPartonic100
 decaymode Omega_b-->d=ubar,c=ss_1; 0.1983 1 /Herwig/Decays/WeakPartonic100

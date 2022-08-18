@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the mass generators for Herwig outputted
-# from the Herwig Particles Database at 12:1:23 on the 18/8/2022.
+# from the Herwig Particles Database at 18:10:23 on the 18/8/2022.
 #
 create Herwig::GenericMassGenerator  rho+mass
 newdef rho+mass:Particle /Herwig/Particles/rho+ 
@@ -1558,20 +1558,20 @@ newdef /Herwig/Particles/Xi'_cbar0:Mass_generator Xi'_c0Mass
 #
 create Herwig::GenericMassGenerator  Xi'_b0Mass
 newdef Xi'_b0Mass:Particle /Herwig/Particles/Xi_b'0 
-newdef Xi'_b0Mass:BreitWignerShape 0
-newdef Xi'_b0Mass:MaximumWeight 0.96838
-newdef Xi'_b0Mass:NGenerate 100
-newdef Xi'_b0Mass:WidthOption 0
+newdef /Herwig/Masses/Xi'_b0Mass:BreitWignerShape 0
+newdef /Herwig/Masses/Xi'_b0Mass:MaximumWeight 0.968197
+newdef /Herwig/Masses/Xi'_b0Mass:NGenerate 100
+newdef /Herwig/Masses/Xi'_b0Mass:WidthOption 0
 
 newdef /Herwig/Particles/Xi_b'bar0:Mass_generator Xi'_b0Mass
 newdef /Herwig/Particles/Xi_b'0:Mass_generator Xi'_b0Mass
 #
 create Herwig::GenericMassGenerator  Xi'_b-Mass
 newdef Xi'_b-Mass:Particle /Herwig/Particles/Xi_b'- 
-newdef Xi'_b-Mass:BreitWignerShape 0
-newdef Xi'_b-Mass:MaximumWeight 0.968198
-newdef Xi'_b-Mass:NGenerate 100
-newdef Xi'_b-Mass:WidthOption 0
+newdef /Herwig/Masses/Xi'_b-Mass:BreitWignerShape 0
+newdef /Herwig/Masses/Xi'_b-Mass:MaximumWeight 0.968201
+newdef /Herwig/Masses/Xi'_b-Mass:NGenerate 100
+newdef /Herwig/Masses/Xi'_b-Mass:WidthOption 0
 
 newdef /Herwig/Particles/Xi_b'-:Mass_generator Xi'_b-Mass
 newdef /Herwig/Particles/Xi_b'bar+:Mass_generator Xi'_b-Mass
