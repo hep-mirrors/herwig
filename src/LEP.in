@@ -53,9 +53,47 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
 #read snippets/HepMC.in
 #set /Herwig/Analysis/HepMC:PrintEvent NNN
 
-set /Herwig/Decays/BottomMeson:Initialize 1
-set /Herwig/Decays/BottomMeson:DatabaseOutput 1
-set /Herwig/Decays/BottomMeson:Points 100000
+#set /Herwig/Decays/TVV:Initialize 1
+#set /Herwig/Decays/TVV:DatabaseOutput 1
+#set /Herwig/Decays/TVV:Points 100000
+#set /Herwig/Decays/SVV:Initialize 1
+#set /Herwig/Decays/SVV:DatabaseOutput 1
+#set /Herwig/Decays/SVV:Points 100000
+# set /Herwig/Decays/ScalarSS:Initialize 1
+# set /Herwig/Decays/ScalarSS:DatabaseOutput 1
+# set /Herwig/Decays/ScalarSS:Points 100000
+# set /Herwig/Decays/AVV:Initialize 1
+# set /Herwig/Decays/AVV:DatabaseOutput 1
+# set /Herwig/Decays/AVV:Points 100000
+# set /Herwig/Decays/SFF:Initialize 1
+# set /Herwig/Decays/SFF:DatabaseOutput 1
+# set /Herwig/Decays/SFF:Points 100000
+#set /Herwig/Decays/TTP:Initialize 1
+#set /Herwig/Decays/TTP:DatabaseOutput 1
+#set /Herwig/Decays/TTP:Points 100000
+# set /Herwig/Decays/Tensor2PScalar:Initialize 1
+# set /Herwig/Decays/Tensor2PScalar:DatabaseOutput 1
+# set /Herwig/Decays/Tensor2PScalar:Points 100000
+#set /Herwig/Decays/TensorVP:Initialize 1
+#set /Herwig/Decays/TensorVP:DatabaseOutput 1
+#set /Herwig/Decays/TensorVP:Points 100000
+
+set /Herwig/Widths/psi2Swidth:Initialize 1
+set /Herwig/Widths/psi2Swidth:Output 1
+set /Herwig/Masses/psi2smass:Initialize 1
+set /Herwig/Masses/psi2smass:Output 1
+set /Herwig/Widths/chi_c01Pwidth:Initialize 1
+set /Herwig/Widths/chi_c01Pwidth:Output 1
+set /Herwig/Masses/chi_c0mass:Initialize 1
+set /Herwig/Masses/chi_c0mass:Output 1
+set /Herwig/Widths/chi_c11Pwidth:Initialize 1
+set /Herwig/Widths/chi_c11Pwidth:Output 1
+set /Herwig/Masses/chi_c11Pmass:Initialize 1
+set /Herwig/Masses/chi_c11Pmass:Output 1
+set /Herwig/Widths/chi_c21Pwidth:Initialize 1
+set /Herwig/Widths/chi_c21Pwidth:Output 1
+set /Herwig/Masses/chi_c21Pmass:Initialize 1
+set /Herwig/Masses/chi_c21Pmass:Output 1
 
 ###################################################
 # Save run for later usage with 'Herwig run'
