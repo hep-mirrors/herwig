@@ -845,7 +845,7 @@ private:
    */
   //@{
   /**
-   *   Whether or not to include spa-cetime distances in the shower
+   *   Whether or not to include space-time distances in the shower
    */
   bool includeSpaceTime_;
 
@@ -861,10 +861,20 @@ private:
   /**
    *  Parameters for the constituent mass treatment.
    */
-    //@{
-  // True if shower should return constituent masses.
-  bool useConstituentMasses_=true;
+  //@{
+
+  /**
+   * True if shower should return constituent masses.
+   */
+  bool useConstituentMasses_ = true;
+
+  /**
+   * Status code to tag intermediate state as after the showering; if zero no tagging will be performed
+   */
+  int tagIntermediates_ = 0;
+
   //@}
+
 private:
 
   /**

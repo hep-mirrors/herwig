@@ -119,7 +119,7 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
   factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-  return alpha_->ratio(pt2, factor);
+  return alpha_->showerRatio(pt2, factor);
 }
 
 
@@ -219,7 +219,7 @@ void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
   double lower = splittingFn_->integOverP(zlimits_.first ,ids,pdfopt);
   double upper = splittingFn_->integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower)
-           * alpha_->overestimateValue()/Constants::twopi*enhance*detune);
+           * alpha_->showerOverestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {
