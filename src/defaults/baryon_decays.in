@@ -738,6 +738,36 @@ decaymode Omega_cbar0->s=ubar,dbar=ss_1bar; 0.0016 1 /Herwig/Decays/WeakPartonic
 decaymode Omega_cbar0->Xi*bar0,K0; 0.0014 1 /Herwig/Decays/CharmBaryon1
 decaymode Omega_cbar0->s=dbar,ubar=ss_1bar; 0.0005 1 /Herwig/Decays/WeakPartonic100
 #
+decaymode Xi_cc+->u=dbar,cs_0=d; 0.7806 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc+->mu+,nu_mu,cs_0=d; 0.089 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc+->e+,nu_e,cs_0=d; 0.089 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc+->u=sbar,cs_0=d; 0.0414 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xibar_cc-->ubar=d,cs_0bar=dbar; 0.7806 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc-->e-,nu_ebar,cs_0bar=dbar; 0.089 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc-->mu-,nu_mubar,cs_0bar=dbar; 0.089 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc-->ubar=s,cs_0bar=dbar; 0.0414 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xi_cc++->u=dbar,cs_0=u; 0.7831 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc++->mu+,nu_mu,cs_0=u; 0.0877 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc++->e+,nu_e,cs_0=u; 0.0877 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cc++->u=sbar,cs_0=u; 0.0415 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xibar_cc--->ubar=d,cs_0bar=ubar; 0.7831 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc--->e-,nu_ebar,cs_0bar=ubar; 0.0877 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc--->mu-,nu_mubar,cs_0bar=ubar; 0.0877 1 /Herwig/Decays/WeakPartonic100
+decaymode Xibar_cc--->ubar=s,cs_0bar=ubar; 0.0415 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Omega_cc+->u=dbar,cs_0=s; 0.8671 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cc+->u=sbar,cs_0=s; 0.0459 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cc+->mu+,nu_mu,cs_0=s; 0.0435 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cc+->e+,nu_e,cs_0=s; 0.0435 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Omegabar_cc-->ubar=d,cs_0bar=sbar; 0.8671 1 /Herwig/Decays/WeakPartonic100
+decaymode Omegabar_cc-->ubar=s,cs_0bar=sbar; 0.0459 1 /Herwig/Decays/WeakPartonic100
+decaymode Omegabar_cc-->e-,nu_ebar,cs_0bar=sbar; 0.0435 1 /Herwig/Decays/WeakPartonic100
+decaymode Omegabar_cc-->mu-,nu_mubar,cs_0bar=sbar; 0.0435 1 /Herwig/Decays/WeakPartonic100
+#
 decaymode Lambda_b0->s=cbar,c=ud_0; 0.2104 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_b0->d=ubar,c=ud_0; 0.2072 1 /Herwig/Decays/WeakPartonic100
 decaymode Lambda_b0->c=ubar,d=ud_0; 0.0913 1 /Herwig/Decays/WeakPartonic100

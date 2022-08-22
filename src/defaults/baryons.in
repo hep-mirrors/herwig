@@ -180,9 +180,9 @@ create ThePEG::ParticleData Sigmabar*_c0
 setup Sigmabar*_c0 -4114 Sigmabar*_c0 2.51848 0.0153 0.0765 0 0 0 4 0 
 makeanti Sigmabar*_c0 Sigma*_c0
 create ThePEG::ParticleData Sigma*_c+
-setup Sigma*_c+ 4214 Sigma*_c+ 2.5175 0.0153 0.0765 0 3 0 4 0 
+setup Sigma*_c+ 4214 Sigma*_c+ 2.5174 0.0172 0.0765 0 3 0 4 0 
 create ThePEG::ParticleData Sigmabar*_c-
-setup Sigmabar*_c- -4214 Sigmabar*_c- 2.5175 0.0153 0.0765 0 -3 0 4 0 
+setup Sigmabar*_c- -4214 Sigmabar*_c- 2.5174 0.01478 0.0765 0 -3 0 4 0 
 makeanti Sigmabar*_c- Sigma*_c+
 create ThePEG::ParticleData Sigma*_c++
 setup Sigma*_c++ 4224 Sigma*_c++ 2.51841 0.01478 0.0739 0 6 0 4 0 
@@ -423,9 +423,9 @@ create ThePEG::ParticleData Xi_b'bar0
 setup Xi_b'bar0 -5322 Xi_b'bar0 5.92992 2.0E-5 0.0002 0 0 0 2 0 
 makeanti Xi_b'bar0 Xi_b'0
 create ThePEG::ParticleData Omega_b-
-setup Omega_b- 5332 Omega_b- 6.0461 4.0107103658537E-13 0 0.492 -3 0 2 0 
+setup Omega_b- 5332 Omega_b- 6.0452 4.0107103658537E-13 0 0.492 -3 0 2 0 
 create ThePEG::ParticleData Omega_bbar+
-setup Omega_bbar+ -5332 Omega_bbar+ 6.0461 4.0107103658537E-13 0 0.492 3 0 2 0 
+setup Omega_bbar+ -5332 Omega_bbar+ 6.0452 4.0107103658537E-13 0 0.492 3 0 2 0 
 makeanti Omega_bbar+ Omega_b-
 create ThePEG::ParticleData Xi_bb-
 setup Xi_bb- 5512 Xi_bb- 10.202 1.2418310258024E-12 0 0.1589 -3 0 2 0 
