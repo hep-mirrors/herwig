@@ -49,6 +49,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2011_I931195
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2033855
 ########### chi_c Decays ################################
+# branching ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC1
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC2
 # decays to baryon antibaryon meson
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1818254
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870388
