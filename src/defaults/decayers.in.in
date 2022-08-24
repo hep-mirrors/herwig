@@ -2,7 +2,7 @@
 
 #
 # This file contains the set-up of the decayers for Herwig outputted
-# from the Herwig Particles Database at 13:45:14 on the 22/8/2022.
+# from the Herwig Particles Database at 16:19:54 on the 24/8/2022.
 #
 # load libraries which are needed
 library Hw64Decay.so

@@ -1226,7 +1226,7 @@ decaymode chi_c2->Sigma+,Sigmabar-; 3.6E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->n0,nbar0,phi; 2.8E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->p+,pbar-,phi; 2.8E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->eta,eta'; 2.2E-5 1 /Herwig/Decays/Tensor2PScalar
-decaymode chi_c2->eta,pi-,pi+; 2.0E-5 1 /Herwig/Decays/DecayME0
+decaymode chi_c2->pi+,pi-,pi0; 2.0E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c2->omega,phi; 1.0E-5 1 /Herwig/Decays/TVV
 decaymode chi_c2->pi+,pi-,pi0,pi0; 0 1 /Herwig/Decays/Mambo
 #
