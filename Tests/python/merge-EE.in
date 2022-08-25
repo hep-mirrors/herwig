@@ -166,6 +166,8 @@ for f in yodafiles:
         sqrts="psi2s"
     elif(file.find("Psi3770")>0) :
         sqrts="psi1d"
+    elif(file.find("Ds")>0) :
+        sqrts="Ds"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
          file.find("Xim")>0 or file.find("Xicp")>0 or
