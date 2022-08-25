@@ -108,6 +108,11 @@ public:
   tPPtr particle(int i) const;
 
   /**
+   * Returns the ith original constituent.
+   */
+  tPPtr particleB(int i) const;
+  
+  /**
    * Returns the original constituent carrying colour
    */
   tPPtr colParticle(bool anti = false) const;

@@ -236,7 +236,11 @@ bool Cluster::isStatusFinal() const {
 }
 
 tPPtr Cluster::particle(int i) const { 
-  return (i < _numComp) ? _component[i] : PPtr(); 
+  return (i < (int)_numComp) ? _component[i] : PPtr(); 
+}
+
+tPPtr Cluster::particleB(int i) const{
+        return (i < (int)_numComp) ? _original[i] : tPPtr(); 
 }
 
 tPPtr Cluster::colParticle(bool anti) const {

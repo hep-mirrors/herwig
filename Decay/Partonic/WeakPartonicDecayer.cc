@@ -30,8 +30,8 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-WeakPartonicDecayer::WeakPartonicDecayer() : MECode(0), _radprob(0.0), _maxtry(300), 
-					     _threemax(3.), _fourmax(3.) 
+WeakPartonicDecayer::WeakPartonicDecayer() : MECode(0), _radprob(0.0), _maxtry(300),
+					     _threemax(3.), _fourmax(3.)
 {}
 
 IBPtr WeakPartonicDecayer::clone() const {
@@ -49,9 +49,9 @@ bool WeakPartonicDecayer::accept(tcPDPtr parent, const tPDVector & prod) const {
   if((id / 1000)%10) {
     flav1 = (id/1000)%10;
     flav2 = (id/10)%100;
-  } 
+  }
   else {
-    flav1 = id/100;  
+    flav1 = id/100;
     flav2 = (id/10)%10;
   }
   if(!flav1 || !flav2) return false;
@@ -108,7 +108,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
       if(partons[0]->dataPtr()->iColour()==PDT::Colour3) {
 	partons[0]->antiColourNeighbour(partons[1]);
       }
-      else { 
+      else {
 	partons[0]->    colourNeighbour(partons[1]);
       }
     }
@@ -126,7 +126,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	partons[0]->antiColourNeighbour(partons[2]);
 	partons[1]->    colourNeighbour(partons[2]);
       }
-      else { 
+      else {
 	partons[0]->    colourNeighbour(partons[2]);
 	partons[1]->antiColourNeighbour(partons[2]);
       }
@@ -248,7 +248,10 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     // three body decay
     if( threeBody ) {
       if(MECode==0) {
-	Kinematics::threeBodyDecay(pdec,pout[1],pout[0],pout[2]);
+				Kinematics::threeBodyDecay(pdec,pout[1],pout[0],pout[2]);
+				// set momenta of particles
+				for(unsigned int ix=0;ix<pout.size();++ix)
+					partons[ix]->setMomentum(pout[ix]);
       }
       else {
 	// generate the kinematics
@@ -271,7 +274,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	  Kinematics::twoBodyDecay(p01,pout[0].mass(),pout[1].mass(),
 				   CosAngle,AzmAngle,pout[0],pout[1]);
 	  // kinematic piece of the weight
-	  wgt = 
+	  wgt =
 	    Kinematics::pstarTwoBodyDecay(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
 	    Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	  // piece to improve weight variation (not kinematics dependent)
@@ -292,7 +295,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	  }
 	}
 	while( wgt < _threemax*UseRandom::rnd() && ntry < _maxtry );
-	if(ntry==_maxtry) throw Exception() 
+	if(ntry==_maxtry) throw Exception()
 	  << "Too many attempts to generate three body kinematics in "
 	  << "WeakPartonicDecayer::decay()" << Exception::eventerror;
       }
@@ -311,7 +314,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
       else {
 	partons[2]->    colourNeighbour(partons[3]);
       }
-    } 
+    }
     // four body decay
     else {
       // generate the extra gluon
@@ -366,7 +369,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	}
       }
       while ( wgt < _fourmax*UseRandom::rnd() && ntry < _maxtry );
-      if(ntry==_maxtry) throw Exception() 
+      if(ntry==_maxtry) throw Exception()
 	<< "Too many attempts to generate four body kinematics in "
 	<< "WeakPartonicDecayer::decay()" << Exception::eventerror;
       // set momenta of particles
@@ -415,7 +418,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
   }
   return partons;
 }
-  
+
 void WeakPartonicDecayer::persistentOutput(PersistentOStream & os) const {
   os << MECode << _radprob << _maxtry << _threemax << _fourmax;
 }
@@ -477,7 +480,7 @@ void WeakPartonicDecayer::Init() {
 }
 
 double WeakPartonicDecayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
-  return (t1-t0)*(t0-t2)*t3; 
+  return (t1-t0)*(t0-t2)*t3;
 }
 
 void WeakPartonicDecayer::dataBaseOutput(ofstream & output,
@@ -486,7 +489,7 @@ void WeakPartonicDecayer::dataBaseOutput(ofstream & output,
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
   output << "newdef " << name() << ":MECode " << MECode << " \n";
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+  if(header) output << "\n\" where BINARY ThePEGName=\""
 		    << fullName() << "\";" << endl;
 }
 
@@ -560,7 +563,7 @@ threeBodyMatrixElement(tcPDPtr dec, const RhoDMatrix & rhoin,
 	Jbc [ix][iy] = w0[iy].leftCurrent(w1[ix]);
       if(lorder)
 	Jdec[ix][iy] = w2[ix].leftCurrent(w3[iy]);
-      else 
+      else
 	Jdec[ix][iy] = w2[iy].leftCurrent(w3[ix]);
     }
   }
@@ -620,13 +623,13 @@ fourBodyMatrixElement(Lorentz5Momentum & p0,Lorentz5Momentum & p1,
   Energy2 d23(p2*p3),d2g(p2*pg),d3g(p3*pg);
   Energy2 m02(sqr(p0.mass())),m12(sqr(p1.mass())),m22(sqr(p2.mass())),
     m32(sqr(p3.mass()));
-  Energy2 mei = 
+  Energy2 mei =
     +1./d0g/d1g  *( -d01*d12*d3g+d01*d03*d2g+2*d01*d03*d12 )
     +1./d0g      *( d12*d3g-d03*d12-d02*d03 )
     +1./d1g      *( d12*d13+d03*d2g+d03*d12 )
     +m12/sqr(d1g)*( -d03*d2g-d03*d12 )
     +m02/sqr(d0g)*(  d12*d3g-d03*d12 );
-  Energy2 mef = !Wcol ? ZERO : 
+  Energy2 mef = !Wcol ? ZERO :
     +1./d2g/d3g  *( d0g*d12*d23+d03*d1g*d23+2*d03*d12*d23 )
     +1./d2g      *( d03*d1g+d03*d12-d02*d12 )
     +1./d3g      *( d0g*d12-d03*d13+d03*d12 )
