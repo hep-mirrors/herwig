@@ -719,7 +719,7 @@ newdef omega':WidthUpCut 0.43
 create ThePEG::ParticleData phi'
 setup phi' 100333 phi' 1.68 0.15 0.3 0 0 0 3 0 
 create ThePEG::ParticleData psi(2S)
-setup psi(2S) 100443 psi(2S) 3.686093 0.000337 0.00337 0 0 0 3 0 
+setup psi(2S) 100443 psi(2S) 3.6861 0.000294 0.00337 0 0 0 3 0 
 create ThePEG::ParticleData Upsilon(2S)
 setup Upsilon(2S) 100553 Upsilon(2S) 10.02326 3.198E-5 0.0003198 0 0 0 3 0 
 create ThePEG::ParticleData K'*+
