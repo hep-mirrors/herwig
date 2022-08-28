@@ -490,9 +490,9 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       //if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
 
       // new kinematic threshold
-      bool C1 = ( Mc1*Mc1 )/( m1*m1 + *m*m + _kinThresholdShift ) < 1.0 ? true : false;
-      bool C2 = ( Mc2*Mc2 )/( m2*m2 + *m*m + _kinThresholdShift ) < 1.0 ? true : false;
-      bool C3 = ( Mc1*Mc1 + Mc2*Mc2 )/( Mc*Mc ) > 1.0 ? true : false;
+      bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+      bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+      bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
 
       if( C1 || C2 || C3 ) continue;
 
@@ -520,9 +520,9 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
        ****************************/
 
       // override chosen masses if needed
-      toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
+      toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
       if(toHadron1) { Mc1 = toHadron1->mass(); pClu1.setMass(Mc1); }
-      toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
+      toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
       if(toHadron2) { Mc2 = toHadron2->mass(); pClu2.setMass(Mc2); }
       // if a beam cluster not allowed to decay to hadrons
       if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
@@ -531,11 +531,11 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       // force the one-hadron decay for the other cluster as well.
       if(Mc1 + Mc2  >  Mc) {
 	if(!toHadron1) {
-	  toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
+	  toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
 	  if(toHadron1) { Mc1 = toHadron1->mass(); pClu1.setMass(Mc1); }
 	}
 	else if(!toHadron2) {
-	  toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
+	  toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
 	  if(toHadron2) { Mc2 = toHadron2->mass(); pClu2.setMass(Mc2); }
 	}
       }
@@ -698,7 +698,7 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
 
     // check if need to force meson clster to hadron
-    toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
+    toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
     if(toHadron) { Mc1 = toHadron->mass(); pClu1.setMass(Mc1); }
     // check if need to force diquark cluster to be on-shell
     toDiQuark = false;
@@ -714,11 +714,11 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     // force the one-hadron decay for the other cluster as well.
     if(Mc1 + Mc2  >  mmax) {
       if(!toHadron) {
-	toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
+	toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
 	if(toHadron) { Mc1 = toHadron->mass(); pClu1.setMass(Mc1); }
       }
       else if(!toDiQuark) {
-	Mc2 = _hadronsSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr()); pClu2.setMass(Mc2);
+	Mc2 = _hadronSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr()); pClu2.setMass(Mc2);
 	toDiQuark = true;
       }
     }
