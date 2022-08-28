@@ -13,7 +13,8 @@
 
 #include "OniumToOniumPiPiDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -28,152 +29,29 @@ using namespace ThePEG::Helicity;
 
 void OniumToOniumPiPiDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
-    if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
+  for(unsigned int ix=0;ix<maxWeight_.size();++ix) {
+    if(initialize()) maxWeight_[ix] = mode(ix)->maxWeight();
   }
-}
-
-OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
-  // Upsilon(3S)->Upsilon(1S) pi pi
-  _incoming.push_back(200553);
-  _outgoing.push_back(   553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(3.92e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.523/MeV2);_imB.push_back( 1.189/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(3S)->Upsilon(2S) pi pi
-  _incoming.push_back(200553);
-  _outgoing.push_back(100553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(311e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-0.395/MeV2);_imB.push_back( 0.001/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(2S)->Upsilon(1S) pi pi
-  _incoming.push_back(100553);
-  _outgoing.push_back(   553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(61.4e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-0.753/MeV2);_imB.push_back( ZERO);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(4S)->Upsilon(1S) pi pi
-  _incoming.push_back(300553);
-  _outgoing.push_back(   553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(1.77e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back( ZERO);_imB.push_back( ZERO);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(4S)->Upsilon(2S) pi pi
-  _incoming.push_back(300553);
-  _outgoing.push_back(100553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // psi(2s)->psi(1S) pi pi
-  _incoming.push_back(100443);
-  _outgoing.push_back(   443);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(66.2e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-0.336/MeV2);_imB.push_back( ZERO);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // psi(3770)->psi(1S) pi pi
-  _incoming.push_back(30443);
-  _outgoing.push_back(   443);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(20.6e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back( ZERO);_imB.push_back( ZERO);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(5S)->Upsilon pi pi
-  _incoming.push_back(400553);
-  _outgoing.push_back(553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(5S)->Upsilon(2S) pi pi
-  _incoming.push_back(400553);
-  _outgoing.push_back(100553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(5S)->Upsilon(3S) pi pi
-  _incoming.push_back(400553);
-  _outgoing.push_back(200553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(5S)->h_b pi pi
-  _incoming.push_back(400553);
-  _outgoing.push_back(10553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Upsilon(5S)->h_b(2P) pi pi
-  _incoming.push_back(400553);
-  _outgoing.push_back(110553);
-  _maxweight.push_back(1.);
-  _maxweight.push_back(1.);
-  _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
-  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( ZERO);_imC.push_back( ZERO);
-  // Initial size of the vectors
-  _initsize=_incoming.size();
-  // don'y generate the intermediates in the phase-space
-  generateIntermediates(false);
 }
 
 void OniumToOniumPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the vectors
-  unsigned int isize=_incoming.size();
-  if(_outgoing.size()!=isize||_maxweight.size()!=2*isize||
-     _coupling.size()!=isize||
-     _reA     .size()!=isize||_imA.size()      !=isize||
-     _reB     .size()!=isize||_imB.size()      !=isize||
-     _reC     .size()!=isize||_imC.size()      !=isize)
+  unsigned int isize=incoming_.size();
+  if(outgoing_.size()!=isize||maxWeight_.size()!=2*isize||
+     coupling_.size()!=isize||cA_.size()      !=isize||
+     cB_      .size()!=isize||cC_.size()      !=isize)
     throw InitException() << "Inconsistent size of the parameter vectors in "
 			  << "OniumToOniumPiPiDecayer"
 			  << Exception::runerror;
-  // construct the complex couplings
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    _cA.push_back(complex<InvEnergy2>(_reA[ix],_imA[ix]));
-    _cB.push_back(complex<InvEnergy2>(_reB[ix],_imB[ix]));
-    _cC.push_back(complex<InvEnergy2>(_reC[ix],_imC[ix]));
-  }
   // construct the decay channels
   tPDPtr pip(getParticleData(ParticleID::piplus ));
   tPDPtr pim(getParticleData(ParticleID::piminus));
   tPDPtr pi0(getParticleData(ParticleID::pi0    ));
   tPDPtr rho0(getParticleData(113)); 
   for(unsigned int ix=0;ix<isize;++ix) {
-    tPDPtr     in = getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoing[ix]),pip,pim};
+    tPDPtr     in = getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix]),pip,pim};
     for(unsigned int iy=0;iy<2;++iy) {
       // pi0 pi0
       if(iy==1) {
@@ -181,7 +59,7 @@ void OniumToOniumPiPiDecayer::doinit() {
 	out[2]=pi0;
       }
       // construct the phase-space mode
-      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
       PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1,0,rho0,1,2,1,3));
       mode->addChannel(channel);
       // reset the resonance parameters
@@ -192,19 +70,14 @@ void OniumToOniumPiPiDecayer::doinit() {
   }
 }
 
-
 void OniumToOniumPiPiDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _maxweight << _initsize << ounit(_reA,1./GeV2) 
-     << ounit(_imA,1./GeV2) << ounit(_cA,1./GeV2) << ounit(_reB,1./GeV2) 
-     << ounit(_imB,1./GeV2) << ounit(_cB,1./GeV2) << ounit(_reC,1./GeV2) 
-     << ounit(_imC,1./GeV2) << ounit(_cC,1./GeV2);
+  os << incoming_ << outgoing_ << maxWeight_ << coupling_
+     << ounit(cA_,1./GeV2) << ounit(cB_,1./GeV2) << ounit(cC_,1./GeV2);
 }
 
 void OniumToOniumPiPiDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _maxweight >> _initsize >> iunit(_reA,1./GeV2) 
-     >> iunit(_imA,1./GeV2) >> iunit(_cA,1./GeV2) >> iunit(_reB,1./GeV2) 
-     >> iunit(_imB,1./GeV2) >> iunit(_cB,1./GeV2) >> iunit(_reC,1./GeV2) 
-     >> iunit(_imC,1./GeV2) >> iunit(_cC,1./GeV2);
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> coupling_
+     >> iunit(cA_,1./GeV2) >> iunit(cB_,1./GeV2) >> iunit(cC_,1./GeV2);
 }
 
 // The following static variable is needed for the type
@@ -244,66 +117,40 @@ void OniumToOniumPiPiDecayer::Init() {
      "Phys.\\ Rev.\\ Lett.\\  {\\bf 96} (2006) 082004 [arXiv:hep-ex/0508023]."
      "%%CITATION = PRLTA,96,082004;%%");
 
-  static ParVector<OniumToOniumPiPiDecayer,long> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming onium state",
-     &OniumToOniumPiPiDecayer::_incoming, -1, long(0), -10000000, 10000000,
-     false, false, Interface::limited);
+  static Command<OniumToOniumPiPiDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, outgoing, coupling, A, B, C (re and im parts, 1/MeV2) and max weights for a decay",
+     &OniumToOniumPiPiDecayer::setUpDecayMode, false);
 
-  static ParVector<OniumToOniumPiPiDecayer,long> interfaceOutgoing
-    ("Outgoing",
-     "The PDG code for the outgoing onium state",
-     &OniumToOniumPiPiDecayer::_outgoing, -1, long(0), -10000000, 10000000,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode, there should be two "
-     "for each mode as we have pi+ pi- and pi0 pi0",
-     &OniumToOniumPiPiDecayer::_maxweight, -1, 1.0, 0.0, 10000.0,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceOutgoing
+    ("Outgoing","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceCoupling
-    ("Coupling",
-     "The overall coupling for the decay",
-     &OniumToOniumPiPiDecayer::_coupling, -1, 1.0, 0.0, 10.0,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReA
-    ("ReA",
-     "The real part of the A coupling",
-     &OniumToOniumPiPiDecayer::_reA, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceCoupling
+    ("Coupling","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImA
-    ("ImA",
-     "The imaginary part of the A coupling",
-     &OniumToOniumPiPiDecayer::_imA, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceReA
+    ("ReA","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReB
-    ("ReB",
-     "The real part of the B coupling",
-     &OniumToOniumPiPiDecayer::_reB, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceReB
+    ("ReB","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImB
-    ("ImB",
-     "The imaginary part of the B coupling",
-     &OniumToOniumPiPiDecayer::_imB, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceReC
+    ("ReC","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReC
-    ("ReC",
-     "The real part of the C coupling",
-     &OniumToOniumPiPiDecayer::_reC, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceImA
+    ("ImA","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImC
-    ("ImC",
-     "The imaginary part of the C coupling",
-     &OniumToOniumPiPiDecayer::_imC, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
-     false, false, Interface::limited);
+  static Deleted<OniumToOniumPiPiDecayer> interfaceImB
+    ("ImB","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<OniumToOniumPiPiDecayer> interfaceImC
+    ("ImC","The old methods of setting up a decay in OniumToOniumPiPiDecayer have been deleted, please use SetUpDecayMode");
 }
 
 int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
@@ -326,18 +173,18 @@ int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   if(!((npip==1&&npim==1)||npi0==2)||idother==0) return -1;
   unsigned int ix=0;
   do {
-    if(idin==_incoming[ix]&&idother==_outgoing[ix]) imode=ix;
+    if(idin==incoming_[ix]&&idother==outgoing_[ix]) imode=ix;
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   return npi0==2 ? 2*imode+1 : 2*imode;
 }
 
 void OniumToOniumPiPiDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
-  VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&part),
+  VectorWaveFunction::constructSpinInfo(vectors_[0],const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
-  VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
+  VectorWaveFunction::constructSpinInfo(vectors_[1],decay[0],
 					outgoing,true,false);
   for(unsigned int ix=1;ix<3;++ix)
     ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
@@ -351,31 +198,31 @@ double OniumToOniumPiPiDecayer::me2(const int,const Particle & part,
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
-    VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
+    VectorWaveFunction::calculateWaveFunctions(vectors_[0],rho_,
 						const_ptr_cast<tPPtr>(&part),
 						incoming,false);
   }
-  _vectors[1].resize(3);
+  vectors_[1].resize(3);
   for(unsigned int ix=0;ix<3;++ix) {
-    _vectors[1][ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
+    vectors_[1][ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
   // compute the matrix element
-  complex<InvEnergy2> A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
+  complex<InvEnergy2> A(cA_[imode()/2]),B(cB_[imode()/2]),C(cC_[imode()/2]);
   Energy2 q2  =(momenta[1]+momenta[2]).m2();
   Energy2 mpi2=sqr(momenta[1].mass());
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      Complex dota = _vectors[0][ix].dot(_vectors[1][iy]);
+      Complex dota = vectors_[0][ix].dot(vectors_[1][iy]);
       complex<Energy2> dotb = 
-	(_vectors[0][ix]*momenta[1])*(_vectors[1][iy]*momenta[2])+
-	(_vectors[0][ix]*momenta[2])*(_vectors[1][iy]*momenta[1]);
-      (*ME())(ix,iy,0,0)= _coupling[imode()/2]*
+	(vectors_[0][ix]*momenta[1])*(vectors_[1][iy]*momenta[2])+
+	(vectors_[0][ix]*momenta[2])*(vectors_[1][iy]*momenta[1]);
+      (*ME())(ix,iy,0,0)= coupling_[imode()/2]*
 	Complex(A*dota*(q2-2.*mpi2)+B*dota*momenta[1].e()*momenta[2].e()
 	 +C*dotb);
     }
   }
   // matrix element
-  double output=ME()->contract(_rho).real();
+  double output=ME()->contract(rho_).real();
   if(imode()%2==1) output*=0.5;
   // test of the matrix element
   // Energy2 s1=(momenta[1]+momenta[2]).m2();
@@ -396,60 +243,16 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "newdef " << name() << ":Outgoing " << ix << " " 
-	     << _outgoing[ix] << "\n";
-      output << "newdef " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix] << "\n";
-      output << "newdef " << name() << ":ReA " << ix << " " 
-	     << _reA[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":ImA " << ix << " " 
-	     << _imA[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":ReB " << ix << " " 
-	     << _reB[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":ImB " << ix << " " 
-	     << _imB[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":ReC " << ix << " " 
-	     << _reC[ix]*MeV2 << "\n";
-      output << "newdef " << name() << ":ImC " << ix << " " 
-	     << _imC[ix]*MeV2 << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "insert " << name() << ":Outgoing " << ix << " " 
-	     << _outgoing[ix] << "\n";
-      output << "insert " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix] << "\n";
-      output << "insert " << name() << ":ReA " << ix << " " 
-	     << _reA[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":ImA " << ix << " " 
-	     << _imA[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":ReB " << ix << " " 
-	     << _reB[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":ImB " << ix << " " 
-	     << _imB[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":ReC " << ix << " " 
-	     << _reC[ix]*MeV2 << "\n";
-      output << "insert " << name() << ":ImC " << ix << " " 
-	     << _imC[ix]*MeV2 << "\n";
-    }
-  }
-  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
-    if(ix<2*_initsize) {
-      output << "newdef " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix] << " " << coupling_[ix] << " "
+	   << cA_[ix].real()*MeV2 << " " << cA_[ix].imag()*MeV2 << " "
+	   << cB_[ix].real()*MeV2 << " " << cB_[ix].imag()*MeV2 << " "
+	   << cC_[ix].real()*MeV2 << " " << cC_[ix].imag()*MeV2 << " "
+	   << maxWeight_[2*ix] << " " << maxWeight_[2*ix+1] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
-		    << fullName() << "\";" << endl;
+  		    << fullName() << "\";" << endl;
 }
 
 WidthCalculatorBasePtr OniumToOniumPiPiDecayer::
@@ -468,15 +271,15 @@ threeBodyMEIntegrator(const DecayMode & dm) const {
   }
   unsigned int ix=0;
   do {
-    if(idin==_incoming[ix]&&idother==_outgoing[ix]) imode=ix;
+    if(idin==incoming_[ix]&&idother==outgoing_[ix]) imode=ix;
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   imode = npi0==2 ? 2*imode+1 : 2*imode;
   // construct the integrator
   vector<double> inweights(1,1.);
-  Energy scale=getParticleData(_incoming[ix-1])->mass();
-  Energy m1=getParticleData(_outgoing[ix-1])->mass();
+  Energy scale=getParticleData(incoming_[ix-1])->mass();
+  Energy m1=getParticleData(outgoing_[ix-1])->mass();
   Energy mpi = npi0==2 ? getParticleData(ParticleID::pi0)->mass() :
     getParticleData(ParticleID::piplus)->mass();
   vector<int> intype(1,3);
@@ -495,9 +298,63 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
   Energy q=sqrt(q2);
   Energy e2 = 0.5*(q2+sqr(m2)-s2)/q;
   Energy e3 = 0.5*(q2+sqr(m3)-s3)/q;
-  Complex amp = _cA[imode/2]*(s1-sqr(m2)-sqr(m3))+_cB[imode/2]*e2*e3;
+  Complex amp = cA_[imode/2]*(s1-sqr(m2)-sqr(m3))+cB_[imode/2]*e2*e3;
   Energy2 dot = 0.5*(q2+sqr(m1)-s1);
-  double output=(2.+sqr(dot/q/m1))*real(amp*conj(amp))*sqr(_coupling[imode/2])/3.;
+  double output=(2.+sqr(dot/q/m1))*real(amp*conj(amp))*sqr(coupling_[imode/2])/3.;
   if(imode%2==1) output*=0.5;
   return output;
+}
+
+string OniumToOniumPiPiDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  long out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "First outgoing particle with id " + std::to_string(out) + "does not have spin 1";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  complex<InvEnergy2> coup[3];
+  Complex ii(0.,1.);
+  for(unsigned int ix=0;ix<3;++ix) {
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double re = stof(stype);
+    stype = StringUtils::car(arg);
+    arg   = StringUtils::cdr(arg);
+    double im = stof(stype);
+    coup[ix] = re/MeV2+im/MeV2*ii;
+  }
+  pair<double,double> wgt;
+  wgt.first = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  wgt.second = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  coupling_.push_back(g);
+  cA_.push_back(coup[0]);
+  cB_.push_back(coup[1]);
+  cC_.push_back(coup[2]);
+  maxWeight_.push_back(wgt.first);
+  maxWeight_.push_back(wgt.second);
+  // success
+  return "";
 }

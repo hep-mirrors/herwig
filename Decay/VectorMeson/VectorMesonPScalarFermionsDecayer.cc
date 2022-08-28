@@ -16,7 +16,8 @@
 #include "VectorMesonPScalarFermionsDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -35,63 +36,14 @@ using namespace ThePEG::Helicity;
 void VectorMesonPScalarFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<_incoming.size();++ix) {
-      _maxweight[ix] = mode(ix)->maxWeight();
-      _weight[ix]    = mode(ix)->channels()[1].weight();
+    for(unsigned int ix=0;ix<incoming_.size();++ix) {
+      maxweight_[ix] = mode(ix)->maxWeight();
+      weight_[ix]    = mode(ix)->channels()[1].weight();
     }
   }
 }
 
-VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
-  : _coupling(8), _incoming(8), _outgoingP(8), _outgoingf(8), _outgoinga(8), 
-    _maxweight(8), _weight(8), _includeVMD(8), _VMDid(8), _VMDmass(8), 
-    _VMDwidth(8) {
-  // omega -> pi e+e- /mu+mu-
-  _incoming[0] =  223; _outgoingP[0] =  111; 
-  _outgoingf[0] = 11; _outgoinga[0] = -11; 
-  _coupling[0] = 0.2179/GeV; _maxweight[0] = 4.0; _weight[0] = 0.; 
-  _includeVMD[0] = 2; _VMDid[0] = 113; 
-  _VMDmass[0] = 0.7758*GeV; _VMDwidth[0] = 0.1503*GeV; 
-  _incoming[1] =  223; _outgoingP[1] =  111; 
-  _outgoingf[1] = 13; _outgoinga[1] = -13; 
-  _coupling[1] = 0.2179/GeV; _maxweight[1] = 2.8; _weight[1] = 0.; 
-  _includeVMD[1] = 2; _VMDid[1] = 113; 
-  _VMDmass[1] = 0.7758*GeV; _VMDwidth[1] = 0.1503*GeV; 
-  // phi -> eta e+e-/mu+mu-
-  _incoming[2] =  333; _outgoingP[2] =  221; 
-  _outgoingf[2] = 11; _outgoinga[2] = -11; 
-  _coupling[2] = 0.0643/GeV; _maxweight[2] = 3.7; _weight[2] = 0.; 
-  _includeVMD[2] = 2; _VMDid[2] = 113; 
-  _VMDmass[2] = 0.7758*GeV; _VMDwidth[2] = 0.1503*GeV; 
-  _incoming[3] =  333; ;_outgoingP[3] =  221; 
-  _outgoingf[3] = 13; _outgoinga[3] = -13; 
-  _coupling[3] = 0.0643/GeV; _maxweight[3] = 2.8; _weight[3] = 0.; 
-  _includeVMD[3] = 2; _VMDid[3] = 113; 
-  _VMDmass[3] = 0.7758*GeV; _VMDwidth[3] = 0.1503*GeV; 
-  // phi -> pi e+e-/mu+mu-
-  _incoming[4] =  333; ;_outgoingP[4] =  111; 
-  _outgoingf[4] = 11; _outgoinga[4] = -11; 
-  _coupling[4] = 0.0120094/GeV; _maxweight[4] = 4.9; _weight[4] = 0.21; 
-  _includeVMD[4] = 2; _VMDid[4] = 113; 
-  _VMDmass[4] = 0.7758*GeV; _VMDwidth[4] = 0.1503*GeV; 
-  _incoming[5] =  333; ;_outgoingP[5] =  111; 
-  _outgoingf[5] = 13; _outgoinga[5] = -13; 
-  _coupling[5] = 0.0120094/GeV; _maxweight[5] = 3.2; _weight[5] = 0.33; 
-  _includeVMD[5] = 2; _VMDid[5] = 113; 
-  _VMDmass[5] = 0.7758*GeV; _VMDwidth[5] = 0.1503*GeV;
-  // Jpsi -> eta e+e-
-  _incoming[6] =  443; _outgoingP[6] =  221; 
-  _outgoingf[6] = 11; _outgoinga[6] = -11; 
-  _coupling[6] = 0.0643/GeV; _maxweight[6] = 3.7; _weight[6] = 0.; 
-  _includeVMD[6] = 2; _VMDid[6] = 113; 
-  _VMDmass[6] = 0.7758*GeV; _VMDwidth[6] = 0.1503*GeV; 
-  _incoming[7] =  443; ;_outgoingP[7] =  221; 
-  _outgoingf[7] = 13; _outgoinga[7] = -13; 
-  _coupling[7] = 0.0643/GeV; _maxweight[7] = 2.8; _weight[7] = 0.; 
-  _includeVMD[7] = 2; _VMDid[7] = 113; 
-  _VMDmass[7] = 0.7758*GeV; _VMDwidth[7] = 0.1503*GeV; 
-  // the initial size of the arrays
-  _initsize=_coupling.size();
+VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() {
   // intermediates
   generateIntermediates(false);
 }
@@ -99,39 +51,39 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
 void VectorMesonPScalarFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
-  unsigned int isize(_coupling.size());
-  if(isize!=_incoming.size()  || isize!=_outgoingP.size()|| isize!=_outgoingf.size()||
-     isize!=_outgoinga.size() || isize!=_maxweight.size()|| isize!=_includeVMD.size()||
-     isize!=_VMDid.size()     || isize!=_VMDmass.size()  || isize!=_VMDwidth.size()||
-     isize!=_weight.size())
+  unsigned int isize(coupling_.size());
+  if(isize!=incoming_.size()  || isize!=outgoing_.size() ||
+     isize!=maxweight_.size()|| isize!=includeVMD_.size()||
+     isize!=VMDid_.size()     || isize!=VMDmass_.size()  || isize!=VMDwidth_.size()||
+     isize!=weight_.size())
     throw InitException() << "Inconsistent parameters in VectorMesonPScalar"
 			  << "FermionsDecayer" << Exception::abortnow;
   // create the integration channel for each mode
   tPDPtr gamma(getParticleData(ParticleID::gamma)),rho;
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    rho=getParticleData(_VMDid[ix]);
-    tPDPtr in     =  getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoingP[ix]),
-		     getParticleData(_outgoingf[ix]),
-		     getParticleData(_outgoinga[ix])};
-    PhaseSpaceModePtr newmode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    rho=getParticleData(VMDid_[ix]);
+    tPDPtr in     =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix].first),
+		     getParticleData(outgoing_[ix].second),
+		     getParticleData(-outgoing_[ix].second)};
+    PhaseSpaceModePtr newmode = new_ptr(PhaseSpaceMode(in,out,maxweight_[ix]));
     // photon channel
     PhaseSpaceChannel newChannel ((PhaseSpaceChannel(newmode),0,gamma,0,1,1,2,1,3));
     newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
-    newChannel.weight(1.-_weight[ix]);
+    newChannel.weight(1.-weight_[ix]);
     newmode->addChannel(newChannel);
     // vmd channel
     PhaseSpaceChannel newChannel2((PhaseSpaceChannel(newmode),0,rho,0,1,1,2,1,3));
-    newChannel2.weight(_weight[ix]);
+    newChannel2.weight(weight_[ix]);
     newmode->addChannel(newChannel2);
     addMode(newmode);
   }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
   for(unsigned ix=0;ix<isize;++ix) {
-    if(_includeVMD[ix]==1) {
-      _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
-      _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
+    if(includeVMD_[ix]==1) {
+      VMDmass_[ix]=getParticleData(VMDid_[ix])->mass();
+      VMDwidth_[ix]=getParticleData(VMDid_[ix])->width();
     }
   }
 }
@@ -155,28 +107,28 @@ int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   do {
-    if(_incoming[ix]==id0&&_outgoingP[ix]==ids) {
-      if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	 (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])) imode=ix;
+    if(incoming_[ix]==id0&&outgoing_[ix].first==ids) {
+      if((idf[0]==outgoing_[ix].second&&idf[1]==-outgoing_[ix].second)||
+	 (idf[1]==outgoing_[ix].second&&idf[0]==-outgoing_[ix].second)) imode=ix;
     }
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
+  while(imode<0&&ix<incoming_.size());
   // perform the decay
   cc=false;
   return imode;
 }
 
 void VectorMesonPScalarFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_coupling,1/GeV) << _incoming << _outgoingP << _outgoingf << _outgoinga 
-     << _maxweight << _weight << _includeVMD << _VMDid << ounit(_VMDmass,GeV) 
-     << ounit(_VMDwidth,GeV);
+  os << ounit(coupling_,1/GeV) << incoming_ << outgoing_
+     << maxweight_ << weight_ << includeVMD_ << VMDid_ << ounit(VMDmass_,GeV) 
+     << ounit(VMDwidth_,GeV);
 }
 
 void VectorMesonPScalarFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoingP >> _outgoingf >> _outgoinga 
-     >> _maxweight >> _weight >> _includeVMD >> _VMDid >> iunit(_VMDmass,GeV) 
-     >> iunit(_VMDwidth,GeV);
+  is >> iunit(coupling_,1/GeV) >> incoming_ >> outgoing_
+     >> maxweight_ >> weight_ >> includeVMD_ >> VMDid_ >> iunit(VMDmass_,GeV) 
+     >> iunit(VMDwidth_,GeV);
 }
 
 // The following static variable is needed for the type
@@ -191,86 +143,60 @@ void VectorMesonPScalarFermionsDecayer::Init() {
      "perform the decay of a vector meson to a pseudoscalar meson and a "
      "fermion-antifermion pair.");
 
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &VectorMesonPScalarFermionsDecayer::_incoming,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceOutcomingP
-    ("OutgoingPseudoScalar",
-     "The PDG code for the outgoing pseudoscalar",
-     &VectorMesonPScalarFermionsDecayer::_outgoingP,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceOutcomingF
-    ("OutgoingFermion",
-     "The PDG code for the outgoing fermion",
-     &VectorMesonPScalarFermionsDecayer::_outgoingf,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceOutcomingA
-    ("OutgoingAntiFermion",
-     "The PDG code for the outgoing antifermion",
-     &VectorMesonPScalarFermionsDecayer::_outgoinga,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,InvEnergy> interfaceCoupling
-    ("Coupling",
-     "The coupling for the decay mode",
-     &VectorMesonPScalarFermionsDecayer::_coupling,
-     1/MeV, 0, ZERO, -10000000/MeV, 10000000/MeV, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &VectorMesonPScalarFermionsDecayer::_maxweight,
-     0, 0, 0, 0., 200.0, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,double> interfaceWeight
-    ("Weight",
-     "The weight for vector meson phasse space channel",
-     &VectorMesonPScalarFermionsDecayer::_weight,
-     0, 0, 0, 0., 200.0, false, false, true);
-
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceIncludeVMD
-    ("IncludeVMD",
+  static Command<VectorMesonPScalarFermionsDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, vector, fermion, coupling(1/GeV), includeVMD,"
+     " VMD id, VMD mass(GeV), VMD width(GeV) and max weight and weight of second channel for a decay."
      "There are three options for 0 the VMD factor is not included, for 1 the factor "
      "is included using the default mass and width of the particle specified by"
      " VMDID, and for 2 the factor is included using the mass and width specified"
      " by VMDwidth and VMDmass.",
-     &VectorMesonPScalarFermionsDecayer::_includeVMD,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+     &VectorMesonPScalarFermionsDecayer::setUpDecayMode, false);
 
-  static ParVector<VectorMesonPScalarFermionsDecayer,int> interfaceVMDID
-    ("VMDID",
-     "The PDG code for the particle to be used for the VMD factor.",
-     &VectorMesonPScalarFermionsDecayer::_VMDid,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<VectorMesonPScalarFermionsDecayer,Energy> interfaceVMDmass
-    ("VMDmass",
-     "The mass to use for the particle in the VMD factor",
-     &VectorMesonPScalarFermionsDecayer::_VMDmass,
-     MeV, 0, ZERO, -10000000*MeV, 10000000*MeV, false, false, true);
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceOutcomingP
+    ("OutgoingPseudoScalar","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<VectorMesonPScalarFermionsDecayer,Energy> interfaceVMDwidth
-    ("VMDwidth",
-     "The width to use for the particle in the VMD factor",
-     &VectorMesonPScalarFermionsDecayer::_VMDwidth,
-     MeV, 0, ZERO, -10000000*MeV, 10000000*MeV, false, false, true);
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceOutcomingF
+    ("OutgoingFermion","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceOutcomingA
+    ("OutgoingAntiFermion","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceCoupling
+    ("Coupling","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceWeight
+    ("Weight","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceIncludeVMD
+    ("IncludeVMD","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceVMDID
+    ("VMDID","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceVMDmass
+    ("VMDmass","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
+
+  static Deleted<VectorMesonPScalarFermionsDecayer> interfaceVMDwidth
+    ("VMDwidth","The old methods of setting up a decay in VectorMesonPScalarFermionsDecayer have been deleted, please use SetUpDecayMode");
 
 }
 
 void VectorMesonPScalarFermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
-  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+  VectorWaveFunction::constructSpinInfo(vectors_,const_ptr_cast<tPPtr>(&part),
 					incoming,true,false);
   ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
   SpinorBarWaveFunction::
-    constructSpinInfo(_wavebar,decay[1],outgoing,true);
+    constructSpinInfo(wavebar_,decay[1],outgoing,true);
   SpinorWaveFunction::
-    constructSpinInfo(_wave   ,decay[2],outgoing,true);
+    constructSpinInfo(wave_   ,decay[2],outgoing,true);
 }
 
 double VectorMesonPScalarFermionsDecayer::me2(const int, const Particle & part,
@@ -282,27 +208,27 @@ double VectorMesonPScalarFermionsDecayer::me2(const int, const Particle & part,
 					 PDT::Spin1Half,PDT::Spin1Half)));
   // initialization
   if(meopt==Initialize) {
-    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+    VectorWaveFunction::calculateWaveFunctions(vectors_,rho_,
 					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
   }
-  _wave.resize(2);
-  _wavebar.resize(2);
+  wave_.resize(2);
+  wavebar_.resize(2);
   for(unsigned int ix=0;ix<2;++ix) {
-    _wavebar[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[1],ix,Helicity::outgoing);
-    _wave   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[2],ix,Helicity::outgoing);
+    wavebar_[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[1],ix,Helicity::outgoing);
+    wave_   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[2],ix,Helicity::outgoing);
   }
   // the factor for the off-shell photon
   Lorentz5Momentum pff(momenta[1]+momenta[2]);
   pff.rescaleMass();
   Energy2 mff2(pff.mass2());
   // prefactor
-  complex<InvEnergy3> pre(_coupling[imode()]/mff2);
+  complex<InvEnergy3> pre(coupling_[imode()]/mff2);
   Complex ii(0.,1.);
   // the VMD factor
-  if(_includeVMD[imode()]>0) {
-    Energy2 mrho2(_VMDmass[imode()]*_VMDmass[imode()]);
-    Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
+  if(includeVMD_[imode()]>0) {
+    Energy2 mrho2(VMDmass_[imode()]*VMDmass_[imode()]);
+    Energy2 mwrho(VMDmass_[imode()]*VMDwidth_[imode()]);
     pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
   }
   // calculate the matrix element
@@ -311,9 +237,9 @@ double VectorMesonPScalarFermionsDecayer::me2(const int, const Particle & part,
   for(ix=0;ix<2;++ix) {
     for(iy=0;iy<2;++iy) {
       temp=pre*epsilon(part.momentum(),pff,
-				    _wave[ix].vectorCurrent(_wavebar[iy]));
+				    wave_[ix].vectorCurrent(wavebar_[iy]));
       for(iz=0;iz<3;++iz) 
-	(*ME())(iz,0,iy,ix)=temp.dot(_vectors[iz]); 
+	(*ME())(iz,0,iy,ix)=temp.dot(vectors_[iz]); 
     }
   }
   // code for the spin averaged me for testing only
@@ -338,7 +264,7 @@ double VectorMesonPScalarFermionsDecayer::me2(const int, const Particle & part,
   // 		    (m2[1] + m2[2] + m2[3] + m2[0])))
   //      << endl;
   // return the answer
-  return ME()->contract(_rho).real();
+  return ME()->contract(rho_).real();
 }
 
 WidthCalculatorBasePtr 
@@ -358,17 +284,17 @@ VectorMesonPScalarFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) c
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   do {
-    if(_incoming[ix]==id0&&_outgoingP[ix]==ids) {
-      if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	 (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])) imode=ix;
+    if(incoming_[ix]==id0&&outgoing_[ix].first==ids) {
+      if((idf[0]==outgoing_[ix].second&&idf[1]==-outgoing_[ix].second)||
+	 (idf[1]==outgoing_[ix].second&&idf[0]==-outgoing_[ix].second)) imode=ix;
     }
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
+  while(imode<0&&ix<incoming_.size());
   // get the masses we need
-  Energy m[3]={getParticleData(_outgoingP[imode])->mass(),
-	       getParticleData(_outgoingf[imode])->mass(),
-	       getParticleData(_outgoinga[imode])->mass()};
+  Energy m[3]={getParticleData( outgoing_[imode].first )->mass(),
+	       getParticleData( outgoing_[imode].second)->mass(),
+	       getParticleData(-outgoing_[imode].second)->mass()};
   return 
     new_ptr(ThreeBodyAllOn1IntegralCalculator<VectorMesonPScalarFermionsDecayer>
 	    (3,-1000.*MeV,-0.8*MeV,-0.8,*this,imode,m[0],m[1],m[2]));
@@ -381,12 +307,12 @@ threeBodydGammads(int imodeb, const Energy2 q2, const Energy2 mff2,
   Energy q(sqrt(q2));
   Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
   // prefactor
-  complex<InvEnergy3> pre(_coupling[imodeb]/mff2);
+  complex<InvEnergy3> pre(coupling_[imodeb]/mff2);
   Complex ii(0.,1.);
   // the VMD factor
-  if(_includeVMD[imodeb]>0) {
-    Energy2 mrho2(_VMDmass[imodeb]*_VMDmass[imodeb]),
-      mwrho(_VMDmass[imodeb]*_VMDwidth[imodeb]);
+  if(includeVMD_[imodeb]>0) {
+    Energy2 mrho2(VMDmass_[imodeb]*VMDmass_[imodeb]),
+      mwrho(VMDmass_[imodeb]*VMDwidth_[imodeb]);
     pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
   }
   InvEnergy6 factor(real(pre*conj(pre)));
@@ -416,53 +342,84 @@ void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming   " << ix << "  " 
-	     << _incoming[ix]   << "\n";
-      output << "newdef " << name() << ":OutgoingPseudoScalar  " 
-	     << ix << "  " << _outgoingP[ix]  << "\n";
-      output << "newdef " << name() << ":OutgoingFermion  " 
-	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "newdef " << name() << ":OutgoingAntiFermion " 
-	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "newdef " << name() << ":Coupling   " << ix << "  " 
-	     << _coupling[ix]*MeV   << "\n";
-      output << "newdef " << name() << ":MaxWeight  " << ix << "  " 
-	     << _maxweight[ix]  << "\n";
-      output << "newdef " << name() << ":Weight  "    << ix << "  " 
-	     << _weight[ix]  << "\n";
-      output << "newdef " << name() << ":IncludeVMD " << ix << "  " 
-	     << _includeVMD[ix] << "\n";
-      output << "newdef " << name() << ":VMDID      " << ix << "  " 
-	     << _VMDid[ix]      << "\n";
-      output << "newdef " << name() << ":VMDmass    " << ix << "  " 
-	     << _VMDmass[ix]/MeV    << "\n";
-      output << "newdef " << name() << ":VMDwidth   " << ix << "  " 
-	     << _VMDwidth[ix]/MeV   << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming   " << ix << "  " 
-	     << _incoming[ix]   << "\n";
-      output << "insert " << name() << ":OutgoingPseudoScalar  " 
-	     << ix << "  " << _outgoingP[ix]  << "\n";
-      output << "insert " << name() << ":OutgoingFermion  " 
-	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "insert " << name() << ":OutgoingAntiFermion " 
-	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "insert " << name() << ":Coupling   " << ix << "  " 
-	     << _coupling[ix]*MeV   << "\n";
-      output << "insert " << name() << ":Weight  "    << ix << "  " 
-	     << _weight[ix]  << "\n";
-      output << "insert " << name() << ":IncludeVMD " << ix << "  " 
-	     << _includeVMD[ix] << "\n";
-      output << "insert " << name() << ":VMDID      " << ix << "  " 
-	     << _VMDid[ix]      << "\n";
-      output << "insert " << name() << ":VMDmass    " << ix << "  " 
-	     << _VMDmass[ix]/MeV    << "\n";
-      output << "insert " << name() << ":VMDwidth   " << ix << "  " 
-	     << _VMDwidth[ix]/MeV   << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix].first  << " " << outgoing_[ix].second << "  " 
+	   << coupling_[ix]*GeV << " " << includeVMD_[ix] << " "
+	   << VMDid_[ix] << " " << VMDmass_[ix]/GeV    << " "
+	   << VMDwidth_[ix]/GeV << " " << maxweight_[ix]  << " "
+	   << weight_[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+
+string VectorMesonPScalarFermionsDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 0";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 1/2";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // vmd option  
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int VMDinclude = stoi(stype);
+  // vmd id
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int VMDid = stoi(stype);
+  // vmd mass
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double VMDmass = stof(stype);
+  // vmd width
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double VMDwidth = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt2 = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  coupling_.push_back(g/GeV);
+  includeVMD_.push_back(VMDinclude);
+  VMDid_.push_back(VMDid);
+  VMDmass_.push_back(VMDmass*GeV);
+  VMDwidth_.push_back(VMDwidth*GeV);
+  maxweight_.push_back(wgt);
+  weight_.push_back(wgt2);
+  // success
+  return "";
 }

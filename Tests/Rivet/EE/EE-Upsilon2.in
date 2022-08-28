@@ -23,3 +23,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CUSB_1984_I199809
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1998_I467642
 # BABAR anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
+# BELLE Upsilon 2S -> Upsilon 1S pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301

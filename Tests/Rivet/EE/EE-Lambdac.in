@@ -17,7 +17,21 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2006_I693639
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319105
 # Lambda_c decays (Lambda Pi+ and Sigma+ Pi0) 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1995_I392704
+# lambda_c -> Sigma + pi0,eta, eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2140379
+# Lambda_c decays Lambda,Sigma0 pi+,K+ 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2138841
 # Lambda_c decays (e+ nu_e)
+# correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I371613
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I371611
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2005_I668268
+# pK- e+ nu_e
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2122399
+# Lambda0 e+ nu_e 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2127373
+# other decays
+# Lambda_c -> Xi* K+ -> Xi- pi_ K+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I781294
+# Lambda_c -> Lambda eta pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1711896

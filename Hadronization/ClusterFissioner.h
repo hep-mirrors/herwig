@@ -363,7 +363,7 @@ protected:
   /**
    *  Access to the hadron selector
    */
-  HadronSelectorPtr hadronsSelector() const {return _hadronsSelector;}
+  HadronSelectorPtr hadronSelector() const {return _hadronSelector;}
 
   /**
    *  Access to soft-cluster parameter
@@ -394,6 +394,13 @@ protected:
 private:
 
   /**
+  * Smooth probability for dynamic threshold cuts:
+  * @scale the current scale, e.g. the mass of the cluster,
+  * @threshold the physical threshold,
+   */
+  bool ProbablityFunction(double scale, double threshold);
+
+  /**
    * Check if a cluster is heavy enough to split again
    */
   bool isHeavy(tcClusterPtr );
@@ -401,7 +408,7 @@ private:
   /**
    * A pointer to a Herwig::HadronSelector object for generating hadrons.
    */
-  HadronSelectorPtr _hadronsSelector;
+  HadronSelectorPtr _hadronSelector;
 
   /**
    * @name The Cluster max mass,dependant on which quarks are involved, used to determine when
@@ -482,6 +489,20 @@ private:
   */
   const double _maxScale = 20.;
 
+  /**
+  * Power factor in ClausterFissioner bell probablity function
+  */
+  double _probPowFactor;
+
+  /**
+  * Shifts from the center in ClausterFissioner bell probablity function
+  */
+  double _probShift;
+
+  /**
+  * Shifts from the kinetic threshold in ClausterFissioner
+  */
+  Energy2 _kinThresholdShift;
 
 };
 

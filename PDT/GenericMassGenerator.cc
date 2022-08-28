@@ -211,8 +211,7 @@ void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
   output << "newdef " << fullName() << ":MaximumWeight " << maxWgt_    << "\n";
   output << "newdef " << fullName() << ":NGenerate "   << nGenerate_ << "\n";
   output << "newdef " << fullName() << ":WidthOption " << widthOpt_ << "\n";
-  if(header) output << "\n\" where BINARY ThePEGFullName=\"" 
-		    << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << name() << "\";" << endl;
 }
 
 void GenericMassGenerator::dofinish() {

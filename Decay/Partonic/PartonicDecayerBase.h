@@ -19,6 +19,9 @@
 #include "Herwig/Hadronization/LightClusterDecayer.h"
 #include "Herwig/Hadronization/ClusterDecayer.h"
 #include "Herwig/Hadronization/Cluster.h"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 
 namespace Herwig {
 
@@ -79,6 +82,16 @@ public:
   virtual void dataBaseOutput(ofstream & os,bool header) const;
   //@}
 
+protected:
+
+  /**
+   *  Perform the parton shower
+   */
+  PVector shower(const Particle & parent, ParticleVector & partons) const;
+  
+  bool timeLikeShower(tShowerParticlePtr particle,
+		      Branching fb, bool first, PVector & output) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -104,6 +117,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 protected:
 
@@ -166,6 +191,29 @@ private:
    * Whether or not to include the intermediates
    */
   bool _inter;
+
+  // @name Parton Shower related variables
+  //@{
+  /**
+   *  Wheher or not to perform the parton shower
+   */
+  bool _shower;
+  
+  /**
+   * Pointer to the splitting generator
+   */
+  SplittingGeneratorPtr _splittingGenerator;
+
+  /**
+   *  Pointer to the PartnerFinder object
+   */
+  PartnerFinderPtr _partnerFinder;
+  
+  /**
+   *  Pointer to the KinematicsReconstructor object
+   */
+  KinematicsReconstructorPtr _reconstructor;
+  //@}
 
 };
 

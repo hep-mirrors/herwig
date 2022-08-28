@@ -14,11 +14,26 @@ decaymode Upsilon(4S)->eta,eta'; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->eta',eta;
 # eta/omega dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 NA60_2016_I1452485
 # eta decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
 # BES eta' dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
+# BES  eta' -> pi+pi- gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1641075
+# BES eta' -> pi0 gamma gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1504943
+# Crystal Barrel eta' -> pi+pi- gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BARREL_1997_I456942
 # eta -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
-
+# eta -> pi+pi-pi0 and 3pi0 + eta'->3pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1376484
+# eta' > pi+pi-e+e-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1830421
+# eta' -> eta pi0 pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2105430
+# eta' -> eta pi0 pi0 and eta pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1623555
+# eta' -> 3 pi0 or pi+pi-pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1469067

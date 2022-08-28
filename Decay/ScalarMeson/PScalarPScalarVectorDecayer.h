@@ -22,7 +22,7 @@ using namespace ThePEG;
  *
  * The <code>PScalarPScalarVectorDecayer</code> class is designed to perform the decay
  * of a pseudoscalar meson to another pseudoscalar meson and a vector meson.
- * There are only a few of these decays. In this case the matrix element has the 
+ * In this case the matrix element has the 
  * form
  *  \f[\mathcal{M} = g\epsilon_2^\mu(p_0+p_1)_\mu,\f]
  *  where
@@ -31,6 +31,7 @@ using namespace ThePEG;
  * - \f$\epsilon_2\f$ is the polarization vector of the vector meson.
  * - \f$g\f$ is the coupling for the decay.
  *
+ * The same Lorentz structure is also valid, and used for Scalar to Scalar Vector, Scalar to PseudoScalar PseudoVector, or PseudoScalar to PseudoVector Scalar decays.
  * @see DecayIntegrator
  *
  * \author Peter Richardson
@@ -39,11 +40,6 @@ using namespace ThePEG;
 class PScalarPScalarVectorDecayer: public DecayIntegrator {
 
 public:
-
-  /**
-   * Default constructor.
-   */
-  PScalarPScalarVectorDecayer();
   
   /**
    * Which of the possible decays is required
@@ -149,6 +145,13 @@ protected:
   virtual void doinitrun();
   //@}
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+  
 private:
 
   /**
@@ -161,42 +164,32 @@ private:
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * the PDG code for the outgoing pseudoscalar
+   * the PDG code for the outgoing particles pseudoscalar, then vector
    */
-  vector<int> _outgoingP;
-
-  /**
-   * the PDG code for the outgoing vector
-   */
-  vector<int> _outgoingV;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * the coupling for the decay
    */
-  vector<double> _coupling;
+  vector<double> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decay products
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_;
 };
 
 }

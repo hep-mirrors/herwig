@@ -7,6 +7,8 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################
+# tasso event shapes at various energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333
 # CELLO EEC
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1982_I12010
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1983_I191415

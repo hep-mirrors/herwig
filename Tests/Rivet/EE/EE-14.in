@@ -8,6 +8,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 # select the analyses 
 ##################################################
 # tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1983_I181470
@@ -18,3 +19,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I168232
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1985_I205119
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I279165
+# JADE gamma,pi and eta spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1985_I213948

@@ -27,6 +27,7 @@ using namespace ThePEG;
  *  The matrix element is taken to b
  *  \f[\mathcal{M} = g \f].
  *
+ * The same Lorentz structure also applies and is used for Scalar to two PseudoScalars, and PseudoScalar to Scalar PseudoScalar decays.
  * @see DecayIntegrator
  * 
  * \author Peter Richardson
@@ -35,11 +36,6 @@ using namespace ThePEG;
 class ScalarScalarScalarDecayer: public DecayIntegrator {
 
 public:
-
-  /**
-   * Default constructor.
-   */
-  ScalarScalarScalarDecayer();
   
   /**
    * Which of the possible decays is required
@@ -151,42 +147,39 @@ private:
    */
   ScalarScalarScalarDecayer & operator=(const ScalarScalarScalarDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * the PDG code for the first outgoing particle
+   * the PDG codes for the outgoing particles
    */
-  vector<int> _outgoing1;
-
-  /**
-   * the PDG code for the second incoming particle
-   */
-  vector<int> _outgoing2;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * the coupling for the decay
    */
-  vector<Energy> _coupling;
+  vector<Energy> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 };
 
 }

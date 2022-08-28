@@ -74,9 +74,11 @@ updateChildren(const tShowerParticlePtr parent,
     (**pit).setShowerMomentum(true);
   }
   // sort out the helicity stuff 
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations()) return;
+  if(ShowerHandler::currentHandlerIsSet() &&
+     ! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations()) return;
   SpinPtr pspin(parent->spinInfo());
-  if(!pspin ||  !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations() ) return;
+  if(!pspin ||  (ShowerHandler::currentHandlerIsSet() &&
+		 !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) ) return;
   Energy2 t = sqr(scale())*z()*(1.-z());
   IdList ids;
   ids.push_back(parent->dataPtr());
@@ -121,7 +123,7 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
   Energy theMass =ZERO;
-  if(!(mass > ZERO) && ShowerHandler::currentHandler()->retConstituentMasses())
+  if(!(mass > ZERO) && (!ShowerHandler::currentHandlerIsSet() ||ShowerHandler::currentHandler()->retConstituentMasses()))
     theMass = last->data().constituentMass();
   else
     theMass = mass > ZERO ? mass : last->data().mass();

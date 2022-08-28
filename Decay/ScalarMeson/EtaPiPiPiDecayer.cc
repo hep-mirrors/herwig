@@ -13,7 +13,8 @@
 #include "EtaPiPiPiDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Deleted.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -28,51 +29,18 @@ using namespace ThePEG::Helicity;
 void EtaPiPiPiDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<_incoming.size();++ix)
-      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+    for(unsigned int ix=0;ix<incoming_.size();++ix)
+      if(mode(ix)) maxWeight_[ix] = mode(ix)->maxWeight();
   }
 }
 
-EtaPiPiPiDecayer::EtaPiPiPiDecayer() 
-  : _incoming(6), _outgoing(6), _charged(6), _prefactor(6),
-    _a(6), _b(6), _c(6), _maxweight(6) {
-  // eta to pi+pi-pi0
-  _incoming[0] = 221; _outgoing[0] = 111; _charged[0] = true; 
-  _prefactor[0] = 0.06477; _maxweight[0] = 1.72861;
-  _a[0] = -1.17; _b[0] = 0.21; _c[0] = 0.06; 
-  // eta to pi0pi0pi0
-  _incoming[1] = 221; _outgoing[1] = 111; _charged[1] = false; 
-  _prefactor[1] = 0.0883547; _maxweight[1] = 1.45813; 
-  _a[1] = 0.; _b[1] = -0.062; _c[1] = -0.062; 
-  // eta' to pi+pi-pi0
-  _incoming[2] = 331; _outgoing[2] = 111; _charged[2] = true; 
-  _prefactor[2] = 0.037165; _maxweight[2] = 0.0153201;
-  _a[2] = -3.08; _b[2] = 0.13; _c[2] = 0.62; 
-  // eta' to pi0pi0pi0
-  _incoming[3] = 331; _outgoing[3] = 111; _charged[3] = false; 
-  _prefactor[3] = 0.016203; _maxweight[3] = 2.52411; 
-  _a[3] = 0.0; _b[3] = -0.86; _c[3] = -0.86; 
-  // eta' to pi+pi-eta
-  _incoming[4] = 331; _outgoing[4] = 221; _charged[4] = true; 
-  _prefactor[4] = 49.42; _maxweight[4] = 1.421;
-  _a[4] = -0.093; _b[4] = -0.059; _c[4] = -0.003; 
-  // eta' to pi0pi0eta
-  _incoming[5] = 331; _outgoing[5] = 221; _charged[5] = false; 
-  _prefactor[5] = 20.62; _maxweight[5] = 1.42649;
-  _a[5] = -0.105; _b[5] = -0.065; _c[5] = -0.004; 
-  // initial size of the arrays
-  _initsize=_maxweight.size();
-  // intermediates
-  generateIntermediates(false);
-}
- 
 void EtaPiPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the parameters
-  unsigned int isize(_incoming.size());
-  if(isize!=_outgoing.size()||isize!=_prefactor.size()||
-     isize!=_charged.size()||isize!=_a.size()||
-     isize!=_b.size()||isize!=_c.size()||isize!=_maxweight.size())
+  unsigned int isize(incoming_.size());
+  if(isize!=outgoing_.size()||isize!=prefactor_.size()||
+     isize!=charged_.size()||isize!=a_.size()||
+     isize!=b_.size()||isize!=c_.size()||isize!=maxWeight_.size())
     throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
   			  << Exception::runerror;
   // external particles for the modes
@@ -83,17 +51,17 @@ void EtaPiPiPiDecayer::doinit() {
   outcharged[1] = getParticleData(ParticleID::piminus);
   tPDPtr rho(getParticleData(113));
   PhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr incoming = getParticleData(_incoming[ix]);
-    outneut[2]    = getParticleData(_outgoing[ix]);
-    outcharged[2] = getParticleData(_outgoing[ix]);
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr incoming = getParticleData(incoming_[ix]);
+    outneut[2]    = getParticleData(outgoing_[ix]);
+    outcharged[2] = getParticleData(outgoing_[ix]);
     // the pi+pi- mode
-    if(_charged[ix]) {
-      mode = new_ptr(PhaseSpaceMode(incoming,outcharged,_maxweight[ix]));
+    if(charged_[ix]) {
+      mode = new_ptr(PhaseSpaceMode(incoming,outcharged,maxWeight_[ix]));
     }
     // the pi0pi0 mode
     else {
-      mode = new_ptr(PhaseSpaceMode(incoming,outneut,_maxweight[ix]));
+      mode = new_ptr(PhaseSpaceMode(incoming,outneut,maxWeight_[ix]));
     }
     PhaseSpaceChannel newChannel((PhaseSpaceChannel(mode),0,rho,0,3,1,1,1,2));
     newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.0);
@@ -127,23 +95,23 @@ int EtaPiPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   unsigned int ix(0);
   int imode(-1);
   do {
-    if(id==_incoming[ix]&&iother==_outgoing[ix]&&_charged[ix]==charged) 
+    if(id==incoming_[ix]&&iother==outgoing_[ix]&&charged_[ix]==charged) 
       imode=ix;
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
+  while(imode<0&&ix<incoming_.size());
   cc=false;
   return imode;
 }
 
 void EtaPiPiPiDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _charged << _prefactor << _a << _b << _c  
-     << _maxweight;
+  os << incoming_ << outgoing_ << charged_ << prefactor_ << a_ << b_ << c_  
+     << maxWeight_;
 }
 
 void EtaPiPiPiDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _charged >> _prefactor >> _a >> _b >> _c 
-     >> _maxweight;
+  is >> incoming_ >> outgoing_ >> charged_ >> prefactor_ >> a_ >> b_ >> c_ 
+     >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -180,53 +148,34 @@ void EtaPiPiPiDecayer::Init() {
      "  %%CITATION = PRLTA,87,192001;%%\n"
      );
 
-  static ParVector<EtaPiPiPiDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code of the incoming particle",
-     &EtaPiPiPiDecayer::_incoming, -1, 0,  0, 1000000,
-     false, false, true);
+  static Command<EtaPiPiPiDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the decay mode (incoming, outgoing, charged/neutral pions, prefactor, a, b, c parameters and maximum weight",
+     &EtaPiPiPiDecayer::setUpDecayMode, false);
 
-  static ParVector<EtaPiPiPiDecayer,int> interfaceOutgoing
-    ("Outgoing",
-     "The PDG code of the outgoing particle",
-     &EtaPiPiPiDecayer::_outgoing, -1, 0,  0, 1000000,
-     false, false, true);
+  static Deleted<EtaPiPiPiDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
+  
+  static Deleted<EtaPiPiPiDecayer> interfaceOutgoing
+    ("Outgoing","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,bool> interfaceCharged
-    ("Charged",
-     "Whether the pions or charged or neutral",
-     &EtaPiPiPiDecayer::_charged,  -1,false, 0, 0,
-     false, false, false);
+  static Deleted<EtaPiPiPiDecayer> interfaceCharged
+    ("Charged","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,double> interfacePrefactor
-    ("Prefactor",
-     "The prefactor for the decay to get the correct partial width",
-     &EtaPiPiPiDecayer::_prefactor, -1,1.0,  0, 0,
-     false, false, false);
+  static Deleted<EtaPiPiPiDecayer> interfacePrefactor
+    ("Prefactor","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,double> interfacea
-    ("a",
-     "The a parameter for the dalitz plot",
-     &EtaPiPiPiDecayer::_a, -1, 0.0,  -10.0, 10.0,
-     false, false, true);
+  static Deleted<EtaPiPiPiDecayer> interfacea
+    ("a","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,double> interfaceb
-    ("b",
-     "The b parameter for the dalitz plot",
-     &EtaPiPiPiDecayer::_b, -1, 0.0,  -10.0, 10.0,
-     false, false, true);
+  static Deleted<EtaPiPiPiDecayer> interfaceb
+    ("b","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,double> interfacec
-    ("c",
-     "The c parameter for the dalitz plot",
-     &EtaPiPiPiDecayer::_c, -1, 0.0,  -10.0, 10.0,
-     false, false, true);
+  static Deleted<EtaPiPiPiDecayer> interfacec
+    ("c","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<EtaPiPiPiDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &EtaPiPiPiDecayer::_maxweight,
-     0, 0, 0, 0., 200., false, false, true);
+  static Deleted<EtaPiPiPiDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in EtaPiPiPiDecayer have been deleted, please use SetUpDecayMode");
 
 }
 
@@ -250,7 +199,7 @@ double EtaPiPiPiDecayer::me2(const int,const Particle & part,
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // calculate the matrix element
   // compute the variables we need
@@ -268,7 +217,7 @@ double EtaPiPiPiDecayer::me2(const int,const Particle & part,
   // compute the variables
   double x(0.5*sqrt(3.)*(u-t)/part.mass()/Q),x2(x*x);
   double y(0.5*msum/part.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
-  double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
+  double me(prefactor_[imode()]*(1+a_[imode()]*y+b_[imode()]*y2+c_[imode()]*x2));
   if(me<0.) me=0.;
   (*ME())(0,0,0,0)=sqrt(me);
   return me;
@@ -285,11 +234,11 @@ InvEnergy EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy2 q2
   Energy rs(sqrt(s)),e2star(0.5*(s-m12+m22)/rs),e3star(0.5*(q2-s-m32)/rs);
   Energy e2sm(sqrt(e2star*e2star-m22)),e3sm(sqrt(e3star*e3star-m32));
   Energy2 a(2*e2star*e3star+m22+m32),b(2*e2sm*e3sm);
-  Energy2 output=2*b*(1+_a[imodeb]*y+_b[imodeb]*y2+_c[imodeb]*xfact*xfact*(xc*xc))
-    +_c[imodeb]*(-8.*xfact*xfact*xc*a*b
+  Energy2 output=2*b*(1+a_[imodeb]*y+b_[imodeb]*y2+c_[imodeb]*xfact*xfact*(xc*xc))
+    +c_[imodeb]*(-8.*xfact*xfact*xc*a*b
 		 +4.*2*b*(3.*a*a+b*b)/3.*xfact*xfact);
   using Constants::pi;
-  return output*_prefactor[imodeb]/256./pi/pi/pi/q2/q;
+  return output*prefactor_[imodeb]/256./pi/pi/pi/q2/q;
 }
 
 
@@ -307,24 +256,24 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   bool charged(npi0<2);
   id=dm.parent()->id();
   do {
-    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
+    if(id==incoming_[ix]&&idout==outgoing_[ix]&&charged_[ix]==charged) 
       imode=ix;
     ++ix;
   }
-  while(imode<0&&ix<_incoming.size());
+  while(imode<0&&ix<incoming_.size());
   Energy mpi;
   if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
   else{mpi=getParticleData(ParticleID::pi0)->mass();}
-  Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
+  Energy m[3]={mpi,mpi,getParticleData(outgoing_[imode])->mass()};
   WidthCalculatorBasePtr 
     temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
   		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
-  if(_outgoing[imode]==ParticleID::eta) {
+  if(outgoing_[imode]==ParticleID::eta) {
     tcGenericMassGeneratorPtr test;
     tGenericMassGeneratorPtr massptr;
-    if(getParticleData(_outgoing[imode])->massGenerator()) {
+    if(getParticleData(outgoing_[imode])->massGenerator()) {
       test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
-  	(getParticleData(_outgoing[imode])->massGenerator());
+  	(getParticleData(outgoing_[imode])->massGenerator());
       massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
     }
     if(massptr) {
@@ -340,44 +289,62 @@ void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "newdef " << name() << ":Outgoing  " << ix << " "
-	     << _outgoing[ix]  << "\n";
-      output << "newdef " << name() << ":Charged " << ix << " "
-		 << _charged[ix]  << "\n";
-      output << "newdef " << name() << ":Prefactor " << ix << " "
-	     << _prefactor[ix]  << "\n";
-      output << "newdef " << name() << ":a " << ix << " "
-	     << _a[ix]  << "\n";
-      output << "newdef " << name() << ":b " << ix << " "
-	     << _b[ix]  << "\n";
-      output << "newdef " << name() << ":c " << ix << " "
-	     << _c[ix]  << "\n";
-      output << "newdef " << name() << ":MaxWeight  " << ix << " "
-	     << _maxweight[ix]  << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming   " << ix << " "
-	     << _incoming[ix]   << "\n";
-      output << "insert " << name() << ":Outgoing  " << ix << " "
-	     << _outgoing[ix]  << "\n";
-      output << "insert " << name() << ":Charged " << ix << " "
-	     << _charged[ix]  << "\n";
-      output << "insert " << name() << ":Prefactor " << ix << " "
-	     << _prefactor[ix]  << "\n";
-      output << "insert " << name() << ":a " << ix << " "
-	     << _a[ix]  << "\n";
-      output << "insert " << name() << ":b " << ix << " "
-	     << _b[ix]  << "\n";
-      output << "insert " << name() << ":c " << ix << " "
-	     << _c[ix]  << "\n";
-      output << "insert " << name() << ":MaxWeight  " << ix << " "
-	     << _maxweight[ix]  << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix]   << " "
+	   << outgoing_[ix]  << " " << charged_[ix]  << " " << prefactor_[ix]  << " "
+	   << a_[ix]  << " " << b_[ix]  << " " << c_[ix]  << " " << maxWeight_[ix]  << "\n";
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
-		    << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+string EtaPiPiPiDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 0";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  long out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "First outgoing particle with id " + std::to_string(out) + "does not have spin 0";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  bool charge = stoi(stype);
+  // get the couplings
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double a = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double b = stof(stype);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double c = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_ .push_back(in);
+  outgoing_ .push_back(out);
+  charged_  .push_back(charge);
+  prefactor_.push_back(g);
+  a_        .push_back(a);
+  b_        .push_back(b);
+  c_        .push_back(c);
+  maxWeight_.push_back(wgt);
+  return "";
 }

@@ -1,0 +1,76 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> psi(2S)
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEPsi2S HwMELepton.so
+set /Herwig/MatrixElements/MEPsi2S:VectorMeson /Herwig/Particles/psi(2S)
+set /Herwig/MatrixElements/MEPsi2S:Coupling  19.25684
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEPsi2S
+set EventGenerator:EventHandler:LuminosityFunction:Energy 3.686097
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+############ general top stuff #######################
+# jpsi, chi_{0,1,2} charged mults
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1800404
+########### Decay to three mesons ####################
+# psi(2s) -> J/Psi pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1979_I144382
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_1999_I507637
+# psi(2S) -> pi+ pi- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2005_I689969
+# psi(2S) -> omega KS0 KS0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1921801
+# psi(2S) -> K+ K- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1127328
+# psi(2S) -> K+ K- eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1771616
+# psi(2S) -> pi+ pi- eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1621266
+
+########### Decay to 2 baryons + meson ####################
+# psi(2S) -> p pbar eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1709205
+# psi(2S) -> p pbar eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1227512
+# psi(2S) -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1120737
+# psi(2S) -> p pbar phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1722111
+# psi(2S) -> Lambda Lambdabar omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2122392
+# psi(2S) -> Lambda Lambdabar eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2128095
+# psi(2S) -> p nbar pi- +cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I716589
+########### Decay to gamma chi_c correlations ###########
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1507887
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I832707
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1624548
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2011_I931195
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2033855
+########### chi_c Decays ################################
+# branching ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC1
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_CHIC2
+# decays to baryon antibaryon meson
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1818254
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870388
+# chi_c1 pi+pi-eta + other modes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I732065
+# chi_c1 pi+pi-eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1490896
+# chi_c1 pi+pi-eta(')
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I929693
+# chi_c to phi phi eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1763897
+# chi_c to 4 KS0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716627
+# chi_c(1,2) -> J/psi mu+mu-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1716256
+# chi_c(1,2) -> eta' K+ K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2014_I1280710
+# chi_c 4 pi 2K 2pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2008_I787608
+# chi_c0 pi+pi-K+K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2005_I690784

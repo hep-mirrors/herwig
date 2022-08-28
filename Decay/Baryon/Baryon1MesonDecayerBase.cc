@@ -799,15 +799,21 @@ threeHalfHalfVector(const int,const Particle & part, const tPDVector & outgoing,
   Complex lS,rS,lV,rV,left,right;
   // incoming particle
   if(part.id()>0) {
-      lS=(A3-B3);rS=(A3+B3);
-      lV=(A2-B2);rV=(A2+B2);
-      left=(A1-B1);right=(A1+B1);
+    lS    = (A3-B3);
+    rS    = (A3+B3);
+    lV    = (A2-B2);
+    rV    = (A2+B2);
+    left  = (A1-B1);
+    right = (A1+B1);
   }
   // incoming anti-particle
   else {
-    lS=conj(A3+B3);rS=conj(A3-B3);
-    lV=-conj(A2-B2);rV=-conj(A2+B2);
-    left=conj(A1+B1);right=conj(A1-B1);
+    lS    = conj(A3+B3);
+    rS    = conj(A3-B3);
+    lV    =-conj(A2-B2);
+    rV    =-conj(A2+B2);
+    left  = conj(A1+B1);
+    right = conj(A1-B1);
   }
   // compute the matrix element
   vector<unsigned int> ispin(3);
@@ -834,7 +840,7 @@ threeHalfHalfVector(const int,const Particle & part, const tPDVector & outgoing,
     for(unsigned iz=0;iz<3;++iz) {
       ispin[2]=iz;
       if(outgoing[0]->id()>0) stemp  = _inThreeHalf[iya].dot(_inVec[iz]);
-      else                 sbtemp = _inThreeHalfBar[iya].dot(_inVec[iz]);
+      else                    sbtemp = _inThreeHalfBar[iya].dot(_inVec[iz]);
       for(unsigned int ixa=0;ixa<2;++ixa) {
 	ispin[1]=ixa;
 	if(outgoing[0]->id()>0) sbtemp = _inHalfBar[ixa];

@@ -19,6 +19,9 @@
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include "HadronSelector.fh"
+#include "HadronInfo.h"
+#include "Kupco.h"
+#include <tuple>
 
 namespace Herwig {
 
@@ -32,8 +35,8 @@ using namespace ThePEG;
  *  \author Peter Richardson
  *
  *  This is the base class for the selection of either a pair of hadrons, or
- *  in some cases a single hadron. The different approaches which were 
- *  previously implemented in this class are now implemented in the 
+ *  in some cases a single hadron. The different approaches which were
+ *  previously implemented in this class are now implemented in the
  *  HwppSelector and Hw64Selector which inherit from this class.
  *
  *  This class implements a number of methods which are needed by all models
@@ -46,188 +49,6 @@ using namespace ThePEG;
  * @see Hw64Selector
  */
 class HadronSelector: public Interfaced {
-
-public:
-
-  /** \ingroup Hadronization
-   *  \class HadronInfo 
-   *  \brief Class used to store all the hadron information for easy access.
-   *  \author Philip Stephens
-   *  
-   *  Note that:
-   *  - the hadrons in _table can be filled in any ordered 
-   *    w.r.t. the mass value, and flavours for different
-   *    groups (for instance, (u,s) hadrons don't need to
-   *    be placed after (d,s) or any other flavour), but 
-   *    all hadrons with the same flavours must be consecutive
-   *    ( for instance you cannot alternate hadrons of type
-   *    (d,s) with those of flavour (u,s) ).
-   *    Furthermore, it is assumed that particle and antiparticle
-   *    have the same weights, and therefore only one of them
-   *    must be entered in the table: we have chosen to refer
-   *    to the particle, defined as PDG id > 0, although if
-   *    an anti-particle is provided in input it is automatically
-   *    transform to its particle, simply by taking the modulus
-   *    of its id.
-   */
-  class HadronInfo {  
-
-  public:
-    
-    /**
-     *  Constructor
-     * @param idin The PDG code of the hadron
-     * @param datain The pointer to the ParticleData object
-     * @param swtin  The singlet/decuplet/orbital factor
-     * @param massin The mass of the hadron
-     */
-    HadronInfo(long idin=0, tPDPtr datain=tPDPtr(),
-	       double swtin=1., Energy massin=ZERO)
-      : id(idin), ptrData(datain), swtef(swtin), wt(1.0), overallWeight(0.0),
-	mass(massin)
-    {}
-    
-    /**
-     *  Comparision operator on mass
-     */
-     bool operator<(const HadronInfo &x) const {
-      if(mass!=x.mass) return mass < x.mass;
-      else return id < x.id;
-    }
-    
-    /**
-     * The hadrons id.
-     */
-    long  id;
-    
-    /**
-     * pointer to ParticleData, to get the spin, etc...
-     */
-    tPDPtr ptrData;
-    
-    /**
-     * singlet/decuplet/orbital factor 
-     */
-    double swtef;
-    
-    /**
-     * mixing factor
-     */
-    double wt;          
-    
-    /**
-     * (2*J+1)*wt*swtef
-     */
-    double overallWeight;
-    
-    /**
-     * The hadrons mass
-     */
-    Energy mass;
-    
-    /**
-     *  Rescale the weight for a given hadron
-     */
-    void rescale(double x) const { 
-      const_cast<HadronInfo*>(this)->overallWeight *= x; 
-    }
-    
-    /**
-     * Friend method used to print the value of a table element.
-     */
-    friend PersistentOStream & operator<< (PersistentOStream & os, 
-					   const HadronInfo & hi ) {
-      os << hi.id << hi.ptrData << hi.swtef << hi.wt 
-	 << hi.overallWeight << ounit(hi.mass,GeV);
-      return os;
-    }
-    
-    /**
-     * debug output
-     */
-    friend ostream & operator<< (ostream & os, const HadronInfo & hi ) {
-      os << std::scientific << std::showpoint
-	 << std::setprecision(4)
-	 << setw(2)
-	 << hi.id << '\t'
-	 << hi.swtef << '\t'
-	 << hi.wt << '\t'
-	 << hi.overallWeight << '\t'
-	 << ounit(hi.mass,GeV);
-      return os;
-    }
-    
-    /**
-     * Friend method used to read in the value of a table element.
-     */
-    friend PersistentIStream & operator>> (PersistentIStream & is, 
-					   HadronInfo & hi ) {
-      is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt 
-	 >> hi.overallWeight >> iunit(hi.mass,GeV);
-      return is;
-    }
-  };
-  
-  /** \ingroup Hadronization
-   *  \class Kupco
-   *  \brief Class designed to make STL routines easy to use.
-   *  \author Philip Stephens
-   *
-   *  This class is used to generate a list of the hadron pairs which can 
-   *  be produced that allows easy traversal and quick access.
-   */
-  class Kupco {
-    
-  public:
-    
-    /**
-     *  Constructor
-     * @param inidQ PDG code of the quark drawn from the vacuum.
-     * @param inhad1 ParticleData for the first hadron produced.
-     * @param inhad2 ParticleData for the second hadron produced.
-     * @param inwgt  The weight for the hadron pair 
-     */
-     Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt)
-      : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
-    {}
-  
-    /**
-     * id of the quark drawn from the vacuum.
-     */
-    tcPDPtr idQ;
-    
-    /**
-     * The ParticleData object for the first hadron produced.
-     */
-    tcPDPtr hadron1;
-    
-    /**
-     * The ParticleData object for the second hadron produced.
-     */
-    tcPDPtr hadron2;
-    
-    /**
-     * Weight factor of this componation.
-     */
-    Energy weight;
-  };
-
-public:
-
-  /**
-   *  The helper classes
-   */
-  //@{
-  /**
-   * The type is used to contain all the hadrons info of a given flavour.
-   */
-  typedef set<HadronInfo> KupcoData;
-  //@}
-
-  /**
-   * The hadron table type.
-   */
-  typedef map<pair<long,long>,KupcoData> HadronTable;
 
 public:
 
@@ -244,9 +65,8 @@ public:
    * @param par2 The second constituent
    * @param par3 The third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-    = 0;
+  virtual tcPDPair chooseHadronPair(const Energy cluMass, 
+				    tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Select the single hadron for a cluster decay
@@ -263,43 +83,43 @@ public:
    * Given the two (or three) constituents of a cluster, it returns
    * the two lightest hadrons with proper flavour numbers.
    * Furthermore, the first of the two hadrons must have the constituent with
-   * par1, and the second must have the constituent with par2. 
+   * par1, and the second must have the constituent with par2.
    * \todo At the moment it does *nothing* in the case that also par3 is present.
    *
-   * The method is implemented by calling twice lightestHadron, 
+   * The method is implemented by calling twice lightestHadron,
    * once with (par1,quarktopick->CC()) ,and once with (par2,quarktopick)
    * where quarktopick is either the pointer to
-   * d or u quarks . In fact, the idea is that whatever the flavour of par1 
+   * d or u quarks . In fact, the idea is that whatever the flavour of par1
    * and par2, no matter if (anti-)quark or (anti-)diquark, the lightest
-   * pair of hadrons containing flavour par1 and par2 will have either 
+   * pair of hadrons containing flavour par1 and par2 will have either
    * flavour d or u, being the lightest quarks.
-   * The method returns the pair (PDPtr(),PDPtr()) if anything goes wrong. 
+   * The method returns the pair (PDPtr(),PDPtr()) if anything goes wrong.
    *
-   * \todo The method assumes par3 == PDPtr() (otherwise we don't know how to proceed: a 
-   * possible, trivial way would be to randomly select two of the three 
+   * \todo The method assumes par3 == PDPtr() (otherwise we don't know how to proceed: a
+   * possible, trivial way would be to randomly select two of the three
    * (anti-)quarks and treat them as a (anti-)diquark, reducing the problem
    * to two components as treated below.
    * In the normal (two components) situation, the strategy is the following:
-   * treat in the same way the two possibilities:  (d dbar)  (i=0) and  
+   * treat in the same way the two possibilities:  (d dbar)  (i=0) and
    * (u ubar)  (i=1)  as the pair quark-antiquark necessary to form a
    * pair of hadrons containing the input flavour  par1  and  par2; finally,
    * select the one that produces the lightest pair of hadrons, compatible
    * with the charge conservation constraint.
    */
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					   tcPDPtr ptr3 = PDPtr ()) const;
+  tcPDPair lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles
    * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent
+   * @param ptr2 is the second constituent
    */
-    Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					tcPDPtr ptr3 = PDPtr ()) const  {
-    pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
-    if ( ! pairData.first || ! pairData.second ) return ZERO;
-    return ( pairData.first->mass() + pairData.second->mass() ); 
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  { 
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    if(lightest!=lightestHadrons_.end())
+      return lightest->second.first->mass()+lightest->second.second->mass();
+    else
+      return ZERO;
   }
 
   /**
@@ -307,13 +127,10 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent
+   * @param ptr2 is the second constituent
    */
-   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-			  tcPDPtr ptr3 = PDPtr ()) const;
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -321,98 +138,60 @@ public:
    *
    * Given the id of two (or three) constituents of a cluster, it returns
    * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
    * @param threshold The theshold
    * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent
+   * @param ptr2 is the second constituent
    */
-  vector<pair<tcPDPtr,double> > 
+  vector<pair<tcPDPtr,double> >
   hadronsBelowThreshold(Energy threshold,
-			tcPDPtr ptr1, tcPDPtr ptr2,
-			tcPDPtr ptr3 = PDPtr ()) const;
+			tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
    * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent 
+   * @param ptr2 is the second constituent
    */
-   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-  				   tcPDPtr ptr3 = PDPtr ()) const {
-#else
-                                   tcPDPtr = PDPtr ()) const {
-#endif
-    // The method assumes ptr3 == empty  
-    assert(!(ptr3));
+   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
     // find entry in the table
     pair<long,long> ids(abs(ptr1->id()),abs(ptr2->id()));
     HadronTable::const_iterator tit=_table.find(ids);
     // throw exception if flavours wrong
     if(tit==_table.end()||tit->second.empty())
       throw Exception() <<  "HadronSelector::massLightestHadron "
-			<< "failed for particle" << ptr1->id()  << " " 
-			<< ptr2->id() 
+			<< "failed for particle" << ptr1->id()  << " "
+			<< ptr2->id()
 			<< Exception::eventerror;
     // return the mass
     return tit->second.begin()->mass;
   }
 
   /**
-   *  Returns the mass of the lightest pair of baryons.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
+   *  Access the parton weights
    */
-  Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
+    assert( it != _pwt.end() );
+    return it->second;
+  }
+
+  /**
+   *  Force baryon/meson selection
+   */
+  virtual std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *  Strange quark weight
+   */
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   * Return the particle data of the diquark (anti-diquark) made by the two
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
   
-  /**
-   *  Return the weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The down quark weight.
-   */
-   double pwtDquark()  const {
-    return _pwtDquark;
-  } 
-
-  /**
-   * The up quark weight.
-   */
-   double pwtUquark()  const { 
-    return _pwtUquark;
-  }
-
-  /**
-   * The strange quark weight.
-   */
-   double pwtSquark()  const { 
-    return _pwtSquark;
-  }
-
-  /**
-   * The charm quark weight.
-   */
-   double pwtCquark()  const { 
-    return _pwtCquark;
-  }
-
-  /**
-   * The bottom quark weight.
-   */
-   double pwtBquark()  const { 
-    return _pwtBquark;
-  } 
-  
-  /**
-   * The diquark weight.
-   */
-   double pwtDIquark() const {
-    return _pwtDIquark;
-  }
-  //@}
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -459,23 +238,33 @@ protected:
 protected:
 
   /**
+   *  A sub-function of HadronSelector::constructHadronTable().
+   *  It receives the information of a prospective Hadron and inserts it
+   *  into the hadron table construct.
+   *  @param particle is a particle data pointer to the hadron
+   *  @param flav1 is the first  constituent of the hadron
+   *  @param flav2 is the second constituent of the hadron
+   */
+  void insertToHadronTable(tPDPtr &particle, int flav1, int flav2);
+
+  /**
    *  Construct the table of hadron data
    *  This is the main method to initialize the hadron data (mainly the
-   *  weights associated to each hadron, taking into account its spin, 
+   *  weights associated to each hadron, taking into account its spin,
    *  eventual isoscalar-octect mixing, singlet-decuplet factor). This is
    *  the method that one should update when new or updated hadron data is
-   *  available. 
+   *  available.
    *
-   *  This class implements the construction of the basic table but can be 
+   *  This class implements the construction of the basic table but can be
    *  overridden if needed in inheriting classes.
    *
-   *  The rationale for factors used for diquarks involving different quarks can 
+   *  The rationale for factors used for diquarks involving different quarks can
    *  be can be explained by taking a prototype example that in the  exact SU(2) limit,
    *  in which:
-   *  \f[m_u=m_d\f] 
+   *  \f[m_u=m_d\f]
    *  \f[M_p=M_n=M_\Delta\f]
    *      and we will have equal numbers of u and d quarks produced.
-   *      Suppose that we weight 1 the diquarks made of the same 
+   *      Suppose that we weight 1 the diquarks made of the same
    *      quark and 1/2 those made of different quarks, the fractions
    *      of u and d baryons (p, n, Delta) we get are the following:
    *        - \f$\Delta^{++}\f$: 1 possibility only  u uu  with weight 1
@@ -484,9 +273,9 @@ protected:
    *                                                 d uu  with weight 1
    *        - \f$n,\Delta^0 \f$: 2 possibilities     d ud  with weight 1/2
    *                                                 u dd  with weight 1
-   *      In the latter two cases, we have to take into account the 
+   *      In the latter two cases, we have to take into account the
    *      fact that  p  and  n  have spin 1/2 whereas  Delta+  and  Delta0
-   *      have spin 3/2 therefore from phase space we get a double weight 
+   *      have spin 3/2 therefore from phase space we get a double weight
    *      for  Delta+  and  Delta0  relative to  p  and  n  respectively.
    *      Therefore the relative amount of these baryons that is
    *      produced is the following:
@@ -501,24 +290,36 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-   const HadronTable & table() const {
+  const HadronTable & table() const {
+    return _table;
+  }
+
+  /**
+   *  Access to the table of hadrons
+   */
+  HadronTable & table() {
     return _table;
   }
   
   /**
    *  Access to the list of partons
    */
-   const vector<PDPtr> & partons() const {
+  const vector<PDPtr> & partons() const {
+    return _partons;
+  }
+  
+  /**
+   *  Access to the list of partons
+   */
+  vector<PDPtr> & partons() {
     return _partons;
   }
 
   /**
    *  Access the parton weights
    */
-   double pwt(long pid) const {
-    map<long,double>::const_iterator it = _pwt.find(abs(pid));
-    assert( it != _pwt.end() );
-    return it->second;
+  map<long,double> & pwt() {
+    return _pwt;
   }
 
   /**
@@ -527,7 +328,7 @@ protected:
   //@{
   /**
    * Return the probability of mixing for Octet-Singlet isoscalar mixing,
-   * the probability of the 
+   * the probability of the
    * \f$\frac1{\sqrt{2}}(|u\bar{u}\rangle + |d\bar{d}\rangle)\f$ component
    * is returned.
    * @param angleMix The mixing angle in degrees (not radians)
@@ -536,12 +337,12 @@ protected:
    * The mixing is defined so that for example with \f$\eta-\eta'\f$ mixing where
    * the mixing angle is \f$\theta=-23^0$ with $\eta\f$ as the first particle
    * and \f$\eta'\f$ the second one.
-   * The convention used is 
+   * The convention used is
    * \f[\eta  = \cos\theta|\eta_{\rm octet  }\rangle
    *           -\sin\theta|\eta_{\rm singlet}\rangle\f]
    * \f[\eta' = \sin\theta|\eta_{\rm octet  }\rangle
    *           -\cos\theta|\eta_{\rm singlet}\rangle\f]
-   * with 
+   * with
    * \f[|\eta_{\rm singlet}\rangle = \frac1{\sqrt{3}}
    * \left[|u\bar{u}\rangle + |d\bar{d}\rangle +  |s\bar{s}\rangle\right]\f]
    * \f[|\eta_{\rm octet  }\rangle = \frac1{\sqrt{6}}
@@ -550,11 +351,11 @@ protected:
    double probabilityMixing(const double angleMix,
 				  const int order) const {
     static double convert=Constants::pi/180.0;
-    if (order == 1)      
+    if (order == 1)
       return sqr( cos( angleMix*convert + atan( sqrt(2.0) ) ) );
-    else if (order == 2) 
+    else if (order == 2)
       return sqr( sin( angleMix*convert + atan( sqrt(2.0) ) ) );
-    else                 
+    else
       return 1.;
   }
 
@@ -562,22 +363,58 @@ protected:
    * Returns the weight of given mixing state.
    * @param id The PDG code of the meson
    */
-  virtual double mixingStateWeight(long id) const; 
+  virtual double mixingStateWeight(long id) const;
   //@}
 
   /**
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
    */
-  double specialWeight(long id) const;
+  double specialWeight(long id) const {
+    const int pspin = id % 10;
+    // Only K0L and K0S have pspin == 0, should
+    // not get them until Decay step
+    assert( pspin != 0 );
+    // Baryon : J = 1/2 or 3/2
+    if(pspin%2==0)
+      return baryonWeight(id);
+    // Meson
+    else 
+      return mesonWeight(id); 
+  }
+  
+  /**
+   *  Weights for mesons
+   */
+  virtual double mesonWeight(long id) const;
+
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const = 0;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
    * for the input PDG id  idHad > 0, suppose to be made by the
-   * two constituent particle pointers: par1 and par2 (both with proper sign).
+   * two constituent particle pointers: ptr1 and ptr2 (both with proper sign).
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
+  /**
+   *   Insert a meson in the table
+   */
+  virtual void insertMeson(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac12\f$ baryon in the table
+   */
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
+  
 private:
 
   /**
@@ -599,51 +436,16 @@ private:
   vector<PDPtr> _forbidden;
 
   /**
-   *  The weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-
-  /**
-   * The probability of producting a diquark.
-   */
-  double _pwtDIquark;
-
-  /**
    * Weights for quarks and diquarks.
    */
   map<long,double> _pwt;
-  //@}
 
   /**
    *  The mixing angles for the \f$I=0\f$ mesons containing light quarks
    */
   //@{
   /**
-   *  The \f$\eta-\eta'\f$ mixing angle 
+   *  The \f$\eta-\eta'\f$ mixing angle
    */
   double _etamix;
 
@@ -760,21 +562,6 @@ private:
   vector<vector<vector<double> > > _repwt;
 
   /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt; 
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt; 
-  //@}
-
-  /**
    * The table of hadron data
    */
   HadronTable _table;
@@ -786,12 +573,12 @@ private:
   /**
    * Defines values for array sizes. L,J,N max values for excited mesons.
    */
-  enum MesonMultiplets { Lmax = 3, Jmax = 4, Nmax = 4}; 
+  enum MesonMultiplets { Lmax = 3, Jmax = 4, Nmax = 4};
   //@}
 
   /**
    *  Option for the construction of the tables
-   */ 
+   */
   unsigned int _topt;
 
   /**
@@ -816,6 +603,16 @@ private:
    *  Option for the selection of hadrons below the pair threshold
    */
   unsigned int belowThreshold_;
+  
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  /**
+   * Masses of lightest hadron pair
+   */
+  map<pair<long,long>,tcPDPair> lightestHadrons_;
+  //@}
 };
 
 

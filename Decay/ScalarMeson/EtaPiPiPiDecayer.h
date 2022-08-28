@@ -48,7 +48,11 @@ public:
   /**
    * Default constructor.
    */
-  EtaPiPiPiDecayer();
+  EtaPiPiPiDecayer() {
+    // no intermediates
+    generateIntermediates(false);
+  }
+ 
   
   /**
    * Which of the possible decays is required
@@ -171,27 +175,34 @@ private:
    */
   EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the id of the incoming particle
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * the id of the last neutral meson
    */
-  vector<int> _outgoing;
+  vector<int> outgoing_;
 
   /**
    * whether the pions are charged or neutral
    */
-  vector<bool> _charged;
+  vector<bool> charged_;
 
   /**
    * the prefactor for the decay
    */
-  vector<double> _prefactor;
+  vector<double> prefactor_;
 
   /**
    * The constants for the matrix elements
@@ -200,33 +211,28 @@ private:
   /**
    * The \f$a\f$ constant
    */
-  vector<double> _a;
+  vector<double> a_;
 
   /**
    * The \f$a\f$ constant
    */
-  vector<double> _b;
+  vector<double> b_;
 
   /**
    * The \f$a\f$ constant
    */
-  vector<double> _c;
+  vector<double> c_;
   //@}
 
   /**
    * maximum weights
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 };
 
 }

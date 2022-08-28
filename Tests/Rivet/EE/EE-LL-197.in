@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# tau polarization in e+e- > tau+tau-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2008_I763352

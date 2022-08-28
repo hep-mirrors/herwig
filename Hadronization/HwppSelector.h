@@ -13,7 +13,6 @@
 //
 
 #include "HadronSelector.h"
-#include "HwppSelector.fh"
 
 namespace Herwig {
 
@@ -33,40 +32,13 @@ public:
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV)
+  HwppSelector() : HadronSelector(1),
+		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
+		   _pwtBquark( 0.0 ),_pwtDIquark(1.0 ),
+		   _sngWt( 1.0 ), _decWt( 1.0 ),
+		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
+		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
-
-  /**
-   *
-   * This method is used to choose a pair of hadrons.
-   *
-   * Given the mass of a cluster and the particle pointers of its
-   * two (or three) constituents, this returns the pair of particle pointers of
-   * the two hadrons with proper flavour numbers.
-   * Furthermore, the first of the two hadron must have the
-   * constituent with par1, and the second must have the constituent with par2.
-   * At the moment it does *nothing* in the case that also par3 is present.
-   *
-   * Kupco's method is used, rather than one used in FORTRAN HERWIG
-   * The idea is to build on the fly a table of all possible pairs
-   * of hadrons (Had1,Had2) (that we can call "cluster decay channels")
-   * which are kinematically above threshold  and have flavour
-   * Had1=(par1,quarktopick->CC()), Had2=(quarktopick,par2), where quarktopick
-   * is the poniter of:
-   *    ---  d, u, s, c, b
-   *                        if either par1 or par2 is a diquark;
-   *    ---  d, u, s, c, b, dd, ud, uu, sd, su, ss,
-   *                        cd, cu, cs, cc, bd, bu, bs, bc, bb
-   *                        if both par1 and par2  are quarks.
-   * The weight associated with each channel is given by the product
-   * of: the phase space available including the spin factor 2*J+1,
-   *     the constant weight factor for chosen idQ,
-   *     the octet-singlet isoscalar mixing factor, and finally
-   *     the singlet-decuplet weight factor.
-   */
-  pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1,
-						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-   ;
 
 public:
 
@@ -93,6 +65,42 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+  
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const;
+
+  /**
+   *  Whether to select a meson or a baryon
+   */
+  std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *  Strange quark weight
+   */
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+  inline Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestBaryons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    assert(lightest!=lightestBaryons_.end());
+    return lightest->second.first->mass()+lightest->second.second->mass();
+  }
+  
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+  tcPDPair lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
 protected:
 
@@ -134,6 +142,58 @@ private:
 private:
 
   /**
+   *  The weights for the different quarks and diquarks
+   */
+  //@{
+  /**
+   * The probability of producting a down quark.
+   */
+  double _pwtDquark;
+
+  /**
+   * The probability of producting an up quark.
+   */
+  double _pwtUquark;
+
+  /**
+   * The probability of producting a strange quark.
+   */
+  double _pwtSquark;
+
+  /**
+   * The probability of producting a charm quark.
+   */
+  double _pwtCquark;
+
+  /**
+   * The probability of producting a bottom quark.
+   */
+  double _pwtBquark;
+
+  /**
+   * The probability of producting a diquark.
+   */
+  double _pwtDIquark;
+  //@}
+
+  /**
+   * Singlet and Decuplet weights
+   */
+  //@{
+  /**
+   *  The singlet weight
+   */
+  double _sngWt;
+
+  /**
+   *  The decuplet weight
+   */
+  double _decWt;
+  //@}
+  
+private:
+
+  /**
    *  Which algorithm to use
    */
   unsigned int _mode;
@@ -160,6 +220,26 @@ private:
   *  becoming too large
   */
   const double _maxScale = 20.;
+
+  /**
+  *  Heavy strange-charm hadron wight coefficient
+  */
+  double _scHadronWtFactor;
+
+  /**
+  *  Heavy strange-bottom hadron wight coefficient
+  */
+  double _sbHadronWtFactor;
+
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  /**
+   * Masses of lightest baryon pair
+   */
+  map<pair<long,long>,tcPDPair> lightestBaryons_;
+  //@}
 
 };
 

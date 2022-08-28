@@ -43,11 +43,6 @@ class VectorMesonVectorScalarDecayer: public DecayIntegrator {
 public:
 
   /**
-   * Default constructor.
-   */
-  VectorMesonVectorScalarDecayer();
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
@@ -157,47 +152,44 @@ private:
    */
   VectorMesonVectorScalarDecayer & operator=(const VectorMesonVectorScalarDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * coupling for a decay
    */
-  vector<InvEnergy> _coupling;
+  vector<InvEnergy> coupling_;
 
   /**
    * PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * PDG codes for the outgoing vector
+   * PDG codes for the outgoing particles (vector,scalar)
    */
-  vector<int> _outgoingV;
-
-  /**
-   * PDG codes for the outgoing scalar mesons.
-   */
-  vector<int> _outgoingS;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * maximum weight for a decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_[2];
 
 };
 

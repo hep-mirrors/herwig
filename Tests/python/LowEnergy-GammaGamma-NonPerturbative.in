@@ -1,0 +1,44 @@
+# -*- ThePEG-repository -*-
+
+read snippets/EECollider.in
+
+##################################################
+# Selected the hard process 
+##################################################
+# leading-order processes
+##################################################
+cd /Herwig/MatrixElements
+create Herwig::MEGammaGamma2PiPi MEgg2PiPi HwMEGammaGamma.so
+# set the process
+${processes}
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set EventGenerator:EventHandler:LuminosityFunction:Energy ${ECMS}
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/gamma:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/pi0:Stable Stable
+set /Herwig/Particles/K_S0:Stable Stable
+cd /Herwig/Generators
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
+${ANALYSES}
+
+cd /Herwig/EventHandlers
+set EventHandler:BeamA /Herwig/Particles/gamma
+set EventHandler:BeamB /Herwig/Particles/gamma
+
+###################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+saverun Rivet-LowEnergy-GammaGamma-NonPerturbative-${ECMS} EventGenerator

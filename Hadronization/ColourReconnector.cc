@@ -70,7 +70,7 @@ void ColourReconnector::rearrange(ClusterVector & clusters) {
 }
 
 
-Energy2 ColourReconnector::_clusterMassSum(const PVector & q, 
+Energy2 ColourReconnector::_clusterMassSum(const PVector & q,
                                            const PVector & aq) const {
   const size_t nclusters = q.size();
   assert (aq.size() == nclusters);
@@ -141,7 +141,7 @@ void ColourReconnector::_doRecoStatistical(ClusterVector & cv) const {
   Energy2 t, delta;
   Energy2 lambda = _clusterMassSum(q,aq);
   const unsigned _ntries = _triesPerStepFactor * nclusters;
-  
+
   // find appropriate starting temperature by measuring the largest lambda
   // difference in some dry-run random rearrangements
   {
@@ -163,7 +163,7 @@ void ColourReconnector::_doRecoStatistical(ClusterVector & cv) const {
     // algorithm if no successful reconnection happens.
     unsigned nSuccess = 0;
     for (unsigned it = 0; it < _ntries; it++) {
-      
+
       // make a random rearrangement
       const unsigned maxtries = 10;
       const pair <int,int> toswap = _shuffle(q,aq,maxtries);
@@ -339,14 +339,14 @@ bool ColourReconnector::_clustersFarApart( const std::vector<CluVecIt> & clu ) c
   } else if (Ncl==2) {
 	// veto if Clusters further apart than _maxDistance
 	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[1])->vertex().vect()).mag() > _maxDistance) return true;
-	// veto if Clusters have negative spacetime difference 
+	// veto if Clusters have negative spacetime difference
 	if (_causalCR && ((*clu[0])->vertex()-(*clu[1])->vertex()).m() < ZERO) return true;
   } else if (Ncl==3) {
 	// veto if Clusters further apart than _maxDistance
 	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[1])->vertex().vect()).mag() > _maxDistance) return true;
 	if (_localCR && ((*clu[1])->vertex().vect()-(*clu[2])->vertex().vect()).mag() > _maxDistance) return true;
 	if (_localCR && ((*clu[0])->vertex().vect()-(*clu[2])->vertex().vect()).mag() > _maxDistance) return true;
-	// veto if Clusters have negative spacetime difference 
+	// veto if Clusters have negative spacetime difference
 	if (_causalCR && ((*clu[0])->vertex()-(*clu[1])->vertex()).m() < ZERO) return true;
 	if (_causalCR && ((*clu[1])->vertex()-(*clu[2])->vertex()).m() < ZERO) return true;
 	if (_causalCR && ((*clu[0])->vertex()-(*clu[2])->vertex()).m() < ZERO) return true;
@@ -721,7 +721,7 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
 
 	// veto if Clusters further apart than _maxDistance
 	if (_localCR && ((**cl).vertex().vect()-(**cit).vertex().vect()).mag() > _maxDistance) continue;
-	// veto if Clusters have negative spacetime difference 
+	// veto if Clusters have negative spacetime difference
 	if (_causalCR && ((**cl).vertex()-(**cit).vertex()).m() < ZERO) continue;
 
     const bool Colour8 =
@@ -819,7 +819,7 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
 
 	// veto if Clusters further apart than _maxDistance
 	if (_localCR && ((**cl).vertex().vect()-(**cit).vertex().vect()).mag() > _maxDistance) continue;
-	// veto if Clusters have negative spacetime difference 
+	// veto if Clusters have negative spacetime difference
 	if (_causalCR && ((**cl).vertex()-(**cit).vertex()).m() < ZERO) continue;
 
     // momenta of the old clusters
@@ -1710,4 +1710,3 @@ void ColourReconnector::Init() {
    1);
 
 }
-

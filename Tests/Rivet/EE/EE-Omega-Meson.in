@@ -8,7 +8,12 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 0.78265
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+# pi0 dalitz
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1498079
 # eta/omega dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 NA60_2016_I1452485
 # omega/phi -> 3pi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
+# omega -> pi+pi-pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1703033

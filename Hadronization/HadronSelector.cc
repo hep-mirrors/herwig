@@ -25,6 +25,7 @@
 #include <ThePEG/Repository/Repository.h>
 #include "CheckId.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 
@@ -33,14 +34,14 @@ describeHadronSelector("Herwig::HadronSelector","Herwig.so");
 
 namespace {
   // debug helper
-  void dumpTable(const HadronSelector::HadronTable & tbl) {
-    typedef HadronSelector::HadronTable::const_iterator TableIter;
+  void dumpTable(const HadronTable & tbl) {
+    typedef HadronTable::const_iterator TableIter;
     for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-      cerr << it->first.first << ' ' 
-  	   << it->first.second << '\n';
-      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-  	   jt != it->second.end(); ++jt) {
-  	cerr << '\t' << *jt << '\n';
+      cerr << it->first.first << ' '
+       	   << it->first.second << '\n';
+      for (KupcoData::const_iterator jt = it->second.begin();
+      	   jt != it->second.end(); ++jt) {
+      	cerr << '\t' << *jt << '\n';
       }
     }
   }
@@ -48,19 +49,15 @@ namespace {
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
-
 }
 
-HadronSelector::HadronSelector(unsigned int opt) 
-  : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-    _pwtBquark( 0.0 ),_pwtDIquark( 1.0 ),
-    _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
+HadronSelector::HadronSelector(unsigned int opt)
+  : _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
     _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
-    _sngWt( 1.0 ),_decWt( 1.0 ),
-    _topt(opt),_trial(0), 
-    _limBottom(), _limCharm(), _limExotic(), belowThreshold_(0) 
+    _topt(opt),_trial(0),
+    _limBottom(), _limCharm(), _limExotic(), belowThreshold_(0)
 {
   // The mixing angles
   // the ideal mixing angle
@@ -90,73 +87,31 @@ HadronSelector::HadronSelector(unsigned int opt)
 }
 
 void HadronSelector::persistentOutput(PersistentOStream & os) const {
-  os << _partons << _pwtDquark  << _pwtUquark << _pwtSquark 
-     << _pwtCquark << _pwtBquark << _pwtDIquark
-     << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix 
-     << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix 
-     << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
+  os << _partons 
+     << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix
+     << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix
+     << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
-     << _forbidden << _sngWt << _decWt << _repwt << _pwt
+     << _forbidden << _repwt << _pwt
      << _limBottom << _limCharm << _limExotic << belowThreshold_
-     << _table;
+     << _table << lightestHadrons_;
 }
 
 void HadronSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _partons >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
-     >> _pwtCquark >> _pwtBquark 
-     >> _pwtDIquark>> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
-     >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
-     >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
+  is >> _partons 
+     >> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix
+     >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix
+     >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
-     >> _forbidden >> _sngWt >> _decWt >> _repwt >> _pwt
+     >> _forbidden >> _repwt >> _pwt
      >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
-     >> _table;
+     >> _table >> lightestHadrons_;
 }
 
 void HadronSelector::Init() {
 
   static ClassDocumentation<HadronSelector> documentation
     ("There is no documentation for the HadronSelector class");
-
-  static Parameter<HadronSelector,double>
-    interfacePwtDquark("PwtDquark","Weight for choosing a quark D",
-		       &HadronSelector::_pwtDquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtUquark("PwtUquark","Weight for choosing a quark U",
-		       &HadronSelector::_pwtUquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtSquark("PwtSquark","Weight for choosing a quark S",
-		       &HadronSelector::_pwtSquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
-		       &HadronSelector::_pwtCquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
-		       &HadronSelector::_pwtBquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfacePwtDIquark("PwtDIquark","Weight for choosing a DIquark",
-			&HadronSelector::_pwtDIquark, 0, 1.0, 0.0, 100.0,
-			false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfaceSngWt("SngWt","Weight for singlet baryons",
-                  &HadronSelector::_sngWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
-
-  static Parameter<HadronSelector,double>
-    interfaceDecWt("DecWt","Weight for decuplet baryons",
-                  &HadronSelector::_decWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
 
   static RefVector<HadronSelector,ParticleData> interfacePartons
     ("Partons",
@@ -390,7 +345,7 @@ double HadronSelector::mixingStateWeight(long id) const {
   case ParticleID::f_2:      return 0.5*probabilityMixing(_f2mix   ,2);
   case 10335:                return 0.5*probabilityMixing(_eta2mix ,1);
   case 10225:		     return 0.5*probabilityMixing(_eta2mix ,2);
-    // missing phi member of 13D1 should be here
+  case 30333:		     return 0.5*probabilityMixing(_omhmix  ,1);
   case 30223:		     return 0.5*probabilityMixing(_omhmix  ,2);
   case 337:                  return 0.5*probabilityMixing(_ph3mix  ,1);
   case 227:		     return 0.5*probabilityMixing(_ph3mix  ,2);
@@ -404,17 +359,6 @@ double HadronSelector::mixingStateWeight(long id) const {
 
 void HadronSelector::doinit() {
   Interfaced::doinit();
-  // the default partons allowed
-  // the quarks
-  for ( int ix=1; ix<=5; ++ix ) {
-    _partons.push_back(getParticleData(ix));
-  }
-  // the diquarks
-  for(unsigned int ix=1;ix<=5;++ix) {
-    for(unsigned int iy=1; iy<=ix;++iy) {
-      _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy)));
-    }
-  }
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -445,44 +389,46 @@ void HadronSelector::doinit() {
     _repwt[2][2][ix]=_weight3D2[ix];
   for( int ix=0;ix<max(int(_weight3D3.size()),int(Nmax));++ix)
     _repwt[2][3][ix]=_weight3D3[ix];
-  // weights for the different quarks etc
-  for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    _pwt[_partons[ix]->id()]=1.;
-  }
-  _pwt[1]  = _pwtDquark;
-  _pwt[2]  = _pwtUquark;
-  _pwt[3]  = _pwtSquark;
-  _pwt[4]  = _pwtCquark;
-  _pwt[5]  = _pwtBquark;
-  _pwt[1103] =       _pwtDIquark * _pwtDquark * _pwtDquark;
-  _pwt[2101] = 0.5 * _pwtDIquark * _pwtUquark * _pwtDquark;
-  _pwt[2203] =       _pwtDIquark * _pwtUquark * _pwtUquark;
-  _pwt[3101] = 0.5 * _pwtDIquark * _pwtSquark * _pwtDquark;
-  _pwt[3201] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
-  _pwt[3303] =       _pwtDIquark * _pwtSquark * _pwtSquark;
-  // Commenting out heavy di-quark weights
-  _pwt[4101] = 0.0;
-  _pwt[4201] = 0.0;
-  _pwt[4301] = 0.0;
-  _pwt[4403] = 0.0;
-  _pwt[5101] = 0.0;
-  _pwt[5201] = 0.0;
-  _pwt[5301] = 0.0;
-  _pwt[5401] = 0.0;
-  _pwt[5503] = 0.0;
+
   // find the maximum
   map<long,double>::iterator pit =
-    max_element(_pwt.begin(),_pwt.end(),weightIsLess); 
+    max_element(_pwt.begin(),_pwt.end(),weightIsLess);
   const double pmax = pit->second;
   for(pit=_pwt.begin(); pit!=_pwt.end(); ++pit) {
     pit->second/=pmax;
   }
   // construct the hadron tables
   constructHadronTable();
-
+  // lightest members (hadrons)
+  for(const PDPtr & p1 : partons()) {
+    for(const PDPtr & p2 : partons()) {
+      tcPDPair lp = lightestHadronPair(p1,p2);
+      if(lp.first && lp.second)
+	lightestHadrons_[make_pair(p1->id(),p2->id())] = lp;
+    }
+  }
   // for debugging
   if(Debug::level >= 10 ) 
     dumpTable(table());
+}
+
+void HadronSelector::insertToHadronTable(tPDPtr &particle, int flav1, int flav2) {
+  // inserting a new Hadron in the hadron table.
+  long pid  = particle->id();
+  int pspin = particle->iSpin();
+  HadronInfo a(pid, particle,specialWeight(pid),particle->mass());
+  // set the weight to the number of spin states
+  a.overallWeight = pspin*a.swtef;
+  // mesons
+  if(pspin%2==1)     insertMeson(a,flav1,flav2);
+  // spin-1/2 baryons
+  else if(pspin==2) insertOneHalf(a,flav1,flav2);
+  // spin -3/2 baryons
+  else if(pspin==4) insertThreeHalf(a,flav1,flav2);
+  // all other cases
+  else {
+    assert(false);
+  }
 }
 
 void HadronSelector::constructHadronTable() {
@@ -490,7 +436,7 @@ void HadronSelector::constructHadronTable() {
   _table.clear();
   for(unsigned int ix=0; ix<_partons.size(); ++ix) {
     for(unsigned int iy=0; iy<_partons.size(); ++iy) {
-      if (!(DiquarkMatcher::Check(_partons[ix]->id()) 
+      if (!(DiquarkMatcher::Check(_partons[ix]->id())
 	    && DiquarkMatcher::Check(_partons[iy]->id())))
       _table[make_pair(_partons[ix]->id(),_partons[iy]->id())] = KupcoData();
     }
@@ -498,14 +444,13 @@ void HadronSelector::constructHadronTable() {
   // get the particles from the event generator
   ParticleMap particles = generator()->particles();
   // loop over the particles
-  double maxdd(0.),maxss(0.),maxrest(0.);
-  for(ParticleMap::iterator it=particles.begin(); 
+  for(ParticleMap::iterator it=particles.begin();
       it!=particles.end(); ++it) {
     long pid = it->first;
     tPDPtr particle = it->second;
     int pspin = particle->iSpin();
     // Don't include hadrons which are explicitly forbidden
-    if(find(_forbidden.begin(),_forbidden.end(),particle)!=_forbidden.end()) 
+    if(find(_forbidden.begin(),_forbidden.end(),particle)!=_forbidden.end())
       continue;
     // Don't include non-hadrons or antiparticles
     if(pid < 100) continue;
@@ -523,180 +468,83 @@ void HadronSelector::constructHadronTable() {
     // shouldn't be coloured
     if(particle->coloured()) continue;
     // Get the flavours
-    const int x4 = (pid/1000)%10; 
+    const int x4 = (pid/1000)%10;
     const int x3 = (pid/100 )%10;
     const int x2 = (pid/10  )%10;
     const int x7 = (pid/1000000)%10;
     const bool wantSusy = x7 == 1 || x7 == 2;
-    int flav1;
-    int flav2;
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
-    else if(x4 == 0) { // meson
-      flav1 = x2; 
-      flav2 = x3; 
-    } 
-    else { // baryon
-      flav1 = CheckId::makeDiquarkID(x2,x3);
+    int flav1,flav2;
+    // meson
+    if(x4 == 0) {
+      flav1 = x2;
+      flav2 = x3;
+      if (wantSusy) flav2 += 1000000 * x7;
+    }
+    // baryon
+    else {
       flav2 = x4;
+      if (wantSusy) flav2 += 1000000 * x7;
+      // insert the spin 1 diquark, sort out the rest later
+      flav1 = CheckId::makeDiquarkID(x2,x3,3);
     }
-    if (wantSusy) flav2 += 1000000 * x7;
-    HadronInfo a(pid,
-		 particle,
-		 specialWeight(pid),
-		 particle->mass());
-    // set the weight to the number of spin states
-    a.overallWeight = pspin;
-    // identical light flavours
-    if(flav1 == flav2 && flav1<=3) {
-      // ddbar> uubar> admixture states
-      if(flav1==1) {
-	if(_topt != 0) a.overallWeight *= 0.5*a.swtef;
-	_table[make_pair(1,1)].insert(a);
-	_table[make_pair(2,2)].insert(a);
-	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-      }
-      // load up ssbar> uubar> ddbar> admixture states
-      else {
-	a.wt = mixingStateWeight(pid);
-	a.overallWeight *= a.wt;
-	if(_topt != 0) a.overallWeight *= a.swtef;
-	_table[make_pair(1,1)].insert(a);
-	_table[make_pair(2,2)].insert(a);
-	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-	a.wt = (_topt != 0) ? 1.- 2.*a.wt : 1 - a.wt;
-	if(a.wt > 0) {
-	  a.overallWeight = a.wt * a.swtef * pspin;
-	  _table[make_pair(3,3)].insert(a);
-	  if(_topt == 0 && a.overallWeight > maxss) maxss = a.overallWeight;
-	}
-      }
-    }
-    // light baryons with all quarks identical
-    else if((flav1 == 1 && flav2 == 1103) || (flav1 == 1103 && flav2 == 1) ||
-	    (flav1 == 2 && flav2 == 2203) || (flav1 == 2203 && flav2 == 2) ||
-	    (flav1 == 3 && flav2 == 3303) || (flav1 == 3303 && flav2 == 3)) {
-      if(_topt != 0) a.overallWeight *= 1.5*a.swtef;
-      _table[make_pair(flav1,flav2)].insert(a);
-      _table[make_pair(flav2,flav1)].insert(a);
-      if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-    }
-    // all other cases
-    else {
-      if(_topt != 0) a.overallWeight *=a.swtef;
-      _table[make_pair(flav1,flav2)].insert(a);
-      if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
-      if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-    }
+    insertToHadronTable(particle,flav1,flav2);
   }
+  // normalise the weights
 
-   // Account for identical combos of diquark/quarks and symmetrical elements
-   // e.g. U UD = D UU
-  HadronTable::iterator tit;  
-  for(tit=_table.begin();tit!=_table.end();++tit) {
-    if(tit->first.first>ParticleID::c) continue;
-    if(!DiquarkMatcher::Check(tit->first.second)) continue;
-    long k, l, sub;
-    if(tit->first.second>=ParticleID::bd_0) {
-      k = ParticleID::b;
-      sub = ParticleID::bd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::cd_0) {
-      k = ParticleID::c;
-      sub = ParticleID::cd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::sd_0) {
-      k = ParticleID::s;
-      sub = ParticleID::sd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::ud_0) {
-      k = ParticleID::u;
-      sub = ParticleID::ud_0/100;
-    }
-    else if(tit->first.second==ParticleID::dd_1) {
-      k = ParticleID::d;
-      sub = ParticleID::dd_1/100;
-    }
-    else continue;
-    sub=tit->first.second/100-sub+1;
-    if(sub > tit->first.first) {
-      l = 1000*sub+100*tit->first.first+1;
-    }
-    else if(sub==tit->first.first) {
-      l = 1000*sub+ 100*tit->first.first+3;
-    }
-    else {
-      l = 100*sub +1000*tit->first.first+1;
-    }
-    if(tit->second.empty()) {
-      pair<long,long> newpair(k,l);
-      tit->second=_table[newpair];
-      newpair=make_pair(tit->first.second,tit->first.first);
-      _table[newpair]=tit->second;
-    };
-  }
 
-  // normalise weights to one for first option
   if(_topt == 0) {
     HadronTable::const_iterator tit;
     KupcoData::iterator it;
     for(tit=_table.begin();tit!=_table.end();++tit) {
-      double weight;
-      if(tit->first.first==tit->first.second) {
-	if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
-	else if (tit->first.first==3)                weight=1./maxss;
-	else                                         weight=1./maxrest;
-      }
-      else                                           weight=1./maxrest;
-      for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
-	it->rescale(weight);
-      }
+      double weight=0;
+      for(it = tit->second.begin(); it!=tit->second.end(); ++it)
+	weight=max(weight,it->overallWeight);
+      weight = 1./weight;
+
     }
+      
+    //   double weight;
+    //   if(tit->first.first==tit->first.second) {
+    // 	if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
+    // 	else if (tit->first.first==3)                weight=1./maxss;
+    // 	else                                         weight=1./maxrest;
+    //   }
+    //   else                                           weight=1./maxrest;
+    //   for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
+    // 	it->rescale(weight);
+    //   }
+    // }
   }
 }
 
-double HadronSelector::specialWeight(long id) const {
-  const int pspin = id % 10;  
-  // Only K0L and K0S have pspin == 0, should
-  // not get them until Decay step
-  assert( pspin != 0 );
-  // Baryon : J = 1/2 or 3/2
-  if(pspin == 2) {
-    // Singlet (Lambda-like) baryon
-    if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);   
-    // octet
-    else                            return 1.;
-  } 
-  // Decuplet baryon
-  else if (pspin == 4) {
-    return sqr(_decWt);
-  }    
-  // Meson
-  else if(pspin % 2 == 1) {
-    // Total angular momentum
-    int j  = (pspin - 1) / 2;
-    // related to Orbital angular momentum l
-    int nl = (id/10000 )%10;
-    int l  = -999;  
-    int n  = (id/100000)%10;  // Radial excitation
-    if(j == 0) l = nl;
-    else if(nl == 0) l = j - 1;
-    else if(nl == 1  || nl == 2) l = j;
-    else if(nl == 3) l = j + 1;
-    // Angular or Radial excited meson
-    if((l||j||n) && l>=0  &&  l<Lmax  &&  j<Jmax  &&  n<Nmax) {
-      return sqr(_repwt[l][j][n]);  
-    }    
+double HadronSelector::mesonWeight(long id) const {
+  // Total angular momentum
+  int j  = ((id % 10) - 1) / 2;
+  // related to Orbital angular momentum l
+  int nl = (id/10000 )%10;
+  int l  = -999;
+  int n  = (id/100000)%10;  // Radial excitation
+  if(j == 0) l = nl;
+  else if(nl == 0) l = j - 1;
+  else if(nl == 1  || nl == 2) l = j;
+  else if(nl == 3) l = j + 1;
+  // Angular or Radial excited meson
+  if((l||j||n) && l>=0  &&  l<Lmax  &&  j<Jmax  &&  n<Nmax) {
+    return sqr(_repwt[l][j][n]);
   }
-  // rest is not excited or 
+  // rest is not excited or
   // has spin >= 5/2 (ispin >= 6), haven't got those
-  return 1.0;
+  else
+    return 1.0;
 }
 
-int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2, 
+
+int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 			       tcPDPtr hadron) const {
   // This method receives in input three PDG ids, whose the
-  // first two have proper signs (corresponding to particles, id > 0, 
+  // first two have proper signs (corresponding to particles, id > 0,
   // or antiparticles, id < 0 ), whereas the third one must
   // be always positive (particle not antiparticle),
   // corresponding to:
@@ -704,7 +552,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
   //      quark-diquark, or diquark-quark, or
   //      antiquark-antidiquark, or antidiquark-antiquark
   //      for the first two input (idQ1, idQ2);
-  //  --- meson or baryon for the third input (idHad): 
+  //  --- meson or baryon for the third input (idHad):
   // The method returns:
   //  --- + 1  if the two partons (idQ1, idQ2) are exactly
   //           the constituents for the hadron idHad;
@@ -712,8 +560,8 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
   //           the constituents for the anti-hadron -idHad;
   //  --- + 0  otherwise.
   // The method it is therefore useful to decide the
-  // sign of the id of the produced hadron as appeared 
-  // in the vector _vecHad (where only hadron idHad > 0 are present)  
+  // sign of the id of the produced hadron as appeared
+  // in the vector _vecHad (where only hadron idHad > 0 are present)
   // given the two constituent partons.
   int sign = 0;
   long idHad = hadron->id();
@@ -723,10 +571,10 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
   // same charge
   if(     chargeIn ==  chargeOut && chargeIn  !=0 ) sign = +1;
   else if(chargeIn == -chargeOut && chargeIn  !=0 ) sign = -1;
-  else if(chargeIn == 0          && chargeOut == 0 ) {  
+  else if(chargeIn == 0          && chargeOut == 0 ) {
     // In the case of same null charge, there are four cases:
     //  i) K0-like mesons, B0-like mesons, Bs-like mesons
-    //     the PDG convention is to consider them "antiparticle" (idHad < 0) 
+    //     the PDG convention is to consider them "antiparticle" (idHad < 0)
     //     if the "dominant" (heavier) flavour (respectively, s, b)
     //     is a quark (idQ > 0): for instance, B0s = (b, sbar) has id < 0
     //     Remember that there is an important exception for K0L (id=130) and
@@ -737,7 +585,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     (idHad > 0) if the charm flavour is carried by a c: (c,ubar) has id>0
     //  3) the remaining mesons should not have antiparticle, therefore their
     //     sign is always positive.
-    //  4) for baryons, that is when one of idQ1 and idQ2 is a (anti-) quark and 
+    //  4) for baryons, that is when one of idQ1 and idQ2 is a (anti-) quark and
     //     the other one is a (anti-) diquark the sign is negative when both
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
@@ -745,7 +593,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
       !DiquarkMatcher::Check(idQ1->id()) && !DiquarkMatcher::Check(idQ2->id()))
     {
       int idQa = abs(idQ1->id());
-      int idQb = abs(idQ2->id()); 
+      int idQb = abs(idQ2->id());
       int dominant = idQ2->id();
 
       if(idQa > idQb) {
@@ -755,17 +603,17 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 
       if((idQa==ParticleID::d && idQb==ParticleID::s) ||
 	 (idQa==ParticleID::d && idQb==ParticleID::b) ||
-	 (idQa==ParticleID::s && idQb==ParticleID::b)) { 
+	 (idQa==ParticleID::s && idQb==ParticleID::b)) {
 	// idHad%10 is zero for K0L,K0S
 	if (dominant < 0 || idHad%10 == 0) sign = +1;
 	else if(dominant > 0)              sign = -1;
-      } 
+      }
       else if((idQa==ParticleID::u && idQb==ParticleID::c) ||
 	      (idQa==ParticleID::u && idQb==ParticleID::t) ||
 	      (idQa==ParticleID::c && idQb==ParticleID::t)) {
 	if     (dominant > 0) sign = +1;
 	else if(dominant < 0) sign = -1;
-      } 
+      }
       else if(idQa==idQb) sign = +1;
       // sets sign for Susy particles
       else sign = (dominant > 0) ? +1 : -1;
@@ -777,107 +625,62 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     }
   }
   if (sign == 0) {
-    cerr << "Could not work out sign for " 
-	 << idQ1->PDGName() << ' ' 
-	 << idQ2->PDGName() << " => " 
+    cerr << "Could not work out sign for "
+	 << idQ1->PDGName() << ' '
+	 << idQ2->PDGName() << " => "
 	 << hadron->PDGName() << '\n';
     assert(false);
   }
   return sign;
 }
 
-pair<tcPDPtr,tcPDPtr> HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-							 tcPDPtr ptr3) const {
-  // throw exception of id3!=0 as doesn't work
-  if ( ptr3 ) throw Exception() 
-    << "ptr3!=0 not yet implemented in HadronSelector::lightestHadronPair"
-    << Exception::abortnow;
-
-  // charge
-  int totalcharge = ptr1->iCharge() + ptr2->iCharge();
-  if ( ptr3 ) totalcharge += ptr3->iCharge();
-
-  tcPDPtr vIdHad1[2]={tcPDPtr(),tcPDPtr()},vIdHad2[2]={tcPDPtr(),tcPDPtr()};
-  bool vOk[2] = {false, false};
-  Energy vMassPair[2] = { ZERO, ZERO };
-  for (int i = 0; i < 2; i++) {
-    tcPDPtr idPartner = i==0 ? getParticleData(ParticleID::d) : getParticleData(ParticleID::u);
-    // Change sign to idPartner (transform it into a anti-quark) if it is not
-    // possible to form a meson or a baryon.
-    assert (ptr1 && idPartner);
-    if (!CheckId::canBeHadron(ptr1, idPartner)) idPartner = idPartner->CC();
-
-    vIdHad1[i] = lightestHadron(ptr1, idPartner);
-    vIdHad2[i] = lightestHadron(ptr2, idPartner->CC());
-    if ( vIdHad1[i] && vIdHad2[i] && 
-	 vIdHad1[i]->iCharge() + vIdHad2[i]->iCharge() == totalcharge ) {
-      vOk[i] = true;
-      vMassPair[i] = vIdHad1[i]->mass() + vIdHad2[i]->mass();
-    }  
-  }
-  // Take the lightest pair compatible with charge conservation.
-  if       ( vOk[0]  && ( ! vOk[1] || vMassPair[0] <= vMassPair[1] ) ) {      
-    return make_pair(vIdHad1[0],vIdHad2[0]);
-  } 
-  else if ( vOk[1]  &&  ( ! vOk[0] || vMassPair[1] <  vMassPair[0] ) ) {      
-    return make_pair(vIdHad1[1],vIdHad2[1]);
-  }
-  else {
-    return make_pair(tcPDPtr(),tcPDPtr());
-  }   
-}
-
-Energy HadronSelector::massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
-  // Make sure that we don't have any diquarks as input, return arbitrarily
-  // large value if we do
-  Energy currentSum = Constants::MaxEnergy; 
-  for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    if(!DiquarkMatcher::Check(_partons[ix]->id())) continue;
-    HadronTable::const_iterator 
-      tit1=_table.find(make_pair(abs(ptr1->id()),_partons[ix]->id())),
-      tit2=_table.find(make_pair(_partons[ix]->id(),abs(ptr2->id())));
-    if( tit1==_table.end() || tit2==_table.end()) continue;
+tcPDPair HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
+  Energy currentSum = Constants::MaxEnergy;
+  tcPDPair output;
+  for(unsigned int ix=0; ix<partons().size(); ++ix) {
+    HadronTable::const_iterator
+      tit1=table().find(make_pair(abs(ptr1->id()),partons()[ix]->id())),
+      tit2=table().find(make_pair(partons()[ix]->id(),abs(ptr2->id())));
+    if( tit1==table().end() || tit2==table().end()) continue;
     if(tit1->second.empty()||tit2->second.empty()) continue;
     Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
-    if(currentSum > s) currentSum = s;
+    if(currentSum > s) {
+      currentSum = s;
+      output.first  = tit1->second.begin()->ptrData;
+      output.second = tit2->second.begin()->ptrData;
+    }
   }
-  return currentSum;
+  return output;
 }
 
-tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-				      tcPDPtr ptr3) const {
-#else
-				      tcPDPtr ) const {
-#endif
-  // The method assumes ptr3 == 0 rest not implemented
-  assert(ptr1 && ptr2 && !ptr3);
+tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
+  assert(ptr1 && ptr2);
   // find entry in the table
   pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
   // throw exception if flavours wrong
-  if (tit==_table.end()) 
-    throw Exception() << "Could not find " 
-		      << ids.first << ' ' << ids.second 
+  if (tit==_table.end())
+    throw Exception() << "Could not find "
+		      << ids.first << ' ' << ids.second
 		      << " in _table. "
 		      << "In HadronSelector::lightestHadron()"
 		      << Exception::eventerror;
   if(tit->second.empty())
     throw Exception() << "HadronSelector::lightestHadron "
-		      << "could not find any hadrons containing " 
+		      << "could not find any hadrons containing "
 		      << ptr1->id() << ' ' << ptr2->id() << '\n'
-		      << tit->first.first << ' ' 
+		      << tit->first.first << ' '
 		      << tit->first.second << Exception::eventerror;
   // find the lightest hadron
   int sign = signHadron(ptr1,ptr2,tit->second.begin()->ptrData);
-  tcPDPtr candidate = sign > 0 ? 
+  tcPDPtr candidate = sign > 0 ?
     tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
   // \todo 20 GeV limit is temporary fudge to let SM particles go through.
   // \todo Use isExotic instead?
-  if (candidate->mass() > 20*GeV 
+  if (candidate->mass() > 20*GeV
       && candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
     generator()->log() << "HadronSelector::lightestHadron: "
-		       << "chosen candidate " << candidate->PDGName() 
+		       << "chosen candidate " << candidate->PDGName()
 		       << " is lighter than its constituents "
 		       << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
 		       << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
@@ -888,31 +691,26 @@ tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
   return candidate;
 }
 
-vector<pair<tcPDPtr,double> > 
+vector<pair<tcPDPtr,double> >
 HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
-				      tcPDPtr ptr2,
-#ifndef NDEBUG
-				      tcPDPtr ptr3) const {
-#else
-				      tcPDPtr ) const {
-#endif
+				      tcPDPtr ptr2) const {
   // The method assumes ptr3 == 0 rest not implemented
-  assert(ptr1 && ptr2 && !ptr3);
+  assert(ptr1 && ptr2);
   // find entry in the table
   pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
   // throw exception if flavours wrong
-  if (tit==_table.end()) 
-    throw Exception() << "Could not find " 
-		      << ids.first << ' ' << ids.second 
+  if (tit==_table.end())
+    throw Exception() << "Could not find "
+		      << ids.first << ' ' << ids.second
 		      << " in _table. "
 		      << "In HadronSelector::hadronsBelowThreshold()"
 		      << Exception::eventerror;
   if(tit->second.empty())
     throw Exception() << "HadronSelector::hadronsBelowThreshold() "
-		      << "could not find any hadrons containing " 
+		      << "could not find any hadrons containing "
 		      << ptr1->id() << ' ' << ptr2->id() << '\n'
-		      << tit->first.first << ' ' 
+		      << tit->first.first << ' '
 		      << tit->first.second << Exception::eventerror;
   vector<pair<tcPDPtr,double> > candidates;
   KupcoData::const_iterator hit = tit->second.begin();
@@ -923,17 +721,17 @@ HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
     tcPDPtr candidate = sign > 0 ? hit->ptrData : hit->ptrData->CC();
     // \todo 20 GeV limit is temporary fudge to let SM particles go through.
     // \todo Use isExotic instead?
-    if (candidate->mass() > 20*GeV 
+    if (candidate->mass() > 20*GeV
 	&& candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
       generator()->log() << "HadronSelector::hadronsBelowTheshold: "
-			 << "chosen candidate " << candidate->PDGName() 
+			 << "chosen candidate " << candidate->PDGName()
 			 << " is lighter than its constituents "
 			 << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
 			 << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
 			 << " + " << ptr2->constituentMass()/GeV << '\n'
 			 << "Check your particle data tables.\n";
       assert(false);
-    } 
+    }
     candidates.push_back(make_pair(candidate,hit->overallWeight));
     ++hit;
   }
@@ -945,18 +743,18 @@ tcPDPtr HadronSelector::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
 					   Energy mass) const {
   // Determine the sum of the nominal masses of the two lightest hadrons
   // with the right flavour numbers as the cluster under consideration.
-  // Notice that we don't need real masses (drawn by a Breit-Wigner 
+  // Notice that we don't need real masses (drawn by a Breit-Wigner
   // distribution) because the lightest pair of hadrons does not involve
   // any broad resonance.
   Energy threshold = massLightestHadronPair(par1,par2);
   // Special: it allows one-hadron decays also above threshold.
-  if (CheckId::isExotic(par1,par2)) 
+  if (CheckId::isExotic(par1,par2))
     threshold *= (1.0 + UseRandom::rnd()*_limExotic);
-  else if (CheckId::hasBottom(par1,par2)) 
+  else if (CheckId::hasBottom(par1,par2))
     threshold *= (1.0 + UseRandom::rnd()*_limBottom);
-  else if (CheckId::hasCharm(par1,par2)) 
+  else if (CheckId::hasCharm(par1,par2))
     threshold *= (1.0 + UseRandom::rnd()*_limCharm);
-  
+
   // only do one hadron decay is mass less than the threshold
   if(mass>=threshold) return tcPDPtr();
 
@@ -968,7 +766,7 @@ tcPDPtr HadronSelector::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
   }
   // new option select from those available
   else if(belowThreshold_ == 1) {
-    vector<pair<tcPDPtr,double> > hadrons = 
+    vector<pair<tcPDPtr,double> > hadrons =
       hadronsBelowThreshold(threshold,par1,par2);
     if(hadrons.size()==1) {
       hadron = hadrons[0].first;
@@ -996,4 +794,234 @@ tcPDPtr HadronSelector::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
   else
     assert(false);
   return hadron;
+}
+
+tcPDPair HadronSelector::chooseHadronPair(const Energy cluMass,
+					  tcPDPtr par1, tcPDPtr par2) const {
+  useMe();
+  // if either of the input partons is a diquark don't allow diquarks to be
+  // produced
+  bool diquark0 = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
+  bool diquark1 = diquark0;
+  bool quark = true;
+  // decide is baryon or meson production
+  if(diquark0) std::tie(quark,diquark0,diquark1) = selectBaryon(cluMass,par1,par2);
+  // weights for the different possibilities
+  Energy weight, wgtsum(ZERO);
+  // loop over all hadron pairs with the allowed flavours
+  static vector<Kupco> hadrons;
+  hadrons.clear();
+  for(unsigned int ix=0;ix<partons().size();++ix) {
+    tcPDPtr quarktopick  = partons()[ix];
+    if(!quark  &&  abs(int(quarktopick->iColour())) == 3
+       && !DiquarkMatcher::Check(quarktopick->id())) continue;
+    if(abs(int(quarktopick->iColour())) == 3
+       && DiquarkMatcher::Check(quarktopick->id()) &&
+       ((!diquark0 && quarktopick->iSpin()==1) ||
+	(!diquark1 && quarktopick->iSpin()==3))) continue;
+    HadronTable::const_iterator
+      tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));
+    HadronTable::const_iterator
+      tit2 = table().find(make_pair(quarktopick->id(),abs(par2->id())));
+    // If not in table skip
+    if(tit1 == table().end()||tit2==table().end()) continue;
+    // tables empty skip
+    const KupcoData & T1 = tit1->second;
+    const KupcoData & T2 = tit2->second;
+    if(T1.empty()||T2.empty()) continue;
+    // if too massive skip
+    if(cluMass <= T1.begin()->mass +
+                  T2.begin()->mass) continue;
+    // quark weight
+    double quarkWeight =  pwt(quarktopick->id());
+    // special for strange
+    if(abs(quarktopick->id()) == 3)
+      quarkWeight = strangeWeight(cluMass,par1,par2);
+    // loop over the hadrons
+    KupcoData::const_iterator H1,H2;
+    for(H1 = T1.begin();H1 != T1.end(); ++H1) {
+      for(H2 = T2.begin();H2 != T2.end(); ++H2) {
+ 	// break if cluster too light
+ 	if(cluMass < H1->mass + H2->mass) break;
+	weight = quarkWeight * H1->overallWeight * H2->overallWeight *
+	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass);
+	int signQ = 0;
+	assert (par1 && quarktopick);
+	assert (par2);
+
+	assert(quarktopick->CC());
+
+	if(CheckId::canBeHadron(par1, quarktopick->CC())
+	   && CheckId::canBeHadron(quarktopick, par2))
+	   signQ = +1;
+	else if(CheckId::canBeHadron(par1, quarktopick)
+		&& CheckId::canBeHadron(quarktopick->CC(), par2))
+	   signQ = -1;
+	else {
+	  cerr << "Could not make sign for" << par1->id()<< " " << quarktopick->id()
+	       << " " << par2->id() << "\n";
+	  assert(false);
+	}
+
+	if (signQ  == -1)
+	  quarktopick = quarktopick->CC();
+	// construct the object with the info
+	Kupco a(quarktopick, H1->ptrData, H2->ptrData, weight);
+	hadrons.push_back(a);
+	wgtsum += weight;
+      }
+    }
+  }
+  if (hadrons.empty())
+    return make_pair(tcPDPtr(),tcPDPtr());
+  // select the hadron
+  wgtsum *= UseRandom::rnd();
+  unsigned int ix=0;
+  do {
+    wgtsum-= hadrons[ix].weight;
+    ++ix;
+  }
+  while(wgtsum > ZERO && ix < hadrons.size());
+  if(ix == hadrons.size() && wgtsum > ZERO)
+      return make_pair(tcPDPtr(),tcPDPtr());
+  --ix;
+  assert(hadrons[ix].idQ);
+  int signHad1 = signHadron(par1, hadrons[ix].idQ->CC(), hadrons[ix].hadron1);
+  int signHad2 = signHadron(par2, hadrons[ix].idQ, hadrons[ix].hadron2);
+  assert( signHad1 != 0 && signHad2 != 0 );
+  return make_pair
+    ( signHad1 > 0 ? hadrons[ix].hadron1 : tcPDPtr(hadrons[ix].hadron1->CC()),
+      signHad2 > 0 ? hadrons[ix].hadron2 : tcPDPtr(hadrons[ix].hadron2->CC()));
+}
+
+std::tuple<bool,bool,bool> HadronSelector::selectBaryon(const Energy, tcPDPtr, tcPDPtr )  const {
+  assert(false);
+}
+
+double HadronSelector::strangeWeight(const Energy, tcPDPtr, tcPDPtr) const {
+  assert(false);
+}
+
+void HadronSelector::insertMeson(HadronInfo a, int flav1, int flav2) {
+  // identical light flavours
+  if(flav1 == flav2 && flav1<=3) {
+    // ddbar> uubar> admixture states
+    if(flav1==1) {
+      a.overallWeight *= 0.5;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+    }
+    // load up ssbar> uubar> ddbar> admixture states
+    else {
+      // uubar ddbar pieces
+      a.wt = mixingStateWeight(a.id);
+      a.overallWeight *= a.wt;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+      a.overallWeight /=a.wt;
+      // ssbar piece
+      a.wt = 1.- 2.*a.wt;
+      if(a.wt > 0) {
+        a.overallWeight *= a.wt;
+        _table[make_pair(3,3)].insert(a);
+      }
+    }
+  }
+  else {
+    _table[make_pair(flav1,flav2)].insert(a);
+    if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
+  }
+}
+
+void HadronSelector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
+  assert(DiquarkMatcher::Check(flav1));
+  long iq1 = flav1/1000;
+  long iq2 = (flav1/100)%10;
+  if(iq1!=iq2 && flav1%10==3) flav1-=2;
+  if(iq1==iq2) {
+    if(iq1==flav2) {
+      a.overallWeight *= 1.5;
+      _table[make_pair(flav1,flav2)].insert(a);
+      _table[make_pair(flav2,flav1)].insert(a);
+    }
+    else {
+      table()[make_pair(flav1,flav2)].insert(a);
+      table()[make_pair(flav2,flav1)].insert(a);
+      long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+      table()[make_pair(iq1,f3 )].insert(a);
+      table()[make_pair(f3 ,iq1)].insert(a);
+    }
+  }
+  else if(iq1==flav2) {
+    // ud1 u type
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    // and uu1 d type
+    long f3 = CheckId::makeDiquarkID(iq1,iq1,3);
+    a.overallWeight *= a.wt;
+    table()[make_pair(f3 ,iq2)].insert(a);
+    table()[make_pair(iq2, f3)].insert(a);
+  }
+  else if(iq2==flav2) assert(false);
+  else {
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+    table()[make_pair(iq2,f3)].insert(a);
+    table()[make_pair(f3,iq2)].insert(a);
+    // 3rd perm
+    f3 = CheckId::makeDiquarkID(iq2,flav2,1);
+    table()[make_pair(iq1,f3)].insert(a);
+    table()[make_pair(f3,iq1)].insert(a);
+  }
+}
+
+void HadronSelector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
+  assert(DiquarkMatcher::Check(flav1));
+  long iq1 = flav1/1000;
+  long iq2 = (flav1/100)%10;
+  if(iq1!=iq2 && flav1%10==3) flav1-=2;
+  if(iq1==iq2) {
+    if(iq1==flav2) {
+      a.overallWeight *= 1.5;
+      _table[make_pair(flav1,flav2)].insert(a);
+      _table[make_pair(flav2,flav1)].insert(a);
+    }
+    else {
+      table()[make_pair(flav1,flav2)].insert(a);
+      table()[make_pair(flav2,flav1)].insert(a);
+      long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+      table()[make_pair(iq1,f3 )].insert(a);
+      table()[make_pair(f3 ,iq1)].insert(a);
+    }
+  }
+  else if(iq1==flav2) {
+    // ud1 u type
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    // and uu1 d type
+    long f3 = CheckId::makeDiquarkID(iq1,iq1,3);
+    a.overallWeight *= a.wt;
+    table()[make_pair(f3 ,iq2)].insert(a);
+    table()[make_pair(iq2, f3)].insert(a);
+  }
+  else {
+    table()[make_pair(flav1,flav2)].insert(a);
+    table()[make_pair(flav2,flav1)].insert(a);
+    long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+    table()[make_pair(iq2,f3)].insert(a);
+    table()[make_pair(f3,iq2)].insert(a);
+    // 3rd perm
+    f3 = CheckId::makeDiquarkID(iq2,flav2,1);
+    table()[make_pair(iq1,f3)].insert(a);
+    table()[make_pair(f3,iq1)].insert(a);
+  }
+}
+
+PDPtr HadronSelector::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
+  long id1 = par1->id();
+  long id2 = par2->id();
+  long pspin = id1==id2 ? 3 : 1;
+  long idnew = CheckId::makeDiquarkID(id1,id2, pspin);
+  return getParticleData(idnew);
 }

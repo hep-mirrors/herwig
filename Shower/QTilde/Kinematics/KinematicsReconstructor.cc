@@ -182,7 +182,8 @@ void KinematicsReconstructor::doinit() {
 }
 
 bool KinematicsReconstructor::
-reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
+reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
+		       const tShowerParticlePtr progenitor) const {
   assert(particleJetParent);
   bool emitted=true;
   // if this is not a fixed point in the reconstruction
@@ -191,7 +192,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
     for ( ParticleVector::const_iterator cit = 
 	    particleJetParent->children().begin();
 	  cit != particleJetParent->children().end(); ++cit )
-      reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit));
+      reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit),progenitor);
   }
   // it is a reconstruction fixpoint, ie kinematical data has to be available 
   else {
@@ -203,10 +204,10 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
     // update if so
     if (jetGrandParent) {
       if (jetGrandParent->showerKinematics()) {
-	if(particleJetParent->id()==_progenitor->id()&&
-	   !_progenitor->data().stable()&&abs(_progenitor->data().id())!=ParticleID::tauminus) {
+	if(particleJetParent->id()==progenitor->id()&&
+	   !progenitor->data().stable()&&abs(progenitor->data().id())!=ParticleID::tauminus) {
 	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent,
-							      _progenitor->mass());
+							      progenitor->mass());
 	}
 	else {
 	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent);
@@ -215,7 +216,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
     }
     // otherwise
     else {
-      Energy dm = ShowerHandler::currentHandler()->retConstituentMasses()?
+      Energy dm = !ShowerHandler::currentHandlerIsSet() ||
+	ShowerHandler::currentHandler()->retConstituentMasses()?
 	particleJetParent->data().constituentMass():
 	particleJetParent->data().mass();
       if (abs(dm-particleJetParent->momentum().m())>0.001*MeV
@@ -284,7 +286,6 @@ reconstructHardJets(ShowerTreePtr hard,
       assert(false);
   }
   catch(KinematicsReconstructionVeto) {
-    _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
     for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
       for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
@@ -304,14 +305,12 @@ reconstructHardJets(ShowerTreePtr hard,
     return false;
   }
   catch (Exception & ex) {
-    _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
     _currentTree = tShowerTreePtr();
     _boosts.clear();
     _treeBoosts.clear();
     throw ex;
   }
-  _progenitor=tShowerParticlePtr();
   _intrinsic.clear();
   // ensure x<1
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
@@ -329,7 +328,6 @@ reconstructHardJets(ShowerTreePtr hard,
     }
     if( ! (hadron->id() == parent->id() && hadron->children().size() <= 1)
        && parent->momentum().rho() > hadron->momentum().rho()) {
-      _progenitor=tShowerParticlePtr();
       _intrinsic.clear();
       for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
 	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
@@ -423,8 +421,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
     dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])->
       showerKinematics()->reconstructParent(p,p->children());
     if(!child->children().empty()) {
-      _progenitor=child;
-      reconstructTimeLikeJet(child);
+      reconstructTimeLikeJet(child,child);
       // calculate the momentum of the particle
       Lorentz5Momentum pnew=p->momentum()-child->momentum();
       pnew.rescaleMass();
@@ -554,9 +551,8 @@ reconstructDecayJets(ShowerTreePtr decay,
       }
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
-      _progenitor=tempJetKin.parent;
       if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
-	atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent);
+	atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,tempJetKin.parent);
 	ShowerHardJets[ix]->reconstructed(ShowerProgenitor::done);
       }
       if(gottaBoost) deepTransform(tempJetKin.parent,restboost);
@@ -666,8 +662,7 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
   // if branching reconstruct time-like child
   child = dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]);
   if(child) {
-    _progenitor=child;
-    reconstructTimeLikeJet(child);
+    reconstructTimeLikeJet(child,child);
     // calculate the momentum of the particle
     Lorentz5Momentum pnew=p->momentum()-child->momentum();
     pnew.rescaleMass();
@@ -1276,9 +1271,8 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     // final-state parton
     if(jets[ix]->progenitor()->isFinalState()) {
       pout[0] +=jets[ix]->progenitor()->momentum();
-      _progenitor = jets[ix]->progenitor();
       if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
-	reconstructTimeLikeJet(jets[ix]->progenitor());
+	reconstructTimeLikeJet(jets[ix]->progenitor(),jets[ix]->progenitor());
 	jets[ix]->reconstructed(ShowerProgenitor::done);
       }
     }
@@ -1588,9 +1582,8 @@ reconstructFinalStateSystem(bool applyBoost,
       deepTransform(tempJetKin.parent,trans);
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
-    _progenitor=tempJetKin.parent;
     if((**cit).reconstructed()==ShowerProgenitor::notReconstructed) {
-      radiated |= reconstructTimeLikeJet((*cit)->progenitor());
+      radiated |= reconstructTimeLikeJet((*cit)->progenitor(),tempJetKin.parent);
       (**cit).reconstructed(ShowerProgenitor::done);
     }
     else {
@@ -2543,6 +2536,7 @@ void KinematicsReconstructor::deepTransform(PPtr particle,
     particle->set5Momentum(ptemp);
   }
   // check if there's a daughter tree which also needs boosting
+  if(!_currentTree) return;
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit  = _currentTree->treelinks().begin();
       tit != _currentTree->treelinks().end();++tit) {

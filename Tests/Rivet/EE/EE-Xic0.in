@@ -12,7 +12,14 @@ set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 decaymode Upsilon(4S)->Xi_c0,Xi_cbar0; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->Xi_c0,Xi_cbar0;
-# Xi_c decays
+# Xi_c -> Xi- pi+ decay asymmetry
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2000_I537236
-# Omega decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1851126
+# Xi_c Lambda/Sigma K* asymmetries
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1859517
+# Xi_c0 -> K+ K- Xi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1835729
+# Omega decay asymmetries
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719581
+# Xi_c0 -> p K- K- pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  BELLE_2005_I660759
