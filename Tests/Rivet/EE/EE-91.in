@@ -152,6 +152,22 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1991_I314407
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1994_I374698
 # DELPHI jade jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1990_I297698
+# OPAL charm hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I356732
+# L3 event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1992_I334954
+# DELPHI events shapes vs thrust
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I522656
+# SLD event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1995_I378545
+# excited lambda_b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1114753
+# lambda_b -> lambda_c mu- nu_mubar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621811
+# B_s -> D_s* mu- nu_mubar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2020_I1787090
+# DELPHI f_1 f'_1 spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I628566
 ##################################################
 # unvalidated 
 ##################################################

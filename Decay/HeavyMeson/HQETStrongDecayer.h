@@ -6,8 +6,10 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/PDT/HeavyMesonWidthGenerator.fh"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "ThePEG/Helicity/LorentzRank3Tensor.h"
 
 namespace Herwig {
 
@@ -21,6 +23,11 @@ using namespace ThePEG;
  * defined for HQETStrongDecayer.
  */
 class HQETStrongDecayer: public DecayIntegrator {
+
+  /**
+   *  The HeavyMesonWidthGenerator is a friend to get access to the couplings
+   */
+  friend class HeavyMesonWidthGenerator; 
 
 public:
 
@@ -142,6 +149,13 @@ private:
    * In fact, it should not even be implemented.
    */
   HQETStrongDecayer & operator=(const HQETStrongDecayer &) = delete;
+  
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
 
 private:
 
@@ -160,15 +174,35 @@ private:
   double g_;
 
   /**
-   *  Coupling for decays within the \f$(1^+ ,2^+)\f$ multiplet
+   *  Coupling for decays within the \f$(0^+,1^+)\f$ multiplet
+   */
+  double gp_;
+
+  /**
+   *  Coupling for decays from the \f$(0^+ ,1^+)\f$ multiplet
    */
   double h_;
 
   /**
-   *  Coupling for decays within the \f$(0^+ ,1^+)\f$ multiplet
+   *  Coupling for decays from the \f$(1^+ ,2^+)\f$ multiplet
    */
-  double f_;
+  double hp_;
 
+  /**
+   *  Coupling for decays from the \f$(2^- ,3^-)\f$ multiplet
+   */
+  double k_;
+
+  /**
+   *  Coupling for decays from the \f$(1^- ,2^-)\f$ multiplet
+   */
+  double kp_;
+
+  /**
+   *  Coupling for decays from the 2S \f$(0^-,1^-)\f$ multiplet
+   */
+  double gtilde_;
+  
   /**
    *  D_1 mixing angle (up and down)
    */
@@ -199,22 +233,12 @@ private:
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> incoming_;
+  vector<long> incoming_;
 
   /**
    * the PDG codes for outgoing heavy meson
    */
-  vector<int> outgoingH_;
-
-  /**
-   * the PDG codes for outgoing light meson
-   */
-  vector<int> outgoingL_;
-
-  /**
-   *  Type of decay
-   */
-  vector<int> type_;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * the maximum weight for the decay
@@ -240,6 +264,11 @@ private:
    *  Storage of polarization tensors of the decaying particle
    */
   mutable vector<Helicity::LorentzTensor<double> > tensorIn_;
+
+  /**
+   *  Storage of polarization tensors of the decaying particle
+   */
+  mutable vector<Helicity::LorentzRank3Tensor<double> > spin3In_;
 
   /**
    *  Storage of polarization vectors of the decay product

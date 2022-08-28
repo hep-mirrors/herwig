@@ -84,6 +84,7 @@ analyses["BESII_2002_I552757"] = ["d01-x01-y01"]
 analyses["BES_1995_I39870"] = ["d01-x01-y01"]
 analyses["BESII_2009_I814778"] = ["d01-x01-y01"]
 analyses["BESII_2006_I717665"] = ["d02-x01-y01"]
+analyses["BESIII_2021_I1996394"] = ["d01-x01-y01"]
 analyses["GAMMAGAMMA_1979_I133588"] = ["d01-x01-y01","d01-x01-y02"]
 analyses["GAMMAGAMMA_1975_I100016"] = ["d01-x01-y01","d01-x01-y02"]
 analyses["GAMMAGAMMA_1973_I84794"] = ["d03-x01-y01","d04-x01-y01"]
@@ -95,6 +96,8 @@ analyses["PLUTO_1981_I165122"]=["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["KEDR_2019_I1673357"]=["d01-x01-y01","d01-x01-y02"]
 analyses["BELLE_2011_I878228"] = ["d02-x01-y01"]
 analyses["PDG_R"] = ["d01-x01-y01"]
+analyses["BESIII_2021_I1868813"] = ["d01-x01-y01"]
+analyses["BESIII_2021_I1908066"] = ["d01-x01-y01"]
 # list analyses if needed
 if(opts.list) :
     print (" ".join(analyses.keys()))

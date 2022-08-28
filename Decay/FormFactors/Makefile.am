@@ -29,7 +29,10 @@ HQETFormFactor.h \
 CzyzNucleonFormFactor.h \
 KornerKurodaFormFactor.h \
 KPiIThreeHalfFOCUSKMatrix.h \
-KPiIHalfFOCUSKMatrix.h
+KPiIHalfFOCUSKMatrix.h\
+PiPiAnisovichKMatrix.h\
+AnalyticOmnesFunction.h\
+ExperimentalOmnesFunction.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -53,4 +56,7 @@ HQETFormFactor.cc \
 CzyzNucleonFormFactor.cc \
 KornerKurodaFormFactor.cc \
 KPiIThreeHalfFOCUSKMatrix.cc \
-KPiIHalfFOCUSKMatrix.cc
+KPiIHalfFOCUSKMatrix.cc\
+PiPiAnisovichKMatrix.cc\
+AnalyticOmnesFunction.cc\
+ExperimentalOmnesFunction.cc

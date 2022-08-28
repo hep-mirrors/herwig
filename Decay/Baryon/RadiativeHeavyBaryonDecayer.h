@@ -38,11 +38,6 @@ class RadiativeHeavyBaryonDecayer: public Baryon1MesonDecayerBase {
 public:
 
   /**
-   * The default constructor.
-   */
-  RadiativeHeavyBaryonDecayer();
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
@@ -166,42 +161,44 @@ private:
    */
   RadiativeHeavyBaryonDecayer & operator=(const RadiativeHeavyBaryonDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    *  The \f$M1\f$ coupling
    */
-  vector<InvEnergy>  _m1coupling;
+  vector<InvEnergy>  M1Coupling_;
 
   /**
    *  The \f$E1\f$ coupling
    */
-  vector<InvEnergy2> _e1coupling;
+  vector<InvEnergy2> E1Coupling_;
 
   /**
    * PDG code for the incoming baryons
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * PDG code for the outgoing baryons
    */
-  vector<int> _outgoingB;
+  vector<int> outgoing_;
 
   /**
    * The type of matrix element
    */
-  vector<int> _modetype;
+  vector<int> modeType_;
 
   /**
    * max weight
    */
-  vector<double> _maxweight;
-
-  /**
-   *  The initial size of the arrays
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 };
 
 }

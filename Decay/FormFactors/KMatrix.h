@@ -9,6 +9,7 @@
 #include "Herwig/Decay/IsoSpin.h"
 #include "KMatrix.fh"
 #include <boost/numeric/ublas/matrix.hpp>
+#include "Herwig/Utilities/Interpolator.h"
 
 namespace Herwig {
 namespace ublas = boost::numeric::ublas;
@@ -28,7 +29,7 @@ public:
   /**
    * Enum for the possible channels
    */
-  enum Channels { PiPi, KPi, KEta, KEtaPrime};
+  enum Channels { PiPi, KPi, KEta, KEtaPrime, KK, EtaEta,EtaEtaPrime,FourPi};
 
 public:
 
@@ -37,7 +38,8 @@ public:
    */
   KMatrix(FlavourInfo flavour=FlavourInfo(),
 	  vector<Channels> channels=vector<Channels>(),
-	  vector<Energy2> poles=vector<Energy2>());
+	  vector<Energy2> poles=vector<Energy2>(),
+	  vector<vector<Energy> > g=vector<vector<Energy> >());
 
   /**
    *   The quantum numbers of the K-matrix
@@ -47,9 +49,9 @@ public:
   };
 
   /**
-   *  Compute the K-matrix for a given scale
+   * Compute the K-matrix for a given scale
    * @param s The scale
-   * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
+   * @param Whether or not to multiply by \f$\prod_i(1-s/m^2_i)\f$ to regularise the poles
    */
   virtual ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) const = 0;
 
@@ -64,12 +66,32 @@ public:
   const vector<Energy2> & poles() const {return poles_;}
 
   /**
-   *  Compute the amplitdes given the \f$P\f$-vector
-   * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
+   *  Access the couplings of the poles
+   */
+  const vector<vector<Energy> > & poleCouplings() const {return g_;}
+
+  /**
+   * Compute the amplitdes given the \f$P\f$-vector
+   * @param Whether or not to multiply by \f$\prod_i(1-s/m^2_i)\f$ to regularise the poles
    */
   virtual ublas::vector<Complex>
   amplitudes(Energy2 s, ublas::vector<Complex> pVector,
 	     bool multiplyByPoles=false) const;
+
+  /**
+   *  The number of channels
+   */
+  unsigned int numberOfChannels() {return channels_.size();}
+
+  /**
+   *   Set the couplings
+   */
+  string setCouplings(string arg);
+
+  /**
+   *   Set the pole values
+   */
+  string setPoles(string arg);
   
 public:
 
@@ -115,7 +137,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KMatrix & operator=(const KMatrix &);
+  KMatrix & operator=(const KMatrix &) = delete;
 
 private:
 
@@ -134,6 +156,11 @@ private:
    */
   vector<Energy2> poles_;
 
+  /**
+   *  Couplings for the resonances
+   */
+  vector<vector<Energy> > g_;
+
 private:
 
   /**
@@ -146,7 +173,7 @@ private:
   Energy mPiPlus_;
 
   /**
-   *   The neutra; pion mass
+   *   The neutral pion mass
    */
   Energy mPi0_;
 
@@ -169,6 +196,41 @@ private:
    *  The \f$\eta^\prime\f$ mass
    */
   Energy mEtaPrime_;
+  //@}
+
+  /**
+   *  Parameters for the four piojn phase space
+   */
+  //@{
+  /**
+   *  Initialize the table
+   */
+  bool initTable_;
+  
+  /**
+   *   Matching constant
+   */
+  double rho0_;
+
+  /**
+   *  Power
+   */
+  double n_;
+
+  /**
+   *   Energy values for interpolator
+   */
+  vector<Energy2> en_;
+
+  /**
+   *  \f$\rho\f$ values
+   */
+  vector<double> rho_;
+
+  /**
+   *  The interpolator
+   */
+  mutable Interpolator<double,Energy2>::Ptr inter_; 
   //@}
 };
 

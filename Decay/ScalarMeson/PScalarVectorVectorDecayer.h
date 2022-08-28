@@ -34,6 +34,9 @@ using namespace ThePEG;
  *  where \f$p_{1,2}\f$ and \f$\epsilon_{1,2}\f$ are the momenta and polarzation
  *  vectors of the outgoing vectors.
  *
+ *  While this Lorentz structure always applies for pseudoscalar to two pseudovectors or scalar to 
+ *  vector pseudovector decays, in practice it is only used for pseudoscalar to two vector decays.
+ *
  *  The incoming pseudoscalar meson, the outgoing vectors and the coupling can
  *  be specified using the relevant interfaces.
  *
@@ -47,11 +50,6 @@ using namespace ThePEG;
 class PScalarVectorVectorDecayer: public DecayIntegrator {
 
 public:
-
-  /**
-   * Default constructor.
-   */
-  PScalarVectorVectorDecayer();
   
   /**
    * Which of the possible decays is required
@@ -163,47 +161,44 @@ private:
    */
   PScalarVectorVectorDecayer & operator=(const PScalarVectorVectorDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the PDG code for the incoming particle
    */
-  vector<int> _incoming;
+  vector<long> incoming_;
 
   /**
-   * the PDG code for the first outgoing particle
+   * the PDG code for the outgoing particles
    */
-  vector<int> _outgoing1;
-
-  /**
-   * the PDG code for the second outgoing particle
-   */
-  vector<int> _outgoing2;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * the coupling for the decay, \f$g\f$.
    */
-  vector<InvEnergy> _coupling;
+  vector<InvEnergy> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
+  vector<double> maxweight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decay products
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_[2];
 };
 
 }

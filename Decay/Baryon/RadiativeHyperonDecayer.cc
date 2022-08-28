@@ -7,6 +7,8 @@
 #include "RadiativeHyperonDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -39,35 +41,6 @@ void RadiativeHyperonDecayer::doinit() {
     PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgtmax));
     addMode(mode);
   }
-}
-
-RadiativeHyperonDecayer::RadiativeHyperonDecayer() {
-  // Sigma+ -> p+
-  incomingB_.push_back(3222); outgoingB_.push_back(2212);
-  A_.push_back(-1.81e-7/GeV); B_.push_back(0.47e-7/GeV);
-  maxweight_.push_back(1.);
-  // Xi- -> Sigma- 
-  incomingB_.push_back(3312); outgoingB_.push_back(3112);
-  A_.push_back(0.08e-7/GeV); B_.push_back(0.15e-7/GeV);
-  maxweight_.push_back(1.);
-  // Sigma0 -> n
-  incomingB_.push_back(3212); outgoingB_.push_back(2112);
-  A_.push_back(-0.02e-7/GeV); B_.push_back(-0.45e-7/GeV);
-  maxweight_.push_back(1.);
-  // Lambda0 -> n
-  incomingB_.push_back(3122); outgoingB_.push_back(2112);
-  A_.push_back(-0.52e-7/GeV); B_.push_back(-0.05e-7/GeV);
-  maxweight_.push_back(1.);
-  // Xi0  -> Sigma0
-  incomingB_.push_back(3322); outgoingB_.push_back(3212);
-  A_.push_back( 0.05e-7/GeV); B_.push_back( 0.70e-7/GeV);
-  maxweight_.push_back(1.);
-  // Xi0  -> Lambda0 
-  incomingB_.push_back(3322); outgoingB_.push_back(3122);
-  A_.push_back(-0.34e-7/GeV); B_.push_back(-0.08e-7/GeV);
-  maxweight_.push_back(1.);
-  // initial size of vectors
-  initsize_ = A_.size();
 }
 
 int RadiativeHyperonDecayer::modeNumber(bool & cc,tcPDPtr parent,
@@ -104,12 +77,12 @@ IBPtr RadiativeHyperonDecayer::fullclone() const {
 
 void RadiativeHyperonDecayer::persistentOutput(PersistentOStream & os) const {
   os << incomingB_ << outgoingB_ << ounit(A_,1./GeV) << ounit(B_,1./GeV) 
-     << maxweight_ << initsize_;
+     << maxweight_;
 }
 
 void RadiativeHyperonDecayer::persistentInput(PersistentIStream & is, int) {
   is >> incomingB_ >> outgoingB_ >> iunit(A_,1./GeV) >> iunit(B_,1./GeV) 
-     >> maxweight_ >> initsize_;
+     >> maxweight_;
 }
 
 // The following static variable is needed for the type
@@ -128,35 +101,30 @@ void RadiativeHyperonDecayer::Init() {
      "Phys.\\ Rev.\\  D {\\bf 59} (1999) 054019 [arXiv:hep-ph/9902431].\n"
      "%%CITATION = PHRVA,D59,054019;%%\n");
 
-  static ParVector<RadiativeHyperonDecayer,double> interfaceMaxWeight
+  static Command<RadiativeHyperonDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, outgoing baryon , A and B couplings (1/GeV) and max weight for a decay",
+     &RadiativeHyperonDecayer::setUpDecayMode, false);
+  
+  static Deleted<RadiativeHyperonDecayer> interfaceMaxWeight
     ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &RadiativeHyperonDecayer::maxweight_,
-     0, 0, 0, 0., 100., false, false, true);
+     "The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHyperonDecayer,long> interfaceIncomingBaryon
+  static Deleted<RadiativeHyperonDecayer> interfaceIncomingBaryon
     ("IncomingBaryon",
-     "The PDG code for the incoming baryon.",
-     &RadiativeHyperonDecayer::incomingB_,
-     0, 0, 0, 0, 1000000, false, false, true);
+     "The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHyperonDecayer,long> interfaceOutgoingBaryon
+  static Deleted<RadiativeHyperonDecayer> interfaceOutgoingBaryon
     ("OutgoingBaryon",
-     "The PDG code for the outgoing baryon.",
-     &RadiativeHyperonDecayer::outgoingB_,
-     0, 0, 0, 0, 1000000, false, false, true);
+     "The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHyperonDecayer,InvEnergy> interfaceCouplingA
+  static Deleted<RadiativeHyperonDecayer> interfaceCouplingA
     ("CouplingA",
-     "The A coupling",
-     &RadiativeHyperonDecayer::A_, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
-     false, false, Interface::limited);
+     "The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<RadiativeHyperonDecayer,InvEnergy> interfaceCouplingB
+  static Deleted<RadiativeHyperonDecayer> interfaceCouplingB
     ("CouplingB",
-     "The B coupling",
-     &RadiativeHyperonDecayer::B_, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
-     false, false, Interface::limited);
+     "The old methods of setting up a decay in NonLeptonicHyperonDecayer have been deleted, please use SetUpDecayMode");
 
 }
 
@@ -173,33 +141,55 @@ void RadiativeHyperonDecayer::halfHalfVectorCoupling(int imode, Energy m0, Energ
 void RadiativeHyperonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<incomingB_.size();++ix) {
-    if(ix<initsize_) {
-      output << "newdef " << name() << ":MaxWeight " << ix << " " 
-	     << maxweight_[ix] << "\n";
-      output << "newdef " << name() << ":IncomingBaryon " << ix << " " 
-	     << incomingB_[ix] << "\n";
-      output << "newdef " << name() << ":OutgoingBaryon " << ix << " " 
-	     << outgoingB_[ix] << "\n";
-      output << "newdef " << name() << ":CouplingA " << ix << " " 
-	     << A_[ix]*GeV << "\n";
-      output << "newdef " << name() << ":CouplingB " << ix << " " 
-	     << B_[ix]*GeV << "\n";
-    }
-    else {
-      output << "insert " << name() << ":MaxWeight " << ix << " " 
-	     << maxweight_[ix] << "\n";
-      output << "insert " << name() << ":IncomingBaryon " << ix << " " 
-	     << incomingB_[ix] << "\n";
-      output << "insert " << name() << ":OutgoingBaryon " << ix << " " 
-	     << outgoingB_[ix] << "\n";
-      output << "insert " << name() << ":CouplingA " << ix << " " 
-	     << A_[ix]*GeV << "\n";
-      output << "insert " << name() << ":CouplingB " << ix << " " 
-	     << B_[ix]*GeV << "\n";
-    }
+    output << "do " << name() << ":SetUpDecayMode "
+	   << incomingB_[ix] << " " << outgoingB_[ix] << " "
+	   << A_[ix]*GeV << " " << B_[ix]*GeV << " "
+	   << maxweight_[ix] << "\n";
   }
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
 
+
+string RadiativeHyperonDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 1/2";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  long out;
+  out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "First outgoing particle with id " + std::to_string(out) + "does not have spin 1/2";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  A_.push_back(g/GeV);
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  g = stof(stype);
+  B_.push_back(g/GeV);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incomingB_.push_back(in);
+  outgoingB_.push_back(out);
+  maxweight_.push_back(wgt);
+  // success
+  return "";
+}

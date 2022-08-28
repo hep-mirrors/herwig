@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HeavyMesonWidthGenerator class.
+//
+#ifndef Herwig_HeavyMesonWidthGenerator_FH
+#define Herwig_HeavyMesonWidthGenerator_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class HeavyMesonWidthGenerator;
+
+ThePEG_DECLARE_POINTERS(Herwig::HeavyMesonWidthGenerator,HeavyMesonWidthGeneratorPtr);
+
+}
+
+#endif

@@ -14,7 +14,8 @@
 #include "ScalarScalarScalarDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Deleted.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -27,99 +28,26 @@ using namespace ThePEG::Helicity;
 void ScalarScalarScalarDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<_incoming.size();++ix)
-      if(mode(ix) ) _maxweight[ix] = mode(ix)->maxWeight();
+    for(unsigned int ix=0;ix<incoming_.size();++ix)
+      if(mode(ix) ) maxWeight_[ix] = mode(ix)->maxWeight();
   }
-}
-
-ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() {
-  _incoming  = {9010221, 9010221, 9010221, 9010221,   10221,   10221,
-	          10221,   10221,   10221,   10221,   10331,   10331,
-	          10331,   10331, 9000221, 9000221, 9000111, 9000211,
-	        9000111, 9000111, 9000211,   10111,   10211,   10111,
-	          10211,   10111,   10111,   10211,   10221,   10331,
-	          10221,   10311,   10311,   10321,   10321,   10411,
-	          10411,   10421,   10421,   10511,   10511,   10521,
-	          10521,  100311,  100311,  100321,  100321,   10431,
-	          10531,  100221,  100221, 9020221, 9020221, 9020221,
-	         100221,   10441,   10441,   10441,   10441,   10441,
-	        9030221, 9030221, 9030221, 9030221, 9030221, 9030221,
-	        9030221, 9030221, 9030221, 9000311, 9000311, 9000321,
-	        9000321,   10441,   10441,   10531,   10531,   10441};
-  _outgoing1 = {    111,     211,     321,     311,     111,     211,
-		 100111,  100211,     321,     311,     111,     211,
-		    321,     311,     111,     211,     221,     221,
-		    321,     311,     321,     221,     221,     331,
-		    331,     321,     311,     321,     221,     221,
-		9000221,     311,     321,     321,     311,     411,
-		    421,     421,     411,     511,     521,     521,
-		    511,   10311,   10321,   10321,   10311,     431,
-		    531, 9000111, 9000211, 9000111, 9000211,     221,
-		9000221,     321,     311,     211,     111,     221,
-		    211,     111, 9000221,     221,     221,     321,
-		    311,  100111,  100211,     311,     321,     321,
-		    311,   10321,   10311,     511,     521, 9010221};
-  _outgoing2 = {    111,    -211,    -321,    -311,     111,    -211,
-		    111,    -211,    -321,    -311,     111,    -211,
-		   -321,    -311,     111,    -211,     111,     211,
-		   -321,    -311,    -311,     111,     211,     111,
-		    211,    -321,    -311,    -311,     221,     221,
-		9000221,     111,    -211,     111,     211,     111,
-		    211,     111,    -211,     111,    -211,     111,
-		    211,     111,    -211,     111,     211,     111,
-		    111,     111,    -211,     111,    -211, 9000221,
-		    221,    -321,    -311,    -211,     111,     221,
-		   -211,     111, 9000221,     221,     331,    -321,
-		   -311,     111,    -211,     111,    -211,     111,
-		    211,  -10321,  -10311,    -311,    -321, 9010221};
-  _coupling  ={ 1.66*GeV,  2.35*GeV,  1.02*GeV,  1.02*GeV, 0.745*GeV, 1.054*GeV,
-	       5.027*GeV, 5.027*GeV, 0.886*GeV, 0.886*GeV, 0.503*GeV, 0.711*GeV,
-	       2.096*GeV, 2.096*GeV, 3.654*GeV, 5.178*GeV,  3.33*GeV,  3.33*GeV,
-		2.54*GeV,  2.54*GeV,  3.59*GeV, 1.357*GeV, 1.357*GeV, 0.995*GeV,
-	       0.995*GeV, 0.950*GeV, 0.950*GeV, 1.344*GeV, 0.235*GeV, 2.189*GeV,
-	       21.46*GeV, 2.837*GeV, 4.000*GeV, 2.837*GeV, 4.000*GeV, 5.472*GeV,
-	       7.714*GeV, 5.447*GeV, 7.818*GeV, 9.698*GeV, 13.71*GeV, 9.698*GeV,
-	       13.71*GeV, 6.595*GeV, 9.445*GeV, 6.595*GeV, 9.445*GeV, 0.103*GeV,
-	       8.314*GeV, 2.057*GeV, 2.057*GeV, 1.470*GeV, 1.470*GeV, 4.051*GeV,
-	       4.316*GeV, 0.104*GeV, 0.104*GeV, 0.093*GeV, 0.066*GeV, 0.064*GeV,
-	       1.398*GeV, 0.989*GeV, 6.079*GeV, 0.809*GeV, 2.844*GeV, 0.686*GeV,
-	       0.686*GeV, 2.615*GeV, 2.615*GeV, 3.834*GeV, 5.406*GeV, 3.834*GeV,
-	       5.406*GeV, 0.104*GeV, 0.104*GeV, 12.17*GeV, 12.17*GeV, 0.084*GeV};
-  _maxweight={1.05, 1.05, 1.05, 1.05, 1.05, 1.05,
-	       2.1,  2.1,  1.1,  1.1, 1.05, 1.05,
-	      1.05, 1.05, 1.05, 1.05,  1.1,  1.1,
-	      1.05, 1.05, 1.05, 1.05, 1.05,  1.6,
-	       1.6, 1.05, 1.05, 1.05,  1.1,  1.2,
-	       7.0, 1.05, 1.05, 1.05, 1.05, 1.05,
-	      1.05, 1.05, 1.05, 1.05, 1.05, 1.05,
-	      1.05,   2.,   2.,   2.,   2., 1.05,
-	      1.05,   2.,   2.,   2.,   2.,   2.,
-	        2., 1.05, 1.05, 1.05, 1.05, 1.05,
-	      1.05, 1.05,  7.0, 1.05, 4.5,  1.05,
-	      1.05,  2.1,  2.1, 1.05, 1.05, 1.05,
-	      1.05, 1.05, 1.05, 1.05, 1.05, 1.05};
-  // initial size
-  _initsize = _coupling.size();
-  // intermediates
-  generateIntermediates(false);
 }
 
 void ScalarScalarScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
-  unsigned int isize(_coupling.size());
-  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
-     isize!=_outgoing2.size() || isize!=_maxweight.size())
+  unsigned int isize(coupling_.size());
+  if(isize!=incoming_.size()  || isize!=outgoing_.size() || isize!=maxWeight_.size())
     throw InitException() << "Inconsistent parameters in ScalarScalarScalarDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
   PhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr     in = getParticleData(_incoming[ix]);
-    tPDVector out = {getParticleData(_outgoing1[ix]),
-		     getParticleData(_outgoing2[ix])};
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    tPDPtr     in = getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoing_[ix].first),
+		     getParticleData(outgoing_[ix].second)};
     if(in&&out[0]&&out[1]) 
-      mode=new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      mode=new_ptr(PhaseSpaceMode(in,out,maxWeight_[ix]));
     else
       mode=PhaseSpaceModePtr();
     addMode(mode);
@@ -139,32 +67,32 @@ int ScalarScalarScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
   unsigned int ix(0);
   int imode(-1);
   do {
-    if(id0   ==_incoming[ix]) {
-      if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
-	 (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])) {
+    if(id0   ==incoming_[ix]) {
+      if((id1   ==outgoing_[ix].first&&id2   ==outgoing_[ix].second)||
+	 (id2   ==outgoing_[ix].first&&id1   ==outgoing_[ix].second)) {
 	imode=ix;
 	cc=false;
       }
     }
-    if(id0bar==_incoming[ix]&&imode<0) {
-      if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
-	 (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])) {
+    if(id0bar==incoming_[ix]&&imode<0) {
+      if((id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second)||
+	 (id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second)) {
 	imode=ix;
 	cc=true;
       }
     }
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
+  while(ix<incoming_.size()&&imode<0);
   return imode;
 }
 
 void ScalarScalarScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_coupling,MeV) << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(coupling_,MeV) << incoming_ << outgoing_ << maxWeight_;
 }
 
 void ScalarScalarScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_coupling,MeV) >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(coupling_,MeV) >> incoming_ >> outgoing_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -178,35 +106,25 @@ void ScalarScalarScalarDecayer::Init() {
     ("The ScalarScalarScalarDecayer class is designed for the"
      " decay of a scalar meson to two scalar mesons including off-shell effects");
 
-  static ParVector<ScalarScalarScalarDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &ScalarScalarScalarDecayer::_incoming,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Command<ScalarScalarScalarDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, outgoing scalars, coupling(MeV) and max weight for a decay",
+     &ScalarScalarScalarDecayer::setUpDecayMode, false);
+  
+  static Deleted<ScalarScalarScalarDecayer> interfaceIncoming
+    ("Incoming","The old methods of setting up a decay in ScalarScalarScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarScalarScalarDecayer,int> interfaceOutcoming1
-    ("FirstOutgoing",
-     "The PDG code for the first outgoing particle",
-     &ScalarScalarScalarDecayer::_outgoing1,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<ScalarScalarScalarDecayer> interfaceOutcoming1
+    ("FirstOutgoing","The old methods of setting up a decay in ScalarScalarScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarScalarScalarDecayer,int> interfaceOutcoming2
-    ("SecondOutgoing",
-     "The PDG code for the second outgoing particle",
-     &ScalarScalarScalarDecayer::_outgoing2,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+  static Deleted<ScalarScalarScalarDecayer> interfaceOutcoming2
+    ("SecondOutgoing","The old methods of setting up a decay in ScalarScalarScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarScalarScalarDecayer,Energy> interfaceCoupling
-    ("Coupling",
-     "The coupling for the decay mode",
-     &ScalarScalarScalarDecayer::_coupling,
-     MeV, 0, ZERO, ZERO, 1000000.*MeV, false, false, true);
+  static Deleted<ScalarScalarScalarDecayer> interfaceCoupling
+    ("Coupling","The old methods of setting up a decay in ScalarScalarScalarDecayer have been deleted, please use SetUpDecayMode");
 
-  static ParVector<ScalarScalarScalarDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &ScalarScalarScalarDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+  static Deleted<ScalarScalarScalarDecayer> interfaceMaxWeight
+    ("MaxWeight","The old methods of setting up a decay in ScalarScalarScalarDecayer have been deleted, please use SetUpDecayMode");
 
 }
 
@@ -227,9 +145,9 @@ double ScalarScalarScalarDecayer::me2(const int,const Particle & part,
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  double fact(_coupling[imode()]/part.mass());
+  double fact(coupling_[imode()]/part.mass());
   (*ME())(0,0,0) = fact;
   return sqr(fact);
 }
@@ -249,30 +167,30 @@ bool ScalarScalarScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
   unsigned int ix(0);
   bool order(true);
   do {
-    if(id   ==_incoming[ix]) {
-      if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]) {
+    if(id   ==incoming_[ix]) {
+      if(id1==outgoing_[ix].first&&id2==outgoing_[ix].second) {
 	imode=ix;
 	order=true;
       }
-      if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]) {
+      if(id2==outgoing_[ix].first&&id1==outgoing_[ix].second) {
 	imode=ix;
 	order=false;
       }
     }
-    if(idbar==_incoming[ix]&&imode<0) {
-      if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]) {
+    if(idbar==incoming_[ix]&&imode<0) {
+      if(id1bar==outgoing_[ix].first&&id2bar==outgoing_[ix].second) {
 	imode=ix;
 	order=true;
       }
-      if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]) {
+      if(id2bar==outgoing_[ix].first&&id1bar==outgoing_[ix].second) {
 	imode=ix;
 	order=false;
       }
     }
     ++ix;
   }
-  while(ix<_incoming.size()&&imode<0);
-  coupling=_coupling[imode]/dm.parent()->mass();
+  while(ix<incoming_.size()&&imode<0);
+  coupling=coupling_[imode]/dm.parent()->mass();
   itype = 6;
   return order;
 }
@@ -283,33 +201,57 @@ void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    if(ix<_initsize) {
-      output << "newdef " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "newdef " << name() << ":FirstOutgoing " << ix << " " 
-	     << _outgoing1[ix] << "\n";
-      output << "newdef " << name() << ":SecondOutgoing " << ix << " " 
-	     << _outgoing2[ix] << "\n";
-      output << "newdef " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix]/MeV << "\n";
-      output << "newdef " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
-    else {
-      output << "insert " << name() << ":Incoming " << ix << " " 
-	     << _incoming[ix] << "\n";
-      output << "insert " << name() << ":FirstOutgoing " << ix << " " 
-	     << _outgoing1[ix] << "\n";
-      output << "insert " << name() << ":SecondOutgoing " << ix << " " 
-	     << _outgoing2[ix] << "\n";
-      output << "insert " << name() << ":Coupling " << ix << " " 
-	     << _coupling[ix]/MeV << "\n";
-      output << "insert " << name() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << outgoing_[ix].first  << " " << outgoing_[ix].second  << " "
+	   << coupling_[ix]/MeV << " " << maxWeight_[ix]  << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+string ScalarScalarScalarDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 0";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  pair<long,long> out;
+  out.first = stoi(stype);
+  pData = getParticleData(out.first);
+  if(!pData)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "First outgoing particle with id " + std::to_string(out.first) + "does not have spin 0";
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  out.second = stoi(stype);
+  pData = getParticleData(out.second);
+  if(!pData)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Second outgoing particle with id " + std::to_string(out.second) + "does not have spin 0";
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  outgoing_.push_back(out);
+  coupling_.push_back(g*MeV);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }

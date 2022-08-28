@@ -7,5 +7,7 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
-# BELLE charm hadron production
+# ARGUS pi0 and eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
+# Crystal Ball pi0 and eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1991_I297905

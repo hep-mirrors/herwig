@@ -184,14 +184,24 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     pspect.setMass(partons[3]->mass());
     pdec.rescaleMass();
     // Get the particle quark that is decaying
-    long idQ, idSpec;
-    idSpec = partons[3]->id();
-    idQ = (abs(parent.id())/1000)%10;
+    long idSpec = partons[3]->id();
+    long idQ = (abs(parent.id())/1000)%10;
     if(!idQ) idQ = (abs(parent.id())/100)%10;
-    // Now the odd case of a B_c where the c decays, not the b
-    if(abs(idSpec) == idQ) idQ = (abs(parent.id())/10)%10;
-    // change sign if spectator quark or antidiquark
-    if((idSpec>0&&idSpec<6)||idSpec<-6) idQ = -idQ;
+    // special for doubly heavy baryons, diquark decays
+    if (abs(parent.id())%2==0 && idQ>=4 &&
+	((abs(parent.id())%1000)/100>=4 || (abs(parent.id())%100)/10>=4)) {
+      long id2=max((abs(parent.id())%1000)/100, (abs(parent.id())%100)/10);
+      if (id2>idQ)     idQ=id2*1000+idQ*100+1;
+      else if(idQ<id2) idQ=id2*100+idQ*1000+1;
+      else             idQ=id2*100+idQ*1000+3;
+      if(parent.id()<0) idQ=-idQ;
+    }
+    else {
+      // Now the odd case of a B_c where the c decays, not the b
+      if(abs(idSpec) == idQ) idQ = (abs(parent.id())/10)%10;
+      // change sign if spectator quark or antidiquark
+      if((idSpec>0&&idSpec<6)||idSpec<-6) idQ = -idQ;
+    }
     // check if W products coloured
     bool Wcol = partons[0]->coloured();
     // particle data object
@@ -281,7 +291,10 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	  // set momenta of particles
 	  for(unsigned int ix=0;ix<pout.size();++ix) partons[ix]->setMomentum(pout[ix]);
 	  // matrix element piece
-	  wgt *= threeBodyMatrixElement(dec,rhoin,pdec,partons);
+	  if(dec->iSpin()==2)
+	    wgt *= threeBodyMatrixElement(dec,rhoin,pdec,partons);
+	  else
+	    wgt *= 16.*(pdec*pout[1])*(pout[0]*pout[2])/sqr(sqr(pdec.mass()));
 	  // check doesn't violate max
 	  if(wgt>_threemax) {
 	    ostringstream message;

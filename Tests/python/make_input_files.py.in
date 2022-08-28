@@ -2,6 +2,7 @@
 from __future__ import print_function
 import logging,sys,os
 from string import Template
+from HerwigInputs import *
 import sys
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -41,55 +42,6 @@ def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
       res+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/"+scale+"\n"
     return res
 
-
-def addLeptonPairCut(minmass,maxmass):
-    return "set /Herwig/Cuts/LeptonPairMassCut:MinMass "+minmass+"*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass "+maxmass+"*GeV\n"
-
-didaddfirstjet=False
-def addFirstJet(ptcut):
-    global didaddfirstjet
-    if(didaddfirstjet):
-      logging.error("Can only add jetcut once.")
-      sys.exit(1)
-  
-    res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-    res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-    res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-    if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
-    didaddfirstjet=True
-    return res
-
-
-
-didaddsecondjet=False
-def addSecondJet(ptcut):
-    global didaddsecondjet
-    if(didaddsecondjet):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-    res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
-    didaddsecondjet=True
-    return res
-
-
-didaddjetpair=False
-def addJetPairCut(minmass):
-  global didaddjetpair
-  if(didaddjetpair):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-  res="""\
-create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
-set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
-set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
-insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
-""".format(mm=minmass)
-  didaddjetpair=True
-  return res
-
 addedBRReweighter=False
 def addBRReweighter():
   global addedBRReweighter
@@ -101,12 +53,6 @@ def addBRReweighter():
   addedBRReweighter=True
   return res
 
-def setHardProcessWidthToZero(list1):
-  res=""
-  for i in list1:
-    res+="set /Herwig/Particles/"+i+":HardProcessWidth 0.\n"
-  return res
-
 selecteddecaymode=False
 def selectDecayMode(particle,decaymodes):
   global selecteddecaymode
@@ -116,46 +62,6 @@ def selectDecayMode(particle,decaymodes):
   res+="\n"
   selecteddecaymode=True
   return res
-
-def jet_kt_cut(ktmin,ktmax=-1.):
-    output = "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=ktmin)
-    if ktmax>0 :
-        output += "set /Herwig/Cuts/JetKtCut:MaxKT {E}*GeV\n".format(E=ktmax)
-    return output
-
-def mhat_cut(mmin,mmax=-1):
-    output = "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=mmin)
-    if mmax>0. :
-        output += "set /Herwig/Cuts/Cuts:MHatMax {E}*GeV\n".format(E=mmax)
-    return output
-
-def mhat_minm_maxm(e1,e2,e3):
-    return """\
-set /Herwig/Cuts/Cuts:MHatMin {e1}*GeV
-set /Herwig/Cuts/MassCut:MinM {e2}*GeV
-set /Herwig/Cuts/MassCut:MaxM {e3}*GeV
-""".format(**locals())
-
-def collider_lumi(energy):
-    return "set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy {E}*GeV\n".format(E=energy)
-
-def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
-    result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
-    if process is not None:
-        result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
-    return result
-
-def particlegroup(factory,name,*particles):
-    directory="MatrixElements/Matchbox"
-    if(factory!="Factory") : directory="Merging"
-    result = ["do /Herwig/{dir}/{fact}:StartParticleGroup {n}".format(n=name,fact=factory,dir=directory)]
-    for p in particles:
-        result.append(
-            "insert /Herwig/{dir}/{fact}:ParticleGroup 0 /Herwig/Particles/{p}".format(p=p,fact=factory,dir=directory)
-        )
-    result.append("do /Herwig/{dir}/{fact}:EndParticleGroup".format(fact=factory,dir=directory))
-    return '\n'.join(result)
-
 
 ME_Upsilon = """\
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
@@ -172,145 +78,13 @@ if len(args) != 1:
 
 name = args[0]
 print (name)
+# work out name and type of the collider
+(collider,have_hadronic_collider) = identifyCollider(name)
 
-
-# select the template to load
-# collider
-KNOWN_COLLIDERS = [
-    "EE-Gamma",
-    "BFactory",
-    "EE",
-    "DIS",
-    "TVT",
-    "LHC-GammaGamma",
-    "LHC",
-    "ISR",
-    "Fermilab",
-    "SppS",
-    "Star",
-    "SPS",
-    "GammaGamma",
-]
-collider = ""
-for cand_collider in KNOWN_COLLIDERS:
-    if cand_collider in name:
-        collider = cand_collider
-        break
-del cand_collider
-if "EHS" in name : collider="SPS"
-assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
-print (collider)
 thefactory="Factory"
 
-parameters = { 
-    'shower'  : '',
-    'bscheme' : '',
-}
-# istart determines how many name parts need to be skipped
-istart = 1
-# Dipole shower with Matchbox Powheg
-if "Dipole-Matchbox-Powheg" in name :
-    istart = 4
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
-
-    # Dipole shower with internal Powheg - Todo: Finish modifying template files.
-    '''
-    elif "Dipole-Powheg" in name :
-    istart = 3
-    simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
-    '''
-
-# Dipole shower with MCatNLO
-elif "Dipole-MCatNLO" in name :
-    istart = 3
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
-
-# Dipole shower with Matchbox LO
-elif "Dipole-Matchbox-LO" in name :
-    istart = 4
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n" 
-
-# Dipole shower with internal LO
-elif "Dipole" in name :
-    istart = 2
-    simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
-    
-# AO shower with Matchbox Powheg
-elif "Matchbox-Powheg" in name :
-    istart = 3
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
-
-# AO shower with MCatNLO
-elif "Matchbox" in name :
-    istart = 2
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
-
-# AO shower with inernal Powheg    
-elif "Powheg" in name :
-    istart = 2
-    simulation="Powheg"
-
-# Dipole shower with merging    
-elif "Merging" in name :
-    istart = 2
-    simulation="Merging"
-    thefactory="MergingFactory"
-    
-# Flavour settings for Matchbox    
-if simulation=="Matchbox" :
-    parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
-    
-    if "Dipole" in parameters["shower"] :
-        parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
-        
-    if collider not in ['DIS','EE'] :
-        parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
-
-# Flavour settings for dipole shower with internal ME
-if simulation=="" and "Dipole" in parameters["shower"] :
-    parameters["bscheme"] = "read snippets/DipoleShowerFiveFlavours.in"
-    
-
-
-# find the template
-if simulation=="" :
-    if collider=="LHC-GammaGamma" :
-        istart += 1
-        templateName="Hadron-Gamma.in"
-    elif have_hadronic_collider :
-        templateName="Hadron.in"
-    elif collider=="EE-Gamma" :
-        istart+=1
-        if("Direct" in name) :
-            templateName="EE-Gamma-Direct.in"
-        elif("Single-Resolved" in name) :
-            templateName="EE-Gamma-Single-Resolved.in"
-        elif("Double-Resolved" in name) :
-            templateName="EE-Gamma-Double-Resolved.in"
-        else :
-            print ("Unknown type of EE-Gamma event ",name)
-            quit()
-    elif collider=="GammaGamma" :
-        templateName="GammaGamma.in"
-    elif collider != "BFactory" :
-        templateName= "%s.in" % collider
-    else :
-        templateName= "EE.in"
-else :
-    if have_hadronic_collider :
-        templateName= "Hadron-%s.in" % simulation 
-    elif collider != "BFactory" :
-        templateName= "%s-%s.in" % (collider,simulation) 
-    else :
-        templateName= "EE-%s.in" % simulation
+# workout the type of simulation
+(simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
         
 # settings for four flavour scheme
 fourFlavour="""
@@ -319,28 +93,6 @@ read Matchbox/FourFlavourScheme.in
 set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
 """.format(bjetgroup=particlegroup(thefactory,'bjet','b','bbar','c', 'cbar',
                                    's','sbar','d','dbar','u','ubar','g'))
-
-# work out the name of the parameter file
-parameterName="-".join(name.split("-")[istart:])
-del istart
-
-class StringBuilder(object):
-    """
-    Avoid expensive string additions until the end
-    by building up a list first.
-
-    This helper class avoids rewriting all the += lower down
-    to list operations.
-    """
-    def __init__(self, init = None):
-        self.lines = [] if init is None else [init]
-
-    def __iadd__(self, line):
-        self.lines.append(line)
-        return self
-
-    def __str__(self):
-        return '\n'.join(self.lines)
 
 # work out the process and parameters
 process=StringBuilder()
@@ -426,15 +178,19 @@ elif(collider=="EE") :
             except :
                 pass
     elif(simulation=="Powheg") :
-        process = StringBuilder()
-        try :
-            ecms = float(parameterName)
-            if(ecms<=3.75) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
-            elif(ecms<=10.6) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
-        except :
-            pass
+        if "LL" in parameterName :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/PowhegMEee2gZ2ll:Allowed Charged\n"
+        else :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2qq"))
+            try :
+                ecms = float(parameterName)
+                if(ecms<=3.75) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
+                elif(ecms<=10.6) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+            except :
+                pass
     elif(simulation=="Matchbox" ) :
         try :
             ecms = float(parameterName)
@@ -603,46 +359,29 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",0,0)
             elif(simulation=="Merging"):
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",1,0)
-            process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("500")
-            elif "Run-II-Jets-11" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("900")
-            elif "Run-II-Jets-12" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("300")
-            elif "Run-I-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "Run-I-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-I-Jets-3" in parameterName : process+=addFirstJet("65")
-            elif "Run-I-Jets-4" in parameterName : process+=addFirstJet("90")
-            elif "Run-I-Jets-5" in parameterName : process+=addFirstJet("160")
-            elif "Run-I-Jets-6" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-I-Jets-7" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("400")
-            elif "Run-I-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("700")
-            elif "Run-II-Jets-0" in parameterName : process+=addFirstJet("15")
-            elif "Run-II-Jets-1" in parameterName : process+=addFirstJet("25")
-            elif "Run-II-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-II-Jets-3" in parameterName : process+=addFirstJet("60")
-            elif "Run-II-Jets-4" in parameterName : process+=addFirstJet("85")
-            elif "Run-II-Jets-5" in parameterName : process+=addFirstJet("110")
-            elif "Run-II-Jets-6" in parameterName : process+=addFirstJet("160")
-            elif "Run-II-Jets-7" in parameterName : process+=addFirstJet("250")
-            elif "Run-II-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-II-Jets-9" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("300")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
-            elif "300-Jets-1" in parameterName : process+=addFirstJet("6")
-            elif "630-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "630-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "630-Jets-3" in parameterName : process+=addFirstJet("75")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
+            if "DiJets" in parameterName :
+                process+=addFirstJet("30")+addSecondJet("25")
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=addJetPairCut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
             else :
-                logging.error("Exit 00007")
-                sys.exit(1)
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=addFirstJet(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
         elif "Run-I-WZ" in parameterName :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",0,0)

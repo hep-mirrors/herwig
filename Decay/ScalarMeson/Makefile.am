@@ -11,6 +11,7 @@ DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 EtaPiGammaGammaDecayer.h\
 EtaPiPiGammaDecayer.h \
+EtaPiPiFermionsDecayer.h \
 EtaPiPiPiDecayer.h \
 PScalar4FermionsDecayer.h\
 PScalarLeptonNeutrinoDecayer.h\
@@ -21,19 +22,15 @@ ScalarMesonTensorScalarDecayer.h\
 ScalarScalarScalarDecayer.h  \
 SemiLeptonicScalarDecayer.h  \
 ScalarMesonFactorizedDecayer.h \
-ScalarVectorVectorDecayer.h  \
-DtoKPiPiE691.h \
-FOCUSDptoKmPipPip.h \
-DtoKPiPiMarkIII.h \
-WeakDalitzDecay.h\
-CLEODptoKmPipPip.h\
-CLEOD0toKmPipPi0.h\
-CLEOD0toK0PipPim.h
+ScalarVectorVectorDecayer.h \
+Scalar2FermionsDecayer.h \
+PseudoScalar2FermionsDecayer.h 
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 EtaPiGammaGammaDecayer.cc \
 EtaPiPiGammaDecayer.cc \
+EtaPiPiFermionsDecayer.cc \
 EtaPiPiPiDecayer.cc \
 PScalar4FermionsDecayer.cc \
 PScalarLeptonNeutrinoDecayer.cc \
@@ -45,10 +42,5 @@ ScalarScalarScalarDecayer.cc \
 SemiLeptonicScalarDecayer.cc \
 ScalarMesonFactorizedDecayer.cc \
 ScalarVectorVectorDecayer.cc \
-DtoKPiPiE691.cc\
-FOCUSDptoKmPipPip.cc\
-DtoKPiPiMarkIII.cc \
-WeakDalitzDecay.cc\
-CLEODptoKmPipPip.cc\
-CLEOD0toKmPipPi0.cc\
-CLEOD0toK0PipPim.cc
+Scalar2FermionsDecayer.cc  \
+PseudoScalar2FermionsDecayer.cc 

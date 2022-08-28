@@ -95,7 +95,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KPiIHalfFOCUSKMatrix & operator=(const KPiIHalfFOCUSKMatrix &);
+  KPiIHalfFOCUSKMatrix & operator=(const KPiIHalfFOCUSKMatrix &) = delete;
 
 private:
 
@@ -103,11 +103,6 @@ private:
    *  Constants \f$C_{ij,k}\f$ from Eqn 8
    */
   vector<double> C11_,C22_,C12_;
-
-  /**
-   *  Couplings for the resonances
-   */
-  vector<Energy> g_;
 
   /**
    *   Adler zero position

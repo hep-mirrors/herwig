@@ -24,11 +24,6 @@ class RadiativeHyperonDecayer: public Baryon1MesonDecayerBase {
 public:
 
   /**
-   * The default constructor.
-   */
-  RadiativeHyperonDecayer();
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
@@ -138,6 +133,13 @@ private:
    */
   RadiativeHyperonDecayer & operator=(const RadiativeHyperonDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
@@ -164,11 +166,6 @@ private:
    * the maximum weights for the decays
    */
   vector<double> maxweight_;
-
-  /**
-   *  initial size fo the vectors
-   */
-  unsigned int initsize_;
 };
 
 }

@@ -12,16 +12,16 @@ ALL_H_FILES = \
 a1ThreePionCLEODecayer.h \
 a1SimpleDecayer.h\
 a1ThreePionDecayer.h \
-PVectorMesonVectorPScalarDecayer.h \
 VectorMeson2FermionDecayer.h \
-VectorMeson2BaryonsDecayer.h \
+VectorMeson2SpinHalfBaryonsDecayer.h \
+VectorMeson2SpinThreeHalfBaryonsDecayer.h \
 VectorMeson2MesonDecayer.h \
-VectorMeson3PionDecayer.h \
 VectorMesonPScalarFermionsDecayer.h \
-VectorMesonPVectorPScalarDecayer.h \
 VectorMesonVectorPScalarDecayer.h  \
 VectorMesonVectorScalarDecayer.h  \
 VectorMesonVectorVectorDecayer.h  \
+VectorMesonTensorVectorDecayer.h \
+PseudoVectorMesonVectorVectorDecayer.h  \
 OniumToOniumPiPiDecayer.h \
 f1RhoPiPiDecayer.h \
 f1FourPiDecayer.h
@@ -31,17 +31,16 @@ ALL_CC_FILES = \
 a1ThreePionCLEODecayer.cc            \
 a1SimpleDecayer.cc                   \
 a1ThreePionDecayer.cc                \
-PVectorMesonVectorPScalarDecayer.cc  \
 VectorMeson2FermionDecayer.cc        \
-VectorMeson2BaryonsDecayer.cc        \
+VectorMeson2SpinHalfBaryonsDecayer.cc \
+VectorMeson2SpinThreeHalfBaryonsDecayer.cc \
 VectorMeson2MesonDecayer.cc          \
-VectorMeson3PionDecayer.cc           \
 VectorMesonPScalarFermionsDecayer.cc \
-VectorMesonPVectorPScalarDecayer.cc  \
 VectorMesonVectorPScalarDecayer.cc   \
 VectorMesonVectorScalarDecayer.cc    \
 VectorMesonVectorVectorDecayer.cc    \
+VectorMesonTensorVectorDecayer.cc    \
+PseudoVectorMesonVectorVectorDecayer.cc  \
 OniumToOniumPiPiDecayer.cc           \
 f1RhoPiPiDecayer.cc                  \
 f1FourPiDecayer.cc
-

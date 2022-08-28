@@ -48,11 +48,6 @@ class TensorMeson2PScalarDecayer: public DecayIntegrator {
 public:
 
   /**
-   * Default constructor.
-   */
-  TensorMeson2PScalarDecayer();
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
@@ -162,48 +157,45 @@ private:
    */
   TensorMeson2PScalarDecayer & operator=(const TensorMeson2PScalarDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * the PDG codes for first outgoing particle
+   * the PDG codes for the outgoing particles
    */
-  vector<int> _outgoing1;
-
-  /**
-   * the PDG codes for second outgoing particle
-   */
-  vector<int> _outgoing2;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * the coupling for the decay
    */
-  vector<InvEnergy> _coupling;
+  vector<InvEnergy> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Storage of polarization tensors to try and increase
    *  speed
    */
-  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+  mutable vector<Helicity::LorentzTensor<double> > tensors_;
 
   /**
    *   Storage of the \f$\rho\f$ matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
 };
 

@@ -140,7 +140,7 @@ if(opts.decay) :
     yodafiles += ["Upsilon","Upsilon2","Upsilon3","Upsilon4","Upsilon4-asym",
                   "Tau","Phi","Lambdac","Omega-Meson",
                   "Omega-Baryon","Eta","Xi0","Xic0","Xicp",
-                  "Omegac0","Xim","JPsi","Psi2S","Psi2S-All","Psi3770"]
+                  "Omegac0","Xim","Ds","Bc","Etac","JPsi","Psi2S","Psi2S-All","Psi3770"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -166,6 +166,10 @@ for f in yodafiles:
         sqrts="psi2s"
     elif(file.find("Psi3770")>0) :
         sqrts="psi1d"
+    elif(file.find("Ds")>0) :
+        sqrts="Ds"
+    elif(file.find("Bc")>0) :
+        sqrts="Bc"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
          file.find("Xim")>0 or file.find("Xicp")>0 or
@@ -228,7 +232,8 @@ for f in yodafiles:
         elif("MARKI_1975_I100733" in aopath) :
             if "d03" in aopath : 
                 outhistos[aopath] = ao
-        elif(aopath.find("A2_2017_I1486671")>=0) :
+        elif("A2_2017_I1486671" in aopath or
+             "NA60_2016_I1452485" in aopath ) :
             if("Eta" in file) :
                 if "d01" in aopath : outhistos[aopath] = ao
             elif("Omega" in file) :
@@ -277,6 +282,13 @@ for f in yodafiles:
                 outhistos[aopath]=htemp2
             else :
                 outhistos[aopath]=htemp
+        elif "BELLE_2017_I1610301" in aopath :
+            if "Upsilon2" in file and "y01" in aopath:
+                outhistos[aopath] = ao
+            elif "Upsilon3" in file and "y02" in aopath:
+                outhistos[aopath] = ao
+            elif "Upsilon4" in file and ("y03" in aopath or "y04" in aopath) :
+                outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao
 

@@ -177,82 +177,73 @@ private:
    */
   PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * coupling for a decay
    */
-  vector<InvEnergy> _coupling;
+  vector<InvEnergy> coupling_;
 
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * the PDG codes for the outgoing vector
    */
-  vector<int> _outgoingV;
-
-  /**
-   * the PDG codes for the outgoing fermion
-   */
-  vector<int> _outgoingf;
-
-  /**
-   * the PDG codes for the outgoing antifermion
-   */
-  vector<int> _outgoinga;
+  vector<pair<long,long> > outgoing_;
 
   /**
    * maximum weight for a decay
    */
-  vector<double> _maxweight;
+  vector<double> maxweight_;
 
   /**
    * Include the VMD factor
    */
-  vector<int> _includeVMD;
+  vector<int> includeVMD_;
 
   /**
    * PDG code for thte particle to use in the VMD factor.
    */
-  vector<int> _VMDid;
+  vector<int> VMDid_;
 
   /**
    * Mass to use in the VMD factor.
    */
-  vector<Energy> _VMDmass;
+  vector<Energy> VMDmass_;
 
   /**
    * Width to use in the VMD factor.
    */
-  vector<Energy> _VMDwidth;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
-
+  vector<Energy> VMDwidth_;
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decay product
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_;
 
   /**
    *  Spinors for the fermions
    */
-  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > _wave;
+  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > wave_;
 
   /**
    *  Barred spinors for the fermions 
    */
-  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > _wavebar;
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > wavebar_;
 };
 
 }
