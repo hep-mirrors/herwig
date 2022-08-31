@@ -30,11 +30,6 @@ set /Herwig/Hadronization/HadronSelector:PwtSquark 0.44791808545341966
 set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.399325692181664 
 set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
 
-set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor 1.60
-set /Herwig/Hadronization/ClusterFissioner:ProbablityShift       0.00
-set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift 2.55
-
-
 set /Herwig/Hadronization/PartonSplitter:Split ud
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappa+
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappa0
