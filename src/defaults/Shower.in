@@ -30,6 +30,7 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 #####################################
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
+create Herwig::ShowerAlphaQCD AlphaQCDFSR
 create Herwig::ShowerAlphaQED AlphaQED
 set AlphaQED:CouplingSource Thompson
 create Herwig::ShowerAlphaQED AlphaEW
@@ -112,7 +113,12 @@ newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:AlphaIn 0.1186
+newdef AlphaQCD:AlphaIn 0.126
+newdef AlphaQCDFSR:ScaleFactor 1.0
+newdef AlphaQCDFSR:NPAlphaS 2
+newdef AlphaQCDFSR:Qmin 0.935
+newdef AlphaQCDFSR:NumberOfLoops 2
+newdef AlphaQCDFSR:AlphaIn 0.1186
 #
 #
 # Lets set up all the splittings
@@ -289,24 +295,37 @@ newdef dtoGdSudakov:SplittingFunction QtoGQSplitFn
 newdef dtoGdSudakov:PDFFactor OverOneMinusZ
 
 
+#Use a different Sudakov for FS QCD splittings in order to use a different value of alphaS
+cp QtoQGSudakov    QtoQGSudakovFSR
+cp GtoGGSudakov    GtoGGSudakovFSR
+cp GtoQQbarSudakov GtoQQbarSudakovFSR
+cp GtobbbarSudakov GtobbbarSudakovFSR
+cp GtobbbarSudakov GtoccbarSudakovFSR
+
+set QtoQGSudakovFSR:Alpha AlphaQCDFSR
+set GtoGGSudakovFSR:Alpha AlphaQCDFSR
+set GtoQQbarSudakovFSR:Alpha AlphaQCDFSR
+set GtobbbarSudakovFSR:Alpha AlphaQCDFSR
+set GtoccbarSudakovFSR:Alpha AlphaQCDFSR
+
 #
 # Now add the final splittings
 #
-do SplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
-do SplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
-do SplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
-do SplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakov
-do SplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakov
-do SplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakovFSR
+do SplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakovFSR
+do SplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakovFSR
+do SplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakovFSR
+do SplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakovFSR
+do SplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakovFSR
 #
-do SplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
+do SplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakovFSR
 #
-do SplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
-do SplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
-do SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
-do SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
-do SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
-do SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakovFSR
+do SplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakovFSR
+do SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakovFSR
+do SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakovFSR
+do SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakovFSR
+do SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakovFSR
 #
 do SplittingGenerator:AddFinalSplitting gamma->u,ubar; GammatoQQbarSudakov
 do SplittingGenerator:AddFinalSplitting gamma->d,dbar; GammatoQQbarSudakov

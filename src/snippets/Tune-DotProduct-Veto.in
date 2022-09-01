@@ -6,7 +6,7 @@
 # dot-product scheme
 read snippets/EvolutionScheme-DotProduct-Veto.in
 # parameters of the tune
-set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1186
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn                             0.1186
 set /Herwig/Shower/PTCutOff:pTmin                                  0.958
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              3.649
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight              2.780
