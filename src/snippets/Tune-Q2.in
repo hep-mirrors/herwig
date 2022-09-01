@@ -6,7 +6,7 @@
 # q^2 scheme
 read snippets/EvolutionScheme-Q2.in
 # parameters of the tune
-set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1244
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn                             0.1244
 set /Herwig/Shower/PTCutOff:pTmin                                  1.136
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              3.141
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight              1.353

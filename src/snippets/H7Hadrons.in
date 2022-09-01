@@ -21,6 +21,7 @@ set H7Selector:Mode 1
 set H7Selector:BelowThreshold All
 
 set /Herwig/Shower/AlphaQCD:AlphaIn 0.11945016393306016
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn 0.11945016393306016
 set /Herwig/Shower/PTCutOff:pTmin 0.9306282520806936
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703

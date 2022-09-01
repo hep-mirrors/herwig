@@ -39,6 +39,23 @@ insert AlphaQCD:QuarkMasses[3] 1.25
 insert AlphaQCD:QuarkMasses[4] 4.2
 insert AlphaQCD:QuarkMasses[5] 174.2
 
+set AlphaQCDFSR:ScaleFactor 1.0
+set AlphaQCDFSR:NPAlphaS 2
+set AlphaQCDFSR:Qmin 0.935
+set AlphaQCDFSR:NumberOfLoops 2
+set AlphaQCDFSR:InputOption 1
+
+set AlphaQCDFSR:AlphaMZ 0.118
+set AlphaQCDFSR:InputScale 91.1876
+
+clear AlphaQCDFSR:QuarkMasses
+insert AlphaQCDFSR:QuarkMasses[0] 0.005
+insert AlphaQCDFSR:QuarkMasses[1] 0.0023
+insert AlphaQCDFSR:QuarkMasses[2] 0.095
+insert AlphaQCDFSR:QuarkMasses[3] 1.25
+insert AlphaQCDFSR:QuarkMasses[4] 4.2
+insert AlphaQCDFSR:QuarkMasses[5] 174.2
+
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
 set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS

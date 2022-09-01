@@ -401,7 +401,7 @@ bool PartonicDecayerBase::timeLikeShower(tShowerParticlePtr particle,
     children[ix]->set5Momentum(Lorentz5Momentum(fb.ids[ix+1]->mass()));
   }
   // update the children
-  particle->showerKinematics()->updateChildren(particle, children,fb.type);
+  particle->showerKinematics()->updateChildren(particle, children,1,fb.type);
   // select branchings for children
   for(unsigned int ix=0;ix<children.size()-1;++ix) {
     fc[ix] = _splittingGenerator->chooseForwardBranching(*children[ix],1.,ShowerInteraction::QCD);

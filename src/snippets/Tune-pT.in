@@ -6,7 +6,7 @@
 # pT scheme
 read snippets/EvolutionScheme-pT.in
 # parameters of the tune
-set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1074
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn                             0.1074
 set /Herwig/Shower/PTCutOff:pTmin                                  0.900
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              4.204
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight              3.000

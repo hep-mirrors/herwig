@@ -19,6 +19,7 @@
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include <cassert>
 
@@ -27,12 +28,67 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & children,
+		unsigned int pTscheme,
 		ShowerPartnerType) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
   ShowerParticle::Parameters & child1 = children[1]->showerParameters();
   double cphi = cos(phi());
   double sphi = sin(phi());
+  ///-- Perform the reconstruction depenting on the recoil scheme, following 2107.04051 (Bewick, Ferrario Ravasio, Richardson and Seymour)
+  Energy2 m02 = ZERO;
+  Energy2 m12 = ZERO;
+  // Time like children, which can be massive
+  IdList ids(1);
+  ids[0] =  children[1]->dataPtr();
+  Energy2 m22 = ZERO;
+  if (ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma) {
+    const vector<Energy> & onshellMasses = SudakovFormFactor()->virtualMasses(ids);
+    m22 =  sqr(onshellMasses[0]);
+  }
+
+  
+  if(theParent->parents().empty()) theParent->virtualMass(ZERO);
+  if(children[1]->children().empty()) children[1]->virtualMass(sqrt(m22));
+
+
+  // each particle contains a pointer to its mass, that we can use to calculate the virtuality.
+  // onshell incoming partons are massless, while offshell ones have negative virtuality q2
+  // q2 = - virtualMass**2  for ISR [THIS IS NOT TRUE FOR RESONANCES]
+  Energy2 pt2;
+  if(pTscheme==0) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
+					m12          ,m22,
+					m02          ,m22);
+  }
+  else if(pTscheme==1) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
+					m12          ,m22,
+					-sqr(theParent->virtualMass()), sqr(children[1]->virtualMass()));
+  }
+  else if(pTscheme==2) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), -sqr(theParent->virtualMass()),
+					m12          ,sqr(children[1]->virtualMass()),
+				        -sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  }
+  else
+    assert(false);
+  
+  if(pt2>ZERO) {
+    pT(sqrt(pt2));
+  }
+  else {
+    pt2=ZERO;
+    pT(ZERO);
+  }
+  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), -sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  // the virtuality is negative
+  if(q2/sqr(1_GeV) > 0.){
+      std::cout<<" virtuality of spacelike parton >0 !! ERROR!! Q2="<<q2/sqr(1_GeV)<<std::endl;
+      abort();
+    }
+  children[0]->virtualMass(sqrt(-q2));
+  // -- now as before 2107.04051
 
   child1.alpha = (1.-z()) * parent.alpha;
 
@@ -50,7 +106,7 @@ updateChildren( const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr parent, 
 	     const ShowerParticleVector & children,
-	     unsigned int ,
+	     unsigned int,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
   splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
@@ -182,3 +238,34 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   plast.rescaleMass();
   theLast->set5Momentum(plast);
 }
+
+
+void IS_QTildeShowerKinematics1to2::
+resetChildren(const tShowerParticlePtr parent, const ShowerParticleVector &) const {
+
+  if(parent->children().size() == 2){
+
+    if(parent->children()[1]->children().size()==2){
+       tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);
+       ShowerParticleVector timelikeGrandChildren;
+       for(unsigned int iy=0;iy<parent->children()[1]->children().size();++iy)
+	 timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+       					 (parent->children()[1]->children()[iy]));
+       //timelike reset children
+       timelikeChild->showerKinematics()->resetChildren(timelikeChild, timelikeGrandChildren);
+    }
+    
+    if(parent->children()[0]->children().size()==2){
+      const tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
+      //Check if its timelike child is a valid shower particle istance. If not, we end here the reshuffling.
+      tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(spacelikeChild->children()[1]);
+      if(timelikeChild){
+      ShowerParticleVector dummyChildren;
+      spacelikeChild->showerKinematics()->resetChildren(spacelikeChild, dummyChildren);
+      }
+    }
+          
+  }
+  
+}
+	

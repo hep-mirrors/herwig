@@ -9,23 +9,29 @@ cd /Herwig/Shower
 set AlphaQCD:AlphaMZ 0.118
 get AlphaQCD:AlphaMZ
 
+set AlphaQCDISR:AlphaMZ 0.118
+get AlphaQCDISR:AlphaMZ
+
 create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSplitFn
 set CMWQtoQGSplitFn:InteractionType QCD
 set CMWQtoQGSplitFn:ColourStructure TripletTripletOctet
 set CMWQtoQGSplitFn:AngularOrdered Yes
-set CMWQtoQGSplitFn:Alpha AlphaQCD
+set CMWQtoQGSplitFn:Alpha AlphaQCDFSR
 
 
 create Herwig::CMWOneOneOneSplitFn CMWGtoGGSplitFn
 set CMWGtoGGSplitFn:InteractionType QCD
 set CMWGtoGGSplitFn:ColourStructure OctetOctetOctet
 set CMWGtoGGSplitFn:AngularOrdered Yes
-set CMWGtoGGSplitFn:Alpha AlphaQCD
+set CMWGtoGGSplitFn:Alpha AlphaQCDFSR
 
 
 
 cp CMWGtoGGSplitFn CMWGtoGGSplitFnIS
 cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
+
+set CMWQtoQGSplitFnIS:Alpha AlphaQCD
+set CMWQtoGGSplitFnIS:Alpha AlphaQCD
 
 set CMWGtoGGSplitFnIS:isInititalState Yes
 set CMWQtoQGSplitFnIS:isInititalState Yes
