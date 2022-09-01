@@ -722,7 +722,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // update the children
   particle->showerKinematics()->
-    updateChildren(particle, children,fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // update number of emissions
   ++_nfs;
   if(_limitEmissions!=0) {
@@ -825,17 +825,27 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     }
   }
   particle->showerKinematics()->
-    updateChildren(newParent, theChildren,bb.type);
+    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
   if(_limitEmissions!=0) {
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return true;
   }
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,Branching(),true);
+
+  particle->showerKinematics()->
+    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
+
   updateHistory(otherChild);
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   if(particle->spinInfo()) particle->spinInfo()->develop();
+ 
+  if(!theChildren.empty()){
+    particle->showerKinematics()->resetChildren(newParent,theChildren);
+  }
+  
+
   return true;
 }
 
@@ -926,7 +936,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // updateChildren the children
   particle->showerKinematics()->
-    updateChildren(particle, children, fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // select branchings for children
   fc[0] = selectSpaceLikeDecayBranching(children[0],maxScales,minmass,
 					type,HardBranchingPtr());
@@ -1575,7 +1585,7 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // update the children
   particle->showerKinematics()->
-    updateChildren(particle, children,fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // select branchings for children
   if(!fc[0].kinematics) {
     // select branching for first particle
@@ -1739,7 +1749,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
       }
     }
     particle->showerKinematics()->
-      updateChildren( newParent, theChildren,bb.type);
+      updateChildren( newParent, theChildren,_evolutionScheme,bb.type);
     if(hardOnly()) return true;
     // perform the shower of the final-state particle
     if( timelike->children().empty() ) {
@@ -1786,7 +1796,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
     }
   }
   particle->showerKinematics()->
-    updateChildren( newParent, theChildren, bb.type);
+    updateChildren( newParent, theChildren,_evolutionScheme, bb.type);
   // perform the shower of the final-state particle
   timeLikeShower( otherChild , type,Branching(),true);
   updateHistory(otherChild);
@@ -1814,7 +1824,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // updateChildren the children
   particle->showerKinematics()->
-    updateChildren(particle, children, fb.type);
+    updateChildren(particle, children,_evolutionScheme, fb.type);
   // select branchings for children
   if(!fc[0].kinematics) {
     if(children[0]->id()==particle->id()) {
