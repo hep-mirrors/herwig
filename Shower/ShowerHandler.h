@@ -27,10 +27,10 @@ using namespace ThePEG;
 
 /** \ingroup Shower
  *
- *  This class is the main driver of the shower: it is responsible for 
+ *  This class is the main driver of the shower: it is responsible for
  *  the proper handling of all other specific collaborating classes
  *  and for the storing of the produced particles in the event record.
- * 
+ *
  *  @see \ref ShowerHandlerInterfaces "The interfaces"
  *
  *  @see ThePEG::CascadeHandler
@@ -70,8 +70,10 @@ public:
    *  pointer to "this", the current ShowerHandler.
    */
   static const tShowerHandlerPtr currentHandler() {
-    assert(currentHandler_);
-    return currentHandler_;
+    if(currentHandler_)
+      return currentHandler_;
+    else
+      return tShowerHandlerPtr();
   }
 
   /**
@@ -94,17 +96,17 @@ public:
    * process masses.
    */
   virtual bool isReshuffling() const { return true; }
-  
+
   /**
    * Return true, if this cascade handler will put the final state
    * particles to their constituent mass. If false the nominal mass is used.
    */
   virtual bool retConstituentMasses() const { return useConstituentMasses_; }
-  
-  
+
+
 
   /**
-   * Return true, if the shower handler can generate a truncated 
+   * Return true, if the shower handler can generate a truncated
    * shower for POWHEG style events generated using Matchbox
    */
   virtual bool canHandleMatchboxTrunc() const { return false; }
@@ -113,23 +115,23 @@ public:
    * Get the PDF freezing scale
    */
   Energy pdfFreezingScale() const { return pdfFreezingScale_; }
-  
+
   /**
    * Get the local PDFs.
    */
   PDFPtr getPDFA() const {return PDFA_;}
-  
+
   /**
    * Get the local PDFs.
    */
   PDFPtr getPDFB() const {return PDFB_;}
-  
+
   /**
    * Return true if currently the primary subprocess is showered.
    */
   bool firstInteraction() const {
     if (!eventHandler()->currentCollision())return true;
-    return ( subProcess_ == 
+    return ( subProcess_ ==
 	     eventHandler()->currentCollision()->primarySubProcess() );
   }
 
@@ -148,7 +150,7 @@ public:
 			DecayProcessMap & decay) const;
 
   /**
-   * Information if the Showerhandler splits the hard process. 
+   * Information if the Showerhandler splits the hard process.
    */
   bool doesSplitHardProcess()const {return splitHardProcess_;}
 
@@ -162,7 +164,7 @@ public:
 	       DecayProcessMap & decay,
 	       bool radPhotons = false) const;
 
-  
+
   /**
    * Cached lookup of decay modes.
    * Generator::findDecayMode() is not efficient.
@@ -173,13 +175,13 @@ public:
   /**
    *  A struct to order the particles in the same way as in the DecayMode's
    */
-  
+
   struct ParticleOrdering {
 
     bool operator() (tcPDPtr p1, tcPDPtr p2) const;
 
   };
-  
+
 
   /**
    * A container for ordered particles required
@@ -203,7 +205,7 @@ public:
    * Switch on or off final state radiation.
    */
   bool doFSR() const { return doFSR_;}
-  
+
   /**
    * Switch on or off initial state radiation.
    */
@@ -227,21 +229,21 @@ public:
   double factorizationScaleFactor() const {
     return factorizationScaleFactor_;
   }
-  
+
   /**
    * The renormalization scale factor.
    */
   double renFac() const {
     return renormalizationScaleFactor_;
   }
-  
+
   /**
    * The factorization scale factor.
    */
   double facFac() const {
     return factorizationScaleFactor_;
   }
-  
+
   /**
    * The renormalization scale factor.
    */
@@ -325,7 +327,7 @@ public:
   }
 
 public :
-  
+
   /**
    *   Access to switches for spin correlations
    */
@@ -336,7 +338,7 @@ public :
   unsigned int spinCorrelations() const {
     return spinOpt_;
   }
-  
+
   /**
    *  Any correlations
    */
@@ -347,13 +349,13 @@ public :
 
 public:
 
-  /** 
+  /**
    * struct that is used to catch exceptions which are thrown
    * due to energy conservation issues of additional scatters
    */
   struct ExtraScatterVeto {};
 
-  /** 
+  /**
    * struct that is used to catch exceptions which are thrown
    * due to fact that the Shower has been invoked more than
    * a defined threshold on a certain configuration
@@ -405,10 +407,10 @@ protected:
   /**
    * Set up for the cascade
    */
-  void prepareCascade(tSubProPtr sub) { 
-    current_ = currentStep(); 
+  void prepareCascade(tSubProPtr sub) {
+    current_ = currentStep();
     subProcess_ = sub;
-  } 
+  }
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs
@@ -445,7 +447,7 @@ protected:
    */
   //@{
   /**
-   * Return true if multiple parton interactions are switched on 
+   * Return true if multiple parton interactions are switched on
    * and can be used for this beam setup.
    */
   bool isMPIOn() const {
@@ -456,9 +458,9 @@ protected:
    * Access function for the MPIHandler, it should only be called after
    * checking with isMPIOn.
    */
-  tUEBasePtr getMPIHandler() const {  
+  tUEBasePtr getMPIHandler() const {
     assert(MPIHandler_);
-    return MPIHandler_;    
+    return MPIHandler_;
   }
 
   /**
@@ -467,7 +469,7 @@ protected:
   bool isResolvedHadron(tPPtr);
 
   /**
-   * Get the remnants from the ThePEG::PartonBinInstance es and 
+   * Get the remnants from the ThePEG::PartonBinInstance es and
    * do some checks.
    */
   RemPair getRemnants(PBIPair incbins);
@@ -485,7 +487,7 @@ public:
    * @param id The PDG code for the particle
    */
   bool decaysInShower(long id) const {
-    return ( particlesDecayInShower_.find( abs(id) ) != 
+    return ( particlesDecayInShower_.find( abs(id) ) !=
 	     particlesDecayInShower_.end() );
   }
 
@@ -563,7 +565,7 @@ protected:
   unsigned int maxtry() const { return maxtry_; }
 
 protected:
-  
+
   /**
    *  Parameters for the space-time model
    */
@@ -636,7 +638,7 @@ private:
   static tShowerHandlerPtr  currentHandler_;
 
   /**
-   * a MPIHandler to administer the creation of several (semihard) 
+   * a MPIHandler to administer the creation of several (semihard)
    * partonic interactions.
    */
   UEBasePtr MPIHandler_;
@@ -857,7 +859,7 @@ private:
 
 
 private:
-  
+
   /**
    *  Parameters for the constituent mass treatment.
    */

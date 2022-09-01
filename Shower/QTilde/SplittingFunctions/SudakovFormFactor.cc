@@ -118,7 +118,8 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 }
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
-  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+  if(ShowerHandler::currentHandler())
+    factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
   return alpha_->showerRatio(pt2, factor);
 }
 
