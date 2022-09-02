@@ -31,21 +31,21 @@
 #include "EvtGenBase/EvtHighSpinParticle.hh"
 #include "EvtGenBase/EvtDecayTable.hh"
 
-#ifndef EVTGEN_PREFIX
-#error Makefile.am needs to define EVTGEN_PREFIX
+#ifndef EVTGEN_SHARE
+#error Makefile.am needs to define EVTGEN_SHARE
 #endif
 
 using namespace Herwig;
 
 namespace {
 
-const string prefix=EVTGEN_PREFIX "";
+const string prefix=EVTGEN_SHARE "";
 const string p8data=PYTHIA8DATA "";
 
 }
 
-EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
-				     pdtName_(prefix+"/share/evt.pdl"),
+EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/DECAY_2010.DEC"),
+				     pdtName_(prefix+"/evt.pdl"),
 				     reDirect_(true), checkConv_(false),
 				     p8Data_(p8data)
 {}
