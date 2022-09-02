@@ -21,6 +21,7 @@ set H7Selector:Mode 1
 set H7Selector:BelowThreshold All
 
 set /Herwig/Shower/AlphaQCD:AlphaIn 0.11945016393306016
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn 0.11945016393306016
 set /Herwig/Shower/PTCutOff:pTmin 0.9306282520806936
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703
@@ -29,9 +30,6 @@ set /Herwig/Hadronization/ClusterDecayer:ClSmrLight 0.78
 set /Herwig/Hadronization/HadronSelector:PwtSquark 0.44791808545341966
 set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.399325692181664 
 set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
-
-
-
 
 set /Herwig/Hadronization/PartonSplitter:Split ud
 insert H7Selector:Forbidden 0 /Herwig/Particles/kappa+

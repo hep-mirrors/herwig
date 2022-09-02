@@ -16,7 +16,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -44,37 +44,19 @@ HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiFermionsDecayer,double,Energy)
 void EtaPiPiFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    for(unsigned int ix=0;ix<maxWeight_.size();++ix)
+    for(unsigned int ix=0;ix<maxWeight_.size();++ix) {
       maxWeight_[ix]=mode(ix)->maxWeight();
+    }
   }
 }
 
 EtaPiPiFermionsDecayer::EtaPiPiFermionsDecayer() 
-  : incoming_(2), lepton_(2), coupling_(2), maxWeight_(2), option_(2) {
-  // the pion decay constant
-  fPi_=130.7*MeV;
-  // the rho mass
-  mRho_=0.7711*GeV;
-  rhoWidth_=0.1492*GeV;
+  : fPi_(130.7*MeV), mRho_(0.7711*GeV), rhoWidth_(0.1492*GeV) {
   // the constants for the omnes function form
   aConst_=0.5/mRho_/mRho_;
   cConst_=1.0;
   // use local values of the parameters
   localParameters_=true;
-  // the modes
-  // eta decay
-  incoming_[0] = 221; 
-  option_[0] = 3; 
-  coupling_[0] = 5.060e-3;
-  lepton_[0]=11;
-  maxWeight_[0] = 3.95072; 
-  // eta' decay
-  incoming_[1] = 331; 
-  option_[1] = 3; 
-  coupling_[1] = 4.278e-3;
-  lepton_[1]=11;
-  maxWeight_[1] = 3.53141; 
-  rhoConst_=0.;
   mPi_=ZERO;
   // intermediates
   generateIntermediates(false);
@@ -181,23 +163,14 @@ void EtaPiPiFermionsDecayer::Init() {
      &EtaPiPiFermionsDecayer::fPi_, MeV, 130.7*MeV, ZERO, 200.*MeV,
      false, false, false); 
 
-  static ParVector<EtaPiPiFermionsDecayer,int> interfaceIncoming
-    ("Incoming",
-     "The PDG code for the incoming particle",
-     &EtaPiPiFermionsDecayer::incoming_,
-     0, 0, 0, -10000000, 10000000, false, false, true);
-
-  static ParVector<EtaPiPiFermionsDecayer,double> interfaceCoupling
-    ("Coupling",
-     "The coupling for the decay mode",
-     &EtaPiPiFermionsDecayer::coupling_,
-     0, 0, 0, 0., 100., false, false, true);
-
-  static ParVector<EtaPiPiFermionsDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "The maximum weight for the decay mode",
-     &EtaPiPiFermionsDecayer::maxWeight_,
-     0, 0, 0, 0., 100., false, false, true);
+  static Command<EtaPiPiFermionsDecayer> interfaceSetUpDecayMode
+    ("SetUpDecayMode",
+     "Set up the particles (incoming, lepton, option for VMD, coupling and maxweight."
+     "There are three options for for VMD, 0 is a VMD model using M Gamma for the width term,"
+     " 1 is a VMD model using q Gamma for the width term,"
+     "2. analytic form of the Omnes function,"
+     "3. experimental form of the Omnes function.",
+     &EtaPiPiFermionsDecayer::setUpDecayMode, false);
 
   static Parameter<EtaPiPiFermionsDecayer,Energy> interfaceRhoMass
     ("RhoMass",
@@ -239,22 +212,8 @@ void EtaPiPiFermionsDecayer::Init() {
      10./GeV2,
      false, false, false);
 
-  static ParVector<EtaPiPiFermionsDecayer,int> interfaceOption
-    ("Option",
-     "The form of the prefactor 0 is a VMD model using M Gamma for the width term,"
-     "1 is a VMD model using q Gamma for the width term,"
-     "2. analytic form of the Omnes function,"
-     "3. experimental form of the Omnes function.",
-     &EtaPiPiFermionsDecayer::option_,
-     0, 0, 0, 0, 4, false, false, true);
-  
-  static ParVector<EtaPiPiFermionsDecayer,int> interfaceLepton
-    ("Lepton",
-     "The type of lepton",
-     &EtaPiPiFermionsDecayer::lepton_, -1, 11, 11, 15,
-     false, false, Interface::limited);
-
 }
+
 void EtaPiPiFermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   // set up the spin information for the decay products
@@ -341,19 +300,54 @@ void EtaPiPiFermionsDecayer::dataBaseOutput(ofstream & output,
   output << "newdef " << name() << ":LocalParameters " << localParameters_ << "\n";
   output << "newdef " << name() << ":OmnesC          " << cConst_          << "\n";
   output << "newdef " << name() << ":OmnesA          " << aConst_*GeV2     << "\n";
-  for(unsigned int ix=0;ix<2;++ix) {
-    output << "newdef " << name() << ":Incoming    " << ix << "  " 
-	   << incoming_[ix]    << "\n";
-    output << "newdef " << name() << ":Coupling    " << ix << "  " 
-	   << coupling_[ix]    << "\n";
-    output << "newdef " << name() << ":Lepton      " << ix << "  " 
-	   << lepton_[ix]      << "\n";
-    output << "newdef " << name() << ":MaxWeight   " << ix << "  " 
-	   << maxWeight_[ix]   << "\n";
-    output << "newdef " << name() << ":Option      " << ix << "  " 
-	   << option_[ix]      << "\n";
+  for(unsigned int ix=0;ix<incoming_.size();++ix) {
+    output << "do " << name() << ":SetUpDecayMode " << incoming_[ix] << " "
+	   << lepton_[ix] << " " << option_[ix] << " "  
+	   << coupling_[ix] << " " << maxWeight_[ix] << "\n";
   }
   omnesFunction_->dataBaseOutput(output,false,true);
   output << "newdef " << name() << ":OmnesFunction " << omnesFunction_->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+string EtaPiPiFermionsDecayer::setUpDecayMode(string arg) {
+  // parse first bit of the string
+  string stype = StringUtils::car(arg);
+  arg          = StringUtils::cdr(arg);
+  // extract PDG code for the incoming particle
+  long in = stoi(stype);
+  tcPDPtr pData = getParticleData(in);
+  if(!pData)
+    return "Incoming particle with id " + std::to_string(in) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin0)
+    return "Incoming particle with id " + std::to_string(in) + "does not have spin 0";
+  // and outgoing particles
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int out = stoi(stype);
+  pData = getParticleData(out);
+  if(!pData)
+    return "Outgoing fermion with id " + std::to_string(out) + "does not exist";
+  if(pData->iSpin()!=PDT::Spin1Half)
+    return "Outgoing fermion with id " + std::to_string(out) + "does not have spin 1/2";
+  // vmd option  
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  int VMDinclude = stoi(stype);
+  // get the coupling
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double g = stof(stype);
+  // and the maximum weight
+  stype = StringUtils::car(arg);
+  arg   = StringUtils::cdr(arg);
+  double wgt = stof(stype);
+  // store the information
+  incoming_.push_back(in);
+  lepton_.push_back(out);
+  coupling_.push_back(g);
+  option_.push_back(VMDinclude);
+  maxWeight_.push_back(wgt);
+  // success
+  return "";
 }

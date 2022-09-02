@@ -58,6 +58,7 @@ updateParameters(tShowerParticlePtr theParent,
 void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
+	       unsigned int,
 	       ShowerPartnerType partnerType) const {
   assert(children.size()==2);
   // calculate the scales

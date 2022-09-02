@@ -164,7 +164,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-{14,14.8}.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.17,4.3,4.41,5.0,5.2,4.6,4.8,5.8,6.2,6.5,6.6,7.0,7.4,3.63,4.03,4.5,8.8,9.27,9.46,9.51,10.52,10.52-sym,10.54,10.58,10.45,10.47,10.6}.in) \
-                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,JPsi,Psi2S,Psi2S-All,Psi3770,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Xim}.in) \
+                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,JPsi,Psi2S,Psi2S-All,Psi3770,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Ds,Bc,Etac,Xim}.in) \
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.in) \
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.in) \
 		  $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.in) \
@@ -242,7 +242,7 @@ Rivet-EE : Rivet-EE/done
 Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,27.7,29,30.2,30.3,30.5,30.7,30.8,30,31.2,31.3,31.6,34,34.8,41.5,43.5,43.6,45,50,52,53.3,55,55.3,56,57,58,59.5,60.8,60,61.4,65.4,66,75.7,76,10,12.8,21.5,22,22.5,25,26.8,34.5,35,36.2,41,42.1,42.6,44,48.0,82,85,91,93.0,130,130.1,133,136,136.1,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207,91-nopi}.yoda) \
 		$(shell echo Rivet-EE-{183,189}-WW.yoda) \
 	        $(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-	        $(shell echo Rivet-EE-{10.52,10.52-sym,10.6,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.5,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,8.8,9.27,9.46,9.51,10.54,10.58,10.45,10.47,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Xim,JPsi,Psi2S,Psi2S-All,Psi3770}.yoda)
+	        $(shell echo Rivet-EE-{10.52,10.52-sym,10.6,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.5,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,8.8,9.27,9.46,9.51,10.54,10.58,10.45,10.47,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Ds,Bc,Etac,Xim,JPsi,Psi2S,Psi2S-All,Psi3770}.yoda)
 	rm -rf Rivet-EE
 	python/merge-EE --with-gg --with-decay --with-WW EE
 	python/merge-EE Powheg-EE
@@ -258,14 +258,6 @@ Rivet-LowEnergy-%.yoda:
 Onium-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)  $(subst .yoda,.run,$@)
-
-Rivet-LowEnergy-EE-%:
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); plots=`python/LowEnergy-EE.py $$args --plots`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@) $$plots`; rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@) $$yodaArgs $$plots;
-
-Rivet-LowEnergy-Photon-%:
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); fi; OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative --perturbative --resonance`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots`; rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) $$yodaArgs $$plots;
 
 Onium-Splitting: Analyses/RivetHerwig.so
 	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -285,6 +277,14 @@ Rivet-Onium: $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Botto
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium --process
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml Onium.yoda  -o Rivet-Onium
+
+Rivet-LowEnergy-EE-%:
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); plots=`python/LowEnergy-EE.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@) $$plots; if [ -e LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ] && [ -e LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@) LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Non-Pert" LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@) LowEnergy-NonPerturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-EE-$(subst Rivet-LowEnergy-EE-,,$@)  LowEnergy-Perturbative-EE-$(subst Rivet-LowEnergy-EE-,,$@).yoda:"Pert" $$plots; fi
+
+Rivet-LowEnergy-Photon-%:
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots; if [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ] && [ -e LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) LowEnergy-NonPerturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@)  LowEnergy-Perturbative-GammaGamma-$(subst Rivet-LowEnergy-Photon-,,$@).yoda:"Pert" $$plots; fi
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

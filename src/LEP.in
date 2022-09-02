@@ -39,8 +39,6 @@ insert SubProcess:MatrixElements 0 MEee2gZ2qq
 #set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2qq
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2ll
-
-
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################

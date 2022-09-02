@@ -168,7 +168,7 @@ elif(collider=="EE") :
             process = StringBuilder(insert_ME("MEee2VV"))
             process += "set /Herwig/MatrixElements/MEee2VV:Process WW\n"
         else :
-            process = StringBuilder(insert_ME("MEee2gZ2qq"))
+            process  = StringBuilder(insert_ME("MEee2gZ2qq"))
             try :
                 ecms = float(parameterName)
                 if(ecms<=3.75) :
@@ -406,46 +406,29 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",0,0)
             elif(simulation=="Merging"):
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",1,0)
-            process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("500")
-            elif "Run-II-Jets-11" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("900")
-            elif "Run-II-Jets-12" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("300")
-            elif "Run-I-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "Run-I-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-I-Jets-3" in parameterName : process+=addFirstJet("65")
-            elif "Run-I-Jets-4" in parameterName : process+=addFirstJet("90")
-            elif "Run-I-Jets-5" in parameterName : process+=addFirstJet("160")
-            elif "Run-I-Jets-6" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-I-Jets-7" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("400")
-            elif "Run-I-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("700")
-            elif "Run-II-Jets-0" in parameterName : process+=addFirstJet("15")
-            elif "Run-II-Jets-1" in parameterName : process+=addFirstJet("25")
-            elif "Run-II-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-II-Jets-3" in parameterName : process+=addFirstJet("60")
-            elif "Run-II-Jets-4" in parameterName : process+=addFirstJet("85")
-            elif "Run-II-Jets-5" in parameterName : process+=addFirstJet("110")
-            elif "Run-II-Jets-6" in parameterName : process+=addFirstJet("160")
-            elif "Run-II-Jets-7" in parameterName : process+=addFirstJet("250")
-            elif "Run-II-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-II-Jets-9" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("300")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
-            elif "300-Jets-1" in parameterName : process+=addFirstJet("6")
-            elif "630-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "630-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "630-Jets-3" in parameterName : process+=addFirstJet("75")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
+            if "DiJets" in parameterName :
+                process+=addFirstJet("30")+addSecondJet("25")
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=addJetPairCut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
             else :
-                logging.error("Exit 00007")
-                sys.exit(1)
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=addFirstJet(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
         elif "Run-I-WZ" in parameterName :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",0,0)

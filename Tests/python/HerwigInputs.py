@@ -227,11 +227,12 @@ def addFirstJet(ptcut,ptmax=""):
     res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
     res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
     if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
+        res+="set /Herwig/Cuts/FirstJet:PtMin %s*GeV\n" % ptcut
     if(ptmax!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMax "+ptmax+"*GeV\n"
+        res+="set /Herwig/Cuts/FirstJet:PtMax %s*GeV\n" % ptmax
     didaddfirstjet=True
     return res
+<<<<<<< working copy
 
 didaddsecondjet=False
 def addSecondJet(ptcut):
@@ -245,7 +246,7 @@ def addSecondJet(ptcut):
     return res
 
 didaddjetpair=False
-def addJetPairCut(minmass):
+def addJetPairCut(minmass,maxmass=""):
   global didaddjetpair
   if(didaddjetpair):
       logging.error("Can only add second jetcut once.")
@@ -257,5 +258,7 @@ set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
 insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
 set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
 """.format(mm=minmass)
+  if maxmass != "" :
+      res+= "set /Herwig/Cuts/JetPairMass:MassMin %s*GeV\n" %maxmass
   didaddjetpair=True
   return res

@@ -389,6 +389,7 @@ void HadronSelector::doinit() {
     _repwt[2][2][ix]=_weight3D2[ix];
   for( int ix=0;ix<max(int(_weight3D3.size()),int(Nmax));++ix)
     _repwt[2][3][ix]=_weight3D3[ix];
+
   // find the maximum
   map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess);
@@ -491,6 +492,8 @@ void HadronSelector::constructHadronTable() {
     insertToHadronTable(particle,flav1,flav2);
   }
   // normalise the weights
+
+
   if(_topt == 0) {
     HadronTable::const_iterator tit;
     KupcoData::iterator it;
@@ -536,6 +539,7 @@ double HadronSelector::mesonWeight(long id) const {
   else
     return 1.0;
 }
+
 
 int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 			       tcPDPtr hadron) const {

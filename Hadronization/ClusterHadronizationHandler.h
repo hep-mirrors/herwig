@@ -17,6 +17,8 @@
 #include "LightClusterDecayer.h"
 #include "ClusterDecayer.h"
 #include "ClusterHadronizationHandler.fh"
+#include "Herwig/Utilities/Reshuffler.h"
+#include "GluonMassGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -48,7 +50,8 @@ using namespace ThePEG;
  * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
  * defined for ClusterHadronizationHandler.
  */ 
-class ClusterHadronizationHandler: public HadronizationHandler {
+class ClusterHadronizationHandler: 
+    public HadronizationHandler, public Reshuffler {
 
 public:
 
@@ -94,6 +97,13 @@ public:
       currentHandler_=new ClusterHadronizationHandler();;
     }
     return currentHandler_;
+  }
+
+  /**
+   * A pointer to a gluon mass generator for the reshuffling
+   */
+  Ptr<GluonMassGenerator>::tptr gluonMassGenerator() const {
+    return gluonMassGenerator_;
   }
 
 public:
@@ -174,6 +184,21 @@ private:
   ClusterDecayerPtr      _clusterDecayer; 
 
   /**
+   * Perform reshuffling to constituent masses.
+   */
+  bool reshuffle_ = false;
+  
+  /**
+   *  Which type of reshuffling (global (default) or colour connected) is used
+   */
+  int reshuffleMode_ = 0;
+  
+  /**
+   * A pointer to a gluon mass generator for the reshuffling
+   */
+  Ptr<GluonMassGenerator>::ptr gluonMassGenerator_;
+
+  /**
    * The minimum virtuality^2 of partons to use in calculating 
    * distances.
    */
@@ -199,6 +224,14 @@ private:
    * Tag the constituents of the clusters as their parents
    */
   void _setChildren(const ClusterVector & clusters) const;
+
+   
+   /**
+    * Split the list of partons into colour connected sub-lists before reshuffling
+    */
+   void splitIntoColourSinglets(PVector thelist,
+				vector<PVector>& reshufflelists);
+
   
   /**
    *  pointer to "this", the current HadronizationHandler.

@@ -43,52 +43,6 @@ IBPtr ConstituentReshuffler::fullclone() const {
   return new_ptr(*this);
 }
 
-double ConstituentReshuffler::ReshuffleEquation::aUnit() {
-  return 1.;
-}
-
-double ConstituentReshuffler::ReshuffleEquation::vUnit() {
-  return 1.;
-}
-
-double ConstituentReshuffler::DecayReshuffleEquation::aUnit() {
-  return 1.;
-}
-
-double ConstituentReshuffler::DecayReshuffleEquation::vUnit() {
-  return 1.;
-}
-
-
-double ConstituentReshuffler::ReshuffleEquation::operator() (double xi) const {
-
-  double r = - w/GeV;
-
-  for (PList::iterator p = p_begin; p != p_end; ++p) {
-    r += sqrt(sqr((**p).dataPtr()->constituentMass()) +
-	      xi*xi*(sqr((**p).momentum().t())-sqr((**p).dataPtr()->mass()))) / GeV;
-  }
-  return r;  
-
-}
-
-double ConstituentReshuffler::DecayReshuffleEquation::operator() (double xi) const {
-  double r = - w/GeV;
-
-  for (PList::iterator pIt = p_begin; pIt != p_end; ++pIt) {
-    r += sqrt(sqr((**pIt).dataPtr()->constituentMass()) +
- 	      xi*xi*(sqr((**pIt).momentum().t())-sqr((**pIt).dataPtr()->mass()))) / GeV;
-  }
-
-  for (PList::iterator rIt = r_begin; rIt != r_end; ++rIt) {
-    r +=  sqrt(sqr((**rIt).momentum().m()) +
-	       xi*xi*(sqr((**rIt).momentum().t())-sqr((**rIt).momentum().m()))) / GeV;
-  }
-
-  return r;  
-
-}
-
 void ConstituentReshuffler::reshuffle(PList& out,
 				      PPair& in,
 				      PList& intermediates,
@@ -212,7 +166,12 @@ void ConstituentReshuffler::reshuffle(PList& out,
 
   // Only partons
   if ( decayRecoilers.size()==0 ) {
-    ReshuffleEquation solve (Q.m(),out.begin(),out.end());
+    list<Energy> masses;
+    for ( auto p : out )
+      masses.push_back(p->dataPtr()->constituentMass());
+    ReshuffleEquation<PList::iterator,list<Energy>::const_iterator>
+      solve (Q.m(),out.begin(),out.end(),
+	     masses.begin(),masses.end());
 
     GSLBisection solver(1e-10,1e-8,10000);
 

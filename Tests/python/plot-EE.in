@@ -300,7 +300,7 @@ particleNames = {
     521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
     
     443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$",
-    441  : "$\\eta_c$", 100553 : "$\\Upsilon(2S)$", 200553 : "$\\Upsilon(3S)$", 300553 : "$\\Upsilon(4S)$", 400553 : "$\\Upsilon(5S)$", 445 : "$\\chi_{c2}(1P)$",
+    441  : "$\\eta_c$", 100553 : "$\\Upsilon(2S)$", 200553 : "$\\Upsilon(3S)$", 300553 : "$\\Upsilon(4S)$", 9000553 : "$\\Upsilon(5S)$", 445 : "$\\chi_{c2}(1P)$",
     120553 : "$\chi_{b1}(2S)$", 110551 : "$\chi_{b0}(2S)$", 100555 : "$\chi_{b2}(2S)$",
     30443 : "$\\psi(3770)$",
     10441 : "$\chi_{c0}(1P)$",
@@ -1403,9 +1403,9 @@ analyses["HadronDecays"][120553]["Shapes"] = ["/CLEOII_1992_I32611/d01-x02-y02",
 analyses["HadronDecays"][100555]["Shapes"] = ["/CLEOII_1992_I32611/d01-x01-y02","/CLEOII_1992_I32611/d03-x01-y03"]
 
 # upsilon(5s)
-analyses["HadronDecays"][400553] = {"Spectrum" : {}}
-analyses["HadronDecays"][400553]["Spectrum"][431   ] = ["/CLEO_2005_I1649168/d01-x01-y08"]
-analyses["HadronDecays"][400553]["Spectrum"][333   ] = ["/CLEO_2007_I728872/d02-x01-y05" ]
+analyses["HadronDecays"][9000553] = {"Spectrum" : {}}
+analyses["HadronDecays"][9000553]["Spectrum"][431   ] = ["/CLEO_2005_I1649168/d01-x01-y08"]
+analyses["HadronDecays"][9000553]["Spectrum"][333   ] = ["/CLEO_2007_I728872/d02-x01-y05" ]
 #
 analyses["HadronDecays"][3312] = { "Modes" : { "$\\Xi^-\\to\\Lambda^0\\pi^-$" : {} } }
 analyses["HadronDecays"][3312]["Modes"]["$\\Xi^-\\to\\Lambda^0\\pi^-$"]["data"] = ["/E756_2000_I530367/d01-x01-y01","/E756_2000_I530367/d01-x01-y02",

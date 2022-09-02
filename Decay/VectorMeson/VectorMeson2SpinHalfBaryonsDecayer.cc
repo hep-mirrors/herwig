@@ -131,9 +131,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double VectorMeson2SpinHalfBaryonsDecayer::me2(const int,const Particle & part,
-				       const tPDVector & outgoing,
-				       const vector<Lorentz5Momentum> & momenta,
-				       MEOption meopt) const {
+					       const tPDVector & outgoing,
+					       const vector<Lorentz5Momentum> & momenta,
+					       MEOption meopt) const {
   // initialze me
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));

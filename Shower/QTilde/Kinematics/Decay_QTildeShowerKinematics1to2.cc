@@ -29,6 +29,7 @@ Decay_QTildeShowerKinematics1to2::Decay_QTildeShowerKinematics1to2(Energy scale,
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
+	       unsigned int ,
 	       ShowerPartnerType partnerType) const {
   assert(children.size() == 2);
   // calculate the scales

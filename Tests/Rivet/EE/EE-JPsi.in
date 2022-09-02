@@ -8,7 +8,6 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.096916
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-do /Herwig/Particles/Jpsi:SelectDecayModes /Herwig/Particles/Jpsi/Jpsi->n0,nbar0; /Herwig/Particles/Jpsi/Jpsi->p+,pbar-; /Herwig/Particles/Jpsi/Jpsi->Sigma0,Sigmabar0; /Herwig/Particles/Jpsi/Jpsi->Sigma+,Sigmabar-; /Herwig/Particles/Jpsi/Jpsi->Lambda0,Lambdabar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*-,Sigma*bar+;  /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*+,Sigma*bar-; /Herwig/Particles/Jpsi/Jpsi->Xi-,Xibar+; /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Xi0,Xibar0; Jpsi->Xi*-,Xibar+; Jpsi->Xi*bar+,Xi-; Jpsi->eta,e-,e+;
 # J/psi-> lambda anti-lambda and sigma anti-sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563
 # J/psi -> p pbar and n nbar
@@ -17,8 +16,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1113599
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
 # J/Psi -> xi0 and Sigma*0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
+# J/psi -> xi- xi+bar correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1864775
 # J/psi-> lambda anti-lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1691850
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2099126
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2071715
 # J/psi-> lambda anti-Sigma0 +cc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1121378
 # J/Psi -> xi*- xibar+
@@ -27,3 +30,31 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1765606
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697377
 # J/Psi -> sigma+ sigmabar-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1791570
+# J/psi -> pi+ pi- pi0, K+K-pi0 and KS0 K+-pi-+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1512302
+# J/psi -> pi+ pi- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1088606
+# J/psi -> pi+ pi- eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1621266
+# J/psi ->  K+K-pi0 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1731057
+# J/psi -> p pbar eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1709205
+# J/psi -> p pbar omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1223625
+# J/psi -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2009_I819937
+# J/psi -> p pbar eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BES_2001_I556330
+# J/psi -> p pbar phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1411448
+# J/psi -> p nbar pi- +cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I650381
+# J/psi -> gamma pi+ pi- eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2018236
+# J/psi -> gamma eta' eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2016785
+# J/psi -> e+e- pi+pi-eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1997940
+# J/psi -> phi eta eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712729

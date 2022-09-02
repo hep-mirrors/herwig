@@ -97,6 +97,35 @@ public:
   double scaleFactor() const {return _scaleFactor;}
 
   /**
+   * Virtual method that is supposed to return the 
+   * running alpha value evaluated at the input scale.
+   * @param scale The scale
+   * @return The coupling
+   */
+  virtual inline double showerValue(const Energy2 scale) const {
+    return value(scale);
+  }
+ 
+  /**
+   * Virtual method, which 
+   * should be overridden in a derived class to provide an 
+   * overestimate approximation of the alpha value. 
+   */
+  virtual inline double showerOverestimateValue() const {
+    return overestimateValue();
+  }
+ 
+  /**
+   *  Virtual method which returns the ratio of the running alpha
+   * value at the input scale to the overestimated value.
+   * @param scale The scale
+   * @return The ratio
+   */
+  virtual inline double showerRatio(const Energy2 scale,double factor=1.) const {
+    return ratio(scale,factor);
+  }
+
+  /**
    * Initialize this coupling.
    */
   virtual void initialize () {}

@@ -55,7 +55,7 @@ void VectorMeson2SpinThreeHalfBaryonsDecayer::doinit() {
 }
 
 int VectorMeson2SpinThreeHalfBaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const tPDVector & children) const {
+							const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;

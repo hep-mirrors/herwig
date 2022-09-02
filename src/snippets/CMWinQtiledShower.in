@@ -9,41 +9,38 @@ cd /Herwig/Shower
 set AlphaQCD:AlphaMZ 0.118
 get AlphaQCD:AlphaMZ
 
-create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSplitFn
+set AlphaQCDISR:AlphaMZ 0.118
+get AlphaQCDISR:AlphaMZ
+
+create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSudakov
 set CMWQtoQGSudakov:InteractionType QCD
 set CMWQtoQGSudakov:ColourStructure TripletTripletOctet
 set CMWQtoQGSudakov:AngularOrdered Yes
-set CMWQtoQGSudakov:Alpha AlphaQCD
+set CMWQtoQGSudakov:Alpha AlphaQCDFSR
 
 
-create Herwig::CMWOneOneOneSplitFn CMWGtoGGSplitFn
+create Herwig::CMWOneOneOneSplitFn CMWGtoGGSudakov
 set CMWGtoGGSudakov:InteractionType QCD
 set CMWGtoGGSudakov:ColourStructure OctetOctetOctet
 set CMWGtoGGSudakov:AngularOrdered Yes
-set CMWGtoGGSudakov:Alpha AlphaQCD
+set CMWGtoGGSudakov:Alpha AlphaQCDFSR
 
 
 
-cp CMWGtoGGSplitFn CMWGtoGGSplitFnIS
-cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
+cp CMWGtoGGSudakov CMWGtoGGSudakovIS
+cp CMWQtoQGSudakov CMWQtoQGSudakovIS
 
-set CMWGtoGGSplitFnIS:isInititalState Yes
-set CMWQtoQGSplitFnIS:isInititalState Yes
+set CMWQtoQGSudakovIS:Alpha AlphaQCD
+set CMWQtoGGSudakovIS:Alpha AlphaQCD
+
+set CMWGtoGGSudakovIS:isInititalState Yes
+set CMWQtoQGSudakovIS:isInititalState Yes
 
 set CMWGtoGGSudakov:isInititalState No
 set CMWQtoQGSudakov:isInititalState No
 
 
 
-cp QtoQGSudakov CMWQtoQGSudakov
-cp QtoQGSudakov CMWQtoQGSudakovIS
-set CMWQtoQGSudakov:SplittingFunction CMWQtoQGSplitFn
-set CMWQtoQGSudakovIS:SplittingFunction CMWQtoQGSplitFnIS
-
-cp GtoGGSudakov CMWGtoGGSudakov
-cp GtoGGSudakov CMWGtoGGSudakovIS
-set CMWGtoGGSudakov:SplittingFunction CMWGtoGGSplitFn
-set CMWGtoGGSudakovIS:SplittingFunction CMWGtoGGSplitFnIS
 
 
 
