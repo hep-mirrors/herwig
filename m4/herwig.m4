@@ -787,6 +787,12 @@ AS_IF([test "x$have_evtgen" = "xlib" -o "x$have_evtgen" = "xlib64" ],
       [EVTGENPREFIX=${with_evtgen}
       AC_SUBST(EVTGENPREFIX)
       ])
+      
+AS_IF([test "x$have_evtgen" = "xlib" -o "x$have_evtgen" = "xlib64" ],
+      [AC_CHECK_FILES(
+      ${with_evtgen}/share/evt.pdl,
+      [EVTGENSHARE=${with_evtgen}/share], [EVTGENSHARE=${with_evtgen}/share/EvtGen])
+       AC_SUBST(EVTGENSHARE)])
 
 AS_IF([test "x$with_evtgen" != "xno"  -a "x$have_evtgen" = "xno"],
       [AC_MSG_ERROR([EvtGen requested but not found])])
