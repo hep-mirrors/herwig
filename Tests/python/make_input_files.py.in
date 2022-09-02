@@ -333,34 +333,6 @@ elif(collider=="TVT") :
         elif "Jets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-<<<<<<< working copy
-            if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(500.)
-            elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhat_cut(900.)
-            elif "Run-I-Jets-1" in parameterName :  process+=jet_kt_cut( 20.)
-            elif "Run-I-Jets-2" in parameterName :  process+=jet_kt_cut( 40.)
-            elif "Run-I-Jets-3" in parameterName :  process+=jet_kt_cut( 65.)
-            elif "Run-I-Jets-4" in parameterName :  process+=jet_kt_cut( 90.)
-            elif "Run-I-Jets-5" in parameterName :  process+=jet_kt_cut(160.)
-            elif "Run-I-Jets-6" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(100.)
-            elif "Run-I-Jets-7" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(400.)
-            elif "Run-I-Jets-8" in parameterName :  process+=jet_kt_cut( 30.)+mhat_cut(700.)
-            elif "Run-II-Jets-0" in parameterName : process+=jet_kt_cut( 15.)
-            elif "Run-II-Jets-1" in parameterName : process+=jet_kt_cut( 25.)
-            elif "Run-II-Jets-2" in parameterName : process+=jet_kt_cut( 40.)
-            elif "Run-II-Jets-3" in parameterName : process+=jet_kt_cut( 60.)
-            elif "Run-II-Jets-4" in parameterName : process+=jet_kt_cut( 85.)
-            elif "Run-II-Jets-5" in parameterName : process+=jet_kt_cut(110.)
-            elif "Run-II-Jets-6" in parameterName : process+=jet_kt_cut(160.)
-            elif "Run-II-Jets-7" in parameterName : process+=jet_kt_cut(250.)
-            elif "Run-II-Jets-8" in parameterName : process+=jet_kt_cut( 30.)+mhat_cut(100.)
-            elif "Run-II-Jets-9" in parameterName : process+=jet_kt_cut( 30.)+mhat_cut(300.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
-            elif "300-Jets-1" in parameterName :    process+=jet_kt_cut(  6.)
-            elif "630-Jets-1" in parameterName :    process+=jet_kt_cut( 20.)
-            elif "630-Jets-2" in parameterName :    process+=jet_kt_cut( 40.)
-            elif "630-Jets-3" in parameterName :    process+=jet_kt_cut( 75.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
-=======
             if "DiJets" in name :
                 process +=jet_kt_cut( 30.)
                 cuts=[100.,300.,600.,900.,ecms]
@@ -379,12 +351,13 @@ elif(collider=="TVT") :
                 elif "900" in parameterName :
                     cuts=[5.,]
                 cuts.append(ecms)
+                print("before name loop ",parameterName)
                 for i in range(1,len(cuts)) :
                     tstring = "-Jets-%s"%i
                     if tstring in parameterName :
                         process+=jet_kt_cut(cuts[i-1],cuts[i])
                         parameterName=parameterName.replace(tstring,"-Jets")
->>>>>>> merge rev
+                    
         elif "Run-I-WZ" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
             process+=insert_ME("MEqq2gZ2ff","Electron")
