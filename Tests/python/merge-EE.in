@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging
 import sys
@@ -328,6 +329,20 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif "Upsilon4" in file and ("y03" in aopath or "y04" in aopath) :
                 outhistos[aopath] = ao
+        elif "FOCUS_2003_I635446" in aopath :
+            if "Ds" in file :
+                if "d01" in aopath or "dalitz1" in aopath :
+                    outhistos[aopath] = ao
+            else :
+                if "d02" in aopath or "dalitz2" in aopath :
+                    outhistos[aopath] = ao
+        elif "FOCUS_2004_I654030" in aopath :
+            if "Ds" in file :
+                if "d02" in aopath or "dalitz_2" in aopath :
+                    outhistos[aopath] = ao
+            else :
+                if "d01" in aopath or "dalitz_1" in aopath :
+                    outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao
 
