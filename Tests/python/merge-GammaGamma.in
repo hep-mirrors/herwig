@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging,sys
 import os, yoda, copy
@@ -14,16 +15,16 @@ def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
         for sqrts in sorted(sourcehistosbysqrts.keys()) :
             h=sourcehistosbysqrts[sqrts]
-            for i in range(0,h.numPoints) :
-                if sqrts==h.points[i].x :
-                    desthisto.addPoint(h.points[i])
+            for i in range(0,h.numPoints()) :
+                if sqrts==h.points()[i].x() :
+                    desthisto.addPoint(h.points()[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
         for sqrts, h in sorted(sourcehistosbysqrts.items()) :
-            for i in range(0,h.numBins) :
-                if(sqrts>=h.bins[i].xMin and \
-                   sqrts<=h.bins[i].xMax) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(sqrts>=h.bins()[i].xMin() and \
+                   sqrts<=h.bins()[i].xMax()) :
+                    desthisto.bins[i] += h.bins()[i]
                     break
     else :
         logging.error("Unknown analysis object" + desthisto.path)
