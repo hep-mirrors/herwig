@@ -94,14 +94,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I642355
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
 # BELLE charm hadron producion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
-<<<<<<< working copy
-# BELLE B+ -> pi+pi- l nu
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
-# BELLE B0 -> D*- tau+ nu_tau D* polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
-# BELLE B -> D* tau+ nu_tau  tau polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
-# BESIII D_s^+ K^0 e^+ nu_e
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
 # BELLE Upsilon 4S -> Upsilon 1,2S pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301
+# BELLE B+ -> phi phi K+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1841899
+# BELLE B0 -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729311
+# BELLE B0 -> KS0 K-+ pi+-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729723

@@ -232,7 +232,6 @@ def addFirstJet(ptcut,ptmax=""):
         res+="set /Herwig/Cuts/FirstJet:PtMax %s*GeV\n" % ptmax
     didaddfirstjet=True
     return res
-<<<<<<< working copy
 
 didaddsecondjet=False
 def addSecondJet(ptcut):
