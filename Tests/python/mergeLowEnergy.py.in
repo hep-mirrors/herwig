@@ -133,4 +133,3 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
     yoda.writeYODA(outhistos,"LowEnergy-%s-%s.yoda" % (runType,args[0]))
     output+="LowEnergy-%s-%s.yoda:%s " % (runType,args[0],labels[runType])
 print(output)
-
