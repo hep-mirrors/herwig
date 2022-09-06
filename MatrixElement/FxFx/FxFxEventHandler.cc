@@ -39,8 +39,6 @@
 
 using namespace ThePEG;
 
-FxFxEventHandler::~FxFxEventHandler() {}
-
 IBPtr FxFxEventHandler::clone() const {
   return new_ptr(*this);
 }

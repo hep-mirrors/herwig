@@ -30,18 +30,10 @@ class DipoleChainOrdering: public DipoleEvolutionOrdering {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   DipoleChainOrdering();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DipoleChainOrdering();
-  //@}
 
 public:
 

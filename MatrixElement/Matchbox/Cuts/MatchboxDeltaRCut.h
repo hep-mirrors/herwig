@@ -32,18 +32,10 @@ class MatchboxDeltaRCut: public TwoCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxDeltaRCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxDeltaRCut();
-  //@}
 
 public:
 

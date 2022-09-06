@@ -20,8 +20,6 @@ using namespace Herwig;
 
 BranchingRatioReweighter::BranchingRatioReweighter() {}
 
-BranchingRatioReweighter::~BranchingRatioReweighter() {}
-
 void BranchingRatioReweighter::
 handle(EventHandler & eh,const tPVector & ,const Hint & ) {
   tEventPtr event = eh.currentEvent();

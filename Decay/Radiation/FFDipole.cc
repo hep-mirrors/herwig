@@ -39,8 +39,6 @@ void FFDipole::persistentInput(PersistentIStream & is, int) {
      >> _mode >> _maxtry >> _energyopt >> _betaopt >> _dipoleopt;
 }
 
-FFDipole::~FFDipole() {}
-
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<FFDipole,Interfaced>

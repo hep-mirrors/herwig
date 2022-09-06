@@ -57,8 +57,6 @@ EvtGenInterface::EvtGenInterface(const EvtGenInterface & x)
     p8Data_(x.p8Data_), evtrnd_(x.evtrnd_),evtgen_(x.evtgen_)
 {}
 
-EvtGenInterface::~EvtGenInterface() {}
-
 IBPtr EvtGenInterface::clone() const {
   return new_ptr(*this);
 }

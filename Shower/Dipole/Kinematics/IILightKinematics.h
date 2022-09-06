@@ -32,18 +32,10 @@ using namespace ThePEG;
 
   public:
 
-    /** @name Standard constructors and destructors. */
-    //@{
     /**
      * The default constructor.
      */
     IILightKinematics();
-
-    /**
-     * The destructor.
-     */
-    virtual ~IILightKinematics();
-    //@}
 
   public:
 

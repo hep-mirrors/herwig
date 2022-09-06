@@ -28,18 +28,10 @@ class MatchboxZGammaAmplitude: public MatchboxAmplitude {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxZGammaAmplitude();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxZGammaAmplitude();
-  //@}
 
 public:
 

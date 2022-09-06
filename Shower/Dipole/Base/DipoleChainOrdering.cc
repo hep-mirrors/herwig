@@ -23,8 +23,6 @@ using namespace Herwig;
 DipoleChainOrdering::DipoleChainOrdering() 
   : DipoleEvolutionOrdering(), virtualityOrdering(false) {}
 
-DipoleChainOrdering::~DipoleChainOrdering() {}
-
 IBPtr DipoleChainOrdering::clone() const {
   return new_ptr(*this);
 }

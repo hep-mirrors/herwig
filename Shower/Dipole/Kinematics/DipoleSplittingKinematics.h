@@ -42,18 +42,10 @@ namespace Herwig {
 
   public:
 
-    /** @name Standard constructors and destructors. */
-    //@{
     /**
      * The default constructor.
      */
     DipoleSplittingKinematics();
-
-    /**
-     * The destructor.
-     */
-    virtual ~DipoleSplittingKinematics();
-    //@}
 
   public:
 

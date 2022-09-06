@@ -23,18 +23,10 @@ class FFgx2ggxDipoleKernel: public DipoleSplittingKernel {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FFgx2ggxDipoleKernel();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFgx2ggxDipoleKernel();
-  //@}
 
 public:
 

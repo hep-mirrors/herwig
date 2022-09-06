@@ -28,18 +28,10 @@ class NJetsAmplitude: public MatchboxOLPME {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   NJetsAmplitude();
-
-  /**
-   * The destructor.
-   */
-  virtual ~NJetsAmplitude();
-  //@}
 
 public:
 

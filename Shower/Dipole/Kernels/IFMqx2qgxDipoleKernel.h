@@ -23,18 +23,10 @@ class IFMqx2qgxDipoleKernel: public DipoleSplittingKernel {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IFMqx2qgxDipoleKernel();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFMqx2qgxDipoleKernel();
-  //@}
 
 public:
 

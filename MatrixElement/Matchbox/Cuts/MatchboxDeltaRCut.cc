@@ -33,8 +33,6 @@ MatchboxDeltaRCut::MatchboxDeltaRCut()
     theDeltaYMin(0.0), theDeltaYMax(Constants::MaxRapidity),
     theDeltaPhiMin(0.0), theDeltaPhiMax(2.0*Constants::pi) {}
 
-MatchboxDeltaRCut::~MatchboxDeltaRCut() {}
-
 IBPtr MatchboxDeltaRCut::clone() const {
   return new_ptr(*this);
 }

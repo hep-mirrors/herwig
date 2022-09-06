@@ -28,10 +28,6 @@ HardProcessAnalysis::HardProcessAnalysis()
     theSplitInitialStates(true),
     thePartonsAreJets(false) {}
 
-HardProcessAnalysis::~HardProcessAnalysis() {}
-
-
-
 #ifndef LWH_AIAnalysisFactory_H
 #ifndef LWH 
 #define LWH ThePEGLWH

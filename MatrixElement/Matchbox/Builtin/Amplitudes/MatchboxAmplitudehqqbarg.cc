@@ -31,8 +31,6 @@ using namespace Herwig;
 MatchboxAmplitudehqqbarg::MatchboxAmplitudehqqbarg() 
   : interfaceTHooft(126*GeV) {}
 
-MatchboxAmplitudehqqbarg::~MatchboxAmplitudehqqbarg() {}
-
 IBPtr MatchboxAmplitudehqqbarg::clone() const {
   return new_ptr(*this);
 }

@@ -17,8 +17,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -27,8 +25,6 @@
 using namespace Herwig;
 
 MatchboxAmplitudeqqbarttbar::MatchboxAmplitudeqqbarttbar() {}
-
-MatchboxAmplitudeqqbarttbar::~MatchboxAmplitudeqqbarttbar() {}
 
 IBPtr MatchboxAmplitudeqqbarttbar::clone() const {
   return new_ptr(*this);
