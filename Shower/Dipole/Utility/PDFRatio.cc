@@ -28,8 +28,6 @@ PDFRatio::PDFRatio()
     theValenceExtrapolation(0.7), theSeaExtrapolation(0.6),
     theFreezingScale(1.0*GeV) {}
 
-PDFRatio::~PDFRatio() {}
-
 IBPtr PDFRatio::clone() const {
   return new_ptr(*this);
 }

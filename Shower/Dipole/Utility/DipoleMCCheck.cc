@@ -27,8 +27,6 @@ DipoleMCCheck::DipoleMCCheck()
     thePtBins(100), theZBins(100) {
 }
 
-DipoleMCCheck::~DipoleMCCheck() {}
-
 IBPtr DipoleMCCheck::clone() const {
   return new_ptr(*this);
 }
