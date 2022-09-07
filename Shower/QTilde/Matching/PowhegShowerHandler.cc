@@ -111,11 +111,10 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
 	outgoing     .erase (decayProd);
 	decayProducts.insert(decayProd);
       }
-      bool coloured = false, foundParent = true;
+      bool foundParent = true;
       tPPtr parent,emitted;
       unsigned int nprod(0);
       for( set<tPPtr>::const_iterator it = decayProducts.begin(); it != decayProducts.end(); ++it ) {
-	coloured |= (**it).dataPtr()->coloured();
 	tPPtr newParent = !(**it).parents().empty() ? (**it).parents()[0] : tPPtr();
 	++nprod;
 	// check if from emission

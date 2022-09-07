@@ -58,7 +58,7 @@ public:
    */
   list<Energy> generateMany(size_t n, Energy QMax) const {
     list<Energy> res;
-    Energy m0, mu, md, ms, mg, mgmax, summg;
+    Energy m0, mu, md, ms, mg, summg;
 
     mu=getParticleData(ThePEG::ParticleID::u)->constituentMass();
     md=getParticleData(ThePEG::ParticleID::d)->constituentMass();

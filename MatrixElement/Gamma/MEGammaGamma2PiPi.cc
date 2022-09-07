@@ -135,8 +135,6 @@ double MEGammaGamma2PiPi::helicityME(vector<VectorWaveFunction> &p1,
   // double beta = meMomenta()[2].vect().mag()/meMomenta()[2].t();
   // double ct   = meMomenta()[2].cosTheta();
   // double phi  = meMomenta()[2].phi();
-  // scale (external photons so scale in couplings is 0)
-  Energy2 mt(0.*GeV2);
   // matrix element to be stored
   if(calc) me_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
   					     PDT::Spin0,PDT::Spin0));

@@ -295,7 +295,7 @@ long FxFxReader::scan() {
 
     HoldFlag<> isScanning(scanning);
 
-    double oldsum = 0.0;
+    // double oldsum = 0.0;
     vector<int> lprup;
     vector<double> newmax;
     vector<long> oldeve;
@@ -324,7 +324,7 @@ long FxFxReader::scan() {
       }
       ++neve;
       ++oldeve[id];
-      oldsum += hepeup.XWGTUP;
+      // oldsum += hepeup.XWGTUP;
       sumlprup[id] += hepeup.XWGTUP;
       sumsqlprup[id] += sqr(hepeup.XWGTUP);
       ++nscanned[id];
@@ -372,9 +372,9 @@ long FxFxReader::scan() {
     }
     if ( abs(heprup.IDWTUP) != 1 ) {
       // Try to fix things if abs(heprup.IDWTUP) != 1.
-      double sumxsec = 0.0;
+      // double sumxsec = 0.0;
       if(abs(heprup.IDWTUP)==3) {
-	for ( int id = 0; id < heprup.NPRUP; ++id ) sumxsec += heprup.XSECUP[id];
+	// for ( int id = 0; id < heprup.NPRUP; ++id ) sumxsec += heprup.XSECUP[id];
       }
       else {
 	for ( int id = 0; id < heprup.NPRUP; ++id )  {
@@ -396,7 +396,7 @@ long FxFxReader::scan() {
 	  heprup.XERRUP[id] = sqrt( heprup.XERRUP[id] );
 	  heprup.XMAXUP[id] = newmax[id];
 	  //cout << "heprup.XMAXUP[id] = " << heprup.XMAXUP[id]  << endl;
-	  sumxsec += heprup.XSECUP[id];
+	  // sumxsec += heprup.XSECUP[id];
 	}
       }
       //cout << "sumxsec = " << sumxsec << endl;
