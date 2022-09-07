@@ -42,7 +42,9 @@ public:
   /**
    * The default constructor.
    */
-  DalitzResonance() {}
+  DalitzResonance() : id(0), type(ResonanceType::NonResonant),mass(ZERO),width(ZERO),
+		      daughter1(0),daughter2(0),spectator(0),amp(0.),R(ZERO)
+  {}
 
   /**
    *  Constructor specifiying the parameters
