@@ -39,17 +39,11 @@ class MergerBase: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MergerBase();
 
-  /**
-   * The destructor.
-   */
-  virtual ~MergerBase();
     /// define the ME region for a particle vector.
   virtual bool matrixElementRegion(PVector incoming,
                                    PVector outcoming,

@@ -28,18 +28,10 @@ class MatchboxOLPME: public MatchboxAmplitude {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxOLPME();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxOLPME();
-  //@}
 
 public:
 

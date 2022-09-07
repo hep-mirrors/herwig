@@ -14,15 +14,10 @@
 #include "IFMassiveTildeKinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-IFMassiveTildeKinematics::IFMassiveTildeKinematics() {}
-
-IFMassiveTildeKinematics::~IFMassiveTildeKinematics() {}
 
 IBPtr IFMassiveTildeKinematics::clone() const {
   return new_ptr(*this);

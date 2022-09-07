@@ -22,18 +22,10 @@ class HardProcessAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   HardProcessAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~HardProcessAnalysis();
-  //@}
 
 public:
 

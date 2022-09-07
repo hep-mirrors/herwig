@@ -35,8 +35,6 @@ ShowerApproximationGenerator::ShowerApproximationGenerator()
   : thePresamplingPoints(2000), theMaxTry(100000), theFreezeGrid(500000),
     theDoCompensate(false) {}
 
-ShowerApproximationGenerator::~ShowerApproximationGenerator() {}
-
 double ShowerApproximationGenerator::generateFraction(tcPDPtr pd, double r, double xmin) const {
   if ( pd->coloured() || pd->id() == ParticleID::gamma ) {
     return pow(xmin,r);

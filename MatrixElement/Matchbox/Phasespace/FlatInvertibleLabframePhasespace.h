@@ -29,18 +29,10 @@ class FlatInvertibleLabframePhasespace: public FlatInvertiblePhasespace {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FlatInvertibleLabframePhasespace();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FlatInvertibleLabframePhasespace();
-  //@}
 
 public:
 

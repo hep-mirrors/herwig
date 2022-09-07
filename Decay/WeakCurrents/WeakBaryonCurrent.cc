@@ -70,7 +70,7 @@ void WeakBaryonCurrent::doinit() {
 
 // complete the construction of the decay mode for integration
 bool WeakBaryonCurrent::createMode(int icharge, tcPDPtr ,
-				   FlavourInfo flavour,
+				   FlavourInfo ,
 				   unsigned int imode,PhaseSpaceModePtr mode,
 				   unsigned int iloc,int ires,
 				   PhaseSpaceChannel phase, Energy upp ) {

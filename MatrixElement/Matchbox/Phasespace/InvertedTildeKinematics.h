@@ -34,18 +34,10 @@ class InvertedTildeKinematics: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   InvertedTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~InvertedTildeKinematics();
-  //@}
 
 public:
 

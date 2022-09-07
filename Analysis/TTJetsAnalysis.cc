@@ -19,8 +19,6 @@ using namespace Herwig;
 
 TTJetsAnalysis::TTJetsAnalysis() {}
 
-TTJetsAnalysis::~TTJetsAnalysis() {}
-
 IBPtr TTJetsAnalysis::clone() const {
   return new_ptr(*this);
 }

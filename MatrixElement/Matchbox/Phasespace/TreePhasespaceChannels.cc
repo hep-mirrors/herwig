@@ -17,17 +17,11 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 using namespace Herwig::PhasespaceHelpers;
-
-TreePhasespaceChannels::TreePhasespaceChannels() {}
-
-TreePhasespaceChannels::~TreePhasespaceChannels() {}
 
 IBPtr TreePhasespaceChannels::clone() const {
   return new_ptr(*this);

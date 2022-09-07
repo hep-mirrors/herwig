@@ -21,18 +21,10 @@ class CrossSectionAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   CrossSectionAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~CrossSectionAnalysis();
-  //@}
 
 protected:
 

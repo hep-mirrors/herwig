@@ -31,10 +31,6 @@ using namespace Herwig;
 JetsPlusAnalysis::JetsPlusAnalysis() 
   : theIsShowered(false) {}
 
-JetsPlusAnalysis::~JetsPlusAnalysis() {}
-
-
-
 #ifndef LWH_AIAnalysisFactory_H
 #ifndef LWH 
 #define LWH ThePEGLWH

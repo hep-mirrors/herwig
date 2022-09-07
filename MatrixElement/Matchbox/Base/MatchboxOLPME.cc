@@ -30,8 +30,6 @@ MatchboxOLPME::MatchboxOLPME()
   : theOrderInGs(0), theOrderInGem(0), theSetMuToMuR(false), 
     theUseRunningAlphaS(false), theUseRunningAlphaEW(false) {}
 
-MatchboxOLPME::~MatchboxOLPME() {}
-
 bool MatchboxOLPME::canHandle(const PDVector& p,
 			      Ptr<MatchboxFactory>::tptr factory,
 			      bool) const {

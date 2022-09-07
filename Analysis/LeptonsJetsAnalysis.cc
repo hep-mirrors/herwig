@@ -31,8 +31,6 @@ using namespace Herwig;
 LeptonsJetsAnalysis::LeptonsJetsAnalysis() 
   : theIsShowered(false), theApplyCuts(false) {}
 
-LeptonsJetsAnalysis::~LeptonsJetsAnalysis() {}
-
 
 
 #ifndef LWH_AIAnalysisFactory_H

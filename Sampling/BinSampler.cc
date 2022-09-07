@@ -59,8 +59,6 @@ BinSampler::BinSampler()
     theHasGrids(false),
     theKappa(1.){}
 
-BinSampler::~BinSampler() {}
-
 IBPtr BinSampler::clone() const {
   return new_ptr(*this);
 }

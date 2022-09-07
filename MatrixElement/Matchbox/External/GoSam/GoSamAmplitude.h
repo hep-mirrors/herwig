@@ -61,21 +61,10 @@ class GoSamAmplitude: public MatchboxOLPME {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-
   /**
    * The default constructor.
    */
   GoSamAmplitude();
-
-  /**
-   * The destructor.
-   */
-  virtual ~GoSamAmplitude();
-
-  //@}
-
 
 public:
 

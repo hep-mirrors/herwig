@@ -32,18 +32,10 @@ class IFLightKinematics: public DipoleSplittingKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IFLightKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFLightKinematics();
-  //@}
 
 public:
 

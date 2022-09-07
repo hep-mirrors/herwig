@@ -25,10 +25,6 @@
 
 using namespace Herwig;
 
-GluonMassGenerator::GluonMassGenerator() {}
-
-GluonMassGenerator::~GluonMassGenerator() {}
-
 IBPtr GluonMassGenerator::clone() const {
   return new_ptr(*this);
 }

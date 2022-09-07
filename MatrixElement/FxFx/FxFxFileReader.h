@@ -39,8 +39,6 @@ class FxFxFileReader: public FxFxReader {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
@@ -52,12 +50,6 @@ public:
    * copied from will have to be reopened in this.
    */
   FxFxFileReader(const FxFxFileReader &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~FxFxFileReader();
-  //@}
 
 public:
 

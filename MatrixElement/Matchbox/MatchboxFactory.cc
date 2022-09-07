@@ -54,8 +54,6 @@ MatchboxFactory::MatchboxFactory()
   theEnforceLeptonNumberConservation(false), theEnforceQuarkNumberConservation(false),
   theLeptonFlavourDiagonal(false), theQuarkFlavourDiagonal(false) {}
 
-MatchboxFactory::~MatchboxFactory() {}
-
 Ptr<MatchboxFactory>::tptr MatchboxFactory::theCurrentFactory = Ptr<MatchboxFactory>::tptr();
 
 bool& MatchboxFactory::theIsMatchboxRun() {

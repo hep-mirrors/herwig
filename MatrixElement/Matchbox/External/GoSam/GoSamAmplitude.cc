@@ -62,8 +62,6 @@ GoSamAmplitude::GoSamAmplitude() :
   bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), GoSamPrefix_(GOSAM_PREFIX)
 {}
 
-GoSamAmplitude::~GoSamAmplitude() {}
-
 IBPtr GoSamAmplitude::clone() const {
   return new_ptr(*this);
 }

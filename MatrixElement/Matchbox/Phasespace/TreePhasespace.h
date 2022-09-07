@@ -34,18 +34,10 @@ class TreePhasespace: public MatchboxPhasespace {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   TreePhasespace();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TreePhasespace();
-  //@}
 
 public:
 

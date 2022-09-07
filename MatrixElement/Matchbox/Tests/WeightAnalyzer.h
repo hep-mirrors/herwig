@@ -21,18 +21,10 @@ class WeightAnalyzer: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   WeightAnalyzer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~WeightAnalyzer();
-  //@}
 
 public:
 
