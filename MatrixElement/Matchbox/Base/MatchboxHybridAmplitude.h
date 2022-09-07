@@ -32,18 +32,10 @@ class MatchboxHybridAmplitude: public Herwig::MatchboxAmplitude {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxHybridAmplitude();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxHybridAmplitude();
-  //@}
 
 public:
 

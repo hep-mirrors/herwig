@@ -45,8 +45,6 @@ MatchboxMEBase::MatchboxMEBase()
     theNoCorrelations(false),
     theHavePDFs(false,false), checkedPDFs(false) {}
 
-MatchboxMEBase::~MatchboxMEBase() {}
-
 Ptr<MatchboxFactory>::tptr MatchboxMEBase::factory() const {
   return MatchboxFactory::currentFactory();
 }
