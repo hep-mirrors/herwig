@@ -499,7 +499,8 @@ analyses["HadronDecays"][20113]["Modes"]["$a_1^0\\to\\pi^+\\pi^-\\pi^0$"]["MC"] 
                                                                                    "/MC_OmegaPhia1_3Pion_Decay/hist2B" ,"/MC_OmegaPhia1_3Pion_Decay/hist2C"]
 # charm decays
 # D+
-analyses["HadronDecays"][411] = { "Mult" : {},
+analyses["HadronDecays"][411] = { "BR" : ["PDG_DP"],
+                                  "Mult" : {},
                                   "Spectrum" : {},
                                   "Modes" : { "$D^+\\to\\bar{K}^0e^+\\nu_e$"                : {},
                                               "$D^+\\to\\pi^0e^+\\nu_e$"                    : {},
@@ -757,7 +758,8 @@ analyses["HadronDecays"][411]["Modes"]["$D^+\\to K^0_S\\pi^+\\eta^\\prime$"     
                                                                                                  "/BESIII_2018_I1693610/d01-x01-y09"]
 analyses["HadronDecays"][411]["Modes"]["$D^+\\to K^0_S\\pi^+\\eta^\\prime$"         ]["MC"  ] = ["/BESIII_2018_I1693610/dalitz_3"]
 # D^0
-analyses["HadronDecays"][421] ={  "Mult" : {},
+analyses["HadronDecays"][421] ={  "BR" : ["PDG_D0"],
+                                  "Mult" : {},
                                   "Spectrum" : {},
                                   "Modes" : { "$D^0\\to K^-e^+\\nu_e$"               : {},
                                              "$D^0\\to K^-\\mu^+\\nu_\\mu$"          : {},
@@ -1081,7 +1083,8 @@ analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^0_SK^+\pi^-$"               ]
 analyses["HadronDecays"][421]["Modes"]["$D^0\\to K^+K^-K^+\\pi^-$"             ]["data"] = ["/FOCUS_2003_I626320/d01-x01-y01",
                                                                                             "/FOCUS_2003_I626320/d01-x01-y02"]
 # D_s decays
-analyses["HadronDecays"][431] = {  "Mult" : {},
+analyses["HadronDecays"][431] = {  "BR" : ["PDG_DS"],
+                                   "Mult" : {},
                                    "Spectrum" : {},
                                    "Modes" : { "$D_s^+\\to \\eta e^+\\nu_e$"                : {},
                                                "$D_s^+\\to \\eta \\mu^+\\nu_\\mu$"          : {},
@@ -1783,13 +1786,14 @@ analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to p\\bar{p}\\eta$"           
                                                                                               "/BES_2001_I556330/d02-x01-y01"]
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to p\\bar{p}\\eta$"              ]["MC"  ]=["/BES_2001_I556330/dalitz"]
 # eta_c
-analyses["HadronDecays"][441] = {"DistChargedMult" : {},
-                                 "Modes" : { "$\\eta_c\\to \\pi^+\\pi^-\\eta$"             : {},
-                                             "$\\eta_c\\to \\pi^+\\pi^-\\eta^\\prime$"     : {},
-                                             "$\\eta_c\\to K^+K^-\\eta$"                   : {},
-                                             "$\\eta_c\\to K^+K^-\\eta^\\prime$"           : {},
-                                             "$\\eta_c\\to K^+K^-\\pi^0$"                  : {},
-                                             "$\\eta_c\\to K^0_SK^\\pm\\pi^\\mp$"          : {},}}
+analyses["HadronDecays"][441] = { "BR" : ["PDG_ETAC"],
+                                  "DistChargedMult" : {},
+                                  "Modes" : { "$\\eta_c\\to \\pi^+\\pi^-\\eta$"             : {},
+                                              "$\\eta_c\\to \\pi^+\\pi^-\\eta^\\prime$"     : {},
+                                              "$\\eta_c\\to K^+K^-\\eta$"                   : {},
+                                              "$\\eta_c\\to K^+K^-\\eta^\\prime$"           : {},
+                                              "$\\eta_c\\to K^+K^-\\pi^0$"                  : {},
+                                              "$\\eta_c\\to K^0_SK^\\pm\\pi^\\mp$"          : {},}}
 analyses["HadronDecays"][441]["DistChargedMult"]["data"] = ["/BESIII_2019_I1724880/d01-x01-y01"]
 analyses["HadronDecays"][441]["Modes"]["$\\eta_c\\to \\pi^+\\pi^-\\eta$"        ]["data"] = ["/BABAR_2021_I1867843/d03-x01-y01",
                                                                                              "/BABAR_2021_I1867843/d03-x01-y02",]
@@ -1822,7 +1826,8 @@ analyses["HadronDecays"][441]["Modes"]["$\\eta_c\\to K^0_SK^\\pm\\pi^\\mp$"     
 analyses["HadronDecays"][441]["Modes"]["$\\eta_c\\to K^0_SK^\\pm\\pi^\\mp$"     ]["MC"  ] = ["/BABAR_2015_I1403544/dalitz_1",
                                                                                              "/BESIII_2012_I1187787/dalitz"]
 # chi_c0
-analyses["HadronDecays"][10441] = {"DistChargedMult" : {},
+analyses["HadronDecays"][10441] = {"BR" : ["PDG_CHIC0"],
+                                   "DistChargedMult" : {},
                                    "Modes" : { "$\\chi_{c0}\\to \\phi\\phi\\eta$"          : {},
                                                "$\\chi_{c0}\\to \\Sigma^0\\bar{p}K^+$"     : {},
                                                "$\\chi_{c0}\\to nK^0_S\\bar{\\Lambda}$"    : {},
@@ -1853,18 +1858,19 @@ analyses["HadronDecays"][10441]["Modes"]["$\\chi_{c0}\\to K^\\pm\\pi^\\mp K^0_S\
                                                                                                     "/CLEO_2008_I787608/d04-x01-y03",
                                                                                                     "/CLEO_2008_I787608/d04-x01-y04",]
 # chi_c1
-analyses["HadronDecays"][20443] = {"DistChargedMult" : {},
-                                   "Modes" : { "$\\chi_{c1}\\to K^+K^-\\eta^\\prime$"       : {},
-                                               "$\\chi_{c1}\\to \\pi^+\\pi^-\\eta$"         : {},
-                                               "$\\chi_{c1}\\to \\pi^+\\pi^-\\eta^\\prime$" : {},
-                                               "$\\chi_{c1}\\to \\phi\\phi\\eta$"           : {},
-                                               "$\\chi_{c1}\\to \\Sigma^0\\bar{p}K^+$"      : {},
-                                               "$\\chi_{c1}\\to nK^0_S\\bar{\\Lambda}$"     : {},
-                                               "$\\chi_{c1}\\to K^+K^-\\pi^0$"              : {},
-                                               "$\\chi_{c1}\\to K^\\pm K^0_S\\pi^\\mp$"     : {},
-                                               "$\\chi_{c1}\\to \\pi^+\\pi^-\\pi^0\\pi^0$"  : {},
-                                               "$\\chi_{c1}\\to K^\\pm\\pi^\\mp K^0_S\\pi^0$" : {},
-                                   }}
+analyses["HadronDecays"][20443] = { "BR" : ["PDG_CHIC1"],
+                                    "DistChargedMult" : {},
+                                    "Modes" : { "$\\chi_{c1}\\to K^+K^-\\eta^\\prime$"       : {},
+                                                "$\\chi_{c1}\\to \\pi^+\\pi^-\\eta$"         : {},
+                                                "$\\chi_{c1}\\to \\pi^+\\pi^-\\eta^\\prime$" : {},
+                                                "$\\chi_{c1}\\to \\phi\\phi\\eta$"           : {},
+                                                "$\\chi_{c1}\\to \\Sigma^0\\bar{p}K^+$"      : {},
+                                                "$\\chi_{c1}\\to nK^0_S\\bar{\\Lambda}$"     : {},
+                                                "$\\chi_{c1}\\to K^+K^-\\pi^0$"              : {},
+                                                "$\\chi_{c1}\\to K^\\pm K^0_S\\pi^\\mp$"     : {},
+                                                "$\\chi_{c1}\\to \\pi^+\\pi^-\\pi^0\\pi^0$"  : {},
+                                                "$\\chi_{c1}\\to K^\\pm\\pi^\\mp K^0_S\\pi^0$" : {},
+                                    }}
 analyses["HadronDecays"][20443]["DistChargedMult"]["data"] = ["/BESIII_2020_I1800404/d01-x01-y02"]
 analyses["HadronDecays"][20443]["Modes"]["$\\chi_{c1}\\to K^+K^-\\eta^\\prime$"]["data"] = ["/BESIII_2014_I1280710/d01-x01-y01",
                                                                                             "/BESIII_2014_I1280710/d01-x01-y02",
@@ -1908,14 +1914,15 @@ analyses["HadronDecays"][20443]["Modes"]["$\\chi_{c1}\\to \\pi^+\\pi^-\\pi^0\\pi
 analyses["HadronDecays"][20443]["Modes"]["$\\chi_{c1}\\to K^\\pm\\pi^\\mp K^0_S\\pi^0$"]["data"] = ["/CLEO_2008_I787608/d05-x01-y01",
                                                                                                     "/CLEO_2008_I787608/d05-x01-y02",]
 # chi_c2
-analyses["HadronDecays"][445  ] = {"DistChargedMult" : {},
-                                   "Modes" : { "$\\chi_{c2}\\to K^+K^-\\eta^\\prime$"      : {},
-                                               "$\\chi_{c2}\\to \\phi\\phi\\eta$"          : {},
-                                               "$\\chi_{c2}\\to \\Sigma^0\\bar{p}K^+$"     : {},
-                                               "$\\chi_{c2}\\to nK^0_S\\bar{\\Lambda}$"    : {},
-                                               "$\\chi_{c2}\\to \\pi^+\\pi^-\\pi^0\\pi^0$" : {},
-                                               "$\\chi_{c2}\\to K^\\pm\\pi^\\mp K^0_S\\pi^0$" : {},
-                                   }}
+analyses["HadronDecays"][445  ] = { "BR" : ["PDG_CHIC2"],
+                                    "DistChargedMult" : {},
+                                    "Modes" : { "$\\chi_{c2}\\to K^+K^-\\eta^\\prime$"      : {},
+                                                "$\\chi_{c2}\\to \\phi\\phi\\eta$"          : {},
+                                                "$\\chi_{c2}\\to \\Sigma^0\\bar{p}K^+$"     : {},
+                                                "$\\chi_{c2}\\to nK^0_S\\bar{\\Lambda}$"    : {},
+                                                "$\\chi_{c2}\\to \\pi^+\\pi^-\\pi^0\\pi^0$" : {},
+                                                "$\\chi_{c2}\\to K^\\pm\\pi^\\mp K^0_S\\pi^0$" : {},
+                                    }}
 analyses["HadronDecays"][445  ]["DistChargedMult"]["data"] = ["/BESIII_2020_I1800404/d01-x01-y03"]
 analyses["HadronDecays"][445  ]["Modes"]["$\\chi_{c2}\\to K^+K^-\\eta^\\prime$"]["data"] = ["/BESIII_2014_I1280710/d03-x01-y01",
                                                                                             "/BESIII_2014_I1280710/d03-x01-y02",
@@ -5094,6 +5101,7 @@ def writeTauDecays(index) :
     decays.close()
 
 def writeParticleDecays(particles,decays,index) :
+    global figures
     for val in particles :
         if val not in analyses["HadronDecays"] : continue
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
@@ -5144,6 +5152,16 @@ def writeParticleDecays(particles,decays,index) :
            len(analyses["HadronDecays"][val]["Other"]) !=0) :
             decays.write("<h5>Other Observables</h5>\n")
             writePlots2(analyses["HadronDecays"][val]["Other"],decays)
+        # BR
+        if "BR" in analyses["HadronDecays"][val] :
+            for ana in analyses["HadronDecays"][val]["BR"] :
+                plots=[]
+                for name in figures :
+                    if ana in name :
+                        plots.append(name[name.find("/"):].replace(".dat",""))
+            if len(plots) !=0 :
+                decays.write("<h5>Branching Ratios</h5>\n")
+                writePlots2(plots,decays)
 
 def writeDecays(index) :
     decays=open(os.path.join(directory,"decays.html"),'w')
