@@ -1,4 +1,4 @@
-SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox Reweighters EW
+SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox Reweighters
 
 if WANT_LIBFASTJET
 SUBDIRS += FxFx
