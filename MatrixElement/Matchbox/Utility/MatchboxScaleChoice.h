@@ -32,18 +32,10 @@ class MatchboxScaleChoice: public HandlerBase, public LastXCombInfo<StandardXCom
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxScaleChoice();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxScaleChoice();
-  //@}
 
 public:
 
