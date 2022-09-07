@@ -881,7 +881,7 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
 	assert(false);
     }
     else if((particles[0]->iColour()==PDT::Colour3 &&
-	     particles[1]->iColour()==PDT::Colour3bar) |
+	     particles[1]->iColour()==PDT::Colour3bar) ||
 	    (particles[0]->iColour()==PDT::Colour3bar &&
 	     particles[1]->iColour()==PDT::Colour3)) {
       if(diag.vertices.first->colourStructure()==ColourStructure::SU3I12I34) {
