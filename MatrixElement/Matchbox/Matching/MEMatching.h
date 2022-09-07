@@ -29,18 +29,10 @@ class MEMatching: public Herwig::ShowerApproximation {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MEMatching();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEMatching();
-  //@}
 
 public:
 

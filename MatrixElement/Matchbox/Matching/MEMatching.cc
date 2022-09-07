@@ -33,8 +33,6 @@ using namespace Herwig;
 MEMatching::MEMatching()
   : theTruncatedShower(false) {}
 
-MEMatching::~MEMatching() {}
-
 IBPtr MEMatching::clone() const {
   return new_ptr(*this);
 }

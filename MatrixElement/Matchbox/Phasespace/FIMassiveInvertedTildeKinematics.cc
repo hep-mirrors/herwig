@@ -19,10 +19,6 @@
 
 using namespace Herwig;
 
-FIMassiveInvertedTildeKinematics::FIMassiveInvertedTildeKinematics() {}
-
-FIMassiveInvertedTildeKinematics::~FIMassiveInvertedTildeKinematics() {}
-
 IBPtr FIMassiveInvertedTildeKinematics::clone() const {
   return new_ptr(*this);
 }

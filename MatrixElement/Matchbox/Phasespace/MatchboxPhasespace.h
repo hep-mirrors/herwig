@@ -83,18 +83,10 @@ class MatchboxPhasespace:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxPhasespace();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxPhasespace();
-  //@}
 
 public:
 

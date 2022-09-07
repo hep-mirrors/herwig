@@ -34,21 +34,6 @@ class TildeKinematics: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  TildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TildeKinematics();
-  //@}
-
-public:
-
   /**
    * Clone this object
    */

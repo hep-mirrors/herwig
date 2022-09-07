@@ -29,8 +29,6 @@ using namespace Herwig;
 FlatInvertibleLabframePhasespace::FlatInvertibleLabframePhasespace()
   : theLogSHat(false) {}
 
-FlatInvertibleLabframePhasespace::~FlatInvertibleLabframePhasespace() {}
-
 IBPtr FlatInvertibleLabframePhasespace::clone() const {
   return new_ptr(*this);
 }

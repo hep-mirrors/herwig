@@ -36,18 +36,10 @@ class ShowerApproximation: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ShowerApproximation();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerApproximation();
-  //@}
 
 public:
 

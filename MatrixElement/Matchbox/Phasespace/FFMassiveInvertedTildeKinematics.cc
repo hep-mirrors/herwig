@@ -15,18 +15,12 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "Herwig/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
 using namespace Herwig;
-
-FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() {}
-
-FFMassiveInvertedTildeKinematics::~FFMassiveInvertedTildeKinematics() {}
 
 IBPtr FFMassiveInvertedTildeKinematics::clone() const {
   return new_ptr(*this);

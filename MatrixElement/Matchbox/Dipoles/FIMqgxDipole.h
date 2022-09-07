@@ -30,18 +30,10 @@ class FIMqgxDipole: public SubtractionDipole {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FIMqgxDipole();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FIMqgxDipole();
-  //@}
 
 public:
 

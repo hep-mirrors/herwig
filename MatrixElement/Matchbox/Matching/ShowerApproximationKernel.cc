@@ -31,8 +31,6 @@ ShowerApproximationKernel::ShowerApproximationKernel()
     theMaxTry(100000), theFreezeGrid(500000),
     sampler(0), theDoCompensate(false) {}
 
-ShowerApproximationKernel::~ShowerApproximationKernel() {}
-
 IBPtr ShowerApproximationKernel::clone() const {
   return new_ptr(*this);
 }
