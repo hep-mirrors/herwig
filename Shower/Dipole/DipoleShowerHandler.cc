@@ -59,8 +59,6 @@ DipoleShowerHandler::DipoleShowerHandler() :
   theInputColouredOffShellInShower(),
   theZBoundaries(1) {}
 
-DipoleShowerHandler::~DipoleShowerHandler() {}
-
 IBPtr DipoleShowerHandler::clone() const {
   return new_ptr(*this);
 }

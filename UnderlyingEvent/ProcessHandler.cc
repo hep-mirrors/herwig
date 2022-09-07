@@ -47,17 +47,6 @@ using namespace Herwig;
 ProcessHandler::ProcessHandler()
   : theBinStrategy(2) {}
 
-ProcessHandler::ProcessHandler(const ProcessHandler & x)
-  : Interfaced(x), LastXCombInfo<>(x), 
-    theSampler(x.theSampler), theHandler(x.theHandler), 
-    theCuts(x.theCuts), theSubProcess(x.theSubProcess),
-    theXCombs(x.theXCombs), theXSecs(x.theXSecs),
-    theBinStrategy(x.theBinStrategy), theMEXMap(x.theMEXMap),
-    theMaxDims(x.theMaxDims) {}
-
-
-ProcessHandler::~ProcessHandler() {}
-
 void ProcessHandler::initialize(tSubHdlPtr sub, tCutsPtr cut, tEHPtr eh) {
   /*
     This method should be called during the "read" phase! However due to

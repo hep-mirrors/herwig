@@ -30,8 +30,6 @@ using namespace Herwig;
 MatchboxHybridAmplitude::MatchboxHybridAmplitude() 
   : theUseOLPCorrelators(false) {}
 
-MatchboxHybridAmplitude::~MatchboxHybridAmplitude() {}
-
 IBPtr MatchboxHybridAmplitude::clone() const {
   return new_ptr(*this);
 }

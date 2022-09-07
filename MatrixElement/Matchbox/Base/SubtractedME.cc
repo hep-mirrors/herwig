@@ -34,8 +34,6 @@ SubtractedME::SubtractedME()
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
     theLoopSimSubtraction(false) {}
 
-SubtractedME::~SubtractedME() {}
-
 Ptr<MatchboxFactory>::tcptr SubtractedME::factory() const {
   return MatchboxFactory::currentFactory();
 }

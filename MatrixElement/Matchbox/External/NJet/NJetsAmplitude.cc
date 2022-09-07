@@ -42,8 +42,6 @@ using namespace Herwig;
 NJetsAmplitude::NJetsAmplitude() : NJetsPrefix_(NJET_PREFIX),
 				   NJetsLibs_(NJET_LIBS) {}
 
-NJetsAmplitude::~NJetsAmplitude() {}
-
 IBPtr NJetsAmplitude::clone() const {
   return new_ptr(*this);
 }

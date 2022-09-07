@@ -24,8 +24,6 @@ alpha_s::alpha_s()
     lambda_range_(1.*MeV2,1.e6*MeV2), fixed_(false) {
 }
 
-alpha_s::~alpha_s() {}
-
 void alpha_s::persistentOutput(PersistentOStream & os) const {
   os << min_active_flavours_ << max_active_flavours_ << matched_ << scale_factor_;
   for (size_t f = 0; f < 7; ++f)

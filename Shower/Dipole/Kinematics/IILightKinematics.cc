@@ -29,8 +29,6 @@ IILightKinematics::IILightKinematics()
     theTransformationCalculated(false) {}
 //theTransformHardOnly(false) {}
 
-IILightKinematics::~IILightKinematics() {}
-
 IBPtr IILightKinematics::clone() const {
   return new_ptr(*this);
 }

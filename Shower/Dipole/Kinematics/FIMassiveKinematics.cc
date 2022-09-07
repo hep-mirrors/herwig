@@ -28,8 +28,6 @@ using namespace Herwig;
 FIMassiveKinematics::FIMassiveKinematics() 
   : DipoleSplittingKinematics() {}
 
-FIMassiveKinematics::~FIMassiveKinematics() {}
-
 IBPtr FIMassiveKinematics::clone() const {
   return new_ptr(*this);
 }

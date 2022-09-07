@@ -58,8 +58,6 @@ namespace Herwig {
          SubtractionDipolePtr dipol, 
          MatchboxMEBasePtr nodeME, 
          int cutstage);
-      /// The destructor.
-    virtual ~Node();
       //@}
     
   public:

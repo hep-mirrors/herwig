@@ -28,8 +28,6 @@ using namespace Herwig;
 Tree2toNGenerator::Tree2toNGenerator() 
   : maxOrderGs(0), maxOrderGem(0), prepared(false) {}
 
-Tree2toNGenerator::~Tree2toNGenerator() {}
-
 IBPtr Tree2toNGenerator::clone() const {
   return new_ptr(*this);
 }

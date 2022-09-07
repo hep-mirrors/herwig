@@ -46,7 +46,7 @@ int MEMultiChannel::nDim() const {
   // return modes_[0]->nRand();
 }
 
-bool MEMultiChannel::generateKinematics(const double * r) {
+bool MEMultiChannel::generateKinematics(const double * ) {
   // first find the mode
   int imode = -1;
   for(unsigned int ix=0;ix<modes_.size();++ix) {

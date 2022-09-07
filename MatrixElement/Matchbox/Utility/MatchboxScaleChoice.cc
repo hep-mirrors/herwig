@@ -28,8 +28,6 @@ using namespace Herwig;
 MatchboxScaleChoice::MatchboxScaleChoice() 
   : theFixedScale(ZERO), theFixedQEDScale(ZERO) {}
 
-MatchboxScaleChoice::~MatchboxScaleChoice() {}
-
 IBPtr MatchboxScaleChoice::clone() const {
   return new_ptr(*this);
 }

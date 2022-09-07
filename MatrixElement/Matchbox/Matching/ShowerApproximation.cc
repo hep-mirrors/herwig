@@ -49,8 +49,6 @@ ShowerApproximation::ShowerApproximation()
     theFactorizationScaleFreeze(1.*GeV),
   maxPtIsMuF(false), theOpenZ(true) {}
 
-ShowerApproximation::~ShowerApproximation() {}
-
 void ShowerApproximation::setLargeNBasis() {
   assert(dipole()->realEmissionME()->matchboxAmplitude());
   if ( !dipole()->realEmissionME()->matchboxAmplitude()->treeAmplitudes() )

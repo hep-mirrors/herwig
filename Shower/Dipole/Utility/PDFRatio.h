@@ -32,18 +32,10 @@ class PDFRatio: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   PDFRatio();
-
-  /**
-   * The destructor.
-   */
-  virtual ~PDFRatio();
-  //@}
 
 public:
 

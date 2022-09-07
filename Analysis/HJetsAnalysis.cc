@@ -19,8 +19,6 @@ using namespace Herwig;
 
 HJetsAnalysis::HJetsAnalysis() {}
 
-HJetsAnalysis::~HJetsAnalysis() {}
-
 IBPtr HJetsAnalysis::clone() const {
   return new_ptr(*this);
 }

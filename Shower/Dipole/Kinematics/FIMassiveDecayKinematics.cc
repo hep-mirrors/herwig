@@ -30,8 +30,6 @@ using namespace Herwig;
 FIMassiveDecayKinematics::FIMassiveDecayKinematics() 
   : DipoleSplittingKinematics() {}
 
-FIMassiveDecayKinematics::~FIMassiveDecayKinematics() {}
-
 IBPtr FIMassiveDecayKinematics::clone() const {
   return new_ptr(*this);
 }

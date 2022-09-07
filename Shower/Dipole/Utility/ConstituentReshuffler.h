@@ -34,21 +34,6 @@ class ConstituentReshuffler: public HandlerBase, public Reshuffler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  ConstituentReshuffler();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ConstituentReshuffler();
-  //@}
-
-public:
-
   /**
    * Reshuffle the outgoing partons to constituent
    * masses. Optionally, incoming partons are given

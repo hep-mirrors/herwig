@@ -30,21 +30,6 @@ class FILightTildeKinematics: public TildeKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  FILightTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FILightTildeKinematics();
-  //@}
-
-public:
-
   /**
    * Perform the mapping to the tilde kinematics for the
    * last selected process and store all dimensionless

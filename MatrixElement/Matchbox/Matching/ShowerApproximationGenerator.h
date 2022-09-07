@@ -33,18 +33,10 @@ class ShowerApproximationGenerator: public StepHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ShowerApproximationGenerator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerApproximationGenerator();
-  //@}
 
 public:
 

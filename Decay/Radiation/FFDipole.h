@@ -50,11 +50,6 @@ public:
     _energyopt(1), _betaopt(4), _dipoleopt(), _nweight(0), _wgtsum(0.), _wgtsq(0.),
     _weightOutput(false) {}
 
-  /**
-   *  Destructor
-   */
-  virtual ~FFDipole();
-
 public:
 
   /**

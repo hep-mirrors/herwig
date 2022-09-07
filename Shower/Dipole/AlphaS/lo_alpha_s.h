@@ -23,18 +23,10 @@ namespace matchbox {
 
   public:
 
-    /** @name Standard constructors and destructors. */
-    //@{
     /**
      * The default constructor.
      */
     lo_alpha_s();
-
-    /**
-     * The destructor.
-     */
-    virtual ~lo_alpha_s();
-    //@}
 
   public:
 

@@ -31,24 +31,10 @@ class SatPDF: public PDFBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SatPDF() : thePDF(PDFPtr()), theX0(1E-4), theExp(0.0) {}
-
-  /**
-   * The copy constructor.
-   */
-  inline SatPDF(const SatPDF & x) : 
-    PDFBase(x), thePDF(x.thePDF), theX0(x.theX0), theExp(x.theExp) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~SatPDF();
-  //@}
 
 public:
 

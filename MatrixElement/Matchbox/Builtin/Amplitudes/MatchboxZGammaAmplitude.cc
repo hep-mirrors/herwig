@@ -28,8 +28,6 @@ using namespace Herwig;
 MatchboxZGammaAmplitude::MatchboxZGammaAmplitude() 
   : MatchboxAmplitude(), theIncludeZ(true), theIncludeGamma(true) {}
 
-MatchboxZGammaAmplitude::~MatchboxZGammaAmplitude() {}
-
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

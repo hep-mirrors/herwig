@@ -30,21 +30,6 @@ class FFMassiveInvertedTildeKinematics: public Herwig::InvertedTildeKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  FFMassiveInvertedTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFMassiveInvertedTildeKinematics();
-  //@}
-
-public:
-
   /**
    * Perform the mapping of the tilde kinematics for the
    * last selected process and store all dimensionless

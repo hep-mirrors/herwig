@@ -24,8 +24,6 @@ using namespace Herwig;
 MergerBase::MergerBase() 
   : HandlerBase() {}
 
-MergerBase::~MergerBase() {}
-
 void MergerBase::Init() {
 
   static ClassDocumentation<MergerBase> documentation
@@ -34,11 +32,8 @@ void MergerBase::Init() {
 }
 
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeAbstractNoPIOClass<MergerBase,HandlerBase>
 describeHerwigMergerBase("Herwig::MergerBase", "Herwig.so");
 

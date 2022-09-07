@@ -23,9 +23,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-MPIPDF::~MPIPDF() {}
-
-
 IBPtr MPIPDF::clone() const {
   return new_ptr(*this);
 }

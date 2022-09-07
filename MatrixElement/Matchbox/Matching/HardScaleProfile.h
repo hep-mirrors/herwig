@@ -30,18 +30,10 @@ class HardScaleProfile: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   HardScaleProfile();
-
-  /**
-   * The destructor.
-   */
-  virtual ~HardScaleProfile();
-  //@}
 
 public:
 

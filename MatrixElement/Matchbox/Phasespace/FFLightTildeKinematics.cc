@@ -14,15 +14,10 @@
 #include "FFLightTildeKinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-FFLightTildeKinematics::FFLightTildeKinematics() {}
-
-FFLightTildeKinematics::~FFLightTildeKinematics() {}
 
 IBPtr FFLightTildeKinematics::clone() const {
   return new_ptr(*this);

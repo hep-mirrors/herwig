@@ -30,11 +30,6 @@
 
 using namespace Herwig;
 
-ConstituentReshuffler::ConstituentReshuffler() 
-  : HandlerBase() {}
-
-ConstituentReshuffler::~ConstituentReshuffler() {}
-
 IBPtr ConstituentReshuffler::clone() const {
   return new_ptr(*this);
 }

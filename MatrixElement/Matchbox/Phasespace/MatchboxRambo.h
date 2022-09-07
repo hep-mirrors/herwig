@@ -29,18 +29,10 @@ class MatchboxRambo: public MatchboxPhasespace {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxRambo();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxRambo();
-  //@}
 
 public:
 
