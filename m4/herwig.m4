@@ -918,7 +918,7 @@ esac
 
 case "${ax_cv_cxx_compiler_vendor}" in
      gnu)
-        AM_CXXFLAGS="-pedantic -Wall -W"
+        AM_CXXFLAGS="-pedantic -Wall -W -Wno-use-after-free"
         ;;
      clang)
         AM_CXXFLAGS="-pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function -Wno-unused-parameter"
