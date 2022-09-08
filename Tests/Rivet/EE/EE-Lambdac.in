@@ -39,3 +39,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1711896
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1837968
 # Lambda_c -> eta Lambda pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1813380
+# Lambda_c -> Lambda K+ K0S
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I722213
