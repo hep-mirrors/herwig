@@ -43,7 +43,8 @@ void HQETRadiativeDecayer::doinit() {
     addMode(mode);
     // calculate coupling A
     Energy mQ = abs(incoming_[ix])/100 == 4 ?
-      getParticleData(ParticleID::c)->mass() : getParticleData(ParticleID::b)->mass();
+      getParticleData(ParticleID::c)->constituentMass() :
+      getParticleData(ParticleID::b)->constituentMass() ;
     double eq = ((abs(incoming_[ix])/10)%10)==2 ?  2./3. : -1./3.;
     double eQ =  abs(incoming_[ix])/100==4      ?  2./3. : -1./3.;
     coupling_.push_back(8.*sqrt(Constants::pi)*
@@ -315,7 +316,7 @@ string HQETRadiativeDecayer::setUpDecayMode(string arg) {
     return "First outgoing particle with id " + std::to_string(out) + "does not have spin 0/1";
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
-  int itype = stoi(stype);  
+  int itype = stoi(stype);
   // and the maximum weight
   stype = StringUtils::car(arg);
   arg   = StringUtils::cdr(arg);
