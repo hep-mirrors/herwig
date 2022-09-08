@@ -258,9 +258,9 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
 	if(evtParent) {
 	  delete evtParent;
 	}
-  	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
-  			  <<" with mass "<< particle->mass()
-  			  <<" to decay channel number "<< particle->getChannel() << "\n"
+  	throw Exception() << "EvtGen could not decay " << parent.PDGName()
+  			  << " with mass " << parent.mass()/GeV 
+  			  << " and decay mode " << dm.tag() << "\n"
   			  << Exception::eventerror;
       }
       assert(decayer !=0 );
