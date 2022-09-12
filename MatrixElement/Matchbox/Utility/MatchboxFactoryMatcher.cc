@@ -29,8 +29,6 @@ using namespace Herwig;
 MatchboxFactoryMatcher::MatchboxFactoryMatcher()
   : theGroup("") {}
 
-MatchboxFactoryMatcher::~MatchboxFactoryMatcher() {}
-
 IBPtr MatchboxFactoryMatcher::clone() const {
   return new_ptr(*this);
 }

@@ -33,10 +33,6 @@ WeightAnalyzer::WeightAnalyzer()
     maxNegativeWeight(0.0),
     gnuplot(true)  {}
 
-WeightAnalyzer::~WeightAnalyzer(){}
-
-
-
 #ifndef LWH_AIAnalysisFactory_H
 #ifndef LWH 
 #define LWH ThePEGLWH

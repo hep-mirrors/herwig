@@ -45,11 +45,6 @@ public:
   MatchboxAmplitudelnuqqbarg();
 
   /**
-   * The destructor.
-   */
-  virtual ~MatchboxAmplitudelnuqqbarg();
-
-  /**
    * Return the (tree-level) order in \f$g_S\f$ in which this matrix
    * element is given.
    */

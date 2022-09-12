@@ -32,11 +32,6 @@ public:
     interOpt_(0), widthOpt_(1), particleType_(false) {}
 
   /**
-   *  Destructor
-   */
-  ~FourBodyDecayConstructor();
-
-  /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
    * @param particles vector of ParticleData pointers containing 

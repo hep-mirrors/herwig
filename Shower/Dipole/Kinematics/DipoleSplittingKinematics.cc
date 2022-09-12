@@ -34,8 +34,6 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
     theLastSplittingParameters(),theOpenZBoundaries(1) {}
 
-DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
-
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
   os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenZBoundaries;
 }

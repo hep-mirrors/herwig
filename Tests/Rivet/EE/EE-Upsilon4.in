@@ -18,10 +18,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1693396
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
 # B0 -> rho,pi B+ -> rho,omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
+# B -> eho,pi ell nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I855306
 # B+ -> omega l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1116411
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1247460
-# B to pi, eta, pmega
+# B to pi, eta, omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1125973
 # B0 -> pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
@@ -35,6 +37,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
 # Crystal Ball e- spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1989_I263581
+# BELLE B-> Xu l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1895149
 ############ b -> s gamma #################################
 # BELLE b->s gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289

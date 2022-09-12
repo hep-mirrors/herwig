@@ -153,8 +153,8 @@ void SextetFFSVertex::setCoupling(Energy2,tcPDPtr part1,
       cRight=Complex(g1R_[1]);
       cLeft=Complex(2.*g1L_[1]);
     }
-    else
-      cRight=Complex(g1R_[2]);{
+    else {
+      cRight=Complex(g1R_[2]);
       cLeft=Complex(2.*g1L_[2]);
     }
   }

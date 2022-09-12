@@ -31,8 +31,6 @@ using namespace Herwig;
 IdentifiedParticleCut::IdentifiedParticleCut() 
   : thePtMin(0.*GeV), thePtMax(Constants::MaxEnergy) {}
 
-IdentifiedParticleCut::~IdentifiedParticleCut() {}
-
 IBPtr IdentifiedParticleCut::clone() const {
   return new_ptr(*this);
 }

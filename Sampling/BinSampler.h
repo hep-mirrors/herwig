@@ -39,18 +39,10 @@ class BinSampler: public Herwig::MultiIterationStatistics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   BinSampler();
-
-  /**
-   * The destructor.
-   */
-  virtual ~BinSampler();
-  //@}
 
 public:
 

@@ -30,18 +30,10 @@ class FFMassiveKinematics: public DipoleSplittingKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FFMassiveKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFMassiveKinematics();
-  //@}
 
 public:
 

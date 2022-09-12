@@ -30,21 +30,6 @@ class IILightTildeKinematics: public TildeKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  IILightTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IILightTildeKinematics();
-  //@}
-
-public:
-
   /**
    * Perform the mapping to the tilde kinematics for the
    * last selected process and store all dimensionless

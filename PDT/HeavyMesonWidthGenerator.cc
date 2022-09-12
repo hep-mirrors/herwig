@@ -171,7 +171,7 @@ Energy HeavyMesonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1
   // calcluate the decay momentum
   Energy2 q2(q*q),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  Energy pcm(sqrt(pcm2)),gam(ZERO),msum(q+m1);
+  Energy pcm(sqrt(pcm2));
   double test=0.;
   if(mecode==101) {
     test = 4.*sqr(g_)*q/m1*sqr(pcm)/sqr(fPi_);

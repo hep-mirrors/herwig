@@ -32,18 +32,10 @@ namespace Herwig {
 
   public:
 
-    /** @name Standard constructors and destructors. */
-    //@{
     /**
      * The default constructor.
      */
     FIMassiveDecayKinematics();
-
-    /**
-     * The destructor.
-     */
-    virtual ~FIMassiveDecayKinematics();
-    //@}
 
   public:
 

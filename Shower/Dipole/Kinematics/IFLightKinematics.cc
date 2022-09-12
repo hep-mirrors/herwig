@@ -27,8 +27,6 @@ using namespace Herwig;
 IFLightKinematics::IFLightKinematics() 
   : DipoleSplittingKinematics(), theCollinearScheme(true) {}
 
-IFLightKinematics::~IFLightKinematics() {}
-
 IBPtr IFLightKinematics::clone() const {
   return new_ptr(*this);
 }

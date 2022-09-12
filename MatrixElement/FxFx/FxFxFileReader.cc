@@ -37,8 +37,6 @@ FxFxFileReader(const FxFxFileReader & x)
     theIncludeCentral(x.theIncludeCentral),
     theDecayer(x.theDecayer) {}
 
-FxFxFileReader::~FxFxFileReader() {}
-
 IBPtr FxFxFileReader::clone() const {
   return new_ptr(*this);
 }

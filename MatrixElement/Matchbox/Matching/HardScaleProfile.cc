@@ -29,8 +29,6 @@ HardScaleProfile::HardScaleProfile()
   : theFixedHardScale(ZERO), theProfileRho(0.3),
     theProfileType(resummation) {}
 
-HardScaleProfile::~HardScaleProfile() {}
-
 IBPtr HardScaleProfile::clone() const {
   return new_ptr(*this);
 }

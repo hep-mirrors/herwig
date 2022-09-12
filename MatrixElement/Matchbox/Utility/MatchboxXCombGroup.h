@@ -46,12 +46,6 @@ public:
    * Default constructor.
    */
   MatchboxXCombGroup();
-
-  /**
-   * Destructor.
-   */
-  virtual ~MatchboxXCombGroup();
-
   //@}
 
 public:

@@ -66,8 +66,6 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -76,12 +74,6 @@ public:
   {
     selector().tolerance(unitTolerance());
   }
-
-  /**
-   * The destructor.
-   */
-  virtual ~FxFxEventHandler();
-  //@}
 
 public:
 

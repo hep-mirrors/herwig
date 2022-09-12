@@ -141,12 +141,6 @@ void SSWGSSVertex::setCoupling(Energy2 q2,   tcPDPtr part1,
     norm(0.);
   }
   long sq1(abs(part3->id())),sq2(abs(part4->id()));
-  if( (sq1 < 1000001 && sq1 > 1000006 && sq1 < 2000001 && sq1 > 2000006) ||
-      (sq2 < 1000001 && sq2 > 1000006 && sq2 < 2000001 && sq2 > 2000006))
-    throw HelicityConsistencyError()
-      << "SSWGSSVertex::setCoupling() - There are no squarks in "
-      << "this vertex! " << part3->id() << " " << part4->id() 
-      << Exception::warning;
 
   if( sq1 % 2 != 0 ) swap(sq1, sq2);
   if( sq1 != _ulast || sq2 != _dlast || boson != _gblast) {

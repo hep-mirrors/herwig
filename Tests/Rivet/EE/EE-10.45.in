@@ -10,3 +10,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+# CLEO Xi_c+ spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I404590

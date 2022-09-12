@@ -32,18 +32,10 @@ class PairRapidityCut: public TwoCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   PairRapidityCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~PairRapidityCut();
-  //@}
 
 public:
 

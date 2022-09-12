@@ -77,7 +77,6 @@ double ScalarTo3ScalarDalitz::me2(const int ichan, const Particle & part,
 			    const tPDVector & ,
 			    const vector<Lorentz5Momentum> & momenta,
 			    MEOption meopt) const {
-  static const Complex ii(0.,1.);
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();

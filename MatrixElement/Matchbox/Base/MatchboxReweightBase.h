@@ -32,21 +32,6 @@ class MatchboxReweightBase: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  MatchboxReweightBase();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxReweightBase();
-  //@}
-
-public:
-
   /**
    * Clone this reweight.
    */

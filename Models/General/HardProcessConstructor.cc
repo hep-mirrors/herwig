@@ -595,11 +595,11 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       for(unsigned int ix=8;ix<12;++ix)
 	cfv.push_back(make_pair(ix,1.));
     }
-    else if(outa==PDT::Colour3bar && outa==PDT::Colour6) {
+    else if(outa==PDT::Colour3bar && outb==PDT::Colour6) {
       cfv[0] = make_pair(4, 1.);
       cfv.push_back(make_pair(5,1.));
     }
-    else if(outa==PDT::Colour6 && outa==PDT::Colour3bar) {
+    else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
       cfv[0] = make_pair(0, 1.);
       for(unsigned int ix=1;ix<4;++ix)
 	cfv.push_back(make_pair(ix,1.));
@@ -881,7 +881,7 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
 	assert(false);
     }
     else if((particles[0]->iColour()==PDT::Colour3 &&
-	     particles[1]->iColour()==PDT::Colour3bar) |
+	     particles[1]->iColour()==PDT::Colour3bar) ||
 	    (particles[0]->iColour()==PDT::Colour3bar &&
 	     particles[1]->iColour()==PDT::Colour3)) {
       if(diag.vertices.first->colourStructure()==ColourStructure::SU3I12I34) {

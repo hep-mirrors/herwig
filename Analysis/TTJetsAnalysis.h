@@ -21,18 +21,10 @@ class TTJetsAnalysis: public Herwig::JetsPlusAnalysis {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   TTJetsAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TTJetsAnalysis();
-  //@}
 
 public:
 

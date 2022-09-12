@@ -30,8 +30,6 @@ using namespace Herwig;
 FFggxDipole::FFggxDipole() 
   : SubtractionDipole() {}
 
-FFggxDipole::~FFggxDipole() {}
-
 IBPtr FFggxDipole::clone() const {
   return new_ptr(*this);
 }

@@ -34,18 +34,10 @@ class DipoleMCCheck: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   DipoleMCCheck();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DipoleMCCheck();
-  //@}
 
 public:
 

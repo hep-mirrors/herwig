@@ -75,8 +75,6 @@ public:
   /** A pair of multiplicities: hard, soft. */
   typedef pair<unsigned int, unsigned int> MPair;
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -91,12 +89,6 @@ public:
                 energyExtrapolation_(3), EEparamA_(0.6*GeV),
                 EEparamB_(37.5*GeV), refScale_(7000.*GeV),
 		pT0_(2.875*GeV), b_(0.3101), offset_(622.204*GeV) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~MPIHandler(){}
-  //@}
 
 public:
 

@@ -30,18 +30,10 @@ class FFLightKinematics: public DipoleSplittingKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FFLightKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFLightKinematics();
-  //@}
 
 public:
 

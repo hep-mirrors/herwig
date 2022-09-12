@@ -44,18 +44,10 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ShowerApproximationKernel();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerApproximationKernel();
-  //@}
 
 public:
 

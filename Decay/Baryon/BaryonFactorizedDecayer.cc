@@ -146,7 +146,7 @@ void BaryonFactorizedDecayer::doinit() {
 	ttform.push_back(tformmap[modeloc[iy]]);
 	ttcurr.push_back(tcurrmap[modeloc[iy]]);
       }
-      vector<Complex> tCKM; Complex ckm;
+      vector<Complex> tCKM;
       for(unsigned int iy=0;iy<ttcurr.size();++iy) {
 	// get the quarks involved in the process
 	int iq,ia,inq,outq;

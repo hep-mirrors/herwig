@@ -18,9 +18,7 @@
 using namespace Herwig;
 
 MatchboxAmplitudelnuqqbargg::MatchboxAmplitudelnuqqbargg() 
-        : theDiagonal(false) {}
-
-MatchboxAmplitudelnuqqbargg::~MatchboxAmplitudelnuqqbargg() {}
+  : theDiagonal(false) {}
 
 void MatchboxAmplitudelnuqqbargg::doinit() {
   MatchboxAmplitude::doinit();

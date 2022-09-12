@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import glob,subprocess,os,optparse
 
@@ -71,11 +72,19 @@ for idir in glob.glob("Rivet/*") :
 hw_low_energy_analyses=[]
 for executable in ["LowEnergy-EE","LowEnergy-Photon"] :
     p = subprocess.Popen(["./python/%s.py"%executable,"--list","--process","All"],stdout=subprocess.PIPE)
-    lowEnergy = p.communicate()[0].decode("utf-8") 
+    lowEnergy = p.communicate()[0]
+    if not isinstance(lowEnergy, bytes) :
+        lowEnergy = lowEnergy.encode("UTF-8")
+    else :
+        lowEnergy = lowEnergy.decode("utf-8")
     hw_low_energy_analyses+=lowEnergy.strip().split()
 # R analyses
 p = subprocess.Popen(["./python/R.py","--list"],stdout=subprocess.PIPE)
-Rlist = p.communicate()[0].decode("utf-8") 
+Rlist = p.communicate()[0]
+if not isinstance(Rlist, bytes) :
+    Rlist = Rlist.encode("UTF-8")
+else :
+    Rlist = Rlist.decode("utf-8")
 hw_low_energy_analyses += Rlist.strip().split()
 
 anatohepmc = open("anatohepmc.txt",'w')

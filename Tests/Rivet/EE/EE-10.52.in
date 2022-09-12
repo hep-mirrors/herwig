@@ -6,6 +6,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.99
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
-
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1216515

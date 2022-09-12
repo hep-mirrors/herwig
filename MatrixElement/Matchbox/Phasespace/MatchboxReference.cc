@@ -20,15 +20,10 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Utilities/GSLBisection.h"
 #include "ThePEG/Cuts/Cuts.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-MatchboxReference::MatchboxReference() {}
-
-MatchboxReference::~MatchboxReference() {}
 
 IBPtr MatchboxReference::clone() const {
   return new_ptr(*this);

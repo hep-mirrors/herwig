@@ -79,6 +79,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I853279
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1720423
 # Dalitz plot analysis of D+ -> K+ K- pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2008_I791716
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1206605
 # Dalitz plot analysis of D+ -> K+ K0S pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1859124
 # Dalitz plot analysis of D0 -> K+ K- pi0

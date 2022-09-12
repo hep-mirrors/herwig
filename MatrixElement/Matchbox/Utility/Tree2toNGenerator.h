@@ -36,18 +36,10 @@ class Tree2toNGenerator: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   Tree2toNGenerator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~Tree2toNGenerator();
-  //@}
 
 public:
 
