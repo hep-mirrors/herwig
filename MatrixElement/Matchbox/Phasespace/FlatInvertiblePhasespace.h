@@ -29,21 +29,6 @@ class FlatInvertiblePhasespace: public MatchboxPhasespace {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  FlatInvertiblePhasespace();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FlatInvertiblePhasespace();
-  //@}
-
-public:
-
   /**
    * Generate a phase space point and return its weight.
    */

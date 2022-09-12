@@ -29,21 +29,6 @@ class MatchboxReference: public MatchboxPhasespace {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  MatchboxReference();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxReference();
-  //@}
-
-public:
-
   /**
    * Generate a phase space point and return its weight.
    */

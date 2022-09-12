@@ -219,8 +219,8 @@ double TensorMesonSpin3VectorDecayer::me2(const int,const Particle & part,
   }
   double output = ME()->contract(rho_).real();
   // test of the answer
-  double test = 7./5.*sqr(fact);
-  if(photon) test *=2./3.;
+  // double test = 7./5.*sqr(fact);
+  // if(photon) test *=2./3.;
   // cout << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
   //      << output << " " << test << " " << (output-test)/(output+test) << endl;

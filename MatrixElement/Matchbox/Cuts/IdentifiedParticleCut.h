@@ -32,18 +32,10 @@ class IdentifiedParticleCut: public OneCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IdentifiedParticleCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IdentifiedParticleCut();
-  //@}
 
 public:
 

@@ -33,8 +33,6 @@ using namespace Herwig;
 QTildeMatching::QTildeMatching() 
   : theCorrectForXZMismatch(true) {}
 
-QTildeMatching::~QTildeMatching() {}
-
 IBPtr QTildeMatching::clone() const {
   return new_ptr(*this);
 }

@@ -32,8 +32,6 @@ IntrinsicPtGenerator::IntrinsicPtGenerator()
     theValenceIntrinsicPtScale(1.0*GeV),
     theSeaIntrinsicPtScale(1.0*GeV) {}
 
-IntrinsicPtGenerator::~IntrinsicPtGenerator() {}
-
 IBPtr IntrinsicPtGenerator::clone() const {
   return new_ptr(*this);
 }

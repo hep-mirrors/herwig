@@ -42,18 +42,10 @@ class DipoleSplittingKernel: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   DipoleSplittingKernel();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DipoleSplittingKernel();
-  //@}
 
 public:
 

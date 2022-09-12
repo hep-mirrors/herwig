@@ -178,7 +178,6 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-13-DiJets-{{1..11}-A,{6..11}-B}.in ) \
                   $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{7,8,13}-Jets-{0..10}.in ) \
 	          $(shell echo Rivet/LHC{,-Dipole}-{900,2360,2760,7,8,13}-UE.in ) \
-	          $(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole}-2760-Jets-{1..3}.in ) \
 	          $(shell echo Rivet/LHC{,-Dipole}-{900,7,13}-UE-Long.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Charm-{0..5}.in) \
@@ -208,6 +207,8 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.in ) \
                   $(shell echo Rivet/EE-Gamma-Onium-91.2.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
+
+#$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
 
 Analyses/RivetHerwig.so: Analyses/*.cc
@@ -239,10 +240,10 @@ Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,19
 Rivet-EE : Rivet-EE/done
 	touch $@
 
-Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,27.7,29,30.2,30.3,30.5,30.7,30.8,30,31.2,31.3,31.6,34,34.8,41.5,43.5,43.6,45,50,52,53.3,55,55.3,56,57,58,59.5,60.8,60,61.4,65.4,66,75.7,76,10,12.8,21.5,22,22.5,25,26.8,34.5,35,36.2,41,42.1,42.6,44,48.0,82,85,91,93.0,130,130.1,133,136,136.1,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207,91-nopi}.yoda) \
+Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,27.7,29,30.2,30.3,30.5,30.7,30.8,30,31.2,31.3,31.6,34,34.8,43.5,43.6,45,50,52,53.3,55,55.3,56,57,58,59.5,60.8,60,61.4,65.4,66,75.7,76,10,12.8,21.5,22,22.5,25,26.8,34.5,35,36.2,41,41.5,42.1,42.6,44,48.0,82,85,91,93.0,130,130.1,133,136,136.1,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207,91-nopi}.yoda) \
 		$(shell echo Rivet-EE-{183,189}-WW.yoda) \
-	        $(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-	        $(shell echo Rivet-EE-{10.52,10.52-sym,10.6,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.5,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,8.8,9.27,9.46,9.51,10.54,10.58,10.45,10.47,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Ds,Bc,Etac,Xim,JPsi,Psi2S,Psi2S-All,Psi3770}.yoda)
+	  	$(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
+	  	$(shell echo Rivet-EE-{10.52,10.52-sym,10.6,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.5,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,8.8,9.27,9.46,9.51,10.54,10.58,10.45,10.47,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon5,Upsilon4-asym,Tau,Phi,Lambdac,Omega-Meson,Omega-Baryon,Eta,Xi0,Xic0,Xicp,Omegac0,Ds,Bc,Etac,Xim,JPsi,Psi2S,Psi2S-All,Psi3770}.yoda)
 	rm -rf Rivet-EE
 	python/merge-EE --with-gg --with-decay --with-WW EE
 	python/merge-EE Powheg-EE
@@ -359,14 +360,14 @@ Rivet-LHC-Jets/done : \
 	        $(shell echo Rivet-LHC-{7,8,13}-Jets-{0..10}.yoda     ) \
 	        $(shell echo Rivet-LHC-2760-Jets-{1..3}.yoda     ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE.yoda ) \
-	        $(shell echo Rivet-LHC-{7,13}-UE-Cent.yoda ) \
 	        $(shell echo Rivet-LHC-{900,7,13}-UE-Long.yoda        ) \
 		$(shell echo Rivet-LHC-7-Charm-{0..5}.yoda            ) \
-		$(shell echo Rivet-LHC-{5-13}-Charm-0.yoda            ) \
+		$(shell echo Rivet-LHC-{5,13}-Charm-0.yoda            ) \
 		$(shell echo Rivet-LHC-7-Bottom-{0..9}.yoda           ) \
 		$(shell echo Rivet-LHC-13-Bottom-{0..6}.yoda           ) \
 		$(shell echo Rivet-LHC-{7,8,13}-Top-{L,SL}.yoda ) \
 		$(shell echo Rivet-LHC-{8,13}-Top-All.yoda )
+#	        $(shell echo Rivet-LHC-{7,13}-UE-Cent.yoda )
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets LHC
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.yoda:Hw
@@ -408,8 +409,8 @@ Rivet-LHC-Higgs/done:  \
 		$(shell echo Rivet{,-Powheg}-LHC-{ggH,VBF,WH,ZH}.yoda) \
         $(shell echo Rivet{,-Powheg}-LHC-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) \
         Rivet-LHC-ggHJet.yoda
-	yodamerge --add Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o Powheg-LHC-Higgs.yoda
-	yodamerge --add Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
+	rivet-merge Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o Powheg-LHC-Higgs.yoda
+	rivet-merge Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
 	rm -rf Rivet-LHC-Higgs
 	rivet-mkhtml -o Rivet-LHC-Higgs Powheg-LHC-Higgs.yoda:Hw-Powheg LHC-Higgs.yoda:Hw\
 	                Rivet-Powheg-LHC-ggH.yoda:gg-Powheg Rivet-LHC-ggH.yoda:gg Rivet-LHC-ggHJet.yoda:HJet \

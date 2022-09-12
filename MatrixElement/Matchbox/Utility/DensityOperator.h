@@ -38,18 +38,10 @@ class DensityOperator: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   DensityOperator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DensityOperator();
-  //@}
 
 public:
   

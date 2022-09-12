@@ -75,7 +75,7 @@ Makefile\.in$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
 ^Tests/.cache$
-^Tests/Rivet/.*(Onium|EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
+^Tests/Rivet/.*(Rivet|SPS|EHS|Fermilab|Onium|EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$

@@ -15,16 +15,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/Rebinder.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-TildeKinematics::TildeKinematics() 
- : HandlerBase() {}
-
-TildeKinematics::~TildeKinematics() {}
 
 Energy TildeKinematics::lastScale() const {
   if ( ( theDipole->bornEmitter() < 2 && theDipole->bornSpectator() > 1 ) ||

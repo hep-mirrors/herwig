@@ -355,12 +355,12 @@ double SMZDecayer::me2(const int,const Particle & part,
     double x2 = 1. - y*(1.-2.*mu2_);
     double x1 = 1. - z*(x2-2.*mu2_);
     // copy the particle objects over for calculateRealEmission
-    tcPDVector outgoing = {part.dataPtr(),outgoing[0],outgoing[1],gluon_};
+    tcPDVector oTemp = {part.dataPtr(),outgoing[0],outgoing[1],gluon_};
     vector<Lorentz5Momentum> mom = {part.momentum(),momenta[0],momenta[1]};
     // total real emission contribution
     realFact += 0.25*jac*sqr(1.-2.*mu2_)/
       sqrt(1.-4.*mu2_)/Constants::twopi
-      *2.*CF_*aS_*calculateRealEmission(x1, x2, outgoing, mom,  phi,
+      *2.*CF_*aS_*calculateRealEmission(x1, x2, oTemp, mom,  phi,
   					iemit, true);
   }
   // the born + virtual + real

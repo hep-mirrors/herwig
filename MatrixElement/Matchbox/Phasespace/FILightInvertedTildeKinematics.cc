@@ -19,10 +19,6 @@
 
 using namespace Herwig;
 
-FILightInvertedTildeKinematics::FILightInvertedTildeKinematics() {}
-
-FILightInvertedTildeKinematics::~FILightInvertedTildeKinematics() {}
-
 IBPtr FILightInvertedTildeKinematics::clone() const {
   return new_ptr(*this);
 }

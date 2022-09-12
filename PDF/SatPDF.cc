@@ -31,8 +31,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SatPDF::~SatPDF() {}
-
 bool SatPDF::canHandleParticle(tcPDPtr particle) const {
   assert(thePDF);
   return thePDF->canHandleParticle(particle);

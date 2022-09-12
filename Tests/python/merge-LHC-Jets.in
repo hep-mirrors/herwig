@@ -147,8 +147,8 @@ if(opts.ue) :
                   "-900-UE.yoda"   ,"-2360-UE.yoda"    ,
                   "-2760-UE.yoda"     ,"-7-UE.yoda"     ,
                   "-900-UE-Long.yoda" ,"-8-UE.yoda"     ,
-                  "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda",
-                  "-7-UE-Cent.yoda","-13-UE-Cent.yoda"]
+                  "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda"]
+#                  "-7-UE-Cent.yoda","-13-UE-Cent.yoda"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}

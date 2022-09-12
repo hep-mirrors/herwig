@@ -41,18 +41,10 @@ class MatchboxFactory: public SubProcessHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxFactory();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxFactory();
-  //@}
 
 public:
 

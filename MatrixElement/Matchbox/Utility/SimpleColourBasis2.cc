@@ -18,15 +18,10 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-SimpleColourBasis2::SimpleColourBasis2() {}
-
-SimpleColourBasis2::~SimpleColourBasis2() {}
 
 IBPtr SimpleColourBasis2::clone() const {
   return new_ptr(*this);

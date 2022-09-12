@@ -29,18 +29,10 @@ class IFqqxDipole: public SubtractionDipole {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IFqqxDipole();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFqqxDipole();
-  //@}
 
 public:
 

@@ -25,8 +25,6 @@ using namespace Herwig;
 
 MatchboxAmplitudeggttbarg::MatchboxAmplitudeggttbarg() {}
 
-MatchboxAmplitudeggttbarg::~MatchboxAmplitudeggttbarg() {}
-
 IBPtr MatchboxAmplitudeggttbarg::clone() const {
   return new_ptr(*this);
 }

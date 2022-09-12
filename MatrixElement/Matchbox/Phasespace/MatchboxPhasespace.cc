@@ -30,8 +30,6 @@ MatchboxPhasespace::MatchboxPhasespace()
   : singularCutoff(10*GeV), theUseMassGenerators(false),
     theLoopParticleIdMin(200001), theLoopParticleIdMax(200100) {}
 
-MatchboxPhasespace::~MatchboxPhasespace() {}
-
 void MatchboxPhasespace::cloneDependencies(const std::string&) {}
 
 Ptr<MatchboxFactory>::tcptr MatchboxPhasespace::factory() const {

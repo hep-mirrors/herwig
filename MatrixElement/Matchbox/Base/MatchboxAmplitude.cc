@@ -44,8 +44,6 @@ MatchboxAmplitude::MatchboxAmplitude()
     theTrivialColourLegs(false) {
 }
 
-MatchboxAmplitude::~MatchboxAmplitude() {}
-
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theColourBasis 
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints

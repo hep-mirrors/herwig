@@ -53,18 +53,10 @@ class DipoleShowerHandler: public ShowerHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   DipoleShowerHandler();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DipoleShowerHandler();
-  //@}
 
 public:
 

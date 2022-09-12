@@ -33,21 +33,6 @@ class TreePhasespaceChannels: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  TreePhasespaceChannels();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TreePhasespaceChannels();
-  //@}
-
-public:
-
   /**
    * Access the channel map
    */

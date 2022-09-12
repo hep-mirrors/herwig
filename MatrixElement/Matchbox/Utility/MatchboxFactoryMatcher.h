@@ -33,18 +33,10 @@ class MatchboxFactoryMatcher: public ThePEG::MatcherBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxFactoryMatcher();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxFactoryMatcher();
-  //@}
 
 public:
 

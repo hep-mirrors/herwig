@@ -32,19 +32,10 @@ class MPIPDF: public PDFBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-
   /**
    * The constructor which takes a PDF object as argument, to work with.
    */
   MPIPDF(cPDFPtr orig = cPDFPtr()) : thePDF(orig) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~MPIPDF();
-  //@}
 
 public:
 

@@ -62,8 +62,6 @@ GoSamAmplitude::GoSamAmplitude() :
   bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), GoSamPrefix_(GOSAM_PREFIX)
 {}
 
-GoSamAmplitude::~GoSamAmplitude() {}
-
 IBPtr GoSamAmplitude::clone() const {
   return new_ptr(*this);
 }
@@ -347,9 +345,9 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     for (int i=1; i<=6; ++i) 
       if (getParticleData(i)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(i);
     // with lepton masses
-      if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
-      if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
-      if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
+    if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
+    if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
+    if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
   }
 
   // hand over quark (and possibly lepton) masses and widths (iff massive)

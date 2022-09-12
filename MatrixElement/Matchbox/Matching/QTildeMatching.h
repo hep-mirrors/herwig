@@ -32,18 +32,10 @@ class QTildeMatching: public Herwig::ShowerApproximation {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   QTildeMatching();
-
-  /**
-   * The destructor.
-   */
-  virtual ~QTildeMatching();
-  //@}
 
 public:
 

@@ -85,7 +85,11 @@ thefactory="Factory"
 
 # workout the type of simulation
 (simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
-        
+
+# set theFactory for merging
+if simulation=="Merging":
+    thefactory="MergingFactory"
+
 # settings for four flavour scheme
 fourFlavour="""
 read Matchbox/FourFlavourScheme.in

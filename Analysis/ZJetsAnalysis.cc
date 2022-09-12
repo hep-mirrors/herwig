@@ -19,8 +19,6 @@ using namespace Herwig;
 
 ZJetsAnalysis::ZJetsAnalysis() {}
 
-ZJetsAnalysis::~ZJetsAnalysis() {}
-
 IBPtr ZJetsAnalysis::clone() const {
   return new_ptr(*this);
 }

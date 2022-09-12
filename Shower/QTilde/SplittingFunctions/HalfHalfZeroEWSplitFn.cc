@@ -89,7 +89,7 @@ void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids, const 
 }
 
 double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
+			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double gH(0.);
   getCouplings(gH,ids,t);
   double val = (1.-z);
@@ -123,7 +123,7 @@ double HalfHalfZeroEWSplitFn::overestimateP(const double z,
 
 double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
-				    const RhoDMatrix & rho) const {
+				    const RhoDMatrix & ) const {
   double gH(0.);
   getCouplings(gH,ids,t);
   double val = 1.;

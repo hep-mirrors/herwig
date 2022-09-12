@@ -16,8 +16,6 @@ using namespace Herwig;
 FFMgx2qqxDipoleKernel::FFMgx2qqxDipoleKernel() 
   : DipoleSplittingKernel() {}
 
-FFMgx2qqxDipoleKernel::~FFMgx2qqxDipoleKernel() {}
-
 IBPtr FFMgx2qqxDipoleKernel::clone() const {
   return new_ptr(*this);
 }

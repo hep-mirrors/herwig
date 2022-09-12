@@ -30,21 +30,6 @@ class FFMassiveTildeKinematics: public TildeKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  FFMassiveTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFMassiveTildeKinematics();
-  //@}
-
-public:
-
   /**
    * Perform the mapping to the tilde kinematics for the
    * last selected process and store all dimensionless

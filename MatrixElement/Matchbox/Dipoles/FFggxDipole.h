@@ -29,18 +29,10 @@ class FFggxDipole: public SubtractionDipole {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FFggxDipole();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFggxDipole();
-  //@}
 
 public:
 
