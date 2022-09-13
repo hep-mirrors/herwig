@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844:LMODE=EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1499471
 # ATLAS Z+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1744201
+# CMS Z + jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1497519

@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys, os, yoda, math, subprocess, time
 
@@ -288,6 +289,11 @@ for f in yodafiles:
                     outhistos[aopath]  = ao
         elif "CMS_2018_I1667854" in aopath :
             if "=EMU" in aopath:
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                else :
+                    outhistos[aopath]  = ao
+        elif "ATLAS_2022_I2077570" in aopath or "CMS_2017_I1497519" in aopath :
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :

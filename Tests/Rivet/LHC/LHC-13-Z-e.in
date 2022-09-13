@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1788444
 # CMS mass spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1711625
+# ATLAS high pt jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2077570
