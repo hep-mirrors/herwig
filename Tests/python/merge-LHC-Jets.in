@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys, math
 
@@ -256,6 +257,8 @@ for f in yodafiles:
            "I1643640" in aopath or "I1808726" in aopath or
            "I1724098" in aopath or "I1719955" in aopath or
            "I1740909" in aopath or "I1913061" in aopath or
+           "I1932460" in aopath or
+           "I1972986" in aopath or "CMS_2021_I1920187_DIJET" in aopath or 
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -427,44 +430,27 @@ for f in yodafiles:
         
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.items():
-    if( hpath.find("8924791")>0  or 
-        hpath.find("8971293")>0 or 
-        hpath.find("8817804")>0 or 
-        hpath.find("8968497")>0 or 
-        (hpath.find("9120041")>0 and (hpath.find("d01")>0 or hpath.find("d02")>0)) or 
-        hpath.find("9126244")>0 or 
-        hpath.find("926145") >0 or 
-        hpath.find("9086218")>0 or 
-        hpath.find("1082936")>0 or 
-        hpath.find("8941262")>0 or 
-        hpath.find("1118269")>0 or 
-        hpath.find("1087342")>0 or 
-        hpath.find("1188891")>0 or
-        hpath.find("919017")>0  or
-        hpath.find("9035664")>0 or
-        hpath.find("1125575")>0 or
-        hpath.find("1094564")>0 or
-        hpath.find("I930220")>0 or
-        hpath.find("S9088458")>0 or 
-        hpath.find("I1273574")>0 or 
-        hpath.find("I1261026")>0 or 
-        hpath.find("I1090423")>0 or
-        hpath.find("QCD_11_010")>0 or
-        hpath.find("1298811"   )>0 or
-        hpath.find("I1325553"  )>0 or
-        hpath.find("I1298810"  )>0 or
-        hpath.find("1307243"   )>0 or
-        hpath.find("I1419070")>0 or
-        hpath.find("I1394679")>0 or
-        hpath.find("I1487277")>0 or
-        hpath.find("I1604271")>0 or
-        hpath.find("I1598460")>0 or
-        hpath.find("CMS_2013_I1208923")>0 or
-        hpath.find("1393758")>0 or
-        hpath.find("ATLAS_2016_CONF_2016_092")>0 or
-        hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238")>0 or
-        hpath.find("1459051")>0 or hpath.find("1634970")>0 or hpath.find("I1740909")>0 or
-        hpath.find("1913061")>0) :
+    if( "8924791"  in hpath or "8971293" in hpath or 
+        "8817804"  in hpath or "8968497" in hpath or 
+        ("9120041" in hpath and ("d01" in hpath or "d02" in hpath)) or 
+        "9126244"  in hpath or "926145"     in hpath or 
+        "9086218"  in hpath or "1082936"    in hpath or 
+        "8941262"  in hpath or "1118269"    in hpath or 
+        "1087342"  in hpath or "1188891"    in hpath or
+        "919017"   in hpath or "9035664"    in hpath or
+        "1125575"  in hpath or "1094564"    in hpath or
+        "I930220"  in hpath or "S9088458"   in hpath or 
+        "I1273574" in hpath or "I1261026"   in hpath or 
+        "I1090423" in hpath or "QCD_11_010" in hpath or
+        "1298811"  in hpath or "I1325553"   in hpath or
+        "I1298810" in hpath or "1307243"    in hpath or
+        "I1419070" in hpath or "I1394679"   in hpath or
+        "I1487277" in hpath or "I1604271"   in hpath or
+        "I1598460" in hpath or "CMS_2013_I1208923" in hpath or
+        "1393758" in hpath or"ATLAS_2016_CONF_2016_092" in hpath or
+        "1111014" in hpath or "1385107" in hpath or "I1486238" in hpath or
+        "1459051" in hpath or "1634970" in hpath or "I1740909" in hpath or
+        "1913061" in hpath or "I1972986" in hpath or "I1932460" in hpath ) :
         title=""
         path=""
         histo = list(list(hsets.values())[0].values())[0]
@@ -492,8 +478,7 @@ for hpath,hsets in inhistos_pt.items():
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_mass.items():
-    if(hpath.find("1268975")>0 or
-       hpath.find("1634970")>0) :
+    if("1268975" in hpath or "1634970" in hpath) :
         title=""
         path=""
         histo = list(list(hsets.values())[0].values())[0]
@@ -1692,6 +1677,50 @@ for  i in range (0,3) :
     for j in range (0,6) :
         for k in range(1,5) :
             useOnePt("/ATLAS_2020_I1808726/d%02d-x01-y01"%(4*i+12*j+k),"13000",pts[i])
+
+logging.info("Processing CMS_2021_I1972986")
+for i in range(1,5) :
+    for j in range(0,40,20) :
+        mergeByPt("/CMS_2021_I1972986/d%02d-x01-y01" % (i+j), "13000")
+
+logging.info("Processing CMS_2021_I1920187_DIJET")
+for ihist in [2,4,6,8,10,14,16,18]:
+    useOnePt("/CMS_2021_I1920187_DIJET/d%02d-x01-y01" % ihist, "13000","110")
+useOnePt("/CMS_2021_I1920187_DIJET/d12-x01-y01", "13000","900")
+for ihist in [155,179,209,234,265,291,322,348,379,405,436,462,492,517,547,572,
+              602,627,657,682,712,737,768,794,825,851,882,908,939,965,996,
+              1022,1053,1079,1110,1136,1167,1193,1224,1250,1271,1283,1314,1327,1358,1371,
+              1402,1415,1446,1459,1490,1503,1525,1538,1560,1573,1595,1608,1630,1643,1674,
+              1687,1718,1731,1762,1775,1806,1819,1850,1863,1894,1907,1938,1951,1982,1995,
+              2026,2039,2070,2083]:
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" %  ihist    , "13000", "40") # 50-65
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 1), "13000", "40") # 65-88
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 2), "13000", "80") # 88-120
+    if ihist == 155 :
+        ioff=0
+    elif ihist == 209 or ihist==492 or ihist==547 or ihist==602 or ihist==657 or ihist==712 or ihist==1271:
+        ioff=0
+        useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+11), "13000","900") # 1000-4000
+    else :
+        ioff=1
+        useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 3), "13000","110") # 120-150
+        useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+12), "13000","900") # 1000-4000
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 3+ioff), "13000","110") # 150-186
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 4+ioff), "13000","110") # 186-254 
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 5+ioff), "13000","210") # 254-326
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 6+ioff), "13000","260") # 326-408
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 7+ioff), "13000","260") # 408-481
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 8+ioff), "13000","260") # 481-614
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+ 9+ioff), "13000","600") # 614-800
+    useOnePt("/CMS_2021_I1920187_DIJET/d%s-x01-y01" % (ihist+10+ioff), "13000","600") # 800-1000
+
+logging.info("Processing CMS_2021_I1932460")
+for i in range(1,5):
+    mergeByPt("/CMS_2021_I1932460/d%02d-x01-y01" % i, "13000")
+for i in range(5,15):
+    useOnePt("/CMS_2021_I1932460/d%02d-x01-y01" % i, "13000","40")
+for i in range(45,51):
+    useOnePt("/CMS_2021_I1932460/d%02d-x01-y01" % i, "13000","40")
 
 logging.info("Processing ATLAS_2019_I1740909")
 for i in [1,2,9]:
