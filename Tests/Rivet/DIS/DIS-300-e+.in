@@ -27,3 +27,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I470499
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I508906
 # zeus neutral current
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1999_I500267
+# H1  fragmentation and multiplicity distributions in the Breit frame
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1997_I445116
