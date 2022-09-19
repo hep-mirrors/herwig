@@ -405,7 +405,7 @@ void MergingFactory::setup() {
     
     const PDVector& partons = particleGroups()["j"];
     unsigned int nl = 0;
-    for ( const auto p : partons ) {
+    for ( const auto & p : partons ) {
     	const Energy mass = p->hardProcessMass();
     	const long pid = p->id();
 
@@ -419,7 +419,7 @@ void MergingFactory::setup() {
     nLight(nl/2);
     
     const PDVector& partonsInP = particleGroups()["p"];
-    for ( const auto pip : partonsInP )
+    for ( const auto & pip : partonsInP )
       if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
         nLightProtonVec( pip->id() );
     
@@ -550,7 +550,7 @@ void MergingFactory::setup() {
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes." << endl;
       progress_display progressBar{ externalAmplitudes().size(), generator()->log() };
-      for ( const auto ext : externalAmplitudes() ) {
+      for ( const auto & ext : externalAmplitudes() ) {
         if ( ! ext->initializeExternal() ) {
           throw InitException()
   << "error: failed to initialize amplitude '" << ext->name() << "'\n";
@@ -565,11 +565,11 @@ void MergingFactory::setup() {
     if ( !olpProcesses().empty() ) {
       generator()->log() << "Initializing one-loop provider(s)." << endl;
       map<Ptr<MatchboxAmplitude>::tptr, map<pair<Process, int>, int> > olps;
-      for (const auto oit : olpProcesses()) {
+      for (const auto & oit : olpProcesses()) {
         olps[oit.first] = oit.second;
       }
       progress_display progressBar{ olps.size(), generator()->log() };
-      for ( const auto olpit : olps ) {
+      for ( const auto & olpit : olps ) {
         if ( !olpit.first->startOLP(olpit.second) ) {
           throw InitException() << "error: failed to start OLP for amplitude '" << olpit.first->name() << "'\n";
         }

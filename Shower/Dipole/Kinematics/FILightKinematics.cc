@@ -27,8 +27,6 @@ using namespace Herwig;
 FILightKinematics::FILightKinematics() 
   : DipoleSplittingKinematics() {}
 
-FILightKinematics::~FILightKinematics() {}
-
 IBPtr FILightKinematics::clone() const {
   return new_ptr(*this);
 }

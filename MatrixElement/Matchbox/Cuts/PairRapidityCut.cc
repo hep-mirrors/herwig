@@ -57,8 +57,6 @@ void PairRapidityCut::describe() const {
 PairRapidityCut::PairRapidityCut() 
   : thePseudo(false), theSameFlavourOnly(false), theOppositeSignOnly(false) {}
 
-PairRapidityCut::~PairRapidityCut() {}
-
 IBPtr PairRapidityCut::clone() const {
   return new_ptr(*this);
 }

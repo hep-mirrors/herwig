@@ -49,7 +49,6 @@ void OneOneOneQEDSplitFn::Init() {
 void OneOneOneQEDSplitFn::doinit() {
   SplittingFunction::doinit();
   tcSMPtr sm = generator()->standardModel();
-  double sw2 = sm->sin2ThetaW();
   // WWG coupling
   gWWG_ = 1.;
   // to employ running masses, wherever needed

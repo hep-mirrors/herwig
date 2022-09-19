@@ -28,8 +28,6 @@ using namespace Herwig;
 IFMassiveDecayKinematics::IFMassiveDecayKinematics() 
   : DipoleSplittingKinematics() {}
 
-IFMassiveDecayKinematics::~IFMassiveDecayKinematics() {}
-
 IBPtr IFMassiveDecayKinematics::clone() const {
   return new_ptr(*this);
 }

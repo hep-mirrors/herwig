@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging,sys,os
 from string import Template
@@ -69,7 +70,6 @@ set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
 set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 """ + insert_ME("MEUpsilon")
 
-
 (opts, args) = parser.parse_args()
 ## Check args
 if len(args) != 1:
@@ -85,7 +85,11 @@ thefactory="Factory"
 
 # workout the type of simulation
 (simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
-        
+
+# set theFactory for merging
+if simulation=="Merging":
+    thefactory="MergingFactory"
+
 # settings for four flavour scheme
 fourFlavour="""
 read Matchbox/FourFlavourScheme.in
@@ -1575,7 +1579,6 @@ if numberOfAddedProcesses == 0 and (simulation =="Merging" or simulation =="Matc
     sys.exit(1)
 
 # get template and write the file
-
 with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
     templateText = f.read()
 

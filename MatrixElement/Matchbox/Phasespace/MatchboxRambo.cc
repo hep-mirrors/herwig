@@ -30,8 +30,6 @@ MatchboxRambo::MatchboxRambo()
   : needToReshuffle(false), theMakeReferenceSample(false),
     referenceSample(0) {}
 
-MatchboxRambo::~MatchboxRambo() {}
-
 IBPtr MatchboxRambo::clone() const {
   return new_ptr(*this);
 }

@@ -46,18 +46,10 @@ class MatchboxMEBase:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxMEBase();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxMEBase();
-  //@}
 
 public:
 

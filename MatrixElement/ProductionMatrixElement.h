@@ -118,7 +118,7 @@ public:
   /**
    * Default constructor.
    */
-  ProductionMatrixElement() {}
+  ProductionMatrixElement() : _nout(0) {}
   //@}
 
 public:

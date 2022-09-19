@@ -25,18 +25,10 @@ class JetsPlusAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   JetsPlusAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~JetsPlusAnalysis();
-  //@}
 
 public:
 

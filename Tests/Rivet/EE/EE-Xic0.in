@@ -22,4 +22,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1835729
 # Omega decay asymmetries
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719581
 # Xi_c0 -> p K- K- pi+
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  BELLE_2005_I660759
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I660759
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2004_I627327

@@ -29,8 +29,6 @@ using namespace Herwig;
 
 DensityOperator::DensityOperator() : Nc(3.0), TR(0.5) { }
 
-DensityOperator::~DensityOperator() {}
-
 void DensityOperator::clear() {
 	theCorrelatorMap.clear();
 }

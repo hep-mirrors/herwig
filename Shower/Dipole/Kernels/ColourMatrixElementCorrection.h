@@ -34,18 +34,10 @@ class ColourMatrixElementCorrection: public DipoleSplittingReweight {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ColourMatrixElementCorrection();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ColourMatrixElementCorrection();
-  //@}
 
 public:
 

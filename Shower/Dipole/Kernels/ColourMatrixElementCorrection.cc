@@ -27,8 +27,6 @@ using namespace Herwig;
 
 ColourMatrixElementCorrection::ColourMatrixElementCorrection():lambda(1.0),negCMECScaling(1.0) {}
 
-ColourMatrixElementCorrection::~ColourMatrixElementCorrection() {}
-
 IBPtr ColourMatrixElementCorrection::clone() const {
   return new_ptr(*this);
 }

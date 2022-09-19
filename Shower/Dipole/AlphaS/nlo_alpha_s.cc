@@ -18,8 +18,6 @@ nlo_alpha_s::nlo_alpha_s()
     exact_evaluation_(true), two_largeq_terms_(true) {
 }
 
-nlo_alpha_s::~nlo_alpha_s() {}
-
 IBPtr nlo_alpha_s::clone() const {
   return new_ptr(*this);
 }

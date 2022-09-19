@@ -22,8 +22,6 @@
 
 using namespace Herwig;
 
-FourBodyDecayConstructor::~FourBodyDecayConstructor() {}
-
 IBPtr FourBodyDecayConstructor::clone() const {
   return new_ptr(*this);
 }

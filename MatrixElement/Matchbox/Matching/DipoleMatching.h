@@ -30,21 +30,6 @@ class DipoleMatching: public Herwig::ShowerApproximation {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  DipoleMatching();
-
-  /**
-   * The destructor.
-   */
-  virtual ~DipoleMatching();
-  //@}
-
-public:
-
   /**
    * Return the shower approximation to the real emission cross
    * section for the given pair of Born and real emission

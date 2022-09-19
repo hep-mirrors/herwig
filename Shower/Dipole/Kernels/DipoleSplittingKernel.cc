@@ -39,9 +39,6 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theCMWScheme(0),
     presampling(false) {}
 
-DipoleSplittingKernel::~DipoleSplittingKernel() {}
-
-
 // initialize static variable out of line
 double DipoleSplittingKernel::theMaxPDFRatio = 1000000.;
 

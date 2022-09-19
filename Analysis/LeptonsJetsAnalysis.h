@@ -25,18 +25,10 @@ class LeptonsJetsAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   LeptonsJetsAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~LeptonsJetsAnalysis();
-  //@}
 
 public:
 

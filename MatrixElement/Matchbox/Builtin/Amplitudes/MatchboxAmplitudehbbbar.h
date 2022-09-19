@@ -30,18 +30,10 @@ class MatchboxAmplitudehbbbar:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MatchboxAmplitudehbbbar();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MatchboxAmplitudehbbbar();
-  //@}
 
 public:
 

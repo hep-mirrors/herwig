@@ -24,18 +24,10 @@ class BranchingRatioReweighter: public StepHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   BranchingRatioReweighter();
-
-  /**
-   * The destructor.
-   */
-  virtual ~BranchingRatioReweighter();
-  //@}
 
 public:
 

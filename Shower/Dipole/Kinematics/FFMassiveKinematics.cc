@@ -33,8 +33,6 @@ using namespace Herwig;
 FFMassiveKinematics::FFMassiveKinematics() 
   : DipoleSplittingKinematics() {}
 
-FFMassiveKinematics::~FFMassiveKinematics() {}
-
 IBPtr FFMassiveKinematics::clone() const {
   return new_ptr(*this);
 }

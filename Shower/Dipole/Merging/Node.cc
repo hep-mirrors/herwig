@@ -42,8 +42,6 @@ theVirtualContribution(false),
 {
 }
 
-Node::~Node() { }
-
 SubtractionDipolePtr Node::dipole() const {
   return thedipol;
 }

@@ -59,8 +59,6 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _softOpt(2), _hardPOWHEG(false), muPt(ZERO)
 {}
 
-QTildeShowerHandler::~QTildeShowerHandler() {}
-
 IBPtr QTildeShowerHandler::clone() const {
   return new_ptr(*this);
 }

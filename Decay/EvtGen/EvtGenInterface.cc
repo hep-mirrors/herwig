@@ -31,21 +31,21 @@
 #include "EvtGenBase/EvtHighSpinParticle.hh"
 #include "EvtGenBase/EvtDecayTable.hh"
 
-#ifndef EVTGEN_PREFIX
-#error Makefile.am needs to define EVTGEN_PREFIX
+#ifndef EVTGEN_SHARE
+#error Makefile.am needs to define EVTGEN_SHARE
 #endif
 
 using namespace Herwig;
 
 namespace {
 
-const string prefix=EVTGEN_PREFIX "";
+const string prefix=EVTGEN_SHARE "";
 const string p8data=PYTHIA8DATA "";
 
 }
 
-EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
-				     pdtName_(prefix+"/share/evt.pdl"),
+EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/DECAY_2010.DEC"),
+				     pdtName_(prefix+"/evt.pdl"),
 				     reDirect_(true), checkConv_(false),
 				     p8Data_(p8data)
 {}
@@ -56,8 +56,6 @@ EvtGenInterface::EvtGenInterface(const EvtGenInterface & x)
     checkConv_(x.checkConv_), convID_(x.convID_),
     p8Data_(x.p8Data_), evtrnd_(x.evtrnd_),evtgen_(x.evtgen_)
 {}
-
-EvtGenInterface::~EvtGenInterface() {}
 
 IBPtr EvtGenInterface::clone() const {
   return new_ptr(*this);
@@ -260,9 +258,9 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
 	if(evtParent) {
 	  delete evtParent;
 	}
-  	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
-  			  <<" with mass "<< particle->mass()
-  			  <<" to decay channel number "<< particle->getChannel() << "\n"
+  	throw Exception() << "EvtGen could not decay " << parent.PDGName()
+  			  << " with mass " << parent.mass()/GeV 
+  			  << " and decay mode " << dm.tag() << "\n"
   			  << Exception::eventerror;
       }
       assert(decayer !=0 );

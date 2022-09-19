@@ -50,11 +50,9 @@ for energy in [225,251,296,300,318,"318-CMS"] :
         yodafiles.append(fname)
         p = subprocess.Popen(mergeargs)
 # need a sleep here otherwise merged files not ready
-time.sleep(2) 
+time.sleep(5) 
 ## Get histos
-inhistos = {}
 outhistos={}
-weights = {}
 
 for f in yodafiles:
     if not os.access(f, os.R_OK):
@@ -79,9 +77,6 @@ for f in yodafiles:
                 if "CC" not in f : outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
-
-# H1_1995_I394793
-
             
 # Choose output file
 name = args[0]+".yoda"

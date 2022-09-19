@@ -33,8 +33,6 @@ using namespace Herwig;
 MissingPtCut::MissingPtCut() 
   : thePtMissMin(0.*GeV), thePtMissMax(Constants::MaxEnergy) {}
 
-MissingPtCut::~MissingPtCut() {}
-
 IBPtr MissingPtCut::clone() const {
   return new_ptr(*this);
 }

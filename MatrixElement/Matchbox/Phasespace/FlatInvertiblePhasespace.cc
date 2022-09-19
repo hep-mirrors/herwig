@@ -20,15 +20,10 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Utilities/GSLBisection.h"
 #include "ThePEG/Cuts/Cuts.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-FlatInvertiblePhasespace::FlatInvertiblePhasespace() {}
-
-FlatInvertiblePhasespace::~FlatInvertiblePhasespace() {}
 
 IBPtr FlatInvertiblePhasespace::clone() const {
   return new_ptr(*this);

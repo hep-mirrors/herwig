@@ -40,8 +40,6 @@ TreePhasespace::TreePhasespace()
   theIncludeMirrored = true;
 }
 
-TreePhasespace::~TreePhasespace() {}
-
 IBPtr TreePhasespace::clone() const {
   return new_ptr(*this);
 }

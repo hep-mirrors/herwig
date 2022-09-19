@@ -30,21 +30,6 @@ class IFMassiveInvertedTildeKinematics: public Herwig::InvertedTildeKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  IFMassiveInvertedTildeKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFMassiveInvertedTildeKinematics();
-  //@}
-
-public:
-
   /**
    * Perform the mapping of the tilde kinematics for the
    * last selected process and store all dimensionless

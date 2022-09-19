@@ -32,18 +32,10 @@ class IFMassiveKinematics: public DipoleSplittingKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IFMassiveKinematics();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFMassiveKinematics();
-  //@}
 
 public:
 

@@ -564,7 +564,7 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
 vector< pair<double, tShowerParticlePtr> >
 PartnerFinder::findEWPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles,
-			       const bool isDecayCase ) {
+			       const bool ) {
   vector< pair<double, tShowerParticlePtr> > partners;
   for(ShowerParticlePtr partner : particles) {
     if(particle==partner || !weaklyInteracting(partner->dataPtr()))

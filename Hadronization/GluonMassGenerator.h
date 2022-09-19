@@ -30,21 +30,6 @@ class GluonMassGenerator: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  GluonMassGenerator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~GluonMassGenerator();
-  //@}
-
-public:
-
   /**
    * Generate a single gluon mass with possible reference to a hard
    * scale Q and up to a maximum value
@@ -73,7 +58,7 @@ public:
    */
   list<Energy> generateMany(size_t n, Energy QMax) const {
     list<Energy> res;
-    Energy m0, mu, md, ms, mg, mgmax, summg;
+    Energy m0, mu, md, ms, mg, summg;
 
     mu=getParticleData(ThePEG::ParticleID::u)->constituentMass();
     md=getParticleData(ThePEG::ParticleID::d)->constituentMass();
@@ -151,18 +136,13 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
-
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GluonMassGenerator & operator=(const GluonMassGenerator &);
+  GluonMassGenerator & operator=(const GluonMassGenerator &) = delete;
 
 };
 

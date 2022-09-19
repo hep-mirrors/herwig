@@ -218,7 +218,6 @@ double VectorCurrentDecayer::me2(const int ichan, const Particle & part,
   }
   while(ix>0);
   constants[nOut] = 1;
-  Energy2 scale(sqr(part.mass()));
   // calculate the hadron current
   Energy q = part.mass();
   // currents for the different flavour components

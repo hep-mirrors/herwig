@@ -29,8 +29,6 @@ using namespace Herwig;
 IIqgxDipole::IIqgxDipole() 
   : SubtractionDipole() {}
 
-IIqgxDipole::~IIqgxDipole() {}
-
 IBPtr IIqgxDipole::clone() const {
   return new_ptr(*this);
 }

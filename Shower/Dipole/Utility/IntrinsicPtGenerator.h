@@ -33,18 +33,10 @@ class IntrinsicPtGenerator: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   IntrinsicPtGenerator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~IntrinsicPtGenerator();
-  //@}
 
 public:
 

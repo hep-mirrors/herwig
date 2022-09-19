@@ -37,18 +37,10 @@ class SubtractedME:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SubtractedME();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SubtractedME();
-  //@}
 
 public:
 
