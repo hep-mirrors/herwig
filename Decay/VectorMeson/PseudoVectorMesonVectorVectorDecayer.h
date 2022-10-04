@@ -25,12 +25,12 @@ using namespace  ThePEG;
  *
  *  The current for the decay is taken to be
  *
- *  \f[\mathcal{M}= g_0 \epsilon_\alpha \epsilon^*_{1\beta}\epsilon^*_{2\gamma} \left[\epsilon^{p_0\alpha\beta\gamma} 
- * -\frac1{m^2_0}{p_{\rm cm}^2}\left( E_1p_2^\beta\epsilon^{\alpha\gamma p_1p_2} -  E_2p_1^\gamma\epsilon^{\alpha\beta p_1p_2}     \right)\right]
+ * \f[\mathcal{M}= g_0 \epsilon_\alpha \epsilon^*_{1\beta}\epsilon^*_{2\gamma} \left[\epsilon^{p_{\rm ref}\alpha\beta\gamma} ] \]
  * where \f$p_{0,1,2}\f$ are the momenta of the incoming and two outgoing
  * vector mesons and \f$\epsilon_{1,2}\f$ are the polarization vectors of
  * the outgoing mesons and \f$\epsilon\f$ is the polarization vector of the 
- * incoming meson. 
+ * incoming meson. If either outgoing particle is a photon then \f$p_{\rm ref}\f$ is equalk to that particle's momentum,
+ * otherwise the momentum of the decaying particle is used.
  *
  *  The incoming vector mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights

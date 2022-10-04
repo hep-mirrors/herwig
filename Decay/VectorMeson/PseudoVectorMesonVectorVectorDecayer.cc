@@ -195,31 +195,31 @@ double PseudoVectorMesonVectorVectorDecayer::me2(const int,const Particle & part
   }
   // work out the dot products we need for the matrix element
   complex<InvEnergy> fact(coupling_[imode()]/part.mass());
-  Energy pcm=Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-  					   momenta[1].mass());
-  InvEnergy3 kinFact(1./part.mass()/sqr(pcm));
-  Energy E1(0.5*(sqr(part.mass()) + sqr(momenta[0].mass()) - sqr(momenta[1].mass()))/part.mass());
-  Energy E2(0.5*(sqr(part.mass()) - sqr(momenta[0].mass()) + sqr(momenta[1].mass()))/part.mass());
+  Lorentz5Momentum pref = part.momentum();
+  if(photon[0]) pref = momenta[0];
+  else if(photon[1]) pref =momenta[1];
   for(unsigned int ih0=0;ih0<3;++ih0) {
     for(unsigned int ih1=0;ih1<3;++ih1) {
       if(photon[0] && ih1==1) continue;
-      LorentzPolarizationVectorE       v0 = epsilon(part.momentum(),vectors_[0][ih0],vectors_[1][ih1]);
-      LorentzVector<complex<Energy2> > v1 = epsilon(vectors_[0][ih0],momenta[0],momenta[1]);
-      complex<Energy2> d1 = v1*vectors_[1][ih1];
-      complex<Energy> d3 = momenta[1]*vectors_[1][ih1];
+      LorentzPolarizationVectorE       v0 = epsilon(pref,vectors_[0][ih0],vectors_[1][ih1]);
       for(unsigned int ih2=0;ih2<3;++ih2) {
-	complex<Energy2> d2 = v1*vectors_[2][ih2];
-	complex<Energy> d4 = momenta[0]*vectors_[2][ih2];
 	if(photon[1] && ih2==1) continue;
-	(*ME())(ih0,ih1,ih2)= Complex(fact*(v0*vectors_[2][ih2]
-					    -kinFact*(E1*d2*d3+E2*d1*d4)));
-	
+   	(*ME())(ih0,ih1,ih2)= Complex(fact*(v0*vectors_[2][ih2]));
       }
     }
   }
   double me = ME()->contract(rho_).real();
   // test of the matrix element;
-  // double test = 2./3.*sqr(coupling_[imode()]);
+  // double test;
+  // if(photon[0]||photon[1]) {
+  //   Energy2 mout2 = sqr(momenta[0].mass()+momenta[1].mass());
+  //   test = sqr(coupling_[imode()])/6.*sqr(sqr(part.mass()) - mout2)*(sqr(part.mass()) + mout2)/(pow<4,1>(part.mass())*mout2);
+  // }
+  // else {
+  //   Energy2 m02(sqr(part.mass())),m12(sqr(momenta[0].mass())),m22(sqr(momenta[1].mass()));
+  //   test = sqr(coupling_[imode()])/6.*(sqr(m02)*(m12 + m22) + sqr(m12 - m22)*(m12 + m22) - 
+  // 				       2*m02*(sqr(m12) - 4*m12*m22 + sqr(m22)))/(m02*m12*m22);
+  // }
   // cerr << "testing matrix element for " << part.PDGName() << " -> " 
   //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
   //      << me << " " << test << " " << (me-test)/(me+test) << "\n";
