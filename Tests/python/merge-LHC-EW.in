@@ -298,6 +298,9 @@ for f in yodafiles:
                     outhistos[aopath] += ao
                 else :
                     outhistos[aopath]  = ao
+        elif (aopath.find("CMS_2021_I1920187")>=0) :
+            ao.setPath(ao.path().replace(":MODE=ZJET",""))
+            outhistos[aopath.replace(":MODE=ZJET","")]  = ao
         else :
             outhistos[aopath] = ao
 # sort out ratios for ATLAS W+c

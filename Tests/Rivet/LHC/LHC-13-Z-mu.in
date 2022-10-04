@@ -18,5 +18,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1711625
 # ATLAS high pt jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2077570
 # CMS substructure
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1920187_ZJET
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1920187:MODE=ZJET
 
