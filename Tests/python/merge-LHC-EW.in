@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys, os, yoda, math, subprocess, time
 
@@ -292,6 +293,14 @@ for f in yodafiles:
                     outhistos[aopath] += ao
                 else :
                     outhistos[aopath]  = ao
+        elif "ATLAS_2022_I2077570" in aopath or "CMS_2017_I1497519" in aopath :
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                else :
+                    outhistos[aopath]  = ao
+        elif (aopath.find("CMS_2021_I1920187")>=0) :
+            ao.setPath(ao.path().replace(":MODE=ZJET",""))
+            outhistos[aopath.replace(":MODE=ZJET","")]  = ao
         else :
             outhistos[aopath] = ao
 # sort out ratios for ATLAS W+c
