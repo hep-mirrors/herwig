@@ -333,7 +333,7 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
     F1 = 1.;
   }
   else if(abs(inPart->id())==ParticleID::pplus) {
-    //defining the form factors F1 and F2 from Ginzburg
+    // defining the form factors F1 and F2 from Ginzburg
     Energy2 q02 = 0.71*GeV2;
     double Ge = 1/sqr(1-t1_/q02);
     double Gm = Ge*sqrt(7.78);

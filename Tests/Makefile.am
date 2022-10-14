@@ -226,7 +226,8 @@ Rivet-GammaGamma/done: $(shell echo Rivet-GammaGamma-mumu-{3.5,4.5,5.5,6.5,7.5,9
 Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
-Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
+Rivet-EE-Gamma/done: Analyses/RivetHerwig.so \
+                     $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2}-10.58.yoda ) \
                      $(shell echo Rivet-EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.yoda ) \
