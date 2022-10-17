@@ -104,6 +104,9 @@ analyses["2K2Pi"]["ARGUS_2000_I511512" ] = ["d03-x01-y01","d03-x01-y02","d03-x01
 analyses["EtaPrimePiPi"]["BELLE_2018_I1672149"] = ["d01-x01-y01","d02-x01-y01"]
 # 6 meson final-states
 analyses["6m"]["ARGUS_1996_I403304"] = [ "d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["6m"]["BELLE_2012_I1090664"] = ["d01-x01-y01","d01-x01-y02",
+                                         "d01-x02-y01","d01-x02-y02",
+                                         "d01-x03-y01","d01-x03-y02"]
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :
