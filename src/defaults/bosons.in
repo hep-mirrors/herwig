@@ -16,3 +16,6 @@ setup W+ 24 W+ 80.403 2.141 21.41 0 3 0 3 0
 create ThePEG::ParticleData W-
 setup W- -24 W- 80.403 2.141 21.41 0 -3 0 3 0 
 makeanti W- W+
+
+set g:ColouredInteraction QCD
+

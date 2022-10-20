@@ -33,3 +33,17 @@ setup t 6 t 174.2 1.4 14 0 2 3 2 0
 create ThePEG::ParticleData tbar
 setup tbar -6 tbar 174.2 1.4 14 0 -2 -3 2 0 
 makeanti tbar t
+
+set d:ColouredInteraction QCD
+set dbar:ColouredInteraction QCD
+set ubar:ColouredInteraction QCD
+set u:ColouredInteraction QCD
+set c:ColouredInteraction QCD
+set cbar:ColouredInteraction QCD
+set sbar:ColouredInteraction QCD
+set s:ColouredInteraction QCD
+set b:ColouredInteraction QCD
+set bbar:ColouredInteraction QCD
+set t:ColouredInteraction QCD
+set tbar:ColouredInteraction QCD
+
