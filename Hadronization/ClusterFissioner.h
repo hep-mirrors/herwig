@@ -11,7 +11,6 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
-#include "HadronSelector.h"
 #include "ClusterFissioner.fh"
 #include "HadronSpectrum.h"
 
@@ -65,7 +64,6 @@ using namespace ThePEG;
  *  (expecially in future developments), without any information loss,
  *  and furthermore it allows a better debugging.
  *
- *  @see HadronSelector
  * @see \ref ClusterFissionerInterfaces "The interfaces"
  * defined for ClusterFissioner.
  */
@@ -368,7 +366,7 @@ protected:
   /**
    *  Access to the hadron selector
    */
-  HadronSelectorPtr hadronsSelector() const {return _hadronsSelector;}
+  HadronSpectrumPtr hadronsSpectrum() const {return _hadronsSpectrum;}
 
   /**
    *  Access to soft-cluster parameter
@@ -404,9 +402,9 @@ private:
   }
   
   /**
-   * A pointer to a Herwig::HadronSelector object for generating hadrons.
+   * A pointer to a Herwig::HadronSpectrum object for generating hadrons.
    */
-  HadronSelectorPtr _hadronsSelector;
+  HadronSpectrumPtr _hadronsSpectrum;
 
   /**
    * @name The Cluster max mass,dependant on which quarks are involved, used to determine when

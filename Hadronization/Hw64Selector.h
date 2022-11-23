@@ -12,7 +12,7 @@
 // This is the declaration of the Hw64Selector class.
 //
 
-#include "HadronSelector.h"
+#include "StandardModelHadronSpectrum.h"
 #include "Hw64Selector.fh"
 
 namespace Herwig {
@@ -26,14 +26,14 @@ using namespace ThePEG;
  * @see \ref Hw64SelectorInterfaces "The interfaces"
  * defined for Hw64Selector.
  */
-class Hw64Selector: public HadronSelector {
+class Hw64Selector: public StandardModelHadronSpectrum {
 
 public:
 
   /**
    * The default constructor.
    */
-  Hw64Selector() : HadronSelector(0)
+  Hw64Selector() : StandardModelHadronSpectrum(0)
   {}
 
   /**

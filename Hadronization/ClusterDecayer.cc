@@ -50,14 +50,14 @@ IBPtr ClusterDecayer::fullclone() const {
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const
 {
-  os << _hadronsSelector << _clDirLight << _clDirHeavy
+  os << _clDirLight << _clDirHeavy
      << _clDirExotic << _clSmrLight << _clSmrHeavy
      << _clSmrExotic << _onshell << _masstry
      << _hadronSpectrum;
 }
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _clDirLight >> _clDirHeavy
+  is >> _clDirLight >> _clDirHeavy
      >> _clDirExotic >> _clSmrLight >> _clSmrHeavy
      >> _clSmrExotic >> _onshell >> _masstry
      >> _hadronSpectrum;
@@ -76,12 +76,6 @@ void ClusterDecayer::Init() {
 
   static ClassDocumentation<ClusterDecayer> documentation
     ("This class is responsible for the two-body decays of normal clusters");
-
-  static Reference<ClusterDecayer,HadronSelector>
-    interfaceHadronSelector("HadronSelector",
-                             "A reference to the HadronSelector object",
-                             &Herwig::ClusterDecayer::_hadronsSelector,
-			     false, false, true, false);
 
   static Reference<ClusterDecayer,HadronSpectrum> interfaceHadronSpectrum
     ("HadronSpectrum",
@@ -351,7 +345,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   }
 
   pair<tcPDPtr,tcPDPtr> dataPair
-    = _hadronsSelector->chooseHadronPair(ptr->mass(),
+    = _hadronSpectrum->chooseHadronPair(ptr->mass(),
 					 ptr1data,
 					 ptr2data);
   if(dataPair.first  == tcPDPtr() ||

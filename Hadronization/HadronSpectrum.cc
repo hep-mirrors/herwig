@@ -47,6 +47,5 @@ void HadronSpectrum::Init() {
 
   static ClassDocumentation<HadronSpectrum> documentation
     ("There is no documentation for the HadronSpectrum class");
-
 }
 

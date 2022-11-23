@@ -26,7 +26,7 @@
 
 using namespace Herwig;
 
-DescribeClass<HwppSelector,HadronSelector>
+DescribeClass<HwppSelector,StandardModelHadronSpectrum>
 describeHwppSelector("Herwig::HwppSelector","Herwig.so");
 
 IBPtr HwppSelector::clone() const {
@@ -38,7 +38,7 @@ IBPtr HwppSelector::fullclone() const {
 }
 
 void HwppSelector::doinit() {
-  HadronSelector::doinit();
+  StandardModelHadronSpectrum::doinit();
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {

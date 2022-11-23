@@ -12,7 +12,7 @@
 // This is the declaration of the HwppSelector class.
 //
 
-#include "HadronSelector.h"
+#include "StandardModelHadronSpectrum.h"
 #include "HwppSelector.fh"
 
 namespace Herwig {
@@ -26,14 +26,14 @@ using namespace ThePEG;
  * @see \ref HwppSelectorInterfaces "The interfaces"
  * defined for HwppSelector.
  */
-class HwppSelector: public HadronSelector {
+class HwppSelector: public StandardModelHadronSpectrum {
 
 public:
 
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV)
+  HwppSelector() : StandardModelHadronSpectrum(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV)
   {}
 
   /**

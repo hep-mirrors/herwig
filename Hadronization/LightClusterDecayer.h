@@ -11,7 +11,7 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
-#include "HadronSelector.h"
+#include "HadronSpectrum.h"
 #include "LightClusterDecayer.fh"
 
 
@@ -46,7 +46,6 @@ using namespace ThePEG;
  *  - An alternate choice of what is considered a "neighbour" could be
  *    implemented but was not considered for Herwig.
  *
- *  @see HadronSelector 
  * @see \ref LightClusterDecayerInterfaces "The interfaces"
  * defined for LightClusterDecayer.
  */ 
@@ -137,9 +136,9 @@ private:
 			 tPVector & finalhadrons);
 
   /**
-   * A pointer to a Herwig::HadronSelector object used for producing hadrons.
+   * A pointer to a Herwig::hadronSpectrum object used for producing hadrons.
    */
-  Ptr<HadronSelector>::pointer _hadronSelector;
+  Ptr<HadronSpectrum>::pointer _hadronSpectrum;
 };
 
 }

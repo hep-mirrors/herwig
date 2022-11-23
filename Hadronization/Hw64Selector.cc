@@ -20,7 +20,7 @@
 
 using namespace Herwig;
 
-DescribeNoPIOClass<Hw64Selector,HadronSelector>
+DescribeNoPIOClass<Hw64Selector,StandardModelHadronSpectrum>
 describeHw64Selector("Herwig::Hw64Selector","Herwig.so");
 
 IBPtr Hw64Selector::clone() const {

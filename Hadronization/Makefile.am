@@ -10,12 +10,11 @@ ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.fh\
 GluonMassGenerator.h GluonMassGenerator.cc \
-HadronSelector.cc HadronSelector.h HadronSelector.fh\
 Hw64Selector.cc Hw64Selector.h Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.fh \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.fh \
 SpinHadronizer.h SpinHadronizer.cc \
-HadronSepctrum.h HadronSpectrum.cc \
+HadronSepctrum.h HadronSepctrum.fh HadronSpectrum.cc \
 StandardModelHadronSpectrum.h StandardModelHadronSpectrum.cc
 

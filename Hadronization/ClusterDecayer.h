@@ -12,7 +12,7 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
-#include "HadronSelector.h"
+#include "HadronSpectrum.h"
 #include "ClusterDecayer.fh"
 #include "HadronSpectrum.h"
 
@@ -29,9 +29,9 @@ using namespace ThePEG;
  *  enough for fission, and not too light to decay into one hadron.
  *
  *  This class is directs the production of hadrons via 2-body cluster decays.
- *  The selection of the hadron flavours is given by Herwig::HadronSelector.
+ *  The selection of the hadron flavours is given by Herwig::HadronSpectrum.
  *
- *  @see HadronSelector
+ *  @see HadronSpectrum
  * @see \ref ClusterDecayerInterfaces "The interfaces"
  * defined for ClusterDecayer.
  */
@@ -145,11 +145,6 @@ private:
 			   const Lorentz5Momentum &, const Lorentz5Momentum &,
 			   LorentzPoint &, LorentzPoint &) const;
 
-  /**
-   * Pointer to a Herwig::HadronSelector for choosing decay types
-   */
-  Ptr<HadronSelector>::pointer _hadronsSelector;
-
   //@{
   /**
    * Whether a cluster decays along the perturbative parton direction.
@@ -181,7 +176,6 @@ private:
    * The hadron spectrum to consider
    */
   Ptr<HadronSpectrum>::ptr _hadronSpectrum;
-
 
 };
 

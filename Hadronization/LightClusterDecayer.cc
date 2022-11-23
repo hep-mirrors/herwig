@@ -39,11 +39,11 @@ IBPtr LightClusterDecayer::fullclone() const {
 
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hadronSelector;
+  os << _hadronSpectrum;
 } 
 
 void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronSelector;
+  is >> _hadronSpectrum;
 }
 
 void LightClusterDecayer::Init() {
@@ -51,10 +51,10 @@ void LightClusterDecayer::Init() {
   static ClassDocumentation<LightClusterDecayer> documentation
     ("There is the class responsible for the one-hadron decay of light clusters");
 
-  static Reference<LightClusterDecayer,HadronSelector> 
-    interfaceHadronSelector("HadronSelector", 
-			     "A reference to the HadronSelector object", 
-			     &Herwig::LightClusterDecayer::_hadronSelector,
+  static Reference<LightClusterDecayer,HadronSpectrum> 
+    interfaceHadronSpectrum("HadronSpectrum", 
+			     "A reference to the HadronSpectrum object", 
+			     &Herwig::LightClusterDecayer::_hadronSpectrum,
 			     false, false, true, false);
 
 }
@@ -119,7 +119,7 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
     }
     
     // select the hadron for single hadron decay
-    tcPDPtr hadron = _hadronSelector->chooseSingleHadron((*it)->particle(0)->dataPtr(),
+    tcPDPtr hadron = _hadronSpectrum->chooseSingleHadron((*it)->particle(0)->dataPtr(),
 							 (*it)->particle(1)->dataPtr(),
 							 (**it).mass());
     // if not single decay continue
@@ -217,8 +217,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
   bool singleHadron = false;
-  Energy mLHP2 = _hadronSelector->massLightestHadronPair(part3->dataPtr(),part4->dataPtr());
-  Energy mLH2 = _hadronSelector->massLightestHadron(part3->dataPtr(),part4->dataPtr());
+  Energy mLHP2 = _hadronSpectrum->massLightestHadronPair(part3->dataPtr(),part4->dataPtr());
+  Energy mLH2 = _hadronSpectrum->massLightestHadron(part3->dataPtr(),part4->dataPtr());
 
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
@@ -266,7 +266,7 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
     // redefined cluster (this choice is justified in order to avoid
     // clusters that could have undefined components).
 
-    PPtr ptrhad2 = _hadronSelector->lightestHadron(part3->dataPtr(),part4->dataPtr())
+    PPtr ptrhad2 = _hadronSpectrum->lightestHadron(part3->dataPtr(),part4->dataPtr())
       ->produceParticle();
     ptrhad2->set5Momentum( pclu2 );            
     ptrhad2->setVertex( cluPtr2->vertex() ); // set hadron vertex position to the
