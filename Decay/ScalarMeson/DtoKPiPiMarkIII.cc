@@ -672,7 +672,7 @@ void DtoKPiPiMarkIII::doinitrun() {
   for(unsigned int ix=0;ix<4;++ix) {
     _maxwgt[ix]=mode(ix)->maxWeight();
     for(unsigned int iz=0;iz<mode(ix)->channels().size();++iz) {
-      _weights[iy]=mode(ix)->channels()[ix].weight();
+      _weights[iy]=mode(ix)->channels()[iz].weight();
       ++iy;
     }
   }
