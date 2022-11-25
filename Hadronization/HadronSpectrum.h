@@ -407,7 +407,7 @@ public:
     HadronTable::const_iterator tit=_table.find(ids);
     // throw exception if flavours wrong
     if(tit==_table.end()||tit->second.empty())
-      throw Exception() <<  "HadronSelector::massLightestHadron "
+      throw Exception() <<  "HadronSpectrum::massLightestHadron "
 			<< "failed for particle" << ptr1->id()  << " " 
 			<< ptr2->id() 
 			<< Exception::eventerror;
