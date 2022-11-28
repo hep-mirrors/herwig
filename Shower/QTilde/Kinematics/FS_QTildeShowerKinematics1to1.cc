@@ -16,6 +16,7 @@ using namespace Herwig;
 void FS_QTildeShowerKinematics1to1::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
+	       unsigned int ,
 	       ShowerPartnerType partnerType) const {
   assert(children.size()==1);
   // update the parameters

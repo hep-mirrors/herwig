@@ -39,6 +39,7 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
+			       unsigned int pTscheme,
 			       ShowerPartnerType partnerType) const;
   
   /**
