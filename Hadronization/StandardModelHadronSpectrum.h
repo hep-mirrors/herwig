@@ -137,13 +137,13 @@ public:
     return ParticleID::d;
   }
 
-  tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
+  virtual tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
 
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					   tcPDPtr ptr3 = PDPtr ()) const;
+  virtual pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+						   tcPDPtr ptr3 = PDPtr ()) const;
 
-  tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-			  tcPDPtr ptr3 = PDPtr ()) const;
+  virtual tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+				 tcPDPtr ptr3 = PDPtr ()) const;
 
   vector<pair<tcPDPtr,double> > 
   hadronsBelowThreshold(Energy threshold,
@@ -152,7 +152,7 @@ public:
 
   Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
-  double pwtQuark(const long& id) const {
+  virtual double pwtQuark(const long& id) const {
     switch(id) {
     case ParticleID::d: return pwtDquark(); break;
     case ParticleID::u: return pwtUquark(); break;

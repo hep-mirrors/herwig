@@ -344,7 +344,7 @@ public:
    * with the charge conservation constraint.
    */
   virtual pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					   tcPDPtr ptr3 = PDPtr ()) const = 0;
+						   tcPDPtr ptr3 = PDPtr ()) const = 0;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles

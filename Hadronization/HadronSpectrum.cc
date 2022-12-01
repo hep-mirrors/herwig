@@ -17,7 +17,8 @@
 
 using namespace Herwig;
 
-HadronSpectrum::HadronSpectrum() {}
+HadronSpectrum::HadronSpectrum() 
+  : Interfaced() {}
 
 HadronSpectrum::~HadronSpectrum() {}
 
@@ -41,7 +42,7 @@ void HadronSpectrum::persistentInput(PersistentIStream &, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<HadronSpectrum,Interfaced>
-  describeHerwigHadronSpectrum("Herwig::HadronSpectrum", "HwHadronization.so");
+  describeHerwigHadronSpectrum("Herwig::HadronSpectrum", "Herwig.so");
 
 void HadronSpectrum::Init() {
 

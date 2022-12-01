@@ -48,7 +48,8 @@ namespace {
 }
 
 StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt) 
-  : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
+  : HadronSpectrum(),
+    _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
     _pwtBquark( 0.0 ),_pwtDIquark( 1.0 ),
     _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
@@ -120,7 +121,7 @@ void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<StandardModelHadronSpectrum,HadronSpectrum>
-describeHerwigStandardModelHadronSpectrum("Herwig::StandardModelHadronSpectrum", "HwHadronization.so");
+describeHerwigStandardModelHadronSpectrum("Herwig::StandardModelHadronSpectrum", "Herwig.so");
 
 void StandardModelHadronSpectrum::Init() {
 
@@ -440,7 +441,7 @@ tcPDPtr StandardModelHadronSpectrum::chooseSingleHadron(tcPDPtr par1, tcPDPtr pa
 }
 
 pair<tcPDPtr,tcPDPtr> StandardModelHadronSpectrum::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-							 tcPDPtr ptr3) const {
+								      tcPDPtr ptr3) const {
   // throw exception of id3!=0 as doesn't work
   if ( ptr3 ) throw Exception() 
     << "ptr3!=0 not yet implemented in StandardModelHadronSpectrum::lightestHadronPair"
@@ -623,7 +624,7 @@ double StandardModelHadronSpectrum::mixingStateWeight(long id) const {
 }
 
 void StandardModelHadronSpectrum::doinit() {
-  Interfaced::doinit();
+  HadronSpectrum::doinit();
   // the default partons allowed
   // the quarks
   for ( int ix=1; ix<=5; ++ix ) {

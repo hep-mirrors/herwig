@@ -137,7 +137,6 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       quark = false;
     }
     else {
-      useMe();
       diquark = false;
       quark = true;
     }
