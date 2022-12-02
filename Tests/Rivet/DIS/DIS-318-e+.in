@@ -17,3 +17,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2008_I810112
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2007_I736052
 # ZEUS strangeness
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2011_I945935
+# H1 beauty production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2005_I676166

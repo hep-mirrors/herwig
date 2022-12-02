@@ -80,11 +80,22 @@ Energy2 ColourReconnector::_clusterMassSum(const PVector & q,
 
 double ColourReconnector::_displacement(tcPPtr p, tcPPtr q) const {
   double deltaRap = (p->rapidity() - q->rapidity());
-  double deltaPhi = (p->momentum().phi() - q->momentum().phi());
-
+  double deltaPhi = fabs(p->momentum().phi() - q->momentum().phi());
+  // keep deltaPhi's below Pi due to periodicity
+  if (deltaPhi > M_PI) deltaPhi-=M_PI;
   return sqrt(deltaRap * deltaRap + deltaPhi * deltaPhi);
 }
 
+/**
+ * Computes circular Mean of three angles alpha, beta, gamma
+ * */
+static double circularMean(double alpha, double beta, double gamma) {
+  double xMean=(cos(alpha)+cos(beta)+cos(gamma))/3.0;
+  double yMean=(sin(alpha)+sin(beta)+sin(gamma))/3.0;
+  // to make the function fail-save
+  if (xMean==0 && yMean==0) return M_PI;
+  return atan2(yMean,xMean);
+}
 
 double ColourReconnector::_displacementBaryonic(tcPPtr q1, tcPPtr q2, tcPPtr q3) const {
   if (_junctionMBCR) {
@@ -100,12 +111,21 @@ double ColourReconnector::_displacementBaryonic(tcPPtr q1, tcPPtr q2, tcPPtr q3)
     double phi2=q2->momentum().phi();
     double phi3=q3->momentum().phi();
     double meanRap=(rap1 + rap2 + rap3)/3.0;
-    double meanPhi=(phi1 + phi2 + phi3)/3.0;
-    double delR;
+	// Use circularMean for defining a sensible mean of an angle
+	double meanPhi=circularMean(phi1,phi2,phi3);
 
-    delR  = sqrt( (rap1-meanRap)*(rap1-meanRap) + (phi1-meanPhi)*(phi1-meanPhi) );
-    delR += sqrt( (rap2-meanRap)*(rap2-meanRap) + (phi2-meanPhi)*(phi2-meanPhi) );
-    delR += sqrt( (rap3-meanRap)*(rap3-meanRap) + (phi3-meanPhi)*(phi3-meanPhi) );
+	double deltaPhi1=fabs(phi1-meanPhi);
+	double deltaPhi2=fabs(phi2-meanPhi);
+	double deltaPhi3=fabs(phi3-meanPhi);
+	// keep deltaPhi's below Pi due to periodicity
+	if (deltaPhi1>M_PI) deltaPhi1-=M_PI;
+	if (deltaPhi2>M_PI) deltaPhi2-=M_PI;
+	if (deltaPhi3>M_PI) deltaPhi3-=M_PI;
+	double delR;
+
+	delR  = sqrt( (rap1-meanRap)*(rap1-meanRap) + deltaPhi1*deltaPhi1 );
+	delR += sqrt( (rap2-meanRap)*(rap2-meanRap) + deltaPhi2*deltaPhi2 );
+	delR += sqrt( (rap3-meanRap)*(rap3-meanRap) + deltaPhi3*deltaPhi3 );
     return delR;
   } else {
     /* just summing up all possible 2 quark displacements */
@@ -733,7 +753,6 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
       _isColour8( (*cl)->colParticle(), (*cit)->antiColParticle() )
       ||
       _isColour8( (*cit)->colParticle(), (*cl)->antiColParticle() ) ;
-    if ( Colour8 ) continue;
 
 
     // boost constituents of cit into RF of cl
@@ -749,7 +768,8 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
     const double rapqbar = calculateRapidityRF(p1anticol,p2anticol);
 
     // configuration for normal CR
-    if ( rapq > 0.0 && rapqbar < 0.0
+	if ( !Colour8
+		 && rapq > 0.0 && rapqbar < 0.0
          && rapq > maxrap
          && rapqbar < minrap ) {
       maxrap = rapq;

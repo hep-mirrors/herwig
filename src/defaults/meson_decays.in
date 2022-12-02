@@ -917,11 +917,8 @@ decaymode f'_1->a_00,pi0; 0.01 1 /Herwig/Decays/Vector2Meson
 decaymode f'_1->a_0+,pi-; 0.01 1 /Herwig/Decays/Vector2Meson
 decaymode f'_1->phi,gamma; 0.0028 1 /Herwig/Decays/AVV
 #
-decaymode chi_c1->g,g; 0.46572 1 /Herwig/Decays/QDecayME0
+decaymode chi_c1->g,g; 0.579012 1 /Herwig/Decays/QDecayME0
 decaymode chi_c1->Jpsi,gamma; 0.346693 1 /Herwig/Decays/AVV
-decaymode chi_c1->omega,gamma; 0.068 1 /Herwig/Decays/AVV
-decaymode chi_c1->phi,gamma; 0.024 1 /Herwig/Decays/AVV
-decaymode chi_c1->rho0,gamma; 0.0216 1 /Herwig/Decays/AVV
 decaymode chi_c1->rho-,pi+,pi0; 0.00725 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->rho+,pi-,pi0; 0.00725 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->eta,pi+,pi-; 0.00462 1 /Herwig/Decays/DecayME0
@@ -965,6 +962,7 @@ decaymode chi_c1->phi,phi,eta; 0.0003 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->n0,nbar0,pi0,pi0; 0.00025 1 /Herwig/Decays/Mambo
 decaymode chi_c1->p+,pbar-,pi0,pi0; 0.00025 1 /Herwig/Decays/Mambo
 decaymode chi_c1->Lambda0,Lambdabar0,pi+,pi-; 0.00025 1 /Herwig/Decays/Mambo
+decaymode chi_c1->rho0,gamma; 0.000216 1 /Herwig/Decays/AVV
 decaymode chi_c1->n0,nbar0,omega; 0.000212 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->p+,pbar-,omega; 0.000212 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->n0,nbar0,pi0; 0.000155 1 /Herwig/Decays/DecayME0
@@ -976,11 +974,13 @@ decaymode chi_c1->Xi-,Xibar+; 8.0E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->Xi0,Xibar0; 8.0E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->n0,nbar0; 7.6E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->p+,pbar-; 7.6E-5 1 /Herwig/Decays/DecayME0
+decaymode chi_c1->omega,gamma; 6.8E-5 1 /Herwig/Decays/AVV
 decaymode chi_c1->Sigma-,Sigmabar+; 4.5E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->Sigma0,Sigmabar0; 4.5E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->Sigma+,Sigmabar-; 4.5E-5 1 /Herwig/Decays/DecayME0
 decaymode chi_c1->K_S0,K_S0,K_S0,K_S0; 3.5E-5 1 /Herwig/Decays/Mambo
 decaymode chi_c1->omega,phi; 2.7E-5 1 /Herwig/Decays/DecayME0
+decaymode chi_c1->phi,gamma; 2.4E-5 1 /Herwig/Decays/AVV
 #
 decaymode chi_b1->g,g; 0.648 1 /Herwig/Decays/QDecayME0
 decaymode chi_b1->Upsilon,gamma; 0.352 1 /Herwig/Decays/AVV
