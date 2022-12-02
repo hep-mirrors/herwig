@@ -78,12 +78,14 @@ analyses["4Pi"]["ARGUS_1989_I266416" ] = ["d01-x01-y01","d02-x01-y01",
 analyses["4Pi"]["CELLO_1989_I267081" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4Pi"]["TASSO_1982_I180755" ] = ["d01-x01-y01"]
 # proton antiproton
-analyses["PPbar"]["ARGUS_1989_I267759" ] = ["d02-x01-y01"]
-analyses["PPbar"]["BELLE_2005_I677625" ] = ["d01-x01-y01"]
-analyses["PPbar"]["CLEO_1994_I358510"  ] = ["d01-x01-y01"]
-analyses["PPbar"]["JADE_1986_I231554"  ] = ["d01-x01-y01"]
-analyses["PPbar"]["TASSO_1983_I191417" ] = ["d01-x01-y01"]
-analyses["PPbar"]["TPC_1987_I246557"   ] = ["d01-x01-y01"]
+analyses["PPbar" ]["ARGUS_1989_I267759" ] = ["d02-x01-y01"]
+analyses["PPbar" ]["BELLE_2005_I677625" ] = ["d01-x01-y01"]
+analyses["PPbar" ]["CLEO_1994_I358510"  ] = ["d01-x01-y01"]
+analyses["PPbar" ]["JADE_1986_I231554"  ] = ["d01-x01-y01"]
+analyses["PPbar" ]["TASSO_1983_I191417" ] = ["d01-x01-y01"]
+analyses["PPbar" ]["TPC_1987_I246557"   ] = ["d01-x01-y01"]
+# other baryons
+analyses["Baryon"]["BELLE_2016_I1444981"   ] = ["d01-x01-y01","d02-x01-y01"]
 # K_0S K+/- pi -/+
 analyses["2K1Pi"]["CELLO_1989_I266414" ] = ["d01-x01-y01"]
 # K*K* and various 2K2pi states
