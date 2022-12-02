@@ -19,7 +19,6 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/Repository/Repository.h>
-#include "CheckId.h"
 
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -46,8 +45,31 @@ namespace {
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
+  
+  /**
+   * Return true if the particle pointer corresponds to a diquark 
+   * or anti-diquark carrying b flavour; false otherwise.
+   */
+  inline bool isDiquarkWithB(tcPDPtr par1) {
+    if (!par1) return false;
+    long id1 = par1->id();
+    return DiquarkMatcher::Check(id1)  &&  (abs(id1)/1000)%10 == ParticleID::b;
+  }
+  
+  /**
+   * Return true if the particle pointer corresponds to a diquark
+   *  or anti-diquark carrying c flavour; false otherwise.
+   */
+  inline bool isDiquarkWithC(tcPDPtr par1) {
+    if (!par1) return false;
+    long id1 = par1->id();
+    return ( DiquarkMatcher::Check(id1)  &&  
+       ( (abs(id1)/1000)%10 == ParticleID::c  
+         || (abs(id1)/100)%10 == ParticleID::c ) );
+  }
 
 }
+
 
 StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt) 
   : HadronSpectrum(),
@@ -382,11 +404,11 @@ tcPDPtr StandardModelHadronSpectrum::chooseSingleHadron(tcPDPtr par1, tcPDPtr pa
   // any broad resonance.
   Energy threshold = massLightestHadronPair(par1,par2);
   // Special: it allows one-hadron decays also above threshold.
-  if (CheckId::isExotic(par1,par2)) 
+  if (isExotic(par1,par2)) 
     threshold *= (1.0 + UseRandom::rnd()*_limExotic);
-  else if (CheckId::hasBottom(par1,par2)) 
+  else if (hasBottom(par1,par2)) 
     threshold *= (1.0 + UseRandom::rnd()*_limBottom);
-  else if (CheckId::hasCharm(par1,par2)) 
+  else if (hasCharm(par1,par2)) 
     threshold *= (1.0 + UseRandom::rnd()*_limCharm);
   
   // only do one hadron decay is mass less than the threshold
@@ -449,7 +471,7 @@ pair<tcPDPtr,tcPDPtr> StandardModelHadronSpectrum::lightestHadronPair(tcPDPtr pt
     // Change sign to idPartner (transform it into a anti-quark) if it is not
     // possible to form a meson or a baryon.
     assert (ptr1 && idPartner);
-    if (!CheckId::canBeHadron(ptr1, idPartner)) idPartner = idPartner->CC();
+    if (!canBeHadron(ptr1, idPartner)) idPartner = idPartner->CC();
 
     vIdHad1[i] = lightestHadron(ptr1, idPartner);
     vIdHad2[i] = lightestHadron(ptr2, idPartner->CC());
@@ -623,7 +645,7 @@ void StandardModelHadronSpectrum::doinit() {
   // the diquarks
   for(unsigned int ix=1;ix<=5;++ix) {
     for(unsigned int iy=1; iy<=ix;++iy) {
-      _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy)));
+      _partons.push_back(getParticleData(makeDiquarkID(ix,iy)));
     }
   }
   // set the weights for the various excited mesons
@@ -747,7 +769,7 @@ void StandardModelHadronSpectrum::constructHadronTable() {
       flav2 = x3; 
     } 
     else { // baryon
-      flav1 = CheckId::makeDiquarkID(x2,x3);
+      flav1 = makeDiquarkID(x2,x3);
       flav2 = x4;
     }
     if (wantSusy) flav2 += 1000000 * x7;
@@ -994,4 +1016,122 @@ int StandardModelHadronSpectrum::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     assert(false);
   }
   return sign;
+}
+
+long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2) const {
+
+  assert( id1 * id2 > 0  
+          && QuarkMatcher::Check(id1)  
+	  && QuarkMatcher::Check(id2)) ;
+  long ida = abs(id1);
+  long idb = abs(id2);
+  if (ida < idb) swap(ida,idb);
+
+  long idnew = ida*1000 + idb*100 + 1;
+  // Diquarks made of quarks of the same type: uu, dd, ss, cc, bb, 
+  // have spin 1, and therefore the less significant digit (which
+  // corresponds to 2*J+1) is 3 rather than 1 as all other Diquarks.
+  if (id1 == id2) idnew += 2;
+
+  return id1 > 0 ? idnew : -idnew;
+}
+
+PDPtr StandardModelHadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
+    long id1 = par1->id();
+    long id2 = par2->id();
+    long idnew = makeDiquarkID(id1,id2);
+    assert(!CurrentGenerator::isVoid());
+    return CurrentGenerator::current().getParticleData(idnew);
+}
+
+bool StandardModelHadronSpectrum::canBeMeson(tcPDPtr par1,tcPDPtr par2) const {
+  assert(par1 && par2);
+  long id1 = par1->id();
+  long id2 = par2->id();
+  // a Meson must not have any diquarks
+  if(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2)) return false;
+  return ( abs(int(par1->iColour()))== 3  && 
+     abs(int(par2->iColour())) == 3 &&  
+     id1*id2 < 0);
+}
+
+
+
+bool StandardModelHadronSpectrum::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) const {
+  assert(par1 && par2);
+  long id1 = par1->id(), id2 = par2->id();
+  if (!par3) {
+    if( id1*id2 < 0) return false;
+    if(DiquarkMatcher::Check(id1))
+return abs(int(par2->iColour())) == 3 && !DiquarkMatcher::Check(id2); 
+    if(DiquarkMatcher::Check(id2))
+return abs(int(par1->iColour())) == 3;
+    return false;
+  } 
+  else {
+    // In this case, to be a baryon, all three components must be (anti-)quarks
+    // and with the same sign.
+    return (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
+(par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
+  }
+}
+  
+
+
+bool StandardModelHadronSpectrum::hasBottom(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) const {
+  long id1 = par1 ? par1->id() : 0;
+  if ( !par2  &&  !par3 ) {
+    return 
+      abs(id1) == ThePEG::ParticleID::b    ||
+      isDiquarkWithB(par1)                 ||
+      ( MesonMatcher::Check(id1)  
+	&& (abs(id1)/100)%10  == ThePEG::ParticleID::b ) ||
+      ( BaryonMatcher::Check(id1) 
+	&& (abs(id1)/1000)%10 == ThePEG::ParticleID::b );
+  } 
+  else {
+    long id2 = par2 ? par2->id() : 0;
+    long id3 = par3 ? par3->id() : 0;
+    return 
+      abs(id1) == ThePEG::ParticleID::b  ||  isDiquarkWithB(par1)  || 
+      abs(id2) == ThePEG::ParticleID::b  ||  isDiquarkWithB(par2)  || 
+      abs(id3) == ThePEG::ParticleID::b  ||  isDiquarkWithB(par3); 
+  }
+}
+
+
+bool StandardModelHadronSpectrum::hasCharm(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) const {
+  long id1 = par1 ? par1->id(): 0;
+  if (!par2  &&  !par3) {
+    return
+      abs(id1) == ThePEG::ParticleID::c     ||
+      isDiquarkWithC(par1)                  ||
+      ( MesonMatcher::Check(id1) && 
+        ((abs(id1)/100)%10 == ThePEG::ParticleID::c ||
+	 (abs(id1)/10)%10 == ThePEG::ParticleID::c) ) ||
+      ( BaryonMatcher::Check(id1) && 
+        ((abs(id1)/1000)%10 == ThePEG::ParticleID::c  ||
+	 (abs(id1)/100)%10  == ThePEG::ParticleID::c  ||
+	 (abs(id1)/10)%10   == ThePEG::ParticleID::c) );
+  } 
+  else {
+ long id2 = par2 ? par1->id(): 0;
+ long id3 = par3 ? par1->id(): 0;
+    return 
+      abs(id1) == ThePEG::ParticleID::c  ||  isDiquarkWithC(par1)  || 
+      abs(id2) == ThePEG::ParticleID::c  ||  isDiquarkWithC(par2)  || 
+      abs(id3) == ThePEG::ParticleID::c  ||  isDiquarkWithC(par3); 
+  }
+}  
+
+bool StandardModelHadronSpectrum::isExotic(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) const {
+  /// \todo make this more general
+  long id1 = par1 ? par1->id(): 0;
+  long id2 = par2 ? par2->id(): 0;
+  long id3 = par3 ? par3->id(): 0;
+return 
+  ( (id1/1000000)% 10 != 0 && (id1/1000000)% 10 != 9 ) ||
+  ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
+  ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
+  abs(id1)==6||abs(id2)==6;
 }

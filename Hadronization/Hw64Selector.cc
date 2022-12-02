@@ -14,7 +14,6 @@
 #include "Hw64Selector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "CheckId.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 
@@ -96,11 +95,11 @@ pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPt
   if(ntry >= nmax) return lighthad;
   int signHad1 = 0;
   int signHad2 = 0;
-  if(CheckId::canBeHadron(par1,quark->CC()) && CheckId::canBeHadron(quark,par2)) {
+  if(canBeHadron(par1,quark->CC()) && canBeHadron(quark,par2)) {
     signHad1 = signHadron(par1, quark->CC(), had1);
     signHad2 = signHadron(par2, quark, had2);
   }
-  else if(CheckId::canBeHadron(par1,quark) && CheckId::canBeHadron(quark->CC(),par2)) {
+  else if(canBeHadron(par1,quark) && canBeHadron(quark->CC(),par2)) {
     signHad1 = signHadron(par1, quark, had1);
     signHad2 = signHadron(par2, quark->CC(), had2);
   }

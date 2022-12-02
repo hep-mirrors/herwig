@@ -20,7 +20,6 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Utilities/Selector.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "CheckId.h"
 #include <cassert>
 #include <ThePEG/Utilities/DescribeClass.h>
 
@@ -200,11 +199,11 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
 
 	assert(quarktopick->CC());
 
-	if(CheckId::canBeHadron(par1, quarktopick->CC())
-	   && CheckId::canBeHadron(quarktopick, par2))
+	if(canBeHadron(par1, quarktopick->CC())
+	   && canBeHadron(quarktopick, par2))
 	   signQ = +1;
-	else if(CheckId::canBeHadron(par1, quarktopick)
-		&& CheckId::canBeHadron(quarktopick->CC(), par2))
+	else if(canBeHadron(par1, quarktopick)
+		&& canBeHadron(quarktopick->CC(), par2))
 	   signQ = -1;
 	else {
 	  cerr << "Could not make sign for" << par1->id()<< " " << quarktopick->id()

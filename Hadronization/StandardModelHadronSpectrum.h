@@ -9,7 +9,8 @@
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Repository/EventGenerator.h>
-#include "CheckId.h"
+#include <ThePEG/PDT/EnumParticles.h>
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 
@@ -85,29 +86,13 @@ public:
    */
   virtual bool hasHeavy(long id, tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const {
     if ( abs(id) == ParticleID::c )
-      return CheckId::hasCharm(par1,par2,par3);
+      return hasCharm(par1,par2,par3);
     if ( abs(id) == ParticleID::b )
-      return CheckId::hasBottom(par1,par2,par3);
+      return hasBottom(par1,par2,par3);
     return false;
   }
 
-  /**
-   * Return true, if any of the possible input particle pointer is an
-   * exotic quark, e.g. Susy quark; false otherwise.
-   */
-  virtual bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const {
-    return CheckId::isExotic(par1,par2,par3);
-  }
-
   //@}
-
-  /**
-   * Return true if the two or three particles in input can be the components 
-   * of a hadron; false otherwise.
-   */
-  virtual bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr()) const {
-    return CheckId::canBeHadron(par1,par2,par3);
-  }
 
   /**
    * Check if can't make a diquark from the partons
@@ -115,16 +100,6 @@ public:
   virtual bool canMakeDiQuark(tcPPtr p1, tcPPtr p2) const {
     long id1 = p1->id(), id2 = p2->id();
     return QuarkMatcher::Check(id1) && QuarkMatcher::Check(id2) && id1*id2>0;
-  }
-
-  /**
-   * Return the particle data of the diquark (anti-diquark) made by the two 
-   * quarks (antiquarks) par1, par2.
-   * @param par1 (anti-)quark data pointer
-   * @param par2 (anti-)quark data pointer
-   */
-  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
-    return CheckId::makeDiquark(par1,par2);
   }
 
   /**
@@ -312,6 +287,66 @@ protected:
    */
   virtual void doinit();
   //@}
+
+  
+  /**
+   * Return the id of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) of id specified in input (id1, id2).
+   * Caller must ensure that id1 and id2 are quarks.
+   */
+  long makeDiquarkID(long id1, long id2)  const;
+  
+  /**
+   * Return the particle data of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2)  const;
+
+  /**
+   * Return true if the two particles in input can be the components of a meson;
+   *false otherwise.
+   */
+  bool canBeMeson(tcPDPtr par1,tcPDPtr par2)  const;
+
+  /**
+   * Return true if the two or three particles in input can be the components 
+   * of a baryon; false otherwise.
+   */
+  bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
+  
+   /**
+   * Return true if the two or three particles in input can be the components 
+   * of a hadron; false otherwise.
+   */
+  inline bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr()) const {
+    return (!par3 && canBeMeson(par1,par2)) || canBeBaryon(par1,par2,par3);
+  }
+
+  /**
+   * Return true if any of the possible three input particles has
+   * b-flavour; 
+   * false otherwise. In the case that only the first particle is specified,
+   * it can be: an (anti-)quark, an (anti-)diquark
+   * an (anti-)meson, an (anti-)baryon; in the other cases, each pointer
+   * is assumed to be either (anti-)quark or (anti-)diquark.
+   */
+  bool hasBottom(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
+  /**
+   * Return true if any of the possible three input particles has 
+   * c-flavour; 
+   * false otherwise.In the case that only the first pointer is specified,
+   * it can be: a (anti-)quark, a (anti-)diquark
+   * a (anti-)meson, a (anti-)baryon; in the other cases, each pointer
+   * is assumed to be either (anti-)quark or (anti-)diquark.
+   */
+  bool hasCharm(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
+  /**
+   * Return true, if any of the possible input particle pointer is an exotic quark, e.g. Susy quark;
+   * false otherwise.   
+   */
+  bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
 
 protected:
 
@@ -637,7 +672,6 @@ private:
    */
   unsigned int belowThreshold_;
 };
-
 
 }
 
