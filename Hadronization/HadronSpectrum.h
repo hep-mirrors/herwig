@@ -457,10 +457,22 @@ public:
    */
   static void Init();
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   *
+   *  The array _repwt is initialized using the interfaces to set different
+   *  weights for different meson multiplets and the constructHadronTable()
+   *  method called to complete the construction of the hadron tables.
+   *
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 private:
 

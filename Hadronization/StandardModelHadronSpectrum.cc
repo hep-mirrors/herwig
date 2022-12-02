@@ -384,7 +384,7 @@ void StandardModelHadronSpectrum::Init() {
 }
 
 tcPDPtr StandardModelHadronSpectrum::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
-					   Energy mass) const {
+							Energy mass) const {
   // Determine the sum of the nominal masses of the two lightest hadrons
   // with the right flavour numbers as the cluster under consideration.
   // Notice that we don't need real masses (drawn by a Breit-Wigner 

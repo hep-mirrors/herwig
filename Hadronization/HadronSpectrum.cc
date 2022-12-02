@@ -22,6 +22,9 @@ HadronSpectrum::HadronSpectrum()
 
 HadronSpectrum::~HadronSpectrum() {}
 
+void HadronSpectrum::doinit() {
+  Interfaced::doinit();
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
