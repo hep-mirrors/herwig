@@ -137,21 +137,86 @@ public:
     return ParticleID::d;
   }
 
+  /**
+   * Select the single hadron for a cluster decay
+   * return null pointer if not a single hadron decay
+   * @param par1 1st constituent
+   * @param par2 2nd constituent
+   * @param mass Mass of the cluster
+   */
   virtual tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
 
+  /**
+   * This returns the lightest pair of hadrons given by the flavours.
+   *
+   * Given the two (or three) constituents of a cluster, it returns
+   * the two lightest hadrons with proper flavour numbers.
+   * Furthermore, the first of the two hadrons must have the constituent with
+   * par1, and the second must have the constituent with par2. 
+   * \todo At the moment it does *nothing* in the case that also par3 is present.
+   *
+   * The method is implemented by calling twice lightestHadron, 
+   * once with (par1,quarktopick->CC()) ,and once with (par2,quarktopick)
+   * where quarktopick is either the pointer to
+   * d or u quarks . In fact, the idea is that whatever the flavour of par1 
+   * and par2, no matter if (anti-)quark or (anti-)diquark, the lightest
+   * pair of hadrons containing flavour par1 and par2 will have either 
+   * flavour d or u, being the lightest quarks.
+   * The method returns the pair (PDPtr(),PDPtr()) if anything goes wrong. 
+   *
+   * \todo The method assumes par3 == PDPtr() (otherwise we don't know how to proceed: a 
+   * possible, trivial way would be to randomly select two of the three 
+   * (anti-)quarks and treat them as a (anti-)diquark, reducing the problem
+   * to two components as treated below.
+   * In the normal (two components) situation, the strategy is the following:
+   * treat in the same way the two possibilities:  (d dbar)  (i=0) and  
+   * (u ubar)  (i=1)  as the pair quark-antiquark necessary to form a
+   * pair of hadrons containing the input flavour  par1  and  par2; finally,
+   * select the one that produces the lightest pair of hadrons, compatible
+   * with the charge conservation constraint.
+   */
   virtual pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
 						   tcPDPtr ptr3 = PDPtr ()) const;
 
+  /**
+   * Returns the lightest hadron formed by the given particles.
+   *
+   * Given the id of two (or three) constituents of a cluster, it returns
+   * the  lightest hadron with proper flavour numbers.
+   * At the moment it does *nothing* in the case that also 'ptr3' present.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent
+   */
   virtual tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
 				 tcPDPtr ptr3 = PDPtr ()) const;
 
-  vector<pair<tcPDPtr,double> > 
-  hadronsBelowThreshold(Energy threshold,
-			tcPDPtr ptr1, tcPDPtr ptr2,
-			tcPDPtr ptr3 = PDPtr ()) const;
+  /**
+   * Returns the hadrons below the constituent mass threshold formed by the given particles,
+   * together with their total weight
+   *
+   * Given the id of two (or three) constituents of a cluster, it returns
+   * the  lightest hadron with proper flavour numbers.
+   * At the moment it does *nothing* in the case that also 'ptr3' present.
+   * @param threshold The theshold
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent
+   */
+  virtual vector<pair<tcPDPtr,double> > hadronsBelowThreshold(Energy threshold,
+							      tcPDPtr ptr1, tcPDPtr ptr2,
+							      tcPDPtr ptr3 = PDPtr ()) const;
 
-  Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
+  /**
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   */
+  virtual Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
+  /**
+   * Return the weight for the given flavour
+   */
   virtual double pwtQuark(const long& id) const {
     switch(id) {
     case ParticleID::d: return pwtDquark(); break;
@@ -291,20 +356,6 @@ protected:
   virtual void constructHadronTable();
 
   /**
-   *  Access to the table of hadrons
-   */
-   const HadronTable & table() const {
-    return _table;
-  }
-  
-  /**
-   *  Access to the list of partons
-   */
-   const vector<PDPtr> & partons() const {
-    return _partons;
-  }
-
-  /**
    *  Access the parton weights
    */
    double pwt(long pid) const {
@@ -371,16 +422,6 @@ protected:
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
 private:
-
-  /**
-   *  The PDG codes of the constituent particles allowed
-   */
-  vector<PDPtr> _partons;
-
-  /**
-   *  The PDG codes of the hadrons which cannot be produced in the hadronization
-   */
-  vector<PDPtr> _forbidden;
 
   /**
    *  The weights for the different quarks and diquarks
@@ -557,11 +598,6 @@ private:
    */
   double _decWt; 
   //@}
-
-  /**
-   * The table of hadron data
-   */
-  HadronTable _table;
 
   /**
    * Enums so arrays can be statically allocated

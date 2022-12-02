@@ -11,6 +11,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
+#include "ThePEG/Interface/RefVector.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -30,12 +31,12 @@ void HadronSpectrum::doinit() {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void HadronSpectrum::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void HadronSpectrum::persistentOutput(PersistentOStream & os) const {
+  os << _table << _partons << _forbidden;
 }
 
-void HadronSpectrum::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void HadronSpectrum::persistentInput(PersistentIStream & is, int) {
+  is >> _table >> _partons >> _forbidden;
 }
 
 
@@ -51,5 +52,16 @@ void HadronSpectrum::Init() {
 
   static ClassDocumentation<HadronSpectrum> documentation
     ("There is no documentation for the HadronSpectrum class");
+
+  static RefVector<HadronSpectrum,ParticleData> interfacePartons
+    ("Partons",
+     "The partons which are to be considered as the consistuents of the hadrons.",
+     &HadronSpectrum::_partons, -1, false, false, true, false, false);
+
+  static RefVector<HadronSpectrum,ParticleData> interfaceForbidden
+    ("Forbidden",
+     "The PDG codes of the particles which cannot be produced in the hadronization.",
+     &HadronSpectrum::_forbidden, -1, false, false, true, false, false);
+
 }
 

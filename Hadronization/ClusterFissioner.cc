@@ -101,7 +101,7 @@ void ClusterFissioner::Init() {
   static Reference<ClusterFissioner,HadronSpectrum> interfaceHadronSpectrum
     ("HadronSpectrum",
      "Set the Hadron spectrum for this cluster fissioner.",
-     &ClusterFissioner::_hadronSpectrum, false, false, true, false, false);
+     &ClusterFissioner::_hadronSpectrum, false, false, true, false);
 
   // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,Energy>

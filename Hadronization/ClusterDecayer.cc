@@ -80,7 +80,7 @@ void ClusterDecayer::Init() {
   static Reference<ClusterDecayer,HadronSpectrum> interfaceHadronSpectrum
     ("HadronSpectrum",
      "Set the hadron spectrum for this parton splitter.",
-     &ClusterDecayer::_hadronSpectrum, false, false, false, false, false);
+     &ClusterDecayer::_hadronSpectrum, false, false, true, false);
 
   //ClDir for light, Bottom, Charm and exotic (e.g Susy) quarks
 

@@ -302,8 +302,7 @@ public:
    * @param par3 The third constituent
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
-    = 0;
+						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const = 0;
 
   /**
    * Select the single hadron for a cluster decay
@@ -352,8 +351,8 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent
    */
-    Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-					tcPDPtr ptr3 = PDPtr ()) const  {
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+				tcPDPtr ptr3 = PDPtr ()) const {
     pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
     if ( ! pairData.first || ! pairData.second ) return ZERO;
     return ( pairData.first->mass() + pairData.second->mass() ); 
@@ -370,7 +369,7 @@ public:
    * @param ptr3 is the third  constituent
    */
    virtual tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-			  tcPDPtr ptr3 = PDPtr ()) const = 0;
+				  tcPDPtr ptr3 = PDPtr ()) const = 0;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -385,8 +384,8 @@ public:
    * @param ptr3 is the third  constituent
    */
   virtual vector<pair<tcPDPtr,double> > hadronsBelowThreshold(Energy threshold,
-			tcPDPtr ptr1, tcPDPtr ptr2,
-			tcPDPtr ptr3 = PDPtr ()) const = 0;
+							      tcPDPtr ptr1, tcPDPtr ptr2,
+							      tcPDPtr ptr3 = PDPtr ()) const = 0;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
@@ -422,10 +421,6 @@ public:
    */
   virtual Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const = 0;
   
-  /**
-   *  Return the weights for the different quarks and diquarks
-   */
-  //@{
   /**
    * Return the weight for the given flavour
    */
@@ -474,6 +469,77 @@ protected:
   virtual void doinit();
   //@}
 
+protected:
+
+  /**
+   *  Construct the table of hadron data
+   *  This is the main method to initialize the hadron data (mainly the
+   *  weights associated to each hadron, taking into account its spin, 
+   *  eventual isoscalar-octect mixing, singlet-decuplet factor). This is
+   *  the method that one should update when new or updated hadron data is
+   *  available. 
+   *
+   *  This class implements the construction of the basic table but can be 
+   *  overridden if needed in inheriting classes.
+   *
+   *  The rationale for factors used for diquarks involving different quarks can 
+   *  be can be explained by taking a prototype example that in the  exact SU(2) limit,
+   *  in which:
+   *  \f[m_u=m_d\f] 
+   *  \f[M_p=M_n=M_\Delta\f]
+   *      and we will have equal numbers of u and d quarks produced.
+   *      Suppose that we weight 1 the diquarks made of the same 
+   *      quark and 1/2 those made of different quarks, the fractions
+   *      of u and d baryons (p, n, Delta) we get are the following:
+   *        - \f$\Delta^{++}\f$: 1 possibility only  u uu  with weight 1
+   *        - \f$\Delta^-   \f$: 1 possibility only  d dd  with weight 1
+   *        - \f$p,\Delta^+ \f$: 2 possibilities     u ud  with weight 1/2
+   *                                                 d uu  with weight 1
+   *        - \f$n,\Delta^0 \f$: 2 possibilities     d ud  with weight 1/2
+   *                                                 u dd  with weight 1
+   *      In the latter two cases, we have to take into account the 
+   *      fact that  p  and  n  have spin 1/2 whereas  Delta+  and  Delta0
+   *      have spin 3/2 therefore from phase space we get a double weight 
+   *      for  Delta+  and  Delta0  relative to  p  and  n  respectively.
+   *      Therefore the relative amount of these baryons that is
+   *      produced is the following:
+   *       # p = # n = ( 1/2 + 1 ) * 1/3 = 1/2
+   *       # Delta++ = # Delta- = 1 = ( 1/2 + 1) * 2/3 # Delta+ = # Delta0
+   *      which is correct, and therefore the weight 1/2 for the
+   *      diquarks of different types of quarks is justified (at least
+   *      in this limit of exact SU(2) ).
+   */
+  virtual void constructHadronTable() = 0;
+
+  /**
+   * The table of hadron data
+   */
+  HadronTable _table;
+
+  /**
+   *  The PDG codes of the constituent particles allowed
+   */
+  vector<PDPtr> _partons;
+
+  /**
+   *  The PDG codes of the hadrons which cannot be produced in the hadronization
+   */
+  vector<PDPtr> _forbidden;
+
+  /**
+   *  Access to the table of hadrons
+   */
+   const HadronTable & table() const {
+    return _table;
+  }
+  
+  /**
+   *  Access to the list of partons
+   */
+   const vector<PDPtr> & partons() const {
+    return _partons;
+  }
+
 private:
 
   /**
@@ -481,11 +547,6 @@ private:
    * In fact, it should not even be implemented.
    */
   HadronSpectrum & operator=(const HadronSpectrum &) = delete;
-
-  /**
-   * The table of hadron data
-   */
-  HadronTable _table;
 
 };
 

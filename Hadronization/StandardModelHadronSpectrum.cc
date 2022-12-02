@@ -29,6 +29,7 @@ using namespace Herwig;
 
 namespace {
   // debug helper
+  /*
   void dumpTable(const StandardModelHadronSpectrum::HadronTable & tbl) {
     typedef StandardModelHadronSpectrum::HadronTable::const_iterator TableIter;
     for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
@@ -40,6 +41,7 @@ namespace {
       }
     }
   }
+  */
 
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
@@ -91,27 +93,25 @@ StandardModelHadronSpectrum::~StandardModelHadronSpectrum() {}
 
 
 void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const {
-  os << _partons << _pwtDquark  << _pwtUquark << _pwtSquark 
+  os << _pwtDquark  << _pwtUquark << _pwtSquark 
      << _pwtCquark << _pwtBquark << _pwtDIquark
      << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix 
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix 
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
-     << _forbidden << _sngWt << _decWt << _repwt << _pwt
-     << _limBottom << _limCharm << _limExotic << belowThreshold_
-     << _table;
+     << _sngWt << _decWt << _repwt << _pwt
+     << _limBottom << _limCharm << _limExotic << belowThreshold_;
 }
 
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
-  is >> _partons >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
+  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
      >> _pwtCquark >> _pwtBquark 
      >> _pwtDIquark>> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
-     >> _forbidden >> _sngWt >> _decWt >> _repwt >> _pwt
-     >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
-     >> _table;
+     >> _sngWt >> _decWt >> _repwt >> _pwt
+     >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_;
 }
 
 
@@ -167,16 +167,6 @@ void StandardModelHadronSpectrum::Init() {
     interfaceDecWt("DecWt","Weight for decuplet baryons",
                   &StandardModelHadronSpectrum::_decWt, 0, 1.0, 0.0, 10.0,
 		   false,false,false);
-
-  static RefVector<StandardModelHadronSpectrum,ParticleData> interfacePartons
-    ("Partons",
-     "The partons which are to be considered as the consistuents of the hadrons.",
-     &StandardModelHadronSpectrum::_partons, -1, false, false, true, false, false);
-
-  static RefVector<StandardModelHadronSpectrum,ParticleData> interfaceForbidden
-    ("Forbidden",
-     "The PDG codes of the particles which cannot be produced in the hadronization.",
-     &StandardModelHadronSpectrum::_forbidden, -1, false, false, true, false, false);
 
   //
   // mixing angles

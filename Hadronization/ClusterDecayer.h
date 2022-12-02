@@ -60,7 +60,7 @@ public:
   /**
    * Return the hadron spectrum
    */
-  Ptr<HadronSpectrum>::ptr spectrum() const {
+  Ptr<HadronSpectrum>::tptr spectrum() const {
     return _hadronSpectrum;
   }
 
