@@ -760,6 +760,8 @@ setup h_b(2P) 110553 h_b(2P) 10.2598 8.0E-5 0.0008 0 0 0 3 0
 #
 # the 2^3P_0 multiplet
 #
+create ThePEG::ParticleData chi_c0(2P)
+setup chi_c0(2P) 110441 chi_c0(2P) 3.9217 0.0188 0.0564 0 0 0 1 0 
 create ThePEG::ParticleData chi_b0(2P)
 setup chi_b0(2P) 110551 chi_b0(2P) 10.2325 0.000887 0.00887 0 0 0 1 0 
 #

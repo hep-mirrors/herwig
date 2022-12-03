@@ -308,6 +308,12 @@ set MEgg2ChiC21P:Parameters /Herwig/OniumParameters
 set MEgg2ChiC21P:State ccbar
 set MEgg2ChiC21P:PrincipalQuantumNumber 1
 
+# g g -> chi_c0(2P)
+create Herwig::MEGGto3P0 MEgg2ChiC02P HwMEHadronOnium.so
+set MEgg2ChiC02P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC02P:State ccbar
+set MEgg2ChiC02P:PrincipalQuantumNumber 2
+
 # g g -> chi_c2(2P)
 create Herwig::MEGGto3P2 MEgg2ChiC22P HwMEHadronOnium.so
 set MEgg2ChiC22P:Parameters /Herwig/OniumParameters
@@ -467,6 +473,15 @@ set AmpGG2ChiC21P:State ccbar
 set AmpGG2ChiC21P:MassOption OffShell
 set AmpGG2ChiC21P:PrincipalQuantumNumber 1
 set MEff2ffChiC21P:Amplitude AmpGG2ChiC21P
+
+# f f -> f f chi_c0(2P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiC02P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiC02P HwMEGammaGammaOnium.so
+set AmpGG2ChiC02P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiC02P:State ccbar
+set AmpGG2ChiC02P:MassOption OffShell
+set AmpGG2ChiC02P:PrincipalQuantumNumber 2
+set MEff2ffChiC02P:Amplitude AmpGG2ChiC02P
 
 # f f -> f f chi_c2(2P) via 2 photon process
 create Herwig::MEff2ffX MEff2ffChiC22P
