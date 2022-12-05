@@ -222,7 +222,7 @@ protected:
   *  Function that returns either the cluster mass or the lambda measure
   */
   Energy2 clustermass(const ClusterPtr & cluster) const;
-  
+
   /**
    * Draw a new flavour for the given cluster; currently defaults to
    * the default model
@@ -243,20 +243,20 @@ protected:
    */
   virtual pair<Energy,Energy> drawNewMasses(Energy Mc, bool soft1, bool soft2,
 					    Lorentz5Momentum& pClu1, Lorentz5Momentum& pClu2,
-					    tPPtr ptrQ1, Lorentz5Momentum& pQ1, 
+					    tPPtr ptrQ1, Lorentz5Momentum& pQ1,
 					    tPPtr, Lorentz5Momentum& pQone,
 					    tPPtr, Lorentz5Momentum& pQtwo,
 					    tPPtr ptrQ2,  Lorentz5Momentum& pQ2) const {
 
     pair<Energy,Energy> result;
-    
+
     double exp1=_pSplitLight;
     double exp2=_pSplitLight;
-    
+
     if     (CheckId::isExotic(ptrQ1->dataPtr())) exp1 = _pSplitExotic;
     else if(CheckId::hasBottom(ptrQ1->dataPtr()))exp1 = _pSplitBottom;
     else if(CheckId::hasCharm(ptrQ1->dataPtr())) exp1 = _pSplitCharm;
-    
+
     if     (CheckId::isExotic(ptrQ2->dataPtr()))  exp2 = _pSplitExotic;
     else if(CheckId::hasBottom(ptrQ2->dataPtr())) exp2 = _pSplitBottom;
     else if(CheckId::hasCharm(ptrQ2->dataPtr()))  exp2 = _pSplitCharm;
@@ -268,7 +268,7 @@ protected:
     pClu2.setMass(result.second);
 
     return result;
-      
+
   }
 
   /**
@@ -281,7 +281,7 @@ protected:
 				   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2,
 				   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb,
 				   Lorentz5Momentum &pQ2, Lorentz5Momentum &pQ2b) const;
-  
+
 protected:
 
   /**
@@ -448,6 +448,11 @@ private:
   * Flag used to determine between normal cluster fission and alternative cluster fission
   */
   int _fissionCluster;
+
+  /**
+  * Flag to choose static or dynamic kinematic thresholds in cluster splittings
+  */
+  int _kinematicThresholdChoice;
 
   //@}
    /**
