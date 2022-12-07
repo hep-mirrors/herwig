@@ -16,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -38,7 +39,7 @@ void GammaGamma2ScalarAmplitude::persistentInput(PersistentIStream & is, int) {
 void GammaGamma2ScalarAmplitude::doinit() {
   GammaGammaAmplitude::doinit();
   if(particle_->iSpin()!=PDT::Spin0)
-    throw Exception() << "Mustr have a spin-0 particle in GammaGamma2ScalarAmplitude"
+    throw Exception() << "Must have a spin-0 particle in GammaGamma2ScalarAmplitude"
 		      << Exception::runerror;
   if(particle_->massGenerator())
     massGen_=dynamic_ptr_cast<GenericMassGeneratorPtr>(particle_->massGenerator());
@@ -49,7 +50,7 @@ void GammaGamma2ScalarAmplitude::doinit() {
 // description system in ThePEG.
 DescribeClass<GammaGamma2ScalarAmplitude,GammaGammaAmplitude>
 describeHerwigGammaGamma2ScalarAmplitude("Herwig::GammaGamma2ScalarAmplitude",
-					       "HwMEGammaGamma.so");
+					 "HwMEGammaGamma.so");
 
 void GammaGamma2ScalarAmplitude::Init() {
 
@@ -100,9 +101,10 @@ vector<DiagPtr> GammaGamma2ScalarAmplitude::getDiagrams(unsigned int iopt) const
     output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, particle_, -1)));
   }
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, particle_, -1)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged())
+      output.push_back(new_ptr((Tree2toNDiagram(4), in.first, g, g, in.second,
+				1, in.first, 3, in.second, 2, particle_, -1)));
   }
   return output;
 }

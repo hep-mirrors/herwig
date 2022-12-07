@@ -16,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -106,9 +107,10 @@ vector<DiagPtr> GammaGamma2TensorAmplitude::getDiagrams(unsigned int iopt) const
     output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, particle_, -1)));
   }
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, particle_, -1)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged())
+      output.push_back(new_ptr((Tree2toNDiagram(4), in.first, g, g, in.second,
+				1, in.first, 3, in.second, 2, particle_, -1)));
   }
   return output;
 }

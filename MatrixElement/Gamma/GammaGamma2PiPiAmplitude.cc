@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -87,15 +88,18 @@ vector<DiagPtr> GammaGamma2PiPiAmplitude::getDiagrams(unsigned int iopt) const {
   }
   // e+ e- > e+ e- pi+pi-
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    for (long id : ids) {
-      tcPDPtr pip = getParticleData(id);
-      tcPDPtr pim = pip->CC();
-      // first t-channel
-      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 2,pip, 3,pim,-1)));
-      // interchange
-      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,pip,gamma,ep, 1, em, 4, ep, 3,pip, 2,pim,-2)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged()) {
+      for (long id : ids) {
+	tcPDPtr pip = getParticleData(id);
+	tcPDPtr pim = pip->CC();
+	// first t-channel
+	output.push_back(new_ptr((Tree2toNDiagram(5),in.first,gamma,pip,gamma,in.second,
+				  1, in.first, 4, in.second, 2,pip, 3,pim,-1)));
+	// interchange
+	output.push_back(new_ptr((Tree2toNDiagram(5),in.first,gamma,pip,gamma,in.second,
+				  1, in.first, 4, in.second, 3,pip, 2,pim,-2)));
+      }
     }
   }
   return output;

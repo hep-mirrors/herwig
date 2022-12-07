@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -114,9 +115,6 @@ void GammaGamma2ffAmplitude::Init() {
 vector<DiagPtr> GammaGamma2ffAmplitude::getDiagrams(unsigned int iopt) const {
   vector<DiagPtr> output; output.reserve(24);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
-  tcPDPtr ep = getParticleData(ParticleID::eplus );
-  tcPDPtr pp = getParticleData(ParticleID::pplus ); 
-  tcPDPtr em = getParticleData(ParticleID::eminus);
   for(int ix=1;ix<17;++ix) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
@@ -137,14 +135,15 @@ vector<DiagPtr> GammaGamma2ffAmplitude::getDiagrams(unsigned int iopt) const {
       output.push_back(new_ptr((Tree2toNDiagram(3),gamma,lp,gamma,2,lm, 1,lp,-2)));
     }
     else {
-      // first t-channel
-      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 2,lm, 3,lp,-1)));
-      // interchange							              
-      output.push_back(new_ptr((Tree2toNDiagram(5),em,gamma,lp,gamma,ep, 1, em, 4, ep, 3,lm, 2,lp,-2)));
-      // first t-channel
-      output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 2,lm, 3,lp,-1)));
-      // interchange							              
-      output.push_back(new_ptr((Tree2toNDiagram(5),pp,gamma,lp,gamma,pp, 1, pp, 4, pp, 3,lm, 2,lp,-2)));
+      cPDPair in = generator()->eventHandler()->incoming();
+      if(in.first->charged() && in.second->charged()) {
+	// first t-channel
+	output.push_back(new_ptr((Tree2toNDiagram(5),in.first,gamma,lp,gamma,in.second,
+				  1, in.first, 4, in.second, 2,lm, 3,lp,-1)));
+	// interchange
+	output.push_back(new_ptr((Tree2toNDiagram(5),in.first,gamma,lp,gamma,in.second,
+				  1, in.first, 4, in.second, 3,lm, 2,lp,-2)));
+      }
     }
   }
   return output;
