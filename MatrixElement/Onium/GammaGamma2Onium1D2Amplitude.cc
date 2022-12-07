@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -127,9 +128,10 @@ vector<DiagPtr> GammaGamma2Onium1D2Amplitude::getDiagrams(unsigned int iopt) con
     output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, -1)));
   }
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, ps, -1)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged())
+      output.push_back(new_ptr((Tree2toNDiagram(4), in.first, g, g, in.second,
+				1, in.first, 3, in.second, 2, ps, -1)));
   }
   return output;
 }
@@ -232,7 +234,7 @@ ProductionMatrixElement GammaGamma2Onium1D2Amplitude::me(const vector<VectorWave
 }
 
 double GammaGamma2Onium1D2Amplitude::
-generateKinematics(const double * r,
+generateKinematics(const double * ,
 		   const Energy2 & scale, 
 		   vector<Lorentz5Momentum> & momenta,
 		   const tcPDVector & ) {

@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
@@ -123,9 +124,10 @@ vector<DiagPtr> GammaGamma2Onium3P0Amplitude::getDiagrams(unsigned int iopt) con
     output.push_back(new_ptr((Tree2toNDiagram(2), g, g, 1, ps, -1)));
   }
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    output.push_back(new_ptr((Tree2toNDiagram(4), em, g, g, ep, 1, em, 3, ep, 2, ps, -1)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged())
+      output.push_back(new_ptr((Tree2toNDiagram(4), in.first, g, g, in.second,
+				1, in.first, 3, in.second, 2, ps, -1)));
   }
   return output;
 }
@@ -180,7 +182,7 @@ Energy GammaGamma2Onium3P0Amplitude::generateW(double r, const tcPDVector & part
 }
 
 double GammaGamma2Onium3P0Amplitude::
-generateKinematics(const double * r,
+generateKinematics(const double * ,
 		   const Energy2 & scale, 
 		   vector<Lorentz5Momentum> & momenta,
 		   const tcPDVector & ) {
