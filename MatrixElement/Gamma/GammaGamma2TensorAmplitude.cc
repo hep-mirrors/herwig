@@ -121,16 +121,8 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
 		  const vector<TensorWaveFunction> & ten,
 		  const Energy2 & t1, const Energy2 & t2,
 		  const Energy & M, double & output) const {
-  ProductionMatrixElement me;
-  if(v1.size()==4&&v2.size()==4) {
-    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2);
-  }
-  else if(v1.size()==2&&v2.size()==2) {
-    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin2);
-  }
-  else
-    assert(false);
+  vector<unsigned int> ihMax(4,0);
+  ProductionMatrixElement me = bookME(ihMax,v1.size(),v2.size(),vector<PDT::Spin>(1,PDT::Spin2));
   // calculate the matrix element
   output = 0;
   Lorentz5Momentum pG1 = v1[0].momentum();
@@ -138,12 +130,12 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
   Energy2 p1p2=pG1*pG2;
   Energy4 X = sqr(p1p2)-t1*t2;
   Lorentz5Momentum pDiff=pG1-pG2;
-  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
-    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+  for(unsigned int ih1A=0;ih1A<ihMax[0];++ih1A) {
+    for(unsigned int ih1B=0;ih1B<ihMax[1];++ih1B) {
       complex<Energy> d1[2]={ v1[2*ih1A+ih1B].wave()*pG1, v1[2*ih1A+ih1B].wave()*pG2};
       LorentzPolarizationVector Q1 = (t1*pG2-p1p2*pG1)*d1[1]/X+v1[2*ih1A+ih1B].wave();
-      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-     	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+      for(unsigned int ih2A=0;ih2A<ihMax[2];++ih2A) {
+     	for(unsigned int ih2B=0;ih2B<ihMax[2];++ih2B) {
 	  complex<Energy> d2[2]={ v2[2*ih2A+ih2B].wave()*pG1, v2[2*ih2A+ih2B].wave()*pG2};
 	  LorentzPolarizationVector Q2 = (t2*pG1-p1p2*pG2)*d2[0]/X+v2[2*ih2A+ih2B].wave();
 	  Complex amp0 = v1[2*ih1A+ih1B].wave()*v2[2*ih2A+ih2B].wave()
@@ -151,13 +143,11 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
 	  for(unsigned int ih3=0;ih3<5;++ih3) {
 	    Complex amp = FTT0_*amp0/M*ten[ih3].wave().preDot(pDiff)*pDiff
 	      +FTT2_/M*ten[ih3].wave().preDot(Q1)*Q2;
-	    output += norm(amp); 
-	    if(v1.size()==4) {
-	      me(ih1A,ih1B,ih2A,ih2B,ih3) = amp;
-	    }
-	    else {
-	      me(2*ih1B,2*ih2B,ih3) = amp;
-	    }
+	    output += norm(amp);
+	    if(v1.size()==2 && v2.size()==2)  me(2*ih1B,2*ih2B,ih3) = amp;
+	    else if(v1.size()==2)             me(2*ih1B,ih2A,ih2B,ih3) = amp;
+	    else if(v2.size()==2)             me(ih1A,ih1B,2*ih2B,ih3) = amp;
+	    else                              me(ih1A,ih1B,ih2A,ih2B,ih3) = amp;
 	  }
       	}
       }

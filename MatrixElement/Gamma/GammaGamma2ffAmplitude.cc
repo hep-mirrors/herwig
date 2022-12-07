@@ -156,24 +156,16 @@ GammaGamma2ffAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v1,
 					  const vector<SpinorWaveFunction>    & fbar,
 					  double & output, DVector & dweight) const {
   dweight = {0.,0.};
-  ProductionMatrixElement me;
-  if(v1.size()==4&&v2.size()==4) {
-    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1Half);
-  }
-  else if(v1.size()==2&&v2.size()==2) {
-    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
-  }
-  else
-    assert(false);
+  vector<unsigned int> ihMax(4,0);
+  ProductionMatrixElement me = bookME(ihMax,v1.size(),v2.size(),vector<PDT::Spin>(2,PDT::Spin1Half));
   Complex diag[2];
   Energy2 mt(ZERO);
   SpinorWaveFunction inters;
-  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
-    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+  for(unsigned int ih1A=0;ih1A<ihMax[0];++ih1A) {
+    for(unsigned int ih1B=0;ih1B<ihMax[1];++ih1B) {
       unsigned int ih1 = 2*ih1A+ih1B;
-      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+      for(unsigned int ih2A=0;ih2A<ihMax[2];++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<ihMax[3];++ih2B) {
 	  unsigned int ih2 = 2*ih2A+ih2B;
 	  for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
@@ -189,12 +181,10 @@ GammaGamma2ffAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v1,
 	      dweight[1] += norm(diag[1]);
 	      Complex amp = diag[0]+diag[1];
 	      output += norm(amp);
-	      if(v1.size()==4) {
-		me(ih1A,ih1B,ih2A,ih2B,ohel1,ohel2) = amp;
-	      }
-	      else {
-		me(2*ih1B,2*ih2B,ohel1,ohel2) = amp;
-	      }
+	      if(v1.size()==2 && v2.size()==2)  me(2*ih1B,2*ih2B,ohel1,ohel2) = amp;
+	      else if(v1.size()==2)             me(2*ih1B,ih2A,ih2B,ohel1,ohel2) = amp;
+	      else if(v2.size()==2)             me(ih1A,ih1B,2*ih2B,ohel1,ohel2) = amp;
+	      else                              me(ih1A,ih1B,ih2A,ih2B,ohel1,ohel2) = amp;
 	    }
 	  }
 	}

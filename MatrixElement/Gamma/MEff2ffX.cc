@@ -326,6 +326,8 @@ void MEff2ffX::Init() {
 vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
 						  const Lorentz5Momentum & pin,
 						  const Lorentz5Momentum & pout) const {
+  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
+  Lorentz5Momentum pGamma = pin-pout;
   // form factors
   Energy m = inPart->mass();
   double F1(0.),F2(0.);
@@ -341,9 +343,13 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
     F1 = (Ge + tau*Gm)/(1.+ tau);
     F2 = (Gm - Ge)/(1 + tau);
   }
+  else {
+    LorentzPolarizationVector current = UnitRemoval::E/t1_*ee*(inPart->iCharge()/3)*(pin+pout);
+    vector<VectorWaveFunction> output;
+    output.push_back(VectorWaveFunction(pGamma,gamma_,current));
+    return output;
+  }
   // calculation of the current
-  Lorentz5Momentum pGamma = pin-pout;
-  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi1_);
   Energy Ea = pin.t();
@@ -466,6 +472,8 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
 vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
 						   const Lorentz5Momentum & pin,
 						   const Lorentz5Momentum & pout) const {
+  Lorentz5Momentum pGamma = pin-pout;
+  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   // form factors
   Energy m = inPart->mass();
   double F1(0.),F2(0.);
@@ -481,9 +489,13 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
     F1 = (Ge + tau*Gm)/(1.+ tau);
     F2 = (Gm - Ge)/(1 + tau);
   }
+  else {
+    LorentzPolarizationVector current = UnitRemoval::E/t2_*ee*(inPart->iCharge()/3)*(pin+pout);
+    vector<VectorWaveFunction> output;
+    output.push_back(VectorWaveFunction(pGamma,gamma_,current));
+    return output;
+  }
   // calculation of the current
-  Lorentz5Momentum pGamma = pin-pout;
-  double ee = FFPVertex_->electroMagneticCoupling(ZERO);
   Complex II(0.,1.);
   Complex phase = exp(II*phi2_);
   Energy Ea = pin.t();
@@ -612,24 +624,36 @@ void MEff2ffX::constructVertex(tSubProPtr sub) {
   // calculate the fermionic currents
   vector<VectorWaveFunction> current1 =  firstCurrent(hard[0]->dataPtr(),hard[0]->momentum(),hard[2]->momentum());
   vector<VectorWaveFunction> current2 = secondCurrent(hard[1]->dataPtr(),hard[1]->momentum(),hard[3]->momentum());
-  // wavefunctionns for the fermions
+  // wavefunctions for the fermions
   vector<SpinorWaveFunction>    f1,f2;
   vector<SpinorBarWaveFunction> a1,a2;
-  if(hard[0]->id()>0) {
-    SpinorWaveFunction   (f1,hard[0],incoming,false,true);
-    SpinorBarWaveFunction(a1,hard[2],outgoing,true,true);
+  if(hard[0]->dataPtr()->iSpin()==PDT::Spin1Half) {
+    if(hard[0]->id()>0) {
+      SpinorWaveFunction   (f1,hard[0],incoming,false,true);
+      SpinorBarWaveFunction(a1,hard[2],outgoing,true,true);
+    }
+    else {
+      SpinorWaveFunction   (f1,hard[2],outgoing,true,true);
+      SpinorBarWaveFunction(a1,hard[0],incoming,false,true);
+    }
   }
   else {
-    SpinorWaveFunction   (f1,hard[2],outgoing,true,true);
-    SpinorBarWaveFunction(a1,hard[0],incoming,false,true);
+    ScalarWaveFunction(hard[0],incoming,false);
+    ScalarWaveFunction(hard[2],outgoing,true ); 
   }
-  if(hard[1]->id()>0) {
-    SpinorWaveFunction   (f2,hard[1],incoming,false,true);
-    SpinorBarWaveFunction(a2,hard[3],outgoing,true,true);
+  if(hard[1]->dataPtr()->iSpin()==PDT::Spin1Half) {
+    if(hard[1]->id()>0) {
+      SpinorWaveFunction   (f2,hard[1],incoming,false,true);
+      SpinorBarWaveFunction(a2,hard[3],outgoing,true,true);
+    }
+    else {
+      SpinorWaveFunction   (f2,hard[3],outgoing,true,true);
+      SpinorBarWaveFunction(a2,hard[1],incoming,false,true);
+    }
   }
   else {
-    SpinorWaveFunction   (f2,hard[3],outgoing,true,true);
-    SpinorBarWaveFunction(a2,hard[1],incoming,false,true);
+    ScalarWaveFunction(hard[1],incoming,false);
+    ScalarWaveFunction(hard[3],outgoing,true );
   }
   tParticleVector pTemp(hard.begin()+4,hard.end());
   ProductionMatrixElement me = amp_->me(current1,current2,pTemp);

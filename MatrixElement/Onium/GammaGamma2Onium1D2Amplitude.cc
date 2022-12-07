@@ -143,16 +143,6 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
 		  const Energy & M, double & output) const {
   Lorentz5Momentum pG1 = v1[0].momentum();
   Lorentz5Momentum pG2 = v2[0].momentum();
-  ProductionMatrixElement me;
-  if(v1.size()==4&&v2.size()==4) {
-    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin2);
-  }
-  else if(v1.size()==2&&v2.size()==2) {
-    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin2);
-  }
-  else
-    assert(false);
   // compute the tensor term
   Lorentz5Momentum pDiff = pG1-pG2;
   vector<Complex> tamp(5);
@@ -160,13 +150,15 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
     tamp[i] = ten[i].wave().trace()+2./sqr(M)*(ten[i].wave().preDot(pDiff)*pDiff);
   }
   // calculate the matrix element
+  vector<unsigned int> ihMax(4,0);
+  ProductionMatrixElement me = bookME(ihMax,v1.size(),v2.size(),vector<PDT::Spin>(1,PDT::Spin2));
   output = 0;
-  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
-    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+  for(unsigned int ih1A=0;ih1A<ihMax[0];++ih1A) {
+    for(unsigned int ih1B=0;ih1B<ihMax[1];++ih1B) {
       unsigned int ih1 = 2*ih1A+ih1B;
       auto vOff1 = Helicity::epsilon(v1[ih1].wave(),pG1,pG2);
-      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+      for(unsigned int ih2A=0;ih2A<ihMax[2];++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<ihMax[3];++ih2B) {
   	  unsigned int ih2 = 2*ih2A+ih2B;
 	  Complex vamp = (vOff1*v2[ih2].wave())/sqr(M);
 	  auto vOff2 = Helicity::epsilon(v2[ih2].wave(),pG1,pG2);
@@ -181,12 +173,10 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
 			      0.25*ten[ix].wave().postDot(v2[ih2].wave())*vOff1)/sqr(M);
 	    amp +=ampNew;
 	    output += norm(amp);
-	    if(v1.size()==4) {
-	      me(ih1A,ih1B,ih2A,ih2B,ix) = amp;
-	    }
-	    else {
-	      me(2*ih1B,2*ih2B,ix) = amp;
-	    }
+	    if(v1.size()==2 && v2.size()==2)  me(2*ih1B,2*ih2B,ix) = amp;
+	    else if(v1.size()==2)             me(2*ih1B,ih2A,ih2B,ix) = amp;
+	    else if(v2.size()==2)             me(ih1A,ih1B,2*ih2B,ix) = amp;
+	    else                              me(ih1A,ih1B,ih2A,ih2B,ix) = amp;
 	  }
 	}
       }

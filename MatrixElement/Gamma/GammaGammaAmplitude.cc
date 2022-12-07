@@ -62,3 +62,34 @@ double GammaGammaAmplitude::generateKinematics(const double * r,
   momenta[1].rescaleEnergy();
   return jac;
 }
+
+ProductionMatrixElement GammaGammaAmplitude::bookME(vector<unsigned int> &ihMax,
+						    unsigned int ih1, unsigned ih2,
+						    const vector<PDT::Spin> & spin) const {
+  PDT::Spin in[2];
+  vector<PDT::Spin> spins; spins.reserve(spin.size()+2);
+  unsigned int ih[2]={ih1,ih2};
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(ih[ix]==2) {
+      in[ix]=PDT::Spin1;
+      ihMax[2*ix  ] = 1;
+      ihMax[2*ix+1] = 2;
+    }
+    else if(ih[ix]==4) {
+      in[ix]=PDT::Spin1Half;
+      spins.push_back(PDT::Spin1Half);
+      ihMax[2*ix  ] = 2;
+      ihMax[2*ix+1] = 2;
+    }
+    else if(ih[ix]==1) {
+      in[ix]=PDT::Spin0;
+      spins.push_back(PDT::Spin0);
+      ihMax[2*ix  ] = 1;
+      ihMax[2*ix+1] = 1;
+    }
+    else
+      assert(false);
+  }
+  for(const PDT::Spin & s : spin) spins.push_back(s);
+  return ProductionMatrixElement(in[0],in[1],spins);
+}

@@ -19,6 +19,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig/MatrixElement/TwoToThreePhaseSpace.h"
 #include "Herwig/Utilities/Kinematics.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -98,16 +99,25 @@ vector<DiagPtr> GammaGamma2BC1S0QQbarAmplitude::getDiagrams(unsigned int iopt) c
   }
   // e+e- initiated
   else {
-    tcPDPtr ep = getParticleData(ParticleID::eplus );
-    tcPDPtr em = getParticleData(ParticleID::eminus);
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, c->CC(), gamma, ep, 1, em, 4, ep, 2, c      , 8, state      , 3, c->CC(), 8, b, -1)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, b->CC(), gamma, ep, 1, em, 4, ep, 5, b->CC(), 8, state      , 8, c->CC(), 2, b, -2)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, c      , gamma, ep, 1, em, 4, ep, 5, c      , 8, state      , 2, c->CC(), 8, b, -3)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, b      , gamma, ep, 1, em, 4, ep, 2, b->CC(), 8, state      , 8, c->CC(), 3, b, -4)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, b->CC(), gamma, ep, 1, em, 4, ep, 2, b      , 8, state->CC(), 3, b->CC(), 8, c, -1)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, c->CC(), gamma, ep, 1, em, 4, ep, 5, c->CC(), 8, state->CC(), 8, b->CC(), 2, c, -2)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, b      , gamma, ep, 1, em, 4, ep, 5, b      , 8, state->CC(), 2, b->CC(), 8, c, -3)));
-    output.push_back(new_ptr((Tree2toNDiagram(5), em, gamma, c      , gamma, ep, 1, em, 4, ep, 2, c->CC(), 8, state->CC(), 8, b->CC(), 3, c, -4)));
+    cPDPair in = generator()->eventHandler()->incoming();
+    if(in.first->charged() && in.second->charged()) {
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, c->CC(), gamma, in.second, 1, in.first, 4, in.second,
+				2, c      , 8, state      , 3, c->CC(), 8, b, -1)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, b->CC(), gamma, in.second, 1, in.first, 4, in.second,
+				5, b->CC(), 8, state      , 8, c->CC(), 2, b, -2)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, c      , gamma, in.second, 1, in.first, 4, in.second,
+				5, c      , 8, state      , 2, c->CC(), 8, b, -3)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, b      , gamma, in.second, 1, in.first, 4, in.second,
+				2, b->CC(), 8, state      , 8, c->CC(), 3, b, -4)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, b->CC(), gamma, in.second, 1, in.first, 4, in.second,
+				2, b      , 8, state->CC(), 3, b->CC(), 8, c, -1)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, c->CC(), gamma, in.second, 1, in.first, 4, in.second,
+				5, c->CC(), 8, state->CC(), 8, b->CC(), 2, c, -2)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, b      , gamma, in.second, 1, in.first, 4, in.second,
+				5, b      , 8, state->CC(), 2, b->CC(), 8, c, -3)));
+      output.push_back(new_ptr((Tree2toNDiagram(5), in.first, gamma, c      , gamma, in.second, 1, in.first, 4, in.second,
+				2, c->CC(), 8, state->CC(), 8, b->CC(), 3, c, -4)));
+    }
   }
   return output;
 }
@@ -141,16 +151,9 @@ GammaGamma2BC1S0QQbarAmplitude::helicityAmplitude(const Energy2 & scale,
   double eb(-1./3.),ec(2./3.);
   if(abs(v4[0].particle()->id())!=4) swap(eb,ec);
   // storage of the matrix element
-  ProductionMatrixElement me;
-  if(v1.size()==4&&v2.size()==4) {
-    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-  }
-  else if(v1.size()==2&&v2.size()==2) {
-    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-  }
-  else
-    assert(false);
+  vector<PDT::Spin> spins = {PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half};
+  vector<unsigned int> ihMax(4,0);
+  ProductionMatrixElement me = bookME(ihMax,v1.size(),v2.size(),spins);
   dweights.resize(4,0.);
   Energy2 dot1 = v1[0].momentum()*v2[0].momentum();
   Energy2 dot2 = v1[0].momentum()*out[1];
@@ -158,14 +161,14 @@ GammaGamma2BC1S0QQbarAmplitude::helicityAmplitude(const Energy2 & scale,
   Energy2 dot6 = out[0]*out[1];
   Energy2 dot7 = out[0]*out[2];
   vector<Complex> diag(20,0.);
-  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
-    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+  for(unsigned int ih1A=0;ih1A<ihMax[0];++ih1A) {
+    for(unsigned int ih1B=0;ih1B<ihMax[1];++ih1B) {
       unsigned int ih1 = 2*ih1A+ih1B;
       complex<Energy> dot5 = v2[0].momentum()*v1[ih1].wave();
       complex<Energy> dot8 = out[1]*v1[ih1].wave();
       complex<Energy> dot10 = out[2]*v1[ih1].wave();
-      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+      for(unsigned int ih2A=0;ih2A<ihMax[2];++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<ihMax[3];++ih2B) {
   	  unsigned int ih2 = 2*ih2A+ih2B;
 	  complex<Energy> dot4 = v1[0].momentum()*v2[ih2].wave();
 	  complex<Energy> dot9 = out[1]*v2[ih2].wave();
@@ -499,12 +502,10 @@ GammaGamma2BC1S0QQbarAmplitude::helicityAmplitude(const Energy2 & scale,
  	      dweights[2]+=norm(diag[15]);
  	      dweights[3]+=norm(diag[19]);
    	      output += norm(amp);
-  	      if(v1.size()==4) {
-  		me(ih1A,ih1B,ih2A,ih2B,0,ih4,ih5) = amp;
-  	      }
-  	      else {
-  		me(2*ih1B,2*ih2B,0,ih4,ih5) = amp;
-  	      }
+	      if(v1.size()==2 && v2.size()==2)  me(2*ih1B,2*ih2B,0,ih4,ih5) = amp;
+	      else if(v1.size()==2)             me(2*ih1B,ih2A,ih2B,0,ih4,ih5) = amp;
+	      else if(v2.size()==2)             me(ih1A,ih1B,2*ih2B,0,ih4,ih5) = amp;
+	      else                              me(ih1A,ih1B,ih2A,ih2B,0,ih4,ih5) = amp;
   	    }
   	  }
   	}

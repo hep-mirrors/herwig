@@ -108,6 +108,15 @@ public:
   }
   //@}
 
+protected:
+
+  /**
+   *   book the matrix element and indices for the loops
+   */
+  ProductionMatrixElement bookME(vector<unsigned int> &ihMax,
+				 unsigned int ih1, unsigned ih2,
+				 const vector<PDT::Spin> &spin) const;
+
 public:
 
   /**

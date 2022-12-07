@@ -112,27 +112,19 @@ GammaGamma2PiPiAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v
 					    double & output,
 					    DVector & dweight) const {
   dweight = {0.,0.};
-  ProductionMatrixElement me;
-  if(v1.size()==4&&v2.size()==4) {
-    me = ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-  				 PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin0);
-  }
-  else if(v1.size()==2&&v2.size()==2) {
-    me = ProductionMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  }
-  else
-    assert(false);
+  vector<unsigned int> ihMax(4,0);
+  ProductionMatrixElement me = bookME(ihMax,v1.size(),v2.size(),vector<PDT::Spin>(2,PDT::Spin0));
   // calculate the matrix element
   Energy2 off = -0.5*v1[0].momentum().m2(); 
   Energy2 d1  = off+v1[0].momentum()*out[0], d2 = off+v1[0].momentum()*out[1];
   Complex diag[2];
-  for(unsigned int ih1A=0;ih1A<v1.size()/2;++ih1A) {
-    for(unsigned int ih1B=0;ih1B<2;++ih1B) {
+  for(unsigned int ih1A=0;ih1A<ihMax[0];++ih1A) {
+    for(unsigned int ih1B=0;ih1B<ihMax[1];++ih1B) {
       unsigned int ih1 = 2*ih1A+ih1B;
       complex<Energy> a1 = out[0]*v1[ih1].wave();
       complex<Energy> a2 = out[1]*v1[ih1].wave();
-      for(unsigned int ih2A=0;ih2A<v1.size()/2;++ih2A) {
-  	for(unsigned int ih2B=0;ih2B<2;++ih2B) {
+      for(unsigned int ih2A=0;ih2A<ihMax[2];++ih2A) {
+  	for(unsigned int ih2B=0;ih2B<ihMax[3];++ih2B) {
 	  unsigned int ih2 = 2*ih2A+ih2B;
 	  complex<Energy> b1 = out[0]*v2[ih2].wave();
 	  complex<Energy> b2 = out[1]*v2[ih2].wave();
@@ -144,12 +136,10 @@ GammaGamma2PiPiAmplitude::helicityAmplitude(const vector<VectorWaveFunction> & v
 	  dweight[1] += norm(diag[1]);
 	  Complex amp = v1[ih1].wave()*v2[ih2].wave()-diag[0]-diag[1];
 	  output += norm(amp);
-	  if(v1.size()==4) {
-	    me(ih1A,ih1B,ih2A,ih2B,0,0) = amp;
-	  }
-	  else {
-	    me(2*ih1B,2*ih2B,0,0) = amp;
-	  }
+	  if(v1.size()==2 && v2.size()==2)  me(2*ih1B,2*ih2B,0,0) = amp;
+	  else if(v1.size()==2)             me(2*ih1B,ih2A,ih2B,0,0) = amp;
+	  else if(v2.size()==2)             me(ih1A,ih1B,2*ih2B,0,0) = amp;
+	  else                              me(ih1A,ih1B,ih2A,ih2B,0,0) = amp;
 	}
       }
     }
