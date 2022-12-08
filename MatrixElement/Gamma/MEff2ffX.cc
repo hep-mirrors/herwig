@@ -244,13 +244,13 @@ IBPtr MEff2ffX::fullclone() const {
 void MEff2ffX::persistentOutput(PersistentOStream & os) const {
   os << FFPVertex_ << gamma_ << amp_ << currentMode_
      << ounit(Q2_1min_,GeV2) << ounit(Q2_1max_,GeV2)
-     << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2);
+     << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2) << formFactor_;
 }
 
 void MEff2ffX::persistentInput(PersistentIStream & is, int) {
   is >> FFPVertex_ >> gamma_ >> amp_ >> currentMode_
      >> iunit(Q2_1min_,GeV2) >> iunit(Q2_1max_,GeV2)
-     >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2);
+     >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2) >> formFactor_;
 }
 
 void MEff2ffX::doinit() {
@@ -259,6 +259,10 @@ void MEff2ffX::doinit() {
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   FFPVertex_ = hwsm->vertexFFP();
   gamma_ = getParticleData(ParticleID::gamma);
+
+  vector<Energy2> q2 = {0.*GeV2,1.*GeV2,2.*GeV2,3.*GeV2,4.*GeV2,100.*GeV2};
+  vector<double>  ff = {1.,1.,1.,1.,1.,1.};
+  formFactor_ = make_InterpolatorPtr(ff,q2,3);
 }
 
 // The following static variable is needed for the type
@@ -344,7 +348,7 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
     F2 = (Gm - Ge)/(1 + tau);
   }
   else {
-    LorentzPolarizationVector current = UnitRemoval::E/t1_*ee*(inPart->iCharge()/3)*(pin+pout);
+    LorentzPolarizationVector current = (*formFactor_)(t1_)*UnitRemoval::E/t1_*ee*(inPart->iCharge()/3)*(pin+pout);
     vector<VectorWaveFunction> output;
     output.push_back(VectorWaveFunction(pGamma,gamma_,current));
     return output;
@@ -490,7 +494,7 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
     F2 = (Gm - Ge)/(1 + tau);
   }
   else {
-    LorentzPolarizationVector current = UnitRemoval::E/t2_*ee*(inPart->iCharge()/3)*(pin+pout);
+    LorentzPolarizationVector current = (*formFactor_)(t2_)*UnitRemoval::E/t2_*ee*(inPart->iCharge()/3)*(pin+pout);
     vector<VectorWaveFunction> output;
     output.push_back(VectorWaveFunction(pGamma,gamma_,current));
     return output;

@@ -7,6 +7,7 @@
 
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Utilities/Interpolator.h"
 #include "GammaGammaAmplitude.h"
 
 namespace Herwig {
@@ -229,6 +230,11 @@ private:
    *  Pointer to the amplitude for the \f$\gamma\gamma$ process
    */
   GammaGammaAmpPtr amp_;
+
+  /**
+   *  Storage of the nucleon form factor
+   */
+  Interpolator<double,Energy2>::Ptr formFactor_;
 
 private:
 
