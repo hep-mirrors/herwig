@@ -14,6 +14,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 #include "Herwig/Models/StandardModel/SMFFHVertex.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
@@ -26,11 +27,11 @@ IBPtr OneOneZeroEWSplitFn::fullclone() const {
 }
 
 void OneOneZeroEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gWWH_ << gZZH_ << _theSM;
+  os << gWWH_ << gZZH_ << _theSM << _couplingValue;
 }
 
 void OneOneZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gWWH_ >> gZZH_ >> _theSM;
+  is >> gWWH_ >> gZZH_ >> _theSM >> _couplingValue;;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -42,6 +43,12 @@ void OneOneZeroEWSplitFn::Init() {
 
   static ClassDocumentation<OneOneZeroEWSplitFn> documentation
     ("The OneOneZeroEWSplitFn class implements the splittings W->WH and Z->ZH");
+
+  static Parameter<OneOneZeroEWSplitFn, double> interfaceCouplingValue
+    ("CouplingValue",
+     "The numerical value of the splitting coupling to be imported for BSM splittings",
+     &OneOneZeroEWSplitFn::_couplingValue, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
 
 }
 
@@ -60,14 +67,18 @@ void OneOneZeroEWSplitFn::doinit() {
 
 
 void OneOneZeroEWSplitFn::getCouplings(double & g, const IdList & ids) const {
-  if(abs(ids[0]->id())==ParticleID::Wplus){
-    g = gWWH_;
+  if(_couplingValue!=0)
+    g = _couplingValue;
+  else {
+    if(abs(ids[0]->id())==ParticleID::Wplus){
+      g = gWWH_;
+    }
+    else if(ids[0]->id()==ParticleID::Z0){
+      g = gZZH_;
+    }
+    else
+      assert(false);
   }
-  else if(ids[0]->id()==ParticleID::Z0){
-    g = gZZH_;
-  }
-  else
-    assert(false);
 }
 
 
@@ -162,9 +173,9 @@ bool OneOneZeroEWSplitFn::accept(const IdList &ids) const {
     return false;
   if(ids[0]->id()!=ids[1]->id())
     return false;
-  if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->id()==ParticleID::h0)
+  if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->iSpin()==PDT::Spin0)
     return true;
-  else if(ids[0]->id()==ParticleID::Z0 && ids[2]->id()==ParticleID::h0)
+  else if(ids[0]->id()==ParticleID::Z0 && ids[2]->iSpin()==PDT::Spin0)
     return true;
   else
     return false;

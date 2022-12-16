@@ -13,7 +13,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The HalfHalfZeroEWSplitFn class implements the splitting function for 
+ * The HalfHalfZeroEWSplitFn class implements the splitting function for
  * \f$\frac12\to q\frac12 h\f$ where the spin-0 higgs particle is a massive scalar boson.
  *
  * @see \ref HalfHalfZeroEWSplitFnInterfaces "The interfaces"
@@ -51,7 +51,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList & ids) const;
 
   /**
    * The concrete implementation of the
@@ -67,7 +67,7 @@ public:
 			const bool mass, const RhoDMatrix & rho) const;
 
   /**
-   * The concrete implementation of the indefinite integral of the 
+   * The concrete implementation of the indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
@@ -75,7 +75,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
+  virtual double integOverP(const double z, const IdList & ids,
 			    unsigned int PDFfactor=0) const;
 
   /**
@@ -85,8 +85,8 @@ public:
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+   */
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const;
   //@}
 
@@ -110,10 +110,10 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 		      const RhoDMatrix &);
-  
+
   /**
    * Calculate the matrix element for the splitting
    * @param z The energy fraction
@@ -121,7 +121,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
 				   const IdList & ids, const double phi, bool timeLike);
 
 protected:
@@ -206,6 +206,10 @@ private:
    */
   double ghqq_;
 
+  /**
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValue;
 
   /**
    * Pointer to the SM object.

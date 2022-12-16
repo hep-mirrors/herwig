@@ -212,6 +212,11 @@ private:
    * Pointer to the SM object.
    */
   tcHwSMPtr _theSM;
+
+  /**
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValue;
 };
 
 }
