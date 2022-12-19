@@ -65,10 +65,11 @@ void OneOneZeroEWSplitFn::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
 
-
 void OneOneZeroEWSplitFn::getCouplings(double & g, const IdList & ids) const {
-  if(_couplingValue!=0)
-    g = _couplingValue;
+  if(_couplingValue!=0) {
+    double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+    g = _couplingValue / e;
+  }
   else {
     if(abs(ids[0]->id())==ParticleID::Wplus){
       g = gWWH_;

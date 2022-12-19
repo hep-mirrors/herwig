@@ -209,7 +209,7 @@ private:
   /**
    *   numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValue;
+  double _couplingValue = 0.;
 
   /**
    * Pointer to the SM object.

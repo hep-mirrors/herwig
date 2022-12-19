@@ -56,14 +56,15 @@ void HalfHalfZeroEWSplitFn::doinit() {
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   ghqq_ = 1./sqrt(4.*sw2);
-
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
 
 void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const {
   if(ids[2]->iSpin()==PDT::Spin0) {
-    if(_couplingValue!=0)
-      gH = _couplingValue;
+    if(_couplingValue!=0) {
+      double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+      gH = _couplingValue / e;
+    }
     else {
       //get quark masses
       Energy mq;
