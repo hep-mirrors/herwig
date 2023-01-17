@@ -33,6 +33,9 @@ newdef ClusterHadHandler:ColourReconnector ColourReconnector
 newdef ClusterHadHandler:ClusterFissioner ClusterFissioner
 newdef ClusterHadHandler:LightClusterDecayer LightClusterDecayer
 newdef ClusterHadHandler:ClusterDecayer ClusterDecayer
+
+do ClusterHadHandler:UseHandlersForInteraction QCD
+
 newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
 newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
 newdef ClusterHadHandler:UnderlyingEventHandler NULL
