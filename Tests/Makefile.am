@@ -206,7 +206,13 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.in ) \
                   $(shell echo Rivet/EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.in ) \
                   $(shell echo Rivet/EE-Gamma-Onium-91.2.in ) \
-	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
+	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in ) \
+	          $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Bottom}-{1..5}.in) \
+                  $(shell echo Rivet/Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.in) \
+                  $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.in) \
+	          $(shell echo Rivet/Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Octet-{Jpsi,psi2S,chi_c{0..2}}-Jets-{1..5}.in) \
+	          $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Octet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-Jets-{1..5}.in) \
+                  $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Singlet-{B_c,B_cStar,B_c2S,B_c2SStar}-{Charm,Bottom}-{1..5}.in)
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
