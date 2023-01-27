@@ -310,6 +310,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   initialize(ids,tmin);
   // check max > min
   if(tmax<=tmin) return ShoKinPtr();
+
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
@@ -376,6 +377,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
     }
     while(PSRew || SplitRew || alphaRew);
   }
+  if(ids[0]->id()==25)
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
 

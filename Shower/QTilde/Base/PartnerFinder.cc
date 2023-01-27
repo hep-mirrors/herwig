@@ -566,10 +566,19 @@ PartnerFinder::findEWPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles,
 			       const bool ) {
   vector< pair<double, tShowerParticlePtr> > partners;
+  bool HiggsScalar = (particle->dataPtr()->iSpin()==PDT::Spin0 &&
+                      particle->dataPtr()->mass()!=0.*GeV) ? true : false;
   for(ShowerParticlePtr partner : particles) {
-    if(particle==partner || !weaklyInteracting(partner->dataPtr()))
-      continue;
-    partners.push_back(make_pair(1.,partner));
+    if(!HiggsScalar) {
+      if( particle==partner  || !weaklyInteracting(partner->dataPtr()))
+        continue;
+      partners.push_back(make_pair(1.,partner));
+    }
+    else { //???
+      if(particle==partner)
+        continue;
+      partners.push_back(make_pair(1.,partner));
+    }
   }
   return partners;
 }

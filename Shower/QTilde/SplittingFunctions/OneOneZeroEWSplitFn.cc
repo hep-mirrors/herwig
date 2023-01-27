@@ -67,8 +67,10 @@ void OneOneZeroEWSplitFn::doinit() {
 
 void OneOneZeroEWSplitFn::getCouplings(double & g, const IdList & ids) const {
   if(_couplingValue!=0) {
-    double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
-    g = _couplingValue / e;
+    double e  = sqrt(4.*Constants::pi*generator()->standardModel()
+              ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+    double m0 = ids[0]->mass()/GeV;
+    g = _couplingValue/e/m0;
   }
   else {
     if(abs(ids[0]->id())==ParticleID::Wplus){

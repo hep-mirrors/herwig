@@ -26,8 +26,8 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
 
 /** \ingroup Shower
  *
- *  This class is responsible of two related tasks: 
- *  -  it finds the partners 
+ *  This class is responsible of two related tasks:
+ *  -  it finds the partners
  *  -  for each pair of partners (and interaction therefore)
  *      it sets the initial evolution scales of both of them.
  *
@@ -35,8 +35,8 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
  *  the calculation of the initial evolution scales should be implemented
  *  for different shower evolution models in classes inheriting from this one.
  *  Notice that a given particle has, in general, a different partner
- *  for each different interaction; however, given a partner, its 
- *  initial evolution scale, Q, is purely a kinematical relationship 
+ *  for each different interaction; however, given a partner, its
+ *  initial evolution scale, Q, is purely a kinematical relationship
  *  between the pair, without dependence on the dynamics (i.e. type of interaction).
  *
  * @see \ref PartnerFinderInterfaces "The interfaces"
@@ -53,13 +53,13 @@ public:
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
-   * each of these methods set the initial evolution scales of those particles, 
+   * each of these methods set the initial evolution scales of those particles,
    * between the ones given in input, that do not have yet their
-   * evolution scale set. 
-   * The input collection of particles can be either the full collection of 
+   * evolution scale set.
+   * The input collection of particles can be either the full collection of
    * showering particles (kept in the main class ShowerHandler,
-   * in the case isDecayCase is false, or simply, in the case isDecayCase 
-   * is true, the decaying particle and its decay products.    
+   * in the case isDecayCase is false, or simply, in the case isDecayCase
+   * is true, the decaying particle and its decay products.
    * The methods returns true, unless something wrong (inconsistencies,
    * or undefined values) happens.
    *
@@ -156,7 +156,7 @@ protected:
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
    */
-  vector< pair<ShowerPartnerType, tShowerParticlePtr> > 
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> >
   findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
@@ -181,8 +181,8 @@ public:
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
    * this method returns their initial evolution scales as a pair.
-   * If something wrong happens, it returns the null (ZERO,ZERO) pair. 
-   * This method is used by the above setXXXInitialEvolutionScales 
+   * If something wrong happens, it returns the null (ZERO,ZERO) pair.
+   * This method is used by the above setXXXInitialEvolutionScales
    * methods.
    * These methods must be overiden in inheriting classes
    */
@@ -196,13 +196,13 @@ public:
   /**
    *  Calculate the initial evolution scales given momenta
    */
-  pair<Energy,Energy> calculateFinalFinalScales(const Lorentz5Momentum & p1, 
+  pair<Energy,Energy> calculateFinalFinalScales(const Lorentz5Momentum & p1,
                                                 const Lorentz5Momentum & p2, int key=0);
 
   /**
    *  Calculate the initial evolution scales given momenta
    */
-  pair<Energy,Energy> calculateInitialInitialScales(const Lorentz5Momentum& p1, 
+  pair<Energy,Energy> calculateInitialInitialScales(const Lorentz5Momentum& p1,
 						    const Lorentz5Momentum& p2);
 
   /**
@@ -221,7 +221,9 @@ protected:
    */
   bool weaklyInteracting(tcPDPtr pd) {
     long id = abs(pd->id());
-    return ( id==ParticleID::Wplus || id ==ParticleID::Z0 || (id>=1 && id<=6 ) || (id>=11 && id<=16));
+    bool HiggsScalar = (pd->iSpin()==PDT::Spin0 && pd->mass()!=0.*GeV) ? true : false;
+    return ( id==ParticleID::Wplus || id ==ParticleID::Z0 || id ==ParticleID::h0 ||
+            HiggsScalar || (id>=1 && id<=6 ) || (id>=11 && id<=16));
   }
 
 private:

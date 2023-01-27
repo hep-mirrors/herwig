@@ -62,8 +62,10 @@ void HalfHalfZeroEWSplitFn::doinit() {
 void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const {
   if(ids[2]->iSpin()==PDT::Spin0) {
     if(_couplingValue!=0) {
-      double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
-      gH = _couplingValue / e;
+      double e  = sqrt(4.*Constants::pi*generator()->standardModel()
+                ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+      // a factor e is factored out since its already accounted for
+      gH = _couplingValue/e;
     }
     else {
       //get quark masses
@@ -84,17 +86,24 @@ void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const 
 
 void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids, const Energy2 t) const {
   if(ids[2]->iSpin()==PDT::Spin0) {
-    //get quark masses
-    Energy mq;
-    if(abs(ids[0]->id())==ParticleID::c)
-      mq = _theSM->mass(t,getParticleData(ParticleID::c));
-    else if(abs(ids[0]->id())==ParticleID::b)
-      mq = _theSM->mass(t,getParticleData(ParticleID::b));
-    else if(abs(ids[0]->id())==ParticleID::t)
-      mq = _theSM->mass(t,getParticleData(ParticleID::t));
-    Energy mW = getParticleData(ParticleID::Wplus)->mass();
-    //Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
-    gH = ghqq_*(mq/mW);
+    if(_couplingValue!=0) {
+      Energy mZ = _theSM->mass(t,getParticleData(ParticleID::Z0));
+      double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(sqr(mZ)));
+      gH = _couplingValue / e;
+    }
+    else {
+      //get quark masses
+      Energy mq;
+      if(abs(ids[0]->id())==ParticleID::c)
+        mq = _theSM->mass(t,getParticleData(ParticleID::c));
+      else if(abs(ids[0]->id())==ParticleID::b)
+        mq = _theSM->mass(t,getParticleData(ParticleID::b));
+      else if(abs(ids[0]->id())==ParticleID::t)
+        mq = _theSM->mass(t,getParticleData(ParticleID::t));
+      Energy mW = getParticleData(ParticleID::Wplus)->mass();
+      //Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
+      gH = ghqq_*(mq/mW);
+    }
   }
   else
     assert(false);
