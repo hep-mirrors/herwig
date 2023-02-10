@@ -251,6 +251,11 @@ public:
   virtual const vector<long>& heavyHadronizingQuarks() const = 0;
 
   /**
+   * The lightest quarks, used for finding the lightest Hadron Pair
+   */
+  virtual const vector<long>& lightestQuarks() const = 0;
+
+  /**
    * Return true if any of the possible three input particles contains
    * the indicated heavy quark.  false otherwise. In the case that
    * only the first particle is specified, it can be: an (anti-)quark,
@@ -268,16 +273,21 @@ public:
 
   //@}
 
-  /**
+   /**
    * Return true if the two or three particles in input can be the components 
    * of a hadron; false otherwise.
    */
-  virtual bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr()) const = 0;
+  inline bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr()) const {
+    return (!par3 && canBeMeson(par1,par2)) || canBeBaryon(par1,par2,par3);
+  }
 
   /**
-   *  Check if can't make a diquark from the partons
+   * Check if can't make a diquark from the partons
    */
-  virtual bool canMakeDiQuark(tcPPtr p1, tcPPtr p2) const = 0;
+  bool canMakeDiQuark(tcPPtr p1, tcPPtr p2) const {
+    long id1 = p1->id(), id2 = p2->id();
+    return QuarkMatcher::Check(id1) && QuarkMatcher::Check(id2) && id1*id2>0;
+  }
 
   /**
    * Return the particle data of the diquark (anti-diquark) made by the two 
@@ -285,7 +295,7 @@ public:
    * @param par1 (anti-)quark data pointer
    * @param par2 (anti-)quark data pointer
    */
-  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const = 0;
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Return the quark flavour which should be considered to set the
@@ -311,7 +321,7 @@ public:
    * @param par2 2nd constituent
    * @param mass Mass of the cluster
    */
-  virtual tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const = 0;
+  tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
 
   /**
    * This returns the lightest pair of hadrons given by the flavours.
@@ -342,8 +352,8 @@ public:
    * select the one that produces the lightest pair of hadrons, compatible
    * with the charge conservation constraint.
    */
-  virtual pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-						   tcPDPtr ptr3 = PDPtr ()) const = 0;
+  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+						   tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles
@@ -358,6 +368,15 @@ public:
     return ( pairData.first->mass() + pairData.second->mass() ); 
   }
 
+  
+  /**
+   * Return the threshold for a cluster to split into a pair of hadrons.
+   * This is normally the mass of the lightest hadron Pair, but can be
+   * higher for heavy and exotic clusters
+   */
+  virtual Energy hadronPairThreshold(tcPDPtr par1, tcPDPtr par2) const=0;
+
+
   /**
    * Returns the lightest hadron formed by the given particles.
    *
@@ -368,8 +387,8 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent
    */
-   virtual tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-				  tcPDPtr ptr3 = PDPtr ()) const = 0;
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+				  tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -383,9 +402,9 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent
    */
-  virtual vector<pair<tcPDPtr,double> > hadronsBelowThreshold(Energy threshold,
+  vector<pair<tcPDPtr,double> > hadronsBelowThreshold(Energy threshold,
 							      tcPDPtr ptr1, tcPDPtr ptr2,
-							      tcPDPtr ptr3 = PDPtr ()) const = 0;
+							      tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
@@ -419,7 +438,7 @@ public:
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent 
    */
-  virtual Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const = 0;
+  Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
   
   /**
    * Return the weight for the given flavour
@@ -469,7 +488,26 @@ protected:
   virtual void doinit();
   //@}
 
+  /**
+   * Return the id of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) of id specified in input (id1, id2).
+   * Caller must ensure that id1 and id2 are quarks.
+   */
+  virtual long makeDiquarkID(long id1, long id2)  const = 0;
+
 protected:
+  /**
+   * Return true if the two particles in input can be the components of a meson;
+   *false otherwise.
+   */
+  bool canBeMeson(tcPDPtr par1,tcPDPtr par2)  const;
+
+  /**
+   * Return true if the two or three particles in input can be the components 
+   * of a baryon; false otherwise.
+   */
+  bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
+
 
   /**
    *  Construct the table of hadron data
@@ -539,6 +577,54 @@ protected:
    const vector<PDPtr> & partons() const {
     return _partons;
   }
+
+  /**
+   * Calculates a special weight specific to  a given hadron.
+   * @param id The PDG code of the hadron
+   */
+  double specialWeight(long id) const;
+
+  /**
+   * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
+   * for the input PDG id  idHad > 0, suppose to be made by the
+   * two constituent particle pointers: par1 and par2 (both with proper sign).
+   */
+  int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
+
+  /**
+   *  Option for the selection of hadrons below the pair threshold
+   */
+  unsigned int belowThreshold_;
+
+  /**
+   *  The weights for the excited meson multiplets
+   */
+  vector<vector<vector<double> > > _repwt;
+
+  /**
+   * Singlet and Decuplet weights
+   */
+  //@{
+  /**
+   *  The singlet weight
+   */
+  double _sngWt; 
+
+  /**
+   *  The decuplet weight
+   */
+  double _decWt; 
+  //@}
+
+  /**
+   * Enums so arrays can be statically allocated
+   */
+  //@{
+  /**
+   * Defines values for array sizes. L,J,N max values for excited mesons.
+   */
+  enum MesonMultiplets { Lmax = 3, Jmax = 4, Nmax = 4}; 
+  //@}
 
 private:
 

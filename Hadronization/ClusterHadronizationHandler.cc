@@ -199,6 +199,51 @@ void ClusterHadronizationHandler::Init() {
 
 }
 
+void ClusterHadronizationHandler::rebind(const TranslationMap & trans) {
+  for (auto iter : _partonSplitters) {
+     _partonSplitters[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterFinders) {
+     _clusterFinders[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _colourReconnectors) {
+     _colourReconnectors[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterFissioners) {
+     _clusterFissioners[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _lightClusterDecayers) {
+     _lightClusterDecayers[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterDecayers) {
+     _clusterDecayers[iter.first] = trans.translate(iter.second);
+  }
+  HandlerBase::rebind(trans);
+}
+
+IVector ClusterHadronizationHandler::getReferences() {
+  IVector ret = HandlerBase::getReferences();
+  for (auto iter : _partonSplitters) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterFinders) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _colourReconnectors) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterFissioners) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _lightClusterDecayers) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterDecayers) {
+     ret.push_back(iter.second);
+  }
+  return ret;
+}
+
 void ClusterHadronizationHandler::doinit() {
   HadronizationHandler::doinit();
   // put current handlers into action for QCD to guarantee default behaviour
@@ -214,10 +259,10 @@ void ClusterHadronizationHandler::doinit() {
 
 string ClusterHadronizationHandler::_setHandlersForInteraction(string interaction) {
   int interactionId = -1;
-  if ( interaction == "QCD" ) {
+  if ( interaction == " QCD" ) {
     interactionId = PDT::ColouredQCD;
   } else {
-    return "unknown interaction";
+    return "unknown interaction " + interaction;
   }
   _partonSplitters[interactionId] = _partonSplitter;
   _clusterFinders[interactionId] = _clusterFinder;
@@ -251,27 +296,24 @@ handle(EventHandler & ch, const tPVector & tagged,
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
 
-  // ATTENTION set this per interaction gluon type
-  Energy2 Q02 = 1.01*sqr(getParticleData(ParticleID::g)->constituentMass());
-
-  array<int,1> interactions = { PDT::ColouredQCD };
+  // TODO: Should this be hard-coded here, or defined in inputs?
+  map<int,int> interactions = {{PDT::ColouredQCD, ParticleID::g}};
   
   // PVector currentlist(tagged.begin(),tagged.end());
   map<int,PVector> currentlists;
   for ( const auto & p : theList ) {
     for ( auto i : interactions ) {
-      if ( p->data().colouredInteraction() == i ) {
-	currentlists[i].push_back(p);
-	if ( i == PDT::ColouredQCD ) {
-	  if(currentlists[i].back()->scale()<Q02) currentlists[i].back()->scale(Q02);
-	}
+      if ( p->data().colouredInteraction() == i.first ) {
+	currentlists[i.first].push_back(p);
+    Energy2 Q02 = 1.01*sqr(getParticleData(i.second)->constituentMass());
+	if(currentlists[i.first].back()->scale()<Q02) currentlists[i.first].back()->scale(Q02);
       }
     }
   }
 
   map<int,ClusterVector> clusters;
 
-  // ATTENTION this needs to have changes to include the new hadron spectrum functionality (gluon, gluon mass generator)
+  // ATTENTION this needs to have changes to include the new hadron spectrum functionality (gluon mass generator)
   for ( auto i : interactions ) {
 
     // reshuffle to the constituents
@@ -280,10 +322,10 @@ handle(EventHandler & ch, const tPVector & tagged,
       vector<PVector> reshufflelists;
 
       if (reshuffleMode_==0){ // global reshuffling
-	reshufflelists.push_back(currentlists[i]);
+	reshufflelists.push_back(currentlists[i.first]);
       }
       else if (reshuffleMode_==1){// colour connected reshuffling
-	splitIntoColourSinglets(currentlists[i], reshufflelists, i);
+	splitIntoColourSinglets(currentlists[i.first], reshufflelists, i.first);
       }
 
       for (auto currentlist : reshufflelists){
@@ -293,7 +335,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 	size_t nGluons = 0; // number of gluons for which a mass need be generated
 	for ( auto p : currentlist ) {
 	  totalQ += p->momentum();
-	  if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
+	  if ( p->id() == i.second && gluonMassGenerator() ) {
 	    ++nGluons;
 	    continue;
 	  }
@@ -311,7 +353,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 	// set masses for inidividual particles
 	vector<Energy> masses;
 	for ( auto p : currentlist ) {
-	  if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
+	  if ( p->id() == i.second && gluonMassGenerator() ) {
 	    list<Energy>::const_iterator it = gluonMasses.begin();
 	    advance(it,UseRandom::irnd(gluonMasses.size()));
 	    masses.push_back(*it);
@@ -330,37 +372,37 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
 
     // split the gluons
-    if ( !currentlists[i].empty() ) {
-      assert(_partonSplitters.find(i) != _partonSplitters.end());
-      _partonSplitters[i]->split(currentlists[i]);
+    if ( !currentlists[i.first].empty() ) {
+      assert(_partonSplitters.find(i.first) != _partonSplitters.end());
+      _partonSplitters[i.first]->split(currentlists[i.first]);
     }
 
     // form the clusters
-    if ( !currentlists[i].empty() ) {
-      assert(_clusterFinders.find(i) != _clusterFinders.end());
-      clusters[i] = _clusterFinders[i]->formClusters(currentlists[i]);
+    if ( !currentlists[i.first].empty() ) {
+      assert(_clusterFinders.find(i.first) != _clusterFinders.end());
+      clusters[i.first] = _clusterFinders[i.first]->formClusters(currentlists[i.first]);
       // reduce BV clusters to two components now if needed
       if(_reduceToTwoComponents)
-	_clusterFinders[i]->reduceToTwoComponents(clusters[i]);
+	_clusterFinders[i.first]->reduceToTwoComponents(clusters[i.first]);
     }
   }
 
   // perform colour reconnection if needed and then
   // decay the clusters into one hadron
   for ( auto i : interactions ) {
-    if ( clusters[i].empty() )
+    if ( clusters[i.first].empty() )
       continue;
     bool lightOK = false;
     short tried = 0;
-    const ClusterVector savedclusters = clusters[i];
+    const ClusterVector savedclusters = clusters[i.first];
     tPVector finalHadrons; // only needed for partonic decayer
     while (!lightOK && tried++ < 10) {
       // no colour reconnection with baryon-number-violating (BV) clusters
       ClusterVector CRclusters, BVclusters;
-      CRclusters.reserve( clusters[i].size() );
-      BVclusters.reserve( clusters[i].size() );
-      for (size_t ic = 0; ic < clusters[i].size(); ++ic) {
-	ClusterPtr cl = clusters[i].at(ic);
+      CRclusters.reserve( clusters[i.first].size() );
+      BVclusters.reserve( clusters[i.first].size() );
+      for (size_t ic = 0; ic < clusters[i.first].size(); ++ic) {
+	ClusterPtr cl = clusters[i.first].at(ic);
 	bool hasClusterParent = false;
 	for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
 	  if (cl->parents()[ix]->id() == ParticleID::Cluster) {
@@ -373,8 +415,8 @@ handle(EventHandler & ch, const tPVector & tagged,
       }
 
       // colour reconnection
-      assert(_colourReconnectors.find(i) != _colourReconnectors.end());
-      _colourReconnectors[i]->rearrange(CRclusters);
+      assert(_colourReconnectors.find(i.first) != _colourReconnectors.end());
+      _colourReconnectors[i.first]->rearrange(CRclusters);
 
 
       // tag new clusters as children of the partons to hadronize
@@ -382,32 +424,32 @@ handle(EventHandler & ch, const tPVector & tagged,
     
    
       // forms diquarks
-      // we should already have used  _clusterFinder[i]
-      _clusterFinders[i]->reduceToTwoComponents(CRclusters);
+      // we should already have used  _clusterFinder[i.first]
+      _clusterFinders[i.first]->reduceToTwoComponents(CRclusters);
     
       // recombine vectors of (possibly) reconnected and BV clusters
-      clusters[i].clear();
-      clusters[i].insert( clusters[i].end(), CRclusters.begin(), CRclusters.end() );
-      clusters[i].insert( clusters[i].end(), BVclusters.begin(), BVclusters.end() );
+      clusters[i.first].clear();
+      clusters[i.first].insert( clusters[i.first].end(), CRclusters.begin(), CRclusters.end() );
+      clusters[i.first].insert( clusters[i.first].end(), BVclusters.begin(), BVclusters.end() );
 
       // fission of heavy clusters
       // NB: during cluster fission, light hadrons might be produced straight away
-      assert(_clusterFissioners.find(i) != _clusterFissioners.end());
-      finalHadrons = _clusterFissioners[i]->fission(clusters[i],i == PDT::ColouredQCD ? isSoftUnderlyingEventON() : false);
+      assert(_clusterFissioners.find(i.first) != _clusterFissioners.end());
+      finalHadrons = _clusterFissioners[i.first]->fission(clusters[i.first],i.first == PDT::ColouredQCD ? isSoftUnderlyingEventON() : false);
 
 
       // if clusters not previously reduced to two components do it now
       if(!_reduceToTwoComponents)
-	_clusterFinders[i]->reduceToTwoComponents(clusters[i]);
-      assert(_lightClusterDecayers.find(i) != _lightClusterDecayers.end());
-      lightOK = _lightClusterDecayers[i]->decay(clusters[i],finalHadrons);
+	_clusterFinders[i.first]->reduceToTwoComponents(clusters[i.first]);
+      assert(_lightClusterDecayers.find(i.first) != _lightClusterDecayers.end());
+      lightOK = _lightClusterDecayers[i.first]->decay(clusters[i.first],finalHadrons);
       // if the decay of the light clusters was not successful, undo the cluster
       // fission and decay steps and revert to the original state of the event
       // record
       if (!lightOK) {
-	clusters[i] = savedclusters;
-	for_each(clusters[i].begin(),
-		 clusters[i].end(),
+	clusters[i.first] = savedclusters;
+	for_each(clusters[i.first].begin(),
+		 clusters[i.first].end(),
 		 std::mem_fn(&Particle::undecay));
       }
     }
@@ -417,8 +459,8 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
 
     // decay the remaining clusters
-    assert(_clusterDecayers[i]);
-    _clusterDecayers[i]->decay(clusters[i],finalHadrons);
+    assert(_clusterDecayers[i.first]);
+    _clusterDecayers[i.first]->decay(clusters[i.first],finalHadrons);
     
   }
 
