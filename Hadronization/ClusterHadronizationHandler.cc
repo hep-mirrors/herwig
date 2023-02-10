@@ -53,7 +53,7 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterFissioners << _lightClusterDecayers << _clusterDecayers
      << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
-     << reshuffle_ << reshuffleMode_ << gluonMassGenerator_
+     << reshuffle_ << gluonMassGenerator_
      << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
      << _underlyingEventHandler << _reduceToTwoComponents;
 }
@@ -64,7 +64,7 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterFissioners >> _lightClusterDecayers >> _clusterDecayers
      >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
-     >> reshuffle_ >> reshuffleMode_ >> gluonMassGenerator_
+     >> reshuffle_ >> gluonMassGenerator_
      >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
      >> _underlyingEventHandler >> _reduceToTwoComponents;
 }
@@ -96,35 +96,25 @@ void ClusterHadronizationHandler::Init() {
      "Set a reference to a gluon mass generator.",
      &ClusterHadronizationHandler::gluonMassGenerator_, false, false, true, true, false);
 
-  static Switch<ClusterHadronizationHandler,bool> interfaceReshuffle
+  static Switch<ClusterHadronizationHandler,int> interfaceReshuffle
     ("Reshuffle",
      "Perform reshuffling if constituent masses have not yet been included by the shower",
-     &ClusterHadronizationHandler::reshuffle_, false, false, false);
-  static SwitchOption interfaceReshuffleYes
+     &ClusterHadronizationHandler::reshuffle_, 0, false, false);
+  static SwitchOption interfaceReshuffleColourConnected
+    (interfaceReshuffle,
+     "ColourConnected",
+     "Separate reshuffling for colour connected partons.",
+     2);
+  static SwitchOption interfaceReshuffleGlobal
     (interfaceReshuffle,
      "Global",
-     "Do reshuffle.",
-     true);
+     "Reshuffle globally.",
+     1);
   static SwitchOption interfaceReshuffleNo
     (interfaceReshuffle,
      "No",
      "Do not reshuffle.",
-     false);
-   
-  static Switch<ClusterHadronizationHandler,int> interfaceReshuffleMode
-    ("ReshuffleMode",
-     "Which mode is used for the reshuffling to constituent masses",
-     &ClusterHadronizationHandler::reshuffleMode_, 0, false, false);
-  static SwitchOption interfaceReshuffleModeGlobal
-    (interfaceReshuffleMode,
-     "Global",
-     "Global reshuffling on all final state partons",
      0);
-  static SwitchOption interfaceReshuffleModeColourConnected
-    (interfaceReshuffleMode,
-     "ColourConnected",
-     "Separate reshuffling for colour connected partons",
-     1);
 
   static Reference<ClusterHadronizationHandler,ClusterFinder>
     interfaceClusterFinder("ClusterFinder",
@@ -337,6 +327,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 	  totalQ += p->momentum();
 	  if ( p->id() == i.second && gluonMassGenerator() ) {
 	    ++nGluons;
+	    needQ += gluonMassGenerator()->minGluonMass();
 	    continue;
 	  }
 	  needQ += p->dataPtr()->constituentMass();

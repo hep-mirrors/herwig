@@ -149,7 +149,6 @@ void PartonSplitter::split(PVector & tagged) {
   }
 
   PVector newtag;
-  Energy2 Q02 = 0.99*sqr(getParticleData(spectrum()->gluonId())->constituentMass());
   // Loop over all of the particles in the event.
   // Loop counter for colourSorted
   for(PVector::iterator pit = particles.begin(); pit!=particles.end(); ++pit) {
@@ -158,6 +157,7 @@ void PartonSplitter::split(PVector & tagged) {
       newtag.push_back(*pit);
       continue;
     }
+    Energy2 Q02 = 0.99*(**pit).momentum().m2();
     // should not have been called for massless or space-like gluons
     if((**pit).momentum().m2() <= 0.0*sqr(MeV) ) {
       throw Exception()

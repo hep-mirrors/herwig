@@ -1046,9 +1046,10 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
 		      );
   // required test for SUSY clusters, since aboveCutoff alone
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
-  static const Energy minmass
-    = getParticleData(spectrum()->minimalSplitQuark())->constituentMass();
-  bool canSplitMinimally
-    = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
-  return aboveCutoff && canSplitMinimally;
+  static const Energy minmass = getParticleData(ParticleID::d)->constituentMass();
+  return aboveCutoff && canSplitMinimally(clu, minmass);
+}
+
+bool ClusterFissioner::canSplitMinimally(tcClusterPtr clu, Energy minmass){
+  return clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
 }

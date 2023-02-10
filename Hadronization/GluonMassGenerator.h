@@ -46,6 +46,13 @@ public:
 public:
 
   /**
+   * Returns the minimum mass of a gluon that can by generated
+   */
+  virtual Energy minGluonMass() const {
+    return getParticleData(ThePEG::ParticleID::g)->constituentMass();
+  }
+
+  /**
    * Generate a single gluon mass with possible reference to a hard
    * scale Q and up to a maximum value
    */
@@ -73,17 +80,9 @@ public:
    */
   list<Energy> generateMany(size_t n, Energy QMax) const {
     list<Energy> res;
-    Energy m0, mu, md, ms, mg, mgmax, summg;
+    Energy summg;
 
-    mu=getParticleData(ThePEG::ParticleID::u)->constituentMass();
-    md=getParticleData(ThePEG::ParticleID::d)->constituentMass();
-    ms=getParticleData(ThePEG::ParticleID::s)->constituentMass();
-
-    m0=md;
-    if(mu<m0){m0=mu;}
-    if(ms<m0){m0=ms;}
-
-    if( QMax<2.0*m0*n ){
+    if ( QMax < minGluonMass()*n ) {
       throw Exception() << "cannot reshuffle to constituent mass shells" << Exception::eventerror;
     }
 
@@ -94,10 +93,10 @@ public:
       summg = 0.0*GeV;
       res.clear();
       for( size_t k = 0; k < n; ++k ){ 
-        mg = generate();
+	Energy mg = generate();
         res.push_back(mg);
         summg += mg;
-        if( summg > QMax - 2.0*m0*(n-k-1) ){
+        if( summg > QMax - minGluonMass()*(n-k-1) ){
           repeat=true;
           break;
         }

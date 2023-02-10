@@ -395,6 +395,11 @@ private:
   bool isHeavy(tcClusterPtr );
 
   /**
+   * Check if a cluster is heavy enough to be at least kinematically able to split
+   */
+  bool canSplitMinimally(tcClusterPtr, Energy);
+
+  /**
    *  Check if can't make a hadron from the partons
    */
   inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {

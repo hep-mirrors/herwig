@@ -244,14 +244,9 @@ private:
   ClusterDecayerPtr      _clusterDecayer;
 
   /**
-   * Perform reshuffling to constituent masses.
+   * Perform reshuffling to constituent masses (0 = no reshuffling, 1 = global reshuffling, 2 = colour connected reshuffling).
    */
-  bool reshuffle_ = false;
-  
-  /**
-   *  Which type of reshuffling (global (default) or colour connected) is used
-   */
-  int reshuffleMode_ = 0;
+  int reshuffle_ = 0;
   
   /**
    * A pointer to a gluon mass generator for the reshuffling
