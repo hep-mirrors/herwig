@@ -311,10 +311,10 @@ handle(EventHandler & ch, const tPVector & tagged,
     
       vector<PVector> reshufflelists;
 
-      if (reshuffleMode_==0){ // global reshuffling
+      if ( reshuffle_ == 1 ) { // global reshuffling
 	reshufflelists.push_back(currentlists[i.first]);
       }
-      else if (reshuffleMode_==1){// colour connected reshuffling
+      else if ( reshuffle_ == 2 ) {// colour connected reshuffling
 	splitIntoColourSinglets(currentlists[i.first], reshufflelists, i.first);
       }
 
