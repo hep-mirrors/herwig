@@ -51,9 +51,10 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
   const {
   os << _partonSplitters << _clusterFinders << _colourReconnectors
      << _clusterFissioners << _lightClusterDecayers << _clusterDecayers
+     << _gluonMassGenerators
      << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
-     << reshuffle_ << gluonMassGenerator_
+     << reshuffle_ << _gluonMassGenerator
      << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
      << _underlyingEventHandler << _reduceToTwoComponents;
 }
@@ -62,9 +63,10 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
 void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
   is >> _partonSplitters >> _clusterFinders >> _colourReconnectors
      >> _clusterFissioners >> _lightClusterDecayers >> _clusterDecayers
+     >> _gluonMassGenerators
      >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
-     >> reshuffle_ >> gluonMassGenerator_
+     >> reshuffle_ >> _gluonMassGenerator
      >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
      >> _underlyingEventHandler >> _reduceToTwoComponents;
 }
@@ -94,7 +96,7 @@ void ClusterHadronizationHandler::Init() {
   static Reference<ClusterHadronizationHandler,GluonMassGenerator> interfaceGluonMassGenerator
     ("GluonMassGenerator",
      "Set a reference to a gluon mass generator.",
-     &ClusterHadronizationHandler::gluonMassGenerator_, false, false, true, true, false);
+     &ClusterHadronizationHandler::_gluonMassGenerator, false, false, true, true, false);
 
   static Switch<ClusterHadronizationHandler,int> interfaceReshuffle
     ("Reshuffle",
@@ -208,6 +210,9 @@ void ClusterHadronizationHandler::rebind(const TranslationMap & trans) {
   for (auto iter : _clusterDecayers) {
      _clusterDecayers[iter.first] = trans.translate(iter.second);
   }
+  for (auto iter : _gluonMassGenerators) {
+     _gluonMassGenerators[iter.first] = trans.translate(iter.second);
+  }
   HandlerBase::rebind(trans);
 }
 
@@ -231,6 +236,9 @@ IVector ClusterHadronizationHandler::getReferences() {
   for (auto iter : _clusterDecayers) {
      ret.push_back(iter.second);
   }
+  for (auto iter : _gluonMassGenerators) {
+     ret.push_back(iter.second);
+  }
   return ret;
 }
 
@@ -244,6 +252,7 @@ void ClusterHadronizationHandler::doinit() {
     _clusterFissioners[PDT::ColouredQCD] = _clusterFissioner;
     _lightClusterDecayers[PDT::ColouredQCD] = _lightClusterDecayer;
     _clusterDecayers[PDT::ColouredQCD] = _clusterDecayer; 
+    _gluonMassGenerators[PDT::ColouredQCD] = _gluonMassGenerator; 
   }
 }
 
@@ -260,6 +269,7 @@ string ClusterHadronizationHandler::_setHandlersForInteraction(string interactio
   _clusterFissioners[interactionId] = _clusterFissioner;
   _lightClusterDecayers[interactionId] = _lightClusterDecayer;
   _clusterDecayers[interactionId] = _clusterDecayer; 
+  _gluonMassGenerators[interactionId] = _gluonMassGenerator; 
   return "";
 }
 
@@ -318,6 +328,11 @@ handle(EventHandler & ch, const tPVector & tagged,
 	splitIntoColourSinglets(currentlists[i.first], reshufflelists, i.first);
       }
 
+      Ptr<GluonMassGenerator>::ptr gMassGenerator;
+      auto git = gluonMassGenerators_.find(i.first);
+      if ( git != gluonMassGenerators_.end() )
+	gMassGenerator = git->second;
+
       for (auto currentlist : reshufflelists){
 	// get available energy and energy needed for constituent mass shells
 	LorentzMomentum totalQ;
@@ -325,9 +340,9 @@ handle(EventHandler & ch, const tPVector & tagged,
 	size_t nGluons = 0; // number of gluons for which a mass need be generated
 	for ( auto p : currentlist ) {
 	  totalQ += p->momentum();
-	  if ( p->id() == i.second && gluonMassGenerator() ) {
+	  if ( p->id() == i.second && gMassGenerator ) {
 	    ++nGluons;
-	    needQ += gluonMassGenerator()->minGluonMass();
+	    needQ += gMassGenerator->minGluonMass();
 	    continue;
 	  }
 	  needQ += p->dataPtr()->constituentMass();
@@ -338,13 +353,13 @@ handle(EventHandler & ch, const tPVector & tagged,
 
 	// generate gluon masses if needed
 	list<Energy> gluonMasses;
-	if ( nGluons && gluonMassGenerator() )
-	  gluonMasses = gluonMassGenerator()->generateMany(nGluons,Q-needQ);
+	if ( nGluons && gMassGenerator )
+	  gluonMasses = gMassGenerator->generateMany(nGluons,Q-needQ);
 
 	// set masses for inidividual particles
 	vector<Energy> masses;
 	for ( auto p : currentlist ) {
-	  if ( p->id() == i.second && gluonMassGenerator() ) {
+	  if ( p->id() == i.second && gMassGenerator ) {
 	    list<Energy>::const_iterator it = gluonMasses.begin();
 	    advance(it,UseRandom::irnd(gluonMasses.size()));
 	    masses.push_back(*it);

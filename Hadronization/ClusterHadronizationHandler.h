@@ -99,13 +99,6 @@ public:
     return currentHandler_;
   }
 
-  /**
-   * A pointer to a gluon mass generator for the reshuffling
-   */
-  Ptr<GluonMassGenerator>::tptr gluonMassGenerator() const {
-    return gluonMassGenerator_;
-  }
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -214,6 +207,11 @@ private:
   map<int,ClusterDecayerPtr>      _clusterDecayers; 
 
   /**
+   * A pointer to a gluon mass generator for the reshuffling
+   */
+  map<int,Ptr<GluonMassGenerator>::ptr> _gluonMassGenerators;
+
+  /**
    * This is a pointer to a Herwig::PartonSplitter object.
    */
   PartonSplitterPtr      _partonSplitter;
@@ -244,14 +242,14 @@ private:
   ClusterDecayerPtr      _clusterDecayer;
 
   /**
+   * A pointer to a gluon mass generator for the reshuffling
+   */
+  Ptr<GluonMassGenerator>::ptr _gluonMassGenerator;
+
+  /**
    * Perform reshuffling to constituent masses (0 = no reshuffling, 1 = global reshuffling, 2 = colour connected reshuffling).
    */
   int reshuffle_ = 0;
-  
-  /**
-   * A pointer to a gluon mass generator for the reshuffling
-   */
-  Ptr<GluonMassGenerator>::ptr gluonMassGenerator_;
 
   /**
    * The minimum virtuality^2 of partons to use in calculating 
