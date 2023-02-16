@@ -329,8 +329,8 @@ handle(EventHandler & ch, const tPVector & tagged,
       }
 
       Ptr<GluonMassGenerator>::ptr gMassGenerator;
-      auto git = gluonMassGenerators_.find(i.first);
-      if ( git != gluonMassGenerators_.end() )
+      auto git = _gluonMassGenerators.find(i.first);
+      if ( git != _gluonMassGenerators.end() )
 	gMassGenerator = git->second;
 
       for (auto currentlist : reshufflelists){
