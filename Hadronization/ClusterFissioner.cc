@@ -1176,7 +1176,7 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
     double scale     = pow(clu->mass()/GeV , clpow);
     double threshold = pow(clmax/GeV, clpow)
                      + pow(clu->sumConstituentMasses()/GeV, clpow);
-    bool aboveCutoff = ProbablityFunction(scale,threshold);
+    aboveCutoff = ProbablityFunction(scale,threshold);
 
     scale     = clu->mass()/GeV;
     threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
