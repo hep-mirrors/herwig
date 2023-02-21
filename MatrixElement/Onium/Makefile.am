@@ -28,7 +28,9 @@ MEPP2qq1Jet.cc MEPP2qq1Jet.h \
 MEPP2bc0Jet.cc MEPP2bc0Jet.h \
 MEPP2bc1Jet.cc MEPP2bc1Jet.h \
 MEGG2BC1S0QQbar.h MEGG2BC1S0QQbar.cc \
-MEGG2BC3S1QQbar.h MEGG2BC3S1QQbar.cc
+MEGG2BC3S1QQbar.h MEGG2BC3S1QQbar.cc \
+MEPP2OniumPowheg.h MEPP2OniumPowheg.cc \
+MEPP21S0.cc MEPP21S0.h
 
 HwMEHadronOnium_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 

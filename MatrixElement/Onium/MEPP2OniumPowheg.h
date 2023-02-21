@@ -1,15 +1,12 @@
 // -*- C++ -*-
-#ifndef Herwig_MEGGto1S0_H
-#define Herwig_MEGGto1S0_H
+#ifndef Herwig_MEPP2OniumPowheg_H
+#define Herwig_MEPP2OniumPowheg_H
 //
-// This is the declaration of the MEGGto1S0 class.
+// This is the declaration of the MEPP2OniumPowheg class.
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "OniumParameters.h"
 
 namespace Herwig {
@@ -17,24 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEGGto1S0 class implements the colour singlet matrix element for
- * \f$gg\to^1\!\!S_0\f$.
+ * The MEPP2OniumPowheg class is designed to allow easy implementation of the matrix elements for quarkonium production inthe POWHEG scheme
  *
- * @see \ref MEGGto1S0Interfaces "The interfaces"
- * defined for MEGGto1S0.
+ * @see \ref MEPP2OniumPowhegInterfaces "The interfaces"
+ * defined for MEPP2OniumPowheg.
  */
-class MEGGto1S0: public HwMEBase {
+class MEPP2OniumPowheg: public HwMEBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  MEGGto1S0() : O1_(ZERO), state_(ccbar), n_(1)
-  {}
-  //@}
+  MEPP2OniumPowheg();
 
 public:
 
@@ -66,17 +58,6 @@ public:
   virtual double me2() const;
 
   /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
-
-  /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
-
-  /**
    * Generate internal degrees of freedom given nDim() uniform
    * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
    * generator, the dSigHatDR should be a smooth function of these
@@ -87,11 +68,24 @@ public:
   virtual bool generateKinematics(const double * r);
 
   /**
+   * Return the scale associated with the last set phase space point.
+   */
+  virtual Energy2 scale() const;
+
+  /**
+   * The number of internal degrees of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const {
+    return 2;
+  }
+
+  /**
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
   virtual CrossSection dSigHatDR() const;
-
+  
   /**
    * Add all possible diagrams with the add() function.
    */
@@ -116,14 +110,60 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   //@}
 
+public:
+ 
+  // /** @name Member functions for the generation of hard QCD radiation */
+  // //@{
+  // /**
+  //  *  Has a POWHEG style correction
+  //  */
+  // virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
 
+  // /**
+  //  *  Apply the POWHEG style correction
+  //  */
+  // virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+  // 						 ShowerInteraction);
+  // //@}
+
+protected:
+
+  /**
+   *  The leading-order matrix element
+   */
+  virtual Energy2 leadingOrderME2() const = 0;
+
+  /**
+   *  set the state
+   */
+  void setParticleData(long ioff) {
+    unsigned int iq = 4+state_;
+    onium_ = getParticleData(long(iq*110+ioff + (n_-1)*100000));
+  }
+
+  /**
+   *  Access to the quarkonium parameters
+   */
+  const OniumParametersPtr parameters() const {
+    return params_;
+  }
+
+  /**
+   *  Type of quarkonium state
+   */
+  OniumState state() const {
+    return state_;
+  }
+
+  /**
+   *  Principal quantum number
+   */
+  unsigned int principalQuantumNumber() const {
+    return n_;
+  }
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -152,23 +192,6 @@ public:
 
 protected:
 
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -185,7 +208,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGGto1S0 & operator=(const MEGGto1S0 &) = delete;
+  MEPP2OniumPowheg & operator=(const MEPP2OniumPowheg &) = delete;
 
 private:
 
@@ -197,11 +220,6 @@ private:
    *  Access to the parameters for the quarkonium states
    */
   OniumParametersPtr params_;
-  
-  /**
-   *  The \f$O_1\f$ colour-singlet coefficient
-   */
-  Energy3 O1_;
 
   /**
    *  Type of state
@@ -214,12 +232,64 @@ private:
   unsigned int n_;
 
   /**
+   *  The particle data object for the state being produced
+   */
+  PDPtr onium_;
+
+  /**
    *  The mass generator for the onium state
    */
   GenericMassGeneratorPtr massGen_;
+  //@}
+
+private:
+
+  /**
+   *  Whether to generate the positive, negative or leading order contribution
+   */
+  unsigned int contrib_;
+
+  /**
+   *  Scales etc
+   */
+  //@{
+  /**
+   * Selects a dynamic (sHat) or fixed factorization scale
+   */
+  unsigned int scaleopt_;
+
+  /**
+   * The factorization  scale 
+   */
+  Energy mu_F_;
+
+  /**
+   * The renormalization scale
+   */
+  Energy mu_UV_;
+
+  /**
+   *  Prefactor if variable scale used
+   */
+  double scaleFact_;
+  //@}
+
+  /**
+   *  Radiation variables
+   */
+  //@{
+  /**
+   *   The \f$\tilde{x}\f$ variable
+   */
+  double xt_;
+
+  /**
+   *  The \f$y\f$ angular variable
+   */
+  double y_;
   //@}
 };
 
 }
 
-#endif /* Herwig_MEGGto1S0_H */
+#endif /* Herwig_MEPP2OniumPowheg_H */
