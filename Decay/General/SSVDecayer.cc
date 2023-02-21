@@ -45,7 +45,7 @@ void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
     incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
     fourPointVertex_[inter] = dynamic_ptr_cast<AbstractVVSSVertexPtr>(fourV.at(inter));
     outgoingVertexS_[inter] = AbstractVSSVertexPtr();
-    outgoingVertexV_[inter] = AbstractVVVVertexPtr();  
+    outgoingVertexV_[inter] = AbstractVVVVertexPtr();
     if(outV[0].at(inter)) {
       if (outV[0].at(inter)->getName()==VertexType::VSS)
 	outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
@@ -55,7 +55,7 @@ void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
     if(outV[1].at(inter)) {
       if (outV[1].at(inter)->getName()==VertexType::VSS)
 	outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
-      else 
+      else
 	outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
     }
   }
@@ -98,11 +98,11 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double SSVDecayer::me2(const int,const Particle & part,
-		       const tPDVector & outgoing,
+		       const tPDVector & decay,
 		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
   unsigned int isc(0),ivec(1);
-  if(outgoing[0]->iSpin() != PDT::Spin0) swap(isc,ivec);
+  if(decay[0]->iSpin() != PDT::Spin0) swap(isc,ivec);
   if(!ME()) {
     if(ivec==1)
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
@@ -116,9 +116,10 @@ double SSVDecayer::me2(const int,const Particle & part,
     // fix rho if no correlations
     fixRho(rho_);
   }
+  bool massless = decay[1]->id()==ParticleID::gamma || decay[1]->id()==ParticleID::g;
   VectorWaveFunction::
-    calculateWaveFunctions(vector_,momenta[ivec],outgoing[ivec],Helicity::outgoing,false);
-  ScalarWaveFunction sca(momenta[isc],outgoing[isc],Helicity::outgoing);
+    calculateWaveFunctions(vector_,momenta[ivec],decay[ivec],Helicity::outgoing,massless);
+  ScalarWaveFunction sca(momenta[isc],decay[isc],Helicity::outgoing);
   Energy2 scale(sqr(part.mass()));
   //make sure decay matrix element is in the correct order
   double output(0.);
@@ -138,12 +139,12 @@ double SSVDecayer::me2(const int,const Particle & part,
   }
   output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
+  output *= colourFactor(part.dataPtr(),decay[0],decay[1]);
   // return the answer
   return output;
 }
 
-Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
+Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
 				 PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
@@ -207,10 +208,10 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 
   // sort out colour flows
   int S(1), V(2);
-  if (decay[iscal]->dataPtr()->iColour()==PDT::Colour3bar && 
+  if (decay[iscal]->dataPtr()->iColour()==PDT::Colour3bar &&
       decay[ivect]->dataPtr()->iColour()==PDT::Colour8)
     swap(S,V);
-  else if (decay[ivect]->dataPtr()->iColour()==PDT::Colour3 && 
+  else if (decay[ivect]->dataPtr()->iColour()==PDT::Colour3 &&
 	   decay[iscal]->dataPtr()->iColour()==PDT::Colour8)
     swap(S,V);
 
@@ -229,10 +230,10 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
 	 (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	assert(incomingVertex_[inter]);
-	ScalarWaveFunction scalarInter = 
+	ScalarWaveFunction scalarInter =
 	  incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					   gluon_[2*ig],swave3_,inpart.mass());
-	
+
 	assert(swave3_.particle()->id()==scalarInter.particle()->id());
 	Complex diag = 0.;
 	for(auto vertex : vertex_)
@@ -242,8 +243,8 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	  couplingSet = true;
 	}
 	for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
-	  (*ME[colourFlow[0][ix].first])(0, 0, iv, ig) += 
-	    colourFlow[0][ix].second*diag; 
+	  (*ME[colourFlow[0][ix].first])(0, 0, iv, ig) +=
+	    colourFlow[0][ix].second*diag;
 	}
 #ifdef GAUGE_CHECK
 	total+=norm(diag);
@@ -256,9 +257,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[iscal]->dataPtr();
 	if(off->CC()) off = off->CC();
-	ScalarWaveFunction scalarInter = 
+	ScalarWaveFunction scalarInter =
 	  outgoingVertexS_[inter]->evaluate(scale,3,off,gluon_[2*ig],scal,decay[iscal]->mass());
-	
+
 	assert(scal.particle()->id()==scalarInter.particle()->id());
 
 	if(!couplingSet) {
@@ -269,7 +270,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	for(auto vertex : vertex_)
 	  diag += vertex->evaluate(scale,vector3_[iv],scalarInter,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
-	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) += 
+	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) +=
 	    colourFlow[S][ix].second*diag;
 	}
 #ifdef GAUGE_CHECK
@@ -284,21 +285,21 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[ivect]->dataPtr();
 	if(off->CC()) off = off->CC();
-	VectorWaveFunction  vectorInter = 
+	VectorWaveFunction  vectorInter =
 	  outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 					    vector3_[iv],decay[ivect]->mass());
-	
+
 	assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
-	
+
 	if(!couplingSet) {
 	  gs = abs(outgoingVertexV_[inter]->norm());
 	  couplingSet = true;
-	}	
+	}
 	Complex diag = 0.;
 	for(auto vertex : vertex_)
 	  diag += vertex->evaluate(scale,vectorInter,scal,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
-	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
+	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) +=
 	    colourFlow[V][ix].second*diag;
 	}
 #ifdef GAUGE_CHECK
@@ -310,7 +311,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	Complex diag =  fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
 							  scal, swave3_);
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
-	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 
+	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) +=
 	     colourFlow[3][ix].second*diag;
 	}
 #ifdef GAUGE_CHECK
@@ -319,7 +320,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       }
     }
   }
-  
+
   // contract matrices
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
