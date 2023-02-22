@@ -38,8 +38,7 @@ SMPARTICLES = {
 -15:'tau+',
 -16:'nu_taubar',
 
--24:'W-',
-
+-24:'W-'
 }
 
 
@@ -202,7 +201,7 @@ def sort_splittings(FR,Vertices,p):
             from FR_Parameters import *
         coup = V.couplings
         keys = coup.keys()
-        coupling_value = 0
+        coupling_value = 0.
         for k in keys :
             coupling_value += eval(coup[k].value)
         # extract splitting format as p -> p1, p2
@@ -268,7 +267,7 @@ def isQuark(particle) :
     else :
         return False
 
-def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs):
+def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs,allow_fcnc):
     plist = []
     antis = {}
     names = []
@@ -386,6 +385,8 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
             Vertices = sort_vertices(FR,str(p.name),3)
             pSplittings = sort_splittings(FR,Vertices,p)
             for V in pSplittings :
+                if V[3].real + V[3].imag == 0. :
+                    continue
                 # do not include QED splittings
                 if V[1].pdg_code == 22 or V[2].pdg_code == 22 :
                     continue
@@ -410,12 +411,15 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         V[0], V[1], V[2] = V[2], V[2], V[0]
                     else :
                         V[0], V[1], V[2] = V[1], V[1], V[0]
-                # SM q -> S q splittings (not allowing FCNC!)
-                elif isQuark(V[1]) and abs(V[1].pdg_code) == abs(V[2].pdg_code) and spin_name(V[0].spin) == 'Zero' :
-                    if V[1].pdg_code > 0 :
-                        V[0], V[1], V[2] = V[1], V[1], V[0]
+                # SM q -> q S splittings
+                elif isQuark(V[1]) and isQuark(V[2]) and spin_name(V[0].spin) == 'Zero' :
+                    if not allow_fcnc :
+                        if V[1].pdg_code > 0 :
+                            V[0], V[1], V[2] = V[1], V[1], V[0]
+                        else :
+                            V[0], V[1], V[2] = V[2], V[2], V[0]
                     else :
-                        V[0], V[1], V[2] = V[2], V[2], V[0]
+                        V[0], V[1], V[2] = V[1], V[2], V[0]
                 # nothing else
                 else :
                     continue
@@ -425,7 +429,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                 # no scalar > quark, antiquark splitting
                 s = [spin_name(V[0].spin),spin_name(V[1].spin),spin_name(V[2].spin)]
 
-                if SPname not in done_splitting_EW:
+                if SPname not in done_splitting_EW and V[3].imag!=0.:
                     done_splitting_EW.append(SPname)
                     splitname = '{name}SplitFnEW'.format(name=SPname)
                     sudname = '{name}SudakovEW'.format(name=SPname)

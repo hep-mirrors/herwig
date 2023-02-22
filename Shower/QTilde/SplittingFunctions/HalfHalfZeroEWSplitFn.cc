@@ -69,15 +69,9 @@ void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const 
     }
     else {
       //get quark masses
-      Energy mq;
-      if(abs(ids[0]->id())==ParticleID::c)
-        mq = getParticleData(ParticleID::c)->mass();
-      else if(abs(ids[0]->id())==ParticleID::b)
-        mq = getParticleData(ParticleID::b)->mass();
-      else if(abs(ids[0]->id())==ParticleID::t)
-        mq = getParticleData(ParticleID::t)->mass();
+      Energy mq0 = getParticleData(abs(ids[0]->id()))->mass();
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
-      gH = ghqq_*(mq/mW);
+      gH = ghqq_*(mq0/mW);
     }
   }
   else
@@ -93,16 +87,10 @@ void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids, const 
     }
     else {
       //get quark masses
-      Energy mq;
-      if(abs(ids[0]->id())==ParticleID::c)
-        mq = _theSM->mass(t,getParticleData(ParticleID::c));
-      else if(abs(ids[0]->id())==ParticleID::b)
-        mq = _theSM->mass(t,getParticleData(ParticleID::b));
-      else if(abs(ids[0]->id())==ParticleID::t)
-        mq = _theSM->mass(t,getParticleData(ParticleID::t));
+      Energy mq0 = _theSM->mass(t,getParticleData(abs(ids[0]->id())));
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       //Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
-      gH = ghqq_*(mq/mW);
+      gH = ghqq_*(mq0/mW);
     }
   }
   else
@@ -114,22 +102,19 @@ double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
   double gH(0.);
   getCouplings(gH,ids,t);
   double val = (1.-z);
-  Energy mq, mH;
+  Energy mq0, mq1, mH;
   //get masses
   if(mass) {
-    mq = ids[0]->mass();
-    mH = ids[2]->mass();
+    mq0 = ids[0]->mass();
+    mq1 = ids[1]->mass();
+    mH  = ids[2]->mass();
   }
   else { // to assure the particle mass in non-zero
-    if(abs(ids[0]->id())==ParticleID::c)
-      mq = getParticleData(ParticleID::c)->mass();
-    else if(abs(ids[0]->id())==ParticleID::b)
-      mq = getParticleData(ParticleID::b)->mass();
-    else if(abs(ids[0]->id())==ParticleID::t)
-      mq = getParticleData(ParticleID::t)->mass();
-    mH = getParticleData(ids[2]->id())->mass();
+    mq0 = getParticleData(abs(ids[0]->id()))->mass();
+    mq1 = getParticleData(abs(ids[1]->id()))->mass();
+    mH  = getParticleData(ids[2]->id())->mass();
   }
-  val += (4.*sqr(mq) - sqr(mH))/(t*(1. - z)*z);
+  val += (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   val *= sqr(gH);
   return colourFactor(ids)*val;
 }
@@ -148,21 +133,18 @@ double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   double gH(0.);
   getCouplings(gH,ids,t);
   double val = 1.;
-  Energy mq, mH;
+  Energy mq0, mq1, mH;
   if(mass) {
-    mq = ids[0]->mass();
-    mH = ids[2]->mass();
+    mq0 = ids[0]->mass();
+    mq1 = ids[1]->mass();
+    mH  = ids[2]->mass();
   }
   else { // to assure the particle mass in non-zero
-    if(abs(ids[0]->id())==ParticleID::c)
-      mq = getParticleData(ParticleID::c)->mass();
-    else if(abs(ids[0]->id())==ParticleID::b)
-      mq = getParticleData(ParticleID::b)->mass();
-    else if(abs(ids[0]->id())==ParticleID::t)
-      mq = getParticleData(ParticleID::t)->mass();
-    mH = getParticleData(ids[2]->id())->mass();
+    mq0 = getParticleData(abs(ids[0]->id()))->mass();
+    mq1 = getParticleData(abs(ids[1]->id()))->mass();
+    mH  = getParticleData(ids[2]->id())->mass();
   }
-  val += (4.*sqr(mq) - sqr(mH))/(t*(1. - z)*z);
+  val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z);
   return val;
 }
 
@@ -194,7 +176,7 @@ double HalfHalfZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = colourFactor(ids)*sqr(gH);
   switch (PDFfactor) {
   case 0:
-    return 1. - sqrt(1. - 2.*r/pre);
+    return 1.-sqrt(1.-2.*r/pre);
   case 1: //OverP/z
   case 2: //OverP/(1-z)
     return  r/pre;
@@ -207,9 +189,16 @@ double HalfHalfZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 }
 
 bool HalfHalfZeroEWSplitFn::accept(const IdList &ids) const {
-  if(ids.size()!=3) return false;
-  if(ids[2]->iSpin()==PDT::Spin0) {
+  if(ids.size()!=3)
+    return false;
+  if(ids[2]->iSpin()==PDT::Spin0 && _couplingValue==0) {
     if(ids[0]->id()==ids[1]->id() && (ids[0]->id()==4 || ids[0]->id()==5 || ids[0]->id()==6))
+      return true;
+  }
+  else if(ids[2]->iSpin()==PDT::Spin0 && _couplingValue!=0) {
+    if(ids[0]->iCharge()+ids[1]->iCharge()+ids[2]->iCharge()!=0.)
+      return false;
+    if((abs(ids[0]->id())>=3 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=3 && abs(ids[1]->id())<=6))
       return true;
   }
   return false;
@@ -237,18 +226,13 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   //get masses
-  Energy mq, mH;
-  if(abs(ids[0]->id())==ParticleID::c)
-    mq = getParticleData(ParticleID::c)->mass();
-  else if(abs(ids[0]->id())==ParticleID::b)
-    mq = getParticleData(ParticleID::b)->mass();
-  else if(abs(ids[0]->id())==ParticleID::t)
-    mq = getParticleData(ParticleID::t)->mass();
-  mH = getParticleData(ids[2]->id())->mass();
+  Energy mq0 = getParticleData(abs(ids[0]->id()))->mass();
+  Energy mq1 = getParticleData(abs(ids[1]->id()))->mass();
+  Energy mH  = getParticleData(ids[2]->id())->mass();
   double gH(0.);
   Energy2 tC = t/(z*(1-z));
   getCouplings(gH,ids,tC);
-  double mqt = mq/sqrt(tC);
+  double mqt = (mq0+mq1)/(2.*sqrt(tC));
   double mHt = mH/sqrt(tC);
   double num1 = gH*(1.+z)*mqt;
   double num2 = gH*sqrt(-sqr(mqt)*(1.-z) - sqr(mHt)*z + z*(1.-z)*(sqr(mqt)+z*(1.-z))); //watch this
