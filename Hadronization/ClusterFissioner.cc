@@ -47,6 +47,7 @@ ClusterFissioner::ClusterFissioner() :
   _fissionPwtDquark(1),
   _fissionPwtSquark(0.5),
   _fissionCluster(0),
+  _kinematicThresholdChoice(0),
   _btClM(1.0*GeV),
   _iopRem(1),
   _kappa(1.0e15*GeV/meter),
@@ -55,8 +56,7 @@ ClusterFissioner::ClusterFissioner() :
   _massMeasure(0),
   _probPowFactor(4.0),
   _probShift(0.0),
-  _kinThresholdShift(1.0*sqr(GeV)),
-  _kinematicThresholdChoice(0)
+  _kinThresholdShift(1.0*sqr(GeV))
 {}
 
 IBPtr ClusterFissioner::clone() const {
@@ -502,10 +502,10 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       Mc1 = res.first;
       Mc2 = res.second;
       // static kinematic threshold
-      if(_kinematicThresholdChoice == 0)
+      if(_kinematicThresholdChoice == 0) {
         if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
       // dynamic kinematic threshold
-      else if(_kinematicThresholdChoice == 1) {
+      } else if(_kinematicThresholdChoice == 1) {
         bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
         bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
         bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
@@ -1158,7 +1158,7 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
   static const Energy minmass
     = getParticleData(ParticleID::d)->constituentMass();
-  bool aboveCutoff, canSplitMinimally;
+  bool aboveCutoff = false, canSplitMinimally = false;
   // static kinematic threshold
   if(_kinematicThresholdChoice == 0) {
     aboveCutoff = (
@@ -1176,7 +1176,7 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
     double scale     = pow(clu->mass()/GeV , clpow);
     double threshold = pow(clmax/GeV, clpow)
                      + pow(clu->sumConstituentMasses()/GeV, clpow);
-    bool aboveCutoff = ProbablityFunction(scale,threshold);
+    aboveCutoff = ProbablityFunction(scale,threshold);
 
     scale     = clu->mass()/GeV;
     threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
