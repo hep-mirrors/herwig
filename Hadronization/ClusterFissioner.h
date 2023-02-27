@@ -371,12 +371,7 @@ protected:
   /**
    *  Access to the hadron selector
    */
-  HadronSpectrumPtr hadronsSpectrum() const {return _hadronsSpectrum;}
-
-  /**
-   *  Access to soft-cluster parameter
-   */
-  Energy btClM() const {return _btClM;}
+  HadronSpectrumPtr hadronSpectrum() const {return _hadronSpectrum;}
   //@}
 
 protected:
@@ -421,7 +416,7 @@ private:
   /**
    * A pointer to a Herwig::HadronSpectrum object for generating hadrons.
    */
-  HadronSpectrumPtr _hadronsSpectrum;
+  HadronSpectrumPtr _hadronSpectrum;
 
   /**
    * @name The Cluster max mass,dependant on which quarks are involved, used to determine when
@@ -516,12 +511,6 @@ private:
   * Shifts from the kinetic threshold in ClausterFissioner
   */
   Energy2 _kinThresholdShift;
-
-  /**
-   * The hadron spectrum to consider
-   */
-  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
-
 
 };
 

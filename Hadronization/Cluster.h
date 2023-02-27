@@ -110,7 +110,7 @@ public:
   /**
    * Returns the ith original constituent.
    */
-  tPPtr particleB(int i) const;
+  tPPtr particleB(unsigned int i) const;
   
   /**
    * Returns the original constituent carrying colour
