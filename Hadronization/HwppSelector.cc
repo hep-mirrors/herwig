@@ -78,17 +78,13 @@ void HwppSelector::doinit() {
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquark
-     << _sngWt << _decWt 
+  os << _pwtDIquark
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
      << _scHadronWtFactor << _sbHadronWtFactor << lightestBaryons_;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquark
-     >> _sngWt >> _decWt 
+  is >> _pwtDIquark
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
      >> _scHadronWtFactor >> _sbHadronWtFactor >> lightestBaryons_;
 }

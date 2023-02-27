@@ -32,15 +32,11 @@ IBPtr Hw64Selector::fullclone() const {
 }
 
 void Hw64Selector::persistentOutput(PersistentOStream & os) const {
-  os << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
-     << _sngWt << _decWt ;
+  os << _pwtDIquarkS0 << _pwtDIquarkS1;
 }
 
 void Hw64Selector::persistentInput(PersistentIStream & is, int) {
-  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
-     >> _sngWt >> _decWt ;
+  is >> _pwtDIquarkS0 >> _pwtDIquarkS1;
 }
 
 void Hw64Selector::doinit() {

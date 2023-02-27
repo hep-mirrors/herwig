@@ -81,18 +81,14 @@ void Hw7Selector::doinit() {
 }
 
 void Hw7Selector::persistentOutput(PersistentOStream & os) const {
-  os << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
-     << _sngWt << _decWt 
+  os << _pwtDIquarkS0 << _pwtDIquarkS1
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
      << _scHadronWtFactor << _sbHadronWtFactor
      << lightestBaryonsS0_ << lightestBaryonsS1_;
 }
 
 void Hw7Selector::persistentInput(PersistentIStream & is, int) {
-  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
-     >> _sngWt >> _decWt 
+  is >> _pwtDIquarkS0 >> _pwtDIquarkS1
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
      >> _scHadronWtFactor >> _sbHadronWtFactor
      >> lightestBaryonsS0_ >> lightestBaryonsS1_;

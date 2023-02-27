@@ -393,8 +393,8 @@ public:
    */
    virtual double pwtQuark(const long& id) const = 0;
 
-  virtual double specialQuarkWeight(double quarkWeight, long id,
-            const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
+  virtual double specialQuarkWeight(double quarkWeight, long,
+				    const Energy, tcPDPtr, tcPDPtr) const {
     return quarkWeight;
   }
 
@@ -604,21 +604,6 @@ protected:
    * Weights for quarks and diquarks.
    */
   map<long,double> _pwt;
-
-  /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt; 
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt; 
-  //@}
 
   /**
    * Enums so arrays can be statically allocated

@@ -361,6 +361,21 @@ protected:
   //@}
 
   /**
+   * Singlet and Decuplet weights
+   */
+  //@{
+  /**
+   *  The singlet weight
+   */
+  double _sngWt; 
+
+  /**
+   *  The decuplet weight
+   */
+  double _decWt; 
+  //@}
+
+  /**
    *  The mixing angles for the \f$I=0\f$ mesons containing light quarks
    */
   //@{

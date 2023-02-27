@@ -60,6 +60,7 @@ StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt)
   : HadronSpectrum(),
     _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
     _pwtBquark( 0.0 ),
+    _sngWt( 1.0 ),_decWt( 1.0 ), 
     _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
@@ -105,7 +106,8 @@ void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
      << _sngWt << _decWt << _repwt << _pwt
-     << _limBottom << _limCharm << _limExotic << belowThreshold_;
+     << _limBottom << _limCharm << _limExotic
+     << _sngWt << _decWt;
 }
 
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
@@ -116,7 +118,8 @@ void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
      >> _sngWt >> _decWt >> _repwt >> _pwt
-     >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_;
+     >> _limBottom >> _limCharm >> _limExotic
+     >> _sngWt >> _decWt ;
 }
 
 
@@ -476,7 +479,7 @@ void StandardModelHadronSpectrum::constructHadronTable() {
   // get the particles from the event generator
   ParticleMap particles = generator()->particles();
   // loop over the particles
-  double maxdd(0.),maxss(0.),maxrest(0.);
+  //double maxdd(0.),maxss(0.),maxrest(0.);
   for(ParticleMap::iterator it=particles.begin(); 
       it!=particles.end(); ++it) {
     long pid = it->first;

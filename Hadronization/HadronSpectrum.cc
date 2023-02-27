@@ -38,8 +38,8 @@ namespace {
 
 HadronSpectrum::HadronSpectrum() 
   : Interfaced(),
-    _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
-    _sngWt( 1.0 ),_decWt( 1.0 ), belowThreshold_(0) {}
+    belowThreshold_(0),
+    _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))) {}
 
 HadronSpectrum::~HadronSpectrum() {}
 
@@ -66,11 +66,13 @@ void HadronSpectrum::doinit() {
 
 
 void HadronSpectrum::persistentOutput(PersistentOStream & os) const {
-  os << _table << _partons << _forbidden;
+  os << _table << _partons << _forbidden
+     << belowThreshold_ << _repwt << _pwt;
 }
 
 void HadronSpectrum::persistentInput(PersistentIStream & is, int) {
-  is >> _table >> _partons >> _forbidden;
+  is >> _table >> _partons >> _forbidden
+     >> belowThreshold_ >> _repwt >> _pwt;
 }
 
 
