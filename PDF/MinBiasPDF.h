@@ -32,25 +32,10 @@ class MinBiasPDF: public PDFBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MinBiasPDF() : thePDF(PDFPtr()) {}
-
-  /**
-   * The copy constructor.
-   */
-  MinBiasPDF(const MinBiasPDF & x) : 
-    PDFBase(x), thePDF(x.thePDF) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~MinBiasPDF() {}
-
-  //@}
 
 public:
 

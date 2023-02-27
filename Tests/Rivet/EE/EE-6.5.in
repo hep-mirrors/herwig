@@ -1,0 +1,13 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 6.5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+# MARK II charged spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416

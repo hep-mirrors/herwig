@@ -28,8 +28,6 @@ using namespace Herwig;
 IFMassiveKinematics::IFMassiveKinematics() 
   : DipoleSplittingKinematics(), theCollinearScheme(true) {}
 
-IFMassiveKinematics::~IFMassiveKinematics() {}
-
 IBPtr IFMassiveKinematics::clone() const {
   return new_ptr(*this);
 }

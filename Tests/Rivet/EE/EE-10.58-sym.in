@@ -1,0 +1,14 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.29*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.29*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.50
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+
+# BELLE charged particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1777678
+# BABAR azimuthal
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1377201

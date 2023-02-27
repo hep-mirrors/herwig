@@ -118,7 +118,8 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 }
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
-  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+  if(ShowerHandler::currentHandler())
+    factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
   return alpha_->showerRatio(pt2, factor);
 }
 
@@ -142,7 +143,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
 
   const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
   if(oldpdf<=0.) return 1.;
-  
+
   const double ratio = newpdf/oldpdf;
   double maxpdf = pdfmax_;
 
@@ -156,7 +157,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   default :
     throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
 		      << pdffactor_ << Exception::runerror;
-    
+
   }
 
   if (ratio > maxpdf) {
@@ -213,7 +214,7 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
 void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  const IdList &ids,
 				  double enhance,bool ident,
-				  double detune, 
+				  double detune,
 				  Energy2 &t_main, double &z_main){
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
   double lower = splittingFn_->integOverP(zlimits_.first ,ids,pdfopt);
@@ -253,8 +254,8 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
     return false;
   }
   else
-    return true; 
-} 
+    return true;
+}
 
 bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
 				   double enhance,
@@ -271,8 +272,8 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return false;
   }
   else
-    return true; 
-} 
+    return true;
+}
 
 bool SudakovFormFactor::PSVeto(const Energy2 t) {
   // still inside PS, return true if outside
@@ -281,7 +282,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t) {
 
   Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
   	masssquared_[0] : Energy2();
-  
+
   Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2],
 					  masssquared_[1],masssquared_[2]);
 
@@ -293,7 +294,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t) {
 }
 
 
- 
+
 ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,
 						   const RhoDMatrix & rho,
@@ -303,7 +304,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
   z_ = 0.;
-  phi_ = 0.; 
+  phi_ = 0.;
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
   initialize(ids,tmin);
@@ -312,14 +313,15 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
-  if(ShowerHandler::currentHandler()->showerVariations().empty()){
+  if(!ShowerHandler::currentHandlerIsSet() ||
+     ShowerHandler::currentHandler()->showerVariations().empty()) {
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
     }
     while(PSVeto(t) ||
-        SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
+        SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) ||
         alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
   else {
@@ -370,15 +372,15 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
                 }
 	  }
         }
-      
+
     }
     while(PSRew || SplitRew || alphaRew);
   }
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
-  
+
   // return the ShowerKinematics object
-  return new_ptr(FS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
+  return new_ptr(FS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this));
 }
 
 ShoKinPtr SudakovFormFactor::
@@ -472,16 +474,16 @@ generateNextSpaceBranching(const Energy startingQ,
             }
 	  }
         }
-      
+
     }
     while( PDFRew || SplitRew || alphaRew);
   }
   if(t > ZERO && zlimits_.first < zlimits_.second)  q_ = sqrt(t);
   else return ShoKinPtr();
-  
+
   pT_ = sqrt(pt2);
   // create the ShowerKinematics and return it
-  return new_ptr(IS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
+  return new_ptr(IS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this));
 }
 
 void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
@@ -499,7 +501,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
 						    const Energy stoppingScale,
 						    const Energy minmass,
 						    const IdList &ids,
-						    const RhoDMatrix & rho, 
+						    const RhoDMatrix & rho,
 						    double enhance,
 						    double detuning) {
   // First reset the internal kinematics variables that can
@@ -519,7 +521,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
     if(!guessDecay(t,tmax,minmass,enhance,detuning)) break;
     pt2 = QTildeKinematics::pT2_Decay(t,z(),masssquared_[0],masssquared_[2]);
   }
-  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)||
 	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<cutoff_->pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
@@ -530,7 +532,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   else return ShoKinPtr();
   phi_ = 0.;
   // create the ShowerKinematics object
-  return new_ptr(Decay_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
+  return new_ptr(Decay_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this));
 }
 
 bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
@@ -544,7 +546,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return false;
   }
   Energy2 tm2 = tmax-masssquared_[0];
-  Energy tm  = sqrt(tm2); 
+  Energy tm  = sqrt(tm2);
   zlimits_ = make_pair(sqr(minmass/masses_[0]),
 		       1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 			       0.25*sqr(masssquared_[2])/tm2)/tm
@@ -561,7 +563,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return false;
   }
   tm2 = t-masssquared_[0];
-  tm  = sqrt(tm2); 
+  tm  = sqrt(tm2);
   zlimits_ = make_pair(sqr(minmass/masses_[0]),
 		   1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 			   0.25*sqr(masssquared_[2])/tm2)/tm
@@ -571,8 +573,8 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return false;
   }
   else
-    return true; 
-} 
+    return true;
+}
 
 bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
   if (t < 1e-20 * GeV2) {
@@ -591,7 +593,7 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
     zlimits_.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min)/t)));
     zlimits_.second = 1.-zlimits_.first;
   }
-  // special case for radiated particle is gluon 
+  // special case for radiated particle is gluon
   else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
     zlimits_.first  =    sqrt((masssquared_[1]+pT2min)/t);
     zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min)/t);
@@ -602,7 +604,7 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
   }
   else {
     zlimits_.first  =    (masssquared_[1]+pT2min)/t;
-    zlimits_.second = 1.-(masssquared_[2]+pT2min)/t; 
+    zlimits_.second = 1.-(masssquared_[2]+pT2min)/t;
   }
   if(zlimits_.first>=zlimits_.second) {
     t=-1.*GeV2;
@@ -619,7 +621,7 @@ bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
   // compute the limits
   zlimits_.first = x;
   double yy = 1.+0.5*masssquared_[2]/t;
-  zlimits_.second = yy - sqrt(sqr(yy)-1.+cutoff_->pT2min()/t); 
+  zlimits_.second = yy - sqrt(sqr(yy)-1.+cutoff_->pT2min()/t);
   // return false if lower>upper
   if(zlimits_.second<zlimits_.first) {
     t=-1.*GeV2;
@@ -637,7 +639,7 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
   tPPtr child = &particle;
   tShowerParticlePtr mother;
   if(forward) {
-    mother = !particle.parents().empty() ? 
+    mother = !particle.parents().empty() ?
       dynamic_ptr_cast<tShowerParticlePtr>(particle.parents()[0]) : tShowerParticlePtr();
   }
   else {
@@ -676,7 +678,7 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
     else {
       if(mother->children()[0]->children().size()!=2)
 	break;
-      tShowerParticlePtr mtemp = 
+      tShowerParticlePtr mtemp =
 	dynamic_ptr_cast<tShowerParticlePtr>(mother->children()[0]);
       if(!mtemp)
 	break;
@@ -714,7 +716,7 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
   double A2(A*A), B2(B*B), C2(C*C), D2(D*D);
   if(abs(B/A)<1e-10 && abs(D/C)<1e-10) return make_pair(phi0,phi0+Constants::pi);
   double root = sqr(B2)*C2*D2*sqr(s012) + 2.*A*B2*B*C2*C*D*c01*s012 + 2.*A*B2*B*C*D2*D*c01*s012
-		     + 4.*A2*B2*C2*D2*c012 - A2*B2*C2*D2*s012 - A2*B2*sqr(D2)*s012 - sqr(B2)*sqr(C2)*s012 
+		     + 4.*A2*B2*C2*D2*c012 - A2*B2*C2*D2*s012 - A2*B2*sqr(D2)*s012 - sqr(B2)*sqr(C2)*s012
 		     - sqr(B2)*C2*D2*s012 - 4.*A2*A*B*C*D2*D*c01 - 4.*A*B2*B*C2*C*D*c01 + sqr(A2)*sqr(D2)
 		     + 2.*A2*B2*C2*D2 + sqr(B2)*sqr(C2);
   if(root<0.) return make_pair(phi0,phi0+Constants::pi);
@@ -743,7 +745,8 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
 					 ShoKinPtr kinematics,
 					 const RhoDMatrix & rho) {
   // no correlations, return flat phi
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
+  if(ShowerHandler::currentHandlerIsSet() &&
+     ! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double  z = kinematics->z();
@@ -758,12 +761,13 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
-  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()&&
+  bool softAllowed = (!ShowerHandler::currentHandlerIsSet() ||
+		      dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()) &&
     (canBeSoft[0] || canBeSoft[1]);
   if(softAllowed) {
     // find the partner for the soft correlations
     tShowerParticlePtr partner=findCorrelationPartner(particle,true,splittingFn()->interactionType());
-    // remember we want the softer gluon 
+    // remember we want the softer gluon
     bool swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
     double zFact = !swapOrder ? (1.-z) : z;
     // compute the transforms to the shower reference frame
@@ -850,10 +854,8 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
     if(xi_min>xi_max) swap(xi_min,xi_max);
     if(xi_min>xi_ij) softAllowed = false;
     Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
-    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
-      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
-    }
-    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
+    if(!ShowerHandler::currentHandlerIsSet() ||
+       dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
       double A = (pipj*Ek[0]- Ej*pik)/Ej/sqr(Ej);
       double B = -sqrt(sqr(pipj)*(sqr(Ek[1])+sqr(Ek[2])))/Ej/sqr(Ej);
       double C = pjk[0]/sqr(Ej);
@@ -862,12 +864,16 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
       aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + max(Ej*(A+B*cos(minima.first -phi1))/(C+D*cos(minima.first -phi0)),
 								    Ej*(A+B*cos(minima.second-phi1))/(C+D*cos(minima.second-phi0))));
     }
+    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
+      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
+    }
     else
       assert(false);
   }
   // if spin correlations
-  vector<pair<int,Complex> > wgts;     
-  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
+  vector<pair<int,Complex> > wgts;
+  if(!ShowerHandler::currentHandlerIsSet() ||
+     dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -891,7 +897,7 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
     }
     wgt = spinWgt.real();
     if(wgt-1.>1e-10) {
-      generator()->log() << "Forward spin weight problem " << wgt << " " << wgt-1. 
+      generator()->log() << "Forward spin weight problem " << wgt << " " << wgt-1.
 			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
       generator()->log() << "Weights \n";
       for(unsigned int ix=0;ix<wgts.size();++ix)
@@ -903,14 +909,15 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
       Energy  Eg  = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
       if(pipj*Eg>pik*Ej) {
-	if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
-	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
-	}
-	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
+	if(!ShowerHandler::currentHandlerIsSet() ||
+		dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
 	  aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
 	}
+	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
+	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+	}
 	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
-	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
+	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1.
 			     << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
 	}
       }
@@ -945,7 +952,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
   double z = kinematics->z();
   Energy2 t = (1.-z)*sqr(kinematics->scale())/z;
   Energy pT = kinematics->pT();
-  // if soft correlations 
+  // if soft correlations
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
     (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
@@ -985,7 +992,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
     Lorentz5Momentum pj = partner->momentum();
     pj.boost(beta_bb);
     pj *= rot;
-    double beta2 = 0.5*(1.-zFact)*(sqr(alpha0*zFact/(1.-zFact))*m2+sqr(pT))/alpha0/zFact/pn; 
+    double beta2 = 0.5*(1.-zFact)*(sqr(alpha0*zFact/(1.-zFact))*m2+sqr(pT))/alpha0/zFact/pn;
     // compute the two phi independent dot products
     Energy2 dot1 = pj*pVect;
     Energy2 dot2 = pj*nVect;
@@ -1041,7 +1048,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
     }
     wgt = spinWgt.real();
     if(wgt-1.>1e-10) {
-      generator()->log() << "Backward weight problem " << wgt << " " << wgt-1. 
+      generator()->log() << "Backward weight problem " << wgt << " " << wgt-1.
 			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << z << " " << phi << "\n";
       generator()->log() << "Weights \n";
       for(unsigned int ix=0;ix<wgts.size();++ix)
@@ -1058,7 +1065,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
 	aziWgt = max(ZERO,0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/dot - Ej*pik/dot)/aziMax);
       }
       if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
- 	generator()->log() << "Backward soft weight problem " << aziWgt << " " << aziWgt-1. 
+ 	generator()->log() << "Backward soft weight problem " << aziWgt << " " << aziWgt-1.
  			   << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
       }
     }
@@ -1177,10 +1184,10 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
       else {
 	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
 	wgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
-      }	
+      }
     }
     if(wgt-1.>1e-10||wgt<-1e-10) {
-      generator()->log() << "Decay soft weight problem " << wgt << " " << wgt-1. 
+      generator()->log() << "Decay soft weight problem " << wgt << " " << wgt-1.
 			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
     }
     if(wgt>wgtMax) {

@@ -15,8 +15,6 @@ using namespace matchbox;
 lo_alpha_s::lo_alpha_s()
   : alpha_s(), freezing_scale_(1.*GeV) {}
 
-lo_alpha_s::~lo_alpha_s() {}
-
 IBPtr lo_alpha_s::clone() const {
   return new_ptr(*this);
 }

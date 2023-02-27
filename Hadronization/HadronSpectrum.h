@@ -10,6 +10,7 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/ParticleData.h>
+#include "Kupco.h"
 /* These last two imports don't seem to be used here, but are needed for other
     classes which import this. Should tidy up at some point*/
 #include <ThePEG/PDT/StandardMatchers.h>
@@ -148,50 +149,6 @@ public:
     }
   };
   
-  /** \ingroup Hadronization
-   *  \class Kupco
-   *  \brief Class designed to make STL routines easy to use.
-   *  \author Philip Stephens
-   *
-   *  This class is used to generate a list of the hadron pairs which can 
-   *  be produced that allows easy traversal and quick access.
-   */
-  class Kupco {
-    
-  public:
-    
-    /**
-     *  Constructor
-     * @param inidQ PDG code of the quark drawn from the vacuum.
-     * @param inhad1 ParticleData for the first hadron produced.
-     * @param inhad2 ParticleData for the second hadron produced.
-     * @param inwgt  The weight for the hadron pair 
-     */
-     Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt)
-      : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
-    {}
-  
-    /**
-     * id of the quark drawn from the vacuum.
-     */
-    tcPDPtr idQ;
-    
-    /**
-     * The ParticleData object for the first hadron produced.
-     */
-    tcPDPtr hadron1;
-    
-    /**
-     * The ParticleData object for the second hadron produced.
-     */
-    tcPDPtr hadron2;
-    
-    /**
-     * Weight factor of this componation.
-     */
-    Energy weight;
-  };
-
 
 public:
 
@@ -251,11 +208,6 @@ public:
   virtual const vector<long>& heavyHadronizingQuarks() const = 0;
 
   /**
-   * The lightest quarks, used for finding the lightest Hadron Pair
-   */
-  virtual const vector<long>& lightestQuarks() const = 0;
-
-  /**
    * Return true if any of the possible three input particles contains
    * the indicated heavy quark.  false otherwise. In the case that
    * only the first particle is specified, it can be: an (anti-)quark,
@@ -272,6 +224,16 @@ public:
   virtual bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const = 0;
 
   //@}
+
+  
+  /**
+   *  Access the parton weights
+   */
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
+    assert( it != _pwt.end() );
+    return it->second;
+  }
 
    /**
    * Return true if the two or three particles in input can be the components 
@@ -298,12 +260,6 @@ public:
   PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
 
   /**
-   * Return the quark flavour which should be considered to set the
-   * minimum mass for a minimal cluster splitting.
-   */
-  virtual long minimalSplitQuark() const = 0;
-
-  /**
    * Method to return a pair of hadrons given the PDG codes of
    * two or three constituents
    * @param cluMass The mass of the cluster
@@ -312,7 +268,7 @@ public:
    * @param par3 The third constituent
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const = 0;
+						 tcPDPtr par2) const;
 
   /**
    * Select the single hadron for a cluster decay
@@ -352,22 +308,31 @@ public:
    * select the one that produces the lightest pair of hadrons, compatible
    * with the charge conservation constraint.
    */
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-						   tcPDPtr ptr3 = PDPtr ()) const;
+  tcPDPair lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Returns the mass of the lightest pair of hadrons with the given particles
    * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent
+   * @param ptr2 is the second constituent
    */
-  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
-				tcPDPtr ptr3 = PDPtr ()) const {
-    pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
-    if ( ! pairData.first || ! pairData.second ) return ZERO;
-    return ( pairData.first->mass() + pairData.second->mass() ); 
+  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const  { 
+    map<pair<long,long>,tcPDPair>::const_iterator lightest =
+      lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
+    if(lightest!=lightestHadrons_.end())
+      return lightest->second.first->mass()+lightest->second.second->mass();
+    else
+      return ZERO;
   }
 
+  /**
+   * Returns the lightest hadron formed by the given particles.
+   *
+   * Given the id of two (or three) constituents of a cluster, it returns
+   * the  lightest hadron with proper flavour numbers.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent
+   */
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const;
   
   /**
    * Return the threshold for a cluster to split into a pair of hadrons.
@@ -375,20 +340,6 @@ public:
    * higher for heavy and exotic clusters
    */
   virtual Energy hadronPairThreshold(tcPDPtr par1, tcPDPtr par2) const=0;
-
-
-  /**
-   * Returns the lightest hadron formed by the given particles.
-   *
-   * Given the id of two (or three) constituents of a cluster, it returns
-   * the  lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also 'ptr3' present.
-   * @param ptr1 is the first  constituent
-   * @param ptr2 is the second constituent 
-   * @param ptr3 is the third  constituent
-   */
-   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-				  tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
    * Returns the hadrons below the constituent mass threshold formed by the given particles,
@@ -403,8 +354,7 @@ public:
    * @param ptr3 is the third  constituent
    */
   vector<pair<tcPDPtr,double> > hadronsBelowThreshold(Energy threshold,
-							      tcPDPtr ptr1, tcPDPtr ptr2,
-							      tcPDPtr ptr3 = PDPtr ()) const;
+							      tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
@@ -412,14 +362,7 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent 
    */
-   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-  				   tcPDPtr ptr3 = PDPtr ()) const {
-#else
-                                   tcPDPtr = PDPtr ()) const {
-#endif
-    // The method assumes ptr3 == empty  
-    assert(!(ptr3));
+   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2) const {
     // find entry in the table
     pair<long,long> ids(abs(ptr1->id()),abs(ptr2->id()));
     HadronTable::const_iterator tit=_table.find(ids);
@@ -434,6 +377,11 @@ public:
   }
 
   /**
+   *  Force baryon/meson selection
+   */
+  virtual std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
+
+  /**
    *  Returns the mass of the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent 
@@ -444,6 +392,11 @@ public:
    * Return the weight for the given flavour
    */
    virtual double pwtQuark(const long& id) const = 0;
+
+  virtual double specialQuarkWeight(double quarkWeight, long id,
+            const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
+    return quarkWeight;
+  }
 
 public:
 
@@ -493,7 +446,7 @@ protected:
    * quarks (antiquarks) of id specified in input (id1, id2).
    * Caller must ensure that id1 and id2 are quarks.
    */
-  virtual long makeDiquarkID(long id1, long id2)  const = 0;
+  virtual long makeDiquarkID(long id1, long id2, long pspin)  const = 0;
 
 protected:
   /**
@@ -508,6 +461,16 @@ protected:
    */
   bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
 
+
+  /**
+   *  A sub-function of HadronSpectrum::constructHadronTable().
+   *  It receives the information of a prospective Hadron and inserts it
+   *  into the hadron table construct.
+   *  @param particle is a particle data pointer to the hadron
+   *  @param flav1 is the first  constituent of the hadron
+   *  @param flav2 is the second constituent of the hadron
+   */
+  void insertToHadronTable(tPDPtr &particle, int flav1, int flav2);
 
   /**
    *  Construct the table of hadron data
@@ -582,7 +545,28 @@ protected:
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
    */
-  double specialWeight(long id) const;
+  double specialWeight(long id) const {
+    const int pspin = id % 10;
+    // Only K0L and K0S have pspin == 0, should
+    // not get them until Decay step
+    assert( pspin != 0 );
+    // Baryon : J = 1/2 or 3/2
+    if(pspin%2==0)
+      return baryonWeight(id);
+    // Meson
+    else 
+      return mesonWeight(id); 
+  }
+  
+  /**
+   *  Weights for mesons
+   */
+  virtual double mesonWeight(long id) const;
+
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const = 0;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
@@ -590,6 +574,21 @@ protected:
    * two constituent particle pointers: par1 and par2 (both with proper sign).
    */
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
+
+  /**
+   *   Insert a meson in the table
+   */
+  virtual void insertMeson(HadronInfo a, int flav1, int flav2) = 0;
+
+  /**
+   *   Insert a spin\f$\frac12\f$ baryon in the table
+   */
+  virtual void insertOneHalf(HadronInfo a, int flav1, int flav2);
+
+  /**
+   *   Insert a spin\f$\frac32\f$ baryon in the table
+   */
+  virtual void insertThreeHalf(HadronInfo a, int flav1, int flav2);
 
   /**
    *  Option for the selection of hadrons below the pair threshold
@@ -600,6 +599,11 @@ protected:
    *  The weights for the excited meson multiplets
    */
   vector<vector<vector<double> > > _repwt;
+
+  /**
+   * Weights for quarks and diquarks.
+   */
+  map<long,double> _pwt;
 
   /**
    * Singlet and Decuplet weights
@@ -624,6 +628,16 @@ protected:
    * Defines values for array sizes. L,J,N max values for excited mesons.
    */
   enum MesonMultiplets { Lmax = 3, Jmax = 4, Nmax = 4}; 
+  //@}
+  
+  /**
+   *  Caches of lightest pairs for speed
+   */
+  //@{
+  /**
+   * Masses of lightest hadron pair
+   */
+  map<pair<long,long>,tcPDPair> lightestHadrons_;
   //@}
 
 private:

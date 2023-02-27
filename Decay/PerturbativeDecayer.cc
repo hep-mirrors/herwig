@@ -161,7 +161,7 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   if ( !colouredParticles && inter==ShowerInteraction::QCD ) return RealEmissionProcessPtr();
   if ( ! chargedParticles && inter==ShowerInteraction::QED ) return RealEmissionProcessPtr();
   // check exactly two outgoing particles
-  if(born->bornOutgoing().size()==2) return RealEmissionProcessPtr();
+  if(born->bornOutgoing().size()!=2) return RealEmissionProcessPtr();
   // for decay b -> a c 
   // set progenitors
   PPtr cProgenitor = born->bornOutgoing()[0];

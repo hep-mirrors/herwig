@@ -64,7 +64,7 @@ VectorMesonCurrent::VectorMesonCurrent()  {
   addDecayMode(4,-4);
   _id.push_back(100443);_decay_constant.push_back(1.08*GeV2);
   addDecayMode(4,-4);
-  _id.push_back(10433);_decay_constant.push_back(0.397*GeV2);
+  _id.push_back(20433);_decay_constant.push_back(0.397*GeV2);
   addDecayMode(4,-3);
   // initial size of the vectors
   _initsize=_id.size();

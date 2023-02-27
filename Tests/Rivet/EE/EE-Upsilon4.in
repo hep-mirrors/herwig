@@ -10,59 +10,54 @@ create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
 set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+####### semileptonic decays #######################
+# B0 -> D* l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1693396
+# B0/B+ -> D l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
+# B0 -> rho,pi B+ -> rho,omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
+# B -> eho,pi ell nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I855306
+# B+ -> omega l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1116411
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1247460
+# B to pi, eta, omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1125973
+# B0 -> pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
+# # BELLE B+ -> pi+pi- l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
+# BELLE B0 -> D*- tau+ nu_tau D* polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
+# BELLE B -> D* tau+ nu_tau  tau polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
+# BABAR e- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
+# Crystal Ball e- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1989_I263581
+# BELLE B-> Xu l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1895149
+############ b -> s gamma #################################
+# BELLE b->s gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
+# BABAR b->s gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I769107
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1123662
+####### spectra ###################################
 # ARGUS pi,K, proton
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2653028
 # ARGUS K*, rho, omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
-# various semileptonic decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1116411
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
-# BELLE b->s gamma
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
-# BES D -> K, pi semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371
-# multiplicities
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
-# BES multiplicty in eta_c decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
-# kaons in b decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
-# charm hadrons in b decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
 # phi spectrum (CLEO and BaBar)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I632399
 # D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
-# # MC analyses based on old internal ones
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
 # ARGUS charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
-# BELLE B0 -> D* semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
-# BABAR D0 -> K- semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
-# BES-III D0 -> pi semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
-# BES-III D+ -> eta semi-leptonic
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
-# BABAR e- spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
-# CLEO multiplicty in Upsilon(4S) decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
-# BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744
-# BABAR Upsilon(4S) -> pi+pi- Upsilon(1,2S) decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714448
 # CLEO Xi_c spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I442910
 # CLEO Sigma_c spectrum
@@ -73,13 +68,37 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1992_I315181
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
 # BABAR Xi'_c spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
+# multiplicities
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
+# CLEO multiplicty in Upsilon(4S) decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
+# kaons in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
+# charm hadrons in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
+# # MC analyses based on old internal ones
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+# BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744
+# BABAR Upsilon(4S) -> pi+pi- Upsilon(1,2S) decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714448
 # CLEO J/psi and psi(2s) in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I606309
 # BABAR eta' in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I642355
 # BELLE eta in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
-# BABAR D_s spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
 # BELLE charm hadron producion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
+# BELLE Upsilon 4S -> Upsilon 1,2S pi+pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301
+# BELLE B+ -> phi phi K+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1841899
+# BELLE B0 -> p pbar pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729311
+# BELLE B0 -> KS0 K-+ pi+-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729723

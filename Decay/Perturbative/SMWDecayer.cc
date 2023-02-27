@@ -280,11 +280,11 @@ double SMWDecayer::me2(const int,const Particle & part,
     double x2 = 1.-y*(1.-muj2-muk2)-muj2+muk2;
     double x1 = 1.+muj2-muk2-z*(x2-2.*muk2);
     // copy the particle objects over for calculateRealEmission
-    tcPDVector outgoing = {part.dataPtr(),outgoing[0],outgoing[1],gluon_};
+    tcPDVector oTemp = {part.dataPtr(),outgoing[0],outgoing[1],gluon_};
     vector<Lorentz5Momentum> mom = {part.momentum(),momenta[0],momenta[1]};
     realFact += 0.25*jac*sqr(1.-muj2-muk2)/
       sqrt((1.-sqr(muj-muk))*(1.-sqr(muj+muk)))/Constants::twopi
-      *2.*CF_*aS_*calculateRealEmission(x1, x2, outgoing,mom, phi, 
+      *2.*CF_*aS_*calculateRealEmission(x1, x2, oTemp, mom, phi, 
   					muj, muk, iemit, true);
   }
   // the born + virtual + real

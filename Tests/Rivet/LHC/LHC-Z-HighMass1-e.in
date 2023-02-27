@@ -1,6 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-# ATLAS high mass
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1234228

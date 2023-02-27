@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ScalarAmplitude class.
+//
+#ifndef Herwig_ScalarAmplitude_FH
+#define Herwig_ScalarAmplitude_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class ScalarAmplitude;
+
+ThePEG_DECLARE_POINTERS(Herwig::ScalarAmplitude,ScalarAmplitudePtr);
+
+}
+
+#endif

@@ -1,0 +1,199 @@
+cd /Herwig/Hadronization
+
+create Herwig::Hw7Selector H7Selector
+set ClusterFissioner:HadronSelector H7Selector 
+set LightClusterDecayer:HadronSelector H7Selector
+set ClusterDecayer:HadronSelector H7Selector
+set ClusterFinder:HadronSelector H7Selector
+set H7Selector:SingleHadronLimitBottom 0.000
+set H7Selector:SingleHadronLimitCharm 0.000
+set H7Selector:SingleHadronLimitExotic 0.
+set H7Selector:PwtDquark  1.0
+set H7Selector:PwtUquark  1.0
+set H7Selector:PwtSquark 0.44791808545341966
+set H7Selector:PwtCquark  0.0
+set H7Selector:PwtBquark  0.0
+set H7Selector:PwtDIquarkS0  0.1
+set H7Selector:PwtDIquarkS1  0.2
+set H7Selector:SngWt      1.
+set H7Selector:DecWt      1.
+set H7Selector:Mode 1
+set H7Selector:BelowThreshold All
+
+set /Herwig/Shower/AlphaQCD:AlphaIn 0.11945016393306016
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn 0.11945016393306016
+set /Herwig/Shower/PTCutOff:pTmin 0.9306282520806936
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.8473684210526315
+set /Herwig/Hadronization/ClusterDecayer:ClSmrLight 0.78
+set /Herwig/Hadronization/HadronSelector:PwtSquark 0.44791808545341966
+set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.399325692181664 
+set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
+
+set /Herwig/Hadronization/PartonSplitter:Split ud
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa+
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa0
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappabar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa-
+insert H7Selector:Forbidden 0 /Herwig/Particles/sigma
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1*0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1*bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*bar+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1520)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1520)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1820)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1820)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1820)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1820)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1600)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1600)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1440)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1440)
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1440)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1440)
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1690)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1690)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1405)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1405)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b10
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b10
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1bar+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1535)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1535)
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1535)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1535)
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1950)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1950)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1950)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1950)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa+
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa0
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappabar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/kappa-
+insert H7Selector:Forbidden 0 /Herwig/Particles/sigma
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1*0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1*bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1*bar+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1520)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1520)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1520)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1670)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1820)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1820)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1820)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1820)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1600)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1600)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1440)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1440)
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1440)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1440)
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1660)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1690)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1690)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1690)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1405)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1405)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b10
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda_b1bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b10
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1bar0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi_b1bar+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambda(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Lambdabar(1670)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/p(1535)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/pbar(1535)
+insert H7Selector:Forbidden 0 /Herwig/Particles/n(1535)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/nbar(1535)
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigma(1750)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1950)-
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1950)+
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xi(1950)0
+insert H7Selector:Forbidden 0 /Herwig/Particles/Xibar(1950)0
+
+set H7Selector:SngWt 1 
+set H7Selector:DecWt 1

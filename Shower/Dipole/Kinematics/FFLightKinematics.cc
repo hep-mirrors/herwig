@@ -26,8 +26,6 @@ using namespace Herwig;
 FFLightKinematics::FFLightKinematics() 
   : DipoleSplittingKinematics() {}
 
-FFLightKinematics::~FFLightKinematics() {}
-
 IBPtr FFLightKinematics::clone() const {
   return new_ptr(*this);
 }

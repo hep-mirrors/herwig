@@ -82,6 +82,57 @@ insert SMHadronSpectrum:Forbidden 0 /Herwig/Particles/Xibar(1820)+
 insert SMHadronSpectrum:Forbidden 0 /Herwig/Particles/Xi(1820)0
 insert SMHadronSpectrum:Forbidden 0 /Herwig/Particles/Xibar(1820)0
 
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda(1600)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambdabar(1600)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/p(1440)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/pbar(1440)
+insert HadronSelector:Forbidden 0 /Herwig/Particles/n(1440)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/nbar(1440)
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1660)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1660)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1660)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1660)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1690)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1690)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1690)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1690)+
+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda(1405)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambdabar(1405)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_c(2593)bar-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_b10
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_b1bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2790)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2790)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2790)bar-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b10
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1bar+
+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda(1670)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambdabar(1670)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/p(1535)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/pbar(1535)
+insert HadronSelector:Forbidden 0 /Herwig/Particles/n(1535)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/nbar(1535)
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1750)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1750)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1750)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1750)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1950)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1950)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1950)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1950)0
+
+
+
 mkdir /Herwig/Widths
 cd /Herwig/Widths
 read widths.in

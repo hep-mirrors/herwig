@@ -168,6 +168,13 @@ private:
    */
   StrongHeavyBaryonDecayer & operator=(const StrongHeavyBaryonDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
@@ -234,22 +241,17 @@ private:
   /**
    * PDG code for the incoming baryons
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * PDG code for the outgoing baryons
+   * PDG code for the outgoing particles
    */
-  vector<int> _outgoingB;
-
-  /**
-   * PDG code for the outgoing mesons.
-   */
-  vector<int> _outgoingM;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * max weight
    */
-  vector<double> _maxweight;
+  vector<double> maxWeight_;
 
   /**
    * The couplings for the different modes.
@@ -259,12 +261,7 @@ private:
   /**
    * The type of matrix element
    */
-  vector<int> _modetype;
-
-  /**
-   *  The initial size of the arrays
-   */
-  unsigned int _initsize;
+  vector<int> modeType_;
 };
 
 }

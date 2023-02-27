@@ -17,18 +17,14 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/Rebinder.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "Herwig/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
 using namespace Herwig;
 
 InvertedTildeKinematics::InvertedTildeKinematics() 
   : HandlerBase(), theJacobian(0.0), thePtCut(0.0*GeV) {}
-
-InvertedTildeKinematics::~InvertedTildeKinematics() {}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

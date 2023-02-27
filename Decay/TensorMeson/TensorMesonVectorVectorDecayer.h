@@ -26,29 +26,19 @@ using namespace ThePEG;
  *  photons. In principle for bottom and charm tensors this may be the decay to
  *  two vector mesons an d it is used to simulate three and four body 
  *  \f$a_2\f$, \f$f_2\f$ and \f$K_2\f$ decays. 
- *
- *  The form of the matrix element is based on the perturbative matrix element
- *  for the decay of a graviton to two vector bosons with the neglect of a mass term
- *
- * \f[ \mathcal{M} =  g\epsilon_{\mu\nu}\left[
- *   \left(\epsilon_{1\alpha} p_1^\mu - \epsilon_1^\mu p_{1\alpha}\right)
- *   \left(\epsilon_2^\alpha  p_2^\nu - \epsilon_2^\nu p_2^\alpha\right)
- *  +\left(\epsilon_{1\alpha} p_1^\nu - \epsilon_1^\nu p_{1\alpha}\right)
- *   \left(\epsilon_2^\alpha  p_2^\mu - \epsilon_2^\nu p_2^\alpha\right)
- * -\frac12g^{\mu\nu}
- *    \left(\epsilon_{1\alpha} p_{1\beta}- \epsilon_{1\beta} p_{1\alpha}\right)
- *    \left(\epsilon_2^\alpha  p_2^\beta - \epsilon_2^\beta p_2^\alpha\right)\right] \f]
- *  in such a way that it vanishes if the polarizations of the outgoing vectors are
- *  replaced with their momenta.
+ *  
+ * The matrix element is
+ *  given by \f[\mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta} \epsilon_2^{\gamma} 
+ *  \left(g_{\alpha_1\beta}+\frac{p_{1\alpha_1}p_{0\beta}{p_0\cdot p_1-m_0m_1}\right)
+ *  \left(g_{\alpha_2\gamma}+\frac{p_{2\alpha_2}p_{0\gamma}{p_0\cdot p_2-m_0m_2}\right)\f]
+ *  where \f$p_{0,1,2}\f$ are the momenta of the incoming pseudotensor and outgoing vector mesons, respectively,
+ * and \f$\epsilon_{0}\f$ is the polarization tensor of the incoming pseudotensor meson and $\epslion_{1,2}$ are those of the outgoing
+ * vector mesons.
  *
  *  The incoming tensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
  *  for the decays can be calculated using the Initialize interface of the
  *  DecayIntegrator class or specified using the interface.
- *
- *  The incoming and outgoing particles, couplings and maximum weights for
- *  many of the common \f$T\to VV\f$ decays are specified in the default
- *  constructor.
  *
  * @see DecayIntegrator
  * * @see \ref TensorMesonVectorVectorDecayerInterfaces "The interfaces"
@@ -58,11 +48,6 @@ using namespace ThePEG;
 class TensorMesonVectorVectorDecayer: public DecayIntegrator {
 
 public:
-
-  /**
-   * Default constructor.
-   */
-  TensorMesonVectorVectorDecayer();
 
   /**
    * Which of the possible decays is required
@@ -174,53 +159,50 @@ private:
    */
   TensorMesonVectorVectorDecayer & operator=(const TensorMesonVectorVectorDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
-   * the PDG codes for the first outgoing particle
+   * the PDG codes for the outgoing particles
    */
-  vector<int> _outgoing1;
-
-  /**
-   * the PDG codes for the second outgoing particle
-   */
-  vector<int> _outgoing2;
+  vector<pair<int,int> > outgoing_;
 
   /**
    * the coupling for the decay
    */
-  vector<InvEnergy> _coupling;
+  vector<Energy> coupling_;
 
   /**
    * the maximum weight for the decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  Storage of polarization tensors to try and increase
    *  speed
    */
-  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+  mutable vector<Helicity::LorentzTensor<double> > tensors_;
 
   /**
    *  Storage of the polarization vectors 
    */
-  mutable vector<Helicity::LorentzPolarizationVector > _vectors[2];
+  mutable vector<Helicity::LorentzPolarizationVector > vectors_[2];
 
   /**
    *   Storage of the \f$\rho\f$ matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
 };
 

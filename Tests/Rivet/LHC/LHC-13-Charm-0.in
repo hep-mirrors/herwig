@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# charm production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1396331

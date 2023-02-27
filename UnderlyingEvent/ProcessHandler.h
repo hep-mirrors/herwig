@@ -64,23 +64,10 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ProcessHandler();
-
-  /**
-   * The copy constructor.
-   */
-  ProcessHandler(const ProcessHandler &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ProcessHandler();
-  //@}
 
 public:
 

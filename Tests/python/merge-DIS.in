@@ -1,6 +1,6 @@
 #! @PYTHON@
 from __future__ import print_function
-import logging, sys
+import logging, sys,subprocess,math,time
 
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -9,34 +9,6 @@ if sys.version_info[:3] < (2,4,0):
 import os, yoda
 
 # #############################################
-
-def fillAbove(desthisto, sourcehistosbyq2):
-    q2high=1e100
-    q2low=-1e100
-    for q2,h in  sorted(sourcehistosbyq2.iteritems(),reverse=True) :
-        q2low=q2
-        for i in range(0,h.numBins()) :
-            if(h.bins()[i].xMin()  >= q2low and 
-               h.bins()[i].xMin()  <  q2high ) :
-                desthisto.bins()[i] += h.bins()[i]
-        q2high=q2
-
-def merge(hpath):
-    global inhistos
-    global outhistos
-    try:
-        fillAbove(outhistos[hpath], inhistos[hpath])
-    except:
-        pass
-
-def useOne(hpath, q2):
-    global inhistos
-    global outhistos
-    try:
-        outhistos[hpath] =  inhistos[hpath][float(q2)]
-    except:
-        pass
-
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
@@ -56,107 +28,68 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # #######################################
-
-yodafiles=["-e--LowQ2","-e+-LowQ2","-e+-HighQ2"]
-
+yodafiles=[]
+for energy in [225,251,296,300,318,"318-CMS"] :
+    for process in ["e+","e-","e+-CC","e--CC","e+"] :
+        mergeargs=["rivet-merge"]
+        for q2 in ["VeryLow","Low","Med","High"] : 
+            fname = "Rivet-%s-%s-%s-%sQ2.yoda" % (args[0], energy ,process,q2)
+            if(os.path.isfile(fname)) :
+                mergeargs.append(fname)
+        if len(mergeargs)==1 : continue
+        if "e+" in process : beam="EPLUS"
+        else : beam="EMINUS"
+        if type(energy) == int :
+            mergeargs.append("-a")
+            mergeargs.append("HERA_2015_I1377206:ENERGY=%s"%energy)
+            mergeargs.append("-a")
+            mergeargs.append("HERA_2015_I1377206:BEAM=%s" %beam)
+        fname = "Rivet-%s-%s-%s.yoda"% (args[0], energy ,process)
+        mergeargs.append("-o")
+        mergeargs.append(fname)
+        yodafiles.append(fname)
+        p = subprocess.Popen(mergeargs)
+# need a sleep here otherwise merged files not ready
+time.sleep(5) 
 ## Get histos
-inhistos = {}
 outhistos={}
-weights = {}
 
 for f in yodafiles:
-    file = "Rivet-%s%s.yoda" % (args[0], f)
-    if(file.find("Low")> 0) :
-        q2=0
-    elif(file.find("High")>0) :
-        q2=50
-
-    if not os.access(file, os.R_OK):
-        logging.error("%s can not be read" % file)
+    if not os.access(f, os.R_OK):
+        logging.error("%s can not be read" % f)
         continue
     try:
-        aos = yoda.read(file)
+        aos = yoda.read(f)
     except:
-        logging.error("%s can not be parsed as YODA" % file)
+        logging.error("%s can not be parsed as YODA" % f)
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
-        if("RAW" in aopath) :continue
-        if(aopath.find("4129130")>0 ) :
-           if aopath not in inhistos:
-               inhistos[aopath] = {}
-           tmpE = inhistos[aopath]
-           if q2 not in tmpE:
-               tmpE[q2] = ao
-           else:
-                raise Exception("A set with q2    = %s already exists" % ( q2   ))
-        elif(aopath.find("2919893")>0 ) :
-            outhistos[aopath] = ao
+        if("RAW" in aopath) : continue
         elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
             continue
+        elif "HERA_2015_I1377206" in aopath :
+            path=aopath.split(":")
+            ao.setPath(path[0]+"/"+path[2].split("/")[1])
+            if "d06" in aopath or "d07" in aopath :
+                if "CC" in f : outhistos[aopath] = ao
+            else :
+                if "CC" not in f : outhistos[aopath] = ao
         else :
-            logging.error("Analysis %s is unknown" % aopath)
-            sys.exit(1)
-
-## Make empty output histos if needed
-for hpath,hsets in inhistos.items():
-    if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
-        title=""
-        path=""
-        histo = list(hsets.values())[0]
-        if hasattr(histo, 'title'):
-            title=histo.title()
-        if hasattr(histo, 'path'):
-            path=histo.path()
-        if(type(histo)==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(path,title)
-        elif(type(histo)==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(path,title)
-            for i in range(0,histo.numBins()) :
-                outhistos[hpath].addBin(histo.bins()[i].xMin(),histo.bins()[i].xMax())
-        else :
-            logging.error("Histogram %s is of unknown type" % hpath)
-            sys.exit(1)
-
-# H1 transverse energy
-useOne("/H1_2000_S4129130/d01-x01-y01","0")
-useOne("/H1_2000_S4129130/d02-x01-y01","0")
-useOne("/H1_2000_S4129130/d03-x01-y01","0")
-useOne("/H1_2000_S4129130/d04-x01-y01","0")
-useOne("/H1_2000_S4129130/d05-x01-y01","0")
-useOne("/H1_2000_S4129130/d06-x01-y01","0")
-useOne("/H1_2000_S4129130/d07-x01-y01","0")
-useOne("/H1_2000_S4129130/d08-x01-y01","0")
-useOne("/H1_2000_S4129130/d09-x01-y01","0")
-useOne("/H1_2000_S4129130/d10-x01-y01","0")
-useOne("/H1_2000_S4129130/d11-x01-y01","0")
-useOne("/H1_2000_S4129130/d12-x01-y01","0")
-useOne("/H1_2000_S4129130/d13-x01-y01","0")
-useOne("/H1_2000_S4129130/d14-x01-y01","0")
-useOne("/H1_2000_S4129130/d15-x01-y01","0")
-useOne("/H1_2000_S4129130/d16-x01-y01","50")
-useOne("/H1_2000_S4129130/d17-x01-y01","50")
-useOne("/H1_2000_S4129130/d18-x01-y01","50")
-useOne("/H1_2000_S4129130/d19-x01-y01","50")
-useOne("/H1_2000_S4129130/d20-x01-y01","50")
-useOne("/H1_2000_S4129130/d21-x01-y01","50")
-useOne("/H1_2000_S4129130/d22-x01-y01","50")
-useOne("/H1_2000_S4129130/d23-x01-y01","50")
-useOne("/H1_2000_S4129130/d24-x01-y01","50")
-useOne("/H1_2000_S4129130/d25-x01-y01","0")
-useOne("/H1_2000_S4129130/d26-x01-y01","0")
-useOne("/H1_2000_S4129130/d27-x01-y01","0")
-useOne("/H1_2000_S4129130/d28-x01-y01","0")
-useOne("/H1_2000_S4129130/d29-x01-y01","50")
-useOne("/H1_2000_S4129130/d30-x01-y01","50")
-useOne("/H1_2000_S4129130/d31-x01-y01","50")
-useOne("/H1_2000_S4129130/d32-x01-y01","50")
-
-merge("/H1_2000_S4129130/d33-x01-y01")
-merge("/H1_2000_S4129130/d34-x01-y01")
-
+            outhistos[aopath] = ao
+            
 # Choose output file
 name = args[0]+".yoda"
+# remove any scatters with nans, causes yoda to crash
+remove = [] 
+for key in outhistos.keys() :
+    ao = outhistos[key]
+    if type(ao)==yoda.core.Scatter2D :
+        skip=False
+        for p in ao.points() :
+            if math.isnan(p.y()) : skip=True
+        if(skip) : remove.append(key)
+for key in remove : del outhistos[key]
 # output the yoda file
 yoda.writeYODA(outhistos,name)
 sys.exit(0)

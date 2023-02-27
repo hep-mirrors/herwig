@@ -297,6 +297,11 @@ protected:
 protected:
 
   /**
+   *  Access to soft-cluster parameter
+   */
+  Energy btClM() const {return _btClM;}
+
+  /**
   *  Function that returns either the cluster mass or the lambda measure
   */
   Energy2 clustermass(const ClusterPtr & cluster) const;
@@ -390,6 +395,13 @@ protected:
 private:
 
   /**
+  * Smooth probability for dynamic threshold cuts:
+  * @scale the current scale, e.g. the mass of the cluster,
+  * @threshold the physical threshold,
+   */
+  bool ProbablityFunction(double scale, double threshold);
+
+  /**
    * Check if a cluster is heavy enough to split again
    */
   bool isHeavy(tcClusterPtr );
@@ -445,6 +457,11 @@ private:
   */
   int _fissionCluster;
 
+  /**
+  * Flag to choose static or dynamic kinematic thresholds in cluster splittings
+  */
+  int _kinematicThresholdChoice;
+
   //@}
    /**
    * Parameter used (2/b) for the beam cluster mass generation.
@@ -484,6 +501,21 @@ private:
   *  calculating
   */
   const double _maxScale = 20.;
+
+ /**
+  * Power factor in ClausterFissioner bell probablity function
+  */
+  double _probPowFactor;
+
+  /**
+  * Shifts from the center in ClausterFissioner bell probablity function
+  */
+  double _probShift;
+
+  /**
+  * Shifts from the kinetic threshold in ClausterFissioner
+  */
+  Energy2 _kinThresholdShift;
 
   /**
    * The hadron spectrum to consider

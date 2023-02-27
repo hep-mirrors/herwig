@@ -31,21 +31,6 @@ class SimpleColourBasis: public ColourBasis {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  SimpleColourBasis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SimpleColourBasis();
-  //@}
-
-public:
-
   /**
    * Prepare the basis for the normal ordered legs and return the
    * dimensionality of the basis.

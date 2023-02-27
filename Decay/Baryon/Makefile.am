@@ -20,6 +20,7 @@ NonLeptonicHyperonDecayer.h \
 NonLeptonicOmegaDecayer.h   \
 RadiativeHyperonDecayer.h   \
 RadiativeHeavyBaryonDecayer.h \
+RadiativeDoublyHeavyBaryonDecayer.h \
 SU3BaryonDecupletOctetPhotonDecayer.h\
 SU3BaryonDecupletOctetScalarDecayer.h\
 SU3BaryonOctetDecupletScalarDecayer.h\
@@ -40,6 +41,7 @@ NonLeptonicHyperonDecayer.cc           \
 NonLeptonicOmegaDecayer.cc             \
 RadiativeHyperonDecayer.cc             \
 RadiativeHeavyBaryonDecayer.cc         \
+RadiativeDoublyHeavyBaryonDecayer.cc \
 SU3BaryonDecupletOctetPhotonDecayer.cc \
 SU3BaryonDecupletOctetScalarDecayer.cc \
 SU3BaryonOctetDecupletScalarDecayer.cc \

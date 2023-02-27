@@ -22,15 +22,15 @@ using namespace Herwig;
 PPtr Cluster::clone() const {
   return new_ptr(*this);
 }
-  
+
 PPtr Cluster::fullclone() const {
   return clone();
 }
 
 ClassDescription<Cluster> Cluster::initCluster;
 
-Cluster::Cluster() 
-  : Particle(), 
+Cluster::Cluster()
+  : Particle(),
     _isAvailable(true),
     _hasReshuffled(false),
     _component(),
@@ -61,11 +61,11 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "
 	 << "without ParticleData for id " << ParticleID::Cluster << '\n';
   }
-  _component.push_back(new_ptr(Particle(*p1))); 
-  _component.push_back(new_ptr(Particle(*p2))); 
+  _component.push_back(new_ptr(Particle(*p1)));
+  _component.push_back(new_ptr(Particle(*p2)));
   if(p3) _component.push_back(new_ptr(Particle(*p3)));
-  _original.push_back(p1); 
-  _original.push_back(p2); 
+  _original.push_back(p1);
+  _original.push_back(p2);
   if(p3) _original.push_back(p3);
 
   _isPerturbative.push_back(initPerturbative(p1));
@@ -107,9 +107,9 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   else {
     setVertex(calculateX(_component[0],_component[1]));
   }
-}    
+}
 
-Cluster::Cluster(tcEventPDPtr x) 
+Cluster::Cluster(tcEventPDPtr x)
   : Particle(x),
     _isAvailable(false),
     _hasReshuffled(false),
@@ -120,7 +120,7 @@ Cluster::Cluster(tcEventPDPtr x)
     _numComp(0),
     _id(0) {}
 
-Cluster::Cluster(const Particle &x) 
+Cluster::Cluster(const Particle &x)
   : Particle(x),
     _isAvailable(false),
     _hasReshuffled(false),
@@ -131,13 +131,13 @@ Cluster::Cluster(const Particle &x)
     _numComp(0),
     _id(0) {}
 
-Energy Cluster::sumConstituentMasses() const 
+Energy Cluster::sumConstituentMasses() const
 {
-  if(_numComp == 3) { 
-    return _component[0]->mass() + 
+  if(_numComp == 3) {
+    return _component[0]->mass() +
            _component[1]->mass() +
            _component[2]->mass();
-  } else if(_numComp == 2) 
+  } else if(_numComp == 2)
     return _component[0]->mass() + _component[1]->mass();
   else return ZERO;
 }
@@ -145,7 +145,7 @@ Energy Cluster::sumConstituentMasses() const
 
 void Cluster::calculateP() {
   Lorentz5Momentum m;
-  for(unsigned int i = 0; i<_numComp; i++) 
+  for(unsigned int i = 0; i<_numComp; i++)
     m += _component[i]->momentum();
   m.rescaleMass();
   set5Momentum(m);
@@ -153,23 +153,23 @@ void Cluster::calculateP() {
 
 
 LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
-  // Get the needed parameters. 
-  Energy2 vmin2 
+  // Get the needed parameters.
+  Energy2 vmin2
     = ClusterHadronizationHandler::currentHandler()->minVirtuality2();
-  Length dmax 
+  Length dmax
     = ClusterHadronizationHandler::currentHandler()->maxDisplacement();
-  
+
   // Get the positions and displacements of the two components (Lab frame).
   LorentzPoint pos1 = q1->vertex();
   Lorentz5Momentum p1 = q1->momentum();
-  LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
+  LorentzDistance displace1 = -log( UseRandom::rnd() ) *
     hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
   if ( abs( displace1.m() ) > dmax ) {
     displace1 *= dmax / abs( displace1.m() );
   }
   LorentzPoint pos2 = q2->vertex();
   Lorentz5Momentum p2 = q2->momentum();
-  LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
+  LorentzDistance displace2 = -log( UseRandom::rnd() ) *
     hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
   if ( abs( displace2.m() ) > dmax ) {
     displace2 *= dmax / abs( displace2.m() );
@@ -181,9 +181,9 @@ LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
     // The displacement with the smallest projection along pcl.vect()
     // is scaled up such that both displacements have equal projections
     // along pcl.vect().
-    double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) / 
+    double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) /
 		     abs( pcl.vect().dot( displace2.vect() ) ) );
-    if ( pcl.vect().dot(displace1.vect()) * 
+    if ( pcl.vect().dot(displace1.vect()) *
 	 pcl.vect().dot(displace2.vect())  <  0.0*sqr(MeV*mm) ) {
       ratio *= -1;
     }
@@ -193,7 +193,7 @@ LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
       displace1 *= ratio;
     }
     // Now determine the s1 and s2 values.
-    double s1minusS2 = ( pcl.vect().dot( pos2.vect() - pos1.vect() ) / 
+    double s1minusS2 = ( pcl.vect().dot( pos2.vect() - pos1.vect() ) /
 			 pcl.vect().dot( displace1.vect() ) );
     if ( s1minusS2 < 0 ) {
       s1 = 1.0;
@@ -230,13 +230,17 @@ void Cluster::isBeamCluster(tPPtr part) {
 
 bool Cluster::isStatusFinal() const {
   int s = children().size();
-  for(unsigned int i = 0; i<children().size(); i++) 
+  for(unsigned int i = 0; i<children().size(); i++)
     if(children()[i]->PDGName() == "Cluster") s--;
   return ( s > 0);
 }
 
 tPPtr Cluster::particle(unsigned int i) const { 
   return (i < _numComp) ? _component[i] : PPtr(); 
+}
+
+tPPtr Cluster::particleB(unsigned int i) const {
+        return (i < _numComp) ? _original[i] : tPPtr();
 }
 
 tPPtr Cluster::colParticle(bool anti) const {
@@ -264,8 +268,8 @@ void Cluster::setBeamRemnant(unsigned int i, bool b) {
 }
 
 bool Cluster::initPerturbative(tPPtr p)
-{ 
-  Energy mg 
+{
+  Energy mg
     = CurrentGenerator::current().getParticleData(ParticleID::g)->constituentMass();
   return p->scale() > sqr(mg);
 }

@@ -26,20 +26,6 @@
 using namespace Herwig;
 
 namespace {
-  // debug helper
-  /*
-  void dumpTable(const StandardModelHadronSpectrum::HadronTable & tbl) {
-    typedef StandardModelHadronSpectrum::HadronTable::const_iterator TableIter;
-    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-      cerr << it->first.first << ' ' 
-  	   << it->first.second << '\n';
-      for (StandardModelHadronSpectrum::KupcoData::const_iterator jt = it->second.begin();
-  	   jt != it->second.end(); ++jt) {
-  	cerr << '\t' << *jt << '\n';
-      }
-    }
-  }
-  */
 
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
@@ -73,7 +59,7 @@ namespace {
 StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt) 
   : HadronSpectrum(),
     _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-    _pwtBquark( 0.0 ),_pwtDIquark( 1.0 ),
+    _pwtBquark( 0.0 ),
     _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
@@ -113,7 +99,7 @@ StandardModelHadronSpectrum::~StandardModelHadronSpectrum() {}
 
 void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const {
   os << _pwtDquark  << _pwtUquark << _pwtSquark 
-     << _pwtCquark << _pwtBquark << _pwtDIquark
+     << _pwtCquark << _pwtBquark
      << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix 
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix 
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
@@ -125,7 +111,7 @@ void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
   is >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
      >> _pwtCquark >> _pwtBquark 
-     >> _pwtDIquark>> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
+     >> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
@@ -171,11 +157,6 @@ void StandardModelHadronSpectrum::Init() {
     interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
 		       &StandardModelHadronSpectrum::_pwtBquark, 0, 0.0, 0.0, 10.0,
 		       false,false,false);
-
-  static Parameter<StandardModelHadronSpectrum,double>
-    interfacePwtDIquark("PwtDIquark","Weight for choosing a DIquark",
-			&StandardModelHadronSpectrum::_pwtDIquark, 0, 1.0, 0.0, 100.0,
-			false,false,false);
 
   static Parameter<StandardModelHadronSpectrum,double>
     interfaceSngWt("SngWt","Weight for singlet baryons",
@@ -438,18 +419,6 @@ double StandardModelHadronSpectrum::mixingStateWeight(long id) const {
 }
 
 void StandardModelHadronSpectrum::doinit() {
-  HadronSpectrum::doinit();
-  // the default partons allowed
-  // the quarks
-  for ( int ix=1; ix<=5; ++ix ) {
-    _partons.push_back(getParticleData(ix));
-  }
-  // the diquarks
-  for(unsigned int ix=1;ix<=5;++ix) {
-    for(unsigned int iy=1; iy<=ix;++iy) {
-      _partons.push_back(getParticleData(makeDiquarkID(ix,iy)));
-    }
-  }
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -484,27 +453,6 @@ void StandardModelHadronSpectrum::doinit() {
   for(unsigned int ix=0; ix<_partons.size(); ++ix) {
     _pwt[_partons[ix]->id()]=1.;
   }
-  _pwt[1]  = _pwtDquark;
-  _pwt[2]  = _pwtUquark;
-  _pwt[3]  = _pwtSquark;
-  _pwt[4]  = _pwtCquark;
-  _pwt[5]  = _pwtBquark;
-  _pwt[1103] =       _pwtDIquark * _pwtDquark * _pwtDquark;
-  _pwt[2101] = 0.5 * _pwtDIquark * _pwtUquark * _pwtDquark;
-  _pwt[2203] =       _pwtDIquark * _pwtUquark * _pwtUquark;
-  _pwt[3101] = 0.5 * _pwtDIquark * _pwtSquark * _pwtDquark;
-  _pwt[3201] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
-  _pwt[3303] =       _pwtDIquark * _pwtSquark * _pwtSquark;
-  // Commenting out heavy di-quark weights
-  _pwt[4101] = 0.0;
-  _pwt[4201] = 0.0;
-  _pwt[4301] = 0.0;
-  _pwt[4403] = 0.0;
-  _pwt[5101] = 0.0;
-  _pwt[5201] = 0.0;
-  _pwt[5301] = 0.0;
-  _pwt[5401] = 0.0;
-  _pwt[5503] = 0.0;
   // find the maximum
   map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess); 
@@ -512,11 +460,7 @@ void StandardModelHadronSpectrum::doinit() {
   for(pit=_pwt.begin(); pit!=_pwt.end(); ++pit) {
     pit->second/=pmax;
   }
-  // construct the hadron tables
-  constructHadronTable();
-
-  // for debugging
-  // dumpTable(table());
+  HadronSpectrum::doinit();
 }
 
 void StandardModelHadronSpectrum::constructHadronTable() {
@@ -562,134 +506,84 @@ void StandardModelHadronSpectrum::constructHadronTable() {
     const int x2 = (pid/10  )%10;
     const int x7 = (pid/1000000)%10;
     const bool wantSusy = x7 == 1 || x7 == 2;
-    int flav1;
-    int flav2;
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
-    else if(x4 == 0) { // meson
-      flav1 = x2; 
-      flav2 = x3; 
-    } 
-    else { // baryon
-      flav1 = makeDiquarkID(x2,x3);
+    int flav1,flav2;
+    // meson
+    if(x4 == 0) {
+      flav1 = x2;
+      flav2 = x3;
+    }
+    // baryon
+    else {
       flav2 = x4;
+      // insert the spin 1 diquark, sort out the rest later
+      flav1 = makeDiquarkID(x2,x3,3);
     }
     if (wantSusy) flav2 += 1000000 * x7;
-    HadronInfo a(pid,
-		 particle,
-		 specialWeight(pid),
-		 particle->mass());
-    // set the weight to the number of spin states
-    a.overallWeight = pspin;
-    // identical light flavours
-    if(flav1 == flav2 && flav1<=3) {
-      // ddbar> uubar> admixture states
-      if(flav1==1) {
-	if(_topt != 0) a.overallWeight *= 0.5*a.swtef;
-	_table[make_pair(1,1)].insert(a);
-	_table[make_pair(2,2)].insert(a);
-	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-      }
-      // load up ssbar> uubar> ddbar> admixture states
-      else {
-	a.wt = mixingStateWeight(pid);
-	a.overallWeight *= a.wt;
-	if(_topt != 0) a.overallWeight *= a.swtef;
-	_table[make_pair(1,1)].insert(a);
-	_table[make_pair(2,2)].insert(a);
-	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-	a.wt = (_topt != 0) ? 1.- 2.*a.wt : 1 - a.wt;
-	if(a.wt > 0) {
-	  a.overallWeight = a.wt * a.swtef * pspin;
-	  _table[make_pair(3,3)].insert(a);
-	  if(_topt == 0 && a.overallWeight > maxss) maxss = a.overallWeight;
-	}
-      }
-    }
-    // light baryons with all quarks identical
-    else if((flav1 == 1 && flav2 == 1103) || (flav1 == 1103 && flav2 == 1) ||
-	    (flav1 == 2 && flav2 == 2203) || (flav1 == 2203 && flav2 == 2) ||
-	    (flav1 == 3 && flav2 == 3303) || (flav1 == 3303 && flav2 == 3)) {
-      if(_topt != 0) a.overallWeight *= 1.5*a.swtef;
-      _table[make_pair(flav1,flav2)].insert(a);
-      _table[make_pair(flav2,flav1)].insert(a);
-      if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-    }
-    // all other cases
-    else {
-      if(_topt != 0) a.overallWeight *=a.swtef;
-      _table[make_pair(flav1,flav2)].insert(a);
-      if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
-      if(_topt == 0 && a.overallWeight > maxrest) maxrest = a.overallWeight;
-    }
+    insertToHadronTable(particle,flav1,flav2);
   }
+  // normalise the weights
 
-   // Account for identical combos of diquark/quarks and symmetrical elements
-   // e.g. U UD = D UU
-  HadronTable::iterator tit;  
-  for(tit=_table.begin();tit!=_table.end();++tit) {
-    if(tit->first.first>ParticleID::c) continue;
-    if(!DiquarkMatcher::Check(tit->first.second)) continue;
-    long k, l, sub;
-    if(tit->first.second>=ParticleID::bd_0) {
-      k = ParticleID::b;
-      sub = ParticleID::bd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::cd_0) {
-      k = ParticleID::c;
-      sub = ParticleID::cd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::sd_0) {
-      k = ParticleID::s;
-      sub = ParticleID::sd_0/100;
-    }
-    else if(tit->first.second>=ParticleID::ud_0) {
-      k = ParticleID::u;
-      sub = ParticleID::ud_0/100;
-    }
-    else if(tit->first.second==ParticleID::dd_1) {
-      k = ParticleID::d;
-      sub = ParticleID::dd_1/100;
-    }
-    else continue;
-    sub=tit->first.second/100-sub+1;
-    if(sub > tit->first.first) {
-      l = 1000*sub+100*tit->first.first+1;
-    }
-    else if(sub==tit->first.first) {
-      l = 1000*sub+ 100*tit->first.first+3;
-    }
-    else {
-      l = 100*sub +1000*tit->first.first+1;
-    }
-    if(tit->second.empty()) {
-      pair<long,long> newpair(k,l);
-      tit->second=_table[newpair];
-      newpair=make_pair(tit->first.second,tit->first.first);
-      _table[newpair]=tit->second;
-    };
-  }
 
-  // normalise weights to one for first option
   if(_topt == 0) {
     HadronTable::const_iterator tit;
     KupcoData::iterator it;
     for(tit=_table.begin();tit!=_table.end();++tit) {
-      double weight;
-      if(tit->first.first==tit->first.second) {
-	if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
-	else if (tit->first.first==3)                weight=1./maxss;
-	else                                         weight=1./maxrest;
-      }
-      else                                           weight=1./maxrest;
-      for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
-	it->rescale(weight);
-      }
+      double weight=0;
+      for(it = tit->second.begin(); it!=tit->second.end(); ++it)
+	weight=max(weight,it->overallWeight);
+      weight = 1./weight;
     }
+
+    //   double weight;
+    //   if(tit->first.first==tit->first.second) {
+    // 	if(tit->first.first==1||tit->first.first==2) weight=1./maxdd;
+    // 	else if (tit->first.first==3)                weight=1./maxss;
+    // 	else                                         weight=1./maxrest;
+    //   }
+    //   else                                           weight=1./maxrest;
+    //   for(it = tit->second.begin(); it!=tit->second.end(); ++it) {
+    // 	it->rescale(weight);
+    //   }
+    // }
   }
 }
 
-long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2) const {
+
+void StandardModelHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2) {
+  // identical light flavours
+  if(flav1 == flav2 && flav1<=3) {
+    // ddbar> uubar> admixture states
+    if(flav1==1) {
+      a.overallWeight *= 0.5;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+    }
+    // load up ssbar> uubar> ddbar> admixture states
+    else {
+      // uubar ddbar pieces
+      a.wt = mixingStateWeight(a.id);
+      a.overallWeight *= a.wt;
+      _table[make_pair(1,1)].insert(a);
+      _table[make_pair(2,2)].insert(a);
+      a.overallWeight /=a.wt;
+      // ssbar piece
+      a.wt = 1.- 2.*a.wt;
+      if(a.wt > 0) {
+        a.overallWeight *= a.wt;
+        _table[make_pair(3,3)].insert(a);
+      }
+    }
+  }
+  else {
+    _table[make_pair(flav1,flav2)].insert(a);
+    if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
+  }
+}
+
+
+long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
 
   assert( id1 * id2 > 0  
           && QuarkMatcher::Check(id1)  
@@ -697,12 +591,16 @@ long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2) const {
   long ida = abs(id1);
   long idb = abs(id2);
   if (ida < idb) swap(ida,idb);
-
-  long idnew = ida*1000 + idb*100 + 1;
-  // Diquarks made of quarks of the same type: uu, dd, ss, cc, bb, 
+  if (pspin != 1 && pspin != 3) assert(false);
+  long idnew = ida*1000 + idb*100 + pspin;
+  // Diquarks made of quarks of the same type: uu, dd, ss, cc, bb,
   // have spin 1, and therefore the less significant digit (which
   // corresponds to 2*J+1) is 3 rather than 1 as all other Diquarks.
-  if (id1 == id2) idnew += 2;
+  if (id1 == id2 && pspin == 1) {
+    //cerr<<"WARNING: spin-0 diquiark of the same type cannot exist."
+    //    <<" Switching to spin-1 diquark.\n";
+    idnew = ida*1000 + idb*100 + 3;
+  }
 
   return id1 > 0 ? idnew : -idnew;
 }

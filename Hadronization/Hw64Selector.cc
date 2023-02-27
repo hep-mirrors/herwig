@@ -13,13 +13,14 @@
 
 #include "Hw64Selector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-DescribeNoPIOClass<Hw64Selector,StandardModelHadronSpectrum>
+DescribeClass<Hw64Selector,StandardModelHadronSpectrum>
 describeHw64Selector("Herwig::Hw64Selector","Herwig.so");
 
 IBPtr Hw64Selector::clone() const {
@@ -30,20 +31,74 @@ IBPtr Hw64Selector::fullclone() const {
   return new_ptr(*this);
 }
 
+void Hw64Selector::persistentOutput(PersistentOStream & os) const {
+  os << _pwtDquark  << _pwtUquark << _pwtSquark
+     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
+     << _sngWt << _decWt ;
+}
+
+void Hw64Selector::persistentInput(PersistentIStream & is, int) {
+  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
+     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
+     >> _sngWt >> _decWt ;
+}
+
+void Hw64Selector::doinit() {
+  // the default partons allowed
+  // the quarks
+  for ( int ix=1; ix<=5; ++ix ) {
+    _partons.push_back(getParticleData(ix));
+  }
+  // the diquarks
+  for(unsigned int ix=1;ix<=5;++ix) {
+    for(unsigned int iy=1; iy<=ix;++iy) {
+      if(ix==iy)
+	_partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(3))));
+      else
+        _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(1))));
+    }
+  }
+  // weights for the different quarks etc
+  for(unsigned int ix=0; ix<partons().size(); ++ix) {
+    _pwt[partons()[ix]->id()]=0.;
+  }
+  _pwt[1]  = _pwtDquark;
+  _pwt[2]  = _pwtUquark;
+  _pwt[3]  = _pwtSquark;
+  _pwt[4]  = _pwtCquark;
+  _pwt[5]  = _pwtBquark;
+  _pwt[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
+  _pwt[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
+  _pwt[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
+  _pwt[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
+  _pwt[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
+  _pwt[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
+  _pwt[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
+  _pwt[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
+  _pwt[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
+  StandardModelHadronSpectrum::doinit();
+}
+
 void Hw64Selector::Init() {
 
   static ClassDocumentation<Hw64Selector> documentation
-    ("There is no documentation for the Hw64Selector class");
+    ("The Hw64Selector class implements the hadron selection algorithm of Hw6");
+
+  static Parameter<Hw64Selector,double>
+    interfacePwtDIquarkS0("PwtDIquarkS0","Weight for choosing a spin-0 DIquark",
+			&Hw64Selector::_pwtDIquarkS0, 0, 1.0, 0.0, 100.0,
+			false,false,false);
+
+  static Parameter<Hw64Selector,double>
+    interfacePwtDIquarkS1("PwtDIquarkS1","Weight for choosing a spin-1 DIquark",
+      &Hw64Selector::_pwtDIquarkS1, 0, 1.0, 0.0, 100.0,
+    	false,false,false);
 
 }
 
-pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr) const
-  {
+pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,
+						     tcPDPtr par1, tcPDPtr par2) const {
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
-
-
-
   pair<tcPDPtr,tcPDPtr> lighthad = lightestHadronPair(par1, par2);
   if(!lighthad.first || !lighthad.second)
     throw Exception() << "Hw64Selector::chooseHadronPair "
@@ -108,4 +163,15 @@ pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPt
 			 << Exception::abortnow;
   return make_pair( signHad1 > 0 ? had1 : tcPDPtr(had1->CC()),
 		    signHad2 > 0 ? had2 : tcPDPtr(had2->CC()));
+}
+
+double Hw64Selector::baryonWeight(long id) const {
+  const int pspin = id % 10;
+  if(pspin == 2) {
+    // Singlet (Lambda-like) baryon
+    if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);
+  }
+  // Decuplet baryon
+  else if (pspin == 4)              return sqr(_decWt);
+  return 1.;
 }

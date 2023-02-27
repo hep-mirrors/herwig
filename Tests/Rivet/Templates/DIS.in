@@ -23,7 +23,6 @@ ${bscheme}
 
 cd /Herwig/MatrixElements/
 # Neutral current DIS
-insert SubProcess:MatrixElements[0] MEDISNC
 ${process}
 
 cd /Herwig/Generators

@@ -61,7 +61,7 @@ void QuarkoniumDecayer::Init() {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<QuarkoniumDecayer,PartonicDecayerBase>
-describeHerwigQuarkoniumDecayer("Herwig::QuarkoniumDecayer", "HwPartonicDecay.so");
+describeHerwigQuarkoniumDecayer("Herwig::QuarkoniumDecayer", "HwShower.so HwPartonicDecay.so");
 
 bool QuarkoniumDecayer::accept(tcPDPtr, const tPDVector & children) const {
   return (children.size() == 3 || children.size() == 2);

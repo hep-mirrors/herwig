@@ -832,13 +832,13 @@ describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope
      << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay
-     << ounit(theProtonMass,GeV) << MPIHandler_;
+     << ounit(theProtonMass,GeV) << MPIHandler_ << singleDiffractionOnly;
 }
 
 void MEDiffraction::persistentInput(PersistentIStream & is, int) {
   is >> theme2 >> deltaOnly >> diffDirection >> theprotonPomeronSlope
      >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay
-     >> iunit(theProtonMass,GeV)>> MPIHandler_;
+     >> iunit(theProtonMass,GeV)>> MPIHandler_ >> singleDiffractionOnly;
 }
 
 InvEnergy2 MEDiffraction::protonPomeronSlope() const{

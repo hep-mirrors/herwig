@@ -25,8 +25,6 @@ using namespace Herwig;
 
 CrossSectionAnalysis::CrossSectionAnalysis() {}
 
-CrossSectionAnalysis::~CrossSectionAnalysis() {}
-
 #ifndef LWH_AIAnalysisFactory_H
 #ifndef LWH 
 #define LWH ThePEGLWH

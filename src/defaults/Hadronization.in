@@ -46,11 +46,44 @@ newdef ClusterFissioner:HadronSpectrum SMHadronSpectrum
 newdef ClusterDecayer:HadronSpectrum SMHadronSpectrum
 newdef LightClusterDecayer:HadronSpectrum SMHadronSpectrum
 
+# ColourReconnector Default Parameters
 newdef ColourReconnector:ColourReconnection Yes
-newdef ColourReconnector:ReconnectionProbabilityBaryonic 0.7
-newdef ColourReconnector:ReconnectionProbability 0.95
 newdef ColourReconnector:Algorithm Baryonic
+
+# Statistical CR Parameters:
+newdef ColourReconnector:AnnealingFactor 0.9
+newdef ColourReconnector:AnnealingSteps 50
+newdef ColourReconnector:TriesPerStepFactor 5.0
+newdef ColourReconnector:InitialTemperature 0.1
+
+# Plain and Baryonic CR Paramters
+newdef ColourReconnector:ReconnectionProbability 0.95
+newdef ColourReconnector:ReconnectionProbabilityBaryonic 0.7
+
+# BaryonicMesonic and BaryonicMesonic CR Paramters
+newdef ColourReconnector:ReconnectionProbability3Mto3M 0.5
+newdef ColourReconnector:ReconnectionProbability3MtoBBbar 0.5
+newdef ColourReconnector:ReconnectionProbabilityBbarBto3M 0.5
+newdef ColourReconnector:ReconnectionProbability2Bto2B 0.05
+newdef ColourReconnector:ReconnectionProbabilityMBtoMB 0.5
+newdef ColourReconnector:StepFactor 1.0
+newdef ColourReconnector:MesonToBaryonFactor 1.333
+
+# General Parameters and switches
+newdef ColourReconnector:MaxDistance 1.0e50
 newdef ColourReconnector:OctetTreatment All
+newdef ColourReconnector:CR2BeamClusters No
+newdef ColourReconnector:Junction Yes
+newdef ColourReconnector:PrePlainCR No
+newdef ColourReconnector:LocalCR No
+newdef ColourReconnector:CausalCR No
+# Debugging 
+newdef ColourReconnector:Debug No
+
+# set ClusterFissioner parameters
+set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor 1.65
+set /Herwig/Hadronization/ClusterFissioner:ProbablityShift       0.00
+set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift 2.75
 
 # Clustering parameters for light quarks
 newdef ClusterFissioner:ClMaxLight  3.649

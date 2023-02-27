@@ -1,0 +1,16 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS Z pT and phi*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516:LMODE=EL
+# ATLAS high mass drell-yan
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454:LMODE=EL
+# ATLAS splittings
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844:LMODE=EL
+# CMS Z+b
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1499471
+# ATLAS Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1744201
+# CMS Z + jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1497519

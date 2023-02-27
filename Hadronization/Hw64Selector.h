@@ -13,7 +13,6 @@
 //
 
 #include "StandardModelHadronSpectrum.h"
-#include "Hw64Selector.fh"
 
 namespace Herwig {
 
@@ -33,7 +32,8 @@ public:
   /**
    * The default constructor.
    */
-  Hw64Selector() : StandardModelHadronSpectrum(0)
+  Hw64Selector() : StandardModelHadronSpectrum(0),
+		   _pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 )
   {}
 
   /**
@@ -44,8 +44,8 @@ public:
    * @param par2 The particle pointer of the second constituent
    * @param par3 The particle pointer of the third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const;
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,
+						 tcPDPtr par1, tcPDPtr par2) const;
 
 public:
 
@@ -73,6 +73,13 @@ public:
    */
   static void Init();
 
+protected :
+  
+  /**
+   *  Weights for baryons
+   */
+  virtual double baryonWeight(long id) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -90,10 +97,17 @@ protected:
    virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 private:
 
@@ -102,6 +116,23 @@ private:
    * In fact, it should not even be implemented.
    */
   Hw64Selector & operator=(const Hw64Selector &) = delete;
+
+private:
+
+  /**
+   *  The weights for the diquarks
+   */
+  //@{
+  /**
+   * The probability of producting a spin-0 diquark.
+   */
+  double _pwtDIquarkS0;
+
+  /**
+   * The probability of producting a spin-1 diquark.
+   */
+  double _pwtDIquarkS1;
+  //@}
 
 };
 

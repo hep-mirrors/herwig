@@ -77,15 +77,6 @@ public:
   }
 
   /**
-   * The lightest quarks, used for finding the lightest Hadron Pair
-   */
-  virtual const vector<long>& lightestQuarks() const {
-    static vector<long> light =
-      { ParticleID::d, ParticleID::u};
-    return light;
-  }
-
-  /**
    * Return true if any of the possible three input particles contains
    * the indicated heavy quark.  false otherwise. In the case that
    * only the first particle is specified, it can be: an (anti-)quark,
@@ -102,16 +93,6 @@ public:
   }
 
   //@}
-
-  /**
-   * Return the quark flavour which should be considered to set the
-   * minimum mass for a minimal cluster splitting.
-   */
-  virtual long minimalSplitQuark() const {
-    //cout << "ParticleID::d= " << ParticleID::d << endl;
-    //cout << getParticleData(ParticleID::d)->id() << endl;
-    return ParticleID::d;
-  }
 
   /**
    * Return the threshold for a cluster to split into a pair of hadrons.
@@ -168,13 +149,6 @@ public:
    double pwtBquark()  const { 
     return _pwtBquark;
   } 
-  
-  /**
-   * The diquark weight.
-   */
-   double pwtDIquark() const {
-    return _pwtDIquark;
-  }
 
 public:
 
@@ -225,7 +199,7 @@ protected:
    * quarks (antiquarks) of id specified in input (id1, id2).
    * Caller must ensure that id1 and id2 are quarks.
    */
-  long makeDiquarkID(long id1, long id2)  const;
+  long makeDiquarkID(long id1, long id2, long pspin)  const;
 
   /**
    * Return true if any of the possible three input particles has
@@ -294,13 +268,9 @@ protected:
   virtual void constructHadronTable();
 
   /**
-   *  Access the parton weights
+   *   Insert a meson in the table
    */
-   double pwt(long pid) const {
-    map<long,double>::const_iterator it = _pwt.find(abs(pid));
-    assert( it != _pwt.end() );
-    return it->second;
-  }
+  virtual void insertMeson(HadronInfo a, int flav1, int flav2);
 
   /**
    * Methods for the mixing of \f$I=0\f$ mesons
@@ -345,8 +315,20 @@ protected:
    */
   virtual double mixingStateWeight(long id) const; 
   //@}
-  
-private:
+
+  virtual double specialQuarkWeight(double quarkWeight, long id,
+            const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
+    // special for strange
+    if(id == 3)
+      return strangeWeight(cluMass,par1,par2);
+    else
+      return quarkWeight;
+  }
+
+  /**
+   *  Strange quark weight
+   */
+  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    *  The weights for the different quarks and diquarks
@@ -376,16 +358,6 @@ private:
    * The probability of producting a bottom quark.
    */
   double _pwtBquark;
-
-  /**
-   * The probability of producting a diquark.
-   */
-  double _pwtDIquark;
-
-  /**
-   * Weights for quarks and diquarks.
-   */
-  map<long,double> _pwt;
   //@}
 
   /**

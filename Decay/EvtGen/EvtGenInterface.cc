@@ -31,21 +31,21 @@
 #include "EvtGenBase/EvtHighSpinParticle.hh"
 #include "EvtGenBase/EvtDecayTable.hh"
 
-#ifndef EVTGEN_PREFIX
-#error Makefile.am needs to define EVTGEN_PREFIX
+#ifndef EVTGEN_SHARE
+#error Makefile.am needs to define EVTGEN_SHARE
 #endif
 
 using namespace Herwig;
 
 namespace {
 
-const string prefix=EVTGEN_PREFIX "";
+const string prefix=EVTGEN_SHARE "";
 const string p8data=PYTHIA8DATA "";
 
 }
 
-EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
-				     pdtName_(prefix+"/share/evt.pdl"),
+EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/DECAY_2010.DEC"),
+				     pdtName_(prefix+"/evt.pdl"),
 				     reDirect_(true), checkConv_(false),
 				     p8Data_(p8data)
 {}
@@ -56,8 +56,6 @@ EvtGenInterface::EvtGenInterface(const EvtGenInterface & x)
     checkConv_(x.checkConv_), convID_(x.convID_),
     p8Data_(x.p8Data_), evtrnd_(x.evtrnd_),evtgen_(x.evtgen_)
 {}
-
-EvtGenInterface::~EvtGenInterface() {}
 
 IBPtr EvtGenInterface::clone() const {
   return new_ptr(*this);
@@ -260,9 +258,9 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
 	if(evtParent) {
 	  delete evtParent;
 	}
-  	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
-  			  <<" with mass "<< particle->mass()
-  			  <<" to decay channel number "<< particle->getChannel() << "\n"
+  	throw Exception() << "EvtGen could not decay " << parent.PDGName()
+  			  << " with mass " << parent.mass()/GeV 
+  			  << " and decay mode " << dm.tag() << "\n"
   			  << Exception::eventerror;
       }
       assert(decayer !=0 );
@@ -520,6 +518,10 @@ EvtId EvtGenInterface::EvtGenID(int id, bool exception) const {
      (absid>100100&&absid<100600&&(ispin==1||ispin==3))||
      // 1 3d1 goes to 3s in evtgen
      (absid>30100&&absid<30600&&ispin==3) ||
+     // 1 1P1 mesons are the same apart from D_s1
+     (absid>10100&&absid<10600&&(ispin==3)) ||
+     // 1 3P1 mesons are the same apart from D_s1
+     (absid>20100&&absid<20600&&(ispin==3)) ||
      // mixed kaons and diffractive states
      (absid>=100&&absid<=3000&&ispin==0)) {
     output = EvtPDL::evtIdFromStdHep(id);
@@ -528,19 +530,9 @@ EvtId EvtGenInterface::EvtGenID(int id, bool exception) const {
   else if(absid>1000&&absid<6000&&ispin>=1&&ispin<=4) {
     output = EvtPDL::evtIdFromStdHep(id);
   }
-  // 1 1P1 mesons are the same apart from D_s1
-  else if(absid>10100&&absid<10600&&(ispin==3)) {
-    if(absid==10433) output = EvtPDL::evtIdFromStdHep(isgn*20433);
-    else             output = EvtPDL::evtIdFromStdHep(id);
-  }
   // 1 3p0 same apart from f'0
   else if (absid>10100&&absid<10600&&ispin==1) {
     if(absid==10221) output = EvtPDL::evtIdFromStdHep(isgn*30221);
-    else             output = EvtPDL::evtIdFromStdHep(id);
-  }
-  // 1 3P1 mesons are the same apart from D_s1
-  else if(absid>20100&&absid<20600&&(ispin==3)) {
-    if(absid==20433) output = EvtPDL::evtIdFromStdHep(isgn*10433);
     else             output = EvtPDL::evtIdFromStdHep(id);
   }
   // excited baryons
@@ -726,7 +718,7 @@ void EvtGenInterface::ThePEGSpin(PPtr peg,EvtParticle *evt) const {
 // convert from EvtGen to ThePEG
 int EvtGenInterface::ThePEGID(EvtId eid,bool exception) const {
   int output(0);
-  int id(EvtPDL::getStdHep(eid)),absid(abs(id)),ispin(absid%10),isgn(id/absid);
+  int id(EvtPDL::getStdHep(eid)),absid(abs(id)),ispin(absid%10);
   // handle the easy cases
   // special particles like string which we delete and include decay products
   if(absid==92||absid==41||absid==42||absid==43||absid==44||
@@ -736,33 +728,27 @@ int EvtGenInterface::ThePEGID(EvtId eid,bool exception) const {
   }
   //quarks(+excited)
   else if(absid<=8|| 
-     // leptons(+excited)
-     (absid>=11&&absid<=18)|| 
-     // SM gauge bosons and higgs
-     (absid>=21&&absid<=25)||(absid>=32&&absid<=37)|| 
-     // 1 1S0, 1 3S1 and 1 3P2 mesons are the same
-     (absid>100&&absid<600&&(ispin%2==1&&ispin<9))|| 
-     // 2 1S0 and 2 3S1 mesons are the same
-     (absid>100100&&absid<100600&&(ispin==1||ispin==3))||
-     // 1 3p0 are the same 
-     (absid>10100&&absid<10600&&ispin==1) ||
-     // 3d1 are the same
-     (absid>30100&&absid<30600&&ispin==3) ||
-     // lowest baryon multiplets and diquarks
-     (absid>1000&&absid<6000&&ispin>=1&&ispin<=4)|| 
-     // mixed kaons and diffractive states
-     (absid>=100&&absid<=3000&&ispin==0)) {
+	  // leptons(+excited)
+	  (absid>=11&&absid<=18)||
+	  // SM gauge bosons and higgs
+	  (absid>=21&&absid<=25)||(absid>=32&&absid<=37)||
+	  // 1 1S0, 1 3S1 and 1 3P2 mesons are the same
+	  (absid>100&&absid<600&&(ispin%2==1&&ispin<9))||
+	  // 2 1S0 and 2 3S1 mesons are the same
+	  (absid>100100&&absid<100600&&(ispin==1||ispin==3))||
+	  // 1 3p0 are the same
+	  (absid>10100&&absid<10600&&ispin==1) ||
+	  // 3d1 are the same
+	  (absid>30100&&absid<30600&&ispin==3) ||
+	  // 1 1P1 mesons are the same 
+	  (absid>10100&&absid<10600&&(ispin==3)) ||
+	  // 1 3P1 mesons are the same
+	  (absid>20100&&absid<20600&&(ispin==3)) ||
+	  // lowest baryon multiplets and diquarks
+	  (absid>1000&&absid<6000&&ispin>=1&&ispin<=4)||
+	  // mixed kaons and diffractive states
+	  (absid>=100&&absid<=3000&&ispin==0)) {
     output=id;
-  }
-  // 1 1P1 mesons are the same apart from D_s1
-  else if (absid>10100&&absid<10600&&(ispin==3)) {
-    if(absid==10433) output=isgn*20433;
-    else             output=id;
-  }
-  // 1 3P1 mesons are the same apart from D_s1
-  else if(absid>20100&&absid<20600&&(ispin==3)) {
-    if(absid==20433) output=isgn*10433;
-    else             output=id;
   }
   // 1 3P0 special for f'0
   else if(absid==30221)

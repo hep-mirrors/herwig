@@ -19,18 +19,12 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 using namespace Herwig;
-
-DipoleMatching::DipoleMatching() {}
-
-DipoleMatching::~DipoleMatching() {}
 
 IBPtr DipoleMatching::clone() const {
   return new_ptr(*this);

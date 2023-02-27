@@ -1,7 +1,9 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging,sys,os
 from string import Template
+from HerwigInputs import *
 import sys
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -41,55 +43,6 @@ def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
       res+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/"+scale+"\n"
     return res
 
-
-def addLeptonPairCut(minmass,maxmass):
-    return "set /Herwig/Cuts/LeptonPairMassCut:MinMass "+minmass+"*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass "+maxmass+"*GeV\n"
-
-didaddfirstjet=False
-def addFirstJet(ptcut):
-    global didaddfirstjet
-    if(didaddfirstjet):
-      logging.error("Can only add jetcut once.")
-      sys.exit(1)
-  
-    res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-    res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-    res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-    if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
-    didaddfirstjet=True
-    return res
-
-
-
-didaddsecondjet=False
-def addSecondJet(ptcut):
-    global didaddsecondjet
-    if(didaddsecondjet):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-    res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
-    didaddsecondjet=True
-    return res
-
-
-didaddjetpair=False
-def addJetPairCut(minmass):
-  global didaddjetpair
-  if(didaddjetpair):
-      logging.error("Can only add second jetcut once.")
-      sys.exit(1)
-  res="""\
-create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
-set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
-set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
-insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
-""".format(mm=minmass)
-  didaddjetpair=True
-  return res
-
 addedBRReweighter=False
 def addBRReweighter():
   global addedBRReweighter
@@ -99,12 +52,6 @@ def addBRReweighter():
   res="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
   res+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
   addedBRReweighter=True
-  return res
-
-def setHardProcessWidthToZero(list1):
-  res=""
-  for i in list1:
-    res+="set /Herwig/Particles/"+i+":HardProcessWidth 0.\n"
   return res
 
 selecteddecaymode=False
@@ -117,46 +64,11 @@ def selectDecayMode(particle,decaymodes):
   selecteddecaymode=True
   return res
 
-def jet_kt_cut(energy):
-    return "set /Herwig/Cuts/JetKtCut:MinKT {E}*GeV\n".format(E=energy)
-
-def mhatmin_cut(energy):
-    return "set /Herwig/Cuts/Cuts:MHatMin {E}*GeV\n".format(E=energy)
-
-def mhat_minm_maxm(e1,e2,e3):
-    return """\
-set /Herwig/Cuts/Cuts:MHatMin {e1}*GeV
-set /Herwig/Cuts/MassCut:MinM {e2}*GeV
-set /Herwig/Cuts/MassCut:MaxM {e3}*GeV
-""".format(**locals())
-
-def collider_lumi(energy):
-    return "set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy {E}*GeV\n".format(E=energy)
-
-def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
-    result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
-    if process is not None:
-        result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
-    return result
-
-def particlegroup(factory,name,*particles):
-    directory="MatrixElements/Matchbox"
-    if(factory!="Factory") : directory="Merging"
-    result = ["do /Herwig/{dir}/{fact}:StartParticleGroup {n}".format(n=name,fact=factory,dir=directory)]
-    for p in particles:
-        result.append(
-            "insert /Herwig/{dir}/{fact}:ParticleGroup 0 /Herwig/Particles/{p}".format(p=p,fact=factory,dir=directory)
-        )
-    result.append("do /Herwig/{dir}/{fact}:EndParticleGroup".format(fact=factory,dir=directory))
-    return '\n'.join(result)
-
-
 ME_Upsilon = """\
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
 set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 """ + insert_ME("MEUpsilon")
-
 
 (opts, args) = parser.parse_args()
 ## Check args
@@ -166,146 +78,18 @@ if len(args) != 1:
 
 name = args[0]
 print (name)
+# work out name and type of the collider
+(collider,have_hadronic_collider) = identifyCollider(name)
 
-
-# select the template to load
-# collider
-KNOWN_COLLIDERS = [
-    "EE-Gamma",
-    "BFactory",
-    "EE",
-    "DIS",
-    "TVT",
-    "LHC-GammaGamma",
-    "LHC",
-    "ISR",
-    "Fermilab",
-    "SppS",
-    "Star",
-    "SPS",
-    "GammaGamma",
-]
-collider = ""
-for cand_collider in KNOWN_COLLIDERS:
-    if cand_collider in name:
-        collider = cand_collider
-        break
-del cand_collider
-if "EHS" in name : collider="SPS"
-assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
-print (collider)
 thefactory="Factory"
 
-parameters = { 
-    'shower'  : '',
-    'bscheme' : '',
-}
-# istart determines how many name parts need to be skipped
-istart = 1
-# Dipole shower with Matchbox Powheg
-if "Dipole-Matchbox-Powheg" in name :
-    istart = 4
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
+# workout the type of simulation
+(simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
 
-    # Dipole shower with internal Powheg - Todo: Finish modifying template files.
-    '''
-    elif "Dipole-Powheg" in name :
-    istart = 3
-    simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
-    '''
-
-# Dipole shower with MCatNLO
-elif "Dipole-MCatNLO" in name :
-    istart = 3
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
-
-# Dipole shower with Matchbox LO
-elif "Dipole-Matchbox-LO" in name :
-    istart = 4
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n" 
-
-# Dipole shower with internal LO
-elif "Dipole" in name :
-    istart = 2
-    simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
-    
-# AO shower with Matchbox Powheg
-elif "Matchbox-Powheg" in name :
-    istart = 3
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
-
-# AO shower with MCatNLO
-elif "Matchbox" in name :
-    istart = 2
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
-
-# AO shower with inernal Powheg    
-elif "Powheg" in name :
-    istart = 2
-    simulation="Powheg"
-
-# Dipole shower with merging    
-elif "Merging" in name :
-    istart = 2
-    simulation="Merging"
+# set theFactory for merging
+if simulation=="Merging":
     thefactory="MergingFactory"
-    
-# Flavour settings for Matchbox    
-if simulation=="Matchbox" :
-    parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
-    
-    if "Dipole" in parameters["shower"] :
-        parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
-        
-    if collider not in ['DIS','EE'] :
-        parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
-# Flavour settings for dipole shower with internal ME
-if simulation=="" and "Dipole" in parameters["shower"] :
-    parameters["bscheme"] = "read snippets/DipoleShowerFiveFlavours.in"
-    
-
-
-# find the template
-if simulation=="" :
-    if collider=="LHC-GammaGamma" :
-        istart += 1
-        templateName="Hadron-Gamma.in"
-    elif have_hadronic_collider :
-        templateName="Hadron.in"
-    elif collider=="EE-Gamma" :
-        istart+=1
-        if("Direct" in name) :
-            templateName="EE-Gamma-Direct.in"
-        elif("Single-Resolved" in name) :
-            templateName="EE-Gamma-Single-Resolved.in"
-        elif("Double-Resolved" in name) :
-            templateName="EE-Gamma-Double-Resolved.in"
-        else :
-            print ("Unknown type of EE-Gamma event ",name)
-            quit()
-    elif collider=="GammaGamma" :
-        templateName="GammaGamma.in"
-    elif collider != "BFactory" :
-        templateName= "%s.in" % collider
-    else :
-        templateName= "EE.in"
-else :
-    if have_hadronic_collider :
-        templateName= "Hadron-%s.in" % simulation 
-    elif collider != "BFactory" :
-        templateName= "%s-%s.in" % (collider,simulation) 
-    else :
-        templateName= "EE-%s.in" % simulation
-        
 # settings for four flavour scheme
 fourFlavour="""
 read Matchbox/FourFlavourScheme.in
@@ -314,60 +98,81 @@ set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
 """.format(bjetgroup=particlegroup(thefactory,'bjet','b','bbar','c', 'cbar',
                                    's','sbar','d','dbar','u','ubar','g'))
 
-# work out the name of the parameter file
-parameterName="-".join(name.split("-")[istart:])
-del istart
-
-class StringBuilder(object):
-    """
-    Avoid expensive string additions until the end
-    by building up a list first.
-
-    This helper class avoids rewriting all the += lower down
-    to list operations.
-    """
-    def __init__(self, init = None):
-        self.lines = [] if init is None else [init]
-
-    def __iadd__(self, line):
-        self.lines.append(line)
-        return self
-
-    def __str__(self):
-        return '\n'.join(self.lines)
-
 # work out the process and parameters
 process=StringBuilder()
 
 # DIS
 if(collider=="DIS") :
     if(simulation=="") :
-        if "NoME" in parameterName :
+        if "NoME" in name :
             process = StringBuilder("set /Herwig/Shower/ShowerHandler:HardEmission None")
             parameterName=parameterName.replace("NoME-","")
+            parameterName=parameterName.replace("DIS-" ,"")
+        if "CC" in parameterName :
+            process += insert_ME("MEDISCC")
         else :
-            process = StringBuilder("")
+            process += insert_ME("MEDISNC")
     elif(simulation=="Powheg") :
-        process = StringBuilder("")
-    elif(simulation=="Matchbox" ) :
-      if "e-" in parameterName :
-            process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",0,0))
-      else :
-            process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",0,0))
-    elif(simulation=="Merging" ) :
-        if "e-" in parameterName :
-            process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",2,2))
+        if "CC" in parameterName :
+            process = StringBuilder(insert_ME("PowhegMEDISCC"))
         else :
-            process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2))
-
+            process = StringBuilder(insert_ME("PowhegMEDISNC"))
+    elif(simulation=="Matchbox" ) :
+        if "CC" in name :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> nu_e j","0","2","",0,0))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> nu_ebar j","0","2","",0,0))
+        else :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",0,0))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",0,0))
+    elif(simulation=="Merging" ) :
+        if "CC" in name :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> e- j","0","2","",2,2))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2))
+        else :
+            if "e-" in parameterName :
+                process = StringBuilder(addProcess(thefactory,"e- p -> nu_e j","0","2","",2,2))
+            else :
+                process = StringBuilder(addProcess(thefactory,"e+ p -> nu_ebar j","0","2","",2,2))
+    Q2Min=1.
+    Q2Max=1000000.
+    if "VeryLow" in name :
+        Q2Max=20.
+        parameterName=parameterName.replace("-VeryLowQ2","")
+    elif "Low" in name :
+        Q2Min=20.
+        Q2Max=100.
+        parameterName=parameterName.replace("-LowQ2","")
+    elif "Med" in name :
+        Q2Min=100.
+        Q2Max=1000.
+        parameterName=parameterName.replace("-MedQ2","")
+    elif "High" in name :
+        Q2Min=1000.
+        parameterName=parameterName.replace("-HighQ2","")
+    if "CC" in name :
+        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+    else :
+        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
 # EE
 elif(collider=="EE") :
     if(simulation=="") :
         if "gg" in parameterName :
             process = StringBuilder("create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n")
             process+=insert_ME("MEee2Higgs2SM","Gluon","Allowed")
+        elif "LL" in parameterName :
+            process = StringBuilder(insert_ME("MEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Charged\n"
+        elif "WW" in parameterName : 
+            process = StringBuilder(insert_ME("MEee2VV"))
+            process += "set /Herwig/MatrixElements/MEee2VV:Process WW\n"
         else :
-            process = StringBuilder(insert_ME("MEee2gZ2qq"))
+            process  = StringBuilder(insert_ME("MEee2gZ2qq"))
             try :
                 ecms = float(parameterName)
                 if(ecms<=3.75) :
@@ -377,15 +182,19 @@ elif(collider=="EE") :
             except :
                 pass
     elif(simulation=="Powheg") :
-        process = StringBuilder()
-        try :
-            ecms = float(parameterName)
-            if(ecms<=3.75) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
-            elif(ecms<=10.6) :
-                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
-        except :
-            pass
+        if "LL" in parameterName :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2ll"))
+            process += "set /Herwig/MatrixElements/PowhegMEee2gZ2ll:Allowed Charged\n"
+        else :
+            process = StringBuilder(insert_ME("PowhegMEee2gZ2qq"))
+            try :
+                ecms = float(parameterName)
+                if(ecms<=3.75) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
+                elif(ecms<=10.6) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+            except :
+                pass
     elif(simulation=="Matchbox" ) :
         try :
             ecms = float(parameterName)
@@ -452,12 +261,13 @@ elif(collider=="GammaGamma") :
 # TVT
 elif(collider=="TVT") :
     process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
-    if "Run-II" in parameterName :  process+=collider_lumi(1960.0)
-    elif "Run-I" in parameterName : process+=collider_lumi(1800.0)
-    elif "900" in parameterName :   process+=collider_lumi(900.0)
-    elif "630" in parameterName :   process+=collider_lumi(630.0)
-    elif "300" in parameterName :   process+=collider_lumi(300.0)
-
+    ecms=1960.
+    if "Run-II" in parameterName :  ecms = 1960.0
+    elif "Run-I" in parameterName : ecms = 1800.0
+    elif "900" in parameterName :   ecms = 900.0
+    elif "630" in parameterName :   ecms = 630.0
+    elif "300" in parameterName :   ecms = 300.0
+    process+=collider_lumi(ecms)
     if(simulation=="") :
         if "PromptPhoton" in parameterName :
             process+=insert_ME("MEGammaJet")
@@ -482,32 +292,29 @@ elif(collider=="TVT") :
         elif "Jets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(500.)
-            elif "Run-II-Jets-11" in parameterName: process+=jet_kt_cut( 30.)+mhatmin_cut(900.)
-            elif "Run-I-Jets-1" in parameterName :  process+=jet_kt_cut( 20.)
-            elif "Run-I-Jets-2" in parameterName :  process+=jet_kt_cut( 40.)
-            elif "Run-I-Jets-3" in parameterName :  process+=jet_kt_cut( 65.)
-            elif "Run-I-Jets-4" in parameterName :  process+=jet_kt_cut( 90.)
-            elif "Run-I-Jets-5" in parameterName :  process+=jet_kt_cut(160.)
-            elif "Run-I-Jets-6" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-I-Jets-7" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(400.)
-            elif "Run-I-Jets-8" in parameterName :  process+=jet_kt_cut( 30.)+mhatmin_cut(700.)
-            elif "Run-II-Jets-0" in parameterName : process+=jet_kt_cut( 15.)
-            elif "Run-II-Jets-1" in parameterName : process+=jet_kt_cut( 25.)
-            elif "Run-II-Jets-2" in parameterName : process+=jet_kt_cut( 40.)
-            elif "Run-II-Jets-3" in parameterName : process+=jet_kt_cut( 60.)
-            elif "Run-II-Jets-4" in parameterName : process+=jet_kt_cut( 85.)
-            elif "Run-II-Jets-5" in parameterName : process+=jet_kt_cut(110.)
-            elif "Run-II-Jets-6" in parameterName : process+=jet_kt_cut(160.)
-            elif "Run-II-Jets-7" in parameterName : process+=jet_kt_cut(250.)
-            elif "Run-II-Jets-8" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(100.)
-            elif "Run-II-Jets-9" in parameterName : process+=jet_kt_cut( 30.)+mhatmin_cut(300.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
-            elif "300-Jets-1" in parameterName :    process+=jet_kt_cut(  6.)
-            elif "630-Jets-1" in parameterName :    process+=jet_kt_cut( 20.)
-            elif "630-Jets-2" in parameterName :    process+=jet_kt_cut( 40.)
-            elif "630-Jets-3" in parameterName :    process+=jet_kt_cut( 75.)
-            elif "900-Jets-1" in parameterName :    process+=jet_kt_cut( 10.)
+            if "DiJets" in name :
+                process +=jet_kt_cut( 30.)
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=mhat_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
+            else :
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=jet_kt_cut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
         elif "Run-I-WZ" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
             process+=insert_ME("MEqq2gZ2ff","Electron")
@@ -556,46 +363,29 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",0,0)
             elif(simulation=="Merging"):
                 process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",1,0)
-            process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Run-II-Jets-10" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("500")
-            elif "Run-II-Jets-11" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("900")
-            elif "Run-II-Jets-12" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("300")
-            elif "Run-I-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "Run-I-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-I-Jets-3" in parameterName : process+=addFirstJet("65")
-            elif "Run-I-Jets-4" in parameterName : process+=addFirstJet("90")
-            elif "Run-I-Jets-5" in parameterName : process+=addFirstJet("160")
-            elif "Run-I-Jets-6" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-I-Jets-7" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("400")
-            elif "Run-I-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("700")
-            elif "Run-II-Jets-0" in parameterName : process+=addFirstJet("15")
-            elif "Run-II-Jets-1" in parameterName : process+=addFirstJet("25")
-            elif "Run-II-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "Run-II-Jets-3" in parameterName : process+=addFirstJet("60")
-            elif "Run-II-Jets-4" in parameterName : process+=addFirstJet("85")
-            elif "Run-II-Jets-5" in parameterName : process+=addFirstJet("110")
-            elif "Run-II-Jets-6" in parameterName : process+=addFirstJet("160")
-            elif "Run-II-Jets-7" in parameterName : process+=addFirstJet("250")
-            elif "Run-II-Jets-8" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("100")
-            elif "Run-II-Jets-9" in parameterName : process+=addFirstJet("30")+addSecondJet("25")+addJetPairCut("300")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
-            elif "300-Jets-1" in parameterName : process+=addFirstJet("6")
-            elif "630-Jets-1" in parameterName : process+=addFirstJet("20")
-            elif "630-Jets-2" in parameterName : process+=addFirstJet("40")
-            elif "630-Jets-3" in parameterName : process+=addFirstJet("75")
-            elif "900-Jets-1" in parameterName : process+=addFirstJet("10")
+            if "DiJets" in parameterName :
+                process+=addFirstJet("30")+addSecondJet("25")
+                cuts=[100.,300.,600.,900.,ecms]
+                for i in range(1,len(cuts)) :
+                    tstring = "-DiJets-%s"%i
+                    if tstring in parameterName :
+                        process+=addJetPairCut(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-DiJets")
             else :
-                logging.error("Exit 00007")
-                sys.exit(1)
+                if "Run" in parameterName :
+                    cuts=[5.,20.,40.,80.,160.,320.]
+                elif "300" in parameterName :
+                    cuts=[5.,]
+                elif "630" in parameterName :
+                    cuts=[5.,20.,40.]
+                elif "900" in parameterName :
+                    cuts=[5.,]
+                cuts.append(ecms)
+                for i in range(1,len(cuts)) :
+                    tstring = "-Jets-%s"%i
+                    if tstring in parameterName :
+                        process+=addFirstJet(cuts[i-1],cuts[i])
+                        parameterName=parameterName.replace(tstring,"-Jets")
         elif "Run-I-WZ" in parameterName :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",0,0)
@@ -714,13 +504,16 @@ elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == 
         
 # LHC
 elif(collider=="LHC") :
-    if   parameterName.startswith("7-")   : process = StringBuilder(collider_lumi(7000.0))
-    elif parameterName.startswith("8-")   : process = StringBuilder(collider_lumi(8000.0))
-    elif parameterName.startswith("13-")  : process = StringBuilder(collider_lumi(13000.0))
-    elif parameterName.startswith("900")  : process = StringBuilder(collider_lumi(900.0))
-    elif parameterName.startswith("2360") : process = StringBuilder(collider_lumi(2360.0))
-    elif parameterName.startswith("2760") : process = StringBuilder(collider_lumi(2760.0))
-    else                                  : process = StringBuilder(collider_lumi(7000.0))
+    ecms=7000.0
+    if   parameterName.startswith("7-")   : ecms = 7000.0
+    elif parameterName.startswith("8-")   : ecms = 8000.0
+    elif parameterName.startswith("13-")  : ecms = 13000.0
+    elif parameterName.startswith("900")  : ecms = 900.0
+    elif parameterName.startswith("2360") : ecms = 2360.0
+    elif parameterName.startswith("2760") : ecms = 2760.0
+    elif parameterName.startswith("5-")   : ecms = 5000.0
+    else                                  : ecms = 7000.0
+    process = StringBuilder(collider_lumi(ecms))
     if(simulation=="") :
         if "VBF" in parameterName :
             process+=insert_ME("MEPP2HiggsVBF")
@@ -766,12 +559,23 @@ elif(collider=="LHC") :
             process+=insert_ME("MEGammaJet")
             if "PromptPhoton-1" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 25.\n"
+                parameterName=parameterName.replace("-1","")
             elif "PromptPhoton-2" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 25.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 80.\n"
+                parameterName=parameterName.replace("-2","")
             elif "PromptPhoton-3" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 80.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 150.\n"
+                parameterName=parameterName.replace("-3","")
             elif "PromptPhoton-4" in parameterName :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 150.\n"
+                process+="set /Herwig/Cuts/PhotonKtCut:MaxKT 500.\n"
+                parameterName=parameterName.replace("-4","")
+            elif "PromptPhoton-5" in parameterName :
+                process+="set /Herwig/Cuts/PhotonKtCut:MinKT 500.\n"
+                parameterName=parameterName.replace("-5","")
         elif "DiPhoton-GammaGamma" in parameterName :
             process+=insert_ME("MEGammaGamma")
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
@@ -854,17 +658,17 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
                 
-            if "DiJets-1" in parameterName   : process+=mhatmin_cut(90.)
-            elif "DiJets-2" in parameterName : process+=mhatmin_cut(200.)
-            elif "DiJets-3" in parameterName : process+=mhatmin_cut(450.)
-            elif "DiJets-4" in parameterName : process+=mhatmin_cut(750.)
-            elif "DiJets-5" in parameterName : process+=mhatmin_cut(950.)
-            elif "DiJets-6" in parameterName : process+=mhatmin_cut(1550.)
-            elif "DiJets-7" in parameterName : process+=mhatmin_cut(2150.)
-            elif "DiJets-8" in parameterName : process+=mhatmin_cut(2750.)
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            if "DiJets-1" in parameterName   : process+=mhat_cut(90.)
+            elif "DiJets-2" in parameterName : process+=mhat_cut(200.)
+            elif "DiJets-3" in parameterName : process+=mhat_cut(450.)
+            elif "DiJets-4" in parameterName : process+=mhat_cut(750.)
+            elif "DiJets-5" in parameterName : process+=mhat_cut(950.)
+            elif "DiJets-6" in parameterName : process+=mhat_cut(1550.)
+            elif "DiJets-7" in parameterName : process+=mhat_cut(2150.)
+            elif "DiJets-8" in parameterName : process+=mhat_cut(2750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
         elif(      "7-Jets" in parameterName 
                or  "8-Jets" in parameterName 
                or "13-Jets" in parameterName 
@@ -884,8 +688,7 @@ elif(collider=="LHC") :
             elif "Jets-7" in parameterName : process+=jet_kt_cut(300.)
             elif "Jets-8" in parameterName : process+=jet_kt_cut(500.)
             elif "Jets-9" in parameterName : process+=jet_kt_cut(800.)
-        elif(    "7-Charm" in parameterName  or "7-Bottom" in parameterName
-             or "8-Bottom" in parameterName) :
+        elif( "-Charm" in parameterName  or "-Bottom" in parameterName ) :
             
             if("8-Bottom" in parameterName) :
                 addBRReweighter()
@@ -902,17 +705,19 @@ elif(collider=="LHC") :
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if "-0" in parameterName :
                 if "Bottom" in parameterName :
-                    process+="set MEBottom:Process Pair\n" 
-                process+=jet_kt_cut(0.)
+                    process+="set MEBottom:Process Pair\n"
+                    process+=jet_kt_cut(0.)
+                else :
+                    process+=jet_kt_cut(1.)
             elif "-1" in parameterName : process+=jet_kt_cut(5.)
             elif "-2" in parameterName : process+=jet_kt_cut(15.)
             elif "-3" in parameterName : process+=jet_kt_cut(20.)
             elif "-4" in parameterName : process+=jet_kt_cut(50.)
             elif "-5" in parameterName : process+=jet_kt_cut(80.)
             elif "-6" in parameterName : process+=jet_kt_cut(110.)
-            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(90.)
-            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(340.)
-            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(500.)
+            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(90.)
+            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(340.)
+            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhat_cut(500.)
         elif "Top-L" in parameterName :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+=insert_ME("MEHeavyQuark")
@@ -975,78 +780,23 @@ elif(collider=="LHC") :
                                            "Z0->nu_mu,nu_mubar;",
                                            "Z0->nu_tau,nu_taubar;"])
             addedBRReweighter = True
-            
-        elif "W-Z-e" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Electron")
-            process+=insert_ME("MEqq2W2ff","Electron")
-        elif "W-Z-mu" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Muon")
-            process+=insert_ME("MEqq2W2ff","Muon")
         elif "W-e" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
         elif "W-mu" in parameterName :
             process+=insert_ME("MEqq2W2ff","Muon")
-        elif "Z-e" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Electron")
-        elif "Z-mu" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-LowMass-e" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Electron")
-            process+=mhat_minm_maxm(20,20,70)
-        elif "Z-MedMass-e" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Electron")
-            process+=mhat_minm_maxm(40,40,130)
-        elif "Z-LowMass-mu" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Muon")
-            process+=mhat_minm_maxm(10,10,70)
-        elif "Z-Mass1" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(10,10,35)
-            else :
-                process+=mhat_minm_maxm(10,10,30)
-            if "-e" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+            if "Z-e" in parameterName:
                 process+=insert_ME("MEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-Mass2" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(25,25,70)
-            else :
-                process+=mhat_minm_maxm(30,30,65)
-            if "-e" in parameterName :
-                process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-Mass3" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(60,60,120)
-            else :
-                process+=mhat_minm_maxm(65,65,115)
-            if "-e" in parameterName :
-                process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-Mass4" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(110,110,8000)
-            else :
-                process+=mhat_minm_maxm(115,115,8000)
-            if "-e" in parameterName :
-                process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-HighMass1" in parameterName :
-            process+=mhat_minm_maxm(116,116,400)
-            if "-e" in parameterName :
-                process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("MEqq2gZ2ff","Muon")
-        elif "Z-HighMass2" in parameterName :
-            process+=mhat_minm_maxm(400,400,7000)
-            if "-e" in parameterName :
-                process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("MEqq2gZ2ff","Muon")
+            mcuts=[10,35,75,110,400,ecms]
+            for i in range(1,6) :
+                tstring = "-Mass%s"%i
+                if tstring in parameterName :
+                    process+=mhat_minm_maxm(mcuts[i-1],mcuts[i-1],mcuts[i])
+                    parameterName=parameterName.replace(tstring,"")
+        elif "Z-nu" in parameterName :
+            process+=insert_ME("MEqq2gZ2ff","Neutrinos")
         elif "W-Jet" in parameterName :
             process+=insert_ME("MEWJet","Electron","WDecay")
             if "W-Jet-1-e" in parameterName :
@@ -1258,78 +1008,23 @@ elif(collider=="LHC") :
                                            "Z0->nu_mu,nu_mubar;",
                                            "Z0->nu_tau,nu_taubar;"])
             addedBRReweighter = True
-            
-        elif "W-Z-e" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            process+=insert_ME("PowhegMEqq2W2ff","Electron")
-        elif "W-Z-mu" in parameterName :
-            process+=insert_ME("MEqq2gZ2ff","Muon")
-            process+=insert_ME("MEqq2W2ff","Muon")
         elif "W-e" in parameterName :
             process+=insert_ME("PowhegMEqq2W2ff","Electron")
         elif "W-mu" in parameterName :
             process+=insert_ME("PowhegMEqq2W2ff","Muon")
-        elif "Z-e" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-        elif "Z-mu" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-LowMass-e" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            process+=mhat_minm_maxm(20,20,70)
-        elif "Z-MedMass-e" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            process+=mhat_minm_maxm(40,40,130)
-        elif "Z-LowMass-mu" in parameterName :
-            process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-            process+=mhat_minm_maxm(10,10,70)
-        elif "Z-Mass1" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(10,10,35)
-            else :
-                process+=mhat_minm_maxm(10,10,30)
-            if "-e" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+            if "Z-e" in parameterName:
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-Mass2" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(25,25,70)
-            else :
-                process+=mhat_minm_maxm(30,30,65)
-            if "-e" in parameterName :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-Mass3" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(60,60,120)
-            else :
-                process+=mhat_minm_maxm(65,65,115)
-            if "-e" in parameterName :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-Mass4" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=mhat_minm_maxm(110,110,8000)
-            else:
-                process+=mhat_minm_maxm(115,115,8000)
-            if "-e" in parameterName :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-HighMass1" in parameterName :
-            process+=mhat_minm_maxm(116,116,400)
-            if "-e" in parameterName :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
-        elif "Z-HighMass2" in parameterName :
-            process+=mhat_minm_maxm(400,400,7000)
-            if "-e" in parameterName :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
-                process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
+            mcuts=[10,35,75,110,400,ecms]
+            for i in range(1,6) :
+                tstring = "-Mass%s"%i
+                if tstring in parameterName :
+                    process+=mhat_minm_maxm(mcuts[i-1],mcuts[i-1],mcuts[i])
+                    parameterName=parameterName.replace(tstring,"")
+        elif "Z-nu" in parameterName :
+            process+=insert_ME("PowhegMEqq2gZ2ff","Neutrinos")
         elif "DiPhoton-GammaGamma" in parameterName :
             process+=insert_ME("MEGammaGammaPowheg","GammaGamma")
             process+=insert_ME("MEGammaGamma","gg")
@@ -1520,9 +1215,9 @@ elif(collider=="LHC") :
             elif "DiJets-6" in parameterName : process+=addJetPairCut("1550")
             elif "DiJets-7" in parameterName : process+=addJetPairCut("2150")
             elif "DiJets-8" in parameterName : process+=addJetPairCut("2750")
-            elif "DiJets-9" in parameterName : process+=mhatmin_cut(3750.)
-            elif "DiJets-10" in parameterName : process+=mhatmin_cut(4750.)
-            elif "DiJets-11" in parameterName : process+=mhatmin_cut(5750.)
+            elif "DiJets-9" in parameterName : process+=mhat_cut(3750.)
+            elif "DiJets-10" in parameterName : process+=mhat_cut(4750.)
+            elif "DiJets-11" in parameterName : process+=mhat_cut(5750.)
             else :
                 logging.error("Exit 00002")
                 sys.exit(1)
@@ -1552,8 +1247,7 @@ elif(collider=="LHC") :
             else :
                 logging.error("Exit 00003")
                 sys.exit(1)
-        elif(     "7-Charm" in parameterName or "7-Bottom" in parameterName
-              or "8-Bottom" in parameterName) :
+        elif(     "-Charm" in parameterName or "-Bottom" in parameterName) :
             parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
             process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
@@ -1703,26 +1397,6 @@ elif(collider=="LHC") :
                                            "Z0->nu_tau,nu_taubar;"])
             process+=addBRReweighter()
             process+=addLeptonPairCut("60","120")
-        elif "W-Z-e" in parameterName :
-            if(simulation=="Matchbox"):
-              process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-              process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
-              process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-              process+=particlegroup(thefactory,'epm','e+','e-')
-              process+=particlegroup(thefactory,'epmnu','e+','e-','nu_e','nu_ebar')
-              process+=addProcess(thefactory,"p p epm epmnu","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("60","120")
-        elif "W-Z-mu" in parameterName :
-            if(simulation=="Matchbox"):
-              process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-              process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
-              process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-              process+=particlegroup(thefactory,'mupm','mu+','mu-')
-              process+=particlegroup(thefactory,'mupmnu','mu+','mu-','nu_mu','nu_mubar')
-              process+=addProcess(thefactory,"p p mupm mupmnu","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("60","120")
         elif "W-e" in parameterName :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
@@ -1740,19 +1414,28 @@ elif(collider=="LHC") :
                 process+=particlegroup(thefactory,'mupm','mu+','mu-')
                 process+=addProcess(thefactory,"p p mupm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
-
-        elif "Z-e" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+            if "Z-e" in parameterName :
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            elif "Z-mu" in parameterName :
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            mcuts=[10,35,75,110,400,ecms]
+            for i in range(1,6) :
+                tstring = "-Mass%s"%i
+                if tstring in parameterName :
+                    process+=addLeptonPairCut(mcuts[i-1],mcuts[i])
+                    parameterName=parameterName.replace(tstring,"")
+        elif "Z-nu" in parameterName :
             if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p p nu nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("60","120")
-        elif "Z-mu" in parameterName :
-            if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("60","120")
+                process+=addProcess(thefactory,"p p nu nu","0","2","LeptonPairMassScale",2,2)
         elif "Z-jj" in parameterName :
             if(simulation=="Merging"):
               logging.warning("Z-jj not explicitly tested for %s " % simulation)
@@ -1761,108 +1444,6 @@ elif(collider=="LHC") :
             process+=addFirstJet("40")
             process+=addSecondJet("30")
             process+=addLeptonPairCut("60","120")
-        elif "Z-LowMass-e" in parameterName :
-            if(simulation=="Matchbox"):
-               process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-               process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("20","70")
-        elif "Z-MedMass-e" in parameterName :
-            if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("40","130")
-        elif "Z-LowMass-mu" in parameterName :
-            if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-            elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-            process+=addLeptonPairCut("10","70")
-        elif "Z-Mass1" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=addLeptonPairCut("10","35")
-            else :
-                process+=addLeptonPairCut("10","30")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-        elif "Z-Mass2" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=addLeptonPairCut("25","70")
-            else :
-                process+=addLeptonPairCut("30","75")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-        elif "Z-Mass3" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=addLeptonPairCut("60","125")
-            else :
-                process+=addLeptonPairCut("65","120")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-        elif "Z-Mass4" in parameterName :
-            if parameterName.startswith("13-") : 
-                process+=addLeptonPairCut("115","8000")
-            else :
-                process+=addLeptonPairCut("120","8000")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-        elif "Z-HighMass1" in parameterName :
-            process+=addLeptonPairCut("116","400")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-        elif "Z-HighMass2" in parameterName :
-            process+=addLeptonPairCut("400","7000")
-            if "-e" in parameterName :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-            else :
-                if(simulation=="Matchbox"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
-                elif(simulation=="Merging"):
-                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif "W-Jet" in parameterName :
             if(simulation=="Merging"):
               logging.warning("W-Jet not explicitly tested for %s " % simulation)
@@ -1998,7 +1579,6 @@ if numberOfAddedProcesses == 0 and (simulation =="Merging" or simulation =="Matc
     sys.exit(1)
 
 # get template and write the file
-
 with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
     templateText = f.read()
 

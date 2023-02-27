@@ -44,7 +44,11 @@ ClusterFissioner::ClusterFissioner() :
   _kappa(1.0e15*GeV/meter),
   _enhanceSProb(0),
   _m0Fission(2.*GeV),
-  _massMeasure(0)
+  _massMeasure(0),
+  _probPowFactor(4.0),
+  _probShift(0.0),
+  _kinThresholdShift(1.0*sqr(GeV)),
+  _kinematicThresholdChoice(0)
 {}
 
 IBPtr ClusterFissioner::clone() const {
@@ -64,7 +68,8 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << ounit(_btClM,GeV)
      << _iopRem  << ounit(_kappa, GeV/meter)
      << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
-     << _hadronSpectrum;
+     << _hadronSpectrum
+     << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
@@ -76,7 +81,8 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> iunit(_btClM,GeV) >> _iopRem
      >> iunit(_kappa, GeV/meter)
      >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
-     >> _hadronSpectrum;
+     >> _hadronSpectrum
+     >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
 }
 
 void ClusterFissioner::doinit() {
@@ -241,6 +247,39 @@ void ClusterFissioner::Init() {
      "Cluster fission mass scale",
      &ClusterFissioner::_m0Fission, GeV, 2.0*GeV, 0.1*GeV, 50.*GeV,
      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,double> interfaceProbPowFactor
+     ("ProbablityPowerFactor",
+      "Power factor in ClausterFissioner bell probablity function",
+      &ClusterFissioner::_probPowFactor, 2.0, 1.0, 20.0,
+      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,double> interfaceProbShift
+     ("ProbablityShift",
+      "Shifts from the center in ClausterFissioner bell probablity function",
+      &ClusterFissioner::_probShift, 0.0, -10.0, 10.0,
+      false, false, Interface::limited);
+
+  static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
+     ("KineticThresholdShift",
+      "Shifts from the kinetic threshold in ClausterFissioner",
+      &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
+      false, false, Interface::limited);
+
+  static Switch<ClusterFissioner,int> interfaceKinematicThreshold
+    ("KinematicThreshold",
+     "Option for using static or dynamic kinematic thresholds in cluster splittings",
+     &ClusterFissioner::_kinematicThresholdChoice, 0, false, false);
+  static SwitchOption interfaceKinematicThresholdStatic
+    (interfaceKinematicThreshold,
+     "Static",
+     "Set static kinematic thresholds for cluster splittings.",
+     0);
+  static SwitchOption interfaceKinematicThresholdDynamic
+    (interfaceKinematicThreshold,
+     "Dynamic",
+     "Set dynamic kinematic thresholds for cluster splittings.",
+     1);
 
 }
 
@@ -425,10 +464,22 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       pair<Energy,Energy> res = drawNewMasses(Mc, soft1, soft2, pClu1, pClu2,
 					      ptrQ1, pQ1, newPtr1, pQone,
 					      newPtr2, pQtwo, ptrQ2, pQ2);
-      
-      Mc1 = res.first; Mc2 = res.second;
 
-      if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+      // derive the masses of the children
+      Mc1 = res.first;
+      Mc2 = res.second;
+      // static kinematic threshold
+      if(_kinematicThresholdChoice == 0)
+        if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+      // dynamic kinematic threshold
+      else if(_kinematicThresholdChoice == 1) {
+        bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+        bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+        bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
+
+        if( C1 || C2 || C3 ) continue;
+      }
+
       /**************************
        * New (not present in Fortran Herwig):
        * check whether the fragment masses  Mc1  and  Mc2  are above the
@@ -615,6 +666,7 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     m  = newPtr1->data().constituentMass();
     // Do not split in the case there is no phase space available
     if(mmax <  m1+m + m2+m) continue;
+
     pQ1.setMass(m1);
     pQone.setMass(m);
     pQtwo.setMass(m);
@@ -623,9 +675,9 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     pair<Energy,Energy> res = drawNewMasses(mmax, soft1, soft2, pClu1, pClu2,
 					    ptrQ[iq1], pQ1, newPtr1, pQone,
 					    newPtr2, pQtwo, ptrQ[iq1], pQ2);
-    
+
     Mc1 = res.first; Mc2 = res.second;
-    
+
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
     // check if need to force meson clster to hadron
     toHadron = _hadronSpectrum->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
@@ -787,8 +839,8 @@ switch(_fissionCluster){
      else if (_enhanceSProb == 2)
         prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
-  /* 1: ClusterFissioner uses its own unique set of weights,
-        i.e. decoupled from ClusterDecayer */
+    /* 1: ClusterFissioner uses its own unique set of weights,
+       i.e. decoupled from ClusterDecayer */
   case 1:
     prob_d = _fissionPwt.find(ParticleID::d)->second;
     prob_u = _fissionPwt.find(ParticleID::u)->second;
@@ -797,7 +849,9 @@ switch(_fissionCluster){
      else if (_enhanceSProb == 2)
         prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
-}
+  default:
+    assert(false);
+  }
 
   int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
@@ -998,19 +1052,24 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
   // children clusters move.
   Lorentz5Momentum u(pClu1);
   u.boost( -pClu.boostVector() );        // boost from LAB to C frame
+
   // the unit three-vector is then  u.vect().unit()
 
   Energy pstarChild = Kinematics::pstarTwoBodyDecay(Mclu,Mclu1,Mclu2);
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
+
+  Energy2 mag2 = u.vect().mag2();
+  InvEnergy fact = mag2>ZERO ? 1./sqrt(mag2) : 1./GeV;
+
   Length x1 = ( 0.25*Mclu + 0.5*( pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
   Length t1 = Mclu/_kappa - x1;
-  LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
+  LorentzDistance distanceClu1( x1 * fact * u.vect(), t1 );
 
   Length x2 = (-0.25*Mclu + 0.5*(-pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
   Length t2 = Mclu/_kappa + x2;
-  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
+  LorentzDistance distanceClu2( x2 * fact * u.vect(), t2 );
 
   // Then, transform such relative positions from the parent cluster
   // reference frame to the Lab frame.
@@ -1021,6 +1080,11 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
   positionClu1 = positionClu + distanceClu1;
   positionClu2 = positionClu + distanceClu2;
 
+}
+
+bool ClusterFissioner::ProbablityFunction(double scale, double threshold) {
+  double cut = UseRandom::rnd(0.0,1.0);
+  return 1./(1.+pow(abs((threshold-_probShift)/scale),_probPowFactor)) > cut ? true : false;
 }
 
 bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
@@ -1038,18 +1102,35 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
       clmax = _clMaxHeavy[id];
     }
   }
-  bool aboveCutoff = (
-		      pow(clu->mass()*UnitRemoval::InvE , clpow)
-		      >
-		      pow(clmax*UnitRemoval::InvE, clpow)
-		      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
-		      );
-  // required test for SUSY clusters, since aboveCutoff alone
+   // required test for SUSY clusters, since aboveCutoff alone
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
-  static const Energy minmass = getParticleData(ParticleID::d)->constituentMass();
-  return aboveCutoff && canSplitMinimally(clu, minmass);
-}
+  static const Energy minmass
+    = getParticleData(ParticleID::d)->constituentMass();
+  bool aboveCutoff, canSplitMinimally;
+  // static kinematic threshold
+  if(_kinematicThresholdChoice == 0) {
+    aboveCutoff = (
+    	      pow(clu->mass()*UnitRemoval::InvE , clpow)
+    	      >
+    	      pow(clmax*UnitRemoval::InvE, clpow)
+    	      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
+    	      );
 
-bool ClusterFissioner::canSplitMinimally(tcClusterPtr clu, Energy minmass){
-  return clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+    canSplitMinimally = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+  }
+  // dynamic kinematic threshold
+  else if(_kinematicThresholdChoice == 1) {
+    //some smooth probablity function to create a dynamic thershold
+    double scale     = pow(clu->mass()/GeV , clpow);
+    double threshold = pow(clmax/GeV, clpow)
+                     + pow(clu->sumConstituentMasses()/GeV, clpow);
+    aboveCutoff = ProbablityFunction(scale,threshold);
+
+    scale     = clu->mass()/GeV;
+    threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
+
+    canSplitMinimally = ProbablityFunction(scale,threshold);
+  }
+
+  return aboveCutoff && canSplitMinimally;
 }

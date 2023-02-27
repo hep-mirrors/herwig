@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! @PYTHON@
 
 import os,sys,glob,errno,shutil,time,fnmatch,tempfile
 from optparse import OptionParser
@@ -224,7 +224,17 @@ if not options.madgraph and not os.path.isfile("InterfaceMadGraph.so"):
   sys.stderr.write("*** MadGraph build failed, check logfile for details ***")
   exit(1)
 
-os.system("python "+options.madgraph+"/mg5_aMC proc.dat")
+# find MG version from its address
+MGV = options.madgraph.split("/")
+MGVersion = 0
+for term in MGV :
+    if "MG5_aMC_v" in term :
+        term = term.split("_")
+        MGVersion = term[2][1]
+if sys.version_info[0] == 2 and MGVersion == "3" :
+    os.system("python3 "+options.madgraph+"/mg5_aMC proc.dat")
+else:
+    os.system("python "+options.madgraph+"/mg5_aMC proc.dat")
 
 
 

@@ -41,8 +41,6 @@ class EvtGenInterface: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -52,12 +50,6 @@ public:
    * The copy constructor (explicit as cannot copy streams)
    */
   EvtGenInterface(const EvtGenInterface &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~EvtGenInterface();
-  //@}
 
 public:
 

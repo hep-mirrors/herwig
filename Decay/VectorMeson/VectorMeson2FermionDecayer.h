@@ -162,57 +162,54 @@ private:
    */
   VectorMeson2FermionDecayer & operator=(const VectorMeson2FermionDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * coupling for a decay
    */
-  vector<double> _coupling;
+  vector<double> coupling_;
 
   /**
    * the PDG codes for the incoming particles
    */
-  vector<int> _incoming;
+  vector<long> incoming_;
 
   /**
-   * the PDG codes for the outgoing fermion
+   * the PDG codes for the outgoing fermion-antifermion
    */
-  vector<int> _outgoingf;
-
-  /**
-   * the PDG codes for the outgoing antifermion.
-   */
-  vector<int> _outgoinga;
+  vector<pair<long,long>> outgoing_;
 
   /**
    * maximum weight for a decay
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxweight_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decaying particle
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_;
 
   /**
    *  Spinors for the decay products
    */
-  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > _wave;
+  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > wave_;
 
   /**
    *  barred spinors for the decay products
    */
-  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > _wavebar;
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > wavebar_;
 };
 
 }

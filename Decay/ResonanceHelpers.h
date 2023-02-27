@@ -9,6 +9,8 @@
 #ifndef HERWIG_ResonanceHelpers_H
 #define HERWIG_ResonanceHelpers_H
 
+namespace Herwig {
+using namespace ThePEG;
 namespace Resonance {
 
 /**
@@ -237,5 +239,7 @@ complex<InvEnergy2> BreitWignerDiff(const Energy2 & s,
     BreitWignerPWave(s,mRes1,gamma1,m1,m2)/sqr(mRes1)-
     BreitWignerPWave(s,mRes2,gamma2,m1,m2)/sqr(mRes2);
 }
+}
+
 }
 #endif

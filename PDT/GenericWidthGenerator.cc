@@ -822,8 +822,10 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   Energy  pcm(sqrt(pcm2));
   double gam(0.);
   switch(MEcode_[imode]) {
-    // V -> P P
-  case  0: gam = pcm2/6./q2;
+    // V -> P P (T->VS)
+  case  0:
+    gam = pcm2/6./q2;
+    if(m1==ZERO) gam *= 3./5.;
     break;
     // V -> P V
   case  1: gam = pcm2/12./m02;
@@ -841,19 +843,19 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     // V -> VV
   case  5: gam = pcm2/3./q2*(1.+m12/q2+m22/q2);
     break;
-    // S -> SS
+    // S -> SS (T->TS and T->VV)
   case  6: gam = 0.125/q2*m02;
+    if(m1==ZERO && m2==ZERO) gam*=7./15.;
+    else if(m1==ZERO || m2==ZERO) gam*=2./3.;
     break;
     // T -> PP
-  case  7: gam = pcm2*pcm2/60./q2/m02;
+  case  7: gam = sqr(pcm2)/60./q2/m02;
     break;
     // T -> VP
-  case  8: gam = pcm2*pcm2/40./m02/m02;
+  case  8: gam = sqr(pcm2)/40./m02/m02;
     break;
     // T -> VV
-  case  9: gam = 1./30./q2/q2/m02*
-      (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
-       -5.*(m12-m22)*(m12-m22)*pcm2);
+  case  9: gam = 16./15.*pcm2/m02;
     break;
     // P -> PV
   case 10: gam = 0.5*pcm2/m22;
@@ -862,7 +864,57 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   case 11: gam = sqr(pcm2)/12.*q2/m12/m12/m02;
     break;
     // S -> VV
-  case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
+  case 12: gam = 0.375*m02/q2;
+    break;
+    // T3 -> PP
+  case 13: gam = 16.*sqr(pcm2)*pcm2/35./q2/sqr(m02);
+    break;
+    // T3 -> VP
+  case 14: gam = 4.*sqr(pcm2)/15./q2/m02;
+    break;
+    // T3 -> VS
+  case 15: gam = 16.*pow(pcm2/m02,3)/105.;
+    break;
+    // T3 -> TP
+  case 16: gam = 8.*pow(pcm2/m02,2)/15.;
+    break;
+    // T -> TP
+  case 17: gam = pcm2/16./m02;
+    break;
+    // V -> P gamma (heavy quark)
+  case  18: gam = pcm2/12./m02*m1/q;
+    break;
+    // S -> SS (T->TS and T->VV)
+  case  19: gam = 5./24./q2*m02;
+    if (m2==ZERO) gam*=2./3.;
+    break;
+    // A -> VV
+  case 20:
+    if(m1==ZERO)
+      gam = sqr(q2 - m22)*(q2 + m22)/(48.*sqr(q2)*m22);
+    else if (m2==ZERO)
+      gam = sqr(q2 - m12)*(q2 + m12)/(48.*sqr(q2)*m12);
+    else
+      gam = (sqr(q2)*(m12 + m22) + sqr(m12-m22)*(m12 + m22) - 
+	     2*q2*(sqr(m12) - 4*m12*m22 + sqr(m22)))/(48.*q2*m12*m22);
+    break;
+    // Rank3 -> T V
+  case 21: gam = 0.125*m02/q2;
+    if (m2==ZERO) gam*=2./3.;
+    break;
+    // T -> Rank3 V
+  case 22: gam = 7./40.*m02/q2;
+    if (m2==ZERO) gam*=2./3.;
+    break;
+  case 23: gam = (sqr(q2-m12)*(11*q2 - 8*q*m1 + 11*m12)
+		  - 2*(11*sqr(q2) - 52*q2*m12 + 11*sqr(m12))*m22 + 
+		  (11*q2 + 8*q*m1 + 11*m12)*sqr(m22))/(960.*sqr(q2)*m12);
+    break;
+    // P -> f f
+  case 24 : gam = 0.25*(1.-sqr(m1-m2)/q2);
+    break;
+    // S -> f f
+  case 25 : gam = 0.25*(1.-sqr(m1+m2)/q2);
     break;
     // unknown
   default:

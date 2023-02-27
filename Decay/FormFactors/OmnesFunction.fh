@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OmnesFunction class.
+//
+#ifndef Herwig_OmnesFunction_FH
+#define Herwig_OmnesFunction_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class OmnesFunction;
+
+ThePEG_DECLARE_POINTERS(Herwig::OmnesFunction,OmnesFunctionPtr);
+
+}
+
+#endif

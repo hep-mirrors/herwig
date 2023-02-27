@@ -32,18 +32,10 @@ class MissingPtCut: public MultiCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MissingPtCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MissingPtCut();
-  //@}
 
 public:
 

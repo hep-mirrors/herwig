@@ -214,12 +214,8 @@ public:
    */
   static void Init();
 
-protected:
-
-  /**
-   *  Methods to reconstruct the kinematics of individual jets
-   */
-  //@{
+public:
+  
   /**
    * Given the particle (ShowerParticle object) that 
    * originates a forward (time-like) jet, this method reconstructs the kinematics 
@@ -233,7 +229,46 @@ protected:
    * main information we want.
    * This methods returns false if there was no radiation or rescaling required
    */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const;
+  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
+				      const tShowerParticlePtr progenitor) const;
+  
+  /**
+   * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
+   * ones before showering and the masses are reconstructed after the showering,
+   * this method returns the overall scaling factor for the 3-momenta of the
+   * vector of particles, vec{P}_i -> k * vec{P}_i, such to preserve energy-
+   * momentum conservation, i.e. after the rescaling the center of mass 5-momentum 
+   * is equal to the one specified in input, cmMomentum. 
+   * The method returns 0 if such factor cannot be found.
+   * @param root_s Centre-of-mass energy
+   * @param jets The jets
+   */
+  double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
+  
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoost(const double k, 
+			     const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldp) const;
+
+  /**
+   *  Apply a transform to the particle and any child, including child ShowerTree
+   *  objects
+   * @param particle The particle
+   * @param r The Lorentz transformation
+   * @param match Whether or not to look at children etc
+   * @param original The original particle
+   */
+  void deepTransform(PPtr particle,const LorentzRotation & r,
+		     bool match=true,PPtr original=PPtr()) const;
+
+protected:
+
+  /**
+   *  Methods to reconstruct the kinematics of individual jets
+   */
+  //@{
 
   /**
    * Exactly similar to the previous one, but for a space-like jet.
@@ -364,13 +399,6 @@ protected:
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  LorentzRotation solveBoost(const double k, 
-			     const Lorentz5Momentum & newq, 
-			     const Lorentz5Momentum & oldp) const;
-  
-  /**
-   * Compute the boost to get from the the old momentum to the new 
-   */
   LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
 			     const Lorentz5Momentum & oldq) const;
   
@@ -412,18 +440,6 @@ protected:
    *  Methods to calculate the various scaling factors
    */
   //@{
-  /**
-   * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
-   * ones before showering and the masses are reconstructed after the showering,
-   * this method returns the overall scaling factor for the 3-momenta of the
-   * vector of particles, vec{P}_i -> k * vec{P}_i, such to preserve energy-
-   * momentum conservation, i.e. after the rescaling the center of mass 5-momentum 
-   * is equal to the one specified in input, cmMomentum. 
-   * The method returns 0 if such factor cannot be found.
-   * @param root_s Centre-of-mass energy
-   * @param jets The jets
-   */
-  double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
 
   /**
    *  Calculate the rescaling factors for the jets in a particle decay where
@@ -499,17 +515,6 @@ protected:
    *  Add the intrinsic \f$p_T\f$ to the system if needed
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
-
-  /**
-   *  Apply a transform to the particle and any child, including child ShowerTree
-   *  objects
-   * @param particle The particle
-   * @param r The Lorentz transformation
-   * @param match Whether or not to look at children etc
-   * @param original The original particle
-   */
-  void deepTransform(PPtr particle,const LorentzRotation & r,
-		     bool match=true,PPtr original=PPtr()) const;
 
   /**
    *  Find the mass of a particle in the hard branching
@@ -617,11 +622,6 @@ private:
    * reconstruction
    */
   Energy _minQ;
-
-  /**
-   *  The progenitor of the jet currently being reconstructed
-   */
-  mutable tShowerParticlePtr _progenitor;
 
   /**
    * Storage of the intrinsic \f$p_T\f$

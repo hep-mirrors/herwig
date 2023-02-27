@@ -22,8 +22,6 @@ MatchboxXComb::MatchboxXComb()
   flushCaches();
 }
 
-MatchboxXComb::~MatchboxXComb() {}
-
 MatchboxXComb::MatchboxXComb(Energy newMaxEnergy, const cPDPair & inc,
 	      tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
 	      tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,

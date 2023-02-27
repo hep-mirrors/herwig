@@ -5,6 +5,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_CONF_2016_092
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1682495
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
+# ATLAS charged fragmentation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1740909
 # ATLAS soft-drop
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1637587
 # ATLAS Lund plane
@@ -12,3 +14,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1790256
 # CMS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955
+# ATLAS event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1808726
+# double differential jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1972986
+# CMS jet substructure
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1920187:MODE=DIJET

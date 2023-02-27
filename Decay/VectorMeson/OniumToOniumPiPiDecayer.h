@@ -48,7 +48,10 @@ public:
   /**
    * The default constructor.
    */
-  OniumToOniumPiPiDecayer();
+  OniumToOniumPiPiDecayer() {
+    // don't generate the intermediates in the phase-space
+    generateIntermediates(false);
+  }
 
   /**
    * Which of the possible decays is required
@@ -179,27 +182,29 @@ private:
    */
   OniumToOniumPiPiDecayer & operator=(const OniumToOniumPiPiDecayer &) = delete;
 
+public:
+
+  /**
+   *   Set the parameters for a decay mode
+   */
+  string setUpDecayMode(string arg);
+
 private:
 
   /**
    * the PDG codes for the incoming onium resonace
    */
-  vector<long> _incoming;
+  vector<long> incoming_;
 
   /**
    * the PDG codes for the outgoing onium resonance
    */
-  vector<long> _outgoing;
+  vector<long> outgoing_;
 
   /**
    * the maximum weight for the integration
    */
-  vector<double> _maxweight;
-
-  /**
-   *  Initial size of the vectors
-   */
-  unsigned int _initsize;
+  vector<double> maxWeight_;
 
   /**
    *  The couplings for the decays
@@ -208,62 +213,33 @@ private:
   /**
    *  Overall normalisation
    */
-  vector<double> _coupling;
-  /**
-   *  The real part of \f$A\f$
-   */
-  vector<InvEnergy2> _reA;
-
-  /**
-   *  The imaginary part of \f$A\f$
-   */
-  vector<InvEnergy2> _imA;
+  vector<double> coupling_;
 
   /**
    *  The complex \f$A\f$ coupling
    */
-  vector<complex<InvEnergy2> > _cA;
-
-  /**
-   *  The real part of \f$B\f$
-   */
-  vector<InvEnergy2> _reB;
-
-  /**
-   *  The imaginary part of \f$B\f$
-   */
-  vector<InvEnergy2> _imB;
+  vector<complex<InvEnergy2> > cA_;
 
   /**
    *  The complex \f$B\f$ coupling
    */
-  vector<complex<InvEnergy2> > _cB;
-
-  /**
-   *  The real part of \f$C\f$
-   */
-  vector<InvEnergy2> _reC;
-
-  /**
-   *  The imaginary part of \f$C\f$
-   */
-  vector<InvEnergy2> _imC;
+  vector<complex<InvEnergy2> > cB_;
 
   /**
    *  The complex \f$C\f$ coupling
    */
-  vector<complex<InvEnergy2> > _cC;
+  vector<complex<InvEnergy2> > cC_;
   //@}
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the incomng and outgoing onium resonances
    */
-  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+  mutable vector<Helicity::LorentzPolarizationVector> vectors_[2];
 
 };
 

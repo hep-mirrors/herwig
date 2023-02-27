@@ -46,21 +46,6 @@ class PhasespaceCouplings: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  PhasespaceCouplings();
-
-  /**
-   * The destructor.
-   */
-  virtual ~PhasespaceCouplings();
-  //@}
-
-public:
-
   /**
    * Couplings to be used in diagram weighting
    */

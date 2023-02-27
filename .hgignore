@@ -75,11 +75,12 @@ Makefile\.in$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
 ^Tests/.cache$
-^Tests/Rivet/.*(EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
+^Tests/Rivet/.*(Rivet|SPS|EHS|Fermilab|EE|DIS|LHC|TVT|Star|ISR|SppS)-.*\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
-Tests/python/LowEnergy.py
+Tests/python/LowEnergy-EE.py
+Tests/python/LowEnergy-Photon.py
 Tests/python/R.py
 Tests/python/make_input_files.py
 Tests/python/merge-DIS
@@ -90,6 +91,7 @@ Tests/python/merge-GammaGamma
 Tests/python/merge-LHC-EW
 Tests/python/merge-LHC-Jets
 Tests/python/merge-LHC-Photon
+Tests/python/merge-Star
 Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
@@ -100,7 +102,9 @@ PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig$
+MatrixElement/Matchbox/External/GoSam/gosam2herwig.py
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
+Sampling/herwig-mergegrids.py
 ^Utilities/Statistics/herwig-combinedistributions$
 ^Utilities/Statistics/herwig-combineruns$
 ^Utilities/Statistics/herwig-makedistributions$

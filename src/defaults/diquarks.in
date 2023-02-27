@@ -81,7 +81,7 @@ makeanti cs_1 cs_1bar
 create ThePEG::ConstituentParticleData cc_1
 setup cc_1 4403 cc_1 3.2 0.  0 0 4 -3 3 1  3.2
 create ThePEG::ConstituentParticleData cc_1bar
-setup cc_1bar -4403 cc_1bar 3.2 0.  0 0 -4 -3 3 1  3.2
+setup cc_1bar -4403 cc_1bar 3.2 0.  0 0 -4 3 3 1  3.2
 makeanti cc_1bar cc_1
 create ThePEG::ConstituentParticleData bd_0bar
 setup bd_0bar -5101 bd_0bar 5.325 0.  0 0 2 -3 1 1  5.325
