@@ -186,7 +186,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Matchbox/External/OpenLoops/Makefile
 		MatrixElement/Matchbox/External/MadGraph/Makefile
 		MatrixElement/Matchbox/External/MadGraph/mg2herwig
-		MatrixElement/Matchbox/External/GoSam/gosam2herwig.py
+		MatrixElement/Matchbox/External/GoSam/gosam2herwig
 		MatrixElement/FxFx/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
@@ -259,7 +259,7 @@ AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT
 AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])	 
 AC_CONFIG_FILES([Tests/python/plot-EE		 ],[chmod +x Tests/python/plot-EE	     ])	 
 AC_CONFIG_FILES([Tests/python/R.py		 ],[chmod +x Tests/python/R.py		     ])
-AC_CONFIG_FILES([Sampling/herwig-mergegrids.py   ],[chmod +x Sampling/herwig-mergegrids.py   ])
+AC_CONFIG_FILES([Sampling/herwig-mergegrids      ],[chmod +x Sampling/herwig-mergegrids      ])
 AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 AC_CONFIG_HEADERS([PDF/SaSPhotonPDF.cc])
