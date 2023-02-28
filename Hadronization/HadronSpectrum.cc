@@ -347,7 +347,9 @@ tcPDPair HadronSpectrum::chooseHadronPair(const Energy cluMass,
       signHad2 > 0 ? hadrons[ix].hadron2 : tcPDPtr(hadrons[ix].hadron2->CC()));
 }
 
-
+std::tuple<bool,bool,bool> HadronSpectrum::selectBaryon(const Energy, tcPDPtr, tcPDPtr )  const {
+  assert(false);
+}
 
 tcPDPair HadronSpectrum::lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2) const {
   Energy currentSum = Constants::MaxEnergy;
@@ -538,8 +540,10 @@ int HadronSpectrum::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     the other one is a (anti-) diquark the sign is negative when both
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
-    if(abs(int(idQ1->iColour()))== 3 && abs(int(idQ2->iColour())) == 3 &&
-      !DiquarkMatcher::Check(idQ1->id()) && !DiquarkMatcher::Check(idQ2->id()))
+    if(std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
+                 idQ1->id()) != hadronizingQuarks().end() &&
+       std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
+                 idQ2->id()) != hadronizingQuarks().end())
     {
       int idQa = abs(idQ1->id());
       int idQb = abs(idQ2->id()); 
@@ -597,27 +601,10 @@ bool HadronSpectrum::canBeMeson(tcPDPtr par1,tcPDPtr par2) const {
   long id2 = par2->id();
   // a Meson must not have any diquarks
   if(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2)) return false;
-  return ( abs(int(par1->iColour()))== 3  && 
-     abs(int(par2->iColour())) == 3 &&  
-     id1*id2 < 0);
-}
-
-bool HadronSpectrum::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) const {
-  assert(par1 && par2);
-  long id1 = par1->id(), id2 = par2->id();
-  if (!par3) {
-    if( id1*id2 < 0) return false;
-    if(DiquarkMatcher::Check(id1))
-return abs(int(par2->iColour())) == 3 && !DiquarkMatcher::Check(id2); 
-    if(DiquarkMatcher::Check(id2))
-return abs(int(par1->iColour())) == 3;
-    return false;
-  } 
-  else {
-    // In this case, to be a baryon, all three components must be (anti-)quarks
-    // and with the same sign.
-    return (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
-(par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
-  }
+  return (std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
+                    id1) != hadronizingQuarks().end() &&
+          std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
+                    id2) != hadronizingQuarks().end() &&
+          id1*id2 < 0);
 }
   

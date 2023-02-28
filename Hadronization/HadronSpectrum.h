@@ -459,7 +459,7 @@ protected:
    * Return true if the two or three particles in input can be the components 
    * of a baryon; false otherwise.
    */
-  bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
+  virtual bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const = 0;
 
 
   /**

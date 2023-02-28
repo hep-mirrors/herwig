@@ -511,6 +511,8 @@ void StandardModelHadronSpectrum::constructHadronTable() {
     const bool wantSusy = x7 == 1 || x7 == 2;
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
+    // Skip particles which are neither SM nor SUSY 
+    if(x7 >= 3) continue;
     int flav1,flav2;
     // meson
     if(x4 == 0) {
@@ -553,6 +555,9 @@ void StandardModelHadronSpectrum::constructHadronTable() {
   }
 }
 
+double StandardModelHadronSpectrum::strangeWeight(const Energy, tcPDPtr, tcPDPtr) const {
+  assert(false);
+}
 
 void StandardModelHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2) {
   // identical light flavours
@@ -664,4 +669,24 @@ return
   ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
   ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
   abs(id1)==6||abs(id2)==6;
+}
+
+
+bool StandardModelHadronSpectrum::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) const {
+  assert(par1 && par2);
+  long id1 = par1->id(), id2 = par2->id();
+  if (!par3) {
+    if( id1*id2 < 0) return false;
+    if(DiquarkMatcher::Check(id1))
+return abs(int(par2->iColour())) == 3 && !DiquarkMatcher::Check(id2); 
+    if(DiquarkMatcher::Check(id2))
+return abs(int(par1->iColour())) == 3;
+    return false;
+  } 
+  else {
+    // In this case, to be a baryon, all three components must be (anti-)quarks
+    // and with the same sign.
+    return (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
+(par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
+  }
 }

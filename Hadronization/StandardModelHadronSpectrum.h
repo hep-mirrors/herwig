@@ -225,6 +225,12 @@ protected:
    */
   bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
 
+  /**
+   * Return true if the two or three particles in input can be the components 
+   * of a baryon; false otherwise.
+   */
+  virtual bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
+
 protected:
 
   /**
