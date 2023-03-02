@@ -1,10 +1,10 @@
 cd /Herwig/Hadronization
 
 create Herwig::Hw7Selector H7Selector
-set ClusterFissioner:HadronSelector H7Selector 
-set LightClusterDecayer:HadronSelector H7Selector
-set ClusterDecayer:HadronSelector H7Selector
-set ClusterFinder:HadronSelector H7Selector
+set ClusterFissioner:SMHadronSpectrum H7Selector 
+set LightClusterDecayer:SMHadronSpectrum H7Selector
+set ClusterDecayer:SMHadronSpectrum H7Selector
+set ClusterFinder:SMHadronSpectrum H7Selector
 set H7Selector:SingleHadronLimitBottom 0.000
 set H7Selector:SingleHadronLimitCharm 0.000
 set H7Selector:SingleHadronLimitExotic 0.
@@ -27,8 +27,8 @@ set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.8473684210526315
 set /Herwig/Hadronization/ClusterDecayer:ClSmrLight 0.78
-set /Herwig/Hadronization/HadronSelector:PwtSquark 0.44791808545341966
-set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.399325692181664 
+set /Herwig/Hadronization/SMHadronSpectrum:PwtSquark 0.44791808545341966
+set /Herwig/Hadronization/SMHadronSpectrum:PwtDIquark 0.399325692181664 
 set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
 
 set /Herwig/Hadronization/PartonSplitter:Split ud

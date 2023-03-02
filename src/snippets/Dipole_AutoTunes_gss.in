@@ -18,10 +18,10 @@ set ClusterFissioner:ClMaxLight               3.055256
 set ClusterFissioner:PSplitLight              0.7779
 set ClusterFissioner:PSplitCharm              0.628766
 set ClusterFissioner:PSplitBottom             0.662911
-set HadronSelector:SingleHadronLimitBottom    0.000446
-set HadronSelector:SingleHadronLimitCharm     0.000508
-set HadronSelector:SngWt                      0.927141
-set HadronSelector:DecWt                      0.630787
+set SMHadronSpectrum:SingleHadronLimitBottom    0.000446
+set SMHadronSpectrum:SingleHadronLimitCharm     0.000508
+set SMHadronSpectrum:SngWt                      0.927141
+set SMHadronSpectrum:DecWt                      0.630787
 
 set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 1.000896
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   1.000896
