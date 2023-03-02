@@ -35,12 +35,12 @@ public:
   /**
    * The default constructor.
    */
-  GluonMassGenerator();
+  GluonMassGenerator() {}
 
   /**
    * The destructor.
    */
-  virtual ~GluonMassGenerator();
+  virtual ~GluonMassGenerator() {}
   //@}
 
 public:

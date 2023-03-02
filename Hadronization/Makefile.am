@@ -7,7 +7,7 @@ ClusterFinder.cc ClusterFinder.h ClusterFinder.fh  \
 ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.fh \
 ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.fh \
-ColourReconnector.cc ColourReconnector.h ColourReconnector.fh\
+ColourReconnector.cc ColourReconnector.h ColourReconnector.fh \
 GluonMassGenerator.h GluonMassGenerator.cc \
 Hw64Selector.cc Hw64Selector.h \
 HwppSelector.cc HwppSelector.h \
