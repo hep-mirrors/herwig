@@ -267,10 +267,9 @@ tcPDPair HadronSpectrum::chooseHadronPair(const Energy cluMass,
   hadrons.clear();
   for(unsigned int ix=0;ix<partons().size();++ix) {
     tcPDPtr quarktopick  = partons()[ix];
-    if(!quark  &&  abs(int(quarktopick->iColour())) == 3
-       && !DiquarkMatcher::Check(quarktopick->id())) continue;
-    if(abs(int(quarktopick->iColour())) == 3
-       && DiquarkMatcher::Check(quarktopick->id()) &&
+    if(!quark && std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
+        abs(quarktopick->id())) != hadronizingQuarks().end()) continue;
+    if(DiquarkMatcher::Check(quarktopick->id()) &&
        ((!diquark0 && quarktopick->iSpin()==1) ||
 	(!diquark1 && quarktopick->iSpin()==3))) continue;
     HadronTable::const_iterator
@@ -541,9 +540,9 @@ int HadronSpectrum::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
     if(std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
-                 idQ1->id()) != hadronizingQuarks().end() &&
+                 abs(idQ1->id())) != hadronizingQuarks().end() &&
        std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
-                 idQ2->id()) != hadronizingQuarks().end())
+                 abs(idQ2->id())) != hadronizingQuarks().end())
     {
       int idQa = abs(idQ1->id());
       int idQb = abs(idQ2->id()); 
@@ -602,9 +601,9 @@ bool HadronSpectrum::canBeMeson(tcPDPtr par1,tcPDPtr par2) const {
   // a Meson must not have any diquarks
   if(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2)) return false;
   return (std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
-                    id1) != hadronizingQuarks().end() &&
+                    abs(id1)) != hadronizingQuarks().end() &&
           std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
-                    id2) != hadronizingQuarks().end() &&
+                    abs(id2)) != hadronizingQuarks().end() &&
           id1*id2 < 0);
 }
   
