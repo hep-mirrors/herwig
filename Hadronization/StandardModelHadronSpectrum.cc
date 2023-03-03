@@ -376,6 +376,15 @@ void StandardModelHadronSpectrum::Init() {
 
 }
 
+
+PDPtr HadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
+    long id1 = par1->id();
+    long id2 = par2->id();
+    long pspin = id1==id2 ? 3 : 1;
+    long idnew = makeDiquarkID(id1,id2, pspin);
+    return getParticleData(idnew);
+}
+
 Energy StandardModelHadronSpectrum::hadronPairThreshold(tcPDPtr par1, tcPDPtr par2) const {
   // Determine the sum of the nominal masses of the two lightest hadrons
   // with the right flavour numbers as the cluster under consideration.

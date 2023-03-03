@@ -15,6 +15,6 @@ Hw7Selector.cc Hw7Selector.h \
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.fh \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.fh \
 SpinHadronizer.h SpinHadronizer.cc \
-HadronSepctrum.h HadronSepctrum.fh HadronSpectrum.cc \
+HadronSpectrum.h HadronSpectrum.fh HadronSpectrum.cc \
 StandardModelHadronSpectrum.h StandardModelHadronSpectrum.cc
 
