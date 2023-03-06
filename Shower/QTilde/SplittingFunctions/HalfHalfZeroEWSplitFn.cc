@@ -196,7 +196,7 @@ bool HalfHalfZeroEWSplitFn::accept(const IdList &ids) const {
       return true;
   }
   else if(ids[2]->iSpin()==PDT::Spin0 && _couplingValue!=0) {
-    if(ids[0]->iCharge()+ids[1]->iCharge()+ids[2]->iCharge()!=0.)
+    if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
       return false;
     if((abs(ids[0]->id())>=3 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=3 && abs(ids[1]->id())<=6))
       return true;

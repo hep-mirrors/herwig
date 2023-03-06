@@ -1,6 +1,7 @@
 from __future__ import print_function
 from string import Template
 import os
+import numpy as np
 
 # ignore these, they're in Hw++ already # TODO reset Hw++ settings instead
 SMPARTICLES = {
@@ -267,7 +268,37 @@ def isQuark(particle) :
     else :
         return False
 
-def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs,allow_fcnc):
+def isLepton(particle) :
+    if abs(particle.pdg_code) >= 11 and abs(particle.pdg_code) <= 16 :
+        return True
+    else :
+        return False
+
+def isScalar(particle) :
+    if particle.spin==1 :
+        return True
+    else :
+        return False
+
+def isGVB(particle) :
+    if abs(particle.pdg_code)==24 :
+        return True
+    elif particle.pdg_code==23 :
+        return True
+    elif particle.pdg_code==22 :
+        return True
+    elif particle.pdg_code==21 :
+        return True
+    else :
+        return False
+
+def antiparticle(FR,particle) :
+    for anti in FR.all_particles :
+        if particle.pdg_code == -anti.pdg_code :
+            return anti
+    return particle
+
+def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs,allow_fcnc) :
     plist = []
     antis = {}
     names = []
@@ -380,61 +411,130 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
         except SkipMe:
             pass
 
-        # EW splitting functions
+        # EW and BSM splitting functions
         try:
             Vertices = sort_vertices(FR,str(p.name),3)
             pSplittings = sort_splittings(FR,Vertices,p)
-            for V in pSplittings :
-                if V[3].real + V[3].imag == 0. :
-                    continue
-                # do not include QED splittings
-                if V[1].pdg_code == 22 or V[2].pdg_code == 22 :
+            for Vertex in pSplittings :
+                # do not do anything for CouplingValue < 1e-6
+                if abs(Vertex[3].real + Vertex[3].imag) < 1e-6 :
                     continue
                 # do not include QCD splittings
-                if V[1].pdg_code == 21 or V[2].pdg_code == 21 :
+                if Vertex[1].pdg_code == 21 or Vertex[2].pdg_code == 21 :
                     continue
-                # check if splitting and not decay
-                m = extract_mass(FR,V)
-                for i in range(len(m)) :
-                    if isinstance(m[i], complex) :
-                        m[i] = m[i].real
-                if m[0] > m[1] + m[2] :
+                # do not include QED splittings
+                if Vertex[2].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[1].pdg_code) or\
+                   Vertex[1].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[2].pdg_code):
                     continue
-
-                # rearrange for SM splitting with SM progenitors
-                # SM Z0 as progenitor
-                if V[1].pdg_code==23 and V[2].pdg_code==23 and spin_name(V[0].spin)=='Zero':
-                    V[0], V[1], V[2] = V[1], V[2], V[0]
-                # SM W as progenitor
-                elif abs(V[1].pdg_code)==24 and abs(V[2].pdg_code)==24 and spin_name(V[0].spin)=='Zero':
-                    if V[1].pdg_code < 0 and V[2].pdg_code > 0 :
-                        V[0], V[1], V[2] = V[2], V[2], V[0]
+                # skip lepton vertices
+                if isLepton(Vertex[1]) or isLepton(Vertex[2]) :
+                    continue
+                # loop over all possible configurations in the splitting
+                for pos in range(0,3) :
+                    # rearrange to all possible cases
+                    V=[Vertex[0], Vertex[1], Vertex[2], Vertex[3]]
+                    if pos==0:
+                        V[0], V[1], V[2] = Vertex[0], Vertex[1], Vertex[2]
+                    elif pos==1:
+                        V[0], V[1], V[2] = Vertex[1], Vertex[2], Vertex[0]
                     else :
-                        V[0], V[1], V[2] = V[1], V[1], V[0]
-                # SM q -> q S splittings
-                elif isQuark(V[1]) and isQuark(V[2]) and spin_name(V[0].spin) == 'Zero' :
-                    if not allow_fcnc :
-                        if V[1].pdg_code > 0 :
-                            V[0], V[1], V[2] = V[1], V[1], V[0]
+                        V[0], V[1], V[2] = Vertex[2], Vertex[0], Vertex[1]
+                    # don't allow photon as progenitor
+                    if V[0].pdg_code == 22 :
+                        continue
+                    # for a generic splitting m0 < m1+m2, otherwise it's a decay
+                    m = extract_mass(FR,V)
+                    # filter out m+i*zero
+                    for ix in range(len(m)) :
+                        if isinstance(m[ix], complex) :
+                            m[ix] = m[ix].real
+                    if m[0] > m[1] + m[2] :
+                        continue
+
+                    """
+                    possible EW splittings:
+                        - V > V  H   with SM GVBs and BSM (charged and nuetral) Scalars
+                        - q > q' H   with SM quarks and BSM (charged and nuetral) Scalars, may include FCNC-inducing splittings
+                        - H > H' V   with BSM (charged and nuetral) Scalars and SM GVBs (W,Z,photon)
+                        - V > H  H'  with SM GVBs and BSM (charged and nuetral) Scalars
+                        - H > H' H'' Higgs splittings
+                    """
+
+                    if isGVB(V[0]) :
+                        # allow V > V H
+                        if isGVB(V[1]) and isScalar(V[2]) :
+                            pass
+                        elif isGVB(V[2]) and isScalar(V[1]) :
+                            V[0], V[1], V[2] = V[0], V[2], V[1]
+                        # allow V > H H'
+                        elif isScalar(V[1]) and isScalar(V[2]):
+                            pass
+                        # nothing else with a GVB progenitor
                         else :
-                            V[0], V[1], V[2] = V[2], V[2], V[0]
+                            continue
+                    elif isQuark(V[0]) :
+                        # allow q > q' H (including FCNC splittings)
+                        if isQuark(V[1]) and isScalar(V[2]) :
+                            pass
+                        elif isQuark(V[2]) and isScalar(V[1]) :
+                            V[0], V[1], V[2] = V[0], V[2], V[1]
+                        # nothing else with a quark progenitor
+                        else :
+                            continue
+                    elif isScalar(V[0]) :
+                        # allow H > H' H''
+                        if isScalar(V[1]) and isScalar(V[2]) :
+                            pass
+                        # allow H > H' V
+                        elif isScalar(V[1]) and isGVB(V[2]) :
+                            pass
+                        elif isScalar(V[2]) and isGVB(V[1]) :
+                            V[0], V[1], V[2] = V[0], V[2], V[1]
+                        # nothing else with a scalar progenitor
+                        else :
+                            continue
+                    # nothing else
                     else :
-                        V[0], V[1], V[2] = V[1], V[2], V[0]
-                # nothing else
-                else :
-                    continue
+                        print(V[0]," > ",V[1], V[2], "splitting cannot be handled.")
+                        continue
 
-                # set up the splitting
-                SPname = split_name(V,False)
-                # no scalar > quark, antiquark splitting
-                s = [spin_name(V[0].spin),spin_name(V[1].spin),spin_name(V[2].spin)]
+                    # getting the electric charge right
+                    if V[0].charge != V[1].charge+V[2].charge :
+                        if V[0].pdg_code*V[1].pdg_code < 0 :
+                            if V[0].pdg_code > 0 :
+                                V[1] = antiparticle(FR,V[1])
+                            else :
+                                V[0] = antiparticle(FR,V[0])
+                        elif V[0].pdg_code*V[2].pdg_code < 0 :
+                            if V[0].pdg_code > 0 :
+                                V[2] = antiparticle(FR,V[2])
+                            else :
+                                V[0] = antiparticle(FR,V[0])
+                    if V[0].charge != V[1].charge+V[2].charge :
+                        if abs(V[0].charge-V[1].charge-V[2].charge) < 1e-10 :
+                            pass
+                        else :
+                            continue
 
-                if SPname not in done_splitting_EW and V[3].imag!=0.:
-                    done_splitting_EW.append(SPname)
-                    splitname = '{name}SplitFnEW'.format(name=SPname)
-                    sudname = '{name}SudakovEW'.format(name=SPname)
-                    p0name, p1name, p2name = split_name(V,True)
-                    splittings.append(
+                    # deal with FCNC inducing splittings
+                    if not allow_fcnc :
+                        if isQuark(V[0]) and isQuark(V[1]) and isScalar(V[2]) and\
+                           V[2].charge==0. and V[0].pdg_code!=V[1].pdg_code :
+                            print("Omitting",V[0],"->",V[1],",",V[2], "FCNC-inducing splitting.",\
+                                 "Use --allow-fcnc flag if you wish to keep this.")
+                            continue
+
+                    # set up the splitting
+                    SPname = split_name(V,False)
+                    # no scalar > quark, antiquark splitting
+                    s = [spin_name(V[0].spin),spin_name(V[1].spin),spin_name(V[2].spin)]
+
+                    if SPname not in done_splitting_EW and V[3].imag!=0.:
+                        done_splitting_EW.append(SPname)
+                        splitname = '{name}SplitFnEW'.format(name=SPname)
+                        sudname = '{name}SudakovEW'.format(name=SPname)
+                        p0name, p1name, p2name = split_name(V,True)
+                        splittings.append(
 """
 create Herwig::{s0}{s1}{s2}EWSplitFn {name}
 set {name}:InteractionType EW
@@ -444,59 +544,12 @@ cp /Herwig/Shower/SudakovCommon {sudname}
 set {sudname}:SplittingFunction {name}
 set {sudname}:Alpha /Herwig/Shower/AlphaEW
 do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {sudname}
-""".format(s0=s[0],s1=s[1],s2=s[2],name=splitname,p0=p0name,p1=p1name,p2=p2name,sudname=sudname,i=V[3].imag)
+""".format(s0=s[0],s1=s[1],s2=s[2],name=splitname,p0=p0name,\
+          p1=p1name,p2=p2name,sudname=sudname,i=V[3].imag)
                     )
         except SkipMe:
             pass
 
-        # BSM splitting functions
-#         try:
-#             Vertices = sort_vertices(FR,str(p.name),3)
-#             pSplittings = sort_splittings(FR,Vertices,p)
-#             for V in pSplittings :
-#                 # do not include QED splittings
-#                 if V[1].pdg_code == 22 or V[2].pdg_code == 22 :
-#                     continue
-#                 # do not include QCD splittings
-#                 if V[1].pdg_code == 21 or V[2].pdg_code == 21 :
-#                     continue
-#                 # check if splitting and not decay
-#                 m = extract_mass(FR,V)
-#                 for i in range(len(m)) :
-#                     if isinstance(m[i], complex) :
-#                         m[i] = m[i].real
-#                 if m[0] > m[1] + m[2] :
-#                     continue
-#
-#                 # set up the splitting
-#                 SPname = split_name(V,False)
-#                 # no scalar > quark, antiquark splitting
-#                 s = [spin_name(V[0].spin),spin_name(V[1].spin),spin_name(V[2].spin)]
-#                 if s == ['Zero', 'Half', 'Half'] :
-#                     continue
-#
-#                 if V[0].charge+V[1].charge+V[2].charge != 0.0 :
-#                     print("Warning: charge violation in vertex", Splitname(V,True))
-#                     continue
-#
-#                 if SPname not in done_splitting_EW:
-#                     done_splitting_EW.append(SPname)
-#                     splitname = '{name}SplitFnEW'.format(name=SPname)
-#                     sudname = '{name}SudakovEW'.format(name=SPname)
-#                     p0name, p1name, p2name = split_name(V,True)
-#                     splittings.append(
-# """
-# create Herwig::{s0}{s1}{s2}SplitFn {name}
-# set {name}:InteractionType EW
-# set {name}:ColourStructure EW
-# cp /Herwig/Shower/SudakovCommon {sudname}
-# set {sudname}:SplittingFunction {name}
-# set {sudname}:Alpha /Herwig/Shower/AlphaEW
-# do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {sudname}
-# """.format(s0=s[0],s1=s[1],s2=s[2],name=splitname,p0=p0name,p1=p1name,p2=p2name,sudname=sudname)
-#                     )
-#         except SkipMe:
-#             pass
 
         if p.charge == 0 and p.color == 1 and p.spin == 1 and not (p.pdg_code == 25 and hw_higgs) :
             if(check_effective_vertex(FR,p,21)) :

@@ -178,6 +178,8 @@ bool ZeroZeroZeroEWSplitFn::accept(const IdList &ids) const {
     return false;
   if(ids[0]->mass()==0.*GeV)
     return false;
+  if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
+    return false;
   if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin0 && ids[2]->iSpin()==PDT::Spin0)
     return true;
   else
