@@ -585,7 +585,7 @@ int HadronSpectrum::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
   }
   return sign;
 }
-
+/*
 PDPtr HadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
     long id1 = par1->id();
     long id2 = par2->id();
@@ -593,7 +593,7 @@ PDPtr HadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
     long idnew = makeDiquarkID(id1,id2, pspin);
     return getParticleData(idnew);
 }
-
+*/
 bool HadronSpectrum::canBeMeson(tcPDPtr par1,tcPDPtr par2) const {
   assert(par1 && par2);
   long id1 = par1->id();

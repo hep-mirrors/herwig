@@ -176,6 +176,14 @@ public:
    */
   static void Init();
 
+  /**
+   * Return the particle data of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
