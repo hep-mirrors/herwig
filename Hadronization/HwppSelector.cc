@@ -199,7 +199,6 @@ double HwppSelector::baryonWeight(long id) const {
 std::tuple<bool,bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
   useMe();
   std::tuple<bool,bool,bool> output(true,true,true);
-  useMe();
   if(_mode ==1) {
     if(UseRandom::rnd() > 1./(1.+_pwtDIquark) && cluMass > massLightestBaryonPair(par1,par2)) {
       std::get<0>(output)  = false;

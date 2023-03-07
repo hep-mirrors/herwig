@@ -65,8 +65,7 @@ public:
    * It also checks if the cluster is a beam cluster, that is if
    * at least one of its components is a beam remnant.
    */
-  ClusterVector formClusters(const PVector & partons) 
-   ;
+  ClusterVector formClusters(const PVector & partons);
 
   /**
    * Reduces three component clusters into two components.
@@ -77,8 +76,14 @@ public:
    * (quark,diquark) or (antiquark,antidiquark), by a random drawing.
    * This could be eliminated or changed in the future.
    */
-  void reduceToTwoComponents(ClusterVector&) 
-   ;
+  void reduceToTwoComponents(ClusterVector&);
+
+  /**
+   * Return the hadron spectrum
+   */
+  Ptr<HadronSpectrum>::tptr spectrum() const {
+    return _hadronSpectrum;
+  }
 
 public:
 

@@ -5,6 +5,7 @@
 //
 
 #include "HadronSpectrum.h"
+#include "ClusterHadronizationHandler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -45,7 +46,6 @@ HadronSpectrum::~HadronSpectrum() {}
 
 void HadronSpectrum::doinit() {
   Interfaced::doinit();
-
   // construct the hadron tables
   constructHadronTable();
   // lightest members (hadrons)
@@ -67,12 +67,12 @@ void HadronSpectrum::doinit() {
 
 void HadronSpectrum::persistentOutput(PersistentOStream & os) const {
   os << _table << _partons << _forbidden
-     << belowThreshold_ << _repwt << _pwt;
+     << belowThreshold_ << _repwt << _pwt << lightestHadrons_;
 }
 
 void HadronSpectrum::persistentInput(PersistentIStream & is, int) {
   is >> _table >> _partons >> _forbidden
-     >> belowThreshold_ >> _repwt >> _pwt;
+     >> belowThreshold_ >> _repwt >> _pwt >> lightestHadrons_;
 }
 
 

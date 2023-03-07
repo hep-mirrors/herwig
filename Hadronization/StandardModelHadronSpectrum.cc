@@ -26,11 +26,10 @@
 using namespace Herwig;
 
 namespace {
-
   bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
-  
+
   /**
    * Return true if the particle pointer corresponds to a diquark 
    * or anti-diquark carrying b flavour; false otherwise.
@@ -105,9 +104,8 @@ void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix 
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
-     << _sngWt << _decWt << _repwt << _pwt
-     << _limBottom << _limCharm << _limExotic
-     << _sngWt << _decWt;
+     << _sngWt << _decWt << _repwt
+     << _limBottom << _limCharm << _limExotic;
 }
 
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
@@ -117,9 +115,8 @@ void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
-     >> _sngWt >> _decWt >> _repwt >> _pwt
-     >> _limBottom >> _limCharm >> _limExotic
-     >> _sngWt >> _decWt ;
+     >> _sngWt >> _decWt >> _repwt
+     >> _limBottom >> _limCharm >> _limExotic;
 }
 
 
@@ -422,6 +419,8 @@ double StandardModelHadronSpectrum::mixingStateWeight(long id) const {
 }
 
 void StandardModelHadronSpectrum::doinit() {
+  HadronSpectrum::doinit();
+
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -452,10 +451,7 @@ void StandardModelHadronSpectrum::doinit() {
     _repwt[2][2][ix]=_weight3D2[ix];
   for( int ix=0;ix<max(int(_weight3D3.size()),int(Nmax));++ix)
     _repwt[2][3][ix]=_weight3D3[ix];
-  // weights for the different quarks etc
-  for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    _pwt[_partons[ix]->id()]=1.;
-  }
+
   // find the maximum
   map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess); 
@@ -463,7 +459,6 @@ void StandardModelHadronSpectrum::doinit() {
   for(pit=_pwt.begin(); pit!=_pwt.end(); ++pit) {
     pit->second/=pmax;
   }
-  HadronSpectrum::doinit();
 }
 
 void StandardModelHadronSpectrum::constructHadronTable() {

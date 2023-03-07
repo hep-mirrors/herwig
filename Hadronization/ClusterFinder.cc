@@ -409,7 +409,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     tcPDPtr dataDiquark  = _hadronSpectrum->makeDiquark(temp1,temp2);
     
     if(!dataDiquark) 
-      throw Exception() << "Could not make a diquark from"
+      throw Exception() << "Could not make a diquark from "
 			<< temp1->PDGName() << " and "
 			<< temp2->PDGName()
 			<< " in ClusterFinder::reduceToTwoComponents()"

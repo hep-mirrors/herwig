@@ -290,6 +290,9 @@ handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
   useMe();
   currentHandler_ = this;
+  for (auto iter : _clusterFinders) {
+     iter.second->spectrum()->setGenerator(currentHandler_->generator());
+  }
 
   PVector theList(tagged.begin(),tagged.end());
   

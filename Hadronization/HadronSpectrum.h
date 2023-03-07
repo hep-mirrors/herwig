@@ -424,6 +424,10 @@ public:
    */
   static void Init();
 
+  void setGenerator(tEGPtr generator) {
+    Interfaced::setGenerator(generator);
+  }
+
 protected:
 
   /** @name Standard Interfaced functions. */
