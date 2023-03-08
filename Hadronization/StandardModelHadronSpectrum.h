@@ -333,7 +333,7 @@ protected:
   virtual double specialQuarkWeight(double quarkWeight, long id,
             const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
     // special for strange
-    if(id == 3)
+    if(abs(id) == 3)
       return strangeWeight(cluMass,par1,par2);
     else
       return quarkWeight;

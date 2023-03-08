@@ -428,8 +428,6 @@ double StandardModelHadronSpectrum::mixingStateWeight(long id) const {
 }
 
 void StandardModelHadronSpectrum::doinit() {
-  HadronSpectrum::doinit();
-
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -468,6 +466,7 @@ void StandardModelHadronSpectrum::doinit() {
   for(pit=_pwt.begin(); pit!=_pwt.end(); ++pit) {
     pit->second/=pmax;
   }
+  HadronSpectrum::doinit();
 }
 
 void StandardModelHadronSpectrum::constructHadronTable() {
@@ -516,7 +515,7 @@ void StandardModelHadronSpectrum::constructHadronTable() {
     // Skip non-hadrons (susy particles, etc...)
     if(x3 == 0 || x2 == 0) continue;
     // Skip particles which are neither SM nor SUSY 
-    if(x7 >= 3) continue;
+    if(x7 >= 3 && x7 != 9) continue;
     int flav1,flav2;
     // meson
     if(x4 == 0) {

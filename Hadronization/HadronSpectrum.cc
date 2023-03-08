@@ -57,7 +57,7 @@ void HadronSpectrum::doinit() {
     }
   }
   // for debugging
-  if(Debug::level >= 10 ) 
+  if (Debug::level >= 10) 
     dumpTable(table());
 }
 
