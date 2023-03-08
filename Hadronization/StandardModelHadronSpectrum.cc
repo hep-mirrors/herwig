@@ -374,7 +374,7 @@ void StandardModelHadronSpectrum::Init() {
 }
 
 
-PDPtr HadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
+PDPtr StandardModelHadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
     long id1 = par1->id();
     long id2 = par2->id();
     long pspin = id1==id2 ? 3 : 1;
