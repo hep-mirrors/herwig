@@ -1,15 +1,13 @@
 #! /usr/bin/env python
 from __future__ import division
 from __future__ import print_function
-import os, sys, pprint, argparse, re, copy, warnings
+import os, sys, pprint, argparse, re, copy, glob
 from string import Template
-warnings.simplefilter(action='ignore', category=SyntaxWarning)
+from os import path
 
 # add path to the ufo conversion modules
 modulepath = os.path.join("@PKGLIBDIR@",'python')
 sys.path.append(modulepath)
-
-from ufo2peg import *
 
 # set up the option parser for command line input
 parser = argparse.ArgumentParser(
@@ -82,9 +80,140 @@ parser.add_argument(
 # get the arguments
 args = parser.parse_args()
 # convert model to python 3 if needed
+
+def convertToPython3(ufodir) :
+    # find all the python files
+    fNames=glob.glob(path.abspath(ufodir)+"/*.py")
+    mNames=[]
+    for i in range(0,len(fNames)) :
+        mNames.append(path.split(fNames[i])[-1].replace(".py",""))
+    # convert them
+    for fName in fNames :
+        convertFileToPython3(fName,mNames)
+
+def prepForConversion(ufodir) :
+    import os
+    path=os.path.abspath(ufodir)
+    if not os.path.isdir(path):
+        raise Exception( 'path to the UFO directory seems to be wrong!')
+    model_dir = path
+    text = open(os.path.join(model_dir, 'object_library.py')).read()
+    text = text.replace('.iteritems()', '.items()')
+    text = re.sub('raise (\w+)\s*,\s*["\']([^"]+)["\']','raise \g<1>("\g<2>")', text)
+    text = open(os.path.join(model_dir, 'object_library.py'),'w').write(text)
+    text = open(os.path.join(model_dir, '__init__.py')).read()
+    mod = False
+    to_check =  ['object_library', 'function_library']
+    for lib in to_check:
+        if 'import %s' % lib in text:
+            continue
+        mod = True
+        text = "import %s \n" % lib + text
+    if mod:
+        open(os.path.join(model_dir, '__init__.py'),'w').write(text)
+
+def convertFileToPython3(fName,names) :
+    output=""
+    inFile=open(fName)
+    line=inFile.readline()
+    isInit = "__init__.py" in fName
+    tNames=[]
+    for val in names : tNames.append(val)
+    while line :
+        # iteritems -> items
+        line=line.replace("iteritems","items")
+        # fix imports
+        if("import" in line) :
+            for val in names :
+                if("import %s" %val in line) :
+                    line=line.replace("import %s"  %val,
+                                      "from . import %s" %val)
+                    if(val in tNames) : tNames.remove(val)
+                if("from %s" %val in line) :
+                    line=line.replace("from %s"  %val,
+                                      "from .%s" %val)
+        # add brackets to print statements
+        if("print" in line) :
+            if line.strip()[0:5] == "print" :
+                line=line.strip("\n").replace("print","print(")+")\n"
+        output += line
+        line=inFile.readline()
+    inFile.close()
+    if(isInit) :
+        if "__init__" in tNames : tNames.remove("__init__")
+        temp=""
+        for val in tNames :
+            temp+= "from . import %s\n" % val
+        output = temp+output
+    with open(fName,'w') as dest:
+        dest.write(output)
+
 if(args.convert) :
     prepForConversion(args.ufodir)
     convertToPython3(args.ufodir)
+
+def load_parameters(FR):
+    if not os.path.isfile("FR_Parameters.py") :
+        file = open("FR_Parameters.py", "a")
+        header = \
+"""
+import cmath
+all_functions = []
+class Function(object):
+    def __init__(self, name, arguments, expression):
+        global all_functions
+        all_functions.append(self)
+
+        self.name = name
+        self.arguments = arguments
+        self.expr = expression
+    def __call__(self, *opt):
+        for i, arg in enumerate(self.arguments):
+            exec('%s = %s' % (arg, opt[i] ))
+        return eval(self.expr)
+complexconjugate = Function(name = 'complexconjugate',
+                            arguments = ('z',),
+                            expression = 'z.conjugate()')
+re = Function(name = 're',
+              arguments = ('z',),
+              expression = 'z.real')
+im = Function(name = 'im',
+              arguments = ('z',),
+              expression = 'z.imag')
+sec = Function(name = 'sec',
+             arguments = ('z',),
+             expression = '1./cmath.cos(z.real)')
+asec = Function(name = 'asec',
+             arguments = ('z',),
+             expression = 'cmath.acos(1./(z.real))')
+csc = Function(name = 'csc',
+             arguments = ('z',),
+             expression = '1./cmath.sin(z.real)')
+acsc = Function(name = 'acsc',
+             arguments = ('z',),
+             expression = 'cmath.asin(1./(z.real))')
+
+cot = Function(name = 'cot',
+               arguments = ('z',),
+               expression = '1./cmath.tan(z.real)')
+theta_function = Function(name = 'theta_function',
+             arguments = ('x','y','z'),
+             expression = 'y if x else z')
+cond = Function(name = 'cond',
+                arguments = ('condition','ExprTrue','ExprFalse'),
+                expression = '(ExprTrue if condition==0.0 else ExprFalse)')
+reglog = Function(name = 'reglog',
+                arguments = ('z'),
+                expression = '(0.0 if z==0.0 else cmath.log(z.real))')
+"""
+        file.write(header)
+        for par in FR.all_parameters :
+            name  = par.name
+            value = par.value
+            file.write(name+" = "+str(value)+"\n")
+        file.close()
+        print("Successfully loaded model parameters. Please remember to execute this command again, in case the parameters are altered.")
+
 # import the model
 try :
     import importlib,importlib.util
@@ -92,6 +221,7 @@ try :
         path,mod = os.path.split(os.path.abspath(args.ufodir))
         spec = importlib.util.spec_from_file_location(mod,os.path.join(os.path.abspath(args.ufodir),"__init__.py"))
         FR = spec.loader.load_module()
+        load_parameters(FR)
     except :
         print ("Could not load the UFO python module.\n",
                "This is usually because you are using python3 and the UFO model is in python2.\n",
@@ -103,9 +233,12 @@ except :
     import imp
     path,mod = os.path.split(os.path.abspath(args.ufodir))
     FR = imp.load_module(mod,*imp.find_module(mod,[path]))
+    load_parameters(FR)
 
 ##################################################
 ##################################################
+
+from ufo2peg import *
 
 # get the Model name from the arguments
 modelname = args.name

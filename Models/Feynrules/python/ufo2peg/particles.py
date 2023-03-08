@@ -2,6 +2,7 @@ from __future__ import print_function
 from string import Template
 import os
 import numpy as np
+from FR_Parameters import *
 
 # ignore these, they're in Hw++ already # TODO reset Hw++ settings instead
 SMPARTICLES = {
@@ -129,77 +130,13 @@ def sort_vertices(FR,pIn,dim):
             possibleVertices.append(V)
     return possibleVertices
 
-def load_parameters(FR):
-    if os.path.isfile("FR_Parameters.py") :
-        return True
-    else :
-        file = open("FR_Parameters.py", "a")
-        header = \
-"""
-import cmath
-all_functions = []
-class Function(object):
-    def __init__(self, name, arguments, expression):
-        global all_functions
-        all_functions.append(self)
 
-        self.name = name
-        self.arguments = arguments
-        self.expr = expression
-    def __call__(self, *opt):
-        for i, arg in enumerate(self.arguments):
-            exec('%s = %s' % (arg, opt[i] ))
-        return eval(self.expr)
-complexconjugate = Function(name = 'complexconjugate',
-                            arguments = ('z',),
-                            expression = 'z.conjugate()')
-re = Function(name = 're',
-              arguments = ('z',),
-              expression = 'z.real')
-im = Function(name = 'im',
-              arguments = ('z',),
-              expression = 'z.imag')
-sec = Function(name = 'sec',
-             arguments = ('z',),
-             expression = '1./cmath.cos(z.real)')
-asec = Function(name = 'asec',
-             arguments = ('z',),
-             expression = 'cmath.acos(1./(z.real))')
-csc = Function(name = 'csc',
-             arguments = ('z',),
-             expression = '1./cmath.sin(z.real)')
-acsc = Function(name = 'acsc',
-             arguments = ('z',),
-             expression = 'cmath.asin(1./(z.real))')
-
-cot = Function(name = 'cot',
-               arguments = ('z',),
-               expression = '1./cmath.tan(z.real)')
-theta_function = Function(name = 'theta_function',
-             arguments = ('x','y','z'),
-             expression = 'y if x else z')
-cond = Function(name = 'cond',
-                arguments = ('condition','ExprTrue','ExprFalse'),
-                expression = '(ExprTrue if condition==0.0 else ExprFalse)')
-reglog = Function(name = 'reglog',
-                arguments = ('z'),
-                expression = '(0.0 if z==0.0 else cmath.log(z.real))')
-"""
-        file.write(header)
-        for par in FR.all_parameters :
-            name  = par.name
-            value = par.value
-            file.write(name+" = "+str(value)+"\n")
-        file.close()
-        return True
 
 # extracts all possible splittings for incoming particle p
 def sort_splittings(FR,Vertices,p):
     pSplittings = []
     for V in Vertices:
         # calculate the total coupling value for this splitting
-        if load_parameters(FR) :
-            from FR_Parameters import *
         coup = V.couplings
         keys = coup.keys()
         coupling_value = 0.
@@ -236,8 +173,6 @@ def sort_splittings(FR,Vertices,p):
     return pSplittings
 
 def extract_mass(FR,Vertex) :
-    if load_parameters(FR) :
-        from FR_Parameters import *
     m = [0.,0.,0.]
     m[0] = Vertex[0].mass.value
     m[1] = Vertex[1].mass.value
