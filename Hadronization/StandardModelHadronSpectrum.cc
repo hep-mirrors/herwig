@@ -415,7 +415,7 @@ double StandardModelHadronSpectrum::mixingStateWeight(long id) const {
   case ParticleID::f_2:      return 0.5*probabilityMixing(_f2mix   ,2);
   case 10335:                return 0.5*probabilityMixing(_eta2mix ,1);
   case 10225:		     return 0.5*probabilityMixing(_eta2mix ,2);
-    // missing phi member of 13D1 should be here
+  case 30333:		     return 0.5*probabilityMixing(_omhmix  ,1);
   case 30223:		     return 0.5*probabilityMixing(_omhmix  ,2);
   case 337:                  return 0.5*probabilityMixing(_ph3mix  ,1);
   case 227:		     return 0.5*probabilityMixing(_ph3mix  ,2);
