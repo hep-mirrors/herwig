@@ -297,6 +297,11 @@ protected:
 protected:
 
   /**
+   *  Dimension used to calculate phase space weights
+   */
+  double dim() const {return _dim;}
+
+  /**
    *  Access to soft-cluster parameter
    */
   Energy btClM() const {return _btClM;}
@@ -412,6 +417,29 @@ private:
   inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
     return ! spectrum()->canBeHadron(p1->dataPtr(), p2->dataPtr());
   }
+
+  /**
+   * Claculate a veto for the phase space weight
+   */
+  inline bool phaseSpaceVeto(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			     const Energy m, const Energy m1, const Energy m2) {
+    double M_temp = Mc/GeV;
+    double M1_temp = Mc1/GeV;
+    double M2_temp = Mc2/GeV;
+    double m_temp = m/GeV;
+    double m1_temp = m1/GeV;
+    double m2_temp = m2/GeV;
+    double lam1 = sqrt((M1_temp-m1_temp-m_temp)*(M1_temp-m1_temp+m_temp)*(M1_temp+m1_temp+m_temp)*(M1_temp+m1_temp-m_temp));
+    double lam2 = sqrt((M2_temp-m2_temp-m_temp)*(M2_temp-m2_temp+m_temp)*(M2_temp+m2_temp+m_temp)*(M2_temp+m2_temp-m_temp));
+    double lam3 = sqrt((M_temp-M1_temp-M2_temp)*(M_temp-M1_temp+M2_temp)*(M_temp+M1_temp+M2_temp)*(M_temp+M1_temp-M2_temp));
+    double ratio;
+    double PSweight = pow(lam1*lam2*lam3,_dim-3.)*pow(M1_temp*M2_temp,2.-_dim);
+    double overEstimate =pow(M_temp,4.*_dim-14.);
+    ratio = PSweight/overEstimate;
+    assert (ratio >= 0);
+    assert (ratio <= 1);
+    return (UseRandom::rnd()>ratio);
+  }
   
   /**
    * A pointer to a Herwig::HadronSpectrum object for generating hadrons.
@@ -443,9 +471,20 @@ private:
   map<long,double> _pSplitHeavy;
   double _pSplitExotic;
 
-
-  // weights for alternaive cluster fission
+  /**
+   * Weights for alternative cluster fission
+   */
   map<long,double> _fissionPwt;
+
+  /**
+   * Include phase space weights
+   */
+  bool _phaseSpaceWeights;
+
+  /**
+   * Dimensionality of phase space weight
+   */
+  double _dim;
 
   /**
   * Flag used to determine between normal cluster fission and alternative cluster fission

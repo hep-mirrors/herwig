@@ -38,6 +38,8 @@ ClusterFissioner::ClusterFissioner() :
   _clPowExotic(2.0),
   _pSplitLight(1.0),
   _pSplitExotic(1.0),
+  _phaseSpaceWeights(false),
+  _dim(4),
   _fissionCluster(0),
   _kinematicThresholdChoice(0),
   _btClM(1.0*GeV),
@@ -67,7 +69,7 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _fissionCluster << _fissionPwt
      << ounit(_btClM,GeV)
      << _iopRem  << ounit(_kappa, GeV/meter)
-     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
+     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure << _dim << _phaseSpaceWeights
      << _hadronSpectrum
      << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
 }
@@ -80,7 +82,7 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _fissionCluster >> _fissionPwt
      >> iunit(_btClM,GeV) >> _iopRem
      >> iunit(_kappa, GeV/meter)
-     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
+     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure >> _dim >> _phaseSpaceWeights
      >> _hadronSpectrum
      >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
 }
@@ -281,6 +283,26 @@ void ClusterFissioner::Init() {
      "Set dynamic kinematic thresholds for cluster splittings.",
      1);
 
+  
+  static Switch<ClusterFissioner,bool> interfacePhaseSpaceWeights
+    ("PhaseSpaceWeights",
+     "Include phase space weights.",
+     &ClusterFissioner::_phaseSpaceWeights, false, false, false);
+  static SwitchOption interfacePhaseSpaceWeightsYes
+    (interfacePhaseSpaceWeights,
+     "Yes",
+     "Do include the effect of cluster fission phase space",
+     true);
+  static SwitchOption interfacePhaseSpaceWeightsNo
+    (interfacePhaseSpaceWeights,
+     "No",
+     "Do not include the effect of cluster phase space",
+     false);
+
+  static Parameter<ClusterFissioner,double>
+    interfaceDim ("Dimension","Dimension in which phase space weights are calculated",
+		  &ClusterFissioner::_dim, 0, 4.0, 0.0, 10.0,false,false,false);
+
 }
 
 tPVector ClusterFissioner::fission(ClusterVector & clusters, bool softUEisOn) {
@@ -478,6 +500,11 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
         bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
 
         if( C1 || C2 || C3 ) continue;
+      }
+
+      if ( _phaseSpaceWeights ) {
+	if ( phaseSpaceVeto(Mc,Mc1,Mc2,m,m1,m2) )
+	  continue;
       }
 
       /**************************
@@ -679,6 +706,12 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     Mc1 = res.first; Mc2 = res.second;
 
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
+
+    if ( _phaseSpaceWeights ) {
+      if ( phaseSpaceVeto(mmax,Mc1,Mc2,m,m1,m2) )
+	continue;
+    }
+    
     // check if need to force meson clster to hadron
     toHadron = _hadronSpectrum->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
     if(toHadron) { Mc1 = toHadron->mass(); pClu1.setMass(Mc1); }
