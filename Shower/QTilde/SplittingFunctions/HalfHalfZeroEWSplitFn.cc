@@ -62,7 +62,7 @@ void HalfHalfZeroEWSplitFn::doinit() {
 void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const {
   if(ids[2]->iSpin()==PDT::Spin0) {
     if(_couplingValue!=0) {
-      double e  = sqrt(4.*Constants::pi*generator()->standardModel()
+      double e = sqrt(4.*Constants::pi*generator()->standardModel()
                 ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
       // a factor e is factored out since its already accounted for
       gH = _couplingValue/e;
@@ -108,13 +108,14 @@ double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
     mq0 = ids[0]->mass();
     mq1 = ids[1]->mass();
     mH  = ids[2]->mass();
+    val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   }
   else { // to assure the particle mass in non-zero
     mq0 = getParticleData(abs(ids[0]->id()))->mass();
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
     mH  = getParticleData(ids[2]->id())->mass();
+    val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   }
-  val += (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   val *= sqr(gH);
   return colourFactor(ids)*val;
 }
@@ -138,13 +139,14 @@ double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
     mq0 = ids[0]->mass();
     mq1 = ids[1]->mass();
     mH  = ids[2]->mass();
+    val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
   }
-  else { // to assure the particle mass in non-zero
+  else { // to enssure the particle mass in non-zero
     mq0 = getParticleData(abs(ids[0]->id()))->mass();
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
     mH  = getParticleData(ids[2]->id())->mass();
+    val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
   }
-  val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z);
   return val;
 }
 
@@ -198,7 +200,7 @@ bool HalfHalfZeroEWSplitFn::accept(const IdList &ids) const {
   else if(ids[2]->iSpin()==PDT::Spin0 && _couplingValue!=0) {
     if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
       return false;
-    if((abs(ids[0]->id())>=3 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=3 && abs(ids[1]->id())<=6))
+    if((abs(ids[0]->id())>=1 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=1 && abs(ids[1]->id())<=6))
       return true;
   }
   return false;
