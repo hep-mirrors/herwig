@@ -56,6 +56,7 @@ void HalfHalfZeroEWSplitFn::doinit() {
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   ghqq_ = 1./sqrt(4.*sw2);
+
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
 
@@ -108,14 +109,13 @@ double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
     mq0 = ids[0]->mass();
     mq1 = ids[1]->mass();
     mH  = ids[2]->mass();
-    val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   }
   else { // to assure the particle mass in non-zero
     mq0 = getParticleData(abs(ids[0]->id()))->mass();
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
-    mH  = getParticleData(ids[2]->id())->mass();
-    val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
+    mH  = getParticleData(abs(ids[2]->id()))->mass();
   }
+  val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
   val *= sqr(gH);
   return colourFactor(ids)*val;
 }
@@ -139,14 +139,13 @@ double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
     mq0 = ids[0]->mass();
     mq1 = ids[1]->mass();
     mH  = ids[2]->mass();
-    val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
   }
   else { // to enssure the particle mass in non-zero
     mq0 = getParticleData(abs(ids[0]->id()))->mass();
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
     mH  = getParticleData(ids[2]->id())->mass();
-    val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
   }
+  val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
   return val;
 }
 
@@ -230,7 +229,7 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   //get masses
   Energy mq0 = getParticleData(abs(ids[0]->id()))->mass();
   Energy mq1 = getParticleData(abs(ids[1]->id()))->mass();
-  Energy mH  = getParticleData(ids[2]->id())->mass();
+  Energy mH  = getParticleData(abs(ids[2]->id()))->mass();
   double gH(0.);
   Energy2 tC = t/(z*(1-z));
   getCouplings(gH,ids,tC);

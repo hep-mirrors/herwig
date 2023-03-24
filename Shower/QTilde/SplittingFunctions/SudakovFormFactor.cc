@@ -377,7 +377,6 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
     }
     while(PSRew || SplitRew || alphaRew);
   }
-  if(ids[0]->id()==25)
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
 
