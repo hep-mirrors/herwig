@@ -32,7 +32,13 @@
 
 using namespace Herwig;
 
+IBPtr DynamicPartonSplitter::clone() const {
+  return new_ptr(*this);
+}
 
+IBPtr DynamicPartonSplitter::fullclone() const {
+  return new_ptr(*this);
+}
 
 void DynamicPartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _findProgenitor << _restrictZ << _dynamicGluonMassGenerator;

@@ -50,11 +50,12 @@ public:
    *  Default constructor
    */
   DynamicPartonSplitter() :
-  _restrictZ(0),
-  _findProgenitor(0)
+    PartonSplitter(),
+    _findProgenitor(0),
+    _restrictZ(0)
   {}
-
-
+ 
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -97,20 +98,6 @@ protected:
    */
    virtual IBPtr fullclone() const;
   //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit(){
-  };
-
-//@}
 
 private:
 

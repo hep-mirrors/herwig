@@ -50,11 +50,12 @@ public:
    *  Default constructor
    */
   PartonSplitter() :
-	 _gluonDistance(ZERO),
-	 _splitGluon(0),
-	 _enhanceSProb(0),
-	 _m0(10.*GeV),
-	 _massMeasure(0) {}
+    Interfaced(),
+    _gluonDistance(ZERO),
+    _splitGluon(0),
+    _enhanceSProb(0),
+    _m0(10.*GeV),
+    _massMeasure(0) {}
 
   /**
    * This method does the nonperturbative splitting of:

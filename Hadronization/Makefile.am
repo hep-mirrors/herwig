@@ -8,7 +8,6 @@ ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.fh \
 ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.fh \
-DynamicClusterFissioner.cc DynamicClusterFissioner.h \
 DynamicGluonMassGenerator.h DynamicGluonMassGenerator.cc \
 DynamicPartonSplitter.h DynamicPartonSplitter.cc \
 GluonMassGenerator.h GluonMassGenerator.cc \
