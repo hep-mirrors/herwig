@@ -131,6 +131,7 @@ void PartnerFinder::Init() {
 void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 					      const bool isDecayCase,
 					      ShowerInteraction type,
+					      bool darkInteraction,
 					      const bool setPartners) {
   // clear the existing partners
   for(ShowerParticleVector::const_iterator cit = particles.begin();
@@ -145,6 +146,9 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
   else if(type==ShowerInteraction::EW) {
     setInitialEWEvolutionScales(particles,isDecayCase,false);
   }
+  else if(type==ShowerInteraction::DARK) {
+     setInitialDARKEvolutionScales(particles,isDecayCase,setPartners);
+  }
   else if(type==ShowerInteraction::QEDQCD) {
     setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
     setInitialQEDEvolutionScales(particles,isDecayCase,false);
@@ -156,6 +160,9 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
   }
   else
     assert(false);
+  if (darkInteraction) {
+    setInitialDARKEvolutionScales(particles,isDecayCase,setPartners);
+  }
   // \todo EW scales here
   // print out for debugging
   if(Debug::level>=10) {
@@ -201,6 +208,7 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
   for ( const auto & sp : particles ) {
     // Skip colourless particles
     if(!sp->data().coloured()) continue;
+    if(abs(sp->id())==90 && abs(sp->id())==91 && abs(sp->id())==92) continue;
     // find the partners
     auto partners = findQCDPartners(sp,particles);
     // must have a partner
@@ -292,6 +300,7 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
   for(const auto & sp : particles) {
     // not charged or photon continue
     if(!sp->dataPtr()->charged() && sp->dataPtr()->id()!=ParticleID::gamma) continue;
+    if(abs(sp->id())==90 || abs(sp->id())==91 || abs(sp->id())==92) continue;
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(sp,particles,isDecayCase);
     if(partners.empty()) {
@@ -462,36 +471,97 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
   return partners;
 }
 
-vector< pair<double, tShowerParticlePtr> >
-PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
-			       const ShowerParticleVector & particles,
-			       const bool isDecayCase) {
-  vector< pair<double, tShowerParticlePtr> > partners;
-  const double pcharge =
-    particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
-  vector< pair<double, tShowerParticlePtr> > photons;
+vector< pair<ShowerPartnerType, tShowerParticlePtr> >
+PartnerFinder::findDARKPartners(tShowerParticlePtr particle,
+                 const ShowerParticleVector &particles) {
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners;
   for (const auto & sp : particles) {
-    if (particle == sp) continue;
-    if (sp->id()==ParticleID::gamma) photons.push_back(make_pair(1.,sp));
-    if (!sp->data().charged() ) continue;
-    double charge = pcharge*double((sp)->data().iCharge());
-    if ( FS(particle) != FS(sp) ) charge *=-1.;
-    if ( QEDPartner_ != 0 && !isDecayCase ) {
-      // only include II and FF as requested
-      if ( QEDPartner_ == 1 && FS(particle) != FS(sp) )
-	continue;
-      // only include IF is requested
-      else if (QEDPartner_ == 2 && FS(particle) == FS(sp) )
-	continue;
+    if(!sp->data().coloured() || particle==sp) continue;
+    if(abs(sp->id())!=90 && abs(sp->id())!=91 && abs(sp->id())!=92) continue;
+    // one initial-state and one final-state particle
+    if(FS(particle) != FS(sp)) {
+      // loop over all the colours of both particles
+      for(size_t ix=0; ix<CLSIZE(particle); ++ix) {
+        for(size_t jx=0; jx<CLSIZE(sp); ++jx) {
+            if((CL(particle,ix) && CL(particle,ix)==CL(sp,jx))) {
+              partners.push_back({ ShowerPartnerType::DARKColourLine, sp });
+            }
+        }
+      }//loop over all the anti-colours of both particles
+      for(size_t ix=0; ix<ACLSIZE(particle); ++ix) {
+	for(size_t jx=0; jx<ACLSIZE(sp); ++jx) {
+	  if((ACL(particle,ix) && ACL(particle,ix)==ACL(sp,jx))) {
+	    partners.push_back({ ShowerPartnerType::DARKAntiColourLine, sp });
+	  }
+	}
+      }
     }
-    if (particle->id()==ParticleID::gamma) charge = -abs(charge);
-    // only keep positive dipoles
-    if (charge<0.) partners.push_back({ -charge, sp });
+    // two initial-state or two final-state particles
+    else {
+      //loop over the colours of the first particle and the anti-colours of the other
+      for(size_t ix=0; ix<CLSIZE(particle); ++ix){
+	for(size_t jx=0; jx<ACLSIZE(sp); ++jx){
+	  if(CL(particle,ix) && CL(particle,ix)==ACL(sp,jx)) {
+	    partners.push_back({ ShowerPartnerType::DARKColourLine, sp });
+	  }
+	}
+      }
+      //loop over the anti-colours of the first particle and the colours of the other
+      for(size_t ix=0; ix<ACLSIZE(particle); ++ix){
+	for(size_t jx=0; jx<CLSIZE(sp); jx++){
+	  if(ACL(particle,ix) && ACL(particle,ix)==CL(sp,jx)) {
+	    partners.push_back({ ShowerPartnerType::DARKAntiColourLine, sp });
+	  }
+	}
+      }
+    }
   }
-  if (particle->id()==ParticleID::gamma && partners.empty())
-    return photons;
+  // if we haven't found any partners look for RPV
+  if (partners.empty()) {
+    // special for RPV
+    tColinePtr col = CL(particle);
+    if(FS(particle)&&col&&col->sourceNeighbours().first) {
+      tColinePair cpair = col->sourceNeighbours();
+      for(const auto & sp : particles) {
+	if(( FS(sp) && ( CL(sp) == cpair.first || CL(sp)  == cpair.second))||
+	   (!FS(sp) && (ACL(sp) == cpair.first || ACL(sp) == cpair.second ))) {
+	  partners.push_back({ ShowerPartnerType::DARKColourLine, sp });
+	}
+      }
+    }
+    else if(col&&col->sinkNeighbours().first) {
+      tColinePair cpair = col->sinkNeighbours();
+      for(const auto & sp : particles) {
+	if(( FS(sp) && (ACL(sp) == cpair.first || ACL(sp)  == cpair.second))||
+	   (!FS(sp) && ( CL(sp) == cpair.first ||  CL(sp) == cpair.second))) {
+	  partners.push_back({ ShowerPartnerType::DARKColourLine, sp });
+	}
+      }
+    }
+    col = ACL(particle);
+    if(FS(particle)&&col&&col->sinkNeighbours().first) {
+      tColinePair cpair = col->sinkNeighbours();
+      for(const auto & sp : particles) {
+	if(( FS(sp) && (ACL(sp) == cpair.first || ACL(sp)  == cpair.second))||
+	   (!FS(sp) && ( CL(sp) == cpair.first ||  CL(sp) == cpair.second ))) {
+	  partners.push_back({ ShowerPartnerType::DARKAntiColourLine, sp });
+	}
+      }
+    }
+    else if(col&&col->sourceNeighbours().first) {
+      tColinePair cpair = col->sourceNeighbours();
+      for(const auto & sp : particles) {
+	if(( FS(sp) && ( CL(sp) == cpair.first || CL(sp) == cpair.second))||
+	   (!FS(sp) && (ACL(sp) == cpair.first ||ACL(sp) == cpair.second))) {
+	  partners.push_back({ ShowerPartnerType::DARKAntiColourLine, sp });
+	}
+      }
+    }
+  }
+  // return the partners
   return partners;
 }
+
 
 void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &particles,
 						const bool isDecayCase,
@@ -561,6 +631,77 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
   }
 }
 
+
+void PartnerFinder::setInitialDARKEvolutionScales(const ShowerParticleVector &particles,
+                                                 const bool isDecayCase,
+                                                 const bool setPartners) {
+	for ( const auto & sp : particles ) {
+		  // Skip colourless particles
+      if(!sp->data().coloured()) continue;
+      if(abs(sp->id())!=90 && abs(sp->id())!=91 && abs(sp->id())!=92) continue;
+			// find the partners
+      auto partners = findDARKPartners(sp,particles);
+      // must have a partner
+      if(partners.empty()) {
+				throw Exception() << "`Failed to make colour connections in "
+                          << "PartnerFinder::setDARKInitialEvolutionScales"
+                          << *sp
+                          << Exception::eventerror;
+      }
+      // Calculate the evolution scales for all possible pairs of of particles
+			vector<pair<Energy,Energy> > scales;
+			int position = -1;
+			for(size_t ix=0; ix< partners.size(); ++ix) {
+					scales.push_back(
+					  calculateInitialEvolutionScales(
+					      ShowerPPair(sp, partners[ix].second),
+							  isDecayCase
+						)
+					);
+					if (!setPartners && partners[ix].second) position = ix;
+			}
+			assert(setPartners || position >= 0);
+
+			// set partners if required
+			if (setPartners) {
+					// random choice of partner
+					position = UseRandom::irnd(partners.size());
+          // set the evolution partner
+          sp->partner(partners[position].second);
+			}
+
+      // primary partner set, set the others and do the scale
+		  for(size_t ix=0; ix<partners.size(); ++ix) {
+          sp->addPartner(
+             ShowerParticle::EvolutionPartner(
+              partners[ix].second,
+					    1.,
+					    partners[ix].first,
+					    scales[ix].first
+					  )
+					);
+      }
+
+      // set scales for all interactions to that of the partner, default
+      Energy scale = scales[position].first;
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+        if(partners[ix].first==ShowerPartnerType::DARKColourLine) {
+	  			sp->scales().DARK_c =
+	    			sp->scales().DARK_c_noAO =
+	    			(scaleChoice_==0 ? scale : scales[ix].first);
+				}
+				else if(partners[ix].first==ShowerPartnerType::DARKAntiColourLine) {
+	  			sp->scales().DARK_ac =
+	    			sp->scales().DARK_ac_noAO =
+	    			(scaleChoice_==0 ? scale : scales[ix].first);
+				}
+				else assert(false);
+      }
+    }
+}
+
+
+
 vector< pair<double, tShowerParticlePtr> >
 PartnerFinder::findEWPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles,
@@ -573,6 +714,38 @@ PartnerFinder::findEWPartners(tShowerParticlePtr particle,
   }
   return partners;
 }
+
+vector< pair<double, tShowerParticlePtr> >
+PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
+			       const ShowerParticleVector & particles,
+			       const bool isDecayCase) {
+  vector< pair<double, tShowerParticlePtr> > partners;
+  const double pcharge =
+    particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
+  vector< pair<double, tShowerParticlePtr> > photons;
+  for (const auto & sp : particles) {
+    if (particle == sp) continue;
+    if (sp->id()==ParticleID::gamma) photons.push_back(make_pair(1.,sp));
+    if (!sp->data().charged() ) continue;
+    double charge = pcharge*double((sp)->data().iCharge());
+    if ( FS(particle) != FS(sp) ) charge *=-1.;
+    if ( QEDPartner_ != 0 && !isDecayCase ) {
+      // only include II and FF as requested
+      if ( QEDPartner_ == 1 && FS(particle) != FS(sp) )
+	continue;
+      // only include IF is requested
+      else if (QEDPartner_ == 2 && FS(particle) == FS(sp) )
+	continue;
+    }
+    if (particle->id()==ParticleID::gamma) charge = -abs(charge);
+    // only keep positive dipoles
+    if (charge<0.) partners.push_back({ -charge, sp });
+  }
+  if (particle->id()==ParticleID::gamma && partners.empty())
+    return photons;
+  return partners;
+}
+
 
 pair<Energy,Energy>
 PartnerFinder::calculateFinalFinalScales(

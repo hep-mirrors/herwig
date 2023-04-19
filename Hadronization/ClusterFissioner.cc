@@ -118,7 +118,7 @@ void ClusterFissioner::Init() {
 		    false,false,false);  
   static ParMap<ClusterFissioner,Energy> interfaceClMaxHeavy
     ("ClMaxHeavy",
-     "ClMax for heavy quarkls",
+     "ClMax for heavy quarks",
      &ClusterFissioner::_clMaxHeavy, GeV, -1, 3.35*GeV, ZERO, 10.0*GeV,
      false, false, Interface::upperlim);
   static Parameter<ClusterFissioner,Energy>

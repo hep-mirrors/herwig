@@ -77,6 +77,7 @@ public:
   virtual void setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
 					 ShowerInteraction,
+					 bool darkInteraction,
 					 const bool setPartners=true);
   //@}
 protected:
@@ -152,6 +153,14 @@ protected:
   //@}
 
   /**
+   *  Set initial scales for a DARK interaction
+   */
+  virtual void setInitialDARKEvolutionScales(const ShowerParticleVector &particles,
+					   const bool isDecayCase,
+					   const bool setPartners=true);
+  //@}
+
+  /**
    *  Find the QCD partners
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
@@ -167,6 +176,15 @@ protected:
   vector< pair<double, tShowerParticlePtr> >
   findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
 		  const bool isDecayCase);
+
+    /**
+   *  Find the DARK partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> >
+  findDARKPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
 
 public:
   /**

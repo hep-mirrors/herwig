@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_StandardModelHadronSpectrum_H
-#define Herwig_StandardModelHadronSpectrum_H
+#ifndef Herwig_DarkHadronSpectrum_H
+#define Herwig_DarkHadronSpectrum_H
 //
-// This is the declaration of the StandardModelHadronSpectrum class.
+// This is the declaration of the DarkHadronSpectrum class.
 //
 
 #include "Herwig/Hadronization/HadronSpectrum.h"
@@ -17,12 +17,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the StandardModelHadronSpectrum class.
+ * Here is the documentation of the DarkHadronSpectrum class.
  *
- * @see \ref StandardModelHadronSpectrumInterfaces "The interfaces"
- * defined for StandardModelHadronSpectrum.
+ * @see \ref DarkHadronSpectrumInterfaces "The interfaces"
+ * defined for DarkHadronSpectrum.
  */
-class StandardModelHadronSpectrum: public HadronSpectrum {
+class DarkHadronSpectrum: public HadronSpectrum {
 
 public:
 
@@ -31,12 +31,12 @@ public:
   /**
    * The default constructor.
    */
-  StandardModelHadronSpectrum(unsigned int opt);
+  DarkHadronSpectrum(unsigned int opt);
 
   /**
    * The destructor.
    */
-  virtual ~StandardModelHadronSpectrum();
+  virtual ~DarkHadronSpectrum();
   //@}
 
 public:
@@ -47,14 +47,15 @@ public:
   /**
    * Return the id of the gluon
    */
-  virtual long gluonId() const { return ParticleID::g; }
+  virtual long gluonId() const { return ParticleID::darkGluon; }
 
   /**
    * Return the ids of all hadronizing quarks
    */
   virtual const vector<long>& hadronizingQuarks() const {
-    static vector<long> hadronizing =
-      { ParticleID::d, ParticleID::u, ParticleID::s, ParticleID::c, ParticleID::b };
+    static vector<long> hadronizing = lightHadronizingQuarks();
+    static vector<long> heavy = heavyHadronizingQuarks();
+    hadronizing.insert(hadronizing.end(), heavy.begin(), heavy.end());
     return hadronizing;
   }
 
@@ -62,28 +63,34 @@ public:
    * The light hadronizing quarks
    */
   virtual const vector<long>& lightHadronizingQuarks() const {
-    static vector<long> light =
-      { ParticleID::d, ParticleID::u, ParticleID::s };
-    return light;
+    if (_lightquarks.size() != _nlightquarks) {
+      for (long il=0; il<_nlightquarks; il++) {
+        _lightquarks.push_back(il+91);
+      }
+    }
+    return _lightquarks;
   }
 
   /**
    * The heavy hadronizing quarks
    */
   virtual const vector<long>& heavyHadronizingQuarks() const {
-    static vector<long> heavy =
-      { ParticleID::c, ParticleID::b };
-    return heavy;
+    if (_heavyquarks.size() != _nheavyquarks) {
+      for (long il=0; il<_nheavyquarks; il++) {
+        _heavyquarks.push_back(il+91+_nlightquarks);
+      }
+    }
+    return _heavyquarks;
   }
 
   /**
    * The lightest quarks, used for finding the lightest Hadron Pair
    */
   virtual const vector<long>& lightestQuarks() const {
-    static vector<long> light =
-      { ParticleID::d, ParticleID::u};
-    return light;
+    // May need to be updated in future for strange-like quarks
+    return lightHadronizingQuarks();
   }
+
 
   /**
    * Return true if any of the possible three input particles contains
@@ -94,10 +101,7 @@ public:
    * (anti-)diquark.
    */
   virtual bool hasHeavy(long id, tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const {
-    if ( abs(id) == ParticleID::c )
-      return hasCharm(par1,par2,par3);
-    if ( abs(id) == ParticleID::b )
-      return hasBottom(par1,par2,par3);
+    //ToDo: this should work for the heavyHadronizingQuarks
     return false;
   }
 
@@ -114,50 +118,15 @@ public:
    * Return the weight for the given flavour
    */
   virtual double pwtQuark(const long& id) const {
-    switch(id) {
-    case ParticleID::d: return pwtDquark(); break;
-    case ParticleID::u: return pwtUquark(); break;
-    case ParticleID::s: return pwtSquark(); break;
-    case ParticleID::c: return pwtCquark(); break;
-    case ParticleID::b: return pwtBquark(); break;
-    }
-    return 0.;
+    return pwt(id);
   }
 
   /**
-   * The down quark weight.
+   * The diquark weight.
    */
-   double pwtDquark()  const {
-    return _pwtDquark;
-  } 
-
-  /**
-   * The up quark weight.
-   */
-   double pwtUquark()  const { 
-    return _pwtUquark;
+   double pwtDIquark() const {
+    return _pwtDIquark;
   }
-
-  /**
-   * The strange quark weight.
-   */
-   double pwtSquark()  const { 
-    return _pwtSquark;
-  }
-
-  /**
-   * The charm quark weight.
-   */
-   double pwtCquark()  const { 
-    return _pwtCquark;
-  }
-
-  /**
-   * The bottom quark weight.
-   */
-   double pwtBquark()  const { 
-    return _pwtBquark;
-  } 
 
 public:
 
@@ -185,14 +154,6 @@ public:
    */
   static void Init();
 
-  /**
-   * Return the particle data of the diquark (anti-diquark) made by the two 
-   * quarks (antiquarks) par1, par2.
-   * @param par1 (anti-)quark data pointer
-   * @param par2 (anti-)quark data pointer
-   */
-  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
-
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -217,36 +178,12 @@ protected:
    * Caller must ensure that id1 and id2 are quarks.
    */
   long makeDiquarkID(long id1, long id2, long pspin)  const;
-
-  /**
-   * Return true if any of the possible three input particles has
-   * b-flavour; 
-   * false otherwise. In the case that only the first particle is specified,
-   * it can be: an (anti-)quark, an (anti-)diquark
-   * an (anti-)meson, an (anti-)baryon; in the other cases, each pointer
-   * is assumed to be either (anti-)quark or (anti-)diquark.
-   */
-  bool hasBottom(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
-  /**
-   * Return true if any of the possible three input particles has 
-   * c-flavour; 
-   * false otherwise.In the case that only the first pointer is specified,
-   * it can be: a (anti-)quark, a (anti-)diquark
-   * a (anti-)meson, a (anti-)baryon; in the other cases, each pointer
-   * is assumed to be either (anti-)quark or (anti-)diquark.
-   */
-  bool hasCharm(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
+  
   /**
    * Return true, if any of the possible input particle pointer is an exotic quark, e.g. Susy quark;
    * false otherwise.   
    */
   bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr())  const;
-
-  /**
-   * Return true if the two or three particles in input can be the components 
-   * of a baryon; false otherwise.
-   */
-  virtual bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
 
 protected:
 
@@ -289,6 +226,15 @@ protected:
    *      in this limit of exact SU(2) ).
    */
   virtual void constructHadronTable();
+
+  /**
+   *  Access the parton weights
+   */
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
+    assert( it != _pwt.end() );
+    return it->second;
+  }
 
   /**
    *   Insert a meson in the table
@@ -341,47 +287,13 @@ protected:
 
   virtual double specialQuarkWeight(double quarkWeight, long id,
             const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
-    // special for strange
-    if(abs(id) == 3)
-      return strangeWeight(cluMass,par1,par2);
-    else
       return quarkWeight;
   }
 
   /**
-   *  Strange quark weight
+   * The probability of producting a diquark.
    */
-  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
-
-  /**
-   *  The weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-  //@}
+  double _pwtDIquark;
 
   /**
    * Singlet and Decuplet weights
@@ -399,121 +311,12 @@ protected:
   //@}
 
   /**
-   *  The mixing angles for the \f$I=0\f$ mesons containing light quarks
+   * Return true if the two or three particles in input can be the components 
+   * of a baryon; false otherwise.
    */
-  //@{
-  /**
-   *  The \f$\eta-\eta'\f$ mixing angle 
-   */
-  double _etamix;
+  virtual bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const;
 
-  /**
-   *  The \f$\phi-\omega\f$ mixing angle
-   */
-  double _phimix;
-
-  /**
-   *  The \f$h_1'-h_1\f$ mixing angle
-   */
-  double _h1mix;
-
-  /**
-   *  The \f$f_0(1710)-f_0(1370)\f$ mixing angle
-   */
-  double _f0mix;
-
-  /**
-   *  The \f$f_1(1420)-f_1(1285)\f$ mixing angle
-   */
-  double _f1mix;
-
-  /**
-   *  The \f$f'_2-f_2\f$ mixing angle
-   */
-  double _f2mix;
-
-  /**
-   *  The \f$\eta_2(1870)-\eta_2(1645)\f$ mixing angle
-   */
-  double _eta2mix;
-
-  /**
-   *  The \f$\phi(???)-\omega(1650)\f$ mixing angle
-   */
-  double _omhmix;
-
-  /**
-   *  The \f$\phi_3-\omega_3\f$ mixing angle
-   */
-  double _ph3mix;
-
-  /**
-   *  The \f$\eta(1475)-\eta(1295)\f$ mixing angle
-   */
-  double _eta2Smix;
-
-  /**
-   *  The \f$\phi(1680)-\omega(1420)\f$ mixing angle
-   */
-  double _phi2Smix;
-  //@}
-
-  /**
-   *  The weights for the various meson multiplets to be used to supress the
-   * production of particular states
-   */
-  //@{
-  /**
-   *  The weights for the \f$\phantom{1}^1S_0\f$ multiplets
-   */
-  vector<double> _weight1S0;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3S_1\f$ multiplets
-   */
-  vector<double> _weight3S1;
-
-  /**
-   *  The weights for the \f$\phantom{1}^1P_1\f$ multiplets
-   */
-  vector<double> _weight1P1;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3P_0\f$ multiplets
-   */
-  vector<double> _weight3P0;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3P_1\f$ multiplets
-   */
-  vector<double> _weight3P1;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3P_2\f$ multiplets
-   */
-  vector<double> _weight3P2;
-
-  /**
-   *  The weights for the \f$\phantom{1}^1D_2\f$ multiplets
-   */
-  vector<double> _weight1D2;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3D_1\f$ multiplets
-   */
-  vector<double> _weight3D1;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3D_2\f$ multiplets
-   */
-  vector<double> _weight3D2;
-
-  /**
-   *  The weights for the \f$\phantom{1}^3D_3\f$ multiplets
-   */
-  vector<double> _weight3D3;
-  //@}
-
+private:
   /**
    *  Option for the construction of the tables
    */ 
@@ -525,20 +328,33 @@ protected:
   unsigned int _trial;
 
   /**
-   * @name A parameter used for determining when clusters are too light.
-   *
-   * This parameter is used for setting the lower threshold, \f$ t \f$ as
-   * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
-   * where \f$ r \f$ is a random number [0,1].
+   *  Prefix for Dark Hadron pdgID
    */
-  //@{
-  double _limBottom;
-  double _limCharm;
-  double _limExotic;
-  //@}
+  int _DarkHadOffset = 4900000;
+
+  /**
+   *  The number of light quarks
+   */
+  int _nlightquarks;
+
+  /**
+   *  The number of heavy quarks
+   */
+  int _nheavyquarks;
+
+
+  /**
+   *  The pdgIds of the light quarks
+   */
+  mutable vector<long> _lightquarks = {};
+
+  /**
+   *  The pdgIds of the heavy quarks
+   */
+  mutable vector<long> _heavyquarks = {};
 
 };
 
 }
 
-#endif /* Herwig_StandardModelHadronSpectrum_H */
+#endif /* Herwig_DarkHadronSpectrum_H */

@@ -1,41 +1,38 @@
 // -*- C++ -*-
 //
-// HwppSelector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// DarkHwppSelector.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_HwppSelector_H
-#define HERWIG_HwppSelector_H
+#ifndef HERWIG_DarkHwppSelector_H
+#define HERWIG_DarkHwppSelector_H
 //
-// This is the declaration of the HwppSelector class.
+// This is the declaration of the DarkHwppSelector class.
 //
 
-#include "StandardModelHadronSpectrum.h"
+#include "DarkHadronSpectrum.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /** \ingroup hadronization
- * The HwppSelector class selects the hadrons produced in cluster decay using
+ * The DarkHwppSelector class selects the hadrons produced in cluster decay using
  * the Herwig variant of the cluster model.
  *
- * @see \ref HwppSelectorInterfaces "The interfaces"
- * defined for HwppSelector.
+ * @see \ref DarkHwppSelectorInterfaces "The interfaces"
+ * defined for DarkHwppSelector.
  */
-class HwppSelector: public StandardModelHadronSpectrum {
+class DarkHwppSelector: public DarkHadronSpectrum {
 
 public:
 
   /**
    * The default constructor.
    */
-  HwppSelector() : StandardModelHadronSpectrum(1),
-		   _pwtDIquark(1.0 ),
-		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
-		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
+  DarkHwppSelector() : DarkHadronSpectrum(1), _mode(1), _m0Decay(1.*GeV)
   {}
 
 public:
@@ -77,11 +74,6 @@ protected:
   std::tuple<bool,bool,bool> selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
-   *  Strange quark weight
-   */
-  virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
-
-  /**
    *  Returns the mass of the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
@@ -92,7 +84,7 @@ protected:
     assert(lightest!=lightestBaryons_.end());
     return lightest->second.first->mass()+lightest->second.second->mass();
   }
-  
+
   /**
    *  Returns the lightest pair of baryons.
    * @param ptr1 is the first  constituent
@@ -135,32 +127,14 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwppSelector & operator=(const HwppSelector &) = delete;
+  DarkHwppSelector & operator=(const DarkHwppSelector &) = delete;
 
-private:
-
-  /**
-   *  The weights for the diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a diquark.
-   */
-  double _pwtDIquark;
-  //@}
-  
 private:
 
   /**
    *  Which algorithm to use
    */
   unsigned int _mode;
-
-  /**
-  *  Flag that switches between no strangeness enhancement, scaling enhancement,
-  *  and exponential enhancement (in numerical order)
-  */
-  int _enhanceSProb;
 
   /**
   *  Parameter that governs the strangeness enhancement scaling
@@ -180,16 +154,6 @@ private:
   const double _maxScale = 20.;
 
   /**
-  *  Heavy strange-charm hadron wight coefficient
-  */
-  double _scHadronWtFactor;
-
-  /**
-  *  Heavy strange-bottom hadron wight coefficient
-  */
-  double _sbHadronWtFactor;
-
-  /**
    *  Caches of lightest pairs for speed
    */
   //@{
@@ -198,9 +162,8 @@ private:
    */
   map<pair<long,long>,tcPDPair> lightestBaryons_;
   //@}
-
 };
 
 }
 
-#endif /* HERWIG_HwppSelector_H */
+#endif /* HERWIG_DarkHwppSelector_H */

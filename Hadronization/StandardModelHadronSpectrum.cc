@@ -51,7 +51,6 @@ namespace {
        ( (abs(id1)/1000)%10 == ParticleID::c  
          || (abs(id1)/100)%10 == ParticleID::c ) );
   }
-
 }
 
 
@@ -373,15 +372,6 @@ void StandardModelHadronSpectrum::Init() {
 
 }
 
-
-PDPtr StandardModelHadronSpectrum::makeDiquark(tcPDPtr par1, tcPDPtr par2) const {
-    long id1 = par1->id();
-    long id2 = par2->id();
-    long pspin = id1==id2 ? 3 : 1;
-    long idnew = makeDiquarkID(id1,id2, pspin);
-    return getParticleData(idnew);
-}
-
 Energy StandardModelHadronSpectrum::hadronPairThreshold(tcPDPtr par1, tcPDPtr par2) const {
   // Determine the sum of the nominal masses of the two lightest hadrons
   // with the right flavour numbers as the cluster under consideration.
@@ -506,6 +496,8 @@ void StandardModelHadronSpectrum::constructHadronTable() {
     if(_trial==1 && pid!=111 && pid!=211) continue;
     // shouldn't be coloured
     if(particle->coloured()) continue;
+    // Exclude dark hadrons
+    if ((pid/100000)==49) continue;
     // Get the flavours
     const int x4 = (pid/1000)%10; 
     const int x3 = (pid/100 )%10;
@@ -592,7 +584,6 @@ void StandardModelHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2
     if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
   }
 }
-
 
 long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
 

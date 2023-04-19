@@ -102,8 +102,9 @@ public:
     /**
      *  Constructor
      */
-    EvolutionScales() : QED(),QCD_c(),QCD_ac(),
-			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
+    EvolutionScales() : QED(),QED_noAO(),QCD_c(),QCD_ac(),
+			            QCD_c_noAO(),QCD_ac_noAO(),DARK_c(),
+                        DARK_ac(),DARK_c_noAO(),DARK_ac_noAO()
     {}
 
     /**
@@ -140,7 +141,27 @@ public:
      *   EW scales
      */
     Energy EW;
-    
+
+    /**
+     *   DARK scales
+     */
+    Energy DARK_c;
+
+    /**
+     *  DARK anticolour scale
+     */
+    Energy DARK_ac;
+
+    /**
+     * DARK colour scale
+     */
+    Energy DARK_c_noAO;
+
+    /**
+     *  DARK anticolour scale
+     */
+    Energy DARK_ac_noAO;
+
   };
 
 
