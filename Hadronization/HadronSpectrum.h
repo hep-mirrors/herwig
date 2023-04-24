@@ -257,7 +257,7 @@ public:
    * @param par1 (anti-)quark data pointer
    * @param par2 (anti-)quark data pointer
    */
-  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const = 0;
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Method to return a pair of hadrons given the PDG codes of
