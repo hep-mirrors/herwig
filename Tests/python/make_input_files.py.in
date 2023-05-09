@@ -81,10 +81,13 @@ print (name)
 # work out name and type of the collider
 (collider,have_hadronic_collider) = identifyCollider(name)
 
-thefactory="Factory"
-
 # workout the type of simulation
 (simulation,templateName,parameterName,parameters)=identifySimulation(name,collider,have_hadronic_collider)
+
+if simulation=="Merging" :
+    thefactory="MergingFactory"
+else :
+    thefactory="Factory"
         
 # settings for four flavour scheme
 fourFlavour="""
