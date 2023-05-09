@@ -78,7 +78,7 @@ public:
    */
   DecayIntegrator() : nIter_(10), nPoint_(10000), nTry_(500),
 		       generateInter_(false), iMode_(-1),
-		       realME_(false), virtualME_(false), eps_(ZERO), warnings_(true)
+		       realME_(false), virtualME_(false), eps_(ZERO), warnings_(false)
   {}
 
 public:
