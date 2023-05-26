@@ -79,7 +79,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
       // SM couplings only treat the imaginary part of the couplings,
       // i.e. Herwig's conventional coupling can be written as
       //       g = Im(_couplingValue)
-      // which is (-i) times the coupling value. However, we do not 
+      // which is (-i) times the coupling value. However, we do not
       // follow this convention strictly because we will norm this value
       g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
     }
@@ -88,7 +88,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
       // running masses
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       Energy mH = getParticleData(ParticleID::h0)->mass();
-      g = 1.5*(gw_/mW)*mH;
+      g = (1.5*(gw_/mW)*mH,0.);
     }
   }
   else
@@ -100,7 +100,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
   if(ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0) {
     // BSM cases, where the numerical value of the couplings are
     // expected to be fed into the splitting functions
-    if(_couplingValueIm!=0||_couplingValueRe!=0) {
+    if(_couplingValueIm!=0.||_couplingValueRe!=0.) {
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(t));
       Energy m0 = ids[0]->mass();
       g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
@@ -110,7 +110,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
       // running masses
       Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
       Energy mH = _theSM->mass(t,getParticleData(ParticleID::h0));
-      g = 1.5*(gw_/mW)*mH;
+      g = (1.5*(gw_/mW)*mH,0.);
     }
   }
   else
@@ -125,11 +125,7 @@ double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   if(mass)
-<<<<<<< working copy
-    return sqr(ghhh)*sqr(m0)/(2.*t);
-=======
-    return norm(ghhh)*sqr(m0)/(2.*t*z*(1.-z));
->>>>>>> merge rev
+    return norm(ghhh)*sqr(m0)/(2.*t);
   else
     assert(false);
 }
@@ -138,11 +134,7 @@ double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-<<<<<<< working copy
-  return sqr(ghhh)/2.;
-=======
-  return norm(ghhh)/(2.*z*(1.-z));
->>>>>>> merge rev
+  return sqr(norm(ghhh))/2.;
 }
 
 double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,

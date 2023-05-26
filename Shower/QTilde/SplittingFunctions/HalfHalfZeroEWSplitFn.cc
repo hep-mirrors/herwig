@@ -91,8 +91,8 @@ void HalfHalfZeroEWSplitFn::getCouplings(Complex& gH0, Complex& gH1, const IdLis
       //get quark masses
       Energy m0 = getParticleData(abs(ids[0]->id()))->mass();
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
-      gH0 = ghqq_*(m0/mW);
-      gH1 = 0.;
+      gH0 = (ghqq_*(m0/mW),0.);
+      gH1 = (0.,0.);
     }
   }
   else
