@@ -136,12 +136,45 @@ def sort_vertices(FR,pIn,dim):
 def sort_splittings(FR,Vertices,p):
     pSplittings = []
     for V in Vertices:
+        lorz = V.lorentz
         # calculate the total coupling value for this splitting
         coup = V.couplings
         keys = coup.keys()
-        coupling_value = 0.
+        coupling_value = [0.,0.]
         for k in keys :
-            coupling_value += eval(coup[k].value)
+            color_idx, lorentz_idx = k
+            # https://arxiv.org/pdf/2304.09883.pdf
+            if 'FFS' in str(lorz[lorentz_idx]):
+                # distinguish CP-even/-odd couplings, each couplings in the square bracket correspond to [1,Gamma5] respectively
+                if str(lorz[lorentz_idx]) == 'FFS1': # ProjM
+                    coupling_value[0] += eval(coup[k].value)/2
+                    coupling_value[1] -= eval(coup[k].value)/2
+                elif str(lorz[lorentz_idx]) == 'FFS2': # ProjM - ProjP
+                    coupling_value[1] -= eval(coup[k].value)
+                elif str(lorz[lorentz_idx]) == 'FFS3': # ProjP
+                    coupling_value[0] += eval(coup[k].value)/2
+                    coupling_value[1] += eval(coup[k].value)/2
+                elif str(lorz[lorentz_idx]) == 'FFS4': # ProjP + ProjM
+                    coupling_value[0] += eval(coup[k].value)
+            elif 'FFV' in str(lorz[lorentz_idx]):
+                # distinguish left-/right-couplings, each couplings in the square bracket correspond to [P_L,P_R] respectively
+                if str(lorz[lorentz_idx]) == 'FFV1': # Gamma
+                    coupling_value[0] += eval(coup[k].value)
+                    coupling_value[1] += eval(coup[k].value)
+                elif str(lorz[lorentz_idx]) == 'FFV2': # Gamma*ProjM
+                    coupling_value[0] += eval(coup[k].value)
+                elif str(lorz[lorentz_idx]) == 'FFV3': # Gamma*(ProjM-2*ProjP)
+                    coupling_value[0] += eval(coup[k].value)
+                    coupling_value[1] -= 2*eval(coup[k].value)
+                elif str(lorz[lorentz_idx]) == 'FFV4': # Gamma*(ProjM+2*ProjP)
+                    coupling_value[0] += eval(coup[k].value)
+                    coupling_value[1] += 2*eval(coup[k].value)
+                elif str(lorz[lorentz_idx]) == 'FFV5': # Gamma*(ProjM+4*ProjP)
+                    coupling_value[0] += eval(coup[k].value)
+                    coupling_value[1] += 4*eval(coup[k].value)
+            else:
+                coupling_value[0] += eval(coup[k].value)
+
         # extract splitting format as p -> p1, p2
         p0set = False
         p1set = False
@@ -166,8 +199,8 @@ def sort_splittings(FR,Vertices,p):
         # put the bigger spin last
         if p1.spin > p2.spin :
             p1, p2 = p2, p1
-        pp1p2 = [p,p1,p2,coupling_value]
-        pp2p1 = [p,p2,p1,coupling_value]
+        pp1p2 = [p,p1,p2] + coupling_value
+        pp2p1 = [p,p2,p1] + coupling_value
         if pp1p2 not in pSplittings and pp2p1 not in pSplittings:
             pSplittings.append(pp1p2)
     return pSplittings
@@ -224,6 +257,16 @@ def isGVB(particle) :
         return True
     elif particle.pdg_code==21 :
         return True
+    else :
+        return False
+
+def isBSMVB(particle) :
+    if particle.spin==3 :
+        pdgid=abs(particle.pdg_code)
+        if 20 < pdgid and pdgid < 26:
+            return False
+        else :
+            return True
     else :
         return False
 
@@ -352,7 +395,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
             pSplittings = sort_splittings(FR,Vertices,p)
             for Vertex in pSplittings :
                 # do not do anything for CouplingValue < 1e-6
-                if abs(Vertex[3].real + Vertex[3].imag) < 1e-6 :
+                if abs(Vertex[3].real) < 1e-6 and abs(Vertex[3].imag) < 1e-6 and abs(Vertex[4].real) < 1e-6 and abs(Vertex[4].imag) < 1e-6 :
                     continue
                 # do not include QCD splittings
                 if Vertex[1].pdg_code == 21 or Vertex[2].pdg_code == 21 :
@@ -367,7 +410,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                 # loop over all possible configurations in the splitting
                 for pos in range(0,3) :
                     # rearrange to all possible cases
-                    V=[Vertex[0], Vertex[1], Vertex[2], Vertex[3]]
+                    V=[Vertex[0], Vertex[1], Vertex[2], Vertex[3], Vertex[4]]
                     if pos==0:
                         V[0], V[1], V[2] = Vertex[0], Vertex[1], Vertex[2]
                     elif pos==1:
@@ -412,6 +455,10 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         if isQuark(V[1]) and isScalar(V[2]) :
                             pass
                         elif isQuark(V[2]) and isScalar(V[1]) :
+                            V[0], V[1], V[2] = V[0], V[2], V[1]
+                        elif isQuark(V[1]) and isBSMVB(V[2]) :
+                            pass
+                        elif isQuark(V[2]) and isBSMVB(V[1]) :
                             V[0], V[1], V[2] = V[0], V[2], V[1]
                         # nothing else with a quark progenitor
                         else :
@@ -464,7 +511,17 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                     # no scalar > quark, antiquark splitting
                     s = [spin_name(V[0].spin),spin_name(V[1].spin),spin_name(V[2].spin)]
 
-                    if SPname not in done_splitting_EW and V[3].imag!=0.:
+                    # If the real the coupling value is small, then ignore
+                    if abs(V[3].real) < 1e-6:
+                        V[3] = complex(0.,V[3].imag)
+                    if abs(V[3].imag) < 1e-6:
+                        V[3] = complex(V[3].real,0.)
+                    if abs(V[4].real) < 1e-6:
+                        V[4] = complex(0.,V[4].imag)
+                    if abs(V[4].imag) < 1e-6:
+                        V[4] = complex(V[4].real,0.)
+
+                    if SPname not in done_splitting_EW and (V[3]!=0. or V[4]!=0.):
                         done_splitting_EW.append(SPname)
                         splitname = '{name}SplitFnEW'.format(name=SPname)
                         sudname = '{name}SudakovEW'.format(name=SPname)
@@ -474,14 +531,37 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
 create Herwig::{s0}{s1}{s2}EWSplitFn {name}
 set {name}:InteractionType EW
 set {name}:ColourStructure EW
-set {name}:CouplingValue {i}
-cp /Herwig/Shower/SudakovCommon {sudname}
+""".format(s0=s[0],s1=s[1],s2=s[2],name=splitname)
+                        )
+                        if s[0]=='Half' and s[1]=='Half' and s[2]=='Zero':
+                            splittings.append(
+"""set {name}:CouplingValue.CP0.Im {i}
+set {name}:CouplingValue.CP0.Re {j}
+set {name}:CouplingValue.CP1.Im {k}
+set {name}:CouplingValue.CP1.Re {l}
+""".format(name=splitname,i=V[3].imag,j=V[3].real,k=V[4].imag,l=V[4].real)
+                            )
+                        elif s[0]=='Half' and s[1]=='Half' and s[2]=='One':
+                            splittings.append(
+"""set {name}:CouplingValue.Left.Im {i}
+set {name}:CouplingValue.Left.Re {j}
+set {name}:CouplingValue.Right.Im {k}
+set {name}:CouplingValue.Right.Re {l}
+""".format(name=splitname,i=V[3].imag,j=V[3].real,k=V[4].imag,l=V[4].real)
+                            )
+                        else:
+                            splittings.append(
+"""set {name}:CouplingValue.Im {i}
+set {name}:CouplingValue.Re {j}
+""".format(name=splitname,i=V[3].imag,j=V[3].real)
+                            )
+                        splittings.append(
+"""cp /Herwig/Shower/SudakovCommon {sudname}
 set {sudname}:SplittingFunction {name}
 set {sudname}:Alpha /Herwig/Shower/AlphaEW
 do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {sudname}
-""".format(s0=s[0],s1=s[1],s2=s[2],name=splitname,p0=p0name,\
-          p1=p1name,p2=p2name,sudname=sudname,i=V[3].imag)
-                    )
+""".format(name=splitname,p0=p0name,p1=p1name,p2=p2name,sudname=sudname)
+                        )
         except SkipMe:
             pass
 

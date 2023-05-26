@@ -27,11 +27,11 @@ IBPtr OneZeroZeroEWSplitFn::fullclone() const {
 }
 
 void OneZeroZeroEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << _couplingValue;
+  os << _couplingValueIm << _couplingValueRe;
 }
 
 void OneZeroZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> _couplingValue;;
+  is >> _couplingValueIm >> _couplingValueRe;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -44,10 +44,16 @@ void OneZeroZeroEWSplitFn::Init() {
   static ClassDocumentation<OneZeroZeroEWSplitFn> documentation
     ("The OneZeroZeroEWSplitFn class implements purly beyond SM electroweak splittings V->HH'");
 
-  static Parameter<OneZeroZeroEWSplitFn, double> interfaceCouplingValue
-    ("CouplingValue",
-     "The numerical value of the splitting coupling to be imported for BSM splittings",
-     &OneZeroZeroEWSplitFn::_couplingValue, 0.0, -1.0E6, +1.0E6,
+  static Parameter<OneZeroZeroEWSplitFn, double> interfaceCouplingValueIm
+    ("CouplingValue.Im",
+     "The numerical value (imaginary part) of the splitting coupling to be imported for BSM splittings",
+     &OneZeroZeroEWSplitFn::_couplingValueIm, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<OneZeroZeroEWSplitFn, double> interfaceCouplingValueRe
+    ("CouplingValue.Re",
+     "The numerical value (real part) of the splitting coupling to be imported for BSM splittings",
+     &OneZeroZeroEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
      false, false, Interface::limited);
 
 }
@@ -58,14 +64,14 @@ void OneZeroZeroEWSplitFn::doinit() {
 }
 
 
-void OneZeroZeroEWSplitFn::getCouplings(double & g, const IdList &) const {
-  g = _couplingValue;
+void OneZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList &) const {
+  g = Complex(_couplingValueRe,_couplingValueIm); // Don't we need '/e'?
 }
 
 
 double OneZeroZeroEWSplitFn::P(const double z, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
-  double gvhh(0.);
+  Complex gvhh(0.,0.);
   getCouplings(gvhh,ids);
   double rho00 = abs(rho(0,0));
   double rho11 = abs(rho(1,1));
@@ -81,15 +87,15 @@ double OneZeroZeroEWSplitFn::P(const double z, const Energy2 t,
     val += (m0t2*sqr(-1.+2.*z)*rho11)/2.+(-(m1t2*(1.-z))-m2t2*z+m0t2*(1.-z)*z)
         *(rho00+rho22);
   }
-  return sqr(gvhh)*val;
+  return norm(gvhh)*val;
 }
 
 
 double OneZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
-  double gvhh(0.);
+  Complex gvhh(0.,0.);
   getCouplings(gvhh,ids);
-  return sqr(gvhh)*(1.-z)*z;
+  return norm(gvhh)*(1.-z)*z;
 }
 
 
@@ -117,9 +123,9 @@ double OneZeroZeroEWSplitFn::ratioP(const double z, const Energy2 t,
 double OneZeroZeroEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
 				      unsigned int PDFfactor) const {
-  double gvhh(0.);
+  Complex gvhh(0.,0.);
   getCouplings(gvhh,ids);
-  double pre = sqr(gvhh);
+  double pre = norm(gvhh);
   switch (PDFfactor) {
   case 0:
     return pre/6.*(3.-2.*z)*sqr(z);
@@ -135,9 +141,9 @@ double OneZeroZeroEWSplitFn::integOverP(const double z,
 
 double OneZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
-  double gvhh(0.);
+  Complex gvhh(0.,0.);
   getCouplings(gvhh,ids);
-  double pre = sqr(gvhh);
+  double pre = norm(gvhh);
   switch (PDFfactor) {
   case 0:
     return (1.-pre/pow(-pow(pre,3)+12.*pow(pre,2)*r+2.*sqrt(6.)
@@ -156,7 +162,7 @@ double OneZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 bool OneZeroZeroEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3)
     return false;
-  if(_couplingValue==0.)
+  if(_couplingValueIm==0.&&_couplingValueRe==0.)
     return false;
   if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
     return false;
@@ -191,7 +197,7 @@ OneZeroZeroEWSplitFn::generatePhiBackward(const double, const Energy2, const IdL
 DecayMEPtr OneZeroZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              const IdList & ids, const double phi,
                                              bool) {
-  double gvhh(0.);
+  Complex gvhh(0.,0.);
   getCouplings(gvhh,ids);
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));

@@ -181,7 +181,6 @@ newdef LtoLWZSplitFn:ColourStructure EW
 create Herwig::HalfHalfZeroEWSplitFn QtoQHSplitFn
 newdef QtoQHSplitFn:InteractionType EW
 newdef QtoQHSplitFn:ColourStructure EW
-newdef QtoQHSplitFn:CouplingValue 0.0
 
 create Herwig::OneOneOneEWSplitFn VtoVVSplitFn
 newdef VtoVVSplitFn:InteractionType EW
@@ -194,12 +193,10 @@ newdef GammatoWWSplitFn:ColourStructure ChargedNeutralCharged
 create Herwig::OneOneZeroEWSplitFn VtoVHSplitFn
 newdef VtoVHSplitFn:InteractionType EW
 newdef VtoVHSplitFn:ColourStructure EW
-newdef VtoVHSplitFn:CouplingValue 0.0
 
 create Herwig::ZeroZeroZeroEWSplitFn HtoHHSplitFn
 newdef HtoHHSplitFn:InteractionType EW
 newdef HtoHHSplitFn:ColourStructure EW
-newdef HtoHHSplitFn:CouplingValue 0.0
 
 #
 # Now the Sudakovs

@@ -131,7 +131,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(double & g, const IdList & ids) const;
+  void getCouplings(Complex & g, const IdList & ids) const;
 
 public:
 
@@ -216,7 +216,8 @@ private:
   /**
    *   numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValue = 0.;
+  double _couplingValueIm = 0.;
+  double _couplingValueRe = 0.;
 };
 
 }

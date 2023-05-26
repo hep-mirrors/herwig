@@ -129,12 +129,12 @@ protected:
   /**
    *   Get the couplings without running masses
    */
-  void getCouplings(double & gH, const IdList & ids) const;
+  void getCouplings(Complex & gH0, Complex & gH1, const IdList & ids) const;
 
   /**
    *   Get the couplings with running masses
    */
-  void getCouplings(double & gH, const IdList & ids, const Energy2 t) const;
+  void getCouplings(Complex & gH0, Complex & gH1, const IdList & ids, const Energy2 t) const;
 
 public:
 
@@ -209,7 +209,10 @@ private:
   /**
    *   numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValue = 0.;
+  double _couplingValue0Re = 0.;
+  double _couplingValue0Im = 0.;
+  double _couplingValue1Re = 0.;
+  double _couplingValue1Im = 0.;
 
   /**
    * Pointer to the SM object.
