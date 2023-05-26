@@ -128,7 +128,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(double & gL, double & gR, const IdList & ids) const;
+  void getCouplings(Complex & gL, Complex & gR, const IdList & ids) const;
 
 public:
 
@@ -204,6 +204,14 @@ private:
    *  W couplings
    */
   double gWL_;
+
+  /** 
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValueLeftRe = 0.; 
+  double _couplingValueLeftIm = 0.; 
+  double _couplingValueRightRe = 0.; 
+  double _couplingValueRightIm = 0.;
 
 };
 

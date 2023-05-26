@@ -27,11 +27,11 @@ IBPtr ZeroZeroZeroEWSplitFn::fullclone() const {
 }
 
 void ZeroZeroZeroEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gw_ << _theSM << _couplingValue;
+  os << gw_ << _theSM << _couplingValueIm << _couplingValueRe;
 }
 
 void ZeroZeroZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gw_ >> _theSM >> _couplingValue;
+  is >> gw_ >> _theSM >> _couplingValueIm >> _couplingValueRe;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -43,10 +43,16 @@ void ZeroZeroZeroEWSplitFn::Init() {
   static ClassDocumentation<ZeroZeroZeroEWSplitFn> documentation
     ("The ZeroZeroZeroEWSplitFn class implements the splitting A->A'A''");
 
-  static Parameter<ZeroZeroZeroEWSplitFn, double> interfaceCouplingValue
-    ("CouplingValue",
-     "The numerical value of the splitting coupling to be imported for BSM splittings",
-     &ZeroZeroZeroEWSplitFn::_couplingValue, 0.0, -1.0E6, +1.0E6,
+  static Parameter<ZeroZeroZeroEWSplitFn, double> interfaceCouplingValueIm
+    ("CouplingValue.Im",
+     "The numerical value (imaginary part) of the splitting coupling to be imported for BSM splittings",
+     &ZeroZeroZeroEWSplitFn::_couplingValueIm, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<ZeroZeroZeroEWSplitFn, double> interfaceCouplingValueRe
+    ("CouplingValue.Re",
+     "The numerical value (real part) of the splitting coupling to be imported for BSM splittings",
+     &ZeroZeroZeroEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
      false, false, Interface::limited);
 
 }
@@ -61,15 +67,21 @@ void ZeroZeroZeroEWSplitFn::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
 
-void ZeroZeroZeroEWSplitFn::getCouplings(double & g, const IdList & ids) const {
+void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const {
   if(ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0) {
     // BSM cases, where the numerical value of the couplings are
     // expected to be fed into the splitting functions
-    if(_couplingValue!=0) {
+    if(_couplingValueIm!=0||_couplingValueRe!=0) {
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->
                   alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
       Energy m0 = ids[0]->mass();
-      g = _couplingValue*GeV/e/m0;
+      // There is no real part in SM couplings. Therefore, the Herwig's
+      // SM couplings only treat the imaginary part of the couplings,
+      // i.e. Herwig's conventional coupling can be written as
+      //       g = Im(_couplingValue)
+      // which is (-i) times the coupling value. However, we do not 
+      // follow this convention strictly because we will norm this value
+      g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
     }
     // SM case
     else {
@@ -83,15 +95,15 @@ void ZeroZeroZeroEWSplitFn::getCouplings(double & g, const IdList & ids) const {
     assert(false);
 }
 
-void ZeroZeroZeroEWSplitFn::getCouplings(double & g, const IdList & ids,
+void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
     const Energy2 t) const {
   if(ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0) {
     // BSM cases, where the numerical value of the couplings are
     // expected to be fed into the splitting functions
-    if(_couplingValue!=0) {
+    if(_couplingValueIm!=0||_couplingValueRe!=0) {
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(t));
       Energy m0 = ids[0]->mass();
-      g = _couplingValue*GeV/e/m0;
+      g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
     }
     // SM case
     else {
@@ -107,13 +119,13 @@ void ZeroZeroZeroEWSplitFn::getCouplings(double & g, const IdList & ids,
 
 double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
-  double ghhh(0.);
+  Complex ghhh(0.,0.);
   Energy m0 = ids[0]->mass();
-  if(_couplingValue==0)
+  if(_couplingValueIm==0&&_couplingValueRe==0)
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   if(mass)
-    return sqr(ghhh)*sqr(m0)/(2.*t*z*(1.-z));
+    return norm(ghhh)*sqr(m0)/(2.*t*z*(1.-z));
   else
     assert(false);
 }
@@ -121,16 +133,16 @@ double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
 
 double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
-  double ghhh(0.);
+  Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  return sqr(ghhh)/(2.*z*(1.-z));
+  return norm(ghhh)/(2.*z*(1.-z));
 }
 
 double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,
 				    const IdList & ids, const bool ,
 				    const RhoDMatrix & ) const {
   Energy m0 = ids[0]->mass();
-  if(_couplingValue==0)
+  if(_couplingValueIm==0&&_couplingValueRe==0)
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   return sqr(m0)/t;
 }
@@ -138,9 +150,9 @@ double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,
 double ZeroZeroZeroEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
 				      unsigned int PDFfactor) const {
-  double ghhh(0.);
+  Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  double pre = sqr(ghhh);
+  double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0: //OverP
     return pre*(-0.5*(log(1.-z) - log(z)));
@@ -158,9 +170,9 @@ double ZeroZeroZeroEWSplitFn::integOverP(const double z,
 
 double ZeroZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
-  double ghhh(0.);
+  Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  double pre = sqr(ghhh);
+  double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0:
     return exp(2.*r/pre)/(1.+exp(2.*r/pre));
@@ -206,9 +218,9 @@ DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
-  double ghhh(0.);
+  Complex ghhh(0.,0.);
   Energy m0 = ids[0]->mass();
-  if(_couplingValue==0)
+  if(_couplingValueIm==0&&_couplingValueRe==0)
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   (*kernal)(0,0,0) = ghhh*m0/sqrt(2*t*z*(1.-z));

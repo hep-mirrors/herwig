@@ -13,6 +13,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
@@ -25,11 +26,11 @@ IBPtr HalfHalfOneEWSplitFn::fullclone() const {
 }
 
 void HalfHalfOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gZ_ << gWL_;
+  os << gZ_ << gWL_ << _couplingValueLeftIm << _couplingValueLeftRe << _couplingValueRightIm << _couplingValueRightRe;
 }
 
 void HalfHalfOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gZ_ >> gWL_;
+  is >> gZ_ >> gWL_ >> _couplingValueLeftIm >> _couplingValueLeftRe >> _couplingValueRightIm >> _couplingValueRightRe;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -40,6 +41,30 @@ void HalfHalfOneEWSplitFn::Init() {
 
   static ClassDocumentation<HalfHalfOneEWSplitFn> documentation
     ("The HalfHalfOneEWSplitFn class implements the splitting q->qW and q->qZ");
+
+  static Parameter<HalfHalfOneEWSplitFn, double> interfaceCouplingValueLeftIm
+    ("CouplingValue.Left.Im",
+     "The numerical value (imaginary part) of the left-handed splitting coupling to be imported for BSM splittings",
+     &HalfHalfOneEWSplitFn::_couplingValueLeftIm, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<HalfHalfOneEWSplitFn, double> interfaceCouplingValueLeftRe
+    ("CouplingValue.Left.Re",
+     "The numerical value (real part) of the left-handed splitting coupling to be imported for BSM splittings",
+     &HalfHalfOneEWSplitFn::_couplingValueLeftRe, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<HalfHalfOneEWSplitFn, double> interfaceCouplingValueRightIm
+    ("CouplingValue.Right.Im",
+     "The numerical value (imaginary part) of the right-handed splitting coupling to be imported for BSM splittings",
+     &HalfHalfOneEWSplitFn::_couplingValueRightIm, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<HalfHalfOneEWSplitFn, double> interfaceCouplingValueRightRe
+    ("CouplingValue.Right.Re",
+     "The numerical value (real part) of the right-handed splitting coupling to be imported for BSM splittings",
+     &HalfHalfOneEWSplitFn::_couplingValueRightRe, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
 
 }
 
@@ -63,8 +88,15 @@ void HalfHalfOneEWSplitFn::doinit() {
   }
 }
 
-void HalfHalfOneEWSplitFn::getCouplings(double & gL, double & gR, const IdList & ids) const {
-  if(ids[2]->id()==ParticleID::Z0) {
+void HalfHalfOneEWSplitFn::getCouplings(Complex & gL, Complex & gR, const IdList & ids) const {
+  if(_couplingValueLeftRe!=0||_couplingValueLeftIm!=0||_couplingValueRightRe!=0||_couplingValueRightIm!=0) {
+    double e = sqrt(4.*Constants::pi*generator()->standardModel()
+              ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+    // a factor e is factored out since its already accounted for
+    gL = Complex(_couplingValueLeftRe,_couplingValueLeftIm)/e;
+    gR = Complex(_couplingValueRightRe,_couplingValueRightIm)/e;
+  }
+  else if(ids[2]->id()==ParticleID::Z0) {
     map<long,pair<double,double> >::const_iterator it = gZ_.find(abs(ids[0]->id()));
     assert(it!=gZ_.end());
     gL = it->second.first ;
@@ -80,45 +112,56 @@ void HalfHalfOneEWSplitFn::getCouplings(double & gL, double & gR, const IdList &
 
 double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
-  double gL(0.),gR(0.);
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double val = (1. + sqr(z))/(1.-z);
+  double val = (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*(1.+sqr(z))/(1.-z);
+  Energy m0, m1, m2;
   if(mass) {
-    Energy m = ids[2]->mass();
-    val -= sqr(m)/t;
+    m0 = ids[0]->mass();
+    m1 = ids[1]->mass();
+    m2 = ids[2]->mass();
+    double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
+    val += (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*((1.+sqr(z))/(1.-z)*sqr(m0t)-(1.+z)/(1.-z)*sqr(m1t)-sqr(m2t))
+           + (norm(gR)*abs(rho(0,0))+norm(gL)*abs(rho(1,1)))*z*sqr(m0t)
+           - 2.*(gR*conj(gL)).real()*(abs(rho(1,1))+abs(rho(0,0)))*m0t*m1t;
   }
-  val *= (sqr(gL)*abs(rho(0,0))+sqr(gR)*abs(rho(1,1)));
   return colourFactor(ids)*val;
 }
 
 
 double HalfHalfOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
-  double gL(0.),gR(0.);
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  return 2.*max(sqr(gL),sqr(gR))*colourFactor(ids)/(1.-z);
+  return 2.*max(norm(gL),norm(gR))*colourFactor(ids)/(1.-z); //FIXME//
 }
 
 double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
 				    const RhoDMatrix & rho) const {
-  double gL(0.),gR(0.);
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double val = 1. + sqr(z);
+  double val = (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*(1.+sqr(z));
+  Energy m0, m1, m2;
   if(mass) {
-    Energy m = ids[2]->mass();
-    val -= (1.-z)*sqr(m)/t;
+    m0 = ids[0]->mass();
+    m1 = ids[1]->mass();
+    m2 = ids[2]->mass();
+    double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
+    val += (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*((1+sqr(z))*sqr(m0t)-(1.+z)*sqr(m1t)-(1.-z)*sqr(m2t))
+           + (norm(gR)*abs(rho(0,0))+norm(gL)*abs(rho(1,1)))*z*(1.-z)*sqr(m0t)
+           - 2.*(gR*conj(gL)).real()*(abs(rho(1,1))+abs(rho(0,0)))*(1.-z)*m0t*m1t;
   }
-  val *= (sqr(gL)*abs(rho(0,0))+sqr(gR)*abs(rho(1,1)))/max(sqr(gL),sqr(gR));
+  val /= max(norm(gR),norm(gL));
   return 0.5*val;
 }
 
 double HalfHalfOneEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
 				      unsigned int PDFfactor) const {
-  double gL(0.),gR(0.);
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*max(sqr(gL),sqr(gR));
+  double pre = colourFactor(ids)*max(norm(gL),norm(gR));
   switch (PDFfactor) {
   case 0:
     return -2.*pre*Math::log1m(z);
@@ -135,9 +178,9 @@ double HalfHalfOneEWSplitFn::integOverP(const double z,
 
 double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
-  double gL(0.),gR(0.);
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*max(sqr(gL),sqr(gR));
+  double pre = colourFactor(ids)*max(norm(gL),norm(gR));
   switch (PDFfactor) {
   case 0:
     return 1. - exp(- 0.5*r/pre);
@@ -154,7 +197,11 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 
 bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
-  if(ids[2]->id()==ParticleID::Z0) {
+  if(ids[2]->iSpin()==PDT::Spin1 && !(_couplingValueLeftRe==0 && _couplingValueLeftIm==0 && _couplingValueRightRe==0 && _couplingValueRightIm==0)) {
+    if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
+    if((abs(ids[0]->id())>=1 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=1 && abs(ids[1]->id())<=6)) return true;
+  }
+  else if(ids[2]->id()==ParticleID::Z0) {
     if(ids[0]->id()==ids[1]->id() &&
        ((ids[0]->id()>=1 && ids[0]->id()<=6) || (ids[0]->id()>=11&&ids[0]->id()<=16) )) return true;
   }
@@ -189,28 +236,28 @@ DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
-  Energy m = ids[2]->mass();
-  double gL(0.),gR(0.);
+  Energy m0 = ids[0]->mass();
+  Energy m1 = ids[1]->mass();
+  Energy m2 = ids[2]->mass();
+  Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double mt = m/sqrt(t);
-  double root = sqrt(1.-sqr(m)/t/(1-z));
-  double romz = sqrt(1.-z);
-  double rz   = sqrt(z);
-  double r2   = sqrt(2.);
+  Energy den = sqrt(2.)*sqrt(t);
+  Energy pt  = sqrt(z*(1.-z)*t+z*(1.-z)*sqr(m0)-(1.-z)*sqr(m1)-z*sqr(m2));
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
-  (*kernal)(0,0,0) = -phase*root*gL/romz;
-  (*kernal)(1,1,2) = cphase*root*gR/romz;
-  (*kernal)(0,0,2) = cphase*z*root*gL/romz;
-  (*kernal)(1,1,0) = -phase*z*root*gR/romz;
-  // long terms
-  (*kernal)(1,1,1) =-gR*mt*r2*rz/(1-z);
-  (*kernal)(0,0,1) =-gL*mt*r2*rz/(1-z);
-  // +- -+ terms zero due quark mass
-  for(unsigned int ix=0;ix<3;++ix) {
-    (*kernal)(1,0,ix) =  0.;
-    (*kernal)(0,1,ix) =  0.;
-  }
+  (*kernal)(1,1,2) = sqrt(2.)*gR*pt/sqrt(z)/(1.-z)*cphase/den;
+  (*kernal)(1,1,1) = -2.*gR*sqrt(z)*m2/(1.-z)/den;
+  (*kernal)(1,1,0) = -sqrt(2.*z)*gR*pt/(1.-z)*phase/den;
+  (*kernal)(1,0,2) = -sqrt(2.)*(gL*z*m0-gR*m1)/sqrt(z)/den;
+  (*kernal)(1,0,1) = 0;
+  (*kernal)(1,0,0) = 0;
+  (*kernal)(0,1,2) = 0;
+  (*kernal)(0,1,1) = 0;
+  (*kernal)(0,1,0) = -sqrt(2.)*(gR*z*m0-gL*m1)/sqrt(z)/den;
+  (*kernal)(0,0,2) = sqrt(2.*z)*gL*pt/(1.-z)*cphase/den;
+  (*kernal)(0,0,1) = -2.*gL*sqrt(z)*m2/(1.-z)/den;
+  (*kernal)(0,0,0) = -sqrt(2.)*gL*pt/sqrt(z)/(1.-z)*phase/den;
+
   // return the answer
   return kernal;
 }

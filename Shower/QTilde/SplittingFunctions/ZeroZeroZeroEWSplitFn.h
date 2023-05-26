@@ -131,7 +131,7 @@ protected:
    * @param g The couplings ( for the SM case, this is g_SM/(e*mH^2) )
    * @param ids The PDG codes for the particles in the splitting.
    */
-  void getCouplings(double & g, const IdList & ids) const;
+  void getCouplings(Complex & g, const IdList & ids) const;
 
   /**
    *   Get the couplings with running masses
@@ -139,7 +139,7 @@ protected:
    * @param ids The PDG codes for the particles in the splitting.
    * @param t The scale \f$t=2p_j\cdot p_k\f$.
    */
-  void getCouplings(double & g, const IdList & ids, const Energy2 t) const;
+  void getCouplings(Complex & g, const IdList & ids, const Energy2 t) const;
 
 public:
 
@@ -214,7 +214,8 @@ private:
   /**
    *   numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValue = 0.;
+  double _couplingValueIm = 0.;
+  double _couplingValueRe = 0.;
 
   /**
    * Pointer to the SM object.
