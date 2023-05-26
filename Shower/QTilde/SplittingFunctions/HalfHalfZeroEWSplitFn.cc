@@ -115,7 +115,7 @@ double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
     mH  = getParticleData(abs(ids[2]->id()))->mass();
   }
-  val+= (sqr(mq0 + mq1) - sqr(mH))/(t*(1. - z)*z);
+  val+= (sqr(mq0+mq1)-sqr(mH))/t;
   val *= sqr(gH);
   return colourFactor(ids)*val;
 }
@@ -145,7 +145,7 @@ double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
     mq1 = getParticleData(abs(ids[1]->id()))->mass();
     mH  = getParticleData(ids[2]->id())->mass();
   }
-  val += (sqr(mq0+mq1) - sqr(mH))/(t*(1. - z)*z)/(1.-z);
+  val += (sqr(mq0+mq1)-sqr(mH))/t/(1.-z);
   return val;
 }
 
@@ -227,23 +227,21 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   //get masses
-  Energy mq0 = getParticleData(abs(ids[0]->id()))->mass();
-  Energy mq1 = getParticleData(abs(ids[1]->id()))->mass();
+  Energy m0 = getParticleData(abs(ids[0]->id()))->mass();
+  Energy m1 = getParticleData(abs(ids[1]->id()))->mass();
   Energy mH  = getParticleData(abs(ids[2]->id()))->mass();
   double gH(0.);
-  Energy2 tC = t/(z*(1-z));
-  getCouplings(gH,ids,tC);
-  double mqt = (mq0+mq1)/(2.*sqrt(tC));
-  double mHt = mH/sqrt(tC);
-  double num1 = gH*(1.+z)*mqt;
-  double num2 = gH*sqrt(-sqr(mqt)*(1.-z) - sqr(mHt)*z + z*(1.-z)*(sqr(mqt)+z*(1.-z))); //watch this
-  double dnum = sqrt(2.)*sqrt((1.-z)*sqr(z));
+  getCouplings(gH,ids,t);
+  double m0t = m0/sqrt(t);
+  double m1t = m1/sqrt(t);
+  double mHt = mH/sqrt(t);
+
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
-  (*kernal)(0,0,0) = num1/dnum;
-  (*kernal)(0,1,0) = cphase*num2/dnum;
-  (*kernal)(1,0,0) = -phase*num2/dnum;
-  (*kernal)(1,1,0) = num1/dnum;
+  (*kernal)(0,0,0) = (m1t+m0t*z)/sqrt(2.*z);
+  (*kernal)(0,1,0) = cphase*gH*sqrt(sqr(m0t)*z*(1.-z)-sqr(m1t)*(1.-z)-sqr(mHt)*z+z*(1.-z))/sqrt(2.*z);
+  (*kernal)(1,0,0) = -phase*gH*sqrt(sqr(m0t)*z*(1.-z)-sqr(m1t)*(1.-z)-sqr(mHt)*z+z*(1.-z))/sqrt(2.*z);
+  (*kernal)(1,1,0) = (m1t+m0t*z)/sqrt(2.*z);
   // return the answer
   return kernal;
 }

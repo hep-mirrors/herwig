@@ -78,8 +78,8 @@ double ZeroZeroOneEWSplitFn::P(const double z, const Energy2 t,
     double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += (rho00+rho22)*(-(m2t2/pow(1.-z,3))+m0t2/pow(1.-z,2)-m1t2/(pow(1.-z,2)*z))
-        +(m2t2*rho11*pow(1.+z,2))/(2.*pow(1.-z,3)*z);
+    val += (m2t2*sqr(1.+z)*rho11)/(2.*sqr(1.-z))+((-(m1t2*(1.-z))
+        -m2t2*z+m0t2*(1.-z)*z)*(rho00+rho22))/sqr(1.-z);
   }
   return sqr(ghhv)*val;
 }
@@ -107,8 +107,8 @@ double ZeroZeroOneEWSplitFn::ratioP(const double z, const Energy2 t,
     double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += (rho00+rho22)*(-(m2t2/pow(1.-z,4))+m0t2/pow(1.-z,3)-m1t2/(pow(1.-z,3)*z))
-        +(m2t2*rho11*pow(1.+z,2))/(2.*pow(1.-z,4)*z);
+    val += ((1.-z)*(m2t2*sqr(1.+z)*rho11+2*(m1t2*(-1.+z)
+        -(m2t2+m0t2*(-1.+z))*z)*(rho00+rho22)))/(2.*sqr(-1.+z)*z);
   }
   return val;
 }
@@ -203,11 +203,11 @@ DecayMEPtr ZeroZeroOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
-  double sqrtmass = sqrt(m0t2-m1t2/z-m2t2/(1.-z)+z*(1.-z));
+  double sqrtmass = sqrt(m0t2*z*(1.-z)-m1t2*(1.-z)-m2t2*z+z*(1.-z));
   // assign kernel
-  (*kernal)(0,0,0) = -phase*sqrtmass/(1.-z);        // 111
-  (*kernal)(1,0,0) =  sqrt(m2t2)/sqrt(2.*z*(1.-z)); // 211 -> 411
-  (*kernal)(2,0,0) = cphase*sqrtmass;               // 311
+  (*kernal)(0,0,0) = -phase*ghhv*sqrtmass/(1.-z);        // 111
+  (*kernal)(1,0,0) = -sqrt(m2t2)*(1.+z)/sqrt(2.*(1.-z)); // 211 -> 411
+  (*kernal)(2,0,0) = cphase*ghhv*sqrtmass/(1.-z);        // 311
   // return the answer
   return kernal;
 }

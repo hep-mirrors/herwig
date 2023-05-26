@@ -113,17 +113,16 @@ double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   if(mass)
-    return sqr(ghhh)*sqr(m0)/(2.*t*z*(1.-z));
+    return sqr(ghhh)*sqr(m0)/(2.*t);
   else
     assert(false);
 }
-
 
 double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double ghhh(0.);
   getCouplings(ghhh,ids);
-  return sqr(ghhh)/(2.*z*(1.-z));
+  return sqr(ghhh)/2.;
 }
 
 double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,
@@ -143,13 +142,13 @@ double ZeroZeroZeroEWSplitFn::integOverP(const double z,
   double pre = sqr(ghhh);
   switch (PDFfactor) {
   case 0: //OverP
-    return pre*(-0.5*(log(1.-z) - log(z)));
+    return pre*z/2.;
   case 1: //OverP/z
-    //return pre*(log(z)-log(1-z)-1/z)/2.;
+    return pre*log(z)/2.;
   case 2: //OverP/(1-z)
-    //return pre*(1/(1-z)-log(1-z)+log(z))/2.;
+    return -pre*log(-1.+z)/2.;
   case 3: //OverP/[z(1-z)]
-    //return  pre*(2*log(z)-2*log(1-z)-1/z+1/(1-z))/2.;
+    return -pre*(log(1.-z)-log(z))/2.;
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -163,10 +162,13 @@ double ZeroZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = sqr(ghhh);
   switch (PDFfactor) {
   case 0:
-    return exp(2.*r/pre)/(1.+exp(2.*r/pre));
+    return 2.*r/pre;
   case 1: //OverP/z
+    return exp(2.*r/pre);
   case 2: //OverP/(1-z)
+    return (2.-exp(-2*r/pre));
   case 3: //OverP/[z(1-z)]
+    return exp(2.*r/pre)/(1.+exp(2.*r/pre));
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::invIntegOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -211,7 +213,7 @@ DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   if(_couplingValue==0)
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
-  (*kernal)(0,0,0) = ghhh*m0/sqrt(2*t*z*(1.-z));
+  (*kernal)(0,0,0) = ghhh*m0/sqrt(2*t);
   // return the answer
   return kernal;
 }
