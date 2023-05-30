@@ -152,7 +152,10 @@ protected:
 
 private:
 
-
+  /**
+   * Private and non-existent assignment operator.
+   */
+  DynamicGluonMassGenerator & operator=(const DynamicGluonMassGenerator &) = delete;
 
   /**
    * Scale of the Sudakov in the gluon splitting
@@ -163,12 +166,6 @@ private:
    * freezing scale for the non-pert. alphas
    */
   Energy _clusteralphasfreeze = 1.0*GeV;
-
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  DynamicGluonMassGenerator & operator=(const DynamicGluonMassGenerator &);
 
 };
 

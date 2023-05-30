@@ -32,7 +32,7 @@ IBPtr DynamicGluonMassGenerator::fullclone() const {
 
 
 
-InvEnergy DynamicGluonMassGenerator::PmgProposal(Energy mg, Energy mq) const {
+InvEnergy DynamicGluonMassGenerator::PmgProposal(Energy, Energy mq) const {
     return (ClusterAlphaS(4*mq*mq)*0.32/mq);
 }
 
