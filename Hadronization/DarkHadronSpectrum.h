@@ -65,7 +65,7 @@ public:
   virtual const vector<long>& lightHadronizingQuarks() const {
     if (_lightquarks.size() != _nlightquarks) {
       for (long il=0; il<_nlightquarks; il++) {
-        _lightquarks.push_back(il+91);
+        _lightquarks.push_back(il+_DarkHadOffset+1);
       }
     }
     return _lightquarks;
@@ -77,7 +77,7 @@ public:
   virtual const vector<long>& heavyHadronizingQuarks() const {
     if (_heavyquarks.size() != _nheavyquarks) {
       for (long il=0; il<_nheavyquarks; il++) {
-        _heavyquarks.push_back(il+91+_nlightquarks);
+        _heavyquarks.push_back(il+_DarkHadOffset+1+_nlightquarks);
       }
     }
     return _heavyquarks;
@@ -179,6 +179,11 @@ protected:
    */
   long makeDiquarkID(long id1, long id2, long pspin)  const;
   
+  /**
+   *  Weights for mesons
+   */
+  virtual double mesonWeight(long id) const;
+
   /**
    * Return true, if any of the possible input particle pointer is an exotic quark, e.g. Susy quark;
    * false otherwise.   

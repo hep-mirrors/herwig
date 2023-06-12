@@ -51,7 +51,7 @@ newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 newdef ShowerHandler:PartnerFinder PartnerFinder
 newdef ShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
-newdef ShowerHandler:Interactions QEDQCD # TODO: is this a good choice?
+newdef ShowerHandler:Interactions QEDQCD
 newdef ShowerHandler:SpinCorrelations Yes
 newdef ShowerHandler:SoftCorrelations Singular
 

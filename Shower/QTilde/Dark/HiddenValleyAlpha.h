@@ -247,6 +247,16 @@ private:
   double _alphain;
 
   /**
+   *  Whether to convert lambda from MSbar scheme
+   */
+  bool _lambdaopt;
+
+  /**
+   *  Whether to use input value of alphas(MZ) or lambda
+   */
+  bool _inopt;
+
+  /**
    *  Tolerance for discontinuities at the thresholds
    */
   double _tolerance;
@@ -255,6 +265,11 @@ private:
    *  Maximum number of iterations for the Newton-Raphson method to converge
    */
   unsigned int _maxtry;
+
+  /**
+   *  Number of light flavours (below qmin)
+   */
+  unsigned int _nf_light;
 
   /**
    *  The minimum value of the coupling

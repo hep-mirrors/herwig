@@ -10,6 +10,7 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 QuarkoniumDecayer.h   \
+DarkQuarkoniumDecayer.h   \
 HeavyDecayer.h        \
 WeakPartonicDecayer.h \
 BtoSGammaDecayer.h    \
@@ -17,6 +18,7 @@ PartonicDecayerBase.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
+DarkQuarkoniumDecayer.cc \
 QuarkoniumDecayer.cc \
 HeavyDecayer.cc \
 WeakPartonicDecayer.cc\

@@ -90,10 +90,26 @@ void HiddenValleyAlpha::Init() {
      &HiddenValleyAlpha::_nloop, 2, 1, 2,
      false, false, Interface::limited);
 
+  static Switch<HiddenValleyAlpha,bool> interfaceLambdaOption
+    ("LambdaOption",
+     "Option for the calculation of the Lambda used in the simulation from the input"
+     " Lambda_MSbar",
+     &HiddenValleyAlpha::_lambdaopt, false, false, false);
+  static SwitchOption interfaceLambdaOptionfalse
+    (interfaceLambdaOption,
+     "Same",
+     "Use the same value",
+     false);
+  static SwitchOption interfaceLambdaOptionConvert
+    (interfaceLambdaOption,
+     "Convert",
+     "Use the conversion to the Herwig scheme from NPB349, 635",
+     true);
+
   static Parameter<HiddenValleyAlpha,Energy> interfaceLambdaQCD
     ("LambdaQCD",
      "Input value of Lambda_MSBar",
-     &HiddenValleyAlpha::_lambdain, MeV, 0.208364*GeV, 100.0*MeV, 500.0*MeV,
+     &HiddenValleyAlpha::_lambdain, GeV, 0.208364*GeV, 100.0*MeV, 100.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<HiddenValleyAlpha,double> interfaceAlphaMZ
@@ -101,6 +117,21 @@ void HiddenValleyAlpha::Init() {
      "The input value of the strong coupling at the Z mass ",
      &HiddenValleyAlpha::_alphain, 0.118, 0.1, 0.2,
      false, false, Interface::limited);
+
+  static Switch<HiddenValleyAlpha,bool> interfaceInputOption
+    ("InputOption",
+     "Option for inputing the initial value of the coupling",
+     &HiddenValleyAlpha::_inopt, true, false, false);
+  static SwitchOption interfaceInputOptionAlphaMZ
+    (interfaceInputOption,
+     "AlphaMZ",
+     "Use the value of alpha at MZ to calculate the coupling",
+     true);
+  static SwitchOption interfaceInputOptionLambdaQCD
+    (interfaceInputOption,
+     "LambdaQCD",
+     "Use the input value of Lambda to calculate the coupling",
+     false);
 
   static Parameter<HiddenValleyAlpha,double> interfaceTolerance
     ("Tolerance",
@@ -128,7 +159,6 @@ void HiddenValleyAlpha::Init() {
      "Constituent",
      "Use the constitent masses.",
      false);
-
 }
 
 double HiddenValleyAlpha::value(const Energy2 scale) const {
@@ -239,12 +269,11 @@ Energy HiddenValleyAlpha::computeLambda(Energy match,
 
 pair<short, Energy> HiddenValleyAlpha::getLamNfTwoLoop(Energy q) const {
   unsigned int ix=1;
-  for(;ix<_thresholds.size();++ix) {
+  for(;ix<_thresholds.size();ix++) {
     if(q<_thresholds[ix]) break;
   }
-  if(ix==_thresholds.size()) --ix;
   --ix;
-  return pair<short,Energy>(ix, _lambda[ix]);
+  return pair<short,Energy>(ix+_nf_light, _lambda[ix]);
 }
 
 void HiddenValleyAlpha::doinit() {
@@ -261,26 +290,39 @@ void HiddenValleyAlpha::doinit() {
   _tr = model->TR();
   // get the thresholds
   _thresholds.push_back(_qmin);
+  _nf_light = 0;
   for(unsigned int ix=1;ix<=model->NF();++ix) {
-    _thresholds.push_back(getParticleData(ParticleID::darkGluon+long(ix))->mass());
+    Energy qmass = getParticleData(ParticleID::darkGluon+long(ix))->mass();
+    if (qmass > _qmin) _thresholds.push_back(qmass);
+    else _nf_light++;
   }
   _lambda.resize(_thresholds.size());
   Energy mz = getParticleData(ThePEG::ParticleID::Z0)->mass();
-  unsigned int nf;
-  for(nf=0;nf<_thresholds.size();++nf) {
-    if(mz<_thresholds[nf]) break;
+  unsigned int nf_heavy;
+  for(nf_heavy=0;nf_heavy<_thresholds.size();++nf_heavy) {
+    if(mz<_thresholds[nf_heavy]) break;
   }
-  nf-=1;
+  nf_heavy-=1;
+  unsigned int nf = _nf_light+nf_heavy;
+
   // value of Lambda from alphas if needed using Newton-Raphson
-  _lambda[nf] = computeLambda(mz,_alphain,nf-1);
+  if(_inopt) {
+    _lambda[nf_heavy] = computeLambda(mz,_alphain,nf-1);
+  }
+  // otherwise it was an input parameter
+  else{_lambda[nf_heavy]=_lambdain;}
+  // convert lambda to the Monte Carlo scheme if needed
+  using Constants::pi;
+  if(_lambdaopt) _lambda[nf_heavy] *=exp((0.5*_ca*(67./3.-sqr(pi))-_tr*nf*10./3.)/(11*_ca-2*nf))/sqrt(2.);
+
   // compute the threshold matching
   // above the Z mass
-  for(int ix=nf;ix<int(_thresholds.size())-1;++ix) {
+  for(int ix=nf_heavy;ix<int(_thresholds.size())-1;++ix) {
     _lambda[ix+1] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
 							   _lambda[ix],ix),ix+1);
   }
   // below Z mass
-  for(int ix=nf-1;ix>=0;--ix) {
+  for(int ix=nf_heavy-1;ix>=0;--ix) {
     _lambda[ix] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
 							 _lambda[ix+1],ix+1),ix);
   }

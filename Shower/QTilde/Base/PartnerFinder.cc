@@ -207,8 +207,7 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 
   for ( const auto & sp : particles ) {
     // Skip colourless particles
-    if(!sp->data().coloured()) continue;
-    if(abs(sp->id())==90 && abs(sp->id())==91 && abs(sp->id())==92) continue;
+    if(!sp->data().coloured() || sp->data().colouredInteraction() != 0) continue;
     // find the partners
     auto partners = findQCDPartners(sp,particles);
     // must have a partner
@@ -300,7 +299,6 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
   for(const auto & sp : particles) {
     // not charged or photon continue
     if(!sp->dataPtr()->charged() && sp->dataPtr()->id()!=ParticleID::gamma) continue;
-    if(abs(sp->id())==90 || abs(sp->id())==91 || abs(sp->id())==92) continue;
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(sp,particles,isDecayCase);
     if(partners.empty()) {
@@ -477,7 +475,7 @@ PartnerFinder::findDARKPartners(tShowerParticlePtr particle,
   vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners;
   for (const auto & sp : particles) {
     if(!sp->data().coloured() || particle==sp) continue;
-    if(abs(sp->id())!=90 && abs(sp->id())!=91 && abs(sp->id())!=92) continue;
+    if(sp->data().colouredInteraction() != 1) continue;
     // one initial-state and one final-state particle
     if(FS(particle) != FS(sp)) {
       // loop over all the colours of both particles
@@ -638,7 +636,7 @@ void PartnerFinder::setInitialDARKEvolutionScales(const ShowerParticleVector &pa
 	for ( const auto & sp : particles ) {
 		  // Skip colourless particles
       if(!sp->data().coloured()) continue;
-      if(abs(sp->id())!=90 && abs(sp->id())!=91 && abs(sp->id())!=92) continue;
+      if(sp->data().colouredInteraction() != 1) continue;
 			// find the partners
       auto partners = findDARKPartners(sp,particles);
       // must have a partner

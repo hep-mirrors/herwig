@@ -47,7 +47,7 @@ void PTCutOff::Init() {
   static Parameter<PTCutOff,Energy> interfacepTmin
     ("pTmin",
      "The minimum pT if using a cut-off on the pT",
-     &PTCutOff::pTmin_, GeV, 1.0*GeV, ZERO, 10.0*GeV,
+     &PTCutOff::pTmin_, GeV, 1.0*GeV, ZERO, 100.0*GeV,
      false, false, Interface::limited);
 
 }

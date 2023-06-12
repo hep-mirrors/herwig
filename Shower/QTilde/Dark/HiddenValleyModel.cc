@@ -78,7 +78,7 @@ void HiddenValleyModel::Init() {
   static ParVector<HiddenValleyModel,double> interfaceQuirkCharges
     ("QuirkCharges",
      "The charges under the new U(1) of the new quirks",
-     &HiddenValleyModel::qCharge_, 1, -0.2, -10., 10.0,
+     &HiddenValleyModel::qCharge_, -1, -0.2, -10., 10.0,
      false, false, Interface::limited);
 
   static Parameter<HiddenValleyModel,double> interfaceZPrimeQL
@@ -124,7 +124,7 @@ void HiddenValleyModel::doinit() {
   BSMModel::doinit();
   FFZPVertex_->init();
   if(qCharge_.size()!=Nf_)
-    throw InitException() << "Number of new fermions and  number of new charges"
+    throw InitException() << "Number of new fermions and  number of new charges "
 			  << "different in HiddenValleyModel::doinit()"
 			  << Exception::runerror;
 }

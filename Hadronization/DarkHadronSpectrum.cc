@@ -306,16 +306,25 @@ void DarkHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2) {
   if(flav1 == flav2 && flav1<=_nlightquarks) {
     vector<long> light = lightHadronizingQuarks();
     // light quark admixture states
-    a.overallWeight *= 1 / light.size();
+    a.overallWeight *= 1. / light.size();
     for(unsigned int ix=0; ix<light.size(); ++ix){
       _table[make_pair(light[ix],light[ix])].insert(a);
 	}
   }
   else {
-    _table[make_pair(90+flav1, 90+flav2)].insert(a);
-    if(flav1 != flav2) _table[make_pair(90+flav2, 90+flav1)].insert(a);
+    _table[make_pair(_DarkHadOffset+flav1, _DarkHadOffset+flav2)].insert(a);
+    if(flav1 != flav2) _table[make_pair(_DarkHadOffset+flav2, _DarkHadOffset+flav1)].insert(a);
   }
 }
+
+
+double DarkHadronSpectrum::mesonWeight(long id) const {
+  // Don't currently have radial excitations (practically clashes with dark had offset
+  // in pdgId codes; theoretically doesn't make much sense to consider such complex
+  // states). For now just return 1
+  return 1.0;
+}
+
 
 long DarkHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
 
@@ -335,22 +344,16 @@ long DarkHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
   if (id1 == id2 && pspin == 1) {
     //cerr<<"WARNING: spin-0 diquiark of the same type cannot exist."
     //    <<" Switching to spin-1 diquark.\n";
-    idnew = ida*1000 + idb*100 + 3;
+    idnew = ida*1000 + idb*100 + 3 + _DarkHadOffset;
   }
 
   return id1 > 0 ? idnew : -idnew;
 }
 
 bool DarkHadronSpectrum::isExotic(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) const {
-  /// \todo make this more general
-  long id1 = par1 ? par1->id(): 0;
-  long id2 = par2 ? par2->id(): 0;
-  long id3 = par3 ? par3->id(): 0;
-return 
-  ( (id1/1000000)% 10 != 0 && (id1/1000000)% 10 != 9 ) ||
-  ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
-  ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
-  abs(id1)==6||abs(id2)==6;
+  // Don't list dark particles as exotic to allow them to be treated as either light
+  // or heavy in the hadronisation
+  return false;
 }
 
 bool DarkHadronSpectrum::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) const {
