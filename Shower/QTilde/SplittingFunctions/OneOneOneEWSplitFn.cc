@@ -98,6 +98,10 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z);
   }
+  // symmetryc factor //
+  // I'm not sure this functional is necessary. Validation is needed
+  if( ids[1]->id() == ids[2]->id() )
+    val /= 2.;
   return sqr(gvvv)*val;
 }
 
@@ -106,7 +110,12 @@ double OneOneOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gvvv(0.);
   getCouplings(gvvv,ids);
-  return sqr(gvvv)*(2./(z*(1.-z)));
+  double val = sqr(gvvv)*(2./(z*(1.-z)));
+  // symmetryc factor //
+  // I'm not sure this functional is necessary. Validation is needed
+  if( ids[1]->id() == ids[2]->id() )
+    val /= 2.;
+  return val;
 }
 
 

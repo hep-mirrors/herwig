@@ -75,12 +75,6 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->
                   alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
       Energy m0 = ids[0]->mass();
-      // There is no real part in SM couplings. Therefore, the Herwig's
-      // SM couplings only treat the imaginary part of the couplings,
-      // i.e. Herwig's conventional coupling can be written as
-      //       g = Im(_couplingValue)
-      // which is (-i) times the coupling value. However, we do not
-      // follow this convention strictly because we will norm this value
       g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
     }
     // SM case
@@ -88,7 +82,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
       // running masses
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       Energy mH = getParticleData(ParticleID::h0)->mass();
-      g = (1.5*(gw_/mW)*mH,0.);
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
     }
   }
   else
@@ -110,7 +104,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
       // running masses
       Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
       Energy mH = _theSM->mass(t,getParticleData(ParticleID::h0));
-      g = (1.5*(gw_/mW)*mH,0.);
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
     }
   }
   else
@@ -124,8 +118,13 @@ double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
   if(_couplingValueIm==0&&_couplingValueRe==0)
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
+  double val = norm(ghhh)/(2.*t)*GeV2;
+  // symmetryc factor //
+  // I'm not sure this functional is necessary. Validation is needed
+  if( ids[1]->id() == ids[2]->id() )
+    val /= 2.;
   if(mass)
-    return norm(ghhh)*sqr(m0)/(2.*t);
+    return val;
   else
     assert(false);
 }
@@ -134,16 +133,18 @@ double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  return sqr(norm(ghhh))/2.;
+  double val = norm(ghhh)/2.;
+  // symmetryc factor //
+  // I'm not sure this functional is necessary. Validation is needed
+  if( ids[1]->id() == ids[2]->id() )
+    val /= 2.;
+  return val;
 }
 
 double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,
 				    const IdList & ids, const bool ,
 				    const RhoDMatrix & ) const {
-  Energy m0 = ids[0]->mass();
-  if(_couplingValueIm==0&&_couplingValueRe==0)
-    m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
-  return sqr(m0)/t;
+  return 1./t*GeV2;
 }
 
 double ZeroZeroZeroEWSplitFn::integOverP(const double z,
@@ -221,11 +222,9 @@ DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   Complex ghhh(0.,0.);
-  Energy m0 = ids[0]->mass();
-  if(_couplingValueIm==0&&_couplingValueRe==0)
-    m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
-  (*kernal)(0,0,0) = ghhh*m0/sqrt(2*t);
+  double sqrtt = sqrt(t)/GeV;
+  (*kernal)(0,0,0) = ghhh/sqrt(2)/sqrtt;
   // return the answer
   return kernal;
 }

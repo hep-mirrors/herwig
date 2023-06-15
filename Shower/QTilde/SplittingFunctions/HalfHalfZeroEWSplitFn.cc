@@ -91,8 +91,8 @@ void HalfHalfZeroEWSplitFn::getCouplings(Complex& gH0, Complex& gH1, const IdLis
       //get quark masses
       Energy m0 = getParticleData(abs(ids[0]->id()))->mass();
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
-      gH0 = (ghqq_*(m0/mW),0.);
-      gH1 = (0.,0.);
+      gH0 = Complex(0.,ghqq_*(m0/mW));
+      gH1 = Complex(0.,0.);
     }
   }
   else
@@ -112,8 +112,8 @@ void HalfHalfZeroEWSplitFn::getCouplings(Complex & gH0, Complex & gH1, const IdL
       Energy m0 = _theSM->mass(t,getParticleData(abs(ids[0]->id())));
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       //Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
-      gH0 = (ghqq_*(m0/mW),0.);
-      gH1 = (0.,0.);
+      gH0 = Complex(0.,ghqq_*(m0/mW));
+      gH1 = Complex(0.,0.);
     }
   }
   else
@@ -142,7 +142,7 @@ double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
   val += -(abs(rho(1,1))*norm(gH0+gH1)+abs(rho(0,0))*norm(gH0-gH1))*sqr(m2t)
          +(abs(rho(1,1))+abs(rho(0,0)))*(norm(gH0)*sqr(m0t+m1t)+norm(gH1)*sqr(m0t-m1t))
          +2*(abs(rho(1,1))-abs(rho(0,0)))*(gH0*conj(gH1)).real()*((1-2*z)*sqr(m0t)+sqr(m1t));
-  return colourFactor(ids)*val;
+  return colourFactor(ids)*val/2.;
 }
 
 
@@ -151,7 +151,7 @@ double HalfHalfZeroEWSplitFn::overestimateP(const double z,
   Complex gH0(0.,0.);
   Complex gH1(0.,0.);
   getCouplings(gH0,gH1,ids);
-  return colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()))*(1.-z);
+  return colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()))*(1.-z)/2.;
 }
 
 double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
@@ -187,7 +187,7 @@ double HalfHalfZeroEWSplitFn::integOverP(const double z,
   Complex gH0(0.,0.);
   Complex gH1(0.,0.);
   getCouplings(gH0,gH1,ids);
-  double pre = colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()));
+  double pre = colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()))/2.;
   switch (PDFfactor) {
   case 0: //OverP
     return pre*(z-sqr(z)/2.);
@@ -208,7 +208,7 @@ double HalfHalfZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   Complex gH0(0.,0.);
   Complex gH1(0.,0.);
   getCouplings(gH0,gH1,ids);
-  double pre = colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()));
+  double pre = colourFactor(ids)*(norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()))/2.;
   switch (PDFfactor) {
   case 0:
     return 1.-sqrt(1.-2.*r/pre);

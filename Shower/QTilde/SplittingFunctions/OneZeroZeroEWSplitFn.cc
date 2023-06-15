@@ -65,7 +65,7 @@ void OneZeroZeroEWSplitFn::doinit() {
 
 
 void OneZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList &) const {
-  g = Complex(_couplingValueRe,_couplingValueIm); // Don't we need '/e'?
+  g = Complex(_couplingValueRe,_couplingValueIm);
 }
 
 

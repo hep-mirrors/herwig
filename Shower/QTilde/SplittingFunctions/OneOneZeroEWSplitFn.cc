@@ -75,15 +75,15 @@ void OneOneZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const {
   if(_couplingValueIm!=0||_couplingValueRe!=0) {
     double e  = sqrt(4.*Constants::pi*generator()->standardModel()
               ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
-    double m0 = ids[0]->mass()/GeV;
-    g = Complex(_couplingValueRe,_couplingValueIm)/e/m0;
+    Energy m0 = ids[0]->mass();
+    g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
   }
   else {
     if(abs(ids[0]->id())==ParticleID::Wplus){
-      g = gWWH_;
+      g = Complex(0.,gWWH_);
     }
     else if(ids[0]->id()==ParticleID::Z0){
-      g = gZZH_;
+      g = Complex(0.,gZZH_);
     }
     else
       assert(false);

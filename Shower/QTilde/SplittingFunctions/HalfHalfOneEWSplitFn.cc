@@ -99,11 +99,11 @@ void HalfHalfOneEWSplitFn::getCouplings(Complex & gL, Complex & gR, const IdList
   else if(ids[2]->id()==ParticleID::Z0) {
     map<long,pair<double,double> >::const_iterator it = gZ_.find(abs(ids[0]->id()));
     assert(it!=gZ_.end());
-    gL = it->second.first ;
-    gR = it->second.second;
+    gL = Complex(0.,it->second.first);
+    gR = Complex(0.,it->second.second);
   }
   else if(abs(ids[2]->id())==ParticleID::Wplus) {
-    gL = gWL_;
+    gL = Complex(0.,gWL_);
   }
   else
     assert(false);
