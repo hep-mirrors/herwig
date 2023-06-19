@@ -111,7 +111,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
     assert(false);
 }
 
-double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
+double ZeroZeroZeroEWSplitFn::P(const double, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
   Complex ghhh(0.,0.);
   Energy m0 = ids[0]->mass();
@@ -129,7 +129,7 @@ double ZeroZeroZeroEWSplitFn::P(const double z, const Energy2 t,
     assert(false);
 }
 
-double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
+double ZeroZeroZeroEWSplitFn::overestimateP(const double,
 					   const IdList & ids) const {
   Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
@@ -141,8 +141,8 @@ double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
   return val;
 }
 
-double ZeroZeroZeroEWSplitFn::ratioP(const double , const Energy2 t,
-				    const IdList & ids, const bool ,
+double ZeroZeroZeroEWSplitFn::ratioP(const double, const Energy2 t,
+				    const IdList &, const bool ,
 				    const RhoDMatrix & ) const {
   return 1./t*GeV2;
 }
@@ -216,7 +216,7 @@ ZeroZeroZeroEWSplitFn::generatePhiBackward(const double, const Energy2, const Id
   return {{ {0, 1.} }};
 }
 
-DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
+DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double, const Energy2 t,
                                              const IdList & ids, const double,
                                              bool) {
   // calculate the kernal
