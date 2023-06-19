@@ -60,13 +60,13 @@ void HardProcessConstructor::doinit() {
     throw
       InitException() << "HardProcessConstructor:: doinit() - "
 		      << "The eventHandler pointer was null therefore "
-		      << "could not get SubProcessHandler pointer " 
+		      << "could not get SubProcessHandler pointer "
 		      << Exception::abortnow;
   }
-  string subProcessName = 
+  string subProcessName =
     eg->preinitInterface(eg->eventHandler(), "SubProcessHandlers", "get","");
   subProcess_ = eg->getObject<SubProcessHandler>(subProcessName);
-  if(!subProcess_) {
+  if(!subProcess_ && HardProcessConstructor::debug_) {
     ostringstream s;
     s << "HardProcessConstructor:: doinit() - "
       << "There was an error getting the SubProcessHandler "
@@ -89,10 +89,10 @@ colourFlow(const tcPDVector & extpart) const {
     }
     else if( outa == PDT::Colour3 && outb == PDT::Colour3bar ) {
       return GeneralHardME::Colour11to33bar;
-    } 
+    }
     else if( outa == PDT::Colour8 && outb == PDT::Colour8 ) {
       return GeneralHardME::Colour11to88;
-    } 
+    }
     else
       assert(false);
   }
@@ -193,7 +193,7 @@ colourFlow(const tcPDVector & extpart) const {
     }
     else if( outa == PDT::Colour6 && outb == PDT::Colour6bar ) {
       return GeneralHardME::Colour88to66bar;
-    }    
+    }
     else
       assert(false);
   }
@@ -224,7 +224,7 @@ colourFlow(const tcPDVector & extpart) const {
       assert(false);
   }
   // incoming 3bar8
-  else if(ina == PDT::Colour3bar && inb == PDT::Colour8 ) {   
+  else if(ina == PDT::Colour3bar && inb == PDT::Colour8 ) {
     if(outa == PDT::Colour3bar && outb == PDT::Colour0 ) {
       return GeneralHardME::Colour3bar8to3bar1;
     }
@@ -244,7 +244,7 @@ colourFlow(const tcPDVector & extpart) const {
       assert(false);
   }
   // unknown colour flow
-  else 
+  else
     assert(false);
   return GeneralHardME::UNDEFINED;
 }
@@ -264,8 +264,8 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
     }
     return;
   }
-  
-  if( psc->iSpin() == psd->iSpin() && 
+
+  if( psc->iSpin() == psd->iSpin() &&
       psc->id() < 0 && psd->id() > 0 ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
@@ -286,7 +286,7 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
   else if (diag.channelType == HPDiagram::fourPoint) {
     fourPointCF(diag);
   }
-  else 
+  else
     assert(false);
 }
 
@@ -347,7 +347,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	     ob->iSpin()==PDT::Spin3Half)) {
       cfv[0] = make_pair(0,-1);
     }
-  } 
+  }
   else if(diag.intermediate->iColour() == PDT::Colour3 ||
 	  diag.intermediate->iColour() == PDT::Colour3bar) {
     if(outa == PDT::Colour0 || outb == PDT::Colour0) {
@@ -429,7 +429,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   }
   diag.colourFlow = cfv;
 }
- 
+
 void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   tcPDPtr ia = getParticleData(diag.incoming.first );
   tcPDPtr ib = getParticleData(diag.incoming.second);
@@ -447,7 +447,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       cfv[0].first = 0;
     }
     else if( outa != outb ) {
-      if(outa == PDT::Colour0 || 
+      if(outa == PDT::Colour0 ||
 	 outb == PDT::Colour0) {
 	cfv[0].first = 0;
       }
@@ -553,7 +553,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	     (outa==PDT::Colour3bar && outb==PDT::Colour3bar))) {
       cfv[0] = make_pair(2, 1.);
     }
-    else if(( ina==PDT::Colour3    &&  inb==PDT::Colour3bar && 
+    else if(( ina==PDT::Colour3    &&  inb==PDT::Colour3bar &&
 	      outa==PDT::Colour3    && outb==PDT::Colour3bar)) {
       cfv[0] = make_pair(2, 1.);
       cfv.push_back(make_pair(3,-1.));
@@ -620,7 +620,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
   PDT::Colour outb = pd->iColour();
   vector<CFPair> cfv(1);
   if(offshell == PDT::Colour8) {
-    if(ina  == PDT::Colour0 || inb  == PDT::Colour0 || 
+    if(ina  == PDT::Colour0 || inb  == PDT::Colour0 ||
        outa == PDT::Colour0 || outb == PDT::Colour0) {
       cfv[0] = make_pair(0, 1);
     }
@@ -660,7 +660,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	  cfv.push_back(make_pair(1, prefact));
 	}
       }
-      else if( (  intrip && !outtrip ) || 
+      else if( (  intrip && !outtrip ) ||
 	       ( !intrip &&  outtrip ) ) {
 	if(!outsex)
 	  cfv[0] = make_pair(0, 1);
@@ -713,7 +713,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
     }
   }
   else if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
-    if(outa == PDT::Colour6    || outa == PDT::Colour6bar || 
+    if(outa == PDT::Colour6    || outa == PDT::Colour6bar ||
        outb == PDT::Colour6bar || outb == PDT::Colour6) {
       cfv[0] = make_pair(6, 1.);
       cfv.push_back(make_pair(7,1.));
@@ -768,8 +768,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       cfv[0] = make_pair(0, 1);
     else
       cfv[0] = make_pair(1, 1);
-  }  
-  diag.colourFlow = cfv; 
+  }
+  diag.colourFlow = cfv;
 }
 
 void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
@@ -786,7 +786,7 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
     else if(col==PDT::Colour6||col==PDT::Colour6bar) ++nsex;
     if(particles.back()->iSpin()==2) nf+=1;
   }
-  if(nsng==4 || (ntri==2&&nsng==2) || 
+  if(nsng==4 || (ntri==2&&nsng==2) ||
      (noct==3            && nsng==1) ||
      (ntri==2 && noct==1 && nsng==1) ||
      (noct == 2 && nsng == 2) ) {
@@ -937,13 +937,13 @@ namespace {
   };
 }
 
-bool HardProcessConstructor::duplicate(const HPDiagram & diag, 
+bool HardProcessConstructor::duplicate(const HPDiagram & diag,
 				       const HPDVector & group) const {
   //find if a duplicate diagram exists
-  HPDVector::const_iterator it = 
+  HPDVector::const_iterator it =
     find_if(group.begin(), group.end(), SameDiagramAs(diag));
   return it != group.end();
-} 
+}
 
 bool HardProcessConstructor::checkOrder(const HPDiagram & diag) const {
   for(map<string,pair<unsigned int,int> >::const_iterator it=model_->couplings().begin();
