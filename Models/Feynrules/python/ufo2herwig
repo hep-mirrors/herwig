@@ -153,9 +153,10 @@ if(args.convert) :
     convertToPython3(args.ufodir)
 
 def load_parameters(FR):
-    if not os.path.isfile("FR_Parameters.py") :
-        file = open("FR_Parameters.py", "a")
-        header = \
+    if os.path.isfile("FR_Parameters.py") :
+        os.remove("FR_Parameters.py")
+    file = open("FR_Parameters.py", "a")
+    header = \
 """
 import cmath
 all_functions = []
@@ -206,13 +207,13 @@ reglog = Function(name = 'reglog',
                 arguments = ('z'),
                 expression = '(0.0 if z==0.0 else cmath.log(z.real))')
 """
-        file.write(header)
-        for par in FR.all_parameters :
-            name  = par.name
-            value = par.value
-            file.write(name+" = "+str(value)+"\n")
-        file.close()
-        print("Successfully loaded model parameters. Please remember to execute this command again, in case the parameters are altered.")
+    file.write(header)
+    for par in FR.all_parameters :
+        name  = par.name
+        value = par.value
+        file.write(name+" = "+str(value)+"\n")
+    file.close()
+    print("Successfully loaded model parameters. Please remember to execute this command again, in case the parameters are altered.")
 
 # import the model
 try :
