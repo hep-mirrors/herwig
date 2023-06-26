@@ -858,6 +858,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 					     pairMomentum,theBranching.sudakov));
     // work out the type of branching
     if(b1->particle()->iColour()==PDT::Colour3) {
+      if(b2->particle()->iColour()==PDT::Colour0) return ProtoBranchingPtr();
       b1->type(ShowerPartnerType::QCDColourLine);
       if(b2->particle()->iColour()==PDT::Colour3 &&
 	 particle_data->iColour()==PDT::Colour8) {
@@ -876,6 +877,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 	assert(false);
     }
     else if(b1->particle()->iColour()==PDT::Colour3bar) {
+      if(b2->particle()->iColour()==PDT::Colour0) return ProtoBranchingPtr();
       b1->type(ShowerPartnerType::QCDAntiColourLine);
       if(b2->particle()->iColour()==PDT::Colour3bar &&
 	 particle_data->iColour()==PDT::Colour8) {

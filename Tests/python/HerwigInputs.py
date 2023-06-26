@@ -155,6 +155,9 @@ def identifySimulation(name,collider,have_hadronic_collider) :
     else :
         if have_hadronic_collider :
             templateName= "Hadron-%s.in" % simulation 
+            if simulation == "Merging" :
+                if "Charm" in name or "Bottom" in name or "Top" in name :
+                    templateName= "Hadron-Merging-Massive.in"
         elif collider != "BFactory" :
             templateName= "%s-%s.in" % (collider,simulation) 
         else :

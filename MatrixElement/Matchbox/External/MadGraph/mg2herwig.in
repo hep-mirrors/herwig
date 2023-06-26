@@ -31,7 +31,7 @@ def fillprocs(model,oras,orew):
     borns="BornAmplitudes.dat"
     virts="VirtAmplitudes.dat"
     procnr=0
-    virtlines=[]
+    virtlines=["set acknowledged_v3.1_syntax True --global"]
     bornlines=[]
   
     # first pass to work out leg numbers   
@@ -399,4 +399,3 @@ if not os.path.isfile("InterfaceMadGraph.so"):
    os.system("make")
 
 build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
-
