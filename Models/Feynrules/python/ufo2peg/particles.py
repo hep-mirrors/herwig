@@ -190,14 +190,31 @@ def sort_splittings(FR,Vertices,p):
                 p2set = True
         if not p0set or not p1set or not p2set :
             continue
+
+        def isGoldstone(p) :
+            def gstest(name):
+                try:
+                    return getattr(p,name)
+                except AttributeError:
+                    return False
+            gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
+            if any(map(gstest, gsnames)):
+                return True
+            return False
+
+        def isGhost(p) :
+            try:
+                getattr(p,'GhostNumber')
+            except AttributeError:
+                return False
+            return p.GhostNumber != 0
+
+        if isGoldstone(p1) or isGoldstone(p2) :
+            continue
+        if isGhost(p1) or isGhost(p2) :
+            continue
         id1 = abs(p1.pdg_code)
         id2 = abs(p2.pdg_code)
-        # TODO need to improve this forbidden list assortment
-        forbidden = [250, 251, 9000001, 9000002, 9000003, 9000004]
-        if id1 in forbidden or id2 in forbidden:
-            continue
-        if p1.GhostNumber!=0 or p2.GhostNumber!=0 :
-            continue
         # put the bigger spin last
         if p1.spin > p2.spin :
             p1, p2 = p2, p1
