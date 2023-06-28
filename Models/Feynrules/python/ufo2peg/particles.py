@@ -196,6 +196,8 @@ def sort_splittings(FR,Vertices,p):
         forbidden = [250, 251, 9000001, 9000002, 9000003, 9000004]
         if id1 in forbidden or id2 in forbidden:
             continue
+        if p1.GhostNumber!=0 or p2.GhostNumber!=0 :
+            continue
         # put the bigger spin last
         if p1.spin > p2.spin :
             p1, p2 = p2, p1
