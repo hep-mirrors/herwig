@@ -32,8 +32,6 @@ def fillprocs(model,oras,orew,MGVersion):
     virts="VirtAmplitudes.dat"
     procnr=0
     virtlines=[]
-    if MGVersion>2 :
-        virtlines.append("set acknowledged_v3.1_syntax True --global")
     bornlines=[]
 
     # first pass to work out leg numbers
