@@ -14,5 +14,5 @@ setup Z0 23 Z0 91.1876 2.4952 24.952 0 0 0 3 0
 create ThePEG::ParticleData W+
 setup W+ 24 W+ 80.377 2.085 21.41 0 3 0 3 0 
 create ThePEG::ParticleData W-
-setup W- -24 W- 80.403 2.141 21.41 0 -3 0 3 0 
+setup W- -24 W- 80.377 2.085 21.41 0 -3 0 3 0 
 makeanti W- W+
