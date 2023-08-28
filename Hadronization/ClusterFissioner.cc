@@ -47,6 +47,7 @@ ClusterFissioner::ClusterFissioner() :
   _fissionPwtDquark(1),
   _fissionPwtSquark(0.5),
   _fissionCluster(0),
+  _kinematicThresholdChoice(0),
   _btClM(1.0*GeV),
   _iopRem(1),
   _kappa(1.0e15*GeV/meter),
@@ -73,7 +74,7 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _clPowCharm << _clPowExotic << _pSplitLight
      << _pSplitBottom << _pSplitCharm << _pSplitExotic
      << _fissionCluster << _fissionPwtUquark << _fissionPwtDquark << _fissionPwtSquark
-     << ounit(_btClM,GeV)
+     << ounit(_btClM,GeV) << _kinematicThresholdChoice
      << _iopRem  << ounit(_kappa, GeV/meter)
      << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
      << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
@@ -86,7 +87,7 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _clPowCharm >> _clPowExotic >> _pSplitLight
      >> _pSplitBottom >> _pSplitCharm >> _pSplitExotic
      >> _fissionCluster >> _fissionPwtUquark >> _fissionPwtDquark >> _fissionPwtSquark
-     >> iunit(_btClM,GeV) >> _iopRem
+     >> iunit(_btClM,GeV) >> _iopRem >> _kinematicThresholdChoice
      >> iunit(_kappa, GeV/meter)
      >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
      >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
@@ -276,6 +277,21 @@ void ClusterFissioner::Init() {
       "Shifts from the kinetic threshold in ClausterFissioner",
       &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
       false, false, Interface::limited);
+
+  static Switch<ClusterFissioner,int> interfaceKinematicThreshold
+    ("KinematicThreshold",
+     "Option for using static or dynamic kinematic thresholds in cluster splittings",
+     &ClusterFissioner::_kinematicThresholdChoice, 0, false, false);
+  static SwitchOption interfaceKinematicThresholdStatic
+    (interfaceKinematicThreshold,
+     "Static",
+     "Set static kinematic thresholds for cluster splittings.",
+     0);
+  static SwitchOption interfaceKinematicThresholdDynamic
+    (interfaceKinematicThreshold,
+     "Dynamic",
+     "Set dynamic kinematic thresholds for cluster splittings.",
+     1);
 
 }
 
@@ -485,16 +501,17 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       // derive the masses of the children
       Mc1 = res.first;
       Mc2 = res.second;
+      // static kinematic threshold
+      if(_kinematicThresholdChoice == 0) {
+        if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+      // dynamic kinematic threshold
+      } else if(_kinematicThresholdChoice == 1) {
+        bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+        bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+        bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
 
-      // old kinematic threshold
-      //if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
-
-      // new kinematic threshold
-      bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
-      bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
-      bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
-
-      if( C1 || C2 || C3 ) continue;
+        if( C1 || C2 || C3 ) continue;
+      }
 
       /**************************
        * New (not present in Fortran Herwig):
@@ -1135,30 +1152,37 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
     clmax = _clMaxCharm;
   }
 
-  //some smooth probablity function to create a dynamic thershold
-  double scale     = pow(clu->mass()/GeV , clpow);
-  double threshold = pow(clmax/GeV, clpow)
-                   + pow(clu->sumConstituentMasses()/GeV, clpow);
-  bool aboveCutoff = ProbablityFunction(scale,threshold);
-
   //regular checks
-  // bool aboveCutoff = (
-	// 	      pow(clu->mass()*UnitRemoval::InvE , clpow)
-	// 	      >
-	// 	      pow(clmax*UnitRemoval::InvE, clpow)
-	// 	      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
-	// 	      );
 
   // required test for SUSY clusters, since aboveCutoff alone
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
   static const Energy minmass
     = getParticleData(ParticleID::d)->constituentMass();
+  bool aboveCutoff = false, canSplitMinimally = false;
+  // static kinematic threshold
+  if(_kinematicThresholdChoice == 0) {
+    aboveCutoff = (
+    	      pow(clu->mass()*UnitRemoval::InvE , clpow)
+    	      >
+    	      pow(clmax*UnitRemoval::InvE, clpow)
+    	      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
+    	      );
 
-  scale     = clu->mass()/GeV;
-  threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
+    canSplitMinimally = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+  }
+  // dynamic kinematic threshold
+  else if(_kinematicThresholdChoice == 1) {
+    //some smooth probablity function to create a dynamic thershold
+    double scale     = pow(clu->mass()/GeV , clpow);
+    double threshold = pow(clmax/GeV, clpow)
+                     + pow(clu->sumConstituentMasses()/GeV, clpow);
+    aboveCutoff = ProbablityFunction(scale,threshold);
 
-  bool canSplitMinimally = ProbablityFunction(scale,threshold);
-  //bool canSplitMinimally = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+    scale     = clu->mass()/GeV;
+    threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
+
+    canSplitMinimally = ProbablityFunction(scale,threshold);
+  }
 
   return aboveCutoff && canSplitMinimally;
 }

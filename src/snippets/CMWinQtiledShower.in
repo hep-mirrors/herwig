@@ -6,11 +6,11 @@
 cd /Herwig/Shower
 
 
-set AlphaQCD:AlphaMZ 0.118
-get AlphaQCD:AlphaMZ
+set AlphaQCD:AlphaIn 0.118
+get AlphaQCD:AlphaIn
 
-set AlphaQCDISR:AlphaMZ 0.118
-get AlphaQCDISR:AlphaMZ
+set AlphaQCDISR:AlphaIn 0.118
+get AlphaQCDISR:AlphaIn
 
 create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSplitFn
 set CMWQtoQGSplitFn:InteractionType QCD

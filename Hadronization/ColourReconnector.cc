@@ -748,7 +748,6 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
       _isColour8( (*cl)->colParticle(), (*cit)->antiColParticle() )
       ||
       _isColour8( (*cit)->colParticle(), (*cl)->antiColParticle() ) ;
-    if ( Colour8 ) continue;
 
 
     // boost constituents of cit into RF of cl
@@ -764,7 +763,8 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
     const double rapqbar = calculateRapidityRF(p1anticol,p2anticol);
 
     // configuration for normal CR
-    if ( rapq > 0.0 && rapqbar < 0.0
+	if ( !Colour8
+		 && rapq > 0.0 && rapqbar < 0.0
          && rapq > maxrap
          && rapqbar < minrap ) {
       maxrap = rapq;

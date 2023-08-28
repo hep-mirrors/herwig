@@ -9,7 +9,7 @@
 
 
 ################################################################################
-# Setup the factory object for merging
+# Setup the MergingFactory object for merging
 ################################################################################
 
 mkdir /Herwig/Merging
@@ -155,6 +155,30 @@ do MergingFactory:EndParticleGroup
 
 do MergingFactory:StartParticleGroup tau-
 insert MergingFactory:ParticleGroup 0 /Herwig/Particles/tau-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_e
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_e
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_mu
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_mu
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_tau
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_tau
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_ebar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_mubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_mubar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu_taubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_taubar
 do MergingFactory:EndParticleGroup
 
 do MergingFactory:StartParticleGroup l
