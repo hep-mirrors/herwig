@@ -179,16 +179,17 @@ double OneOneZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 bool OneOneZeroEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3)
     return false;
-  if(ids[0]->id()!=ids[1]->id())
-    return false;
-  if(ids[0]->iSpin()==PDT::Spin1 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin0)
-    return true;
-  //if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->iSpin()==PDT::Spin0)
-  //  return true;
-  //else if(ids[0]->id()==ParticleID::Z0 && ids[2]->iSpin()==PDT::Spin0)
-  //  return true;
-  else
-    return false;
+  if(_couplingValueIm==0&&_couplingValueRe==0) {
+    if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->iSpin()==PDT::Spin0)
+      return true;
+    else if(ids[0]->id()==ParticleID::Z0 && ids[2]->iSpin()==PDT::Spin0)
+      return true;
+  }
+  else {
+    if(ids[0]->iSpin()==PDT::Spin1 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin0)
+      return true;
+  }
+  return false;
 }
 
 

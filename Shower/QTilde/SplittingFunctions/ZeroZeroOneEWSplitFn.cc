@@ -164,15 +164,9 @@ bool ZeroZeroOneEWSplitFn::accept(const IdList &ids) const {
     return false;
   if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
     return false;
-  bool is1GVB = (abs(ids[1]->id())==ParticleID::Wplus
-              || abs(ids[1]->id())==ParticleID::Z0
-              || abs(ids[1]->id())==ParticleID::gamma);
-  bool is2GVB = (abs(ids[2]->id())==ParticleID::Wplus
-              || abs(ids[2]->id())==ParticleID::Z0
-              || abs(ids[2]->id())==ParticleID::gamma);
-  if(ids[0]->iSpin()==PDT::Spin0 && is1GVB && ids[2]->iSpin()==PDT::Spin0)
+  if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin0)
     return true;
-  else if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin0 && is2GVB)
+  else if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin0 && ids[2]->iSpin()==PDT::Spin1)
     return true;
   else
     return false;

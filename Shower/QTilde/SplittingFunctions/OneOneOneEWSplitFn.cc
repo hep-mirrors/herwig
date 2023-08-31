@@ -191,17 +191,22 @@ double OneOneOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 
 bool OneOneOneEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
-  // Z > WW
-  if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
-                                       && ids[1]->id()==-ids[2]->id())
-    return true;
-
-  if(abs(ids[0]->id())==ParticleID::Wplus) {
-    // W > WG
-    if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::gamma)
+  if(_couplingValueIm==0&&_couplingValueRe==0) {
+    // Z > WW
+    if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
+                                         && ids[1]->id()==-ids[2]->id())
       return true;
-    // W > WZ
-    if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::Z0)
+    if(abs(ids[0]->id())==ParticleID::Wplus) {
+      // W > WG
+      if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::gamma)
+        return true;
+      // W > WZ
+      if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::Z0)
+        return true;
+    }
+  }
+  else {
+    if(ids[0]->iSpin()==PDT::Spin1 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin1)
       return true;
   }
   return false;
