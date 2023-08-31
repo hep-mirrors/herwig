@@ -9,11 +9,6 @@ from os import path
 modulepath = os.path.join("@PKGLIBDIR@",'python')
 sys.path.append(modulepath)
 
-<<<<<<< working copy
-=======
-from ufo2peg import *
-
->>>>>>> merge rev
 # set up the option parser for command line input
 parser = argparse.ArgumentParser(
     description='Create Herwig model files from Feynrules UFO input.'
@@ -269,15 +264,6 @@ parmsubs = dict( [ (p.name, p.value)
 
 # evaluate python cmath
 def evaluate(x):
-<<<<<<< working copy
-    import cmath
-    return eval(x,
-                {'cmath':cmath,
-                 'complexconjugate':FR.function_library.complexconjugate,
-                 'im':FR.function_library.im,
-                 're':FR.function_library.re},
-                parmsubs)
-=======
      import cmath
      return eval(x,
                  {'sec':FR.function_library.sec,
@@ -287,8 +273,6 @@ def evaluate(x):
                   'im':FR.function_library.im,
                   're':FR.function_library.re},
                  parmsubs)
->>>>>>> merge rev
-
 
 ## get internal params into arrays
 internal = ( p for p in FR.all_parameters
