@@ -14,6 +14,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 #include "Herwig/Models/StandardModel/SMFFHVertex.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
@@ -26,11 +27,11 @@ IBPtr OneOneOneEWSplitFn::fullclone() const {
 }
 
 void OneOneOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gWWG_ << gWWZ_ << _theSM;
+  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe;
 }
 
 void OneOneOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gWWG_ >> gWWZ_ >> _theSM;
+  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -42,6 +43,18 @@ void OneOneOneEWSplitFn::Init() {
 
   static ClassDocumentation<OneOneOneEWSplitFn> documentation
     ("The OneOneOneEWSplitFn class implements the splitting W->WG, W->WZ and Z->ZZ");
+
+  static Parameter<OneOneOneEWSplitFn, double> interfaceCouplingValueIm
+    ("CouplingValue.Im",
+     "The numerical value (imaginary part) of the splitting coupling to be imported for BSM splittings",
+     &OneOneOneEWSplitFn::_couplingValueIm, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
+
+  static Parameter<OneOneOneEWSplitFn, double> interfaceCouplingValueRe
+    ("CouplingValue.Re",
+     "The numerical value (real part) of the splitting coupling to be imported for BSM splittings",
+     &OneOneOneEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
+     false, false, Interface::limited);
 
 }
 
@@ -59,21 +72,26 @@ void OneOneOneEWSplitFn::doinit() {
 }
 
 
-void OneOneOneEWSplitFn::getCouplings(double & gvvv, const IdList & ids) const {
+void OneOneOneEWSplitFn::getCouplings(Complex & gvvv, const IdList & ids) const {
+  if(_couplingValueIm!=0||_couplingValueRe!=0) {
+    double e  = sqrt(4.*Constants::pi*generator()->standardModel()
+              ->alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
+    gvvv = Complex(_couplingValueRe,_couplingValueIm)/e;
+  }
   // Z > WW
-  if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
+  else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
                                        && abs(ids[2]->id())==ParticleID::Wplus){
-    gvvv = gWWZ_;
+    gvvv = Complex(0.,gWWZ_);
   }
   // W > WG
   else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                && ids[2]->id()==ParticleID::gamma){
-    gvvv = gWWG_;
+    gvvv = Complex(0.,gWWG_);
   }
   // W > WZ
   else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                && ids[2]->id()==ParticleID::Z0){
-    gvvv = gWWZ_;
+    gvvv = Complex(0.,gWWZ_);
   }
   else
     assert(false);
@@ -82,7 +100,7 @@ void OneOneOneEWSplitFn::getCouplings(double & gvvv, const IdList & ids) const {
 
 double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
-  double gvvv(0.);
+  Complex gvvv(0.,0.);
   getCouplings(gvvv,ids);
   double abs_rho_00 = abs(rho(0,0));
   double abs_rho_11 = abs(rho(1,1));
@@ -98,23 +116,15 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z);
   }
-  // symmetryc factor //
-  // I'm not sure this functional is necessary. Validation is needed
-  if( ids[1]->id() == ids[2]->id() )
-    val /= 2.;
-  return sqr(gvvv)*val;
+  return norm(gvvv)*val;
 }
 
 
 double OneOneOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
-  double gvvv(0.);
+  Complex gvvv(0.,0.);
   getCouplings(gvvv,ids);
-  double val = sqr(gvvv)*(2./(z*(1.-z)));
-  // symmetryc factor //
-  // I'm not sure this functional is necessary. Validation is needed
-  if( ids[1]->id() == ids[2]->id() )
-    val /= 2.;
+  double val = norm(gvvv)*(2./(z*(1.-z)));
   return val;
 }
 
@@ -144,9 +154,9 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
 double OneOneOneEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
 				      unsigned int PDFfactor) const {
-  double gvvv(0.);
+  Complex gvvv(0.);
   getCouplings(gvvv,ids);
-  double pre = sqr(gvvv);
+  double pre = norm(gvvv);
   switch (PDFfactor) {
   case 0:
     return 2.*pre*(log(z)-log(1.-z));
@@ -164,9 +174,9 @@ double OneOneOneEWSplitFn::integOverP(const double z,
 
 double OneOneOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
-  double gvvv(0.);
+  Complex gvvv(0.);
   getCouplings(gvvv,ids);
-  double pre = sqr(gvvv);
+  double pre = norm(gvvv);
   switch (PDFfactor) {
   case 0:
     return exp(0.5*r/pre)/(1.+exp(0.5*r/pre));
@@ -221,7 +231,7 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
-  double gvvv(0.);
+  Complex gvvv(0.);
   getCouplings(gvvv,ids);
   // defining dummies
   double m0t = ids[0]->mass()/sqrt(t);
