@@ -213,10 +213,6 @@ def sort_splittings(FR,Vertices,p):
             continue
         id1 = abs(p1.pdg_code)
         id2 = abs(p2.pdg_code)
-        # TODO need to improve this forbidden list assortment
-        forbidden = [250, 251, 9000001, 9000002, 9000003, 9000004, 9900252]
-        if id1 in forbidden or id2 in forbidden:
-            continue
         # put the bigger spin last
         if p1.spin > p2.spin :
             p1, p2 = p2, p1
@@ -423,20 +419,16 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
             for Vertex in pSplittings :
                 # do not do anything for CouplingValue < 1e-6
                 if abs(Vertex[3].real) < 1e-6 and abs(Vertex[3].imag) < 1e-6 and abs(Vertex[4].real) < 1e-6 and abs(Vertex[4].imag) < 1e-6 :
-                    print(Vertex[0]," > ",Vertex[1], Vertex[2], "splitting is removed. Coupling is too small.")
                     continue
                 # do not include QCD splittings
                 if Vertex[1].pdg_code == 21 or Vertex[2].pdg_code == 21 :
-                    print(Vertex[0]," > ",Vertex[1], Vertex[2], "splitting cannot be handled. Assumed to ba a QCD splitting.")
                     continue
                 # do not include QED splittings
                 if Vertex[2].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[1].pdg_code) or\
                    Vertex[1].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[2].pdg_code):
-                    print(Vertex[0]," > ",Vertex[1], Vertex[2], "splitting cannot be handled. Assumed to be a QED splitting.")
                     continue
                 # skip lepton vertices
                 if isLepton(Vertex[1]) or isLepton(Vertex[2]) : ###HERE###
-                    print(Vertex[0], Vertex[1], Vertex[2], " vertex is a lepton vertex. Do not handle corresponding splittings.")
                     continue
                 # loop over all possible configurations in the splitting
                 for pos in range(0,3) :
@@ -450,7 +442,6 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         V[0], V[1], V[2] = Vertex[2], Vertex[0], Vertex[1]
                     # don't allow photon as progenitor
                     if V[0].pdg_code == 22 : ###HERE###
-                        print(V[0]," > ",V[1], V[2], "splitting cannot be handled. Photon cannot be a progenitor.")
                         continue
                     # for a generic splitting m0 < m1+m2, otherwise it's a decay
                     m = extract_mass(FR,V)
@@ -459,7 +450,6 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         if isinstance(m[ix], complex) :
                             m[ix] = m[ix].real
                     if m[0] > m[1] + m[2] :
-                        print(V[0]," > ",V[1], V[2], " is a decay. ")
                         continue
 
                     """
@@ -485,7 +475,6 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             pass
                         # nothing else with a GVB progenitor
                         else :
-                            print(V[0]," > ",V[1], V[2], "splitting cannot be handled.")
                             continue
                     elif isQuark(V[0]) :
                         # allow q > q' H (including FCNC splittings)
@@ -499,7 +488,6 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             V[0], V[1], V[2] = V[0], V[2], V[1]
                         # nothing else with a quark progenitor
                         else :
-                            print(V[0]," > ",V[1], V[2], "splitting cannot be handled.")
                             continue
                     elif isScalar(V[0]) :
                         # allow H > H' H''
@@ -512,11 +500,9 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             V[0], V[1], V[2] = V[0], V[2], V[1]
                         # nothing else with a scalar progenitor
                         else :
-                            print(V[0]," > ",V[1], V[2], "splitting cannot be handled.")
                             continue
                     # nothing else
                     else :
-                        print(V[0]," > ",V[1], V[2], "splitting cannot be handled.")
                         continue
 
                     # getting the electric charge right

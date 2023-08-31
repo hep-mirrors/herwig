@@ -112,9 +112,6 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
 double ZeroZeroZeroEWSplitFn::P(const double, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
   Complex ghhh(0.,0.);
-  Energy m0 = ids[0]->mass();
-  if(_couplingValueIm==0&&_couplingValueRe==0)
-    m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   double val = norm(ghhh)/(2.*t)*GeV2;
   if(mass)
