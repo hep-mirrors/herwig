@@ -71,18 +71,17 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
   if(ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0 && ids[0]->iSpin()==PDT::Spin0) {
     // BSM cases, where the numerical value of the couplings are
     // expected to be fed into the splitting functions
-    if(_couplingValueIm!=0||_couplingValueRe!=0) {
+    if(_couplingValueIm!=0.||_couplingValueRe!=0.) {
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->
                   alphaEM(sqr(getParticleData(ParticleID::Z0)->mass())));
-      Energy m0 = ids[0]->mass();
-      g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
+      g = Complex(_couplingValueRe,_couplingValueIm)/e;
     }
     // SM case
     else {
       // running masses
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       Energy mH = getParticleData(ParticleID::h0)->mass();
-      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV)*10.;
     }
   }
   else
@@ -96,15 +95,14 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
     // expected to be fed into the splitting functions
     if(_couplingValueIm!=0.||_couplingValueRe!=0.) {
       double e  = sqrt(4.*Constants::pi*generator()->standardModel()->alphaEM(t));
-      Energy m0 = ids[0]->mass();
-      g = Complex(_couplingValueRe,_couplingValueIm)*GeV/e/m0;
+      g = Complex(_couplingValueRe,_couplingValueIm)/e;
     }
     // SM case
     else {
       // running masses
       Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
       Energy mH = _theSM->mass(t,getParticleData(ParticleID::h0));
-      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV)*10.;
     }
   }
   else
@@ -119,32 +117,24 @@ double ZeroZeroZeroEWSplitFn::P(const double, const Energy2 t,
     m0 = _theSM->mass(t,getParticleData(ids[0]->id()));
   getCouplings(ghhh,ids,t);
   double val = norm(ghhh)/(2.*t)*GeV2;
-  // symmetryc factor //
-  // I'm not sure this functional is necessary. Validation is needed
-  if( ids[1]->id() == ids[2]->id() )
-    val /= 2.;
   if(mass)
     return val;
   else
     assert(false);
 }
 
-double ZeroZeroZeroEWSplitFn::overestimateP(const double,
+double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  double val = norm(ghhh)/2.;
-  // symmetryc factor //
-  // I'm not sure this functional is necessary. Validation is needed
-  if( ids[1]->id() == ids[2]->id() )
-    val /= 2.;
+  double val = norm(ghhh);
   return val;
 }
 
-double ZeroZeroZeroEWSplitFn::ratioP(const double, const Energy2 t,
+double ZeroZeroZeroEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList &, const bool ,
 				    const RhoDMatrix & ) const {
-  return 1./t*GeV2;
+  return 1./(2.*t)*GeV2;
 }
 
 double ZeroZeroZeroEWSplitFn::integOverP(const double z,
@@ -155,13 +145,13 @@ double ZeroZeroZeroEWSplitFn::integOverP(const double z,
   double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0: //OverP
-    return pre*z/2.;
+    return pre*z;
   case 1: //OverP/z
-    return pre*log(z)/2.;
+    return pre*log(z);
   case 2: //OverP/(1-z)
-    return -pre*log(-1.+z)/2.;
+    return -pre*log(-1.+z);
   case 3: //OverP/[z(1-z)]
-    return -pre*(log(1.-z)-log(z))/2.;
+    return -pre*(log(1.-z)-log(z));
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -175,13 +165,13 @@ double ZeroZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0:
-    return 2.*r/pre;
+    return r/pre;
   case 1: //OverP/z
-    return exp(2.*r/pre);
+    return exp(r/pre);
   case 2: //OverP/(1-z)
-    return (2.-exp(-2*r/pre));
+    return 1.+exp(-r/pre);
   case 3: //OverP/[z(1-z)]
-    return exp(2.*r/pre)/(1.+exp(2.*r/pre));
+    return exp(r/pre)/(1.+exp(r/pre));
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::invIntegOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;

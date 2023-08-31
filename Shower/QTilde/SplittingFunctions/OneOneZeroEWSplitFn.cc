@@ -181,10 +181,12 @@ bool OneOneZeroEWSplitFn::accept(const IdList &ids) const {
     return false;
   if(ids[0]->id()!=ids[1]->id())
     return false;
-  if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->iSpin()==PDT::Spin0)
+  if(ids[0]->iSpin()==PDT::Spin1 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin0)
     return true;
-  else if(ids[0]->id()==ParticleID::Z0 && ids[2]->iSpin()==PDT::Spin0)
-    return true;
+  //if(abs(ids[0]->id())==ParticleID::Wplus && ids[2]->iSpin()==PDT::Spin0)
+  //  return true;
+  //else if(ids[0]->id()==ParticleID::Z0 && ids[2]->iSpin()==PDT::Spin0)
+  //  return true;
   else
     return false;
 }
