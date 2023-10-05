@@ -68,7 +68,7 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _pSplitHeavy << _pSplitExotic
      << _fissionCluster << _fissionPwt
      << ounit(_btClM,GeV)
-     << _iopRem  << ounit(_kappa, GeV/meter)
+     << _iopRem << _kinematicThresholdChoice << ounit(_kappa, GeV/meter)
      << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure << _dim << _phaseSpaceWeights
      << _hadronSpectrum
      << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
@@ -80,7 +80,7 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _clPowExotic >> _pSplitLight
      >> _pSplitHeavy >> _pSplitExotic
      >> _fissionCluster >> _fissionPwt
-     >> iunit(_btClM,GeV) >> _iopRem
+     >> iunit(_btClM,GeV) >> _iopRem >> _kinematicThresholdChoice
      >> iunit(_kappa, GeV/meter)
      >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure >> _dim >> _phaseSpaceWeights
      >> _hadronSpectrum
