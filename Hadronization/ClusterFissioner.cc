@@ -74,9 +74,8 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _clPowCharm << _clPowExotic << _pSplitLight
      << _pSplitBottom << _pSplitCharm << _pSplitExotic
      << _fissionCluster << _fissionPwtUquark << _fissionPwtDquark << _fissionPwtSquark
-     << ounit(_btClM,GeV) << _kinematicThresholdChoice
-     << _iopRem  << ounit(_kappa, GeV/meter)
-     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
+     << ounit(_btClM,GeV) << _iopRem << _kinematicThresholdChoice
+     << ounit(_kappa, GeV/meter) << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
      << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
 }
 
@@ -88,8 +87,7 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _pSplitBottom >> _pSplitCharm >> _pSplitExotic
      >> _fissionCluster >> _fissionPwtUquark >> _fissionPwtDquark >> _fissionPwtSquark
      >> iunit(_btClM,GeV) >> _iopRem >> _kinematicThresholdChoice
-     >> iunit(_kappa, GeV/meter)
-     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
+     >> iunit(_kappa, GeV/meter) >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
      >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
 }
 
