@@ -38,7 +38,7 @@ option "debug-fpe" D "Enable floating point exceptions."
 option "quiet" q "Disable event counter."
   flag off
 
-option "jobs" j "Number of jobs to run in parallel (max 10)."
+option "jobs" j "Number of jobs to run in parallel."
   int  optional
 
 option "setupfile" x "An input file to modify run parameters."
