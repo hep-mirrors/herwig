@@ -270,11 +270,11 @@ void ClusterFissioner::Init() {
       &ClusterFissioner::_probShift, 0.0, -10.0, 10.0,
       false, false, Interface::limited);
 
-  static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
-     ("KineticThresholdShift",
-      "Shifts from the kinetic threshold in ClausterFissioner",
-      &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
-      false, false, Interface::limited);
+  // static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
+  //    ("KineticThresholdShift",
+  //     "Shifts from the kinetic threshold in ClausterFissioner",
+  //     &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
+  //     false, false, Interface::limited);
 
   static Switch<ClusterFissioner,int> interfaceKinematicThreshold
     ("KinematicThreshold",
@@ -503,13 +503,14 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       if(_kinematicThresholdChoice == 0) {
         if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
       // dynamic kinematic threshold
-      } else if(_kinematicThresholdChoice == 1) {
-        bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
-        bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
-        bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
-
-        if( C1 || C2 || C3 ) continue;
       }
+      // else if(_kinematicThresholdChoice == 1) {
+      //   bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+      //   bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
+      //   bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
+      //
+      //   if( C1 || C2 || C3 ) continue;
+      // }
 
       /**************************
        * New (not present in Fortran Herwig):
