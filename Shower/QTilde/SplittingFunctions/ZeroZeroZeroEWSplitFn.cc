@@ -81,7 +81,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids) const 
       // running masses
       Energy mW = getParticleData(ParticleID::Wplus)->mass();
       Energy mH = getParticleData(ParticleID::h0)->mass();
-      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV)*10.;
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
     }
   }
   else
@@ -102,7 +102,7 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
       // running masses
       Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
       Energy mH = _theSM->mass(t,getParticleData(ParticleID::h0));
-      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV)*10.;
+      g = Complex(0.,1.5*gw_*sqr(mH)/mW/GeV);
     }
   }
   else

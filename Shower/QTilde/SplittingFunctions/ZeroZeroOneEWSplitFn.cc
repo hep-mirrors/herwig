@@ -70,22 +70,18 @@ void ZeroZeroOneEWSplitFn::getCouplings(Complex & g, const IdList &) const {
 
 
 double ZeroZeroOneEWSplitFn::P(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
+			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
   Complex ghhv(0.,0.);
   getCouplings(ghhv,ids);
-  double rho00 = abs(rho(0,0));
-  double rho11 = abs(rho(1,1));
-  double rho22 = abs(rho(2,2));
   // the splitting in the massless limit
-  double val = z*(rho00+rho22)/(1.-z);
+  double val = 2*z/(1.-z);
   // the massive limit
   if(mass){
     // get the running mass
     double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += (m2t2*sqr(1.+z)*rho11)/(2.*sqr(1.-z))+((-(m1t2*(1.-z))
-        -m2t2*z+m0t2*(1.-z)*z)*(rho00+rho22))/sqr(1.-z);
+    val += (2*z/(1.-z))*m0t2 - (2./(1.-z))*m1t2 + (1./2.)*m2t2;
   }
   return norm(ghhv)*val;
 }
@@ -95,26 +91,22 @@ double ZeroZeroOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   Complex ghhv(0.,0.);
   getCouplings(ghhv,ids);
-  return norm(ghhv)*z/(1.-z);
+  return norm(ghhv)*2*z/(1.-z);
 }
 
 
 double ZeroZeroOneEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
-				    const RhoDMatrix & rho) const {
-  double rho00 = abs(rho(0,0));
-  double rho11 = abs(rho(1,1));
-  double rho22 = abs(rho(2,2));
+				    const RhoDMatrix &) const {
   // ratio in the massless limit
-  double val = rho00+rho22;
+  double val = 1.;
   // the massive limit
   if(mass){
     // get the running mass
     double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += ((1.-z)*(m2t2*sqr(1.+z)*rho11+2*(m1t2*(-1.+z)
-        -(m2t2+m0t2*(-1.+z))*z)*(rho00+rho22)))/(2.*sqr(-1.+z)*z);
+    val += m0t2-(1./z)*m1t2+((1.-z)/(4.*z))*m2t2;
   }
   return val;
 }
@@ -125,7 +117,7 @@ double ZeroZeroOneEWSplitFn::integOverP(const double z,
 				      unsigned int PDFfactor) const {
   Complex ghhv(0.,0.);
   getCouplings(ghhv,ids);
-  double pre = norm(ghhv);
+  double pre = norm(ghhv)*2.;
   switch (PDFfactor) {
   case 0:
     return -pre*(z+log(1.-z));
@@ -143,10 +135,10 @@ double ZeroZeroOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
   Complex ghhv(0.,0.);
   getCouplings(ghhv,ids);
-  double pre = norm(ghhv);
+  double pre = norm(ghhv)*2.;
   switch (PDFfactor) {
   case 0:
-    return 1.-exp(-(1+r/pre));;
+    return 1.-exp(-(1.+r/pre));;
   case 1:
   case 2:
   case 3:

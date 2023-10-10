@@ -110,9 +110,9 @@ double OneZeroZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    double m0t2 = sqr(ids[0]->mass())/t;
+    double m1t2 = sqr(ids[1]->mass())/t;
+    double m2t2 = sqr(ids[2]->mass())/t;
     val += ((m0t2*sqr(-1.+2.*z)*rho11)/2.+(-(m1t2*(1.-z))-m2t2*z+m0t2*(1.-z)*z)
         *(rho00+rho22))/((1.-z)*z);
   }
