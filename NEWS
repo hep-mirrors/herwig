@@ -1,6 +1,22 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.3.0 release: 2023-10-25
+
+** electroweak radiations added to the default parton shower
+
+** HQET spin hadronization and decay have been implemented to improve the predictions of excited heavy mesons and heavy baryons
+
+** dot-preserving treatment of the default parton shower evolution scale has been implemented
+
+** infrastructure for dynamic hadronization model and dark hadronization added
+
+** kinematic treatment of cluster splitting in cluster fissioner improved
+
+** new global tune implemented
+
+** several bugs fixed 
+
 * Herwig 7.2.3 release: 2022-04-30
 
 ** improved ufo2herwig tool

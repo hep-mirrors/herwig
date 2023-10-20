@@ -95,6 +95,7 @@ Tests/python/merge-Star
 Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
+Tests/python/merge-SppS
 Tests/python/mergeLowEnergy.py
 Tests/python/plot-EE
 Tests/python/rivet_check
