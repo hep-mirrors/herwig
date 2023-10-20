@@ -138,3 +138,5 @@ __all.cc$
 PDF/stamp-h2
 Tests/anatohepmc.txt
 Tests/hepmctoana.txt
+MatrixElement/Matchbox/External/GoSam/gosam2herwig
+Sampling/herwig-mergegrids
