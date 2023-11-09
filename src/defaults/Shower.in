@@ -113,12 +113,12 @@ newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:AlphaIn 0.102337
+newdef AlphaQCD:AlphaIn 0.1185
 newdef AlphaQCDFSR:ScaleFactor 1.0
 newdef AlphaQCDFSR:NPAlphaS 2
 newdef AlphaQCDFSR:Qmin 0.935
 newdef AlphaQCDFSR:NumberOfLoops 2
-newdef AlphaQCDFSR:AlphaIn 0.1186
+newdef AlphaQCDFSR:AlphaIn 0.102337
 #
 #
 # Lets set up all the splittings
