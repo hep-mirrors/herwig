@@ -270,11 +270,11 @@ void ClusterFissioner::Init() {
       &ClusterFissioner::_probShift, 0.0, -10.0, 10.0,
       false, false, Interface::limited);
 
-  // static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
-  //    ("KineticThresholdShift",
-  //     "Shifts from the kinetic threshold in ClausterFissioner",
-  //     &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
-  //     false, false, Interface::limited);
+  static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
+     ("KineticThresholdShift",
+      "Shifts from the kinetic threshold in ClausterFissioner",
+      &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
+      false, false, Interface::limited);
 
   static Switch<ClusterFissioner,int> interfaceKinematicThreshold
     ("KinematicThreshold",

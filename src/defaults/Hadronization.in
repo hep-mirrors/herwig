@@ -78,14 +78,14 @@ newdef ColourReconnector:Debug No
 
 # set ClusterFissioner parameters
 set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
-set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor  3.3462
-set /Herwig/Hadronization/ClusterFissioner:ProbablityShift        6.0442
-# set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift -1.5321
+set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor   6.486
+set /Herwig/Hadronization/ClusterFissioner:ProbablityShift        -0.87875
+# set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift 0.08844
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  3.2344
-newdef ClusterFissioner:ClPowLight  2.6464
-newdef ClusterFissioner:PSplitLight 0.7235
+newdef ClusterFissioner:ClMaxLight  3.528693
+newdef ClusterFissioner:ClPowLight  1.849375
+newdef ClusterFissioner:PSplitLight 0.914156
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
@@ -121,12 +121,12 @@ newdef PartonSplitter:Split uds
 # 
 newdef HadronSelector:PwtDquark  1.0
 newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark  0.35743
+newdef HadronSelector:PwtSquark  0.374094
 newdef HadronSelector:PwtCquark  0.0
 newdef HadronSelector:PwtBquark  0.0
-newdef HadronSelector:PwtDIquark 0.36452
-newdef HadronSelector:SngWt      0.88022
-newdef HadronSelector:DecWt      0.34622
+newdef HadronSelector:PwtDIquark 0.33107
+newdef HadronSelector:SngWt      0.89050
+newdef HadronSelector:DecWt      0.41628
 newdef HadronSelector:Mode 1
 newdef HadronSelector:BelowThreshold All
 
