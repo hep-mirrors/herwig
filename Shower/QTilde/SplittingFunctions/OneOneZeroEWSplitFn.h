@@ -218,6 +218,13 @@ private:
    */
   double _couplingValueIm = 0.;
   double _couplingValueRe = 0.;
+
+public:
+
+  /**
+   *   booleans to sort cases
+   */
+  mutable bool sm_ = true;
 };
 
 }
