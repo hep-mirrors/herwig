@@ -124,14 +124,13 @@ double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   Complex ghhh(0.,0.);
   getCouplings(ghhh,ids);
-  double val = norm(ghhh);
-  return val;
+  return norm(ghhh)/(2.*z*(1.-z));
 }
 
 double ZeroZeroZeroEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList &, const bool ,
 				    const RhoDMatrix & ) const {
-  return 1./(2.*t)*GeV2;
+  return z*(1.-z)/t*GeV2;
 }
 
 double ZeroZeroZeroEWSplitFn::integOverP(const double z,
@@ -142,13 +141,10 @@ double ZeroZeroZeroEWSplitFn::integOverP(const double z,
   double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0: //OverP
-    return pre*z;
+    return pre*(log(z)-log(1.-z))/2.;
   case 1: //OverP/z
-    return pre*log(z);
   case 2: //OverP/(1-z)
-    return -pre*log(-1.+z);
   case 3: //OverP/[z(1-z)]
-    return -pre*(log(1.-z)-log(z));
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -162,13 +158,10 @@ double ZeroZeroZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = norm(ghhh);
   switch (PDFfactor) {
   case 0:
-    return r/pre;
+    return exp(2.*r/pre)/(1.+exp(2.*r/pre));
   case 1: //OverP/z
-    return exp(r/pre);
   case 2: //OverP/(1-z)
-    return 1.+exp(-r/pre);
   case 3: //OverP/[z(1-z)]
-    return exp(r/pre)/(1.+exp(r/pre));
   default:
     throw Exception() << "ZeroZeroZeroEWSplitFn::invIntegOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
