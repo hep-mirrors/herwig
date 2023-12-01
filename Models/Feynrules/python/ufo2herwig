@@ -72,6 +72,12 @@ parser.add_argument(
     help="Convert the UFO model for python2 to python3 before loading it."
 )
 parser.add_argument(
+    '--enable-bsm-shower',
+    action="store_true",
+    default=False,
+    help="Enable BSM parton shower in the build, integrating generalized splittings."
+)
+parser.add_argument(
     '--allow-fcnc',
     action="store_true",
     default=False,
@@ -530,7 +536,8 @@ parmtextsubs['couplingOrders']  = couplingOrders
 
 # particles
 
-plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name,args.use_Herwig_Higgs,args.allow_fcnc)
+plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name,\
+                                args.use_Herwig_Higgs,args.enable_bsm_shower,args.allow_fcnc)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
