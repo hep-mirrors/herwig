@@ -84,8 +84,7 @@ double OneZeroZeroEWSplitFn::P(const double z, const Energy2 t,
     double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += (m0t2*sqr(-1.+2.*z)*rho11)/2.+(-(m1t2*(1.-z))-m2t2*z+m0t2*(1.-z)*z)
-        *(rho00+rho22);
+    val += (rho00+rho22)*(z*(1.-z)*m0t2-(1.-z)*m1t2-z*m2t2)+rho11*sqr(1.-2.*z)/2.*m0t2;
   }
   return norm(gvhh)*val;
 }

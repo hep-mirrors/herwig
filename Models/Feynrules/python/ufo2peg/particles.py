@@ -376,7 +376,7 @@ rm /Herwig/Widths/hWidth
 
         try:
             # QCD splitting functions
-            if p.color in [3,6,8] and abs(pdg) not in done_splitting_QCD: # which colors?
+            if p.color in [3,6,8] and abs(pdg) not in done_splitting_QCD and (enable_bsm_shower or p.pdg_code in SMPARTICLES): # which colors?
                 done_splitting_QCD.append(abs(pdg))
                 splitname = '{name}SplitFnQCD'.format(name=p.name)
                 sudname = '{name}SudakovQCD'.format(name=p.name)
@@ -395,7 +395,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudn
             pass
         # QED splitting functions
         try:
-            if p.charge != 0 and abs(pdg) not in done_splitting_QED:
+            if p.charge != 0 and abs(pdg) not in done_splitting_QED and (enable_bsm_shower or p.pdg_code in SMPARTICLES):
                 done_splitting_QED.append(abs(pdg))
                 splitname = '{name}SplitFnQED'.format(name=p.name)
                 sudname = '{name}SudakovQED'.format(name=p.name)
