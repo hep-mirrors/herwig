@@ -110,7 +110,7 @@ set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 cd /Herwig/Shower
 set /Herwig/Shower/FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set /Herwig/Shower/FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
-set /Herwig/Shower/FxFxHandler:ShowerAlpha  AlphaQCD
+set /Herwig/Shower/FxFxHandler:ShowerAlpha  AlphaQCDFSR
 # set the heavy quark decay product vetoing process on/off
 set FxFxHandler:HeavyQVeto Yes
 # Automatic detection of the hard process (experimental)
