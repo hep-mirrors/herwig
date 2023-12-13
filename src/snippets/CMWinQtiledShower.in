@@ -6,8 +6,8 @@
 cd /Herwig/Shower
 
 
-set AlphaQCD:AlphaIn 0.118
-get AlphaQCD:AlphaIn
+set AlphaQCDFSR:AlphaIn 0.118
+get AlphaQCDFSR:AlphaIn
 
 set AlphaQCDISR:AlphaIn 0.118
 get AlphaQCDISR:AlphaIn
@@ -30,8 +30,8 @@ set CMWGtoGGSplitFn:Alpha AlphaQCDFSR
 cp CMWGtoGGSplitFn CMWGtoGGSplitFnIS
 cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
 
-set CMWQtoQGSplitFnIS:Alpha AlphaQCD
-set CMWQtoGGSplitFnIS:Alpha AlphaQCD
+set CMWQtoQGSplitFnIS:Alpha AlphaQCDFSR
+set CMWQtoGGSplitFnIS:Alpha AlphaQCDFSR
 
 set CMWGtoGGSplitFnIS:isInititalState Yes
 set CMWQtoQGSplitFnIS:isInititalState Yes

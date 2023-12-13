@@ -1,5 +1,5 @@
 ================================================================================
-Herwig 7.2.2
+Herwig 7.3.0
 ================================================================================
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -9,15 +9,16 @@ Herwig is actively developed by:
 --------------------------------------------------------------------------------
 
 Gavin Bewick
-Cody Duncan
 Silvia Ferrario Ravasio
 Stefan Gieseke
-Mohammad R. Masouminia
+Stefan Kiebacher
+Aidin Masouminia
 Andreas Papaefstathiou
 Simon Plätzer
 Peter Richardson
 Mike Seymour
 Andrzej Siödmok
+James Whitehead
 
 --------------------------------------------------------------------------------
 Former authors are:
@@ -26,6 +27,7 @@ Former authors are:
 Ken Arnold
 Manuel Bähr
 Johannes Bellm
+Cody Duncan
 Luca d'Errico
 Martyn Gigg
 David Grellscheid

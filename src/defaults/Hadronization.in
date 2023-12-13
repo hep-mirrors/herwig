@@ -82,14 +82,14 @@ newdef ColourReconnector:Debug No
 
 # set ClusterFissioner parameters
 set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
-set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor  3.3462
-set /Herwig/Hadronization/ClusterFissioner:ProbablityShift        6.0442
-set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift -1.5321
+set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift   0.08844
+set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor   6.486
+set /Herwig/Hadronization/ClusterFissioner:ProbablityShift        -0.87875
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  3.2344
-newdef ClusterFissioner:ClPowLight  2.6464
-newdef ClusterFissioner:PSplitLight 0.7235
+newdef ClusterFissioner:ClMaxLight  3.528693
+newdef ClusterFissioner:ClPowLight  1.849375
+newdef ClusterFissioner:PSplitLight 0.914156
 insert ClusterFissioner:FissionPwt 1 1.0
 insert ClusterFissioner:FissionPwt 2 1.0
 insert ClusterFissioner:FissionPwt 3 0.5
@@ -130,12 +130,12 @@ newdef PartonSplitter:Split Light
 # 
 newdef SMHadronSpectrum:PwtDquark  1.0
 newdef SMHadronSpectrum:PwtUquark  1.0
-newdef SMHadronSpectrum:PwtSquark  0.35743
+newdef SMHadronSpectrum:PwtSquark  0.374094
 newdef SMHadronSpectrum:PwtCquark  0.0
 newdef SMHadronSpectrum:PwtBquark  0.0
-newdef SMHadronSpectrum:PwtDIquark  0.36452
-newdef SMHadronSpectrum:SngWt      0.88022
-newdef SMHadronSpectrum:DecWt      0.34622
+newdef SMHadronSpectrum:PwtDIquark  0.33107
+newdef SMHadronSpectrum:SngWt      0.89050
+newdef SMHadronSpectrum:DecWt      0.41628
 newdef SMHadronSpectrum:Mode 1
 newdef SMHadronSpectrum:BelowThreshold All
 

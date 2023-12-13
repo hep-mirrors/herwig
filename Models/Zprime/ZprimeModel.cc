@@ -83,7 +83,7 @@ void ZprimeModel::persistentInput(PersistentIStream & is, int) {
       >> _gZPUU_L
       >> _gZPUU_R
       >> _gZPDD_L
-      >> _gZPDD_L
+      >> _gZPDD_R
       >> _gZPee_L
       >> _gZPee_R
       >> _gZPmm_L
