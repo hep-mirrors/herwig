@@ -292,7 +292,7 @@ void HiddenValleyAlpha::doinit() {
   _thresholds.push_back(_qmin);
   _nf_light = 0;
   for(unsigned int ix=1;ix<=model->NF();++ix) {
-    Energy qmass = getParticleData(ParticleID::darkGluon+long(ix))->mass();
+    Energy qmass = getParticleData(ParticleID::darkg+long(ix))->mass();
     if (qmass > _qmin) _thresholds.push_back(qmass);
     else _nf_light++;
   }

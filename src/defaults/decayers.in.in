@@ -5332,7 +5332,7 @@ newdef ISGW2FormFactor:OutQuark 197 3
 newdef ISGW2:FormFactor ISGW2FormFactor 
 #
 create Herwig::SMZDecayer  ZDecayer
-newdef ZDecayer:AlphaS  /Herwig/Shower/AlphaQCD
+newdef ZDecayer:AlphaS  /Herwig/Shower/AlphaQCDFSR
 newdef ZDecayer:AlphaEM /Herwig/Shower/AlphaQED
 newdef ZDecayer:QuarkMax 0 3.
 newdef ZDecayer:QuarkMax 1 3.
@@ -21589,7 +21589,7 @@ newdef BtosgammaMass:Spectrum 99 1.04156e-05
 newdef BtosgammaKagan:HadronicMass BtosgammaMass 
 #
 create Herwig::SMTopDecayer  Top
-newdef Top:AlphaS  /Herwig/Shower/AlphaQCD
+newdef Top:AlphaS  /Herwig/Shower/AlphaQCDFSR
 newdef Top:AlphaEM /Herwig/Shower/AlphaQED
 newdef Top:QuarkWeights 0 5.
 newdef Top:QuarkWeights 1 5.
@@ -21621,7 +21621,7 @@ newdef Hff:Iteration 1
 newdef Hff:Ntry 500
 newdef Hff:Points 10000
 newdef Hff:GenerateIntermediates 0 
-newdef Hff:AlphaS  /Herwig/Shower/AlphaQCD
+newdef Hff:AlphaS  /Herwig/Shower/AlphaQCDFSR
 newdef Hff:AlphaEM /Herwig/Shower/AlphaQED
 newdef Hff:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 #
@@ -21968,7 +21968,7 @@ newdef D0KS0PipPimBFactory:ResonanceMass 0
 
 #
 create Herwig::SMWDecayer  WDecayer
-newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
+newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCDFSR
 newdef WDecayer:AlphaEM /Herwig/Shower/AlphaQED
 newdef WDecayer:QuarkMax 0 3.
 newdef WDecayer:QuarkMax 1 3.
@@ -21995,7 +21995,7 @@ newdef HPP:SMHZPVertex /Herwig/Vertices/HZPVertex
 newdef HPP:Iteration 10
 newdef HPP:Ntry 500
 newdef HPP:Points 10000
-newdef HPP:AlphaS  /Herwig/Shower/AlphaQCD
+newdef HPP:AlphaS  /Herwig/Shower/AlphaQCDFSR
 newdef HPP:GenerateIntermediates 0
 #
 create Herwig::TauDecayer  Tau2Kaon

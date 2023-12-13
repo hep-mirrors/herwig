@@ -241,7 +241,7 @@ void BallZwickyVectorFormFactor::persistentOutput(PersistentOStream & os) const 
 void BallZwickyVectorFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _Vr1 >> _Vr2 >> _A0r1 >> _A0r2 >> _A1r1 >> _A1r2 >> _A2r1 >> _A2r2 >> _T1r1
      >> _T1r2 >> _T2r1 >> _T2r2 >> _T3r1 >> _T3r2 
-     >> iunit(_VmR2,GeV2) >> iunit(_Vmfit2,GeV2) >> iunit(_A0mR2 ,GeV2)
+     >> iunit(_VmR2,GeV2) >> iunit(_Vmfit2,GeV2) >> iunit(_A0mR2,GeV2)
      >> iunit(_A0mfit2,GeV2) >> iunit(_A1mR2,GeV2) >> iunit(_A1mfit2,GeV2) 
      >> iunit(_A2mR2,GeV2) >> iunit(_A2mfit2,GeV2) >> iunit(_T1mR2,GeV2) 
      >> iunit(_T1mfit2,GeV2) >> iunit(_T2mR2,GeV2) >> iunit(_T2mfit2,GeV2) 

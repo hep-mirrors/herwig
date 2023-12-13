@@ -339,7 +339,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
 			// special for octets
-			if(particle.dataPtr()->iColour()==PDT::HiddenColourAdjoint) {
+			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
 		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
 				type = ShowerPartnerType::DARKColourLine;
@@ -517,7 +517,7 @@ chooseDecayBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
 			// special for octets
-			if(particle.dataPtr()->iColour()==PDT::HiddenColourAdjoint) {
+			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
 		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
 			Energy stoppingColour = angularOrdered ? stoppingScales.DARK_c     : stoppingScales.DARK_c_noAO;
@@ -684,7 +684,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
 			// special for octets
-			if(particle.dataPtr()->iColour()==PDT::HiddenColourAdjoint) {
+			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
 		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
 					type = ShowerPartnerType::DARKColourLine;

@@ -679,13 +679,13 @@ namespace {
   bool hasColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
     return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6||
-           colour==PDT::HiddenColourFundamental || colour==PDT::HiddenColourAdjoint;
+           colour==PDT::DarkColourFundamental || colour==PDT::DarkColourAdjoint;
   }
 
   bool hasAntiColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
     return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar ||
-           colour==PDT::HiddenColourAntiFundamental || colour==PDT::HiddenColourAdjoint;
+           colour==PDT::DarkColourAntiFundamental || colour==PDT::DarkColourAdjoint;
   }
 
 }

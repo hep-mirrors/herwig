@@ -454,7 +454,7 @@ void ShowerParticle::constructSpinInfo(bool timeLike) {
   }
   // calculate the basis states and construct the SpinInfo for a spin-1 particle
   else if(spin==PDT::Spin1) {
-    bool massless(id()==ParticleID::g||id()==ParticleID::gamma||id()==ParticleID::darkGluon);
+    bool massless(id()==ParticleID::g||id()==ParticleID::gamma||id()==ParticleID::darkg);
     vector<Helicity::LorentzPolarizationVector> vtemp;
     VectorWaveFunction::calculateWaveFunctions(vtemp,this,outgoing,massless,vector_phase);
     VectorWaveFunction::constructSpinInfo(vtemp,this,outgoing,timeLike,massless);

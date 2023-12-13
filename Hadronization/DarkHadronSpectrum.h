@@ -47,7 +47,7 @@ public:
   /**
    * Return the id of the gluon
    */
-  virtual long gluonId() const { return ParticleID::darkGluon; }
+  virtual long gluonId() const { return ParticleID::darkg; }
 
   /**
    * Return the ids of all hadronizing quarks

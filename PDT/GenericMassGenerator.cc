@@ -53,8 +53,8 @@ void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
   is >> particle_
      >> iunit(lowerMass_,GeV) >> iunit(upperMass_,GeV) >> maxWgt_ 
      >> BWShape_ >> nGenerate_ 
-     >> iunit(mass_,GeV) >> iunit(width_ ,GeV)
-     >> iunit(mass2_,GeV2) >> iunit(mWidth_ ,GeV2)
+     >> iunit(mass_,GeV) >> iunit(width_,GeV)
+     >> iunit(mass2_,GeV2) >> iunit(mWidth_,GeV2)
      >> nInitial_ >> initialize_ >> output_ >> widthGen_ >> widthGenB_
      >> widthOpt_;
 }

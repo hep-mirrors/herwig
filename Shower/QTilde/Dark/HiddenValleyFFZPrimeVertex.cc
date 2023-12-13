@@ -39,7 +39,7 @@ void HiddenValleyFFZPrimeVertex::setCoupling(Energy2, tcPDPtr a,tcPDPtr,tcPDPtr)
     right(_gr[iferm]);
     return;
   }
-  iferm -= ParticleID::darkGluon;
+  iferm -= ParticleID::darkg;
   if(iferm<=int(_gql.size())) {
     left (_gql[iferm]);
     right(_gqr[iferm]);
@@ -85,7 +85,7 @@ void HiddenValleyFFZPrimeVertex::doinit() {
   _gql.resize(model->NF()+1,0.);
   _gqr.resize(model->NF()+1,0.);
   for(int ix=0;ix<int(model->NF());++ix) {
-    int id = ParticleID::darkGluon+1+ix;
+    int id = ParticleID::darkg+1+ix;
     addToList(-id,id,32);
     _gql[ix+1] = model->qCharge()[ix];
     _gqr[ix+1] = model->qCharge()[ix]-2.;

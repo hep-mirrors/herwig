@@ -33,32 +33,32 @@ void OneHalfHalfDarkSplitFn::Init() {
 bool OneHalfHalfDarkSplitFn::checkColours(const IdList & ids) const {
   if(colourStructure()==TripletTripletOctet) {
     if(ids[0]!=ids[1]) return false;
-    if((ids[0]->iColour()==PDT::HiddenColourFundamental||
-	ids[0]->iColour()==PDT::HiddenColourAntiFundamental) &&
-       ids[2]->iColour()==PDT::HiddenColourAdjoint) return true;
+    if((ids[0]->iColour()==PDT::DarkColourFundamental||
+	ids[0]->iColour()==PDT::DarkColourAntiFundamental) &&
+       ids[2]->iColour()==PDT::DarkColourAdjoint) return true;
     return false;
   }
   else if(colourStructure()==OctetOctetOctet) {
     for(unsigned int ix=0;ix<3;++ix) {
-      if(ids[ix]->iColour()!=PDT::HiddenColourAdjoint) return false;
+      if(ids[ix]->iColour()!=PDT::DarkColourAdjoint) return false;
     }
     return true;
   }
   else if(colourStructure()==OctetTripletTriplet) {
-    if(ids[0]->iColour()!=PDT::HiddenColourAdjoint) return false;
-    if(ids[1]->iColour()==PDT::HiddenColourFundamental&&
-       ids[2]->iColour()==PDT::HiddenColourAntiFundamental)
+    if(ids[0]->iColour()!=PDT::DarkColourAdjoint) return false;
+    if(ids[1]->iColour()==PDT::DarkColourFundamental&&
+       ids[2]->iColour()==PDT::DarkColourAntiFundamental)
       return true;
-    if(ids[1]->iColour()==PDT::HiddenColourAntiFundamental&&
-       ids[2]->iColour()==PDT::HiddenColourFundamental)
+    if(ids[1]->iColour()==PDT::DarkColourAntiFundamental&&
+       ids[2]->iColour()==PDT::DarkColourFundamental)
       return true;
     return false;
   }
   else if(colourStructure()==TripletOctetTriplet) {
     if(ids[0]!=ids[2]) return false;
-    if((ids[0]->iColour()==PDT::HiddenColourFundamental||
-	ids[0]->iColour()==PDT::HiddenColourAntiFundamental) &&
-       ids[1]->iColour()==PDT::HiddenColourAdjoint) return true;
+    if((ids[0]->iColour()==PDT::DarkColourFundamental||
+	ids[0]->iColour()==PDT::DarkColourAntiFundamental) &&
+       ids[1]->iColour()==PDT::DarkColourAdjoint) return true;
     return false;
   }
   else {
