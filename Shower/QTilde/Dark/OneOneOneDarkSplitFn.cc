@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// OneOneOneSplitFn.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// OneOneOneDarkSplitFn.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,11 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the OneOneOneSplitFn class.
+// functions of the OneOneOneDarkSplitFn class.
 //
 
-#include "OneOneOneSplitFn.h"
+#include "OneOneOneDarkSplitFn.h"
+#include "HiddenValleyModel.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -19,17 +20,54 @@
 
 using namespace Herwig;
 
-DescribeNoPIOClass<OneOneOneSplitFn,Herwig::SplittingFunction>
-describeOneOneOneSplitFn ("Herwig::OneOneOneSplitFn","HwShower.so");
+DescribeNoPIOClass<OneOneOneDarkSplitFn,Herwig::SplittingFunction>
+describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwShower.so");
 
-void OneOneOneSplitFn::Init() {
+void OneOneOneDarkSplitFn::Init() {
 
-  static ClassDocumentation<OneOneOneSplitFn> documentation
-    ("The OneOneOneSplitFn class implements the g -> gg splitting function");
+  static ClassDocumentation<OneOneOneDarkSplitFn> documentation
+    ("The OneOneOneDarkSplitFn class implements the g -> gg splitting function");
 
 }
 
-double OneOneOneSplitFn::P(const double z, const Energy2,
+bool OneOneOneDarkSplitFn::checkColours(const IdList & ids) const {
+  if(colourStructure()==TripletTripletOctet) {
+    if(ids[0]!=ids[1]) return false;
+    if((ids[0]->iColour()==PDT::DarkColourFundamental||
+	ids[0]->iColour()==PDT::DarkColourAntiFundamental) &&
+       ids[2]->iColour()==PDT::DarkColourAdjoint) return true;
+    return false;
+  }
+  else if(colourStructure()==OctetOctetOctet) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ids[ix]->iColour()!=PDT::DarkColourAdjoint) return false;
+    }
+    return true;
+  }
+  else if(colourStructure()==OctetTripletTriplet) {
+    if(ids[0]->iColour()!=PDT::DarkColourAdjoint) return false;
+    if(ids[1]->iColour()==PDT::DarkColourFundamental&&
+       ids[2]->iColour()==PDT::DarkColourAntiFundamental)
+      return true;
+    if(ids[1]->iColour()==PDT::DarkColourAntiFundamental&&
+       ids[2]->iColour()==PDT::DarkColourFundamental)
+      return true;
+    return false;
+  }
+  else if(colourStructure()==TripletOctetTriplet) {
+    if(ids[0]!=ids[2]) return false;
+    if((ids[0]->iColour()==PDT::DarkColourFundamental||
+	ids[0]->iColour()==PDT::DarkColourAntiFundamental) &&
+       ids[1]->iColour()==PDT::DarkColourAdjoint) return true;
+    return false;
+  }
+  else {
+    assert(false);
+  }
+  return false;
+}
+
+double OneOneOneDarkSplitFn::P(const double z, const Energy2,
 			   const IdList & ids, const bool, const RhoDMatrix &)const {
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig shower! Alberto
@@ -37,57 +75,57 @@ double OneOneOneSplitFn::P(const double z, const Energy2,
   return colourFactor(ids)*sqr(1.-z*(1.-z))/(z*(1.-z));
 }
 
-double OneOneOneSplitFn::overestimateP(const double z,
+double OneOneOneDarkSplitFn::overestimateP(const double z,
 				       const IdList & ids) const {
-  return colourFactor(ids)*(1/z + 1/(1.-z)); 
+  return colourFactor(ids)*(1/z + 1/(1.-z));
 }
 
 
-double OneOneOneSplitFn::ratioP(const double z, const Energy2,
+double OneOneOneDarkSplitFn::ratioP(const double z, const Energy2,
 				const IdList & , const bool, const RhoDMatrix &) const {
   return sqr(1.-z*(1.-z));
 }
 
-double OneOneOneSplitFn::invIntegOverP(const double r,
+double OneOneOneDarkSplitFn::invIntegOverP(const double r,
 				       const IdList & ids,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1./(1.+exp(-r/colourFactor(ids))); 
+    return 1./(1.+exp(-r/colourFactor(ids)));
   case 1:
   case 2:
   case 3:
   default:
-    throw Exception() << "OneOneOneSplitFn::integOverP() invalid PDFfactor = "
+    throw Exception() << "OneOneOneDarkSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
   }
-} 
+}
 
-double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
+double OneOneOneDarkSplitFn::integOverP(const double z, const IdList & ids,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     assert(z>0.&&z<1.);
-    return colourFactor(ids)*log(z/(1.-z)); 
+    return colourFactor(ids)*log(z/(1.-z));
   case 1:
   case 2:
   case 3:
   default:
-    throw Exception() << "OneOneOneSplitFn::integOverP() invalid PDFfactor = "
+    throw Exception() << "OneOneOneDarkSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
   }
 }
 
-bool OneOneOneSplitFn::accept(const IdList & ids) const {
+bool OneOneOneDarkSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix) {
-    if(ids[ix]->iSpin()!=PDT::Spin1) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1) return false;
   }
-  return checkColours(ids);
+  return OneOneOneDarkSplitFn::checkColours(ids);
 }
 
-vector<pair<int, Complex> > 
-OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
+vector<pair<int, Complex> >
+OneOneOneDarkSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
 				     const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));
@@ -99,8 +137,8 @@ OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList
   return output;
 }
 
-vector<pair<int, Complex> > 
-OneOneOneSplitFn::generatePhiBackward(const double z, const Energy2, const IdList &,
+vector<pair<int, Complex> >
+OneOneOneDarkSplitFn::generatePhiBackward(const double z, const Energy2, const IdList &,
 			      const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
@@ -113,7 +151,7 @@ OneOneOneSplitFn::generatePhiBackward(const double z, const Energy2, const IdLis
   return output;
 }
 
-DecayMEPtr OneOneOneSplitFn::matrixElement(const double z, const Energy2, 
+DecayMEPtr OneOneOneDarkSplitFn::matrixElement(const double z, const Energy2,
 					   const IdList &, const double phi,
                                            bool) {
   // calculate the kernal

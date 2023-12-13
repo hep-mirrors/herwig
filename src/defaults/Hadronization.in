@@ -105,9 +105,9 @@ insert ClusterDecayer:ClSmrHeavy 5 0.078
 newdef SMHadronSpectrum:SingleHadronLimitBottom 0.000
 
 # Clustering parameters for c-quarks
-insert ClusterFissioner:ClMaxHeavy 4 3.950
-insert ClusterFissioner:ClPowHeavy 4  2.559
-insert ClusterFissioner:PSplitHeavy 4 0.994
+insert ClusterFissioner:ClMaxHeavy 4 3.950*GeV
+insert ClusterFissioner:ClPowHeavy 4  2.559*GeV
+insert ClusterFissioner:PSplitHeavy 4 0.994*GeV
 insert ClusterDecayer:ClDirHeavy 4 1
 insert ClusterDecayer:ClSmrHeavy 4 0.163
 newdef SMHadronSpectrum:SingleHadronLimitCharm 0.000

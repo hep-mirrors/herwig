@@ -586,8 +586,6 @@ void ColourReconnector::_doRecoBaryonicMesonic(ClusterVector & cv) const {
   swap(cv, clustervector);
 }
 
-
-
 namespace {
 
 double calculateRapidityRF(const Lorentz5Momentum & q1,
@@ -808,7 +806,6 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         }
       }
     }
-
   }
 
   if (bcand == true) {
@@ -1486,7 +1483,6 @@ void ColourReconnector::persistentInput(PersistentIStream & is, int) {
 
 
 void ColourReconnector::Init() {
-
   static ClassDocumentation<ColourReconnector> documentation
   ("This class is responsible of the colour reconnection.");
 

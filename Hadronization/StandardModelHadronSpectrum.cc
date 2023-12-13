@@ -51,7 +51,6 @@ namespace {
        ( (abs(id1)/1000)%10 == ParticleID::c  
          || (abs(id1)/100)%10 == ParticleID::c ) );
   }
-
 }
 
 
@@ -497,6 +496,8 @@ void StandardModelHadronSpectrum::constructHadronTable() {
     if(_trial==1 && pid!=111 && pid!=211) continue;
     // shouldn't be coloured
     if(particle->coloured()) continue;
+    // Exclude dark hadrons
+    if ((pid/100000)==49) continue;
     // Get the flavours
     const int x4 = (pid/1000)%10; 
     const int x3 = (pid/100 )%10;
@@ -583,7 +584,6 @@ void StandardModelHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2
     if(flav1 != flav2) _table[make_pair(flav2,flav1)].insert(a);
   }
 }
-
 
 long StandardModelHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
 

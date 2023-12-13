@@ -71,6 +71,10 @@ using namespace ThePEG;
       return ShowerInteraction::QED;
     else if(partner==ShowerPartnerType::EW)
       return ShowerInteraction::EW;
+    else if (partner==ShowerPartnerType::DARKColourLine ||
+             partner==ShowerPartnerType::DARKAntiColourLine)
+      return ShowerInteraction::DARK;
+
     else
       return ShowerInteraction::UNDEFINED;
   }

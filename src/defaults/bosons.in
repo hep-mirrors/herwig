@@ -18,4 +18,3 @@ setup W- -24 W- 80.377 2.085 21.41 0 -3 0 3 0
 makeanti W- W+
 
 set g:ColouredInteraction QCD
-

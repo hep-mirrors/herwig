@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() : inter_(ShowerInteraction::QEDQCD), weakMassCut_(-GeV) {
+  TwoBodyDecayConstructor() : inter_(ShowerInteraction::ALL), weakMassCut_(-GeV) {
     radiationVertices_[ShowerInteraction::QCD] = map<tPDPtr,VertexBasePtr>();
     radiationVertices_[ShowerInteraction::QED] = map<tPDPtr,VertexBasePtr>();
   }
@@ -50,7 +50,7 @@ public:
    * Function used to determine allowed decaymodes
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const set<PDPtr,MassOrdering> & particles);
+  virtual void DecayList(const set<PDPtr,MassOrdering> & part);
 
   /**
    * Number of outgoing lines. Required for correct ordering.

@@ -20,7 +20,7 @@ create Herwig::TwoBodyDecayConstructor TwoBodyDC
 set TwoBodyDC:ExcludeEffectiveVertices No
 set TwoBodyDC:AlphaQCD /Herwig/Shower/AlphaQCDFSR
 set TwoBodyDC:AlphaQED /Herwig/Shower/AlphaQED
-set TwoBodyDC:Interactions QCDandQED
+set TwoBodyDC:Interactions ALL
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 set ThreeBodyDC:RemoveFlavourChangingVertices Yes
 create Herwig::FourBodyDecayConstructor FourBodyDC
