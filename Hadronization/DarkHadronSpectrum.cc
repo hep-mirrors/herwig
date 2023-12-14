@@ -182,12 +182,13 @@ void DarkHadronSpectrum::doinit() {
   for(long ix : hadronizingQuarks()) {
     for(long iy : hadronizingQuarks()) {
         // Only add diquarks if they've been defined
-        if(ix==iy)
-	      if (getParticleData(makeDiquarkID(ix,iy,long(3))))
-            _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(3))));
-        else
-	      if (getParticleData(makeDiquarkID(ix,iy,long(1))))
-            _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(1))));
+      if(ix==iy) {
+	if (getParticleData(makeDiquarkID(ix,iy,long(3))))
+	  _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(3))));
+      } else {
+	if (getParticleData(makeDiquarkID(ix,iy,long(1))))
+	  _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(1))));
+      }
     }
   }
   // set the weights for the various excited mesons
@@ -318,7 +319,7 @@ void DarkHadronSpectrum::insertMeson(HadronInfo a, int flav1, int flav2) {
 }
 
 
-double DarkHadronSpectrum::mesonWeight(long id) const {
+double DarkHadronSpectrum::mesonWeight(long) const {
   // Don't currently have radial excitations (practically clashes with dark had offset
   // in pdgId codes; theoretically doesn't make much sense to consider such complex
   // states). For now just return 1
@@ -350,7 +351,7 @@ long DarkHadronSpectrum::makeDiquarkID(long id1, long id2, long pspin) const {
   return id1 > 0 ? idnew : -idnew;
 }
 
-bool DarkHadronSpectrum::isExotic(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) const {
+bool DarkHadronSpectrum::isExotic(tcPDPtr, tcPDPtr, tcPDPtr) const {
   // Don't list dark particles as exotic to allow them to be treated as either light
   // or heavy in the hadronisation
   return false;

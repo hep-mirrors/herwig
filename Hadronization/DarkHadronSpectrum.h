@@ -63,7 +63,7 @@ public:
    * The light hadronizing quarks
    */
   virtual const vector<long>& lightHadronizingQuarks() const {
-    if (_lightquarks.size() != _nlightquarks) {
+    if (long(_lightquarks.size()) != _nlightquarks) {
       for (long il=0; il<_nlightquarks; il++) {
         _lightquarks.push_back(il+_DarkHadOffset+1);
       }
@@ -75,7 +75,7 @@ public:
    * The heavy hadronizing quarks
    */
   virtual const vector<long>& heavyHadronizingQuarks() const {
-    if (_heavyquarks.size() != _nheavyquarks) {
+    if (long(_heavyquarks.size()) != _nheavyquarks) {
       for (long il=0; il<_nheavyquarks; il++) {
         _heavyquarks.push_back(il+_DarkHadOffset+1+_nlightquarks);
       }
@@ -100,7 +100,7 @@ public:
    * cases, each pointer is assumed to be either (anti-)quark or
    * (anti-)diquark.
    */
-  virtual bool hasHeavy(long id, tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const {
+  virtual bool hasHeavy(long, tcPDPtr, tcPDPtr = PDPtr(), tcPDPtr = PDPtr()) const {
     //ToDo: this should work for the heavyHadronizingQuarks
     return false;
   }
@@ -290,8 +290,8 @@ protected:
   virtual double mixingStateWeight(long id) const; 
   //@}
 
-  virtual double specialQuarkWeight(double quarkWeight, long id,
-            const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
+  virtual double specialQuarkWeight(double quarkWeight, long,
+				    const Energy, tcPDPtr, tcPDPtr) const {
       return quarkWeight;
   }
 
