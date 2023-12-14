@@ -208,6 +208,11 @@ public:
   virtual const vector<long>& heavyHadronizingQuarks() const = 0;
 
   /**
+   * The lightest quarks, used for finding the lightest Hadron Pair
+   */
+  virtual const vector<long>& lightestQuarks() const = 0;
+
+  /**
    * Return true if any of the possible three input particles contains
    * the indicated heavy quark.  false otherwise. In the case that
    * only the first particle is specified, it can be: an (anti-)quark,
@@ -224,14 +229,15 @@ public:
   virtual bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr()) const = 0;
 
   //@}
-
   
   /**
    *  Access the parton weights
    */
    double pwt(long pid) const {
     map<long,double>::const_iterator it = _pwt.find(abs(pid));
-    assert( it != _pwt.end() );
+    if( it == _pwt.end() )
+        throw Exception("Houston, we have a problem",
+		       Exception::eventerror);
     return it->second;
   }
 
@@ -257,7 +263,7 @@ public:
    * @param par1 (anti-)quark data pointer
    * @param par2 (anti-)quark data pointer
    */
-  virtual PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const = 0;
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
 
   /**
    * Method to return a pair of hadrons given the PDG codes of
@@ -320,6 +326,7 @@ public:
       lightestHadrons_.find(make_pair(abs(ptr1->id()),abs(ptr2->id())));
     if(lightest!=lightestHadrons_.end())
       return lightest->second.first->mass()+lightest->second.second->mass();
+
     else
       return ZERO;
   }
@@ -464,7 +471,6 @@ protected:
    * of a baryon; false otherwise.
    */
   virtual bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  const = 0;
-
 
   /**
    *  A sub-function of HadronSpectrum::constructHadronTable().

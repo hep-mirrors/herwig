@@ -94,7 +94,7 @@ protected:
   }
   
   /**
-   *  Returns the mass of the lightest pair of baryons.
+   *  Returns the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
    */

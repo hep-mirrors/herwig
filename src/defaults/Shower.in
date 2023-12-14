@@ -29,12 +29,13 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 # initial setup, don't change these!
 #####################################
 create Herwig::SplittingGenerator SplittingGenerator
-create Herwig::ShowerAlphaQCD AlphaQCD
+create Herwig::ShowerAlphaQCD AlphaQCDISR
 create Herwig::ShowerAlphaQCD AlphaQCDFSR
 create Herwig::ShowerAlphaQED AlphaQED
 set AlphaQED:CouplingSource Thompson
 create Herwig::ShowerAlphaQED AlphaEW
 set AlphaEW:CouplingSource MZ
+create Herwig::HiddenValleyAlpha AlphaDARK
 create Herwig::PartnerFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 0
 newdef PartnerFinder:ScaleChoice 0
@@ -44,7 +45,7 @@ newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 newdef KinematicsReconstructor:FinalFinalWeight Yes
 
-newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
+newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCDISR
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
 newdef ShowerHandler:PartnerFinder PartnerFinder
@@ -109,16 +110,21 @@ newdef PowhegShowerHandler:EvolutionScheme DotProduct
 # a few default values
 newdef ShowerHandler:MECorrMode 1
 newdef ShowerHandler:EvolutionScheme DotProduct
-newdef AlphaQCD:ScaleFactor 1.0
-newdef AlphaQCD:NPAlphaS 2
-newdef AlphaQCD:Qmin 0.935
-newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:AlphaIn 0.126
+newdef AlphaQCDISR:ScaleFactor 1.0
+newdef AlphaQCDISR:NPAlphaS 2
+newdef AlphaQCDISR:Qmin 0.935
+newdef AlphaQCDISR:NumberOfLoops 2
+newdef AlphaQCDISR:AlphaIn 0.1185
 newdef AlphaQCDFSR:ScaleFactor 1.0
 newdef AlphaQCDFSR:NPAlphaS 2
 newdef AlphaQCDFSR:Qmin 0.935
 newdef AlphaQCDFSR:NumberOfLoops 2
-newdef AlphaQCDFSR:AlphaIn 0.1186
+newdef AlphaQCDFSR:AlphaIn 0.102337
+newdef AlphaDARK:ScaleFactor 1.0
+newdef AlphaDARK:NPAlphaS 2
+newdef AlphaDARK:Qmin 0.935
+newdef AlphaDARK:NumberOfLoops 2
+#
 #
 #
 # Lets set up all the splittings
@@ -134,11 +140,23 @@ newdef QtoQGSplitFn:ColourStructure TripletTripletOctet
 set QtoQGSplitFn:AngularOrdered Yes
 set QtoQGSplitFn:StrictAO Yes
 
+create Herwig::HalfHalfOneDarkSplitFn QtoQGDARKSplitFn
+newdef QtoQGDARKSplitFn:InteractionType DARK
+newdef QtoQGDARKSplitFn:ColourStructure TripletTripletOctet
+set QtoQGDARKSplitFn:AngularOrdered Yes
+set QtoQGDARKSplitFn:StrictAO Yes
+
 create Herwig::OneOneOneSplitFn GtoGGSplitFn
 newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
 set GtoGGSplitFn:StrictAO Yes
+
+create Herwig::OneOneOneDarkSplitFn GtoGGDARKSplitFn 
+newdef GtoGGDARKSplitFn:InteractionType DARK
+newdef GtoGGDARKSplitFn:ColourStructure OctetOctetOctet
+set GtoGGDARKSplitFn:AngularOrdered Yes
+set GtoGGDARKSplitFn:StrictAO Yes
 
 create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
 newdef WtoWGammaSplitFn:InteractionType QED
@@ -151,6 +169,12 @@ newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
 set GtoQQbarSplitFn:AngularOrdered Yes
 set GtoQQbarSplitFn:StrictAO Yes
+
+create Herwig::OneHalfHalfDarkSplitFn GtoQQbarDARKSplitFn 
+newdef GtoQQbarDARKSplitFn:InteractionType DARK
+newdef GtoQQbarDARKSplitFn:ColourStructure OctetTripletTriplet
+set GtoQQbarDARKSplitFn:AngularOrdered Yes
+set GtoQQbarDARKSplitFn:StrictAO Yes
 
 create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
 newdef GammatoQQbarSplitFn:InteractionType QED
@@ -197,16 +221,20 @@ newdef VtoVHSplitFn:ColourStructure EW
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff
-newdef PTCutOff:pTmin 0.958*GeV
+newdef PTCutOff:pTmin 0.654714*GeV
 
 create Herwig::SudakovFormFactor SudakovCommon
-newdef SudakovCommon:Alpha AlphaQCD
+newdef SudakovCommon:Alpha AlphaQCDISR
 newdef SudakovCommon:Cutoff PTCutOff
 newdef SudakovCommon:PDFmax 1.0
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
 newdef QtoQGSudakov:PDFmax 1.9
+
+cp SudakovCommon QtoQGDARKSudakov
+newdef QtoQGDARKSudakov:SplittingFunction QtoQGDARKSplitFn
+newdef QtoQGDARKSudakov:PDFmax 1.9
 
 cp SudakovCommon QtoQGammaSudakov
 set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
@@ -256,6 +284,10 @@ cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
 newdef GtoGGSudakov:PDFmax 2.0
 
+cp SudakovCommon GtoGGDARKSudakov
+newdef GtoGGDARKSudakov:SplittingFunction GtoGGDARKSplitFn
+newdef GtoGGDARKSudakov:PDFmax 2.0
+
 cp SudakovCommon WtoWGammaSudakov
 newdef WtoWGammaSudakov:SplittingFunction WtoWGammaSplitFn
 set WtoWGammaSudakov:Alpha AlphaQED
@@ -263,6 +295,10 @@ set WtoWGammaSudakov:Alpha AlphaQED
 cp SudakovCommon GtoQQbarSudakov
 newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
 newdef GtoQQbarSudakov:PDFmax 120.0
+
+cp SudakovCommon GtoQQbarDARKSudakov
+newdef GtoQQbarDARKSudakov:SplittingFunction GtoQQbarDARKSplitFn
+newdef GtoQQbarDARKSudakov:PDFmax 120.0
 
 cp SudakovCommon GammatoQQbarSudakov
 newdef GammatoQQbarSudakov:SplittingFunction GammatoQQbarSplitFn

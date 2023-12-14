@@ -68,7 +68,7 @@ void ClusterFinder::Init() {
   static SwitchOption interfaceHeavyDiquarksNoDoublyHeavy
     (interfaceHeavyDiquarks,
      "NoDoublyHeavy",
-     "Avoid having diquarks with twoo heavy quarks",
+     "Avoid having diquarks with two heavy quarks",
      1);
   static SwitchOption interfaceHeavyDiquarksNoHeavy
     (interfaceHeavyDiquarks,

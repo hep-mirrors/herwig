@@ -260,6 +260,8 @@ string ClusterHadronizationHandler::_setHandlersForInteraction(string interactio
   int interactionId = -1;
   if ( interaction == " QCD" ) {
     interactionId = PDT::ColouredQCD;
+  } else if ( interaction == " Dark" ) {
+    interactionId = PDT::ColouredDark;
   } else {
     return "unknown interaction " + interaction;
   }
@@ -290,9 +292,6 @@ handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
   useMe();
   currentHandler_ = this;
-  for (auto iter : _clusterFinders) {
-     iter.second->spectrum()->setGenerator(currentHandler_->generator());
-  }
 
   PVector theList(tagged.begin(),tagged.end());
   
@@ -300,7 +299,7 @@ handle(EventHandler & ch, const tPVector & tagged,
   // if less than this so they are classed as perturbative
 
   // TODO: Should this be hard-coded here, or defined in inputs?
-  map<int,int> interactions = {{PDT::ColouredQCD, ParticleID::g}};
+  map<int,int> interactions = {{PDT::ColouredQCD, ParticleID::g}, {PDT::ColouredDark, ParticleID::darkg}};
   
   // PVector currentlist(tagged.begin(),tagged.end());
   map<int,PVector> currentlists;

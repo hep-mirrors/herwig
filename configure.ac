@@ -11,7 +11,7 @@ AC_CANONICAL_HOST
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
-   CXXFLAGS="-O2 -DBOOST_UBLAS_NDEBUG"
+   CXXFLAGS="-O2 -DBOOST_UBLAS_NDEBUG -Wno-deprecated-declarations -Wno-deprecated-copy"
 fi
 if test "x$CFLAGS" = "x"; then
    CFLAGS=-O2

@@ -87,7 +87,7 @@ void DecayIntegrator::Init() {
    static Switch<DecayIntegrator, bool> InterfacePhaseSpaceWarning
      ("PhaseSpaceWarning",
       "Switch on/off text warnings in PhaseSpaceMode class",
-      &DecayIntegrator::warnings_, true, false, false);
+      &DecayIntegrator::warnings_, false, false, false);
    static SwitchOption on
      (InterfacePhaseSpaceWarning,"on","turn on the warnings", true);
    static SwitchOption off

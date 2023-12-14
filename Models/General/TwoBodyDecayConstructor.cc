@@ -89,11 +89,22 @@ void TwoBodyDecayConstructor::Init() {
      "QED",
      "QED only",
      ShowerInteraction::QED);
-  static SwitchOption interfaceInteractionsQCDandQED
+  static SwitchOption interfaceInteractionsQCDQED
     (interfaceInteractions,
-     "QCDandQED",
+     "QEDQCD",
      "Both QCD and QED",
      ShowerInteraction::QEDQCD);
+  static SwitchOption interfaceInteractionsDARK
+    (interfaceInteractions,
+     "DARK",
+     "DARK Only",
+     ShowerInteraction::DARK);
+ 
+  static SwitchOption interfaceInteractionsALL
+   (interfaceInteractions,
+    "ALL",
+    "ALL",
+    ShowerInteraction::ALL);
 
 }
 
@@ -277,7 +288,7 @@ TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay,
   else if(inter_==ShowerInteraction::QED)
     generator()->preinitInterface(decayer, "Interactions", "set", "QED");
   else
-    generator()->preinitInterface(decayer, "Interactions", "set", "QCDandQED");
+    generator()->preinitInterface(decayer, "Interactions", "set", "QEDQCD");
   // get the vertices for radiation from the external legs
   map<ShowerInteraction,VertexBasePtr> inRad,fourRad;
   vector<map<ShowerInteraction,VertexBasePtr> > outRad(2);

@@ -321,7 +321,7 @@ PVector PartonicDecayerBase::shower(const Particle & parent,
       particles.push_back(new_ptr(ShowerParticle(*p,2,true)));
     }
     // set up the partners and evolution scales
-    _partnerFinder->setInitialEvolutionScales(particles,true,ShowerInteraction::QCD);
+    _partnerFinder->setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,false);
     // do the shower
     PVector output;
     for(tShowerParticlePtr p : particles) {

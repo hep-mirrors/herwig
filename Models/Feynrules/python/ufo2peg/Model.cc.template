@@ -38,6 +38,14 @@ IBPtr ${ModelName}::fullclone() const {
   return new_ptr(*this);
 }
 
+double sec(double x) { 
+  return 1./cos(x); 
+}
+
+double csc(double x) { 
+  return 1./sin(x); 
+}
+
 void ${ModelName}::doinit() {
   ${doinit}
   BSMModel::doinit();

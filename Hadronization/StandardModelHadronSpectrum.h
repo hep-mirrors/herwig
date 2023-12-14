@@ -77,6 +77,15 @@ public:
   }
 
   /**
+   * The lightest quarks, used for finding the lightest Hadron Pair
+   */
+  virtual const vector<long>& lightestQuarks() const {
+    static vector<long> light =
+      { ParticleID::d, ParticleID::u};
+    return light;
+  }
+
+  /**
    * Return true if any of the possible three input particles contains
    * the indicated heavy quark.  false otherwise. In the case that
    * only the first particle is specified, it can be: an (anti-)quark,
@@ -175,14 +184,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-  /**
-   * Return the particle data of the diquark (anti-diquark) made by the two 
-   * quarks (antiquarks) par1, par2.
-   * @param par1 (anti-)quark data pointer
-   * @param par2 (anti-)quark data pointer
-   */
-  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) const;
 
 protected:
 

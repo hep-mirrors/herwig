@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DarkHwppSelector class.
+//
+#ifndef HERWIG_DarkHwppSelector_FH
+#define HERWIG_DarkHwppSelector_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DarkHwppSelector;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DarkHwppSelector,DarkHwppSelectorPtr);
+
+}
+
+#endif
