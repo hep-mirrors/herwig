@@ -103,8 +103,9 @@ public:
      *  Constructor
      */
     EvolutionScales() : QED(),QED_noAO(),QCD_c(),QCD_ac(),
-			            QCD_c_noAO(),QCD_ac_noAO(),DARK_c(),
-                        DARK_ac(),DARK_c_noAO(),DARK_ac_noAO()
+			QCD_c_noAO(),QCD_ac_noAO(),
+			EW(),
+			DARK_c(), DARK_ac(),DARK_c_noAO(),DARK_ac_noAO()
     {}
 
     /**
