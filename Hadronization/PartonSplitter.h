@@ -50,11 +50,12 @@ public:
    *  Default constructor
    */
   PartonSplitter() :
-	 _gluonDistance(ZERO),
-	 _splitGluon(0),
-	 _enhanceSProb(0),
-	 _m0(10.*GeV),
-	 _massMeasure(0) {}
+    Interfaced(),
+    _gluonDistance(ZERO),
+    _splitGluon(0),
+    _enhanceSProb(0),
+    _m0(10.*GeV),
+    _massMeasure(0) {}
 
   /**
    * This method does the nonperturbative splitting of:
@@ -135,7 +136,7 @@ private:
    * @param quark The quark produced in the splitting
    * @param anti  The antiquark produced in the splitting
    */
-  void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
+  virtual void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
 
   /**
