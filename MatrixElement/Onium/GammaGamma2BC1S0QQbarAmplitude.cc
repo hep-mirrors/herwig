@@ -70,10 +70,10 @@ void GammaGamma2BC1S0QQbarAmplitude::Init() {
 }
 
 
-Energy GammaGamma2BC1S0QQbarAmplitude::generateW(double r, const tcPDVector & partons,
+Energy GammaGamma2BC1S0QQbarAmplitude::generateW(double r, const tcPDVector & partons, Energy Wmin,
 						 Energy Wmax,Energy2 & jacW, Energy2) {
   // twice B_c mass
-  Energy Wmin = 2.*partons[0]->mass();
+  Wmin = max(Wmin,2.*partons[0]->mass());
   Energy W = Wmin*pow(Wmax/Wmin,r);
   jacW = 2.*sqr(W)*log(Wmax/Wmin);
   return W;

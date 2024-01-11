@@ -198,8 +198,9 @@ double GammaGamma2Onium3P2Amplitude::me2(const vector<VectorWaveFunction> & v1,
   return 128./5.*output*O1_/pow<3,1>(M)/scale*sqr(Constants::pi*alpha*sqr(eQ)/(1.-t1/Lambda2_)/(1.-t2/Lambda2_));
 }
 
-Energy GammaGamma2Onium3P2Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {
-  Energy Wmin = partons.back()->massMin();
+Energy GammaGamma2Onium3P2Amplitude::generateW(double r, const tcPDVector & partons, Energy Wmin,
+					       Energy Wmax,Energy2 & jacW, Energy2 scale) {
+  Wmin = max(Wmin,partons.back()->massMin());
   Wmax = min(Wmax,partons.back()->massMax());
   double wgt(0.);
   Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);

@@ -159,9 +159,9 @@ double GammaGamma2ScalarAmplitude::me2(const vector<VectorWaveFunction> & v1,
   return 0.25*sqr(form)/scale*output*sqr(alpha*4.*Constants::pi);
 }
 
-Energy GammaGamma2ScalarAmplitude::generateW(double r, const tcPDVector & partons,
+Energy GammaGamma2ScalarAmplitude::generateW(double r, const tcPDVector & partons, Energy Wmin,
 					     Energy Wmax,Energy2 & jacW, Energy2 scale) {
-  Energy Wmin = partons.back()->massMin();
+  Wmin = max(Wmin,partons.back()->massMin());
   Wmax = min(Wmax,partons.back()->massMax());
   double wgt(0.);
   Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);

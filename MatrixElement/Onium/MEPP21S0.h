@@ -33,6 +33,26 @@ protected:
    */
   virtual Energy2 leadingOrderME2() const;
 
+  /**
+   *   Members to calculate the real emission matrix elements
+   */
+  //@{
+  /**
+   *  The matrix element for \f$gg\to H g\f$
+   */
+  virtual double ggME(Energy2 s, Energy2 t, Energy2 u) const;
+
+  /**
+   *  The matrix element for \f$qg\to H q\f$
+   */
+  virtual double qgME(Energy2 s, Energy2 t, Energy2 u) const;
+
+  /**
+   *  The matrix element for \f$qbarg\to H qbar\f$
+   */
+  virtual double qbargME(Energy2 s, Energy2 t, Energy2 u) const;
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

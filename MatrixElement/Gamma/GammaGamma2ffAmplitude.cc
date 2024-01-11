@@ -275,8 +275,8 @@ ProductionMatrixElement GammaGamma2ffAmplitude::me(const vector<VectorWaveFuncti
   return helicityAmplitude(v1,v2,f,fbar,output,dwgt);
 }
 
-Energy GammaGamma2ffAmplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2) {
-  Energy Wmin = 2.*partons[0]->constituentMass();
+Energy GammaGamma2ffAmplitude::generateW(double r, const tcPDVector & partons, Energy Wmin, Energy Wmax,Energy2 & jacW, Energy2) {
+  Wmin = max(Wmin,2.*partons[0]->constituentMass());
   //Energy Wmin=3.*GeV;
   Energy W = Wmin*pow(Wmax/Wmin,r);
   jacW = 2.*sqr(W)*log(Wmax/Wmin);

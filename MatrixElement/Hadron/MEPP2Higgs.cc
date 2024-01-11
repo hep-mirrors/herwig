@@ -252,8 +252,7 @@ void MEPP2Higgs::Init() {
 
   static Parameter<MEPP2Higgs, Energy> interfacePtMin
     ("minPt",
-     "The pt cut on hardest emision generation"
-     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
+     "The pt cut on hardest emision generation",
      &MEPP2Higgs::minpT_, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
 

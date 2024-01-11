@@ -8,13 +8,15 @@
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "OniumParameters.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEPP2OniumPowheg class is designed to allow easy implementation of the matrix elements for quarkonium production inthe POWHEG scheme
+ * The MEPP2OniumPowheg class is designed to allow easy implementation of the matrix elements
+ * for quarkonium production inthe POWHEG scheme
  *
  * @see \ref MEPP2OniumPowhegInterfaces "The interfaces"
  * defined for MEPP2OniumPowheg.
@@ -114,26 +116,47 @@ public:
 
 public:
  
-  // /** @name Member functions for the generation of hard QCD radiation */
-  // //@{
-  // /**
-  //  *  Has a POWHEG style correction
-  //  */
-  // virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
+  /** @name Member functions for the generation of hard QCD radiation */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
 
-  // /**
-  //  *  Apply the POWHEG style correction
-  //  */
-  // virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-  // 						 ShowerInteraction);
-  // //@}
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+  						 ShowerInteraction);
+  //@}
 
 protected:
 
+  
   /**
    *  The leading-order matrix element
    */
   virtual Energy2 leadingOrderME2() const = 0;
+  
+  /**
+   *   Members to calculate the real emission matrix elements
+   */
+  //@{
+  /**
+   *  The matrix element for \f$gg\to H g\f$
+   */
+  virtual double ggME(Energy2 s, Energy2 t, Energy2 u) const = 0;
+
+  /**
+   *  The matrix element for \f$qg\to H q\f$
+   */
+  virtual double qgME(Energy2 s, Energy2 t, Energy2 u) const = 0;
+
+  /**
+   *  The matrix element for \f$qbarg\to H qbar\f$
+   */
+  virtual double qbargME(Energy2 s, Energy2 t, Energy2 u) const = 0;
+  //@}
 
   /**
    *  set the state
@@ -163,6 +186,32 @@ protected:
   unsigned int principalQuantumNumber() const {
     return n_;
   }
+
+  /**
+   * Generates the hardest emission (yj,p)
+   * @param pnew The momenta of the new particles
+   * @param emissiontype The type of emission, as for getResult
+   * @return Whether not an emission was generated
+   */
+  bool getEvent(vector<Lorentz5Momentum> & pnew,int & emissiontype);
+
+  /**
+   * Returns the matrix element for a given type of process,
+   * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
+   * @param emis_type the type of emission,
+   * (0 is \f$gg\to h^0g\f$, 1 is \f$qg\to h^0q\f$ and 2 is \f$g\bar{q}\to h^0\bar{q}\f$)
+   * @param pt The transverse momentum of the jet
+   * @param yj The rapidity of the jet
+   * @param outParton the outgoing parton
+   */
+  double getResult(int emis_type, Energy pt, double yj,tcPDPtr & outParton);
+
+  /**
+   *  Method to extract the PDF weight for quark/antiquark
+   * initiated processes and select the quark flavour
+   */  
+  tPDPtr quarkFlavour(tcPDFPtr pdf, Energy2 scale, double x, tcBeamPtr beam, 
+		      double & pdfweight, bool anti);
   
 public:
 
@@ -272,6 +321,11 @@ private:
    *  Prefactor if variable scale used
    */
   double scaleFact_;
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy minpT_;
   //@}
 
   /**
@@ -288,6 +342,99 @@ private:
    */
   double y_;
   //@}
+
+  /**
+   *  Option for dynamic scale choice in alpha_S (0=mT,>0=pT)
+   */
+  unsigned int mu_R_opt_;
+
+  /**
+   *  Option for dynamic scale choice in PDFs    (0=mT,>0=pT)
+   */
+  unsigned int mu_F_opt_;
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   * The power, \f$n\f$, for the sampling
+   */
+  double power_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$gg\f$ channel
+   */
+  double pregg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double preqg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double pregqbar_;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> prefactor_;
+  //@}
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alpha_;
+  
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  vector<tcBeamPtr> beams_;
+  
+  /**
+   *  Pointers to the ParticleDataObjects for the partons
+   */
+  vector<tcPDPtr> partons_;
+  //@}
+
+  /**
+   *  Properties of the boson and jets
+   */
+  //@{
+  /**
+   *  The rapidity of the onium state
+   */
+  double yO_;
+
+  /**
+   *  the rapidity of the jet
+   */
+  double yj_;
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy pt_;
+
+  /**
+   *  The outgoing parton
+   */
+  tcPDPtr out_;
+  //@}
+
+protected:
+
+  /**
+   *  The mass of the onium state
+   */
+  Energy mass_;
 };
 
 }

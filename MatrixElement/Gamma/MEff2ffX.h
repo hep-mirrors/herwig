@@ -30,6 +30,7 @@ public:
    */
   MEff2ffX() : Q2_1min_(ZERO), Q2_1max_(Constants::MaxEnergy2),
 	       Q2_2min_(ZERO), Q2_2max_(Constants::MaxEnergy2),
+	       mHatMin_(ZERO),
 	       currentMode_(0)
   {}
   
@@ -261,6 +262,11 @@ private:
    *  Maximum value of \f$Q_2^2\f$
    */
   Energy2 Q2_2max_;
+
+  /**  
+   * Minimum \f$\hat{m}\f$ for the core process
+   */
+  Energy mHatMin_;
   //@}
 
 private:

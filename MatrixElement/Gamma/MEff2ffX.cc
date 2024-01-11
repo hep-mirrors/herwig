@@ -51,7 +51,8 @@ bool MEff2ffX::generateKinematics(const double * r) {
   }
   else {
     Energy2 jacW(ZERO);
-    W = amp_->generateW(r[4],tcPDVector(mePartonData().begin()+4,mePartonData().end()),rS-2.*m,jacW,sHat());
+    Energy Wmax = rS-2.*m;
+    W = amp_->generateW(r[4],tcPDVector(mePartonData().begin()+4,mePartonData().end()),mHatMin_,Wmax,jacW,sHat());
     jacobian(jacW*jacobian()/sHat());
   }
   Energy2 m2=sqr(m), W2=sqr(W);
@@ -175,7 +176,6 @@ bool MEff2ffX::generateKinematics(const double * r) {
   }
   ptotal+=pX;
   double test = (sqr(ptotal.x())+sqr(ptotal.y())+sqr(ptotal.z())+sqr(ptotal.t()))/sHat();
-  if(test>1e-20) cerr << "testing the sum " << ptotal/GeV << " " << test << "\n";
   if(meMomenta().size()==5) {
     meMomenta()[4] = pX;
   }
@@ -244,13 +244,15 @@ IBPtr MEff2ffX::fullclone() const {
 void MEff2ffX::persistentOutput(PersistentOStream & os) const {
   os << FFPVertex_ << gamma_ << amp_ << currentMode_
      << ounit(Q2_1min_,GeV2) << ounit(Q2_1max_,GeV2)
-     << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2) << formFactor_;
+     << ounit(Q2_2min_,GeV2) << ounit(Q2_2max_,GeV2)
+     << ounit(mHatMin_,GeV) << formFactor_;
 }
 
 void MEff2ffX::persistentInput(PersistentIStream & is, int) {
   is >> FFPVertex_ >> gamma_ >> amp_ >> currentMode_
      >> iunit(Q2_1min_,GeV2) >> iunit(Q2_1max_,GeV2)
-     >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2) >> formFactor_;
+     >> iunit(Q2_2min_,GeV2) >> iunit(Q2_2max_,GeV2) >> iunit(mHatMin_,GeV)
+     >> formFactor_;
 }
 
 void MEff2ffX::doinit() {
@@ -325,6 +327,12 @@ void MEff2ffX::Init() {
      "Use the equivalent photon approximation, neglecting spin correlations",
      2);
 
+  static Parameter<MEff2ffX,Energy> interfaceMHatMin
+    ("MHatMin",
+     "The minimum Mhat for the core process",
+     &MEff2ffX::mHatMin_, GeV, ZERO, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+  
 }
 
 vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,

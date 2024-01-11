@@ -102,10 +102,15 @@ public:
 
   /**
    * Generate the mass of the \f$\gamma\gamma\f$ system
+   * @param r The random number to use for the generation of W
+   * @param partons The outgoing partons
+   * @param The minimum value of W
+   * @param Wmax The maximum for W
+   * @param jacW The jacobian for the gneeration of W
+   * @param scale The scale to be used to make result dimensiionless
+   * @return The generated value of W
    */
-  virtual Energy generateW(double , const tcPDVector &,Energy ,Energy2 &,Energy2) {
-    assert(false);
-  }
+  virtual Energy generateW(double r, const tcPDVector & partons, Energy Wmin, Energy Wmax, Energy2 & jacW,Energy2 scale) = 0;
   //@}
 
 protected:

@@ -90,7 +90,7 @@ public:
   /**
    * Generate the mass of the \f$\gamma\gamma\f$ system
    */
-  virtual Energy generateW(double , const tcPDVector & partons,Energy Wmax,Energy2 & jacW);
+  virtual Energy generateW(double , const tcPDVector & partons, Energy Wmin, Energy Wmax,Energy2 & jacW, Energy2 scale);
   //@}
 
 public:

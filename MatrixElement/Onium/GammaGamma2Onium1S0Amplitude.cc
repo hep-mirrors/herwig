@@ -162,8 +162,9 @@ helicityAmplitude(const vector<VectorWaveFunction> & v1,
   return me;
 }
 
-Energy GammaGamma2Onium1S0Amplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW, Energy2 scale) {
-  Energy Wmin = partons.back()->massMin();
+Energy GammaGamma2Onium1S0Amplitude::generateW(double r, const tcPDVector & partons, Energy Wmin,
+					       Energy Wmax,Energy2 & jacW, Energy2 scale) {
+  Wmin = max(Wmin,partons.back()->massMin());
   Wmax = min(Wmax,partons.back()->massMax());
   double wgt(0.);
   Energy output = massGen_->mass(wgt,*partons.back(),Wmin,Wmax,r);

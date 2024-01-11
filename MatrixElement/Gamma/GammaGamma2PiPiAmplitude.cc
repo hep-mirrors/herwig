@@ -163,8 +163,8 @@ double GammaGamma2PiPiAmplitude::me2(const vector<VectorWaveFunction> & v1,
   return output*sqr(alpha*4.*Constants::pi);
 }
 
-Energy GammaGamma2PiPiAmplitude::generateW(double r, const tcPDVector & partons,Energy Wmax,Energy2 & jacW) {
-  Energy Wmin = 2.*partons[0]->constituentMass();
+Energy GammaGamma2PiPiAmplitude::generateW(double r, const tcPDVector & partons, Energy Wmin, Energy Wmax,Energy2 & jacW, Energy2) {
+  Wmin = max(Wmin,2.*partons[0]->constituentMass());
   Energy W = Wmin*pow(Wmax/Wmin,r);
   jacW = 2.*sqr(W)*log(Wmax/Wmin);
   return W;

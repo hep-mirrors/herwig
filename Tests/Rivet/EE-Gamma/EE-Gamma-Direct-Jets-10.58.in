@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10.58
+##################################################
+# select the analyses 
+##################################################
+set  /Herwig/Cuts/JetKtCut:MinKT 0.0
+set  /Herwig/Cuts/Cuts:MHatMin 2.*GeV
+# CLEO Lambda Lambdabar0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I439745

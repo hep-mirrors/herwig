@@ -388,6 +388,12 @@ if(opts.list) :
 if(opts.plot) :
     output=""
     for process in processes:
+        if process=="DD" :
+            output+= " -m/%s/%s" % ("BESIII_2017_I1604892","d02-x01-y01")
+            for ix in range(1,3) :
+                for iy in range(1,3) :
+                    output+= " -m/%s/%s" % ("BESIII_2017_I1604892","d01-x0%s-y0%s"%(ix,iy))
+
         for analysis in analyses[process] :
             if(analysis=="CMD3_2019_I1770428") :
                 for iy in range(1,3) :
@@ -409,6 +415,23 @@ if(opts.plot) :
             elif(analysis=="SND_2020_I1809286") :
                 for ix in range(1,5) :
                     output+= " -m/%s/%s" % (analysis,"d04-x01-y0%s"% ix)
+            elif(analysis=="BESIII_2020_I1793431") :
+                for ix in range(1,5) :
+                    for iy in range(1,3):
+                        output+= " -m/%s/%s" % (analysis,"d02-x0%s-y0%s"% (ix,iy))
+            elif(analysis=="BESIII_2019_I1725786") :
+                for ix in range(1,4) :
+                    output+= " -m/%s/%s" % (analysis,"d02-x01-y0%s"% ix)
+                    if ix<3 : output+= " -m/%s/%s" % (analysis,"d01-x01-y0%s"% ix)
+                    for iy in range(1,4):
+                        output+= " -m/%s/%s" % (analysis,"d03-x0%s-y0%s"% (ix,iy))
+            elif(analysis=="BESIII_2018_I1711382") :
+                output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
+            elif analysis == "BESIII_2015_I1393996" :
+                output+= " -m/%s/%s" % (analysis,"d03-x01-y01")
+                for ix in range(1,3) :
+                    for iy in range(1,3):
+                        output+= " -m/%s/%s" % (analysis,"d02-x0%s-y0%s"% (ix,iy))
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print (output)
@@ -479,6 +502,19 @@ for process in processes:
     matrix=""
     if( process in me ) :
         matrix = me[process]
+    if process == "DD" :
+        for energy in [4.23,4.26] :
+            if(energy in energies) :
+                if("BESIII_2017_I1604892" not in energies[energy][1]) :
+                    energies[energy][1].append(analysis)
+                if(matrix!="" and matrix not in energies[energy][0] and
+                   minMass[process]<=energy) :
+                    energies[energy][0].append(matrix)
+            else :
+                if(matrix=="") :
+                    energies[energy]=[[],["BESIII_2017_I1604892"]]
+                elif(minMass[process]<=energy) :
+                    energies[energy]=[[matrix],["BESIII_2017_I1604892"]]
     for analysis in analyses[process] :
         aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
         if(len(aos)==0) : continue

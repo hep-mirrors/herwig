@@ -109,6 +109,10 @@ analyses["6m"]["ARGUS_1996_I403304"] = [ "d01-x01-y01","d01-x01-y02","d01-x01-y0
 analyses["6m"]["BELLE_2012_I1090664"] = ["d01-x01-y01","d01-x01-y02",
                                          "d01-x02-y01","d01-x02-y02",
                                          "d01-x03-y01","d01-x03-y02"]
+# hyperons
+analyses["LL"]["BELLE_2006_I727063" ] = ["d01-x01-y01","d01-x01-y02"]
+analyses["LL"]["CLEOII_1997_I439745"] = ["d01-x01-y01"]
+
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :

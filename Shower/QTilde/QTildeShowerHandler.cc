@@ -1317,6 +1317,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
       real = _hardme->generateHardest( currentTree()->perturbativeProcess(),
 				       interaction_);
       type = _hardme->hasPOWHEGCorrection();
+      generator()->log() << "testing hardest " << *real << "\n";
     }
     // decay
     else {
