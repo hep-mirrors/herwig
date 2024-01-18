@@ -29,7 +29,7 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 # initial setup, don't change these!
 #####################################
 create Herwig::SplittingGenerator SplittingGenerator
-create Herwig::ShowerAlphaQCD AlphaQCD
+create Herwig::ShowerAlphaQCD AlphaQCDISR
 create Herwig::ShowerAlphaQCD AlphaQCDFSR
 create Herwig::ShowerAlphaQED AlphaQED
 set AlphaQED:CouplingSource Thompson
@@ -44,7 +44,7 @@ newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 newdef KinematicsReconstructor:FinalFinalWeight Yes
 
-newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
+newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCDISR
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
 newdef ShowerHandler:PartnerFinder PartnerFinder
@@ -109,16 +109,16 @@ newdef PowhegShowerHandler:EvolutionScheme DotProduct
 # a few default values
 newdef ShowerHandler:MECorrMode 1
 newdef ShowerHandler:EvolutionScheme DotProduct
-newdef AlphaQCD:ScaleFactor 1.0
-newdef AlphaQCD:NPAlphaS 2
-newdef AlphaQCD:Qmin 0.935
-newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:AlphaIn 0.126
+newdef AlphaQCDISR:ScaleFactor 1.0
+newdef AlphaQCDISR:NPAlphaS 2
+newdef AlphaQCDISR:Qmin 0.935
+newdef AlphaQCDISR:NumberOfLoops 2
+newdef AlphaQCDISR:AlphaIn 0.1185
 newdef AlphaQCDFSR:ScaleFactor 1.0
 newdef AlphaQCDFSR:NPAlphaS 2
 newdef AlphaQCDFSR:Qmin 0.935
 newdef AlphaQCDFSR:NumberOfLoops 2
-newdef AlphaQCDFSR:AlphaIn 0.1186
+newdef AlphaQCDFSR:AlphaIn 0.102337
 #
 #
 # Lets set up all the splittings
@@ -197,10 +197,10 @@ newdef VtoVHSplitFn:ColourStructure EW
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff
-newdef PTCutOff:pTmin 0.958*GeV
+newdef PTCutOff:pTmin 0.654714*GeV
 
 create Herwig::SudakovFormFactor SudakovCommon
-newdef SudakovCommon:Alpha AlphaQCD
+newdef SudakovCommon:Alpha AlphaQCDISR
 newdef SudakovCommon:Cutoff PTCutOff
 newdef SudakovCommon:PDFmax 1.0
 
