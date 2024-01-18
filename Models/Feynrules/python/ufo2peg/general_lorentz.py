@@ -573,11 +573,11 @@ class LorentzIndex :
         else :
             print("Unknown value in Lorentz index:",val)
             raise SkipThisVertex()
-            
+
     def __eq__(self,other):
         if(not isinstance(other,LorentzIndex)) :
             return False
-        return ( (self.type, self.value) 
+        return ( (self.type, self.value)
                  == (other.type, other.value) )
 
     def __hash__(self) :
@@ -598,7 +598,7 @@ class DiracMatrix:
             return "%s" % self.index
         else :
             return "%s" % self.value
-    
+
 class LorentzStructure:
     """A simple class to store a Lorentz structures"""
     name=""
@@ -611,7 +611,7 @@ class LorentzStructure:
         self.value=0
         self.lorentz=[]
         self.spin=[]
-    
+
     def __repr__(self):
         output = self.name
         if((self.name=="P" or self.name=="Tensor") and self.value!=0) :
@@ -971,7 +971,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
             # check for tensor index
             found=False
             for li in parsed[j].lorentz :
-                if(li.type[0]=="T") : 
+                if(li.type[0]=="T") :
                     index = li
                     found=True
                     break
@@ -987,7 +987,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                 parsed[j].name = "Tensor"
                 parsed[j].value = index.value
                 parsed[j].lorentz = []
-                if(iloc!=index.value) : 
+                if(iloc!=index.value) :
                     name= "traceT%s" % parsed[j].value
                     if( name  in defns ) :
                         output += "*(%s)" % defns[name][0]
@@ -1000,7 +1000,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
             for k in range(j+1,len(parsed)) :
                 found = False
                 for li in parsed[k].lorentz :
-                    if(li == index2) : 
+                    if(li == index2) :
                         found=True
                         break
                 if(not found) : continue
@@ -1030,7 +1030,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     if(index.value==iloc or (newIndex1.type=="E" and newIndex1.value==iloc)) :
                         newIndex2=index2
                     # otherwise contract
-                    else : 
+                    else :
                         unit=computeUnit(newIndex1.dimension)
                         if(index.type=="T1") :
                             name="T%s%sF" % (index.value,newIndex1)
@@ -1251,7 +1251,7 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
         print("Structure can't be handled",parsed,iloc)
         raise SkipThisVertex()
     return (output,dimension)
-    
+
 def tensorPropagator(struct,defns) :
     # dummy index
     i0 = LorentzIndex(-1000)
@@ -1305,13 +1305,13 @@ def tensorPropagator(struct,defns) :
                                 val +="-"+pre[1:]
                             else :
                                 val +="+"+pre[1:]
-                                    
-                            
+
+
                 else :
                     val += "%s*%s%s*%s%s" % (pre,term[1],i1,term[2],i2)
             output["%s%s" % (i1,i2) ] = val.replace("+1*","+").replace("-1*","-")
     return output
-        
+
 def generateVertex(iloc,L,parsed,lorentztag,vertex,defns) :
     # try to import sympy and exit if required
     try :
@@ -1575,7 +1575,7 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
                 start.index = oindex
                 start.value =Template( rslashB.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind, "loc" : sind,
                                                             "DB" : RB, "dot" : name , "v2" : contract}))
-                
+
                 endT=DiracMatrix()
                 endT.name = "RQ"
                 endT.index = oindex
@@ -1689,7 +1689,7 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
                 end.index = oindex
                 end.value =Template( rslash2B.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind, "loc" : lind,
                                                            "DA" : RB, "dot" : name , "v2" : contract}))
-                
+
                 startT=DiracMatrix()
                 startT.name = "RQ"
                 startT.index = oindex
@@ -1743,11 +1743,11 @@ def calculateDirac(expr,start,end,startT,endT,sind,lind,Symbols,iloc) :
         etemp="*".join(str(x) for x in expr[ichain])
         temp={}
         exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+
-             ( "%s*%s*%s" %(start[ichain],etemp,end[ichain]))) in temp
+             ( "%s*%s*%s" %(start[ichain],etemp,end[ichain])), temp)
         res.append(temp["result"])
         tempT={}
         exec("import sympy\nfrom sympy import Symbol,Matrix,Transpose\n"+Symbols+"result="+
-             ( "%s*%s*Transpose(%s)*%s*%s" %(startT[ichain],CC,etemp,CD,endT[ichain]))) in tempT
+             ( "%s*%s*Transpose(%s)*%s*%s" %(startT[ichain],CC,etemp,CD,endT[ichain])), tempT)
         res.append(tempT["result"])
     if(len(start)==1) :
         if(iloc==0 or (iloc!=sind[ichain] and iloc!=lind[ichain])) :
@@ -1857,8 +1857,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
         elif(lstruct.name=="Tensor") :
             if(iloc==lstruct.value) :
                 Symbols += momCom.substitute({"v": "P%s"%lstruct.value})
-                Symbols += "OM%s = Symbol(\"OM%s\")\n" % (lstruct.value,lstruct.value) 
-                Symbols += "M%s2 = Symbol(\"M%s2\")\n" % (lstruct.value,lstruct.value) 
+                Symbols += "OM%s = Symbol(\"OM%s\")\n" % (lstruct.value,lstruct.value)
+                Symbols += "M%s2 = Symbol(\"M%s2\")\n" % (lstruct.value,lstruct.value)
                 Symbols += "p2 = Symbol(\"p2\")\n"
                 for ival in range(1,3) :
                     newIndex=LorentzIndex(ival)
@@ -2183,12 +2183,12 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             for key in sVal:
                 sVal[key] = sVal[key][0]
     return sVal
-            
+
 def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex) :
     # get the spins of the particles
     spins = vertex.lorentz[0].spins
     # check if we have one or two spin chains
-    nchain = (lorentztag.count("F")+lorentztag.count("R"))/2
+    nchain = int((lorentztag.count("F")+lorentztag.count("R"))/2)
     # storage of the intermediate results
     expr  =[]
     start =[]
@@ -2273,7 +2273,7 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
             else :
                 print('Unknown lorentz structure',parsed[i])
                 raise SkipThisVertex()
-                
+
         parsed = [x for x in parsed if x != ""]
         if(len(parsed)!=0) :
             print("Can't parse ",parsed,iloc)
@@ -2293,7 +2293,7 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
     else :
         output = [old,sVal,(lind[0],sind[0],lind[1],sind[1])]
     return (output,dimension,defns)
-            
+
 def convertLorentz(Lstruct,lorentztag,order,vertex,iloc,defns,evalVertex) :
     eps = False
     # split the structure into individual terms
@@ -2367,7 +2367,7 @@ def constructSignature(vertex,order,iloc,decls,momenta,waves,fIndex) :
     nf=0
     poff=""
     offType="Complex"
-    for i in order : 
+    for i in order :
         spin = vertex.lorentz[0].spins[i-1]
         if(i==iloc) :
             if(spin==1) :
@@ -2488,7 +2488,7 @@ def combineResult(res,nf,ispin,vertex) :
         for i1 in imap :
             for i2 in imap :
                 otype["%s%s"%(i1,i2)]=""
-    else :      
+    else :
         print('Unknown spin',ispin)
         raise SkipThisVertex()
     expr=[otype]
@@ -2511,8 +2511,8 @@ def combineResult(res,nf,ispin,vertex) :
             for j in range(0,len(vals)) :
                 print(j,dim[j],vals[j])
             raise SkipThisVertex()
-        # simplest case 
-        if(isinstance(vals[i], basestring)) :
+        # simplest case
+        if(isinstance(vals[i], str)) :
             for ii in range(0,len(expr)) :
                 for(key,val) in expr[ii].items() :
                     expr[ii][key] = expr[ii][key]+vals[i]
@@ -2620,7 +2620,7 @@ def combineComponents(result,offType,RS) :
             result[i]=result[i].replace("1j","ii")
         return
     # calculate the substitutions
-    if(not isinstance(result[0],basestring)) :
+    if(not isinstance(result[0],str)) :
         subs=[]
         for ii in range(0,len(result)) :
             subs.append({})
@@ -2650,7 +2650,7 @@ def combineComponents(result,offType,RS) :
         stype  = "LorentzRSSpinor"
         sbtype = "LorentzRSSpinorBar"
         if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
-        subs[0]["type"] = stype      
+        subs[0]["type"] = stype
         result[0] = RSSpinorTemplate.substitute(subs[0])
         subs[1]["type"] = sbtype
         result[1] = RSSpinorTemplate.substitute(subs[1])
@@ -2699,7 +2699,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                     result[ii][key] = " %s((local_C%s)*(%s)) " % (vtype,j,val)
         else :
             for ii in range(0,len(expr)) :
-                for (key,val) in expr[ii].items(): 
+                for (key,val) in expr[ii].items():
                     result[ii][key] += " + %s((local_C%s)*(%s)) " % (vtype,j,val)
     # for more complex types merge the spin/lorentz components
     combineComponents(result,offType,RS)
@@ -2762,7 +2762,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             raise SkipThisVertex()
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.items() :
-        if( isinstance(key, basestring)) :
+        if( isinstance(key, str)) :
             if(key.find("vvP")==0) :
                 momenta[int(key[3])-1][0] = True
         else :
@@ -2790,7 +2790,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
     # special for 4-point VVVV
     if(vertex.lorentz[0].spins.count(3)==4 and iloc==0) :
         sig=sig.replace("Energy2","Energy2,int")
-            
+
     header="virtual %s" % sig
     sig=sig.replace("=-GeV","")
     symboldefs = [ def_from_model(model,s) for s in symbols ]
@@ -3026,5 +3026,3 @@ def multipleEvaluate(vertex,spin,defns) :
             iloc+=1
     code+="   else assert(false);\n"
     return (header,evaluateMultiple.format(decl=ccdefn,code=code))
-
-            

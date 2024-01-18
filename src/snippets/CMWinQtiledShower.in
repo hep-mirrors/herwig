@@ -6,8 +6,8 @@
 cd /Herwig/Shower
 
 
-set AlphaQCD:AlphaIn 0.118
-get AlphaQCD:AlphaIn
+set AlphaQCDFSR:AlphaIn 0.118
+get AlphaQCDFSR:AlphaIn
 
 set AlphaQCDISR:AlphaIn 0.118
 get AlphaQCDISR:AlphaIn
@@ -30,14 +30,8 @@ set CMWGtoGGSudakov:Alpha AlphaQCDFSR
 cp CMWGtoGGSudakov CMWGtoGGSudakovIS
 cp CMWQtoQGSudakov CMWQtoQGSudakovIS
 
-set CMWQtoQGSudakovIS:Alpha AlphaQCD
-set CMWQtoGGSudakovIS:Alpha AlphaQCD
-
-set CMWGtoGGSudakovIS:isInititalState Yes
-set CMWQtoQGSudakovIS:isInititalState Yes
-
-set CMWGtoGGSudakov:isInititalState No
-set CMWQtoQGSudakov:isInititalState No
+set CMWQtoQGSudakovIS:Alpha AlphaQCDFSR
+set CMWQtoGGSudakovIS:Alpha AlphaQCDFSR
 
 
 

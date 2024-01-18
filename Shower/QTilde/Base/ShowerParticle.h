@@ -102,7 +102,8 @@ public:
      *  Constructor
      */
     EvolutionScales() : QED(),QCD_c(),QCD_ac(),
-			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO(),
+			EW()
     {}
 
     /**

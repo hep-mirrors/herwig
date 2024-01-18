@@ -202,7 +202,7 @@ void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(_fpi,GeV) << ounit(_fact,1/GeV)
      << _rhomagP << _rhophaseP
      << _rhocoupP << ounit(_rhomagD,1/GeV2) << _rhophaseD
-     << ounit(_rhocoupD,1/GeV2) <<ounit(_f2mag,1/GeV2) << _f2phase << ounit(_f2coup ,1/GeV2)
+     << ounit(_rhocoupD,1/GeV2) <<ounit(_f2mag,1/GeV2) << _f2phase << ounit(_f2coup,1/GeV2)
      << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup
      << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV)
      << ounit(_a1runq2,GeV2) <<  _initializea1

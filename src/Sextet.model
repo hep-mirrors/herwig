@@ -150,13 +150,13 @@ insert ShowerHandler:DecayInShower 0 6000213
 
 
 create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSudakov
-set SDiquarktoSDiquarkSudakov:Alpha AlphaQCD
+set SDiquarktoSDiquarkSudakov:Alpha AlphaQCDFSR
 set SDiquarktoSDiquarkSudakov:Cutoff PTCutOff
 set SDiquarktoSDiquarkSudakov:InteractionType QCD
 set SDiquarktoSDiquarkSudakov:ColourStructure SextetSextetOctet
 
 create Herwig::OneOneOneSplitFn VDiquarktoVDiquarkSudakov
-set VDiquarktoVDiquarkSudakov:Alpha AlphaQCD
+set VDiquarktoVDiquarkSudakov:Alpha AlphaQCDFSR
 set VDiquarktoVDiquarkSudakov:Cutoff PTCutOff
 set VDiquarktoVDiquarkSudakov:InteractionType QCD
 set VDiquarktoVDiquarkSudakov:ColourStructure SextetSextetOctet

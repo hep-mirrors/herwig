@@ -139,10 +139,8 @@ protected:
     typedef double ArgType;
     typedef double ValType;
 
-    static double aUnit();
-    static double vUnit();
-
-    double operator() (double xi) const;
+    static double aUnit() { return 1.; }
+    static double vUnit() { return 1.; }
 
     Energy w;
 
@@ -151,6 +149,24 @@ protected:
 
     PList::iterator r_begin;
     PList::iterator r_end;
+
+    double operator() (double xi) const {
+
+      double r = - w/GeV;
+      
+      for (PList::iterator pIt = p_begin; pIt != p_end; ++pIt) {
+	r += sqrt(sqr((**pIt).dataPtr()->constituentMass()) +
+		  xi*xi*(sqr((**pIt).momentum().t())-sqr((**pIt).dataPtr()->mass()))) / GeV;
+      }
+      
+      for (PList::iterator rIt = r_begin; rIt != r_end; ++rIt) {
+	r +=  sqrt(sqr((**rIt).momentum().m()) +
+		   xi*xi*(sqr((**rIt).momentum().t())-sqr((**rIt).momentum().m()))) / GeV;
+      }
+      
+      return r;  
+    }
+
   };
 
 

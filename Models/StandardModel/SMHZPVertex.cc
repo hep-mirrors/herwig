@@ -52,7 +52,7 @@ void SMHZPVertex::persistentOutput(PersistentOStream & os) const {
 }
 
 void SMHZPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw, GeV) >> iunit(_mz,GeV) >> _massopt
+  is >> _theSM >> iunit(_mw,GeV) >> iunit(_mz,GeV) >> _massopt
      >> _minloop >> _maxloop;
 }
 

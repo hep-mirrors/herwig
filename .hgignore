@@ -96,6 +96,7 @@ Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
 Tests/python/merge-Onium
+Tests/python/merge-SppS
 Tests/python/mergeLowEnergy.py
 Tests/python/OniumSplitting.py
 Tests/python/OniumSigma.py
@@ -141,3 +142,5 @@ __all.cc$
 PDF/stamp-h2
 Tests/anatohepmc.txt
 Tests/hepmctoana.txt
+MatrixElement/Matchbox/External/GoSam/gosam2herwig
+Sampling/herwig-mergegrids

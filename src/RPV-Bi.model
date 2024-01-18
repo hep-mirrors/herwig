@@ -387,7 +387,7 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_2+
 cd /Herwig/Shower
 
 create Herwig::ZeroZeroOneSplitFn PhitoPhiGSudakov
-set PhitoPhiGSudakov:Alpha AlphaQCD
+set PhitoPhiGSudakov:Alpha AlphaQCDFSR
 set PhitoPhiGSudakov:Cutoff PTCutOff
 set PhitoPhiGSudakov:InteractionType QCD
 set PhitoPhiGSudakov:ColourStructure TripletTripletOctet
@@ -400,7 +400,7 @@ set PhitoPhiGammaSudakov:ColourStructure ChargedChargedNeutral
 set PhitoPhiGammaSudakov:AngularOrdered Yes
 
 create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSudakov
-set GluinotoGluinoGSudakov:Alpha AlphaQCD
+set GluinotoGluinoGSudakov:Alpha AlphaQCDFSR
 set GluinotoGluinoGSudakov:Cutoff PTCutOff
 set GluinotoGluinoGSudakov:InteractionType QCD
 set GluinotoGluinoGSudakov:ColourStructure OctetOctetOctet

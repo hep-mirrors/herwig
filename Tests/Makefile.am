@@ -275,7 +275,8 @@ Onium-Sigma: Analyses/RivetHerwig.so
 	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSigma.py --fast --analyse
 
-Rivet-Onium: $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Bottom}-{1..5}.yoda) \
+Rivet-Onium: Analyses/RivetHerwig.so \
+	     $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Bottom}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.yoda) \
 	     $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Octet-{Jpsi,psi2S,chi_c{0..2}}-Jets-{1..5}.yoda) \

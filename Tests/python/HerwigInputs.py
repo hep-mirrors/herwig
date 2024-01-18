@@ -53,7 +53,7 @@ def identifySimulation(name,collider,have_hadronic_collider) :
 
     Identify the parton shower and source of the matrix elements
     """
-    parameters = { 
+    parameters = {
         'shower'  : '',
         'bscheme' : '',
     }
@@ -65,7 +65,7 @@ def identifySimulation(name,collider,have_hadronic_collider) :
         istart = 4
         simulation="Matchbox"
         parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
-        
+
         # Dipole shower with internal Powheg - Todo: Finish modifying template files.
         '''
         elif "Dipole-Powheg" in name :
@@ -73,25 +73,25 @@ def identifySimulation(name,collider,have_hadronic_collider) :
         simulation="Powheg"
         parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
         '''
-        
+
     # Dipole shower with MCatNLO
     elif "Dipole-MCatNLO" in name :
         istart = 3
         simulation="Matchbox"
-        parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
+        parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n"
 
     # Dipole shower with Matchbox LO
     elif "Dipole-Matchbox-LO" in name :
         istart = 4
         simulation="Matchbox"
-        parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n" 
+        parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n"
 
     # Dipole shower with internal LO
     elif "Dipole" in name :
         istart = 2
         simulation=""
         parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
-    
+
     # AO shower with Matchbox Powheg
     elif "Matchbox-Powheg" in name :
         istart = 3
@@ -104,31 +104,31 @@ def identifySimulation(name,collider,have_hadronic_collider) :
         simulation="Matchbox"
         parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
 
-    # AO shower with internal Powheg    
+    # AO shower with internal Powheg
     elif "Powheg" in name :
         istart = 2
         simulation="Powheg"
 
-    # Dipole shower with merging    
+    # Dipole shower with merging
     elif "Merging" in name :
         istart = 2
         simulation="Merging"
         thefactory="MergingFactory"
-    
-    # Flavour settings for Matchbox    
+
+    # Flavour settings for Matchbox
     if simulation=="Matchbox" :
         parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
-    
+
         if "Dipole" in parameters["shower"] :
             parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
-        
+
         if collider not in ['DIS','EE'] :
             parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
     # Flavour settings for dipole shower with internal ME
     if simulation=="" and "Dipole" in parameters["shower"] :
         parameters["bscheme"] = "read snippets/DipoleShowerFiveFlavours.in"
-    
+
     # find the template
     if simulation=="" :
         if collider=="LHC-GammaGamma" :
@@ -154,9 +154,12 @@ def identifySimulation(name,collider,have_hadronic_collider) :
             templateName= "EE.in"
     else :
         if have_hadronic_collider :
-            templateName= "Hadron-%s.in" % simulation 
+            templateName= "Hadron-%s.in" % simulation
+            if simulation == "Merging" :
+                if "Charm" in name or "Bottom" in name or "Top" in name :
+                    templateName= "Hadron-Merging-Massive.in"
         elif collider != "BFactory" :
-            templateName= "%s-%s.in" % (collider,simulation) 
+            templateName= "%s-%s.in" % (collider,simulation)
         else :
             templateName= "EE-%s.in" % simulation
     # work out the name of the parameter file
@@ -202,7 +205,7 @@ def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
             result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
         else :
             result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
-        
+
     return result
 
 def particlegroup(factory,name,*particles):
@@ -222,7 +225,7 @@ def addFirstJet(ptcut,ptmax=""):
     if(didaddfirstjet):
       logging.error("Can only add jetcut once.")
       sys.exit(1)
-  
+
     res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
     res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
     res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
@@ -258,6 +261,6 @@ insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
 set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
 """.format(mm=minmass)
   if maxmass != "" :
-      res+= "set /Herwig/Cuts/JetPairMass:MassMin %s*GeV\n" %maxmass
+      res+= "set /Herwig/Cuts/JetPairMass:MassMax %s*GeV\n" %maxmass
   didaddjetpair=True
   return res
