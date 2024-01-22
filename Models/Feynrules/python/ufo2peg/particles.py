@@ -431,7 +431,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                        Vertex[1].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[2].pdg_code):
                         continue
                     # skip lepton vertices
-                    if isLepton(Vertex[1]) or isLepton(Vertex[2]) : ###HERE###
+                    if isLepton(Vertex[1]) or isLepton(Vertex[2]) : 
                         continue
                     # loop over all possible configurations in the splitting
                     for pos in range(0,3) :
@@ -444,7 +444,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         else :
                             V[0], V[1], V[2] = Vertex[2], Vertex[0], Vertex[1]
                         # don't allow photon as progenitor
-                        if V[0].pdg_code == 22 : ###HERE###
+                        if V[0].pdg_code == 22 : 
                             continue
                         # for a generic splitting m0 < m1+m2, otherwise it's a decay
                         m = extract_mass(FR,V)
@@ -464,15 +464,12 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             - H > H' H'' Higgs splittings
                         """
 
-                        if isVector(V[0]) : ###HERE###
+                        if isVector(V[0]) : 
                             # allow V > V' H
                             if isVector(V[1]) and isScalar(V[2]) :
                                 pass
                             elif isVector(V[2]) and isScalar(V[1]) :
                                 V[0], V[1], V[2] = V[0], V[2], V[1]
-                            # allow V > H H'
-                            elif isScalar(V[1]) and isScalar(V[2]):
-                                pass
                             # allow V > V' V''
                             elif isVector(V[1]) and isVector(V[2]):
                                 pass
