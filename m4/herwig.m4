@@ -291,6 +291,16 @@ AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno"],
 
 AM_CONDITIONAL(HAVE_VBFNLO,[test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64"])
 
+AS_IF([test "x$with_vbfnlo" != "xno"],
+[AC_MSG_CHECKING([for VBFNLO version >= 3.0.0])
+tmp_vbfnloversion=[$(${with_vbfnlo}/bin/vbfnlo --version | awk '{print $2}')]
+AX_COMPARE_VERSION([${tmp_vbfnloversion}],[lt],[3.0.0],
+                   [have_vbfnlo3=no],
+                   [have_vbfnlo3=yes])
+
+AM_CONDITIONAL(HAVE_VBFNLO3, [test "x$have_vbfnlo3" = "xyes"])
+])
+
 if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
         AC_REQUIRE([AC_PROG_SED])
         VBFNLOINCLUDE=${with_vbfnlo}/include
