@@ -2866,7 +2866,6 @@ void QTildeShowerHandler::decay(ShowerTreePtr tree, ShowerDecayMap & decay) {
     PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
     newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
     DecayProcessMap decayMap;
-    //cerr<<"This is the error! "<< tit->second.second->id()<<" and "<<newProcess->incoming()[0].first->id()<<"\n";
     ShowerHandler::decay(newProcess,decayMap);
     ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
   }
