@@ -36,7 +36,7 @@ using namespace ThePEG;
 class QTildeShowerHandler: public ShowerHandler {
 
 public:
-  
+
   /**
    *  Pointer to an XComb object
    */
@@ -54,12 +54,12 @@ public:
   /**
    * At the end of the Showering, transform ShowerParticle objects
    * into ThePEG particles and fill the event record with them.
-   * Notice that the parent/child relationships and the 
+   * Notice that the parent/child relationships and the
    * transformation from ShowerColourLine objects into ThePEG
    * ColourLine ones must be properly handled.
    */
   void fillEventRecord();
-  
+
   /**
    * Return the relevant hard scale to be used in the profile scales
    */
@@ -72,7 +72,7 @@ public:
    * as in e.g. MLM merging.
    */
   virtual bool showerHardProcessVeto() const { return false; }
-  
+
   /**
    *  Generate hard emissions for CKKW etc
    */
@@ -203,7 +203,7 @@ protected:
 			      Branching fb, bool first);
 
   /**
-   * It does the backward evolution of the space-like input particle 
+   * It does the backward evolution of the space-like input particle
    * (and recursively for all its time-like radiation products).
    * accepting only emissions which conforms to the showerVariables.
    * If at least one emission has occurred then the method returns true
@@ -211,18 +211,18 @@ protected:
    * @param beam The beam particle
    */
   virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-			       ShowerInteraction); 
+			       ShowerInteraction);
 
   /**
    * If does the forward evolution of the input on-shell particle
-   * involved in a decay 
+   * involved in a decay
    * (and recursively for all its time-like radiation products).
    * accepting only emissions which conforms to the showerVariables.
    * @param particle    The particle to be showered
    * @param maxscale    The maximum scale for the shower.
    * @param minimumMass The minimum mass of the final-state system
    */
-  virtual bool 
+  virtual bool
   spaceLikeDecayShower(tShowerParticlePtr particle,
 		       const ShowerParticle::EvolutionScales & maxScales,
 		       Energy minimumMass,ShowerInteraction,
@@ -235,7 +235,7 @@ protected:
 				       HardBranchingPtr branch,
 				       ShowerInteraction type,
 				       Branching fb, bool first);
- 
+
   /**
    * Truncated shower from a space-like particle
    */
@@ -257,21 +257,21 @@ protected:
    */
   //@{
   /**
-   * Any ME correction?   
+   * Any ME correction?
    */
-  bool MECOn() const { 
+  bool MECOn() const {
     return _hardEmission == 1;
   }
 
   /**
-   * Any hard ME correction? 
+   * Any hard ME correction?
    */
   bool hardMEC() const {
     return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode == 2);
   }
 
   /**
-   * Any soft ME correction? 
+   * Any soft ME correction?
    */
   bool softMEC() const {
     return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode > 2);
@@ -293,7 +293,7 @@ protected:
   bool ipTon() const {
     return _iptrms != ZERO || ( _beta == 1.0 && _gamma != ZERO && _iptmax !=ZERO );
   }
-   //@}  
+   //@}
 
   /**@name Additional shower vetoes */
   //@{
@@ -305,7 +305,7 @@ protected:
   /**
    * Remove a veto.
    */
-  void removeVeto (ShowerVetoPtr v) { 
+  void removeVeto (ShowerVetoPtr v) {
     vector<ShowerVetoPtr>::iterator vit = find(_vetoes.begin(),_vetoes.end(),v);
     if (vit != _vetoes.end())
       _vetoes.erase(vit);
@@ -427,17 +427,17 @@ protected:
   map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsicpT() { return _intrinsic; }
 
   /**
-   *  find the maximally allowed pt acc to the hard process. 
+   *  find the maximally allowed pt acc to the hard process.
    */
   void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
-   *  find the relevant hard scales for profile scales. 
+   *  find the relevant hard scales for profile scales.
    */
   void setupHardScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
-   *  Convert the HardTree into an extra shower emission 
+   *  Convert the HardTree into an extra shower emission
    */
   void convertHardTree(bool hard,ShowerInteraction type);
 
@@ -451,7 +451,7 @@ protected:
   /**
    * Fix Remnant connections after ISR
    */
-  tPPair remakeRemnant(tPPair oldp); 
+  tPPair remakeRemnant(tPPair oldp);
 
 protected:
 
@@ -473,7 +473,7 @@ protected:
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool 
+  virtual bool
   startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			    Energy minimumMass,ShowerInteraction);
 
@@ -625,7 +625,7 @@ private:
   ShowerDecayMap decay_;
 
   /**
-   *  The ShowerTrees for which the initial shower 
+   *  The ShowerTrees for which the initial shower
    */
   vector<ShowerTreePtr> done_;
   //@}
@@ -654,12 +654,12 @@ private :
 
   /**
    * If hard veto pT scale is being read-in this determines
-   * whether the read-in value is applied to primary and 
+   * whether the read-in value is applied to primary and
    * secondary (MPI) scatters or just the primary one, with
    * the usual computation of the veto being performed for
    * the secondary (MPI) scatters.
    */
-  bool _hardVetoReadOption; 
+  bool _hardVetoReadOption;
 
   /**
    * rms intrinsic pT of Gaussian distribution
@@ -685,7 +685,7 @@ private :
    *  Limit the number of emissions for testing
    */
   unsigned int _limitEmissions;
-  
+
   /**
    *  The progenitor of the current shower
    */
@@ -713,7 +713,7 @@ private :
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm
-   *  if needed by the soft matrix element correction 
+   *  if needed by the soft matrix element correction
    */
   //@{
   /**
@@ -799,7 +799,7 @@ private :
   static bool _hardEmissionWarn;
 
   /**
-   * True if no warnings about missing truncated shower 
+   * True if no warnings about missing truncated shower
    * have been issued yet
    */
   static bool _missingTruncWarn;
