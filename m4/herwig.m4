@@ -298,8 +298,8 @@ AX_COMPARE_VERSION([${tmp_vbfnloversion}],[lt],[3.0.0],
                    [have_vbfnlo3=no],
                    [have_vbfnlo3=yes])
 
+],[have_vbfnlo3=no])
 AM_CONDITIONAL(HAVE_VBFNLO3, [test "x$have_vbfnlo3" = "xyes"])
-])
 
 if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
         AC_REQUIRE([AC_PROG_SED])
