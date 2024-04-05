@@ -47,9 +47,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I769107
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1123662
 ####### spectra ###################################
 # ARGUS pi,K, proton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2653028
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I340894
 # ARGUS K*, rho, omega
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I356616
 # phi spectrum (CLEO and BaBar)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I632399
@@ -69,7 +69,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
 # BABAR Xi'_c spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
 # multiplicities
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
 # CLEO multiplicty in Upsilon(4S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
 # kaons in b decays
@@ -77,10 +77,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
 # charm hadrons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
 # # MC analyses based on old internal ones
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
 # BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744

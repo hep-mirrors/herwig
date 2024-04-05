@@ -12,7 +12,7 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau
 set /Herwig/Particles/pi0:Stable Stable
 # Babar three pion
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S7266081
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I756323
 # BELLE pipi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I786560
 # ALEPH spectral functions
@@ -34,5 +34,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I373188
 # BELLE phi K
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I725750
 # MC dists
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TAU_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TAU_Decay
 

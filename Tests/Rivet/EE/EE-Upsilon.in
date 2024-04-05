@@ -12,8 +12,8 @@ set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon
 set /Herwig/MatrixElements/MEUpsilon:Coupling 41.15810
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 # BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I356616
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I342061
 # ARGUS pi0 and eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
 # Crystal Ball pi0 and eta

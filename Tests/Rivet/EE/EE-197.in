@@ -6,8 +6,10 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197
 ##################################################
 # select the analyses
 ##################################################
+# ALEPH event shapes and multiplicities at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_I636645
 # OPAL event shapes and multiplicities at different energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I669402
 # OPAL from gluon paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
 # L3 event shapes

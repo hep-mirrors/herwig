@@ -10,9 +10,9 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 ########## branching ratios ################
 # D0 inclusive 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_D0
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_D0
 # D+ inclusive 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DPLUS
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DPLUS
 ########## semi-leptonic ###################
 # CLEO D lepton spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2009_I823313

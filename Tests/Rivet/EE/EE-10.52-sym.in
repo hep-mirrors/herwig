@@ -8,7 +8,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # CLEO charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_S5809304
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I645209
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2000_I526554
 # CLEO baryon assymetry
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2001_I552541

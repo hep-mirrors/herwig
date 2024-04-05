@@ -16,7 +16,7 @@ do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 NA60_2016_I1452485
 # eta decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
 # BES eta' dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
 # BES  eta' -> pi+pi- gamma
