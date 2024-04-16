@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # D0 Run II charge asymmetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7837160
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_I791230
 # CDF Run II W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7541902
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I768579

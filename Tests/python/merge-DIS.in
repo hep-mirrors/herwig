@@ -31,12 +31,11 @@ if __name__ == "__main__":
 yodafiles=[]
 for energy in [225,251,296,300,318,"318-CMS"] :
     for process in ["e+","e-","e+-CC","e--CC","e+"] :
-        mergeargs=["rivet-merge"]
+        mergeargs=["rivet-merge","--assume-reentrant"]
         for q2 in ["VeryLow","Low","Med","High"] : 
             fname = "Rivet-%s-%s-%s-%sQ2.yoda" % (args[0], energy ,process,q2)
-            if(os.path.isfile(fname)) :
-                mergeargs.append(fname)
-        if len(mergeargs)==1 : continue
+            if(os.path.isfile(fname)) : mergeargs.append(fname)
+        if len(mergeargs)==2 : continue
         if "e+" in process : beam="EPLUS"
         else : beam="EMINUS"
         if type(energy) == int :
@@ -50,7 +49,7 @@ for energy in [225,251,296,300,318,"318-CMS"] :
         yodafiles.append(fname)
         p = subprocess.Popen(mergeargs)
 # need a sleep here otherwise merged files not ready
-time.sleep(5) 
+time.sleep(10) 
 ## Get histos
 outhistos={}
 

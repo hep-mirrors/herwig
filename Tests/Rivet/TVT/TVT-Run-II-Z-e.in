@@ -3,20 +3,20 @@
 # select the analyses
 ##################################################
 # CDF Run II Z+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7540469
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I768451
 # CDF Z+b jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8095620
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I806082
 # CDF Run II Z cross section and rapidity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_I856131
 # D0 Run II Z cross section and rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2007_S7075677
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2007_I744624
 # D0 Run II jet ratios
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S6879055
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_I724239
 # D0 Run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7554427
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_I769689
 # D0 Run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8202443
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_I815094
 # D0 run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8821313
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_I871787
 # CDF run II Z pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_I1124333

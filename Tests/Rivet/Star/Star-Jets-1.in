@@ -2,4 +2,4 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_S6870392
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_I723509

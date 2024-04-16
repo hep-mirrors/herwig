@@ -142,7 +142,7 @@ for en in ["300","630","900","Run-I","Run-II"] :
             mergeargs.append("CDF_2012_NOTE10874:ENERGY=%s"%energy)
         else :
             mergeargs.append("-a")
-            mergeargs.append("CDF_2004_S5839831:ENERGY=%s"%energy)
+            mergeargs.append("CDF_2004_I647490:ENERGY=%s"%energy)
         mergeargs.append("-o")
         mergeargs.append("Rivet-%s-%s-%s.yoda" % (args[0], en ,proc))
         #print(" ".join(mergeargs))
@@ -178,7 +178,7 @@ for f in yodafiles :
             path=path.split(":")
             path=path[0]+"/"+path[1].split("/")[1]
             ao.setPath(path)
-        if "CDF_2001_S4751469" in path :
+        if "CDF_2001_I564673" in path :
             if "d01" in path or "d02" in path or "d07" in path :
                 if "y03" in path :
                     if "Jets" in fname : outhistos[path]=ao
@@ -188,7 +188,7 @@ for f in yodafiles :
                 if "Jets" in fname : outhistos[path]=ao
             elif opts.ue and "UE" in fname :
                     outhistos[path]=ao
-        elif "CDF_2004_S5839831" in path :
+        elif "CDF_2004_I647490" in path :
             if "d03" in path :
                 if "Jets" in fname : outhistos[path]=ao
             elif "d05" in path or "d06" in path or "d10" in path or "d11" in path:
@@ -198,7 +198,7 @@ for f in yodafiles :
                     histos_UE[path]=ao
                 elif "Jets" in fname :
                     histos_Jets[path]=ao
-        elif "CDF_2010_S8591881_QCD" in path or "CDF_2012_NOTE10874" in path :
+        elif "CDF_2010_I849042" in path or "CDF_2012_NOTE10874" in path :
             if opts.ue and "UE" in fname :
                 histos_UE[path]=ao
             elif "Jets" in fname :

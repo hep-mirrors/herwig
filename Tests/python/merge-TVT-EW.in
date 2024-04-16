@@ -49,7 +49,7 @@ if __name__ == "__main__":
         ## Get histos from this YODA file
         for aopath, ao in aos.items() :
             if("RAW" in aopath) :continue
-            if(aopath.find("D0_2010_S8821313")>0) :
+            if(aopath.find("D0_2010_I871787")>0) :
                 if(aopath.find("d01")>0 and file.find("-e")>0) : 
                     outhistos[aopath] = ao
                 elif(aopath.find("d02")>0 and file.find("-mu")>0) : 

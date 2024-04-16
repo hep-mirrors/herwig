@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # CDF Run II prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8436959
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_I834437
 # DO Run II prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2006_S6438750
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2006_I698784
 # DO Run II prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7719523
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_I782968

@@ -1,6 +1,7 @@
 #! @PYTHON@
 from __future__ import print_function
-import yoda,glob,math,optparse
+import yoda,glob,optparse
+import numpy as np
 import subprocess,os
 op = optparse.OptionParser(usage=__doc__)
 op.add_option("-m"         , dest="plots"       , default=[], action="append")
@@ -59,45 +60,95 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                     title=histo.title()
                 if hasattr(histo, 'path'):
                     path=histo.path()
-                outhistos[hpath] = yoda.core.Scatter2D(path,title)
+                if hasattr(aos[hpath],'points') :
+                    outhistos[hpath] = yoda.core.Scatter2D(path,title)
+                else :
+                    outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges(),path,title)
             matched = False
-            for i in range(0,aos[hpath].numPoints()) :
-                x = aos[hpath].points()[i].x()
-                delta=1e-5
-                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                   "FENICE_1996_I426675" in hpath):
-                   x=math.sqrt(x)
-                   delta=1e-3
-                if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
-                    duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints()) :
-                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                            duplicate = True
-                            break
-                    if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points()[i])
-                    matched = True
-                    break
-            if(matched) : continue
-            for i in range(0,aos[hpath].numPoints()) :
-                xmin = aos[hpath].points()[i].xMin()
-                xmax = aos[hpath].points()[i].xMax()
-                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                   "FENICE_1996_I426675" in hpath) :
-                   xmin=math.sqrt(xmin)
-                   xmax=math.sqrt(xmax)
-                if((energy    > xmin and energy    < xmax) or
-                   (energyMeV > xmin and energyMeV < xmax) ) :
-                    duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints()) :
-                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                            duplicate = True
-                            break
-                    if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points()[i])
-                    break
+            if hasattr(aos[hpath],"points") :
+                for i in range(0,aos[hpath].numPoints()) :
+                    x = aos[hpath].points()[i].x()
+                    delta=1e-5
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath):
+                        x=np.sqrt(x)
+                        delta=1e-3
+                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
+                        duplicate = False
+                        for j in range(0,outhistos[hpath].numPoints()) :
+                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
+                                duplicate = True
+                                break
+                        if(not duplicate) :
+                            outhistos[hpath].addPoint(aos[hpath].points()[i])
+                        matched = True
+                        break
+                if(matched) : continue
+                for i in range(0,aos[hpath].numPoints()) :
+                    xmin = aos[hpath].points()[i].xMin()
+                    xmax = aos[hpath].points()[i].xMax()
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath) :
+                        xmin=np.sqrt(xmin)
+                        xmax=np.sqrt(xmax)
+                    if((energy    > xmin and energy    < xmax) or
+                       (energyMeV > xmin and energyMeV < xmax) ) :
+                        duplicate = False
+                        for j in range(0,outhistos[hpath].numPoints()) :
+                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
+                                duplicate = True
+                                break
+                        if(not duplicate) :
+                            outhistos[hpath].addPoint(aos[hpath].points()[i])
+                        break
+            else :
+                for i,bin in enumerate(aos[hpath].bins()) :
+                    if bin.edge(0) :
+                        x = bin.edge(0)
+                    else :
+                        x = bin.mid(0)
+                    x = float(x)
+                    delta=1e-5
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath):
+                        x=np.sqrt(x)
+                        delta=1e-3
+                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
+                        duplicate = False
+                        outhistos[hpath].bins()[i].setVal(bin.val())
+                        for key in bin.sources() :
+                            outhistos[hpath].bins()[i].setErr(bin.err(key))
+                        matched = True
+                        break
+                if(matched) : continue
+                #     xmin=0.
+                #     xmax=0.
+                #     if bin.xMid() and bin.xMax() and bin.xMin()) :
+                #         xmin = bin.xMin()
+                #         xmax = bin.xMid()
+
+
+                # for i in range(0,aos[hpath].numPoints()) :
+                #     xmin = aos[hpath].points()[i].xMin()
+                #     xmax = aos[hpath].points()[i].xMax()
+                #     if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                #        "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                #        "FENICE_1996_I426675" in hpath) :
+                #         xmin=np.sqrt(xmin)
+                #         xmax=np.sqrt(xmax)
+                #     if((energy    > xmin and energy    < xmax) or
+                #        (energyMeV > xmin and energyMeV < xmax) ) :
+                #         duplicate = False
+                #         for j in range(0,outhistos[hpath].numPoints()) :
+                #             if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
+                #                 duplicate = True
+                #                 break
+                #         if(not duplicate) :
+                #             outhistos[hpath].addPoint(aos[hpath].points()[i])
+                #         break
     if len(outhistos) == 0: continue
     p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
     path=p.communicate()[0]
