@@ -66,17 +66,17 @@ yodafiles=["-13-Z-nu","-W-e","-W-mu","-Z-mu-Short","-8-W-e","-8-W-mu",
            "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu"]
 for energy in ["","8-","13-"] :
     for ll in ["e","mu"] :
-        mergeargs=["rivet-merge"]
+        mergeargs=["rivet-merge","--assume-reentrant"]
         for mass in range(1,6) : 
             fname = "Rivet-%s-%sZ-%s-Mass%s.yoda" % (args[0], energy , ll,mass)
             if(os.path.isfile(fname)) :
                 mergeargs.append(fname)
-        if len(mergeargs)==1 : continue
+        if len(mergeargs)==2 : continue
         mergeargs.append("-o")
         mergeargs.append("Rivet-%s-%sZ-%s.yoda"% (args[0], energy ,ll))
         yodafiles.append("-%sZ-%s"% (energy ,ll))
         p = subprocess.Popen(mergeargs)
-time.sleep(5)
+time.sleep(30)
 
 ## Get histos
 outhistos={}
@@ -93,12 +93,12 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if "RAW" in aopath or "XSEC" in aopath or "EVTCOUNT" in aopath : continue
-        if(aopath.find("ATLAS_2010_S8919674")>0) :
+        if(aopath.find("ATLAS_2010_I882534")>0) :
             if ("d01" in aopath or "d05" in aopath or "d07" in aopath) and "-e" in fname: 
                 outhistos[aopath] = ao
             elif ("d02" in aopath or "d06" in aopath or "d08" in aopath) and "-mu" in fname: 
                 outhistos[aopath] = ao
-        elif (aopath.find("ATLAS_2011_S9131140")>0) :
+        elif (aopath.find("ATLAS_2011_I917931")>0) :
             if("d01" in aopath and "-e" in fname) : 
                 outhistos[aopath] = ao
             elif("d02" in aopath and "-mu" in fname) : 
@@ -209,9 +209,8 @@ for f in yodafiles:
                 outhistos[aopath] = ao
         elif "ATLAS_2016_I1502620" in aopath :
             newPath = aopath.split(":")[0]+"/"+aopath.split("/")[-1]
-            if newPath in outhistos :
-                continue
-            else :                
+            if (("W" in fname and     ("d09" in aopath or "d10" in aopath or "d35" in aopath)) or
+                ("Z" in fname and not ("d09" in aopath or "d10" in aopath or "d35" in aopath))) :
                 outhistos[newPath] = ao
                 ao.setPath(newPath)
         elif ("CMS_2015_I1310737" in aopath or "ATLAS_2013_I1219109" in aopath or
@@ -225,24 +224,27 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif fname.find("Z")>0 and "d09" in aopath :
                 outhistos[aopath] = ao
-        elif (aopath.find("ATLAS_2015_I1351916")>=0) :
-            if(aopath.find("-y02")>=0) :
-                pathBase = "/%s/" % aopath.split("/")[1]
-                if("d03" in aopath) :
-                    hp = aos[pathBase+"_ncf_pos"]
-                    hm = aos[pathBase+"_ncf_neg"]
-                else :
-                    hp = aos[pathBase+"_ncc_pos"]
-                    hm = aos[pathBase+"_ncc_neg"]
-                ratio = (hp-hm)/(hp+hm)
-                title=""
-                if hasattr(ao, 'title'):
-                    title=ao.title()
-                hnew = yoda.core.Scatter2D(aopath,title)
-                hnew.combineWith(ratio)
-                outhistos[aopath] = hnew
-            else :
-                continue
+        # elif (aopath.find("ATLAS_2015_I1351916")>=0) :
+        #     if(aopath.find("-y02")>=0) :
+        #         pathBase = "/%s/" % aopath.split("/")[1]
+        #         print(pathBase)
+        #         for kk in aos.keys() :
+        #             if pathBase in kk : print(kk)
+        #         if("d03" in aopath) :
+        #             hp = aos[pathBase+"_ncf_pos"]
+        #             hm = aos[pathBase+"_ncf_neg"]
+        #         else :
+        #             hp = aos[pathBase+"_ncc_pos"]
+        #             hm = aos[pathBase+"_ncc_neg"]
+        #         ratio = (hp-hm)/(hp+hm)
+        #         title=""
+        #         if hasattr(ao, 'title'):
+        #             title=ao.title()
+        #         hnew = yoda.core.Scatter2D(aopath,title)
+        #         hnew.combineWith(ratio)
+        #         outhistos[aopath] = hnew
+        #     else :
+        #         continue
         elif (aopath.find("ATLAS_2014_I1282447")>=0) :
             if((aopath.find("/ATLAS_2014_I1282447/d02-x01-y01")>=0 or
                 aopath.find("/ATLAS_2014_I1282447/d08-x01-y01")>=0 or 
@@ -284,7 +286,10 @@ for f in yodafiles:
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                     if "d29" not in aopath :
-                        outhistos[aopath].scaleW(0.5)
+                        if hasattr(outhistos[aopath], 'scale') :
+                            outhistos[aopath].scale(0.5)
+                        else :
+                            outhistos[aopath].scaleW(0.5)
                 else :
                     outhistos[aopath]  = ao
         elif "CMS_2018_I1667854" in aopath :

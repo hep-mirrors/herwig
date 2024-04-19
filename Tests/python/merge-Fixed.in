@@ -12,13 +12,13 @@ import os, yoda, copy
 def fillAbove(desthisto, sourcehistosbyptmin):
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
+    temp={}
+    for (pt, h) in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints()) :
                 xMin = h.points()[i].x-h.points()[i].xErrs().minus
-                if( xMin >= ptlow and 
-                    xMin <  pthigh ) :
+                if( xMin >= ptlow and xMin <  pthigh ) :
                     desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins()) :
@@ -30,6 +30,13 @@ def fillAbove(desthisto, sourcehistosbyptmin):
                 if(h.bins()[i].xMin()  >= ptlow and 
                    h.bins()[i].xMin()  <  pthigh ) :
                     desthisto.bins()[i] += h.bins()[i]
+        elif(type(desthisto)==yoda.core.BinnedEstimate1D) :
+            for b in h.bins() :
+                if(b.xMin()  >= ptlow and 
+                   b.xMin()  <  pthigh ) :
+                    desthisto.bin(b.index()).setVal(b.val())
+                    for key in  b.sources() :
+                        desthisto.bin(b.index()).setErr(b.err(key),key)
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
@@ -38,10 +45,7 @@ def fillAbove(desthisto, sourcehistosbyptmin):
 def mergeByPt(hpath, sqrts):
     global inhistos
     global outhistos
-    try:
-        fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
-    except:
-        pass
+    fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
 
 def useOnePt(hpath, sqrts, ptmin):
     global inhistos
@@ -264,7 +268,7 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
-        if(aopath.find("6870392")>0 or aopath.find("HELEN")>0) :
+        if(aopath.find("723509")>0 or aopath.find("HELEN")>0) :
             if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
@@ -280,7 +284,7 @@ for f in yodafiles:
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.items():
-    if( (hpath.find("6870392")>0 and hpath.find("d02-x01-y01" )>0 ) or
+    if( (hpath.find("723509")>0 and hpath.find("d02-x01-y01" )>0 ) or
         hpath.find("HELEN")>0 ) :
         title=""
         path=""
@@ -301,9 +305,12 @@ for hpath,hsets in inhistos.items():
             for i in range(0,histo.numBins()) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),
                                         histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.BinnedEstimate1D) :
+            outhistos[hpath] = yoda.core.BinnedEstimate1D(histo.xEdges(),path,title)
+            if len(histo.maskedBins()) > 0:
+                outhistos[hpath].maskBins(histo.maskedBins())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print (hpath,type(histo))
             sys.exit(1)
 
 useOnePt("/STAR_2006_I723509/d01-x01-y01","200","2")

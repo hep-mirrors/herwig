@@ -52,10 +52,10 @@ for f in files:
         if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
         if ( aopath in outhistos ) :
             aotype = type(ao)
-            if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D):
+            if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D,yoda.core.BinnedEstimate1D):
                 outhistos[aopath] += ao
             else :
-                quit()
+                print("unknown ao type",aotype)
         else:
             outhistos[aopath] = ao
 

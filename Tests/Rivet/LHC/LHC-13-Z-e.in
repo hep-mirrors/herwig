@@ -3,7 +3,7 @@
 # select the analyses
 ##################################################
 # ATLAS Z
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_EL
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041:LMODE=EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1514251
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
