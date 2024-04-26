@@ -13,51 +13,58 @@ import os, yoda
 
 def rescale(path,scale) :
     if(path not in outhistos) : return
-    outhistos[path].scaleW(scale)
+    if hasattr(outhistos[path],'scaleW') :
+        outhistos[path].scaleW(scale)
+    elif hasattr(outhistos[path],'scale') :
+        outhistos[path].scale(scale)
+    else :
+        print("Can't scale ",path)
 
 def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
+    temp={}
+    for (pt, h) in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints()) :
-                xMin = h.points()[i].x()-h.points()[i].xErrs().minus
-                if( xMin*scale >= ptlow and 
-                    xMin*scale <  pthigh ) :
+                xMin = h.points()[i].x-h.points()[i].xErrs().minus
+                if( xMin >= ptlow and xMin <  pthigh ) :
                     desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins()) :
-                if(h.bins()[i].xMin()*scale  >= ptlow and 
-                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                if(h.bins()[i].xMin()  >= ptlow and 
+                   h.bins()[i].xMin()  <  pthigh ) :
                     desthisto.bins()[i] += h.bins()[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
             for i in range(0,h.numBins()) :
-                if(h.bins()[i].xMin()*scale  >= ptlow and 
-                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                if(h.bins()[i].xMin()  >= ptlow and 
+                   h.bins()[i].xMin()  <  pthigh ) :
                     desthisto.bins()[i] += h.bins()[i]
-        elif(type(desthisto)==yoda.core.Counter) :
-                    desthisto += h
+        elif(type(desthisto)==yoda.core.BinnedEstimate1D) :
+            for b in h.bins() :
+                if(b.xMin()  >= ptlow and 
+                   b.xMin()  <  pthigh ) :
+                    desthisto.bin(b.index()).setVal(b.val())
+                    for key in  b.sources() :
+                        desthisto.bin(b.index()).setErr(b.err(key),key)
         else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path())
+            logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
         pthigh=pt
 
 def mergeByPt(hpath, sqrts, scale=1.) :
     global inhistos_pt
     global outhistos
-    try:
-        fillAbove(scale,outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
-    except:
-        pass
+    if hpath not in outhistos or hpath not in inhistos_pt :
+        print("Histograms not found for %s, can't merge by pT" % hpath)
+        return
+    fillAbove(scale,outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
 
 def mergeByMass(hpath, sqrts, scale=1.):
     global inhistos_mass
     global outhistos
-    try:
-        fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
-    except:
-        pass
+    fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
 
 def useOnePt(hpath, sqrts, ptmin):
     global inhistos_pt
@@ -230,18 +237,18 @@ for f in yodafiles:
         aopath=aopath.replace(":MODE=DIJET","")
         ao.setPath(ao.path().replace(":MODE=DIJET",""))
         if "RAW" in aopath : continue
-        if("S8924791" in aopath or "S8971293" in aopath or
-           "S8817804" in aopath or "I1082936" in aopath or
-           "S8994773" in aopath or "S8918562" in aopath or
-           "S8624100" in aopath or "S8625980" in aopath or
-           "S8894728" in aopath or "S8957746" in aopath or
-           "S9126244" in aopath or "S9120041" in aopath or
-           "S8950903" in aopath or "S9086218" in aopath or
-           "S9088458" in aopath or "I919017"  in aopath or
-           "I926145"  in aopath or "S8941262" in aopath or
-           "S8973270" in aopath or "I1118269" in aopath or
+        if("I882984" in aopath or "I889546" in aopath or
+           "871366" in aopath or "I1082936" in aopath or
+           "I891834" in aopath or "I882098" in aopath or
+           "I852450" in aopath or "852264"   in aopath or
+           "I879407" in aopath or "I886332" in aopath or
+           "917526"   in aopath or "916908"   in aopath or
+           "I885663" in aopath or "902309" in aopath or
+           "I912560" in aopath or "I919017"  in aopath or
+           "I926145"  in aopath or "I884811" in aopath or
+           "I889807" in aopath or "I1118269" in aopath or
            "I1188891" in aopath or "I1082009" in aopath or
-           "I1087342" in aopath or "S9035664" in aopath or
+           "I1087342" in aopath or "I896268" in aopath or
            "I1125575" in aopath or "I1094564" in aopath or
            "I930220"  in aopath or "I1224539" in aopath or
            "I1273574" in aopath or "I1261026" in aopath or
@@ -414,7 +421,7 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
-        if(aopath.find("8817804")>0 or aopath.find("8968497")>0 or 
+        if(aopath.find("871366")>0 or aopath.find("889175")>0 or 
            aopath.find("1082936")>0 or aopath.find("I930220")>0 or
            aopath.find("1261026")>0 or aopath.find("1090423")>0 or
            aopath.find("1268975")>0 or aopath.find("1519995") >0 or
@@ -438,17 +445,18 @@ for f in yodafiles:
         
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.items():
-    if( "8924791"  in hpath or "8971293" in hpath or 
-        "8817804"  in hpath or "8968497" in hpath or 
-        ("9120041" in hpath and ("d01" in hpath or "d02" in hpath)) or 
-        "9126244"  in hpath or "926145"     in hpath or 
-        "9086218"  in hpath or "1082936"    in hpath or 
-        "8941262"  in hpath or "1118269"    in hpath or 
+    if( "882984"  in hpath or "889546" in hpath or 
+        "871366"  in hpath or "889175" in hpath or 
+        ("916908" in hpath and ("d01" in hpath or "d02" in hpath)) or 
+        "917526"  in hpath or "926145"     in hpath or 
+        "902309"  in hpath or "1082936"    in hpath or 
+        "884811"  in hpath or "1118269"    in hpath or 
         "1087342"  in hpath or "1188891"    in hpath or
-        "919017"   in hpath or "9035664"    in hpath or
-        "1125575"  in hpath or "1094564"    in hpath or
+        "919017"   in hpath or "896268"    in hpath or
+        ("1125575"  in hpath and "nEvents" not in hpath) or
+        "1094564"    in hpath or
         ("I930220"  in hpath and "Counter" not in hpath) or
-        "S9088458"   in hpath or 
+        "I912560"   in hpath or 
         "I1273574" in hpath or "I1261026"   in hpath or 
         "I1090423" in hpath or "QCD_11_010" in hpath or
         "1298811"  in hpath or "I1325553"   in hpath or
@@ -513,6 +521,10 @@ for hpath,hsets in inhistos_mass.items():
             for i in range(0,histo.numBins()) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),
                                         histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.BinnedEstimate1D) :
+            outhistos[hpath] = yoda.core.BinnedEstimate1D(histo.xEdges(),path,title)
+            if len(histo.maskedBins()) > 0:
+                outhistos[hpath].maskBins(histo.maskedBins())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)

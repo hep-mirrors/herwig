@@ -1484,25 +1484,13 @@ for ix in range(0,2) :
 for ix in range(13,16) :
     for iy in range(1,5) :
         useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(ix,iy), "189")        
-merge("/DELPHI_2001_I526164/d01-x01-y01")
+merge("/DELPHI_2001_I526164/d01-x01-y01")          
+merge("/DELPHI_2001_I526164/d03-x01-y01")
+merge("/DELPHI_2001_I526164/d03-x01-y03")
 for ix in range(1,6) :
     merge("/DELPHI_2001_I526164/d02-x01-y0%s"%ix)
 for ix in range(1,7) :
     useOne("/DELPHI_2001_I526164/d04-x01-y0%s"%ix,"189")
-# weird histo, select bins by hand
-if "/DELPHI_2001_I526164/d03-x01-y01" in inhistos:
-    if hasattr(outhistos["/DELPHI_2001_I526164/d03-x01-y01"],'points') :
-        outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[0])
-        outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[1])
-        outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].points()[2])
-        outhistos["/DELPHI_2001_I526164/d03-x01-y01"].addPoint(inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].points()[3])
-    else :
-        for i,bin in enumerate(outhistos["/DELPHI_2001_I526164/d03-x01-y01"].bins()) :
-            if i%2==0 : src = inhistos["/DELPHI_2001_I526164/d03-x01-y01"][183.].bins()[i]
-            else      : src = inhistos["/DELPHI_2001_I526164/d03-x01-y01"][189.].bins()[i]
-            bin.setVal(src.val())
-            for key in  src.sources() :
-                bin.setErr(src.err(key),key)
         
 useOne("/MARKII_1982_I178416/d01-x01-y01","5.2")
 useOne("/MARKII_1982_I178416/d01-x01-y02","6.5")
