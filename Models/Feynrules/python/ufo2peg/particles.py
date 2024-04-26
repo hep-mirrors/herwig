@@ -431,7 +431,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                        Vertex[1].pdg_code == 22 and abs(Vertex[0].pdg_code) == abs(Vertex[2].pdg_code):
                         continue
                     # skip lepton vertices
-                    if isLepton(Vertex[1]) or isLepton(Vertex[2]) : 
+                    if isLepton(Vertex[1]) or isLepton(Vertex[2]) :
                         continue
                     # loop over all possible configurations in the splitting
                     for pos in range(0,3) :
@@ -444,7 +444,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                         else :
                             V[0], V[1], V[2] = Vertex[2], Vertex[0], Vertex[1]
                         # don't allow photon as progenitor
-                        if V[0].pdg_code == 22 : 
+                        if V[0].pdg_code == 22 :
                             continue
                         # for a generic splitting m0 < m1+m2, otherwise it's a decay
                         m = extract_mass(FR,V)
@@ -464,7 +464,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             - H > H' H'' Higgs splittings
                         """
 
-                        if isVector(V[0]) : 
+                        if isVector(V[0]) :
                             # allow V > V' H
                             if isVector(V[1]) and isScalar(V[2]) :
                                 pass
@@ -493,6 +493,11 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             # allow H > H' H''
                             if isScalar(V[1]) and isScalar(V[2]) :
                                 pass
+                            # allow H > H' V
+                            elif isScalar(V[1]) and isVector(V[2]) :
+                                pass
+                            elif isScalar(V[2]) and isVector(V[1]) :
+                                V[0], V[1], V[2] = V[0], V[2], V[1]
                             # nothing else with a scalar progenitor
                             else :
                                 continue
