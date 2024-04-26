@@ -189,7 +189,7 @@ DecayMEPtr ZeroZeroOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   Complex ghhv(0.,0.);
   getCouplings(ghhv,ids);
   // calculate the kernal
-  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
   double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
   double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
   double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
