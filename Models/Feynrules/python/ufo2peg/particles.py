@@ -493,11 +493,6 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
                             # allow H > H' H''
                             if isScalar(V[1]) and isScalar(V[2]) :
                                 pass
-                            # allow H > H' V
-                            elif isScalar(V[1]) and isVector(V[2]) :
-                                pass
-                            elif isScalar(V[2]) and isVector(V[1]) :
-                                V[0], V[1], V[2] = V[0], V[2], V[1]
                             # nothing else with a scalar progenitor
                             else :
                                 continue
