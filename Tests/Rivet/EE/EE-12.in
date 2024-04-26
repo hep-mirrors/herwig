@@ -10,7 +10,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 #  Validated
 ##################################################
 # tasso event shapes at various energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1980_I154270
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1983_I190818
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1981_I165122

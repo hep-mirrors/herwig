@@ -3,16 +3,16 @@
 # select the analyses
 ##################################################
 # ATLAS di-jet decorrelation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8971293
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I889546
 # ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I871366
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082936
 # ATLAS dijet with veto
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9126244
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I917526
 # CMS jet cross section
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I902309
 # CMS 3/2 jet cross section ratio
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9088458
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I912560
 # ATLAS track jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # CMS central and forward jets

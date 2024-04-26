@@ -9,7 +9,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.
 #  Validated
 ##################################################
 # ALEPH charged particle multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_I319520
 # OPAL charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1992_I321190
 # OPAL charged particle multiplicity (light flavour separated)
@@ -17,51 +17,51 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_I536266
 # DELPHI charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1991_I301657
 # ALEPH main LEP I QCD summary paper
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_I428072
 # ALEPH D*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1999_S4193598
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1999_I507422
 # OPAL D*
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_I382219
 # OPAL charged hadron analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1994_S2927284
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1994_I372772
 # OPAL Delta++ analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_S3198391
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_I398320
 # OPAL J/Psi analysis analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_S3257789
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_I402487
 # ALEPH eta/omega analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2002_S4823664
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2002_I569165
 # ALEPH pi0,eta,eta',K0,lambda in 2/3 jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2000_I507531
 # OPAL K*0 analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3608263
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I447146
 # OPAL flavour specific charged multiplicities etc
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3780481
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_I472637
 # OPAL f_0,f_2 and phi production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3702294
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_I467092
 # OPAL gamma,pi0,eta,eta',rho+/-,a0+/- 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3749908
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_I470419
 # OPAL K0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_S4418603
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_I529898
 # OPAL K* +/-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_I342766
 # SLD flavour specific charged multiplicities etc
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1996_S3398250
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1996_I422172
 # SLD flavour specific charged multiplicities etc
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1999_S3743934
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1999_I469925
 # SLD flavour specific charged multiplicities etc
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2004_S5693039
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2004_I630327
 # OPAL event shapes and multiplicities at different energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I669402
 # ALEPH jet and event shapes at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_I636645
 # OPAL/JADE jet rates at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_I513337
 # DELPHI strange baryon production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_S3137023
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I394716
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2006_I719387
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I524694
 # DELPHI f_0, rho_0 and f_2 production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_S3960137
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_I482816
 # DELPHI K*0 and phi production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I420528
 # DELPHI f'_2 production
@@ -77,16 +77,16 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I399737
 # DELPHI pi, K p, flavour seperated
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1998_I473409
 # OPAL strange baryon production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I421978
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I421977
 # DELPHI tuning paper
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I424112
 # DELPHI b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2011_I890503
 # ALEPH b quark
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_I558327
 # SLD b quark
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2002_S4869273
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2002_I582951
 # OPAL b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2003_I599181
 # PDG hadron multiplicities and ratios
@@ -167,12 +167,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621811
 # B_s -> D_s* mu- nu_mubar
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2020_I1787090
 # DELPHI f_1 f'_1 spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I628566
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I628566
 ##################################################
 # unvalidated 
 ##################################################
 # OPAL 4 jet angles 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_I552446
 ##################################################
 # MC
 ##################################################

@@ -1,6 +1,7 @@
 #! @PYTHON@
 from __future__ import print_function
-import yoda,os,math,subprocess,optparse
+import yoda,os,subprocess,optparse
+import numpy as np
 from string import Template
 # get the path for the rivet data
 p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
@@ -42,7 +43,7 @@ analyses["PiPi"]["CMD2_1999_I498859"   ] = ["d01-x01-y01"]
 analyses['PiPi']["CLEOC_2005_I693873"  ] = ["d01-x01-y01"]
 analyses['PiPi']["ND_1991_I321108"     ] = ["d11-x01-y01"]
 analyses['PiPi']["OLYA_1984_I208231"   ] = ["d01-x01-y01"]
-analyses['PiPi']["SND_2020_I1789269"   ] = ["d01-x01-y04"]
+analyses['PiPi']["SND_2020_I1789269"   ] = ["d01-x01-y01"]
 # K+K- and K_S^0 K_L^0
 analyses['KK']["BESIII_2018_I1704558"] = ["d01-x01-y01"]
 analyses['KK']["BABAR_2013_I1238807" ] = ["d01-x01-y01"]
@@ -516,19 +517,38 @@ for process in processes:
                 elif(minMass[process]<=energy) :
                     energies[energy]=[[matrix],["BESIII_2017_I1604892"]]
     for analysis in analyses[process] :
-        aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
+        try : 
+            aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda.gz"))
+        except :
+            try : 
+                aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda.gz"))
+            except:
+                continue
         if(len(aos)==0) : continue
         for plot in analyses[process][analysis] :
             histo = aos["/REF/%s/%s" %(analysis,plot)]
-            for point in histo.points() :
-                energy = point.x()
-                if(analysis=="KLOE_2009_I797438" or
-                   analysis=="KLOE_2005_I655225" or
-                   analysis=="KLOE2_2017_I1634981" or
-                   analysis=="FENICE_1994_I377833") :
-                    energy = math.sqrt(energy)
-                if(energy>200) :
-                    energy *= 0.001
+            eTemp=[]
+            if hasattr(histo,'bins') : 
+                for bin in histo.bins() :
+                    if bin.edge(0) :
+                        energy = bin.edge(0)
+                    else :
+                        energy = bin.mid(0)
+                    energy=float(energy)
+                    eTemp.append(energy)
+            elif hasattr(histo,'points') :
+                for point in histo.points() :
+                    eTemp.append(point.x())
+            else :
+                #print("Can't handle %s " % type(histo))
+                continue
+            eTemp=np.array(eTemp)
+            if(analysis=="KLOE_2009_I797438"   or analysis=="KLOE_2005_I655225" or
+               analysis=="KLOE2_2017_I1634981" or analysis=="FENICE_1994_I377833") :
+                eTemp = np.sqrt(eTemp)
+            if(eTemp[0]>200) :
+                eTemp *= 0.001
+            for energy in eTemp :
                 emin,delta,anals = nearestEnergy(energy)
                 if(energy in energies) :
                     if(analysis not in energies[energy][1]) :

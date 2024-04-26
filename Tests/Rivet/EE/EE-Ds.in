@@ -13,7 +13,7 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 decaymode Upsilon(4S)->D_s+,D_s-; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->D_s+,D_s-;
 # D_s inclusive brs
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DS
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_DS
 ############## semi-leptonic #################
 # D_s+ -> K0, K* e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549

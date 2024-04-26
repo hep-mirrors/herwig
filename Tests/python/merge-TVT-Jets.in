@@ -10,49 +10,83 @@ import os, yoda
 
 # Divide two profile histograms with different nos of bins
 def divide(name,numer,denom) :
-    output = yoda.Scatter2D(name,name)
-    size = min(numer.numBins(),denom.numBins())
-    for i in range(0,size) :
-        b1 = numer.bin(i)
-        b2 = denom.bin(i)
-        # Assemble the x value and error
-        x = b1.xMid()
-        exminus = x - b1.xMin()
-        explus  = b1.xMax() - x
-        # Assemble the y value and error
-        # numerator
-        yupp=0.
-        relerr_1=0.
-        try :
-            yupp = b1.mean()
+    if type(numer)==yoda.core.Profile1D : 
+        output = yoda.Scatter2D(name,name)
+        size = min(numer.numBins(),denom.numBins())
+        for i in range(0,size) :
+            b1 = numer.bin(i)
+            b2 = denom.bin(i)
+            # Assemble the x value and error
+            x = b1.xMid()
+            exminus = x - b1.xMin()
+            explus  = b1.xMax() - x
+            # Assemble the y value and error
+            # numerator
+            yupp=0.
+            relerr_1=0.
             try :
-                if b1.stdErr() != 0 :
-                    relerr_1 =  b1.stdErr()/b1.mean()
-            except:
-                relerr_1=0.
-        except :
-            yupp = 0.
-            relerr_1 =0.
-        # denominator
-        ylow=0.
-        relerr_2 = 0.
-        try :
-            ylow = b2.mean()
-            try :
-                if b2.stdErr() != 0 :
-                    relerr_2 =  b2.stdErr()/b2.mean()
-            except:
-                relerr_2=0.
-        except :
-            ylow = 0.
+                yupp = b1.mean()
+                try :
+                    if b1.stdErr() != 0 :
+                        relerr_1 =  b1.stdErr()/b1.mean()
+                except:
+                    relerr_1=0.
+            except :
+                yupp = 0.
+                relerr_1 =0.
+            # denominator
+            ylow=0.
             relerr_2 = 0.
-        if yupp==0. or ylow== 0. :
-            y=0.
-            ey=0.
+            try :
+                ylow = b2.mean()
+                try :
+                    if b2.stdErr() != 0 :
+                        relerr_2 =  b2.stdErr()/b2.mean()
+                except:
+                    relerr_2=0.
+            except :
+                ylow = 0.
+                relerr_2 = 0.
+            if yupp==0. or ylow== 0. :
+                y=0.
+                ey=0.
+            else :
+                y = yupp / ylow
+                ey = y * math.sqrt(relerr_1**2 + relerr_2**2)
+            output.addPoint(x, y, (exminus,explus), (ey,ey))
+    elif type(numer)==yoda.core.BinnedEstimate1D :
+        if numer.numBins() > denom.numBins() :
+            output = yoda.core.BinnedEstimate1D(denom.xEdges(),name,name)
         else :
-            y = yupp / ylow
-            ey = y * math.sqrt(relerr_1**2 + relerr_2**2)
-        output.addPoint(x, y, (exminus,explus), (ey,ey))
+            output = yoda.core.BinnedEstimate1D(numer.xEdges(),name,name)
+        size = min(numer.numBins(),denom.numBins())
+        for i in range(0,size) :
+            b1 = numer.bin(i)
+            b2 = denom.bin(i)
+            # Assemble the y value and error
+            # numerator
+            yupp = b1.val()
+            if b1.relTotalErrAvg() != 0 :
+                relerr_1 = b1.relTotalErrAvg()
+            else :
+                relerr_1=0.
+            # denominator
+            ylow = b2.val()
+            if b2.relTotalErrAvg() != 0 :
+                relerr_2 = b2.relTotalErrAvg()
+            else :
+                relerr_2=0.
+            if yupp==0. or ylow== 0. :
+                y=0.
+                ey=0.
+            else :
+                y = yupp / ylow
+                ey = y * math.sqrt(relerr_1**2 + relerr_2**2)
+            output.bin(i).setVal(y)
+            output.bin(i).setErr(ey,"stats")
+    else :
+        print("Unknown type in divide",type(numer))
+        quit()
     return output
 
 def mergeHistos(histUE, histJet):
@@ -76,9 +110,12 @@ def mergeHistos(histUE, histJet):
         for i in range(0,histUE.numBins()) :
             newHisto.addBin(histUE.bins()[i].xMin(),
                             histUE.bins()[i].xMax())
+    elif(type(histUE)==yoda.core.BinnedEstimate1D) :
+        newHisto = yoda.core.BinnedEstimate1D(histUE.xEdges(),path,title)
+        if len(histUE.maskedBins()) > 0:
+            newHisto.maskBins(histUE.maskedBins())
     else :
-        logging.error("Histogram %s is of unknown type" % hpath)
-        print (hpath,type(histUE))
+        logging.error("Histogram %s is of unknown type" % histUE.path())
         sys.exit(1)
     pTMerge=10.    
 
@@ -88,6 +125,16 @@ def mergeHistos(histUE, histJet):
                 newHisto.bins()[i] += histJet.bins()[i]
             else :
                 newHisto.bins()[i] += histUE.bins()[i]
+    elif type(newHisto)==yoda.core.BinnedEstimate1D :
+        for b in newHisto.bins():
+            idx = b.index()
+            if b.xMin() > pTMerge :
+                oldb = histJet.bin(idx)
+            else :
+                oldb = histUE.bin(idx)
+            b.setVal(oldb.val())
+            for key in  oldb.sources() :
+                b.setErr(oldb.err(key),key)
     else :
         print(path,title,newHisto)
         print(histUE, histJet)
@@ -131,21 +178,20 @@ for en in ["300","630","900","Run-I","Run-II"] :
     if en=="Run-I" : energy="1800"
     elif en=="Run-II" : energy="1960"
     for proc in ["Jets","DiJets"] :
-        mergeargs=["rivet-merge"]
+        mergeargs=["rivet-merge","--assume-reentrant"]
         for i in range(1,10) :
             fname = "Rivet-%s-%s-%s-%s.yoda" % (args[0], en ,proc,i)
             if(os.path.isfile(fname)) :
                 mergeargs.append(fname)
-        if len(mergeargs)==1 : continue
+        if len(mergeargs)==2 : continue
         if en != "Run-I" and en!="630":
             mergeargs.append("-a")
             mergeargs.append("CDF_2012_NOTE10874:ENERGY=%s"%energy)
         else :
             mergeargs.append("-a")
-            mergeargs.append("CDF_2004_S5839831:ENERGY=%s"%energy)
+            mergeargs.append("CDF_2004_I647490:ENERGY=%s"%energy)
         mergeargs.append("-o")
         mergeargs.append("Rivet-%s-%s-%s.yoda" % (args[0], en ,proc))
-        #print(" ".join(mergeargs))
         yodafiles.append("-%s-%s.yoda" % (en ,proc))
         p = subprocess.Popen(mergeargs)
 # need a sleep here otherwise merged files not ready
@@ -171,14 +217,14 @@ for f in yodafiles :
         continue
     ## Get histos from this YODA fname
     for aopath, ao in aos.items() :
-        if ("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath or
+        if ("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath or "_BEAMPZ" in aopath or
             "sumWTrig" in aopath or "totalNum" in aopath or "sumWeights" in aopath) : continue
         path=aopath
         if "ENERGY" in path :
             path=path.split(":")
             path=path[0]+"/"+path[1].split("/")[1]
             ao.setPath(path)
-        if "CDF_2001_S4751469" in path :
+        if "CDF_2001_I564673" in path :
             if "d01" in path or "d02" in path or "d07" in path :
                 if "y03" in path :
                     if "Jets" in fname : outhistos[path]=ao
@@ -188,7 +234,7 @@ for f in yodafiles :
                 if "Jets" in fname : outhistos[path]=ao
             elif opts.ue and "UE" in fname :
                     outhistos[path]=ao
-        elif "CDF_2004_S5839831" in path :
+        elif "CDF_2004_I647490" in path :
             if "d03" in path :
                 if "Jets" in fname : outhistos[path]=ao
             elif "d05" in path or "d06" in path or "d10" in path or "d11" in path:
@@ -198,13 +244,12 @@ for f in yodafiles :
                     histos_UE[path]=ao
                 elif "Jets" in fname :
                     histos_Jets[path]=ao
-        elif "CDF_2010_S8591881_QCD" in path or "CDF_2012_NOTE10874" in path :
+        elif "CDF_2010_I849042" in path or "CDF_2012_NOTE10874" in path :
             if opts.ue and "UE" in fname :
                 histos_UE[path]=ao
             elif "Jets" in fname :
                 histos_Jets[path]=ao
         else :
-            if path in outhistos : print("DUP",path)
             outhistos[path]=ao
 
 # UE plots where we need to merge

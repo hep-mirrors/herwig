@@ -3,9 +3,9 @@
 # select the analyses
 ##################################################
 # ATLAS W asymetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9002537
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I892704
 # ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I882534
 # ATLAS W pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
 # ATLAS W+jets
@@ -19,7 +19,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
 # CMS W+ jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1303894
 # ATLAS W
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_W
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289:MODE=W
 # ATLAS W+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490:LMODE=MU
