@@ -63,7 +63,7 @@ for colour in ["Singlet","Octet"]:
     for state in ["eta_c","Jpsi","psi2S","chi_c0","chi_c1","chi_c2",
                   "B_c","B_cStar","B_c2S","B_c2SStar",
                   "Upsilon","Upsilon2S","Upsilon3S","chi_b0","chi_b1","chi_b2",
-                  "chi_b0(2P)","chi_b1(2P)","chi_b2(2P)","chi_b0(3P)","chi_b1(3P)","chi_b2(3P)"]:
+                  "chi_b02P","chi_b12P","chi_b22P","chi_b03P","chi_b13P","chi_b23P"]:
         processes.append("%s-%s"%(colour,state))
 processes.append("NonPrompt")
 for collider in ["TVT","LHC"] :
@@ -100,6 +100,7 @@ for collider in ["TVT","LHC"] :
                 p = subprocess.Popen(mergeargs)
             elif opts.process :
                 fname = "Rivet-Onium-%s-%s-%s.yoda" % (collider, energy , state)
+                if "NonPrompt" not in fname : continue
                 if not os.path.isfile(fname) : continue
                 aos=yoda.read(fname)
                 outhistos={}
@@ -108,7 +109,7 @@ for collider in ["TVT","LHC"] :
                         if "ATLAS_2011_S9035664" in key :
                             if "d11" in key or "d12" in key or "d13" in key or "d14" in key:
                                 outhistos[key]=aos[key]
-                            elif "d20" in key or "d21" in key or "d22" in key or "d23" in key:
+                            elif ("d20" in key or "d21" in key or "d22" in key or "d23" in key) and "RAW" in key:
                                 iy=int(key.split("-")[-3].replace("/ATLAS_2011_S9035664/d","").replace("/RAW",""))
                                 path="/RAW/ATLAS_2011_S9035664/d%s-x01-y01" % (34-iy)
                                 outhistos[key] = aos[path].clone()
@@ -127,8 +128,8 @@ for collider in ["TVT","LHC"] :
                             else :
                                 pass
                         elif "ATLAS_2016_I1409298" in key :
-                            if ( "d01" in key or "d02" in key or "d05" in key or "d06" in key or "d09" in key or 
-                                 "d10" in key or "d11" in key or "d12" in key or "d13" in key or "d14" in key or "d16" in key) :
+                            if ( "d01" in key or "d02" in key or "d05" in key or "d06" in key or "d09" in key or "d10" in key or 
+                                 "d11" in key or "d12" in key or "d13" in key or "d14" in key or "d15" in key or "d16" in key) :
                                 pass
                             elif "TMP/JPsi" in key or "TMP/psi2S" in key:
                                 ipsi = 0
@@ -151,8 +152,10 @@ for collider in ["TVT","LHC"] :
                                 pass
                             else :
                                 outhistos[key]=aos[key]
-                        elif "CMS_2012_I944755" in key :
-                            if "y01" in key:
+                        elif "CMS_2012_I944755" in key:
+                            if ("y01" in key or "d17" in key or "d18" in key or "d19" in key or "d20" in key or "d21" in key or
+                                "d21" in key or "d22" in key or "d23" in key or "d24" in key or "d25" in key or "d26" in key or
+                                "d27" in key or "d28" in key):
                                 pass
                             elif "TMP/psi_" in key :
                                 iy  =int(key.split("_")[-1])
@@ -160,6 +163,11 @@ for collider in ["TVT","LHC"] :
                                 path="/RAW/CMS_2012_I944755/d0%s-x01-y02" %(iy+5*ipsi)
                                 outhistos[key] = aos[path].clone()
                                 outhistos[key].setPath(aos[key].path())
+                            else :
+                                outhistos[key]=aos[key]
+                        elif "CMS_2017_I1512296" in key:
+                            if "d01" in key or "d02" in key or "d05" in key:
+                                pass
                             else :
                                 outhistos[key]=aos[key]
                         elif "LHCB_2011_I891233" in key :
@@ -218,10 +226,12 @@ for collider in ["TVT","LHC"] :
                                 outhistos[key].setPath(aos[key].path())
                             else :
                                 outhistos[key]=aos[key]
-                        elif ("ATLAS_2013_I1204994" in key or "ATLAS_2017_I1598613" in key or "CMS_2019_I1672011"  in key or
-                              "CMS_2018_I1633431"   in key or "CMS_2015_I1345023"   in key or "CMS_2015_I1342266"  in key or
-                              "CMS_2013_I1244128"   in key or "CMS_2013_I1225274"   in key or "CMS_2013_I1185414"  in key or
-                              "CMS_2012_I1189050"   in key or "LHCB_2012_I1087907"  in key or "LHCB_2012_I1091071" in key or
+                        elif ("ATLAS_2013_I1204994" in key or "CDF_1997_I440446"   in key or
+                              "CMS_2022_I1870319"   in key or "CMS_2019_I1672011"  in key or
+                              "CMS_2018_I1633431"   in key or "CMS_2015_I1345023"  in key or
+                              "CMS_2015_I1342266"   in key or "CMS_2013_I1244128"  in key or
+                              "CMS_2013_I1225274"   in key or "CMS_2013_I1185414"  in key or
+                              "CMS_2012_I1189050"   in key or "LHCB_2012_I1087907" in key or "LHCB_2012_I1091071" in key or
                               "LHCB_2012_I1107645"  in key or "LHCB_2012_I1184177"  in key or "LHCB_2013_I1242869" in key or
                               "LHCB_2013_I1244315"  in key or "LHCB_2014_I1280929"  in key or "LHCB_2014_I1308738" in key or
                               "LHCB_2014_I1315113"  in key or "LHCB_2015_I1392456"  in key or "LHCB_2017_I1621596" in key or
@@ -231,7 +241,6 @@ for collider in ["TVT","LHC"] :
                             outhistos[key]=aos[key]
                     else :
                         outhistos[key]=aos[key]
-                    removeNan()
                     yoda.writeYODA(outhistos,fname)
             else :
                 fname = "Rivet-Onium-%s-%s-%s.yoda" % (collider, energy , state)
