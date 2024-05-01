@@ -80,16 +80,16 @@ for collider in ["TVT","LHC"] :
             ecms=1800.
         else :
             ecms = energy*1000
-        mergeargs2=["rivet-merge"]
+        mergeargs2=["rivet-merge","--assume-reentrant"]
         for state in processes:
             if opts.initialize :
-                mergeargs=["rivet-merge"]
+                mergeargs=["rivet-merge","--assume-reentrant"]
                 for proc in ["Charm","Bottom","Jets"] :
                     for cut in range(1,6):
                         fname = "Rivet-Onium-%s-%s-%s-%s-%s.yoda" % (collider, energy , state, proc, cut)
                         if(os.path.isfile(fname)) :
                             mergeargs.append(fname)
-                if len(mergeargs)==1 : continue
+                if len(mergeargs)==2 : continue
                 if ecms in energies:
                     for val in energies[ecms]:
                         mergeargs.append("-a")
@@ -105,12 +105,12 @@ for collider in ["TVT","LHC"] :
                 outhistos={}
                 for key in aos.keys():
                     if "NonPrompt" in fname :
-                        if "ATLAS_2011_S9035664" in key :
+                        if "ATLAS_2011_I896268" in key :
                             if "d11" in key or "d12" in key or "d13" in key or "d14" in key:
                                 outhistos[key]=aos[key]
                             elif "d20" in key or "d21" in key or "d22" in key or "d23" in key:
-                                iy=int(key.split("-")[-3].replace("/ATLAS_2011_S9035664/d","").replace("/RAW",""))
-                                path="/RAW/ATLAS_2011_S9035664/d%s-x01-y01" % (34-iy)
+                                iy=int(key.split("-")[-3].replace("/ATLAS_2011_I896268/d","").replace("/RAW",""))
+                                path="/RAW/ATLAS_2011_I896268/d%s-x01-y01" % (34-iy)
                                 outhistos[key] = aos[path].clone()
                                 outhistos[key].setPath(aos[key].path())
                             else :
@@ -137,8 +137,9 @@ for collider in ["TVT","LHC"] :
                                 if ecms==8000.  : iloc=1
                                 iy=int(key.split("_")[-1])
                                 path="/RAW/ATLAS_2016_I1409298:ENERGY=%s/d0%s-x01-y0%s" % (ecms,3+iloc+4*ipsi,iy+1)
-                                outhistos[key] = aos[path].clone()
-                                outhistos[key].setPath(aos[key].path())
+                                if path in aos :
+                                    outhistos[key] = aos[path].clone()
+                                    outhistos[key].setPath(aos[key].path())
                             else :
                                 outhistos[key]=aos[key]
                         elif "ATLAS_2018_I1622737" in key :
@@ -237,7 +238,7 @@ for collider in ["TVT","LHC"] :
                 fname = "Rivet-Onium-%s-%s-%s.yoda" % (collider, energy , state)
                 if not os.path.isfile(fname) : continue
                 mergeargs2.append(fname)
-        if len(mergeargs2)==1 or opts.process or opts.initialize : continue
+        if len(mergeargs2)==2 or opts.process or opts.initialize : continue
         if ecms in energies:
             for val in energies[ecms]:
                 mergeargs2.append("-a")
@@ -356,29 +357,29 @@ if 7000 in inhistos and 5020 in inhistos :
             newHisto.setPath(newPath)
             outhistos[newPath]=newHisto
 
-if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
-    path="/LHCB_2019_I1760257/d01-x01-y01"
-    if ( path in inhistos[ 7000] and  path in inhistos[ 8000] and
-         path in inhistos[13000] ) :
-        outhistos[path] = yoda.core.Scatter2D(path,path)
-        outhistos[path].addPoint(inhistos[ 7000][path].points()[0])
-        outhistos[path].addPoint(inhistos[ 8000][path].points()[1])
-        outhistos[path].addPoint(inhistos[13000][path].points()[2])
-        outhistos[path].addPoint(inhistos[13000][path].points()[3])
-        path2="/LHCB_2019_I1760257/d02-x01-y01"
-        outhistos[path2] = yoda.core.Scatter2D(path2,path2)
-        outhistos[path2].addPoint(inhistos[ 8000][path].points()[1])
-        outhistos[path2].addPoint(inhistos[13000][path].points()[2])
-        outhistos[path2].points()[1].setX(13)
-        for val in outhistos[path2].points():
-            val.scaleY(1./inhistos[ 7000][path].points()[0].y())
+# if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
+#     path="/LHCB_2019_I1760257/d01-x01-y01"
+#     if ( path in inhistos[ 7000] and  path in inhistos[ 8000] and
+#          path in inhistos[13000] ) :
+#         outhistos[path] = yoda.core.Scatter2D(path,path)
+#         outhistos[path].addPoint(inhistos[ 7000][path].points()[0])
+#         outhistos[path].addPoint(inhistos[ 8000][path].points()[1])
+#         outhistos[path].addPoint(inhistos[13000][path].points()[2])
+#         outhistos[path].addPoint(inhistos[13000][path].points()[3])
+#         path2="/LHCB_2019_I1760257/d02-x01-y01"
+#         outhistos[path2] = yoda.core.Scatter2D(path2,path2)
+#         outhistos[path2].addPoint(inhistos[ 8000][path].points()[1])
+#         outhistos[path2].addPoint(inhistos[13000][path].points()[2])
+#         outhistos[path2].points()[1].setX(13)
+#         for val in outhistos[path2].points():
+#             val.scaleY(1./inhistos[ 7000][path].points()[0].y())
 
-if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
-    for ix in range(1,3) :
-        path="/LHCB_2019_I1716259/d0%s-x01-y01" %ix
-        outhistos[path] = yoda.core.Scatter2D(path,path)
-        outhistos[path].addPoint(inhistos[ 7000][path].points()[0])
-        outhistos[path].addPoint(inhistos[13000][path].points()[1])
+# if 7000 in inhistos and 8000 in inhistos and 13000 in inhistos:
+#     for ix in range(1,3) :
+#         path="/LHCB_2019_I1716259/d0%s-x01-y01" %ix
+#         outhistos[path] = yoda.core.Scatter2D(path,path)
+#         outhistos[path].addPoint(inhistos[ 7000][path].points()[0])
+#         outhistos[path].addPoint(inhistos[13000][path].points()[1])
 
 # Choose output file
 if len(args)==1 :

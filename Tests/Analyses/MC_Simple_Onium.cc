@@ -47,7 +47,7 @@ namespace Rivet {
 
     /// Normalise histograms etc., after the run
     void finalize() {
-      for (const auto & kv : _h) {
+      for (auto & kv : _h) {
 	scale(kv.second,0.5/sumW());
       }
     }

@@ -50,9 +50,9 @@ namespace Rivet {
 
     /// Normalise histograms etc., after the run
     void finalize() {
-      for(const auto& kv: _h_pT)
+      for(auto& kv: _h_pT)
 	scale(kv.second, crossSection()/picobarn/sumW());
-      for(const auto& kv: _h_y )
+      for(auto& kv: _h_y )
 	scale(kv.second, crossSection()/picobarn/sumW());
     }
 

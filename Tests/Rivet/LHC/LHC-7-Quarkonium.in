@@ -5,7 +5,7 @@
 # LHCb eta_c
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1316329
 # ATLAS JPsi
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I896268
 # ATLAS JPsi/psi(2S)
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1409298
 # CMS JPsi
