@@ -175,7 +175,7 @@ bool MEff2ffX::generateKinematics(const double * r) {
     else     ptotal +=meMomenta()[ix];
   }
   ptotal+=pX;
-  double test = (sqr(ptotal.x())+sqr(ptotal.y())+sqr(ptotal.z())+sqr(ptotal.t()))/sHat();
+  //double test = (sqr(ptotal.x())+sqr(ptotal.y())+sqr(ptotal.z())+sqr(ptotal.t()))/sHat();
   if(meMomenta().size()==5) {
     meMomenta()[4] = pX;
   }
@@ -301,7 +301,7 @@ void MEff2ffX::Init() {
      "The maximum value of Q2 for the off-shell photon from the electron",
      &MEff2ffX::Q2_2max_, GeV2, 0.*GeV2, 0.0*GeV2, Constants::MaxEnergy2,
      false, false, Interface::limited);
-  
+
   static Reference<MEff2ffX,GammaGammaAmplitude> interfaceAmplitude
     ("Amplitude",
      "The gamma gamma -> X amplitude",
@@ -332,7 +332,7 @@ void MEff2ffX::Init() {
      "The minimum Mhat for the core process",
      &MEff2ffX::mHatMin_, GeV, ZERO, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
-  
+
 }
 
 vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
@@ -432,13 +432,13 @@ vector<VectorWaveFunction> MEff2ffX::firstCurrent(tcPDPtr inPart,
     }
     // no spin correlations
     else if(currentMode_==2) {
-      Energy2 m2=sqr(m);  
+      Energy2 m2=sqr(m);
       double ort=sqrt(0.5);
       double fact = ort*ee*UnitRemoval::E/t1_*
 	sqrt(2.*pT2*((4.*sqr(F1))/sqr(1.-z) + (2.*sqr(F1)+4.*F1*F2+3.*sqr(F2))/z)
 	     +2.*sqr(F2)*sqr(pT2)/(m2*sqr(1.-z)*z)
 	     +4.*sqr(F1+F2)*m2*sqr(1.-z)/z);
-      current.resize(2);    
+      current.resize(2);
       current[0] = fact*ort*LorentzPolarizationVector( 1,-II,0.,0.);
       current[1] = fact*ort*LorentzPolarizationVector(-1,-II,0.,0.);
     }
@@ -513,7 +513,7 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
   Energy Ea = pin.t();
   vector<LorentzPolarizationVector> current(4);
   // full result stable for small pT and x->1
-  if(currentMode_==0) {    
+  if(currentMode_==0) {
     double mr2 = sqr(m/Ea);
     double x = pout.t()/Ea;
     double b = sqrt(1.-mr2), b1 = sqrt(1-mr2/sqr(x)), bb1=(1.+b)*(1.+b1);
@@ -521,7 +521,7 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
     double fact2 = (F1+F2)*m/sqrt(x)            /sqrt(bb1)/t2_*UnitRemoval::E*ee;
     current[0] = fact1*LorentzPolarizationVector(0.5*(bb1-mr2/x)   +b1*phase*sqr(sHalf2_)*(mr2+bb1*x)*cos(phi2_)/(1.-x),
 						 0.5*II*(bb1-mr2/x)+b1*phase*sqr(sHalf2_)*(mr2+bb1*x)*sin(phi2_)/(1.-x),
-						 phase*(mr2*sHalf2_*(1.+b-(1.+b1)*x)/cHalf2_/x+b1*cHalf2_*sHalf2_*(mr2+bb1*x))/(1.-x),0);    
+						 phase*(mr2*sHalf2_*(1.+b-(1.+b1)*x)/cHalf2_/x+b1*cHalf2_*sHalf2_*(mr2+bb1*x))/(1.-x),0);
     current[1] = fact2*LorentzPolarizationVector(sHalf2_*(   (1.+b-(1.+b1)*x)/phase-2.*b1*sqr(cHalf2_)*x*(1.+b+(1.+b1)*x)*cos(phi2_)/(1.-x)),
 						 sHalf2_*(II*(1.+b-(1.+b1)*x)/phase-2.*b1*sqr(cHalf2_)*x*(1.+b+(1.+b1)*x)*sin(phi2_)/(1.-x)),
 						 -2.*cHalf2_*x*((1.+b)*(1.+b1*sqr(cHalf2_))-(1.+b1)*(1.-b1*sqr(cHalf2_))*x)/(1.-x),0.);
@@ -562,7 +562,7 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
       double fact2 = fact*(F1+F2)*m /Ea/sqrt(z)*(1.-z);
       current[0] = fact1      *LorentzPolarizationVector(1.+z*sqr(phase), II*(1.-z*sqr(phase)),0., 0.);
       current[1] = fact2/phase*LorentzPolarizationVector( 1.,II,0.,0.);
-      current[2] = fact2*phase*LorentzPolarizationVector(-1.,II,0.,0.);    
+      current[2] = fact2*phase*LorentzPolarizationVector(-1.,II,0.,0.);
       current[3] = fact1      *LorentzPolarizationVector(1.+z/sqr(phase),-II*(1.-z/sqr(phase)),0.,0.);
       // F2 piece if non-zero
       if(F2!=0) {
@@ -582,7 +582,7 @@ vector<VectorWaveFunction> MEff2ffX::secondCurrent(tcPDPtr inPart,
 	sqrt(2.*pT2*((4.*sqr(F1))/sqr(1.-z) + (2.*sqr(F1)+4.*F1*F2+3.*sqr(F2))/z)
 	     +2.*sqr(F2)*sqr(pT2)/(m2*sqr(1.-z)*z)
 	     +4.*sqr(F1+F2)*m2*sqr(1.-z)/z);
-      current.resize(2);      
+      current.resize(2);
       current[0] = fact*ort*LorentzPolarizationVector(-1,-II,0.,0.);
       current[1] = fact*ort*LorentzPolarizationVector( 1,-II,0.,0.);
     }
@@ -651,7 +651,7 @@ void MEff2ffX::constructVertex(tSubProPtr sub) {
   }
   else {
     ScalarWaveFunction(hard[0],incoming,false);
-    ScalarWaveFunction(hard[2],outgoing,true ); 
+    ScalarWaveFunction(hard[2],outgoing,true );
   }
   if(hard[1]->dataPtr()->iSpin()==PDT::Spin1Half) {
     if(hard[1]->id()>0) {
