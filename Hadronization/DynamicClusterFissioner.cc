@@ -359,14 +359,6 @@ while(repeat2){
   temp.boost(bv);
   ptrQbar->set5Momentum(temp);
 
-
-  Lorentz5Momentum clu1mom = ptrP->momentum()+ptrQbar->momentum();
-  Lorentz5Momentum clu2mom = ptrPbar->momentum()+ptrQ->momentum();
-  Energy clu1mass = clu1mom.m();
-  Energy clu2mass = clu2mom.m();
-if (Mcl/(1.*GeV) < 91.2001 && Mcl/(1.*GeV) > 91.1999){
-  std::cout << clu1mass/(1.*GeV) << " " << clu2mass/(1.*GeV) << std::endl;
-}
 }
 
 
