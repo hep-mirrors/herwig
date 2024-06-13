@@ -115,7 +115,7 @@ public:
    * @param quark The quark produced in the splitting
    * @param anti  The antiquark produced in the splitting
    */
-  void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
+  virtual void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
 
   /**

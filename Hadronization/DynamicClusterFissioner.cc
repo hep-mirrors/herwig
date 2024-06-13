@@ -45,11 +45,11 @@ IBPtr DynamicClusterFissioner::fullclone() const {
 }
 
 void DynamicClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _AngOrdFission << _restrictGluon;;
+  os << _AngOrdFission << _restrictGluon << ounit(_Qqtilde,GeV) << ounit(_Qg2tilde,GeV) << _dynamicGluonMassGenerator << _dynamicPartonSplitter;
 }
 
 void DynamicClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _AngOrdFission >> _restrictGluon;;
+  is >> _AngOrdFission >> _restrictGluon >> iunit(_Qqtilde,GeV) >> iunit(_Qg2tilde,GeV) >> _dynamicGluonMassGenerator >> _dynamicPartonSplitter;
 }
 
 void DynamicClusterFissioner::Init() {
@@ -95,27 +95,36 @@ void DynamicClusterFissioner::Init() {
      "Gluon virtuality is restricted to the range that the kinematics allow once that z and qitlde are fixed for the quark",
      1);
 
+    static Reference<DynamicClusterFissioner,DynamicGluonMassGenerator> interfaceDynamicGluonMassGenerator
+    ("GluonMassGenerator",
+     "Set a reference to a gluon mass generator.",
+     &DynamicClusterFissioner::_dynamicGluonMassGenerator, false, false, true, true, false);
+
+    static Reference<DynamicClusterFissioner,DynamicPartonSplitter> interfaceDynamicPartonSplitter
+    ("PartonSplitter",
+     "Set a reference to a parton splitter",
+     &DynamicClusterFissioner::_dynamicPartonSplitter, false, false, true, true, false);
+
 }
 
 
 
 
 InvEnergy DynamicClusterFissioner::Pqzproposal(double z,Energy qtilde, Energy Qqtilde, Energy mq) const{
-  return gluonMassGenerator()->ClusterAlphaS(0.*GeV2)*2.*(1.-sqr(mq/Qqtilde))/(qtilde*(1.-z)); 
+  return _dynamicGluonMassGenerator->ClusterAlphaS(0.*GeV2)*2.*(1.-sqr(mq/Qqtilde))/(qtilde*(1.-z)); 
 }
 
 InvEnergy DynamicClusterFissioner::Pqz(double z, Energy qtilde, Energy mq) const {
   if ( z*qtilde > mq){
-    return gluonMassGenerator()->ClusterAlphaS(sqr(z*(1.0-z)*qtilde))*( (1.+z*z)/(1.-z) - ((2.*sqr(mq))/( z*(1.-z)*sqr(qtilde) )))/qtilde;}
+    return _dynamicGluonMassGenerator->ClusterAlphaS(sqr(z*(1.0-z)*qtilde))*( (1.+z*z)/(1.-z) - ((2.*sqr(mq))/( z*(1.-z)*sqr(qtilde) )))/qtilde;}
   else {
     return 0./(1.*GeV);
   }
 }
 
 
-void DynamicClusterFissioner::dynamicFission(tPPtr & ptrP, tPPtr & ptrPbar, PPtr & ptrQ, PPtr & ptrQbar) const {
+void DynamicClusterFissioner::dynamicFission(tPPtr  ptrP, tPPtr  ptrPbar, PPtr&  ptrQ, PPtr&  ptrQbar) const {
 
-  
   LorentzMomentum P1, P2;
   bool fromcolor;
 
@@ -144,8 +153,6 @@ void DynamicClusterFissioner::dynamicFission(tPPtr & ptrP, tPPtr & ptrPbar, PPtr
 
   //upper scale of the quark splitting
   Qqtilde = _Qqtilde;
-
-
  
 
 while(repeat2){
@@ -181,7 +188,7 @@ while(repeat2){
   
   
 
-
+  //Qqtilde = Qqtilde + mq;
   //get z and qtilde
   double zmin=mq/Qqtilde;
   double zmax=1-(4*sqr(m0)/( sqr(Mcl-mq2)-sqr(mq)  ));
@@ -227,7 +234,6 @@ while(repeat2){
     }
   }
   
-  
 
   //scale for the Sudakov in the gluon splitting
   if (_AngOrdFission==1){
@@ -242,11 +248,11 @@ while(repeat2){
   if (_restrictGluon==1){
     //restirct the gluon virtuality to the range where kinematic reconstruction is possible, i.e. Mcl>MP1+mq2 is always true
     Energy mgmax=sqrt((1.-z)*(sqr(Mcl-mq2) - sqr(mq) -z*(1.-z)*sqr(qtilde)));
-    mg=gluonMassGenerator()->generate(Qgtilde,mgmax);
+    mg=_dynamicGluonMassGenerator->generate(Qgtilde,mgmax);
   }
   else{
     //no additional restriction on gluon virtuality. Mcl>MP1+mq2 might fail and new z and qtilde for the quark are generated
-    mg=gluonMassGenerator()->generate(Qgtilde);
+    mg=_dynamicGluonMassGenerator->generate(Qgtilde);
   }
 
   
@@ -319,14 +325,16 @@ while(repeat2){
     ptrPbar->set5Momentum(P2prime);
     ptrPprime = getParticle(ptrP->id());
     ptrPprime->set5Momentum(P1prime);
-    partonSplitter()->splitTimeLikeGluon(ptrG,ptrPprime,ptrPbar,ptrQ,ptrQbar,Qgtilde,nbar,fromcolor);
+    //_dynamicPartonSplitter->splitTimeLikeGluon(ptrG,ptrPprime,ptrPbar,ptrQ,ptrQbar,Qgtilde,nbar,fromcolor);
+    _dynamicPartonSplitter->splitTimeLikeGluon(ptrG,ptrQ, ptrQbar, ptrPprime, ptrPbar,Qgtilde,nbar,fromcolor);
   }
   else{
     ptrP->set5Momentum(P2prime);
     ptrPbar->set5Momentum(k);
     ptrPprime = getParticle(ptrPbar->id());
     ptrPprime->set5Momentum(P1prime);
-    partonSplitter()->splitTimeLikeGluon(ptrG,ptrP,ptrPprime,ptrQ,ptrQbar,Qgtilde,nbar,fromcolor);
+    //_dynamicPartonSplitter->splitTimeLikeGluon(ptrG,ptrP,ptrPprime,ptrQ,ptrQbar,Qgtilde,nbar,fromcolor);
+    _dynamicPartonSplitter->splitTimeLikeGluon(ptrG,ptrQ, ptrQbar, ptrP, ptrPprime,Qgtilde,nbar,fromcolor);
   }
 
 
@@ -352,6 +360,13 @@ while(repeat2){
   ptrQbar->set5Momentum(temp);
 
 
+  Lorentz5Momentum clu1mom = ptrP->momentum()+ptrQbar->momentum();
+  Lorentz5Momentum clu2mom = ptrPbar->momentum()+ptrQ->momentum();
+  Energy clu1mass = clu1mom.m();
+  Energy clu2mass = clu2mom.m();
+if (Mcl/(1.*GeV) < 91.2001 && Mcl/(1.*GeV) > 91.1999){
+  std::cout << clu1mass/(1.*GeV) << " " << clu2mass/(1.*GeV) << std::endl;
+}
 }
 
 
