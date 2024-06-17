@@ -291,25 +291,42 @@ AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno"],
 
 AM_CONDITIONAL(HAVE_VBFNLO,[test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64"])
 
-if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
-        AC_REQUIRE([AC_PROG_SED])
-        VBFNLOINCLUDE=${with_vbfnlo}/include
-	AC_SUBST(VBFNLOINCLUDE)
-        VBFNLOLIB=$(echo ${with_vbfnlo}/${have_vbfnlo}/VBFNLO | $SED -e 's%/\+%/%g')
-        AC_SUBST(VBFNLOLIB)
-     	LOAD_VBFNLO="library"
-     	CREATE_VBFNLO="create"
-     	INSERT_VBFNLO="insert"
-     	SET_VBFNLO="set"
-     	DO_VBFNLO="do"
-     	MKDIR_VBFNLO="mkdir"
+# Check if VBFNLO is being used
+AS_IF([test "x$with_vbfnlo" != "xno"],
+[
+  # Check for VBFNLO version
+  AC_MSG_CHECKING([for VBFNLO version >= 3.0.0])
+  tmp_vbfnloversion=$(${with_vbfnlo}/bin/vbfnlo --version | awk '{print $2}')
+  AX_COMPARE_VERSION([${tmp_vbfnloversion}], [lt], [3.0.0],
+                     [have_vbfnlo3=no],
+                     [have_vbfnlo3=yes])
+  AC_MSG_RESULT([VBFNLO 3.0.0 or higher: $have_vbfnlo3])
+  have_vbfnlo3=no
+],[have_vbfnlo3=no])
+
+# Define conditional based on VBFNLO version
+AM_CONDITIONAL(HAVE_VBFNLO3, [test "x$have_vbfnlo3" = "xyes"])
+
+# Configure library paths and options only if VBFNLO library is specified
+if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64"; then
+    AC_REQUIRE([AC_PROG_SED])
+    VBFNLOINCLUDE=${with_vbfnlo}/include
+    AC_SUBST(VBFNLOINCLUDE)
+    VBFNLOLIB=$(echo ${with_vbfnlo}/${have_vbfnlo}/VBFNLO | $SED -e 's%/\+%/%g')
+    AC_SUBST(VBFNLOLIB)
+    LOAD_VBFNLO="library"
+    CREATE_VBFNLO="create"
+    INSERT_VBFNLO="insert"
+    SET_VBFNLO="set"
+    DO_VBFNLO="do"
+    MKDIR_VBFNLO="mkdir"
 else
-     	LOAD_VBFNLO="# library"
-	CREATE_VBFNLO="# create"
-     	INSERT_VBFNLO="# insert"
-     	SET_VBFNLO="# set"
-     	DO_VBFNLO="# do"
-     	MKDIR_VBFNLO="# mkdir"
+    LOAD_VBFNLO="# library"
+    CREATE_VBFNLO="# create"
+    INSERT_VBFNLO="# insert"
+    SET_VBFNLO="# set"
+    DO_VBFNLO="# do"
+    MKDIR_VBFNLO="# mkdir"
 fi
 
 AC_SUBST([LOAD_VBFNLO])

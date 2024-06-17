@@ -13,4 +13,4 @@ set Amplitudelnuqqbargg:Diagonal Yes
 set Amplitudelnuqqbarqqbar:Diagonal Yes
 
 
-
+set /Herwig/MatrixElements/Matchbox/Amplitudes/OpenLoops:Diagonal Yes
