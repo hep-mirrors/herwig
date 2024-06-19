@@ -205,7 +205,7 @@ public:
   /**
    * The light hadronizing diquarks
    */
-  virtual const vector<long>& lightHadronizingDiquarks() const;
+  virtual const vector<long>& lightHadronizingDiquarks() const = 0;
 
   /**
    * The heavy hadronizing quarks
