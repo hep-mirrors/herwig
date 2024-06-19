@@ -31,7 +31,10 @@ newdef PPExtractor:FirstPDF HardLOPDF
 newdef PPExtractor:SecondPDF HardLOPDF
 cp EEExtractor EPExtractor
 newdef EPExtractor:FlatSHatY 1
+cp EEExtractor PEExtractor
+newdef PEExtractor:FlatSHatY 1
 
 newdef PPExtractor:FirstPDF HardLOPDF
 newdef PPExtractor:SecondPDF HardLOPDF
 newdef EPExtractor:SecondPDF HardLOPDF
+newdef PEExtractor:FirstPDF HardLOPDF
