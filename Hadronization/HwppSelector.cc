@@ -23,6 +23,7 @@
 #include <cassert>
 #include <ThePEG/Utilities/DescribeClass.h>
 
+#include "Herwig/Utilities/AlphaS.h"
 using namespace Herwig;
 
 DescribeClass<HwppSelector,StandardModelHadronSpectrum>
@@ -125,6 +126,20 @@ void HwppSelector::Init() {
      "Use the Herwig approach",
      1);
 
+  static SwitchOption interfaceModeBaryonic
+    (interfaceMode,
+     "Baryonic",
+     "Use alphaS^2 suppression for Baryon production.",
+     2);
+
+  static SwitchOption interfaceModeBaryonicLimit
+    (interfaceMode,
+     "BaryonicLimit",
+     "Use alphaS^2 suppression for Baryon production.",
+     3);
+
+
+
   static Switch<HwppSelector,int> interfaceEnhanceSProb
     ("EnhanceSProb",
      "Option for enhancing strangeness",
@@ -199,7 +214,12 @@ double HwppSelector::baryonWeight(long id) const {
 std::tuple<bool,bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
   useMe();
   std::tuple<bool,bool,bool> output(true,true,true);
-  if(_mode ==1) {
+	switch (_mode)
+	{
+		case 0:
+			return output;
+		case 1:
+			{
     if(UseRandom::rnd() > 1./(1.+_pwtDIquark) && cluMass > massLightestBaryonPair(par1,par2)) {
       std::get<0>(output)  = false;
     }
@@ -207,6 +227,38 @@ std::tuple<bool,bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPD
       std::get<1>(output)  = false;
       std::get<2>(output)  = false;
     }
+				break;
+			}
+		case 2:
+			{
+				double wB=_pwtDIquark*sqr(Herwig::Math::alphaS(cluMass, 0.25*GeV,3, 2));
+				if (wB>1.0) wB=1.0;
+				if(UseRandom::rnd() < wB && cluMass > massLightestBaryonPair(par1,par2)) {
+					std::get<0>(output)  = false;
+				}
+				else {
+					std::get<1>(output)  = false;
+					std::get<2>(output)  = false;
+				}
+				break;
+			}
+		case 3:
+			{
+				double wB=_pwtDIquark*sqr(Herwig::Math::alphaS(cluMass, 0.25*GeV,3, 2));
+				wB = wB/(1.0+wB);
+				if (wB>1.0) wB=1.0;
+				if(UseRandom::rnd() < wB && cluMass > massLightestBaryonPair(par1,par2)) {
+					std::get<0>(output)  = false;
+				}
+				else {
+					std::get<1>(output)  = false;
+					std::get<2>(output)  = false;
+				}
+				break;
+			}
+		default:
+			assert(false);
+	
   }
   return output;
 }
