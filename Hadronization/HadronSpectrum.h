@@ -203,6 +203,11 @@ public:
   virtual const vector<long>& lightHadronizingQuarks() const = 0;
 
   /**
+   * The light hadronizing diquarks
+   */
+  virtual const vector<long>& lightHadronizingDiquarks() const = 0;
+
+  /**
    * The heavy hadronizing quarks
    */
   virtual const vector<long>& heavyHadronizingQuarks() const = 0;
@@ -283,7 +288,7 @@ public:
    * @param par2 2nd constituent
    * @param mass Mass of the cluster
    */
-  tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
+  virtual tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
 
   /**
    * This returns the lightest pair of hadrons given by the flavours.

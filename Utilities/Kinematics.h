@@ -48,6 +48,54 @@ namespace Herwig {
 			     const Axis & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
     
+	/*
+	 * Kaellen functions
+	 * */
+	inline double kaellen(double x, double y, double z){
+		return (x*x-(y+z)*(y+z))*(x*x-(y-z)*(y-z));
+	}
+
+	inline Energy4 kaellenV(Energy x, Energy y, Energy z){
+		return (x*x-(y+z)*(y+z))*(x*x-(y-z)*(y-z));
+	}
+
+	/*
+	 * samples exactly from distribution 1/(1/Ainv-cosTheta)^2
+	 * where cosTheta in [-1:1] and Ainv must be in [-1:1]
+	 * */
+	inline double sampleCosTchannel(double Ainv){
+		if (fabs(Ainv)<1e-14) return UseRandom::rnd()*2.0-1.0;
+		double A=1.0/Ainv;
+		double r=UseRandom::rnd();
+		double cosTheta = r*2.0-1.0;
+		double res = (1.0+A*cosTheta)/(A+cosTheta);
+		return res;
+	}
+	/*
+	 * samples exactly from distribution exp(lambda*(cosTheta-1))
+	 * where cosTheta in [-1:1]
+	 * */
+	inline double sampleCosExp(double lambda){
+		double r = UseRandom::rnd();
+		// double cosTheta = -1.0 + log(1.0+r*(exp(2*lambda)-1.0))/lambda;
+		// Better numerics for small lambda
+		double cosTheta;
+		// numerics
+		if (2*lambda>700.0)
+			cosTheta = 1.0;
+		else
+			cosTheta = -1.0 + log1p(r*(expm1(2*lambda)))/lambda;
+		assert(cosTheta<=1.0);
+		assert(cosTheta>=-1.0);
+		return cosTheta;
+	}
+	/**
+	 * Boost consistently the Lorentz5Momenta momenta (given in the COM frame of pi+pj)
+	 * into the piLab pjLab frame. see details at the definition of the function 
+	 * */
+	void BoostIntoTwoParticleFrame(const Energy M, const Lorentz5Momentum & piLab,
+		const Lorentz5Momentum & pjLab,
+		std::vector<Lorentz5Momentum * > momenta);
     /**
      * It returns the unit 3-vector with the given  cosTheta  and  phi.
      */

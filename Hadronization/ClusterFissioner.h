@@ -77,6 +77,10 @@ public:
    * Default constructor.
    */
    ClusterFissioner();
+  /**
+   * Default destructor.
+   */
+   virtual ~ClusterFissioner();
 
   //@}
 
@@ -97,12 +101,12 @@ public:
    * of the mass spectrum from which to draw the masses of the two
    * cluster children (see method drawChildrenMasses for details).
    */
-  tPVector fission(ClusterVector & clusters, bool softUEisOn);
+  virtual tPVector fission(ClusterVector & clusters, bool softUEisOn);
 
   /**
    * Return the hadron spectrum
    */
-  Ptr<HadronSpectrum>::tptr spectrum() const {
+  virtual Ptr<HadronSpectrum>::tptr spectrum() const {
     return _hadronSpectrum;
   }
 
@@ -240,7 +244,14 @@ protected:
    * needed for fission of a heavy cluster. Equal probabilities
    * are assumed for producing  u, d, or s pairs.
    */
-  void drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const;
+  void drawNewFlavourQuarks(PPtr& newPtrPos,PPtr& newPtrNeg) const;
+
+  /**
+   * Returns the new quark-antiquark pair or diquark -
+   * antidiquark pair needed for fission of a heavy cluster.
+   */
+  void drawNewFlavourDiquarks(PPtr& newPtrPos,PPtr& newPtrNeg,
+		  		const ClusterPtr & clu) const;
 
   /**
    * Returns the new quark-antiquark pair
@@ -317,7 +328,8 @@ protected:
    */
   virtual void drawNewFlavour(PPtr& newPtr1, PPtr& newPtr2, const ClusterPtr & cluster) const {
     if (_enhanceSProb == 0){
-      drawNewFlavour(newPtr1,newPtr2);
+      if (_diquarkClusterFission>=0) drawNewFlavourDiquarks(newPtr1,newPtr2,cluster);
+			else drawNewFlavourQuarks(newPtr1,newPtr2);
     }
     else {
       drawNewFlavourEnhanced(newPtr1,newPtr2,clustermass(cluster));
@@ -328,46 +340,30 @@ protected:
    * Calculate the masses and possibly kinematics of the cluster
    * fission at hand; if claculateKineamtics is perfomring non-trivial
    * steps kinematics claulcated here will be overriden. Currentl;y resorts to the default
+	 * @return the potentially non-trivial distribution weight=f(M1,M2)
+	 *         On Failure we return 0
    */
-  virtual pair<Energy,Energy> drawNewMasses(Energy Mc, bool soft1, bool soft2,
+  virtual double drawNewMasses(const Energy Mc, const bool soft1, const bool soft2,
 					    Lorentz5Momentum& pClu1, Lorentz5Momentum& pClu2,
-					    tPPtr ptrQ1, Lorentz5Momentum& pQ1, 
-					    tPPtr, Lorentz5Momentum& pQone,
-					    tPPtr, Lorentz5Momentum& pQtwo,
-					    tPPtr ptrQ2,  Lorentz5Momentum& pQ2) const {
-
-    pair<Energy,Energy> result;
-    
-    // power for splitting
-    double exp1 = !spectrum()->isExotic(ptrQ1->dataPtr()) ? _pSplitLight : _pSplitExotic;
-    double exp2 = !spectrum()->isExotic(ptrQ2->dataPtr()) ? _pSplitLight : _pSplitExotic;
-    for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
-      assert(_pSplitHeavy.find(id) != _pSplitHeavy.end());
-      if ( spectrum()->hasHeavy(id,ptrQ1->dataPtr()) ) exp1 = _pSplitHeavy.find(id)->second;
-      if ( spectrum()->hasHeavy(id,ptrQ2->dataPtr()) ) exp2 = _pSplitHeavy.find(id)->second;
-    }
-
-    result.first = drawChildMass(Mc,pQ1.mass(),pQ2.mass(),pQone.mass(),exp1,soft1);
-    result.second = drawChildMass(Mc,pQ2.mass(),pQ1.mass(),pQtwo.mass(),exp2,soft2);
-
-    pClu1.setMass(result.first);
-    pClu2.setMass(result.second);
-
-    return result;
-      
-  }
+					    tcPPtr ptrQ1,    const Lorentz5Momentum& pQ1, 
+					    tcPPtr, const Lorentz5Momentum& pQone,
+					    tcPPtr, const Lorentz5Momentum& pQtwo,
+					    tcPPtr ptrQ2,    const Lorentz5Momentum& pQ2) const;
 
   /**
    * Calculate the final kinematics of a heavy cluster decay C->C1 +
    * C2, if not already performed by drawNewMasses
    */
-  virtual void calculateKinematics(const Lorentz5Momentum &pClu,
-				   const Lorentz5Momentum &p0Q1,
-				   const bool toHadron1, const bool toHadron2,
-				   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2,
-				   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb,
-				   Lorentz5Momentum &pQ2, Lorentz5Momentum &pQ2b) const;
-  
+	virtual void calculateKinematics(const Lorentz5Momentum & pClu,
+					   const Lorentz5Momentum & p0Q1,
+					   const bool toHadron1,
+					   const bool toHadron2,
+					   Lorentz5Momentum & pClu1,
+					   Lorentz5Momentum & pClu2,
+					   Lorentz5Momentum & pQ1,
+					   Lorentz5Momentum & pQbar,
+					   Lorentz5Momentum & pQ,
+					   Lorentz5Momentum & pQ2bar) const;
 
 protected:
 
@@ -377,6 +373,11 @@ protected:
    *  Access to the hadron selector
    */
   HadronSpectrumPtr hadronSpectrum() const {return _hadronSpectrum;}
+  /**
+   *  Access for fission Pwts
+   */
+  const map<long,double> fissionPwt() const { return _fissionPwt;}
+
   //@}
 
 protected:
@@ -390,16 +391,61 @@ protected:
    */
   virtual void doinit();
 
+	/**
+	 * Flat PhaseSpace weight for ClusterFission
+	 */
+	double weightFlatPhaseSpace(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			const Energy m, const Energy m1, const Energy m2,
+			tcPPtr pQ, tcPPtr pQ1, tcPPtr pQ2) const {
+		switch (_phaseSpaceWeights)
+		{
+			case 1:
+				return weightPhaseSpaceConstituentMasses(Mc, Mc1, Mc2, m, m1, m2, 0.0);
+			case 2:
+				return weightFlatPhaseSpaceHadronMasses(Mc, Mc1, Mc2, pQ, pQ1, pQ2);
+			case 3:
+				return weightFlatPhaseSpaceNoConstituentMasses(Mc, Mc1, Mc2);
+			default:
+				assert(false);
+		}
+	};
+	/**
+	 * PhaseSpace weight for ClusterFission using constituent masses
+	 */
+	double weightPhaseSpaceConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			const Energy m, const Energy m1, const Energy m2, const double power=0.0) const;
+	/**
+	 * Flat PhaseSpace weight for ClusterFission using lightest hadron masses
+	 */
+	double weightFlatPhaseSpaceHadronMasses(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			tcPPtr pQ, tcPPtr pQ1, tcPPtr pQ2) const;
+	double weightFlatPhaseSpaceNoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2) const;
+
+
+  /**
+   * Calculate a veto for the phase space weight
+   */
+  bool phaseSpaceVeto(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			     const Energy m, const Energy m1, const Energy m2, tcPPtr pQ1=tcPPtr(), tcPPtr pQ2=tcPPtr(), tcPPtr pQ=tcPPtr(), const double power = 0.0) const;
+  bool phaseSpaceVetoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			     const Energy m, const Energy m1, const Energy m2, const double power = 0.0) const;
+  bool phaseSpaceVetoNoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2) const;
+
+  bool phaseSpaceVetoHadronPairs(const Energy Mc, const Energy Mc1, const Energy Mc2,
+			      tcPPtr pQ1, tcPPtr pQ2, tcPPtr pQconst) const;
+
+
 //@}
 
-private:
+protected:
 
   /**
   * Smooth probability for dynamic threshold cuts:
   * @scale the current scale, e.g. the mass of the cluster,
   * @threshold the physical threshold,
    */
-  bool ProbablityFunction(double scale, double threshold);
+  bool ProbabilityFunction(double scale, double threshold);
+	bool ProbabilityFunctionPower(double Mass, double threshold);
 
   /**
    * Check if a cluster is heavy enough to split again
@@ -417,30 +463,6 @@ private:
   inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
     return ! spectrum()->canBeHadron(p1->dataPtr(), p2->dataPtr());
   }
-
-  /**
-   * Claculate a veto for the phase space weight
-   */
-  inline bool phaseSpaceVeto(const Energy Mc, const Energy Mc1, const Energy Mc2,
-			     const Energy m, const Energy m1, const Energy m2) {
-    double M_temp = Mc/GeV;
-    double M1_temp = Mc1/GeV;
-    double M2_temp = Mc2/GeV;
-    double m_temp = m/GeV;
-    double m1_temp = m1/GeV;
-    double m2_temp = m2/GeV;
-    double lam1 = sqrt((M1_temp-m1_temp-m_temp)*(M1_temp-m1_temp+m_temp)*(M1_temp+m1_temp+m_temp)*(M1_temp+m1_temp-m_temp));
-    double lam2 = sqrt((M2_temp-m2_temp-m_temp)*(M2_temp-m2_temp+m_temp)*(M2_temp+m2_temp+m_temp)*(M2_temp+m2_temp-m_temp));
-    double lam3 = sqrt((M_temp-M1_temp-M2_temp)*(M_temp-M1_temp+M2_temp)*(M_temp+M1_temp+M2_temp)*(M_temp+M1_temp-M2_temp));
-    double ratio;
-    double PSweight = pow(lam1*lam2*lam3,_dim-3.)*pow(M1_temp*M2_temp,2.-_dim);
-    double overEstimate =pow(M_temp,4.*_dim-14.);
-    ratio = PSweight/overEstimate;
-    assert (ratio >= 0);
-    assert (ratio <= 1);
-    return (UseRandom::rnd()>ratio);
-  }
-  
   /**
    * A pointer to a Herwig::HadronSpectrum object for generating hadrons.
    */
@@ -452,6 +474,7 @@ private:
    */
   //@{
   Energy _clMaxLight;
+  Energy _clMaxDiquark;
   map<long,Energy> _clMaxHeavy;
   Energy _clMaxExotic;
   //@}
@@ -460,6 +483,7 @@ private:
    */
   //@{
   double _clPowLight;
+  double _clPowDiquark;
   map<long,double> _clPowHeavy;
   double _clPowExotic;
   //@}
@@ -479,7 +503,7 @@ private:
   /**
    * Include phase space weights
    */
-  bool _phaseSpaceWeights;
+  int _phaseSpaceWeights;
 
   /**
    * Dimensionality of phase space weight
@@ -495,6 +519,16 @@ private:
   * Flag to choose static or dynamic kinematic thresholds in cluster splittings
   */
   int _kinematicThresholdChoice;
+
+  /**
+   * Pwt weight for drawing diquark
+   */
+  double _pwtDIquark;
+
+  /**
+   * allow clusters to fission to 1 (or 2) diquark clusters or not
+   */
+  int _diquarkClusterFission;
 
   //@}
    /**
@@ -551,6 +585,31 @@ private:
   */
   Energy2 _kinThresholdShift;
 
+  /**
+   * Flag for strict diquark selection according to kinematics
+   */
+  int _strictDiquarkKinematics;
+
+  /**
+   * Use Covariant boost in MatrixElementClusterFissioner
+   */
+  bool _covariantBoost;
+
+	/**
+	 * Power for MassPreSampler = PowerLaw
+	 */
+	double _powerLawPower;
+	
+	/*
+	 * flag for allowing strange Diquarks to be produced during
+	 * Cluster Fission
+	 * */
+	unsigned int _hadronizingStrangeDiquarks;
+
+	private:
+	/*
+	 * DEBUG output */
+	int _writeOut;
 };
 
 }

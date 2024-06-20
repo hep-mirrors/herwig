@@ -56,6 +56,7 @@ namespace {
 
 StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt) 
   : HadronSpectrum(),
+	_hadronizingStrangeDiquarks(1),
     _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
     _pwtBquark( 0.0 ),
     _sngWt( 1.0 ),_decWt( 1.0 ), 
@@ -63,7 +64,7 @@ StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt)
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
     _topt(opt),_trial(0), 
-    _limBottom(), _limCharm(), _limExotic() 
+    _limBottom(0.0), _limCharm(0.0), _limExotic(0.0) 
 {
   // The mixing angles
   // the ideal mixing angle
@@ -97,7 +98,8 @@ StandardModelHadronSpectrum::~StandardModelHadronSpectrum() {}
 
 
 void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const {
-  os << _pwtDquark  << _pwtUquark << _pwtSquark 
+  os << _hadronizingStrangeDiquarks
+     << _pwtDquark  << _pwtUquark << _pwtSquark 
      << _pwtCquark << _pwtBquark
      << _etamix << _phimix << _h1mix << _f0mix << _f1mix << _f2mix 
      << _eta2mix << _omhmix << _ph3mix << _eta2Smix << _phi2Smix 
@@ -108,7 +110,8 @@ void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const
 }
 
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
-  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
+  is >> _hadronizingStrangeDiquarks
+     >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
      >> _pwtCquark >> _pwtBquark 
      >> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
@@ -369,6 +372,26 @@ void StandardModelHadronSpectrum::Init() {
      "All",
      "Select from all the hadrons below the two hadron threshold according to their spin weights",
      1);
+
+  static Switch<StandardModelHadronSpectrum,unsigned int> interfaceHadronizingStrangeDiquarks
+    ("HadronizingStrangeDiquarks",
+     "Option for adding strange diquarks to Hadronization",
+     &StandardModelHadronSpectrum::_hadronizingStrangeDiquarks, 0, false, false);
+  static SwitchOption interfaceHadronizingStrangeDiquarksNo
+    (interfaceHadronizingStrangeDiquarks,
+     "No",
+     "No strangeness containing diquarks in Hadronization",
+     0);
+  static SwitchOption interfaceHadronizingStrangeDiquarksOnlySingleStrange
+    (interfaceHadronizingStrangeDiquarks,
+     "OnlySingleStrange",
+     "Only one strangeness containing diquarks in Hadronization i.e. su,sd",
+     1);
+  static SwitchOption interfaceHadronizingStrangeDiquarksAll
+    (interfaceHadronizingStrangeDiquarks,
+     "All",
+     "All strangeness containing diquarks in Hadronization i.e. su,sd,ss",
+     2);
 
 }
 
@@ -658,11 +681,13 @@ bool StandardModelHadronSpectrum::isExotic(tcPDPtr par1, tcPDPtr par2, tcPDPtr p
   long id1 = par1 ? par1->id(): 0;
   long id2 = par2 ? par2->id(): 0;
   long id3 = par3 ? par3->id(): 0;
-return 
-  ( (id1/1000000)% 10 != 0 && (id1/1000000)% 10 != 9 ) ||
+	bool Exotic=( (id1/1000000)% 10 != 0 && (id1/1000000)% 10 != 9 ) ||
   ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
   ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
   abs(id1)==6||abs(id2)==6;
+	if (Exotic) 
+		std::cout << "WARNING: found Exotic Clusters ParticleID with id's "<<id1 << "\t"<<id2 <<"\t"<<id3 <<"\n";
+return Exotic;
 }
 
 

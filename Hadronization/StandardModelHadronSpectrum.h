@@ -12,6 +12,8 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include "ThePEG/Repository/CurrentGenerator.h"
 
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 namespace Herwig {
 
 using namespace ThePEG;
@@ -65,6 +67,76 @@ public:
     static vector<long> light =
       { ParticleID::d, ParticleID::u, ParticleID::s };
     return light;
+  }
+
+  /**
+   * The light hadronizing diquarks
+   */
+  virtual const vector<long>& lightHadronizingDiquarks() const {
+	  /**
+	   * Diquarks q==q_0 are not allowed as they need to have antisymmetric
+	   * spin wave-function, which forces the spin to 1
+	   * Diquarks q!=q'_1 are not allowed as they need to have antisymmetric
+	   * spin wave-function, which forces the spin to 1
+	   * */
+
+		// TODO: strange diquarks are turned off for the moment
+		// 		 since in combination with the current ClusterFission
+		// 		 they fail (overshoot) to reproduce the Xi and Lambda 
+		// 		 pT spectra.
+		// 		 One may enable these after the ClusterFission
+		// 		 kinematics are settled
+		// TODO why ud_1 not allowed?
+		// exceptions: Could not find 2103 1 in _table
+		// but no problem for 2103 2 ???
+		// ParticleID::ud_1
+	switch(_hadronizingStrangeDiquarks) {
+		case 0:
+			{
+				static vector<long> light = {
+					ParticleID::uu_1,
+					ParticleID::dd_1,
+					ParticleID::ud_0
+					// ParticleID::ud_1,
+				};
+				return light;
+				// break;
+			}
+		case 1:
+			{
+				static vector<long> light = {
+					ParticleID::uu_1,
+					ParticleID::dd_1,
+					ParticleID::ud_0,
+					// ParticleID::ud_1,
+					ParticleID::su_0,
+					// ParticleID::su_1,
+					ParticleID::sd_0
+					// ParticleID::sd_1
+				};
+				return light;
+			}
+		case 2:
+			{
+				static vector<long> light = {
+					ParticleID::uu_1,
+					ParticleID::dd_1,
+					ParticleID::ud_0,
+					// ParticleID::ud_1,
+					ParticleID::su_0,
+					// ParticleID::su_1,
+					ParticleID::sd_0,
+					// ParticleID::sd_1,
+					ParticleID::ss_1
+				};
+				return light;
+				// break;
+			}
+		default:
+			assert(false);
+	}
+	static vector<long> light;
+	return light;
   }
 
   /**
@@ -158,6 +230,13 @@ public:
    double pwtBquark()  const { 
     return _pwtBquark;
   } 
+
+  /**
+   * The diquark weight.
+   */
+   double pwtDIquark() const {
+    return _pwtDIquark;
+  }
 
 public:
 
@@ -346,6 +425,10 @@ protected:
   virtual double strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const;
 
   /**
+   *  Strange diquark option for Hadronization
+   */
+  unsigned int _hadronizingStrangeDiquarks;
+  /**
    *  The weights for the different quarks and diquarks
    */
   //@{
@@ -375,6 +458,10 @@ protected:
   double _pwtBquark;
   //@}
 
+  /**
+   * The probability of producting a diquark.
+   */
+  double _pwtDIquark;
   /**
    * Singlet and Decuplet weights
    */
