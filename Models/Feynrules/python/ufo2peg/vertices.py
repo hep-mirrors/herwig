@@ -112,7 +112,6 @@ def colorfactor(vertex,L,pos,lorentztag):
         result = [ p == t
                    for p,t in zip(patterns,color) ]
         return all(result)
-
     label = None
     l = lambda c: len(pos[c])
     if l(1) == L:
@@ -176,7 +175,7 @@ def colorfactor(vertex,L,pos,lorentztag):
         # if lorentz is FFV get extra minus sign
         if lorentztag in ['FFV'] : sign *=-1
         label = ('f(1,2,3)',)
-        if match(label,colors): return ("SU3F",('-complex(0,1.)*(%s)'%sign,))
+        if match(label,colors): return ("SU3F",('-complex(0.,1.)*(%s)'%sign,))
 
     elif l(8) == 3 and l(1)==1 and L == 4:
         colors=[]
@@ -233,7 +232,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),
                      'T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
                      'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-            if match(label): return ("SU3TTFUNDS",(('-complex(0.,1.)','complex(0.,1.)'),'1.','1.'))
+            if match(label): return ("SU3TTFUNDS",('complex(0,1.)','1.','1.'))
             
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
