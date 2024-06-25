@@ -13,10 +13,10 @@ def compare(a,b) :
     return num/den<1e-10
 
 def evaluate(x,model,parmsubs):
-    import cmath
     return eval(x, 
                 {'cmath':cmath,
-                 'complexconjugate':model.function_library.complexconjugate}, 
+                 'complexconjugate':model.function_library.complexconjugate,
+                 'complex':complex},
                 parmsubs)
 
 # ordering for EW VVV vertices (ordering not an issue as all same spin)
@@ -721,7 +721,9 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         raise SkipThisVertex()
                     else:
                         tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs)
-                    if(abs(tval-tval2)>1e-6) :
+                    if abs(tval-tval2)>1e-6 :
+                        print('Warning: Non-conventional Lorantz structure detected in',
+                            f'{vertex.name}: ({tval} , {tval2}), skipping the vertex')
                         raise SkipThisVertex()
     elif(lorentztag=="VVVV") :
         order=[]
@@ -764,10 +766,15 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
         else :
             for icolor in range(0,len(all_couplings)) :
                 col=colours[icolor].split("*")
-                if(len(col)==2 and "f(" in col[0] and "f(" in col[1]) :
+                if len(col)==2 and ( "f(" in col[0] or "T(" in col[0] ) and ( "f(" in col[1] or "T(" in col[1] ) :
                     sign = 1
                     for i in range(0,2) :
-                        col[i],stemp = extractAntiSymmetricIndices(col[i],"f(")
+                        if "T(" in col[i] :
+                            col[i],stemp = extractAntiSymmetricIndices(col[i], "T(")
+                        elif "f(" in col[i] :
+                            col[i],stemp = extractAntiSymmetricIndices(col[i], "f(")
+                        else :
+                            raise SkipThisVertex()
                         for ix in range(0,len(col[i])): col[i][ix]=int(col[i][ix])
                         sign *=stemp
                     if(col[0][0]>col[1][0]) : col[0],col[1] = col[1],col[0]
@@ -801,7 +808,9 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
                     else :
                         raise SkipThisVertex()
-                    if(abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6 ) :
+                    if (abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6) :
+                        print('Warning: Non-conventional Lorantz structure detected in',
+                            f'{vertex.name}: ({tval} , {tval2} , {tval3}), skipping the vertex')
                         raise SkipThisVertex()
                     append = 'setType(1);\nsetOrder(0,1,2,3);'
                 else :

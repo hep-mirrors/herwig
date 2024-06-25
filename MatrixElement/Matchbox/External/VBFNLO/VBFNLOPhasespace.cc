@@ -99,7 +99,11 @@ void VBFNLOPhasespace::setXComb(tStdXCombPtr xco) {
   if (value && (value != lastSqrtS/GeV)) {
     lastSqrtS = value*GeV;
     string name = "sqrtS";
+    #ifdef VBFNLO3
+    OLP_SetParameter_VBFNLO(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+    #else
     OLP_SetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+    #endif
     if ( !pStatus )
       throw Exception() << "VBFNLOPhasespace::setXComb(): VBFNLO failed to set parameter '"
                         << name << "' to " << value << "\n"
@@ -120,7 +124,11 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
 
   double* p = new double[4*momenta.size()];
 
+  #ifdef VBFNLO3
+  OLP_PhaseSpacePoint_VBFNLO(&id, const_cast<double*>(random), const_cast<double*>(random+1), p, &weight);
+  #else
   OLP_PhaseSpacePoint(&id, const_cast<double*>(random), const_cast<double*>(random+1), p, &weight);
+  #endif
 
   if (weight < 0) {
     throw Exception() << "VBFNLOPhasespace::generateTwoToNKinematics(): Negative weight in VBFNLOPhaseSpace\n"
@@ -217,7 +225,11 @@ int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   int pStatus = 0;
   double value, zero;
   string name = "PSdimension";
+  #ifdef VBFNLO3
+  OLP_GetParameter_VBFNLO(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+  #else
   OLP_GetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+  #endif
   if ( pStatus != 1) {
     throw Exception() << "VBFNLOPhasespace::nDimPhasespace(): Cannot get phasespace dimension in VBFNLOPhaseSpace\n"
 		      << "error code: " << pStatus << "\n"
