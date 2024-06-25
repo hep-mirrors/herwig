@@ -122,6 +122,13 @@ public:
   }
 
   /**
+   * Dummy function as it will not be needed
+   */
+	virtual const vector<long>& lightHadronizingDiquarks() const {
+		static vector<long> nothing;
+		return nothing;
+	};
+  /**
    * The diquark weight.
    */
    double pwtDIquark() const {

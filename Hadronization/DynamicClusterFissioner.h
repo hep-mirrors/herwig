@@ -105,7 +105,7 @@ protected:
   /**
    * The actual implementation of the dynamic fission
    */
-  virtual void dynamicFission(tPPtr & ptrP, tPPtr & ptrPbar, PPtr & ptrQ, PPtr & ptrQbar) const;
+  virtual void dynamicFission(tPPtr  ptrP, tPPtr  ptrPbar, PPtr & ptrQ, PPtr & ptrQbar) const;
 
 
   /**
@@ -113,10 +113,10 @@ protected:
    */
   virtual void drawNewFlavour(PPtr& newPtr1, PPtr& newPtr2,const ClusterPtr& cluster) const {
     if(!cluster->particle(0)->hasAntiColour()){
-      dynamicFission(cluster->particle(0),cluster->particle(1),newPtr2,newPtr1);
+      dynamicFission(cluster->particle(0), cluster->particle(1) ,newPtr2,newPtr1);
     } 
     else{
-      dynamicFission(cluster->particle(1),cluster->particle(0),newPtr1,newPtr2);
+      dynamicFission(cluster->particle(1), cluster->particle(0) ,newPtr1,newPtr2);
     }
   }
 
@@ -150,6 +150,11 @@ protected:
   pQ2.setMass(ptrQ2->data().constituentMass());
   pQone.setMass(newPtr1->data().constituentMass());
   pQtwo.setMass(newPtr2->data().constituentMass());
+
+  pair<Energy,Energy> result;
+  result.first = pClu1.m();
+  result.second = pClu2.m();
+  return result;
   }
 
   /**
@@ -168,18 +173,18 @@ protected:
   /**
    *  pointer to the dynamic parton splitter
    */
-  Ptr<DynamicPartonSplitter>::tptr partonSplitter() const {
+  /*Ptr<DynamicPartonSplitter>::tptr partonSplitter() const {
     Ptr<DynamicPartonSplitter>::tptr partonSplitter_ = dynamic_ptr_cast<Ptr<DynamicPartonSplitter>::tptr>(ClusterHadronizationHandler::currentHandler()->partonSplitter());
     return partonSplitter_;
-  }
+  }*/
 
   /**
    *  pointer to the dynamic gluon mass generator
    */
-  Ptr<DynamicGluonMassGenerator>::tptr gluonMassGenerator() const {
+  /*Ptr<DynamicGluonMassGenerator>::tptr gluonMassGenerator() const {
     Ptr<DynamicGluonMassGenerator>::tptr gluonMassGenerator_ = dynamic_ptr_cast<Ptr<DynamicGluonMassGenerator>::tptr>(ClusterHadronizationHandler::currentHandler()->gluonMassGenerator());
     return gluonMassGenerator_;
-  }
+  }*/
 
 
 private:
@@ -193,7 +198,9 @@ private:
 
    //switch for restricting the gluon virtuality in dynamic fission
   int _restrictGluon;
-  //end Daniel
+
+  Ptr<DynamicGluonMassGenerator>::ptr _dynamicGluonMassGenerator;
+  Ptr<DynamicPartonSplitter>::ptr _dynamicPartonSplitter;
 
 
   

@@ -10,6 +10,7 @@ ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.fh \
 DynamicGluonMassGenerator.h DynamicGluonMassGenerator.cc \
 DynamicPartonSplitter.h DynamicPartonSplitter.cc \
+DynamicClusterFissioner.h DynamicClusterFissioner.cc \
 GluonMassGenerator.h GluonMassGenerator.cc \
 Hw64Selector.cc Hw64Selector.h \
 HwppSelector.cc HwppSelector.h \
