@@ -19,5 +19,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2019_I1748712
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1509507
 # LHCb Upsilon
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1670013
+# LHCb Xi_cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2020_I1760788
 # general MC analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium
