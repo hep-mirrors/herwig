@@ -34,15 +34,13 @@ IBPtr HiddenValleyAlpha::fullclone() const {
 
 void HiddenValleyAlpha::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _thresopt
-     << ounit(_lambdain,GeV) << _alphain
-     << _tolerance << _maxtry << _alphamin
+     << ounit(_lambdain,GeV) << _tolerance << _maxtry << _alphamin
      << ounit(_thresholds,GeV) << ounit(_lambda,GeV) << _ca << _cf << _tr;
 }
 
 void HiddenValleyAlpha::persistentInput(PersistentIStream & is, int) {
   is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _thresopt
-     >> iunit(_lambdain,GeV) >> _alphain
-     >> _tolerance >> _maxtry >> _alphamin
+     >> iunit(_lambdain,GeV) >> _tolerance >> _maxtry >> _alphamin
      >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV) >> _ca >> _cf >> _tr;
 }
 
@@ -106,32 +104,11 @@ void HiddenValleyAlpha::Init() {
      "Use the conversion to the Herwig scheme from NPB349, 635",
      true);
 
-  static Parameter<HiddenValleyAlpha,Energy> interfaceLambdaQCD
-    ("LambdaQCD",
+  static Parameter<HiddenValleyAlpha,Energy> interfaceLambdaDark
+    ("LambdaDark",
      "Input value of Lambda_MSBar",
      &HiddenValleyAlpha::_lambdain, GeV, 0.208364*GeV, 100.0*MeV, 100.0*GeV,
      false, false, Interface::limited);
-
-  static Parameter<HiddenValleyAlpha,double> interfaceAlphaMZ
-    ("AlphaMZ",
-     "The input value of the strong coupling at the Z mass ",
-     &HiddenValleyAlpha::_alphain, 0.118, 0.1, 0.2,
-     false, false, Interface::limited);
-
-  static Switch<HiddenValleyAlpha,bool> interfaceInputOption
-    ("InputOption",
-     "Option for inputing the initial value of the coupling",
-     &HiddenValleyAlpha::_inopt, true, false, false);
-  static SwitchOption interfaceInputOptionAlphaMZ
-    (interfaceInputOption,
-     "AlphaMZ",
-     "Use the value of alpha at MZ to calculate the coupling",
-     true);
-  static SwitchOption interfaceInputOptionLambdaQCD
-    (interfaceInputOption,
-     "LambdaQCD",
-     "Use the input value of Lambda to calculate the coupling",
-     false);
 
   static Parameter<HiddenValleyAlpha,double> interfaceTolerance
     ("Tolerance",
@@ -297,34 +274,20 @@ void HiddenValleyAlpha::doinit() {
     else _nf_light++;
   }
   _lambda.resize(_thresholds.size());
-  Energy mz = getParticleData(ThePEG::ParticleID::Z0)->mass();
-  unsigned int nf_heavy;
-  for(nf_heavy=0;nf_heavy<_thresholds.size();++nf_heavy) {
-    if(mz<_thresholds[nf_heavy]) break;
-  }
-  nf_heavy-=1;
-  unsigned int nf = _nf_light+nf_heavy;
+  
+  
+  unsigned int nf = _nf_light;
 
-  // value of Lambda from alphas if needed using Newton-Raphson
-  if(_inopt) {
-    _lambda[nf_heavy] = computeLambda(mz,_alphain,nf-1);
-  }
-  // otherwise it was an input parameter
-  else{_lambda[nf_heavy]=_lambdain;}
+  // Set lambda below heavy quark thresholds to input value
+  _lambda[0]=_lambdain;
   // convert lambda to the Monte Carlo scheme if needed
   using Constants::pi;
-  if(_lambdaopt) _lambda[nf_heavy] *=exp((0.5*_ca*(67./3.-sqr(pi))-_tr*nf*10./3.)/(11*_ca-2*nf))/sqrt(2.);
+  if(_lambdaopt) _lambda[0] *=exp((0.5*_ca*(67./3.-sqr(pi))-_tr*nf*10./3.)/(11*_ca-2*nf))/sqrt(2.);
 
-  // compute the threshold matching
-  // above the Z mass
-  for(int ix=nf_heavy;ix<int(_thresholds.size())-1;++ix) {
+  // Compute the threshold matching
+  for(int ix=0;ix<int(_thresholds.size())-1;++ix) {
     _lambda[ix+1] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
 							   _lambda[ix],ix),ix+1);
-  }
-  // below Z mass
-  for(int ix=nf_heavy-1;ix>=0;--ix) {
-    _lambda[ix] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
-							 _lambda[ix+1],ix+1),ix);
   }
   // compute the maximum value of as
   if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8*sqr(MeV)); // approx as = 1
