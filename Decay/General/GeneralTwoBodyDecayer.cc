@@ -278,16 +278,7 @@ void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
 DescribeAbstractClass<GeneralTwoBodyDecayer,PerturbativeDecayer>
 describeHerwigGeneralTwoBodyDecayer("Herwig::GeneralTwoBodyDecayer", "Herwig.so");
 
-void GeneralTwoBodyDecayer::Init(else if((out1->iColour()==PDT::DarkColourFundamental && out2->iColour()==PDT::DarkColourAntiFundamental) ||
-+           (out1->iColour()==PDT::DarkColourAntiFundamental && out2->iColour()==PDT::DarkColourFundamental)) {
-+      if(generator()){
-+        auto model = generator()->standardModel();
-+        if(model) {
-+        output *= model->NcDark();
-+        }
-+        }
-+    }
-) {
+void GeneralTwoBodyDecayer::Init() {
 
   static ClassDocumentation<GeneralTwoBodyDecayer> documentation
     ("This class is designed to be a base class for all 2 body decays"
