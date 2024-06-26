@@ -201,7 +201,6 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
-
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
 
@@ -215,8 +214,10 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
-                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
-	              $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
+                     $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+	             $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime}-10.58.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.yoda ) \
+	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma
 	rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
