@@ -143,14 +143,14 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	rm -rf $(subst .yoda,,$@)
 
 Rivet-%.run : Rivet/%.in
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
 
 Rivet-%.yoda : Rivet-%.run
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
 
 Rivet/Onium-%.in :
 	python/onium_input_files.py $(notdir $(subst .in,,$@))
@@ -218,8 +218,8 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
 
-Analyses/RivetHerwig.so: Analyses/*.cc
-	rivet-build Analyses/RivetHerwig.so Analyses/*.cc 
+Analysis/RivetHerwig.so: Analysis/*.cc
+	rivet-build Analysis/RivetHerwig.so Analysis/*.cc 
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
@@ -233,7 +233,7 @@ Rivet-GammaGamma/done: $(shell echo Rivet-GammaGamma-mumu-{3.5,4.5,5.5,6.5,7.5,9
 Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
-Rivet-EE-Gamma/done: Analyses/RivetHerwig.so \
+Rivet-EE-Gamma/done: Analysis/RivetHerwig.so \
                      $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
 	             $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.yoda ) \
@@ -242,7 +242,7 @@ Rivet-EE-Gamma/done: Analyses/RivetHerwig.so \
 	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
 	touch $@
 
 Rivet-EE : Rivet-EE/done
@@ -260,33 +260,33 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 	touch $@
 
 Rivet-LowEnergy-%.yoda:
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)  $(subst .yoda,.run,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
 
 
 Onium-%.yoda:
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)  $(subst .yoda,.run,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
 
-Onium-Splitting: Analyses/RivetHerwig.so
+Onium-Splitting: Analysis/RivetHerwig.so
 	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSplitting.py --fast --analyse
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSplitting.py --fast --analyse
 
-Onium-Sigma: Analyses/RivetHerwig.so
+Onium-Sigma: Analysis/RivetHerwig.so
 	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/OniumSigma.py --fast --analyse
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSigma.py --fast --analyse
 
-Rivet-Onium: Analyses/RivetHerwig.so \
+Rivet-Onium: Analysis/RivetHerwig.so \
 	     $(shell echo Rivet-Onium-{TVT-Run-I,LHC-{2760,5,7,8,13}}-NonPrompt-{Charm,Bottom}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.yoda) \
 	     $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Octet-{Jpsi,psi2S,chi_c{0..2}}-Jets-{1..5}.yoda) \
 	     $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Octet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-Jets-{1..5}.yoda) \
              $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{B_c,B_cStar,B_c2S,B_c2SStar}-{Charm,Bottom}-{1..5}.yoda)
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium --initialize
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium --process
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; python/merge-Onium
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml Onium.yoda  -o Rivet-Onium
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium --initialize
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium --process
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; rivet-mkhtml Onium.yoda  -o Rivet-Onium
 
 Rivet-LowEnergy-EE-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -431,7 +431,7 @@ clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt
 	rm -rf Rivet-*
 	rm -rf Onium-Splitting
-	rm -rf Analyses/*.so
+	rm -rf Analysis/*.so
 
 distclean-local:
 	rm -rf .cache
