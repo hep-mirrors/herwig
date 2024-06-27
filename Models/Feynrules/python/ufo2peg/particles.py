@@ -374,48 +374,49 @@ rm /Herwig/Widths/hWidth
                      8 : 'Octet' }
             return cols[c]
 
-        try:
-            # QCD splitting functions
-            if p.color in [3,6,8] and abs(pdg) not in done_splitting_QCD and (enable_bsm_shower or p.pdg_code in SMPARTICLES): # which colors?
-                done_splitting_QCD.append(abs(pdg))
-                splitname = '{name}SplitFnQCD'.format(name=p.name)
-                sudname = '{name}SudakovQCD'.format(name=p.name)
-                splittings.append(
-"""
-create Herwig::{s}{s}OneSplitFn {name}
-set {name}:InteractionType QCD
-set {name}:ColourStructure {c}{c}Octet
-cp /Herwig/Shower/SudakovCommon {sudname}
-set {sudname}:SplittingFunction {name}
-do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudname}
-""".format(s=spin_name(p.spin), name=splitname,
-           c=col_name(p.color), pname=p.name, sudname=sudname)
-                )
-        except SkipMe:
-            pass
-        # QED splitting functions
-        try:
-            if p.charge != 0 and abs(pdg) not in done_splitting_QED and (enable_bsm_shower or p.pdg_code in SMPARTICLES):
-                done_splitting_QED.append(abs(pdg))
-                splitname = '{name}SplitFnQED'.format(name=p.name)
-                sudname = '{name}SudakovQED'.format(name=p.name)
-                splittings.append(
-"""
-create Herwig::{s}{s}OneSplitFn {name}
-set {name}:InteractionType QED
-set {name}:ColourStructure ChargedChargedNeutral
-cp /Herwig/Shower/SudakovCommon {sudname}
-set {sudname}:SplittingFunction {name}
-set {sudname}:Alpha /Herwig/Shower/AlphaQED
-do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {sudname}
-""".format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname)
-                )
-        except SkipMe:
-            pass
+        # if BSM shower is requested
+        if enable_bsm_shower :
 
+            try:
+                # QCD splitting functions
+                if p.color in [3,6,8] and abs(pdg) not in done_splitting_QCD and (enable_bsm_shower or p.pdg_code in SMPARTICLES): # which colors?
+                    done_splitting_QCD.append(abs(pdg))
+                    splitname = '{name}SplitFnQCD'.format(name=p.name)
+                    sudname = '{name}SudakovQCD'.format(name=p.name)
+                    splittings.append(
+    """
+    create Herwig::{s}{s}OneSplitFn {name}
+    set {name}:InteractionType QCD
+    set {name}:ColourStructure {c}{c}Octet
+    cp /Herwig/Shower/SudakovCommon {sudname}
+    set {sudname}:SplittingFunction {name}
+    do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudname}
+    """.format(s=spin_name(p.spin), name=splitname,
+               c=col_name(p.color), pname=p.name, sudname=sudname)
+                    )
+            except SkipMe:
+                pass
+            # QED splitting functions
+            try:
+                if p.charge != 0 and abs(pdg) not in done_splitting_QED and (enable_bsm_shower or p.pdg_code in SMPARTICLES):
+                    done_splitting_QED.append(abs(pdg))
+                    splitname = '{name}SplitFnQED'.format(name=p.name)
+                    sudname = '{name}SudakovQED'.format(name=p.name)
+                    splittings.append(
+    """
+    create Herwig::{s}{s}OneSplitFn {name}
+    set {name}:InteractionType QED
+    set {name}:ColourStructure ChargedChargedNeutral
+    cp /Herwig/Shower/SudakovCommon {sudname}
+    set {sudname}:SplittingFunction {name}
+    set {sudname}:Alpha /Herwig/Shower/AlphaQED
+    do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {sudname}
+    """.format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname)
+                    )
+            except SkipMe:
+                pass
 
         # EW and BSM splitting functions
-        if enable_bsm_shower :
             try:
                 Vertices = sort_vertices(FR,str(p.name),3)
                 pSplittings = sort_splittings(FR,Vertices,p)
