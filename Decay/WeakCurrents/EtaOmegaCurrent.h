@@ -12,7 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The EtaOmegaCurrent class implements the current for $\eta\omega$ using the results of 
+ * The EtaOmegaCurrent class implements the current for \f$\eta\omega\f$ using the results of 
  * Phys.Rev. D94 (2016) no.9, 092002
  *
  * @see \ref EtaOmegaCurrentInterfaces "The interfaces"
