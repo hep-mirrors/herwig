@@ -2159,6 +2159,11 @@ decaymode h_b(2P)->g,g,gamma; 0.02 1 /Herwig/Decays/QDecayME130
 # the 2^3P_0 multiplet
 #
 #
+decaymode chi_c0(2P)->omega,Jpsi; 0.649348 1 /Herwig/Decays/SVV
+decaymode chi_c0(2P)->D+,D-; 0.175324 1 /Herwig/Decays/ScalarSS
+decaymode chi_c0(2P)->D0,Dbar0; 0.175324 1 /Herwig/Decays/ScalarSS
+decaymode chi_c0(2P)->gamma,gamma; 4.0E-6 1 /Herwig/Decays/SVV
+#
 decaymode chi_b0(2P)->g,g; 0.9809 1 /Herwig/Decays/QDecayME0
 decaymode chi_b0(2P)->Upsilon(2S),gamma; 0.0138 1 /Herwig/Decays/SVV
 decaymode chi_b0(2P)->Upsilon,gamma; 0.0038 1 /Herwig/Decays/SVV
