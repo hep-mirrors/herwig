@@ -451,10 +451,9 @@ chooseDecayBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy stoppingScale, startingScale;
-	stoppingScale = stoppingScales.EW;
-	startingScale = particle.scales().EW;
-      if(startingScale < stoppingScale ) { 
+      Energy stoppingScale  = stoppingScales.EW;
+      Energy startingScale  = particle.scales().EW;
+      if(startingScale < stoppingScale && startingScale > ZERO ) { 
     	newKin = cit->second.sudakov->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,particles,rho,enhance,_deTuning);
       }

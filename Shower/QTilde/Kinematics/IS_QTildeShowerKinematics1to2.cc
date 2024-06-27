@@ -146,6 +146,12 @@ updateParent(const tShowerParticlePtr parent,
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);
+  // check if rotating basis
+  RhoDMatrix mapping;
+  SpinPtr output;
+  bool needMapping = children[0]->getMapping(output,mapping);
+  if(needMapping)
+    vertex->outgoingBasisTransform(0,mapping);
   // construct the spin infos
   parent     ->constructSpinInfo(false);
   children[1]->constructSpinInfo(true);
