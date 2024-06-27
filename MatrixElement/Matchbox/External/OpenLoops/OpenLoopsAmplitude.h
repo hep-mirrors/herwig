@@ -13,6 +13,7 @@
 //
 
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxOLPME.h"
+#include "Herwig/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 
@@ -318,6 +319,13 @@ private:
    */
   
   int psp_tolerance;
+
+  /**
+   * True, if a diagonal CKM matrix should be assumed. This ignores
+   * the CKM object of the StandardModel.
+   */
+  bool theDiagonal;
+
 
   /**
    *   Location of the OpenLoops libraries

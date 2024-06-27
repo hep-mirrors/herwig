@@ -40,11 +40,45 @@ RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
-    if(int(ix)!=i)
+    if(int(ix)!=i) {
       rhoout.push_back(outgoing()[ix]->DMatrix());
+      if(convertOut_[ix]) {
+        RhoDMatrix Dp(rhoout.back().iSpin(),false);
+        for(int ixb=0;ixb<rhoout.back().iSpin();++ixb) {
+          for(int iyb=0;iyb<rhoout.back().iSpin();++iyb) {
+            if(outMatrix_[ix](iyb,ixb)==0.)continue;
+            for(int iya=0;iya<rhoout.back().iSpin();++iya) {
+              if(rhoout.back()(iya,iyb)==0.)continue;
+              for(int ixa=0;ixa<rhoout.back().iSpin();++ixa) {
+                Dp(ixa,ixb) += rhoout.back()(iya,iyb)*outMatrix_[ix](ixa,iya)*conj(outMatrix_[ix](ixb,iyb));
+              }
+            }
+          }
+        }
+        Dp.normalize();
+        rhoout.back()=Dp;
+      }
+    }
   }
   // calculate the spin density matrix
-  return matrixElement_->calculateRhoMatrix(i,input,rhoout);
+  RhoDMatrix output = matrixElement_->calculateRhoMatrix(i,input,rhoout);
+  if(!convertOut_[i]) return output;
+  else {
+    RhoDMatrix Dp(output.iSpin(),false);
+    for(int ixb=0;ixb<output.iSpin();++ixb) {
+      for(int iyb=0;iyb<output.iSpin();++iyb) {
+        if(outMatrix_[i](iyb,ixb)==0.)continue;
+        for(int iya=0;iya<output.iSpin();++iya) {
+          if(output(iya,iyb)==0.)continue;
+          for(int ixa=0;ixa<output.iSpin();++ixa) {
+            Dp(ixa,ixb) += output(iya,iyb)*outMatrix_[i](ixa,iya)*conj(outMatrix_[i](ixb,iyb));
+          }
+        }
+      }
+    }
+    Dp.normalize();
+    return Dp;
+  }
 }
 
 // method to get the D matrix for an incoming particle
@@ -54,6 +88,22 @@ RhoDMatrix ShowerVertex::getDMatrix(int) const {
   vector<RhoDMatrix> Dout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
     Dout.push_back(outgoing()[ix]->DMatrix());
+    if(convertOut_[ix]) {
+      RhoDMatrix Dp(Dout[ix].iSpin(),false);
+      for(int ixb=0;ixb<Dout[ix].iSpin();++ixb) {
+        for(int iyb=0;iyb<Dout[ix].iSpin();++iyb) {
+          if(outMatrix_[ix](iyb,ixb)==0.)continue;
+          for(int iya=0;iya<Dout[ix].iSpin();++iya) {
+            if(Dout[ix](iya,iyb)==0.)continue;
+            for(int ixa=0;ixa<Dout[ix].iSpin();++ixa) {
+              Dp(ixa,ixb) += Dout[ix](iya,iyb)*outMatrix_[ix](ixa,iya)*conj(outMatrix_[ix](ixb,iyb));
+            }
+          }
+        }
+      }
+      Dp.normalize();
+      Dout[ix]=Dp;
+    }
   }
   // calculate the spin density matrix 
   RhoDMatrix rho = matrixElement_->calculateDMatrix(Dout);
