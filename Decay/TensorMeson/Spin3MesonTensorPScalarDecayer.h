@@ -22,7 +22,7 @@ using namespace ThePEG;
  *
  *  The <code>Spin3MesonTensorPScalarDecayer</code> class is designed for the decay
  *  of a rank 3 tensor meson to a tensor and a scalar via matrix element which takes the form
- *  \f[ \mathcal{M} =  g \epsilon^{\alpha_1\alpha_2\alpha_3}\epsilon_1^{\beta_1\beta_2} \epsilon_{\mu\nu\alpha_1\beta_1}(g_{\alpha_2\beta_2} - \frac{p_{1\alpha_2}p_{0\beta_2}}{p_0\cdot p_1-m_0m_1})P_{-\mu}p_{1\nu}(p_1-p_2)_\alpha_3\f]
+ *  \f[ \mathcal{M} =  g \epsilon^{\alpha_1\alpha_2\alpha_3}\epsilon_1^{\beta_1\beta_2} \epsilon_{\mu\nu\alpha_1\beta_1}(g_{\alpha_2\beta_2} - \frac{p_{1\alpha_2}p_{0\beta_2}}{p_0\cdot p_1-m_0m_1})p_0\mu p_1^\nu(p_1-p_2)_{\alpha_3}\f]
  *  where \f$\epsilon^{\mu\nu\rho}\f$ is the polarization tensor of the decaying 
  *  meson, $p_{1,2}$ are the momenta of the decay products and \f$g\f$ is the coupling.
  *

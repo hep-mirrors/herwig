@@ -26,7 +26,7 @@ using namespace ThePEG;
  *  which has the same structure. The matrix element is
  *  given by \f[\mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta_1\beta_2} 
  *   \epsilon_{\alpha_1\beta_1\gamma_1p_2}\epsilon_{2\gamma_1}
- *  \left(g_{\alpha_2\beta_2}+\frac{p_{1\alpha_2}p_{0\beta_2}{p_0\cdot p_1-m_0m_1}\right)\f]
+ *  \left(g_{\alpha_2\beta_2}+\frac{p_{1\alpha_2}p_{0\beta_2}}{p_0\cdot p_1-m_0m_1}\right)\f]
  * where \f$p_{0,1}\f$ are the momenta of the incoming and outgoing tensor mesons,
  * and \f$\epsilon_{0,1}\f$ are the polarization tensors of the 
  * incoming and outgoing tensor mesons.

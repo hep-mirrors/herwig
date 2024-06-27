@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The OneOneOneEWSplitFn class implements the splitting function for
- * \f$\1\to q\1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
+ * \f$1\to 1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
  *
  * @see \ref OneOneOneEWSplitFnInterfaces "The interfaces"
  * defined for OneOneOneEWSplitFn.

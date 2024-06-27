@@ -26,7 +26,7 @@ using namespace ThePEG;
  * \[f \mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta} \epsilon_2^{\gamma}  \epsilon^{\mu\alpha_1\beta'\gamma'}(p_1-p_2)_{\alpha_2} G_{\beta\beta'} G_{\gamma\gamma'}\f]
  * where \f$p_{0,1,2}\f$ are the momenta of the incoming pseudotensor and outgoing vector mesons, respectively,
  * and \f$\epsilon_{0}\f$ is the polarization tensor of the incoming pseudotensor meson and $\epslion_{1,2}$ are those of the outgoing
- * vector mesons and \f[G_{\mu\nu} = g_{\mu\nu} + \frac1X\left(-p_1\cdot p_2(p_{2\mu}p_{1\nu}_p_{1\mu}p_{2\nu}) + m_2^2p_{1\mu}p_{1\nu} + m_1^2p_{2\mu}p_{2\nu}\right),\f]
+ * vector mesons and \f[G_{\mu\nu} = g_{\mu\nu} + \frac1X\left(-p_1\cdot p_2(p_{2\mu}p_{1\nu}+p_{1\mu}p_{2\nu}) + m_2^2p_{1\mu}p_{1\nu} + m_1^2p_{2\mu}p_{2\nu}\right),\f]
  * where \f$X=(p_1\cdot p_2)^2-m^2_1m^2_2\f$.
  *  The incoming pseudotensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
