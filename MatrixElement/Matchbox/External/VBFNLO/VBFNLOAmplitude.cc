@@ -51,8 +51,13 @@ IBPtr VBFNLOAmplitude::fullclone() const {
 
 void VBFNLOAmplitude::signOLP(const string& order, const string& contract) {
   int status = 0;
+  #ifdef VBFNLO3
+  OLP_Order_VBFNLO(const_cast<char*>(order.c_str()),
+		   const_cast<char*>(contract.c_str()),&status);
+  #else
   OLP_Order(const_cast<char*>(order.c_str()),
 	    const_cast<char*>(contract.c_str()),&status);
+  #endif
   if ( status != 1 )
     throw Exception() << "VBFNLOAmplitude: Failed to sign contract with VBFNLO.\n"
                       << "The BLHA contract file " << contract << "\n"
@@ -64,7 +69,11 @@ void VBFNLOAmplitude::setOLPParameter(const string& name, double value) const {
 
   int pStatus = 0;
   double zero = 0.0;
+  #ifdef VBFNLO3
+  OLP_SetParameter_VBFNLO(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+  #else
   OLP_SetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
+  #endif
   if ( !pStatus )
     throw Exception() << "VBFNLOAmplitude: VBFNLO failed to set parameter '"
 		      << name << "' to " << value << "\n"
@@ -74,7 +83,11 @@ void VBFNLOAmplitude::setOLPParameter(const string& name, double value) const {
 
 void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
+  #ifdef VBFNLO3
+  OLP_Start_VBFNLO(const_cast<char*>(contract.c_str()), &status);
+  #else
   OLP_Start(const_cast<char*>(contract.c_str()), &status);
+  #endif
 
   map<long,Energy>::const_iterator it=reshuffleMasses().find(ParticleID::b);
   double bmass;
@@ -82,6 +95,7 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
     bmass = getParticleData(ParticleID::b)->hardProcessMass()/GeV;
   else
     bmass = it->second/GeV;
+
   setOLPParameter("mass(5)",bmass);
   setOLPParameter("mass(6)",getParticleData(ParticleID::t)->hardProcessMass()/GeV);
 
@@ -155,8 +169,8 @@ bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
   signOLP(orderFileName, contractFileName);
 
   int status = -1;
-
-  startOLP(contractFileName,status);  
+  
+  startOLP(contractFileName,status);
 
   if ( status != 1 )
     return false;
@@ -178,7 +192,11 @@ LorentzVector<Complex> VBFNLOAmplitude::plusPolarization(const Lorentz5Momentum&
   double pvec[4] = {p.t()/GeV,p.x()/GeV,p.y()/GeV,p.z()/GeV};
   double nvec[4] = {n.t()/GeV,n.x()/GeV,n.y()/GeV,n.z()/GeV};
   double out[8] ={ };
+  #ifdef VBFNLO3 
+  OLP_Polvec_VBFNLO(pvec,nvec,out);
+  #else
   OLP_Polvec(pvec,nvec,out);
+  #endif
 
   LorentzVector<Complex> res;
   Complex a(out[0],out[1]);
@@ -205,8 +223,9 @@ void VBFNLOAmplitude::evalSubProcess() const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
-
+  if (hasRunningAlphaS())
+    setOLPParameter("alphas",lastAlphaS());
+  
   double acc = -1.0;
   double out[4]={};
 
@@ -227,7 +246,11 @@ void VBFNLOAmplitude::evalSubProcess() const {
     }
   }
 
+  #ifdef VBFNLO3 
+  OLP_EvalSubProcess2_VBFNLO(&id, olpMomenta(), &scale, out, &acc);
+  #else
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, out, &acc);
+  #endif
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
     lastTreeME2(out[3]*units);
@@ -245,7 +268,8 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS())
+    setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
 
@@ -266,7 +290,11 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
     }
   }
 
+  #ifdef VBFNLO3 
+  OLP_EvalSubProcess2_VBFNLO(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+  #else
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+  #endif
 
   for ( int i = 0; i < n; ++i )
     for ( int j = i+1; j < n; ++j ) {
@@ -281,7 +309,8 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2); 
 
-  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS())
+    setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
 
@@ -302,7 +331,11 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
     }
   }
 
+  #ifdef VBFNLO3 
+  OLP_EvalSubProcess2_VBFNLO(&id, olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
+  #else
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
+  #endif
 
   for ( int i = 0; i < n; ++i )
     for ( int j = 0; j < n; ++j ) {
@@ -350,7 +383,11 @@ void VBFNLOAmplitude::evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const {
   }
 
   setOLPParameter("Nc",-1); // large-N limit
+  #ifdef VBFNLO3 
+  OLP_EvalSubProcess2_VBFNLO(&id, olpMomenta(), &scale, out, &acc);
+  #else
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, out, &acc);
+  #endif
   setOLPParameter("Nc",generator()->standardModel()->Nc()); 
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
@@ -409,7 +446,11 @@ void VBFNLOAmplitude::evalLargeNColourCorrelator(pair<int,int>,
   }
 
   setOLPParameter("Nc",-1); // large-N limit
+  #ifdef VBFNLO3
+  OLP_EvalSubProcess2_VBFNLO(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+  #else
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+  #endif
   setOLPParameter("Nc",generator()->standardModel()->Nc()); 
 
   for ( int i = 0; i < n; ++i )

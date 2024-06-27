@@ -10,6 +10,7 @@ DipoleShowerFiveFlavours.in \
 DipoleShowerFourFlavours.in \
 EECollider.in \
 EPCollider.in \
+PECollider.in \
 HepMCFixedOrder.in \
 HepMC.in \
 Matchbox.in \

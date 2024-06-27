@@ -149,12 +149,12 @@ set PowhegMEee2gZ2ll:AlphaQED /Herwig/Shower/AlphaQED
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ff MEqq2gZ2ff
 newdef MEqq2gZ2ff:Process 3
-newdef MEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef MEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCDISR
 
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ff  MEqq2W2ff
 newdef MEqq2W2ff:Process 2
-newdef MEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef MEqq2W2ff:Coupling /Herwig/Shower/AlphaQCDISR
 
 # W+jet
 create Herwig::MEPP2WJet MEWJet
@@ -211,22 +211,22 @@ set MESingleTopTW:Process tW
 create Herwig::MEPP2Higgs   MEHiggs
 newdef MEHiggs:ShapeScheme MassGenerator
 newdef MEHiggs:Process gg
-newdef MEHiggs:Coupling /Herwig/Shower/AlphaQCD
+newdef MEHiggs:Coupling /Herwig/Shower/AlphaQCDISR
 
 # hadron-hadron to higgs+jet
 create Herwig::MEPP2HiggsJet   MEHiggsJet
 
 # PP->ZH
 create Herwig::MEPP2ZH MEPP2ZH
-newdef MEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
+newdef MEPP2ZH:Coupling /Herwig/Shower/AlphaQCDISR
 
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
-newdef MEPP2WH:Coupling /Herwig/Shower/AlphaQCD
+newdef MEPP2WH:Coupling /Herwig/Shower/AlphaQCDISR
 
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
-newdef MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
+newdef MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCDISR
 
 # PP -> t tbar Higgs
 create Herwig::MEPP2QQHiggs MEPP2ttbarH
@@ -244,40 +244,40 @@ library HwPowhegMEHadron.so
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ffPowheg PowhegMEqq2gZ2ff
 newdef PowhegMEqq2gZ2ff:Process 3
-newdef PowhegMEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCDISR
 
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
 newdef PowhegMEqq2W2ff:Process 2
-newdef PowhegMEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEqq2W2ff:Coupling /Herwig/Shower/AlphaQCDISR
  
 # PP->ZH
 create Herwig::MEPP2ZHPowheg PowhegMEPP2ZH
-newdef PowhegMEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2ZH:Coupling /Herwig/Shower/AlphaQCDISR
 
 # PP->WH
 create Herwig::MEPP2WHPowheg PowhegMEPP2WH
-newdef PowhegMEPP2WH:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2WH:Coupling /Herwig/Shower/AlphaQCDISR
 
 # hadron-hadron to higgs
 create Herwig::MEPP2HiggsPowheg PowhegMEHiggs
 newdef PowhegMEHiggs:ShapeScheme MassGenerator
 newdef PowhegMEHiggs:Process gg
-newdef PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCDISR
 
 # PP->VV
 create Herwig::MEPP2VVPowheg PowhegMEPP2VV
-newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCDISR
 
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBFPowheg PowhegMEPP2HiggsVBF
-newdef PowhegMEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCDISR
 
 # PP -> diphoton NLO
 create Herwig::MEPP2GammaGammaPowheg MEGammaGammaPowheg 
 set MEGammaGammaPowheg:Process 0
 set MEGammaGammaPowheg:Contribution 1
-set MEGammaGammaPowheg:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
+set MEGammaGammaPowheg:ShowerAlphaQCD /Herwig/Shower/AlphaQCDISR
 set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
 
 ##########################################################
@@ -286,20 +286,20 @@ set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
 
 # neutral current
 create Herwig::MENeutralCurrentDIS MEDISNC
-newdef MEDISNC:Coupling /Herwig/Shower/AlphaQCD
+newdef MEDISNC:Coupling /Herwig/Shower/AlphaQCDISR
 newdef MEDISNC:Contribution 0
 # charged current
 create Herwig::MEChargedCurrentDIS MEDISCC
-newdef MEDISCC:Coupling /Herwig/Shower/AlphaQCD
+newdef MEDISCC:Coupling /Herwig/Shower/AlphaQCDISR
 newdef MEDISCC:Contribution 0
 
 # neutral current (POWHEG)
 create Herwig::MENeutralCurrentDIS PowhegMEDISNC
-newdef PowhegMEDISNC:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEDISNC:Coupling /Herwig/Shower/AlphaQCDISR
 newdef PowhegMEDISNC:Contribution 1
 # charged current (POWHEG)
 create Herwig::MEChargedCurrentDIS PowhegMEDISCC
-newdef PowhegMEDISCC:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEDISCC:Coupling /Herwig/Shower/AlphaQCDISR
 newdef PowhegMEDISCC:Contribution 1
 
 ##########################################################

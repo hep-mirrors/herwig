@@ -74,9 +74,8 @@ void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
      << _clPowCharm << _clPowExotic << _pSplitLight
      << _pSplitBottom << _pSplitCharm << _pSplitExotic
      << _fissionCluster << _fissionPwtUquark << _fissionPwtDquark << _fissionPwtSquark
-     << ounit(_btClM,GeV) << _kinematicThresholdChoice
-     << _iopRem  << ounit(_kappa, GeV/meter)
-     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
+     << ounit(_btClM,GeV) << _iopRem << _kinematicThresholdChoice
+     << ounit(_kappa, GeV/meter) << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
      << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
 }
 
@@ -88,8 +87,7 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> _pSplitBottom >> _pSplitCharm >> _pSplitExotic
      >> _fissionCluster >> _fissionPwtUquark >> _fissionPwtDquark >> _fissionPwtSquark
      >> iunit(_btClM,GeV) >> _iopRem >> _kinematicThresholdChoice
-     >> iunit(_kappa, GeV/meter)
-     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
+     >> iunit(_kappa, GeV/meter) >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
      >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
 }
 
@@ -505,7 +503,8 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       if(_kinematicThresholdChoice == 0) {
         if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
       // dynamic kinematic threshold
-      } else if(_kinematicThresholdChoice == 1) {
+      }
+      else if(_kinematicThresholdChoice == 1) {
         bool C1 = ( sqr(Mc1) )/( sqr(m1) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
         bool C2 = ( sqr(Mc2) )/( sqr(m2) + sqr(m) + _kinThresholdShift ) < 1.0 ? true : false;
         bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;

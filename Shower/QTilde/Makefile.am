@@ -1,6 +1,6 @@
 SUBDIRS = Matching
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 29:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 30:0:0
 HwShower_la_SOURCES =  \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\

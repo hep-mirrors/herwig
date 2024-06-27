@@ -1,4 +1,5 @@
-set /Herwig/Shower/AlphaQCD:AlphaIn           0.118
+set /Herwig/Shower/AlphaQCDFSR:AlphaIn           0.118
+set /Herwig/Shower/AlphaQCDISR:AlphaIn           0.118
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.118
 cd /Herwig/Particles/

@@ -347,7 +347,7 @@ void a1ThreePionCLEODecayer::persistentOutput(PersistentOStream & os) const {
      << ounit(_psigmacc,GeV) << ounit(_psigma00,GeV) 
      << ounit(_mpi0,GeV) << ounit(_mpic,GeV) 
      << ounit(_coupling,1/GeV) << _rhomagP << _rhophaseP 
-     << _rhocoupP << ounit(_rhomagD ,1/GeV2)<< _rhophaseD 
+     << _rhocoupP << ounit(_rhomagD,1/GeV2)<< _rhophaseD 
      << ounit(_rhocoupD,1/GeV2) << ounit(_f2mag,1/GeV2)
      << _f2phase << ounit(_f2coup,1/GeV2)
      << _f0mag << _f0phase << _f0coup 

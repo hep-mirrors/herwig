@@ -11,14 +11,14 @@ create Herwig::ModelGenerator NewModel
 create Herwig::ResonantProcessConstructor ResConstructor
 create Herwig::TwoToTwoProcessConstructor HPConstructor
 create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
-set HVConstructor:AlphaQCD /Herwig/Shower/AlphaQCD
+set HVConstructor:AlphaQCD /Herwig/Shower/AlphaQCDFSR
 create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
 create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
 create Herwig::DecayConstructor DecayConstructor
 newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
 set TwoBodyDC:ExcludeEffectiveVertices No
-set TwoBodyDC:AlphaQCD /Herwig/Shower/AlphaQCD
+set TwoBodyDC:AlphaQCD /Herwig/Shower/AlphaQCDFSR
 set TwoBodyDC:AlphaQED /Herwig/Shower/AlphaQED
 set TwoBodyDC:Interactions QCDandQED
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC

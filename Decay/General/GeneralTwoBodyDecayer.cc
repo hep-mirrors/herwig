@@ -1,4 +1,3 @@
-
 // -*- C++ -*-
 //
 // GeneralTwoBodyDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
@@ -768,6 +767,11 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
       /// @todo: handle these better
     case PDT::ColourUndefined:     break;
     case PDT::Coloured:            break;
+    case PDT::DarkColoured:        break;
+    case PDT::DarkColourNeutral:   break;
+    case PDT::DarkColourFundamental: break;
+    case PDT::DarkColourAntiFundamental: break;
+    case PDT::DarkColourAdjoint:   break;
     }
   }
 

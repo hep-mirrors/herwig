@@ -221,9 +221,22 @@ protected:
    */
   bool weaklyInteracting(tcPDPtr pd) {
     long id = abs(pd->id());
-    bool HiggsScalar = (pd->iSpin()==PDT::Spin0 && pd->mass()!=0.*GeV) ? true : false;
-    return ( id==ParticleID::Wplus || id ==ParticleID::Z0 || id ==ParticleID::h0 ||
-            HiggsScalar || (id>=1 && id<=6 ) || (id>=11 && id<=16));
+    bool is = false ;
+    if ( id==ParticleID::Wplus || id ==ParticleID::Z0 || id ==ParticleID::h0)
+      is = true;
+    if ((id>=1 && id<=6 ) || (id>=11 && id<=16))
+      is = true;
+    // for SUSY and excited particles
+    if(id > 25) {
+      long bsm_id = id % 1000000;
+      if ( bsm_id==ParticleID::Wplus || bsm_id ==ParticleID::Z0 || bsm_id ==ParticleID::h0 || bsm_id ==ParticleID::gamma)
+        is = true;
+      if ((bsm_id>=1 && bsm_id<=6 ) || (bsm_id>=11 && bsm_id<=16))
+        is = true;
+      if (bsm_id >=32 && bsm_id <=39)
+        is = true;
+      }
+    return is;
   }
 
 private:

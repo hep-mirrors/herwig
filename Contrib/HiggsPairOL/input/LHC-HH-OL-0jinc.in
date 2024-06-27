@@ -28,7 +28,7 @@ cd /Herwig/Shower
 set AlpGenHandlerOL:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set AlpGenHandlerOL:RemDecayer  /Herwig/Partons/RemnantDecayer
 #set AlpGenHandlerOL:ShowerHandler     ShowerHandler
-set AlpGenHandlerOL:ShowerAlpha  AlphaQCD
+set AlpGenHandlerOL:ShowerAlpha  AlphaQCDISR
 # Calorimeter granularity settings used by GetJet algorithm
 set AlpGenHandlerOL:NoCellsInRapidity 100
 set AlpGenHandlerOL:NoCellsInPhi       60

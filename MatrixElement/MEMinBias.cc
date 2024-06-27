@@ -34,7 +34,7 @@ inline bool checkValence(int i,int side,Ptr<StandardEventHandler>::tptr eh){
    vector<int> val;
    if( beam == ParticleID::pplus || beam == ParticleID::n0 ) val = {1,2};
    if( beam == ParticleID::pbarminus || beam == ParticleID::nbar0 ) val = { -1 , -2 };
-   if( val.size() == 0 ) 
+   if( val.size() == 0 )
       {cerr<<"\n\n MEMinBias: Valence Quarks not defined for pid "<<beam;assert(false);}
    for(auto v:val)if(v==i)return true;
    return false;
@@ -110,17 +110,17 @@ double  MEMinBias::correctionweight() const {
 
 
   // Here we calculate the weight to restore the inelastic-diffractiveXSec
-  // given by the MPIHandler. 
-  
-  // First get the eventhandler to get the current cross sections. 
-  static Ptr<StandardEventHandler>::tptr eh =
+  // given by the MPIHandler.
+
+  // First get the eventhandler to get the current cross sections.
+  Ptr<StandardEventHandler>::tptr eh =
   dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
 
-  // All diffractive processes make use of this ME. 
+  // All diffractive processes make use of this ME.
   // The static map can be used to collect all the sumOfWeights.
   static map<XCombPtr,double> weightsmap;
   weightsmap[lastXCombPtr()]=lastXComb().stats().sumWeights();
-  
+
 
   // Define static variable to keep trac of reweighting
   static double rew_=1.;
@@ -141,11 +141,11 @@ double  MEMinBias::correctionweight() const {
      sum+=xx.second;
     }
     double avRew=sumRew/countN;
-    
+
     CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
     CrossSection XS_wanted=MPIHandler_->nonDiffractiveXSec();
     double deltaN=50;
-    
+
       // Cross section without reweighting: XS_norew
       // XS_have = avcsNorm2*XS_norew    (for large N)
       // We want to determine the rew that allows to get the wanted XS.
@@ -155,11 +155,11 @@ double  MEMinBias::correctionweight() const {
     rew_=avRew*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
     countUpdateWeight+=deltaN;
   }
-  //Make sure we dont produce negative weights. 
-  // TODO: write finalize method that checks if reweighting was performed correctly. 
+  //Make sure we dont produce negative weights.
+  // TODO: write finalize method that checks if reweighting was performed correctly.
   rew_=max(rew_,0.000001);
   rew_=min(rew_,10000.0);
-  
+
   return rew_;
 
 
@@ -190,7 +190,7 @@ unsigned int MEMinBias::orderInAlphaEW() const {
 Selector<MEBase::DiagramIndex>
 MEMinBias::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
+  for ( DiagramIndex i = 0; i < diags.size(); ++i )
     sel.insert(1.0, i);
 
   return sel;
@@ -204,7 +204,7 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
   static ColourLines qbqb("-1 -4, -3 -5");
 
   Selector<const ColourLines *> sel;
-  
+
   switch(diag->id()){
   case -1:
     sel.insert(1.0, &qq);
@@ -246,12 +246,12 @@ void MEMinBias::Init() {
 
   static ClassDocumentation<MEMinBias> documentation
     ("There is no documentation for the MEMinBias class");
-     
+
   static Parameter<MEMinBias,double> interfacecsNorm
     ("csNorm",
      "Normalization of the min-bias cross section.",
-     &MEMinBias::csNorm_, 
-     1.0, 0.0, 100.0, 
+     &MEMinBias::csNorm_,
+     1.0, 0.0, 100.0,
      false, false, Interface::limited);
   static Parameter<MEMinBias,Energy> interfaceScale
     ("Scale",
@@ -274,7 +274,6 @@ void MEMinBias::Init() {
   static SwitchOption interfaceOnlyValNo
   ( interfaceOnlyVal , "No" , "" , false );
 
- 
+
 
 }
-

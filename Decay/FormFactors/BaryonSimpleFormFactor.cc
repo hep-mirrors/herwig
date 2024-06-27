@@ -147,11 +147,13 @@ void BaryonSimpleFormFactor::doinit() {
 
 void BaryonSimpleFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _gA << _alphaD << _etaV << _etaA << _rhoE << _rhoM 
-     << _f1 << _f2 << _g1 << _g2;}
+     << _f1 << _f2 << _g1 << _g2;
+}
 
 void BaryonSimpleFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _gA >> _alphaD >> _etaV >> _etaA >> _rhoE >> _rhoM 
-     >> _f1 >> _f2 >> _g1 >> _g2;}
+     >> _f1 >> _f2 >> _g1 >> _g2;
+}
 
 // The following static variable is needed for the type
 // description system in ThePEG.

@@ -38,6 +38,9 @@ CzyzNucleonFormFactor::CzyzNucleonFormFactor() {
   // Magnetic moments
   mup_ =  2.792847356;
   mun_ = -1.9130427;
+  // initialise a_ and b_
+  a_ = mup_-mun_-1.;
+  b_ = -mup_-mun_+1.;
   // set up the form factors
   addFormFactor(2212,2212,2,2,2,1,1,1);
   addFormFactor(2112,2112,2,2,2,1,1,1);
@@ -109,7 +112,7 @@ void CzyzNucleonFormFactor::doinit() {
   fact += c4_[3]*sqr(rhoMasses_[3]);
   c4_.push_back(-fact/sqr(rhoMasses_[4]));
   // a and b parameters
-  a_ = mup_-mun_-1;
+  a_ = mup_-mun_-1.;
   b_ = -mup_-mun_+1.;
 }
 
@@ -151,25 +154,25 @@ void CzyzNucleonFormFactor::Init() {
      "[arXiv:1407.7995 [hep-ph]].\n"
      "%%CITATION = doi:10.1103/PhysRevD.90.114021;%%\n"
      "%5 citations counted in INSPIRE as of 25 Aug 2018\n");
-  
+
   static ParVector<CzyzNucleonFormFactor,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the rho mesons for the form factor",
      &CzyzNucleonFormFactor::rhoMasses_, GeV, 5, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
-  
+
   static ParVector<CzyzNucleonFormFactor,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the rho mesons for the form factor",
      &CzyzNucleonFormFactor::rhoWidths_, GeV, 5, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
-  
+
   static ParVector<CzyzNucleonFormFactor,Energy> interfaceOmegaMasses
     ("OmegaMasses",
      "The masses of the omega mesons for the form factor",
      &CzyzNucleonFormFactor::omegaMasses_, GeV, 5, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
-  
+
   static ParVector<CzyzNucleonFormFactor,Energy> interfaceOmegaWidths
     ("OmegaWidths",
      "The widths of the omega mesons for the form factor",
@@ -299,7 +302,7 @@ void CzyzNucleonFormFactor::
 dataBaseOutput(ofstream& output,bool header,
 	       bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::CzyzNucleonFormFactor " 
+  if(create) output << "create Herwig::CzyzNucleonFormFactor "
 		    << name() << " \n";
   for(unsigned int ix=0;ix<5;++ix) {
     output << "newdef " << name() << ":RhoMasses " << ix << " "
@@ -334,6 +337,6 @@ dataBaseOutput(ofstream& output,bool header,
   output << "newdef " << name() << ":MuProton  " << mup_ << "\n";
   output << "newdef " << name() << ":MuNeutron " << mun_ << "\n";
   BaryonFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+  if(header) output << "\n\" where BINARY ThePEGName=\""
 		    << fullName() << "\";" << endl;
 }

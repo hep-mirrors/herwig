@@ -75,8 +75,7 @@ void Col_str::Col_str_of_str( const std::string str ) {
 
 	// Read in the Polynomial until a [ is found
 	j=0;
-	std::string  Poly_string;
-	Poly_string.empty();
+	std::string Poly_string;
 	while( j<str.size() and str.at(j)!='['){
 		Poly_string.push_back(str.at(j));
 		j++;
@@ -84,7 +83,6 @@ void Col_str::Col_str_of_str( const std::string str ) {
 
 	// Then read in the col_str
 	std::string  col_string;
-	col_string.empty();
 	while( j< str.size() and str.at(j)!=']'){
 		col_string.push_back( str.at(j) );
 		j++;

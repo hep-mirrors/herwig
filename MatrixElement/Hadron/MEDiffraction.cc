@@ -620,7 +620,7 @@ double  MEDiffraction::correctionweight() const {
   // given by the MPIHandler.
 
   // First get the eventhandler to get the current cross sections.
-  static Ptr<StandardEventHandler>::tptr eh =
+  Ptr<StandardEventHandler>::tptr eh =
   dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
 
   // All diffractive processes make use of this ME.

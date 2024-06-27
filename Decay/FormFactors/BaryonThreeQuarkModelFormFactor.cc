@@ -260,12 +260,14 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
 void BaryonThreeQuarkModelFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _initialize << _order << ounit(_mlight,MeV) << ounit(_mstrange,MeV) 
      << ounit(_LambdaQ,MeV) << ounit(_Lambdaqq,MeV) 
-     << ounit(_Lambdasq,MeV) << ounit(_Lambdass,MeV) << _C0 << _C1 << _C2;}
+     << ounit(_Lambdasq,MeV) << ounit(_Lambdass,MeV) << _C0 << _C1 << _C2;
+}
 
 void BaryonThreeQuarkModelFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _initialize >> _order >> iunit(_mlight,MeV) >> iunit(_mstrange,MeV) 
      >> iunit(_LambdaQ,MeV) >> iunit(_Lambdaqq,MeV)
-     >> iunit(_Lambdasq,MeV) >> iunit(_Lambdass,MeV) >> _C0 >> _C1 >> _C2;}
+     >> iunit(_Lambdasq,MeV) >> iunit(_Lambdass,MeV) >> _C0 >> _C1 >> _C2;
+}
 
 // The following static variable is needed for the type
 // description system in ThePEG.

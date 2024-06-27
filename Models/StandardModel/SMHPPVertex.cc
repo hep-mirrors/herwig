@@ -30,7 +30,7 @@ void SMHPPVertex::persistentOutput(PersistentOStream & os) const {
 }
 
 void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw, GeV) >> _massopt >> _minloop >> _maxloop 
+  is >> _theSM >> iunit(_mw,GeV) >> _massopt >> _minloop >> _maxloop 
      >> _CoefRepresentation;
 }
 

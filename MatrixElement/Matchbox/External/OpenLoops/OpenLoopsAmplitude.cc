@@ -45,7 +45,7 @@ using namespace Herwig;
 #endif
 
 OpenLoopsAmplitude::OpenLoopsAmplitude() :
-  theHiggsEff(false), use_cms(true), psp_tolerance(12){
+  theHiggsEff(false), use_cms(true), psp_tolerance(12), theDiagonal(false){
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -156,6 +156,42 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
 	orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
 	orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
+
+	// To enable non-diagonal CKM processes
+	if (!theDiagonal) {
+
+	  orderFile << "model sm_ckm\n"; 
+	  orderFile << "extra ckmorder 1\n"; 
+
+	  std::vector<std::vector<std::complex<double>>> ckmelement = StandardCKM().getUnsquaredMatrix(6);
+
+	  // write CKM matrix elements to OLP order file
+	  orderFile << "extra vckmdu " << ckmelement[0][0].real() << "\n";      
+	  orderFile << "extra vckmsu " << ckmelement[0][1].real() << "\n";      
+	  orderFile << "extra vckmbu " << ckmelement[0][2].real() << "\n";      
+
+	  orderFile << "extra vckmidu " << ckmelement[0][0].imag() << "\n";      
+	  orderFile << "extra vckmisu " << ckmelement[0][1].imag() << "\n";      
+	  orderFile << "extra vckmibu " << ckmelement[0][2].imag() << "\n";    
+
+	  orderFile << "extra vckmdc " << ckmelement[1][0].real() << "\n";     
+	  orderFile << "extra vckmsc " << ckmelement[1][1].real() << "\n";     
+	  orderFile << "extra vckmbc " << ckmelement[1][2].real() << "\n";
+
+	  orderFile << "extra vckmidc " << ckmelement[1][0].imag() << "\n";     
+	  orderFile << "extra vckmisc " << ckmelement[1][1].imag() << "\n";     
+	  orderFile << "extra vckmibc " << ckmelement[1][2].imag() << "\n";
+
+	  orderFile << "extra vckmdt " << ckmelement[2][0].real() << "\n";     
+	  orderFile << "extra vckmst " << ckmelement[2][1].real() << "\n";     
+	  orderFile << "extra vckmbt " << ckmelement[2][2].real() << "\n";
+
+	  orderFile << "extra vckmidt " << ckmelement[2][0].imag() << "\n";
+	  orderFile << "extra vckmist " << ckmelement[2][1].imag() << "\n";     
+	  orderFile << "extra vckmibt " << ckmelement[2][2].imag() << "\n";
+
+	}
+	
 	if (theCollierLib) { 
 		orderFile << "extra preset 2 "<<"\n";
 	   if(theHiggsEff){
@@ -412,13 +448,13 @@ string OpenLoopsAmplitude::getOpenLoopsPrefix() const{
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << idpair << theHiggsEff << use_cms << theCollierLib << OpenLoopsLibs_ << OpenLoopsPrefix_;
+  os << idpair << theHiggsEff << use_cms << theDiagonal << theCollierLib << OpenLoopsLibs_ << OpenLoopsPrefix_;
   OpenLoopsLibs_.clear();
   OpenLoopsPrefix_.clear();
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> idpair >> theHiggsEff >> use_cms >> theCollierLib ;
+  is >> idpair >> theHiggsEff >> use_cms >> theDiagonal >> theCollierLib ;
   string input=""; is>>input; if (!input.empty())OpenLoopsLibs_=input;
   input=""; is>>input; if (!input.empty())OpenLoopsPrefix_=input;
 }
@@ -455,6 +491,21 @@ void OpenLoopsAmplitude::Init() {
          (interfaceHiggsEff,
           "No",
           "No",
+          false);
+
+  static Switch<OpenLoopsAmplitude,bool> interfaceDiagonal
+         ("Diagonal",
+	  "Use a diagonal CKM matrix (ignoring the CKM object of the StandardModel).",
+          &OpenLoopsAmplitude::theDiagonal, false, false, false);
+  static SwitchOption interfaceDiagonalYes
+         (interfaceDiagonal,
+          "Yes",
+	  "Use a diagonal CKM matrix.",
+          true);
+  static SwitchOption interfaceDiagonalNo
+         (interfaceDiagonal,
+          "No",
+	  "Use the CKM object as used by the StandardModel.",
           false);
 
   static Switch<OpenLoopsAmplitude,bool> interfaceUseComplMass
