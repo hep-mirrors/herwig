@@ -72,6 +72,7 @@ read Particles.in
 read QEDRadiation.in
 read Model.in
 read Partons.in
+read Onium.in
 read UnderlyingEvent.in
 read Shower.in
 read MatrixElements.in
