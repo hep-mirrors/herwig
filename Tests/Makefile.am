@@ -137,7 +137,7 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	rm -rf $(subst .yoda,,$@)
 	mkdir $(subst .yoda,,$@)
 	mv $(subst .yoda,.run,$@) $(subst UE-,,$(subst .yoda,.run,$@)) $(subst .yoda,,$@)
-	cd $(subst .yoda,,$@); ../$(HWRUN) $(subst UE-,,$(subst .yoda,.run,$@)); mv $(subst UE-,,$@) ALICE_2015_PPCentrality.yoda
+	cd $(subst .yoda,,$@); ../$(HWRUN) $(subst UE-,,$(subst .yoda,.run,$@)); mv $(subst UE-,,$@) ALICE_2015_CENT_PP.yoda
 	cd $(subst .yoda,,$@); export RIVET_ANALYSIS_PATH=`pwd`; ../$(HWRUN)  $(subst .yoda,.run,$@)
 	mv $(subst .yoda,,$@)/$@ .
 	rm -rf $(subst .yoda,,$@)
