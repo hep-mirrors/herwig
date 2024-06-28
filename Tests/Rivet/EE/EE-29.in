@@ -23,6 +23,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I201482
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I200105
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I23360
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1991_I316132
+# D spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1984_I202899
+# D* spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELCO_1985_I205132
 # HRS D* polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I250823
 # MARK II omega spectrum
@@ -43,6 +47,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I215848
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I246184
 # HRS Lambda spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I17781
+# HRS Sigma*+- Xi- spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I246162
 # HRS phi and D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I213242
 # HRS f_2, f_0 and K_2 spectrum
@@ -53,3 +59,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1989_I276948
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I250899
 # MARK II charged spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416
+# MARK II charged spectrum 3 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I216850

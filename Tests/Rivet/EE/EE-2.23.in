@@ -2,14 +2,11 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 4.6
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 2.2324
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 ##################################################
 # select the analyses
 ##################################################
 #  Validated
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2004_I622224
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DASP_1979_I132410
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1674528
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2611489
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2513076

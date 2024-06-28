@@ -74,6 +74,10 @@ for f in yodafiles:
                 if "CC" in f : outhistos[aopath] = ao
             else :
                 if "CC" not in f : outhistos[aopath] = ao
+        elif "ZEUS_2008_I780108" in aopath :
+            if (("y01" in aopath and "e-" in f) or
+                ("y02" in aopath and "e+" in f)) :
+                outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
             

@@ -12,5 +12,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1707015
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1677498
 # CMS top
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1620050
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1703993
 # LHCB top
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1662483
+# ATLAS colour connections
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2152933

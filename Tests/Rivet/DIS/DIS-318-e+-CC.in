@@ -9,3 +9,5 @@ set /Herwig/Cuts/ChargedCurrentCut:MaxW2 1e10
 set /Herwig/Cuts/Cuts:MHatMin 0.
 # HERA F2
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HERA_2015_I1377206
+# ZEUS multijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2008_I780108

@@ -1,0 +1,26 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 7.*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 7.*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.999
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+do /Herwig/Particles/Upsilon(4S):SelectDecayModes
+decaymode Upsilon(4S)->Lambda_b10,Lambda_bbar0;  .25 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(4S)->Lambda_b0,Lambda_b1bar0;  .25 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(4S)->Lambda_b1*0,Lambda_bbar0; .25 1 /Herwig/Decays/DecayME0
+decaymode Upsilon(4S)->Lambda_b0,Lambda_b1*bar0; .25 1 /Herwig/Decays/DecayME0
+
+# excited lambda_b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1114753
+# lambda_b -> lambda_c mu- nu_mubar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621811
+# lambda_b -> Lambda0 gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2022_I1971920
+# lambda_b -> Lambda(1520)0 mu+ mu-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2023_I2633007

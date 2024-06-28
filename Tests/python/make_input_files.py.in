@@ -155,9 +155,9 @@ if(collider=="DIS") :
         Q2Min=1000.
         parameterName=parameterName.replace("-HighQ2","")
     if "CC" in name :
-        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 %s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
     else :
-        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 %s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
 # EE
 elif(collider=="EE") :
     if(simulation=="") :
@@ -1528,14 +1528,15 @@ elif(collider=="LHC") :
             sys.exit(1)
 # LHC-GammaGamma
 elif(collider=="LHC-GammaGamma" ) :
-    if   "-7-" in parameterName : process = StringBuilder(collider_lumi(7000.0))
-    elif "-8-" in parameterName : process = StringBuilder(collider_lumi(8000.0))
-    else :                        process = StringBuilder(collider_lumi(7000.0))
+    if   "7"  in parameterName : process = StringBuilder(collider_lumi( 7000.0))
+    elif "8"  in parameterName : process = StringBuilder(collider_lumi( 8000.0))
+    elif "13" in parameterName : process = StringBuilder(collider_lumi(13000.0))
+    else :                       process = StringBuilder(collider_lumi( 7000.0))
     if(simulation=="") :
-        if "7" in parameterName : process += insert_ME("MEgg2ff","Muon")
-        else :
-            logging.error(" Process %s not supported for default matrix elements" % name)
-            sys.exit(1)
+        process += "cp MEgg2ff MEgg2ee\n"
+        process += insert_ME("MEgg2ee","Electron")
+        process += "cp MEgg2ff MEgg2mm\n"
+        process += insert_ME("MEgg2mm","Muon")
     else :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)

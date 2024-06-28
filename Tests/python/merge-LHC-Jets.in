@@ -266,7 +266,7 @@ for f in yodafiles:
            "I1643640" in aopath or "I1808726" in aopath or
            "I1724098" in aopath or "I1719955" in aopath or
            "I1740909" in aopath or "I1913061" in aopath or
-           "I1932460" in aopath or
+           "I1932460" in aopath or "I2625697" in aopath or
            "I1972986" in aopath or "I1920187" in aopath or 
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
@@ -1769,6 +1769,20 @@ for i in range(5,7) :
 for i in range(7,9) :
     mergeByPt("/ATLAS_2021_I1913061/d%02d-x01-y01" % i, "13000")
 
+# ATLAS EEC
+logging.info("Processing ATLAS_2023_I2625697")
+for ioff in range(0,2) :
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  1), "13000","400")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  2), "13000","400")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  3), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  4), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  5), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  6), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  7), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  8), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  9), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 10), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 11), "13000","900")
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)

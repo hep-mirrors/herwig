@@ -22,5 +22,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1403544
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1187787
 #  eta_c -> K+K-eta', pi+pi-eta and pi+pi-eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2021_I1867843
+# eta_c -> f_r f_2(')
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I754089
 # eta_c BRs
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_ETAC
+# eta_c MC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DALITZ_ETAC

@@ -29,7 +29,7 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 # merge the prompt photon results
-files=["-GammaGamma-7.yoda"]
+files=["-GammaGamma-7.yoda","-GammaGamma-13.yoda"]
 for en in [7,8,13] :
     files.append("-%s-DiPhoton-GammaGamma.yoda"%en)
     files.append("-%s-DiPhoton-GammaJet.yoda"  %en)
