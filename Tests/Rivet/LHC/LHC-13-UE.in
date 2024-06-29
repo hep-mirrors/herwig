@@ -22,3 +22,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1708620
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1608166
 # ALICE light hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2020_I1797443
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2021_I1889335
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2023_I2658888

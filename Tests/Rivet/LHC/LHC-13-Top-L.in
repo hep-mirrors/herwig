@@ -8,6 +8,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1495243
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1705857
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1759875
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1707015
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2023_I2648096
 # ATLAS WWbb
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1677498
 # CMS top
