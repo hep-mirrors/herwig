@@ -573,9 +573,13 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findEWPartners(*cit,particles,isDecayCase);
     if(partners.empty()) {
-      throw Exception() << "Failed to find partner in "
-  			<< "PartnerFinder::setEWInitialEvolutionScales"
-  			<< (**cit) << Exception::eventerror;
+      // if after improved weaklyInteracting(), still can't
+      // decide if the partner is weakly interacting or not
+      // mostly for imported BSM models, just pass
+      continue;
+      // throw Exception() << "Failed to find partner in "
+  		// 	<< "PartnerFinder::setEWInitialEvolutionScales"
+  		// 	<< (**cit) << Exception::eventerror;
     }
     // calculate the probabilities
     double prob(0.);
@@ -743,7 +747,6 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
     return photons;
   return partners;
 }
-
 
 pair<Energy,Energy>
 PartnerFinder::calculateFinalFinalScales(
