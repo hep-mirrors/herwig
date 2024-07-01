@@ -19,7 +19,6 @@
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-
 #include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Interface/Parameter.h>
 
