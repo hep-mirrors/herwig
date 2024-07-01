@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref HalfHalfOneEWSplitFnInterfaces "The interfaces"
  * defined for HalfHalfOneEWSplitFn.
  */
-class HalfHalfOneEWSplitFn: public SplittingFunction {
+class HalfHalfOneEWSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

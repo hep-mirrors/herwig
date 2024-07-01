@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref OneOneOneEWSplitFnInterfaces "The interfaces"
  * defined for OneOneOneEWSplitFn.
  */
-class OneOneOneEWSplitFn: public SplittingFunction {
+class OneOneOneEWSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

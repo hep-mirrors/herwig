@@ -35,7 +35,7 @@ void OneZeroZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
 }
 
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<OneZeroZeroEWSplitFn,SplittingFunction>
+DescribeClass<OneZeroZeroEWSplitFn,Sudakov1to2FormFactor>
 describeHerwigOneZeroZeroEWSplitFn("Herwig::OneZeroZeroEWSplitFn", "HwShower.so");
 
 
@@ -60,7 +60,7 @@ void OneZeroZeroEWSplitFn::Init() {
 
 
 void OneZeroZeroEWSplitFn::doinit() {
-  SplittingFunction::doinit();
+  Sudakov1to2FormFactor::doinit();
 }
 
 

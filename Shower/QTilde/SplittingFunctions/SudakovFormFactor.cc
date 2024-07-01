@@ -50,7 +50,7 @@ void SudakovFormFactor::Init() {
     ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
      " form factors in Herwig");
 
-  static Reference<SudakovFormFactor,SplittingFunction>
+  static Reference<SudakovFormFactor,Sudakov1to2FormFactor>
     interfaceSplittingFunction("SplittingFunction",
 			       "A reference to the SplittingFunction object",
 			       &Herwig::SudakovFormFactor::splittingFn_,

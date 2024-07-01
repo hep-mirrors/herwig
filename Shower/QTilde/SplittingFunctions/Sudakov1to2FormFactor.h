@@ -6,10 +6,10 @@
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_SplittingFunction_H
-#define HERWIG_SplittingFunction_H
+#ifndef HERWIG_Sudakov1to2FormFactor_H
+#define HERWIG_Sudakov1to2FormFactor_H
 //
-// This is the declaration of the SplittingFunction class.
+// This is the declaration of the Sudakov1to2FormFactor class.
 //
 
 #include "ThePEG/Interface/Interfaced.h"
@@ -42,7 +42,7 @@ using namespace ThePEG;
  *  for all \f$1\to2\f$ splitting functions, for both initial-state
  *  and final-state radiation.
  *
- *  The SplittingFunction class contains a number of purely virtual members
+ *  The Sudakov1to2FormFactor class contains a number of purely virtual members
  *  which must be implemented in the inheriting classes. The class also stores
  *  the interaction type of the spltting function.
  *
@@ -62,10 +62,10 @@ using namespace ThePEG;
  *  ratio of the true splitting function to the overestimate must be provided
  *  as they are necessary for the veto alogrithm used to implement the evolution.
  *
- * @see \ref SplittingFunctionInterfaces "The interfaces"
- * defined for SplittingFunction.
+ * @see \ref Sudakov1to2FormFactorInterfaces "The interfaces"
+ * defined for Sudakov1to2FormFactor.
  */
-class SplittingFunction: public Interfaced {
+class Sudakov1to2FormFactor: public Interfaced {
 
 public:
 
@@ -73,7 +73,7 @@ public:
    * The default constructor.
    * @param b All splitting functions must have an interaction order
    */
-  SplittingFunction()
+  Sudakov1to2FormFactor()
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _colourStructure(Undefined), _colourFactor(-1.),
       angularOrdered_(true), scaleChoice_(2), strictAO_(true) {}
@@ -350,7 +350,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SplittingFunction & operator=(const SplittingFunction &) = delete;
+  Sudakov1to2FormFactor & operator=(const Sudakov1to2FormFactor &) = delete;
 
 private:
 
@@ -388,4 +388,4 @@ private:
 
 }
 
-#endif /* HERWIG_SplittingFunction_H */
+#endif /* HERWIG_Sudakov1to2FormFactor_H */

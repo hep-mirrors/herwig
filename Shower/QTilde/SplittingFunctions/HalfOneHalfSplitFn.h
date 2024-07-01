@@ -35,7 +35,7 @@ using namespace ThePEG;
  *
  *  @see SplittingFunction
  */
-class HalfOneHalfSplitFn: public SplittingFunction {
+class HalfOneHalfSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

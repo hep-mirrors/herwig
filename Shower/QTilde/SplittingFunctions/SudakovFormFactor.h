@@ -230,7 +230,7 @@ public:
   /** 
    * Return the pointer to the SplittingFunction object.
    */
-  tSplittingFnPtr splittingFn() const { return splittingFn_; }
+  tSudakov1to2Ptr splittingFn() const { return splittingFn_; }
 
   /**
    * Return the pointer to the ShowerAlpha object.
@@ -526,7 +526,7 @@ private:
   /**
    *  Pointer to the splitting function for this Sudakov form factor
    */
-  SplittingFnPtr splittingFn_;
+  Sudakov1to2Ptr splittingFn_;
 
   /**
    *  Pointer to the coupling for this Sudakov form factor

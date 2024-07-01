@@ -202,7 +202,7 @@ public:
    * Access the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  tSplittingFnPtr splittingFn() const { return _sudakov-> splittingFn(); }
+  tSudakov1to2Ptr splittingFn() const { return _sudakov-> splittingFn(); }
   //@}
 
   /**

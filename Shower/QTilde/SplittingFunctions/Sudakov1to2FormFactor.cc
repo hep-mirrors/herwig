@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// SplittingFunction.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Sudakov1to2FormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,7 +8,7 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the SplittingFunction class.
+// functions of the Sudakov1to2FormFactor class.
 //
 
 #include "Sudakov1to2FormFactor.h"
@@ -23,19 +23,19 @@
 
 using namespace Herwig;
 
-DescribeAbstractClass<SplittingFunction,Interfaced>
-describeSplittingFunction ("Herwig::SplittingFunction","");
+DescribeAbstractClass<Sudakov1to2FormFactor,Interfaced>
+describeSudakov1to2FormFactor ("Herwig::Sudakov1to2FormFactor","");
 
-void SplittingFunction::Init() {
+void Sudakov1to2FormFactor::Init() {
 
-  static ClassDocumentation<SplittingFunction> documentation
-    ("The SplittingFunction class is the based class for 1->2 splitting functions"
+  static ClassDocumentation<Sudakov1to2FormFactor> documentation
+    ("The Sudakov1to2FormFactor class is the based class for 1->2 splitting functions"
      " in Herwig");
 
-  static Switch<SplittingFunction,ColourStructure> interfaceColourStructure
+  static Switch<Sudakov1to2FormFactor,ColourStructure> interfaceColourStructure
     ("ColourStructure",
      "The colour structure for the splitting function",
-     &SplittingFunction::_colourStructure, Undefined, false, false);
+     &Sudakov1to2FormFactor::_colourStructure, Undefined, false, false);
   static SwitchOption interfaceColourStructureTripletTripletOctet
     (interfaceColourStructure,
      "TripletTripletOctet",
@@ -83,11 +83,11 @@ void SplittingFunction::Init() {
      "q -> q W/Z, q -> q h0, V -> V' V'', V -> V H",
      EW);
 
-  static Switch<SplittingFunction,ShowerInteraction>
+  static Switch<Sudakov1to2FormFactor,ShowerInteraction>
     interfaceInteractionType
     ("InteractionType",
      "Type of the interaction",
-     &SplittingFunction::_interactionType,
+     &Sudakov1to2FormFactor::_interactionType,
      ShowerInteraction::UNDEFINED, false, false);
   static SwitchOption interfaceInteractionTypeQCD
     (interfaceInteractionType,
@@ -99,11 +99,11 @@ void SplittingFunction::Init() {
     (interfaceInteractionType,
      "EW","EW",ShowerInteraction::EW);
 
-  static Switch<SplittingFunction,bool> interfaceAngularOrdered
+  static Switch<Sudakov1to2FormFactor,bool> interfaceAngularOrdered
     ("AngularOrdered",
      "Whether or not this interaction is angular ordered, "
      "normally only g->q qbar and gamma-> f fbar are the only ones which aren't.",
-     &SplittingFunction::angularOrdered_, true, false, false);
+     &Sudakov1to2FormFactor::angularOrdered_, true, false, false);
   static SwitchOption interfaceAngularOrderedYes
     (interfaceAngularOrdered,
      "Yes",
@@ -115,10 +115,10 @@ void SplittingFunction::Init() {
      "Interaction isn't angular ordered",
      false);
 
-  static Switch<SplittingFunction,unsigned int> interfaceScaleChoice
+  static Switch<Sudakov1to2FormFactor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
      "The scale choice to be used",
-     &SplittingFunction::scaleChoice_, 2, false, false);
+     &Sudakov1to2FormFactor::scaleChoice_, 2, false, false);
   static SwitchOption interfaceScaleChoicepT
     (interfaceScaleChoice,
      "pT",
@@ -135,11 +135,11 @@ void SplittingFunction::Init() {
      "If angular order use pT, otherwise Q2",
      2);
 
-  static Switch<SplittingFunction,bool> interfaceStrictAO
+  static Switch<Sudakov1to2FormFactor,bool> interfaceStrictAO
     ("StrictAO",
      "Whether or not to apply strict angular-ordering,"
      " i.e. for QED even in QCD emission, and vice versa",
-     &SplittingFunction::strictAO_, true, false, false);
+     &Sudakov1to2FormFactor::strictAO_, true, false, false);
   static SwitchOption interfaceStrictAOYes
     (interfaceStrictAO,
      "Yes",
@@ -152,19 +152,19 @@ void SplittingFunction::Init() {
      false);
 }
 
-void SplittingFunction::persistentOutput(PersistentOStream & os) const {
+void Sudakov1to2FormFactor::persistentOutput(PersistentOStream & os) const {
    os << oenum(_interactionType)
       << oenum(_colourStructure) << _colourFactor
       << angularOrdered_ << scaleChoice_ << strictAO_;
 }
 
-void SplittingFunction::persistentInput(PersistentIStream & is, int) {
+void Sudakov1to2FormFactor::persistentInput(PersistentIStream & is, int) {
   is >> ienum(_interactionType)
      >>	ienum(_colourStructure) >> _colourFactor
      >> angularOrdered_ >> scaleChoice_ >> strictAO_;
 }
 
-void SplittingFunction::colourConnection(tShowerParticlePtr parent,
+void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,
                                          tShowerParticlePtr second,
 					                               ShowerPartnerType partnerType,
@@ -568,7 +568,7 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
   }
 }
 
-void SplittingFunction::doinit() {
+void Sudakov1to2FormFactor::doinit() {
   Interfaced::doinit();
   assert(_interactionType!=ShowerInteraction::UNDEFINED);
   assert((_colourStructure>0&&_interactionType==ShowerInteraction::QCD) ||
@@ -599,7 +599,7 @@ void SplittingFunction::doinit() {
   }
 }
 
-bool SplittingFunction::checkColours(const IdList & ids) const {
+bool Sudakov1to2FormFactor::checkColours(const IdList & ids) const {
   if(_colourStructure==TripletTripletOctet) {
     if(ids[0]!=ids[1]) return false;
     if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
@@ -670,7 +670,7 @@ namespace {
 
 }
 
-void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
 						 Energy scale, double z,
 						 tShowerParticlePtr parent,
 						 tShowerParticlePtr emitter,
@@ -849,7 +849,7 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
     assert(false);
 }
 
-void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType,
 						   Energy scale, double z,
 						   tShowerParticlePtr parent,
 						   tShowerParticlePtr spacelike,
@@ -991,7 +991,7 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
     assert(false);
 }
 
-void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
+void Sudakov1to2FormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
 					    Energy scale, double z,
 					    tShowerParticlePtr parent,
 					    tShowerParticlePtr spacelike,
