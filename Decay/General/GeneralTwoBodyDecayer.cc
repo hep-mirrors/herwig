@@ -50,7 +50,7 @@ void GeneralTwoBodyDecayer::doinit() {
 				 maxWeight_)));
 }
 
-int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
 				      const tPDVector & children) const {
   long parentID = parent->id();
   long id1 = children[0]->id();
