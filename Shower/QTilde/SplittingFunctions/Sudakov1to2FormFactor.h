@@ -12,7 +12,7 @@
 // This is the declaration of the Sudakov1to2FormFactor class.
 //
 
-#include "ThePEG/Interface/Interfaced.h"
+#include "SudakovFormFactor.h"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig/Decay/DecayMatrixElement.h"
@@ -24,17 +24,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
-  /** \ingroup Shower
-   * Enum to define the possible types of colour structure which can occur in
-   * the branching.
-   */
-  enum ColourStructure {Undefined=0,
-			TripletTripletOctet  = 1,OctetOctetOctet    =2,
-			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
-			SextetSextetOctet    = 5,
-			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
-			NeutralChargedCharged=-3,EW=-4};
 
 /** \ingroup Shower
  *
@@ -65,7 +54,7 @@ using namespace ThePEG;
  * @see \ref Sudakov1to2FormFactorInterfaces "The interfaces"
  * defined for Sudakov1to2FormFactor.
  */
-class Sudakov1to2FormFactor: public Interfaced {
+class Sudakov1to2FormFactor: public SudakovFormFactor {
 
 public:
 
@@ -73,71 +62,98 @@ public:
    * The default constructor.
    * @param b All splitting functions must have an interaction order
    */
-  Sudakov1to2FormFactor()
-    : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
-      _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true), scaleChoice_(2), strictAO_(true) {}
+  Sudakov1to2FormFactor() : z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
+                            strictAO_(true), colourFactor_(-1.),
+                            enhancementFactor_(1.)
+  {}
+
+  /**
+   *  Members to generate the scale of the next branching
+   */
+  //@{
+  /**
+   * Return the scale of the next time-like branching. If there is no 
+   * branching then it returns ZERO.
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param enhance The radiation enhancement factor
+   * defined.
+   */
+  ShoKinPtr generateNextTimeBranching(const Energy startingScale,
+                                      const IdList &ids,
+                                      const RhoDMatrix & rho,
+                                      double enhance, double detuning);
+
+  /**
+   * Return the scale of the next space-like decay branching. If there is no 
+   * branching then it returns ZERO.
+   * @param startingScale starting scale for the evolution
+   * @param stoppingScale stopping scale for the evolution
+   * @param minmass The minimum mass allowed for the spake-like particle.
+   * @param ids The PDG codes of the particles in the splitting
+   * defined.
+   * @param enhance The radiation enhancement factor
+   */
+  ShoKinPtr generateNextDecayBranching(const Energy startingScale,
+                                       const Energy stoppingScale,
+                                       const Energy minmass,
+                                       const IdList &ids,
+                                       const RhoDMatrix & rho,
+                                       double enhance,
+                                       double detuning);
+
+  /**
+   * Return the scale of the next space-like branching. If there is no 
+   * branching then it returns ZERO.
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param x The fraction of the beam momentum
+   * defined.
+   * @param beam The beam particle
+   * @param enhance The radiation enhancement factor
+   */
+  ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
+                                       const IdList &ids,double x,
+                                       const RhoDMatrix & rho,
+                                       double enhance,
+                                       tcBeamPtr beam,
+                                       double detuning);
+  //@}
 
 public:
 
   /**
-   *  Methods to return the interaction type and order for the splitting function
+   * Generate the azimuthal angle of the branching for forward evolution
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
    */
-  //@{
+  double generatePhiForward(ShowerParticle & particle,const IdList & ids,
+                            ShoKinPtr kinematics,
+                            const RhoDMatrix & rho);
   /**
-   *  Return the type of the interaction
+   *  Generate the azimuthal angle of the branching for backward evolution
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
    */
-  ShowerInteraction interactionType() const {return _interactionType;}
+  double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
+                             ShoKinPtr kinematics,
+                             const RhoDMatrix & rho);
 
   /**
-   *  Return the colour structure
+   *  Generate the azimuthal angle of the branching for ISR in decays
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
    */
-  ColourStructure colourStructure() const {return _colourStructure;}
-
-  /**
-   *  Return the colour factor
-   */
-  double colourFactor(const IdList &ids) const {
-    if(_colourStructure>0)
-      return _colourFactor;
-    else if(_colourStructure<0) {
-      if(_colourStructure==ChargedChargedNeutral ||
-	 _colourStructure==ChargedNeutralCharged) {
-	return sqr(double(ids[0]->iCharge())/3.);
-      }
-      else if(_colourStructure==NeutralChargedCharged) {
-	double fact = sqr(double(ids[1]->iCharge())/3.);
-	if(ids[1]->coloured())
-	  fact *= abs(double(ids[1]->iColour()));
-	return fact;
-      }
-      else if(_colourStructure==EW) {
-	return 1.;
-      }
-      else {
-	assert(false);
-	return 0.;
-      }
-    }
-    else {
-      assert(false);
-      return 0.;
-    }
-  }
+  double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
+                          ShoKinPtr kinematics,
+                          const RhoDMatrix & rho);
   //@}
 
-  /**
-   *  Purely virtual method which should determine whether this splitting
-   *  function can be used for a given set of particles.
-   *  @param ids The PDG codes for the particles in the splitting.
-   */
-  virtual bool accept(const IdList & ids) const = 0;
-
-  /**
-   *  Method to check the colours are correct
-   */
-  virtual bool checkColours(const IdList & ids) const;
-
+public:
+  
   /**
    *   Methods to return the splitting function.
    */
@@ -152,8 +168,10 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const = 0;
+  double P(const double z, const Energy2 t, const IdList & ids,
+           const bool mass, const RhoDMatrix & rho) const {
+    return ratioP(z,t,ids,mass,rho)*overestimateP(z,ids);
+  }
 
   /**
    * Purely virtual method which should return
@@ -207,21 +225,6 @@ public:
   //@}
 
   /**
-   * Purely virtual method which should make the proper colour connection
-   * between the emitting parent and the branching products.
-   * @param parent The parent for the branching
-   * @param first  The first  branching product
-   * @param second The second branching product
-   * @param partnerType The type of evolution partner
-   * @param back Whether this is foward or backward evolution.
-   */
-  virtual void colourConnection(tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second,
-				ShowerPartnerType partnerType,
-				const bool back) const;
-
-  /**
    * Method to calculate the azimuthal angle for forward evolution
    * @param z The energy fraction
    * @param t The scale \f$t=2p_j\cdot p_k\f$.
@@ -256,17 +259,55 @@ public:
 				   const IdList & ids, const double phi,
                                    bool timeLike) = 0;
 
+public:
+
   /**
-   *  Whether or not the interaction is angular ordered
+   *  Methods to access the kinematic variables for the branching
    */
-  bool angularOrdered() const {return angularOrdered_;}
+  //@{
+  /**
+   *  The energy fraction
+   */
+  double z() const { return z_; }
+
+  /**
+   *  The azimuthal angle
+   */
+  double phi() const { return phi_; }
+
+  /**
+   *  The transverse momentum
+   */
+  Energy pT() const { return pT_; }
+  //@}
+
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
   /**
    *  Scale choice
    */
   bool pTScale() const {
-    return scaleChoice_ == 2 ? angularOrdered_ : scaleChoice_ == 0;
+    return scaleChoice_ == 2 ? angularOrdered() : scaleChoice_ == 0;
   }
+
+  /**
+   * Method which should make the proper colour connection
+   * between the emitting parent and the branching products.
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param partnerType The type of evolution partner
+   * @param back Whether this is foward or backward evolution.
+   */
+  void colourConnection(tShowerParticlePtr parent,
+                        tShowerParticlePtr first,
+                        tShowerParticlePtr second,
+                        ShowerPartnerType partnerType,
+                        const bool back) const;
 
   /**
    *  Functions to state scales after branching happens
@@ -338,11 +379,149 @@ protected:
   //@}
 
 protected:
+  /**
+   *  Methods to provide the next value of the scale before the vetos
+   *  are applied.
+   */
+  //@{
+  /**
+   *  Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param enhance The radiation enhancement factor
+   * @return False if scale less than minimum, true otherwise
+   */
+  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, double detune);
 
   /**
-   *  Set the colour factor
+   * Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmax The maximum scale
+   * @param minmass The minimum mass of the particle after the branching
+   * @param enhance The radiation enhancement factor
    */
-  void colourFactor(double in) {_colourFactor=in;}
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
+		  double enhance, double detune);
+
+  /**
+   * Value of the energy fraction and scale for space-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param x Fraction of the beam momentum.
+   * @param enhance The radiation enhancement factor
+   */
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
+		      double enhance, double detune);
+  //@}
+
+  /**
+   *  Initialize the values of the cut-offs and scales
+   * @param tmin The minimum scale
+   * @param ids  The ids of the partics in the branching
+   */
+  void initialize(const IdList & ids,Energy2 &tmin);
+
+  /**
+   *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
+   *  so that the emission is within the allowed phase space.
+   * @param t  The scale
+   * @param maxQ2 The maximum virtuality
+   * @return true if vetoed
+   */
+  virtual bool PSVeto(const Energy2 t);
+
+  /**
+   * Compute the limits on \f$z\f$ for time-like branching
+   * @param scale The scale of the particle
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeTimeLikeLimits(Energy2 & scale);
+
+  /**
+   * Compute the limits on \f$z\f$ for space-like branching
+   * @param scale The scale of the particle
+   * @param x The energy fraction of the parton
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeSpaceLikeLimits(Energy2 & scale, double x);
+
+protected:
+
+  /**
+   *  Methods to implement the veto algorithm to generate the scale of 
+   *  the next branching
+   */
+  //@{
+  /**
+   * Value of the energy fraction and value of the scale for the veto algorithm
+   * @param iopt The option for calculating z
+   * @param ids The PDG codes of the particles in the splitting
+   * - 0 is final-state
+   * - 1 is initial-state for the hard process
+   * - 2 is initial-state for particle decays
+   * @param t1 The starting valoe of the scale
+   * @param enhance The radiation enhancement factor
+   * @param identical Whether or not the outgoing particles are identical
+   * @param t_main rerurns the value of the energy fraction for the veto algorithm
+   * @param z_main returns the value of the scale for the veto algorithm
+   */
+  virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
+                       double enhance,bool ident,
+                       double detune, Energy2 &t_main, double &z_main);
+
+  /**
+   *  The veto on the splitting function.
+   * @param t The scale
+   * @param ids The PDG codes of the particles in the splitting
+   * @param mass Whether or not to use the massive splitting functions 
+   * @return true if vetoed
+   */
+  bool SplittingFnVeto(const Energy2 t, 
+		       const IdList &ids, 
+		       const bool mass,
+		       const RhoDMatrix & rho,
+		       const double & detune) const {
+    return UseRandom::rnd()>SplittingFnVetoRatio(t,ids,mass,rho,detune);
+  }
+  
+  /**
+   * The Splitting function veto ratio
+   */
+  
+  double SplittingFnVetoRatio(const Energy2 t,
+			      const IdList &ids,
+			      const bool mass,
+			      const RhoDMatrix & rho,
+			      const double & detune) const {
+    return ratioP(z_, t, ids,mass,rho)/detune;
+  }
+  //@}
+
+protected:
+
+  /**
+   *  Return the colour factor
+   */
+  double colourFactor() const;
+
+  /**
+   *  The limits of \f$z\f$ in the splitting
+   */
+  pair<double,double> zLimits() const {return zlimits_;};
+
+public:
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  const vector<Energy> & virtualMasses(const IdList & ids) {
+  	return cutoff_->virtualMasses(ids);
+  }
+
+  /**
+   *  The minimum pT2
+   */
+  Energy2 pT2min() { return cutoff_->pT2min(); }
 
 private:
 
@@ -355,24 +534,61 @@ private:
 private:
 
   /**
-   *  The interaction type for the splitting function.
+   *  Pointer to the coupling for this Sudakov form factor
    */
-  ShowerInteraction _interactionType;
+  SudakovCutOffPtr cutoff_;
+
+private:
 
   /**
-   *  The colour structure
+   * Member variables to keep the shower kinematics information
+   * generated by a call to generateNextTimeBranching or generateNextSpaceBranching
    */
-  ColourStructure _colourStructure;
+  //@{
+  /**
+   *  The energy fraction
+   */
+  double z_;
 
   /**
-   *  The colour factor
+   *  The azimuthal angle
    */
-  double _colourFactor;
+  double phi_;
 
   /**
-   *  Whether or not this interaction is angular-ordered
+   *  The transverse momentum
    */
-  bool angularOrdered_;
+  Energy pT_;
+  //@}
+
+  /**
+   *  The limits of \f$z\f$ in the splitting
+   */
+  pair<double,double> zlimits_;
+  
+private:
+  
+  /**
+   *  The evolution scale, \f$\tilde{q}\f$.
+   */
+  Energy q_;
+
+  /**
+   *  The Ids of the particles in the current branching
+   */
+  IdList ids_;
+
+  /**
+   *  The masses of the particles in the current branching
+   */
+  vector<Energy> masses_;
+
+  /**
+   *  The mass squared of the particles in the current branching
+   */
+  vector<Energy2> masssquared_;
+  
+private:
 
   /**
    *  The choice of scale
@@ -383,6 +599,16 @@ private:
    *   Enforce strict AO
    */
   bool strictAO_;
+  
+  /**
+   *  The colour factor
+   */
+  double colourFactor_;
+
+  /**
+   *  Enhancement factor
+   */
+  double enhancementFactor_;
 
 };
 
