@@ -11,6 +11,9 @@ SplittingFunctions/HalfHalfZeroEWSplitFn.h SplittingFunctions/HalfHalfZeroEWSpli
 SplittingFunctions/OneOneOneEWSplitFn.h SplittingFunctions/OneOneOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneQEDSplitFn.h SplittingFunctions/OneOneOneQEDSplitFn.cc\
 SplittingFunctions/OneOneZeroEWSplitFn.h SplittingFunctions/OneOneZeroEWSplitFn.cc\
+SplittingFunctions/ZeroZeroZeroEWSplitFn.h SplittingFunctions/ZeroZeroZeroEWSplitFn.cc\
+SplittingFunctions/OneZeroZeroEWSplitFn.h SplittingFunctions/OneZeroZeroEWSplitFn.cc\
+SplittingFunctions/ZeroZeroOneEWSplitFn.h SplittingFunctions/ZeroZeroOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/OneOneOneMassiveSplitFn.h SplittingFunctions/OneOneOneMassiveSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
