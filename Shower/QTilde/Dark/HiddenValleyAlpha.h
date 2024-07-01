@@ -41,7 +41,7 @@ public:
   HiddenValleyAlpha() : ShowerAlpha(), 
 			_qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0),
 			_nloop(2),_thresopt(false),
-			_lambdain(0.208364*GeV),_alphain(0.118),
+			_lambdain(0.208364*GeV),
 			_tolerance(1e-10),
 			_maxtry(100),_alphamin(0.) {}
   
@@ -240,11 +240,6 @@ private:
    *  Input value of Lambda
    */
   Energy _lambdain;
-
-  /**
-   *  Input value of \f$alpha_S(M_Z)\f$
-   */
-  double _alphain;
 
   /**
    *  Whether to convert lambda from MSbar scheme

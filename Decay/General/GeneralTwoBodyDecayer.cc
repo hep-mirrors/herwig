@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Utilities/Kinematics.h"
+#include "Herwig/Shower/QTilde/Dark/HiddenValleyModel.h"
 
 using namespace Herwig;
 
@@ -326,6 +327,15 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
     // colour octet colour octet
     else if(out1->iColour()==PDT::Colour8 && out2->iColour()==PDT::Colour8 ) {
       output *= 8.;
+    }
+    else if((out1->iColour()==PDT::DarkColourFundamental
+             && out2->iColour()==PDT::DarkColourAntiFundamental) ||
+	    (out1->iColour()==PDT::DarkColourAntiFundamental
+         && out2->iColour()==PDT::DarkColourFundamental)) {
+      throw Exception() << "The GeneralTwoBodyDecayer cannot yet handle "
+            << "decays to dark coloured particles. Please include these "
+            << "decays in the hard process"
+			<< Exception::runerror;
     }
     else 
       throw Exception() << "Unknown colour for the outgoing particles"
