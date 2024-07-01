@@ -30,68 +30,6 @@ void OneOneOneMassiveSplitFn::Init() {
 
 }
 
-double OneOneOneMassiveSplitFn::P(const double z, const Energy2 t,
-				  const IdList & ids, const bool, const RhoDMatrix & rho )const {
-  Energy2 m2 = sqr(ids[0]->mass());
-  double rho00 = rho(1,1).real();
-  return 2.*colourFactor(ids)*(z/(1.-z)-m2/t
-			       + (1.-rho00)*( (1.-z)/z + z*(1.-z) -sqr(1.-z)*m2/t )
-			       + 2.*rho00*sqr(1.-z)*m2/t);
-}
-
-double OneOneOneMassiveSplitFn::overestimateP(const double z,
-					      const IdList & ids) const {
-  return 2.*colourFactor(ids)*(1/z + 1/(1.-z)); 
-}
-
-
-double OneOneOneMassiveSplitFn::ratioP(const double z, const Energy2 t,
-				       const IdList & ids , const bool, const RhoDMatrix & rho) const {
-  Energy2 m2 = sqr(ids[0]->mass());
-  double rho00 = rho(1,1).real();
-  return (sqr(z)-z*(1.-z)*m2/t
-	  + (1.-rho00)*sqr(1.-z)*( 1. + sqr(z) -z*(1.-z)*m2/t )
-	  + 2.*rho00*z*(1.-z)*sqr(1.-z)*m2/t);
-}
-
-double OneOneOneMassiveSplitFn::invIntegOverP(const double r,
-				       const IdList & ids,
-				       unsigned int PDFfactor) const {
-  switch(PDFfactor) {
-  case 0:
-    return 1./(1.+exp(-0.5*r/colourFactor(ids))); 
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "OneOneOneMassiveSplitFn::integOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-} 
-
-double OneOneOneMassiveSplitFn::integOverP(const double z, const IdList & ids,
-				    unsigned int PDFfactor) const {
-  switch(PDFfactor) {
-  case 0:
-    assert(z>0.&&z<1.);
-    return 2.*colourFactor(ids)*log(z/(1.-z)); 
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "OneOneOneMassiveSplitFn::integOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-}
-
-bool OneOneOneMassiveSplitFn::accept(const IdList & ids) const {
-  if(ids.size()!=3) return false;
-  for(unsigned int ix=0;ix<ids.size();++ix) {
-    if(ids[0]->iSpin()!=PDT::Spin1) return false;
-  }
-  return checkColours(ids);
-}
-
 vector<pair<int, Complex> > 
 OneOneOneMassiveSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
 				     const RhoDMatrix & rho) {

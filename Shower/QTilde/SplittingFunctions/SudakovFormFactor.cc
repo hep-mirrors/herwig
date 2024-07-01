@@ -13,14 +13,13 @@
 
 #include "SudakovFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/EnumIO.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 
 using namespace Herwig;

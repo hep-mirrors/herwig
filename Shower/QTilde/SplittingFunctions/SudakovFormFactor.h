@@ -29,11 +29,15 @@ using namespace ThePEG;
  * the branching.
  */
 enum ColourStructure {Undefined=0,
-                      TripletTripletOctet  = 1,OctetOctetOctet    =2,
-                      OctetTripletTriplet  = 3,TripletOctetTriplet=4,
-                      SextetSextetOctet    = 5,
-                      ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
-                      NeutralChargedCharged=-3,EW=-4};
+                      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
+                      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
+                      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
+		      OctetOctetSinglet    = 7, Epsilon               = 8,
+		      OctetSinglet         = 9,
+		      ChargedChargedNeutral=-1,
+		      ChargedNeutralCharged=-2,
+		      NeutralChargedCharged=-3,
+		      EW=-4};
 
 /**
  *  A typedef for the BeamParticleData

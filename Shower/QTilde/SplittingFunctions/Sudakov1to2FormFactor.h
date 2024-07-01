@@ -19,6 +19,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "SudakovCutOff.h"
 #include "Sudakov1to2FormFactor.fh"
 
 namespace Herwig {
@@ -537,8 +538,6 @@ private:
    *  Pointer to the coupling for this Sudakov form factor
    */
   SudakovCutOffPtr cutoff_;
-
-private:
 
   /**
    * Member variables to keep the shower kinematics information

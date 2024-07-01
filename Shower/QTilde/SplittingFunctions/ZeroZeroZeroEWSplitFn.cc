@@ -109,30 +109,6 @@ void ZeroZeroZeroEWSplitFn::getCouplings(Complex & g, const IdList & ids,
     assert(false);
 }
 
-double ZeroZeroZeroEWSplitFn::P(const double, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
-  Complex ghhh(0.,0.);
-  getCouplings(ghhh,ids,t);
-  double val = norm(ghhh)/(2.*t)*GeV2;
-  if(mass)
-    return val;
-  else
-    assert(false);
-}
-
-double ZeroZeroZeroEWSplitFn::overestimateP(const double z,
-					   const IdList & ids) const {
-  Complex ghhh(0.,0.);
-  getCouplings(ghhh,ids);
-  return norm(ghhh)/(2.*z*(1.-z));
-}
-
-double ZeroZeroZeroEWSplitFn::ratioP(const double z, const Energy2 t,
-				    const IdList &, const bool ,
-				    const RhoDMatrix & ) const {
-  return z*(1.-z)/t*GeV2;
-}
-
 double ZeroZeroZeroEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
 				      unsigned int PDFfactor) const {
@@ -179,21 +155,6 @@ bool ZeroZeroZeroEWSplitFn::accept(const IdList &ids) const {
     return true;
   else
     return false;
-}
-
-vector<pair<int, Complex> >
-ZeroZeroZeroEWSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
-				       const RhoDMatrix &) {
-  // scalar so no dependence
-  return {{ {0, 1.} }};
-}
-
-vector<pair<int, Complex> >
-ZeroZeroZeroEWSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
-					const RhoDMatrix &) {
-  // scalar so no dependence
-  assert(false);
-  return {{ {0, 1.} }};
 }
 
 DecayMEPtr ZeroZeroZeroEWSplitFn::matrixElement(const double, const Energy2 t,

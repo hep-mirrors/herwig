@@ -21,9 +21,13 @@
 #include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include <cassert>
 
 using namespace Herwig;
+
+IS_QTildeShowerKinematics1to2::IS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+  : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
 
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
@@ -43,7 +47,7 @@ updateChildren( const tShowerParticlePtr theParent,
   ids[0] =  children[1]->dataPtr();
   Energy2 m22 = ZERO;
   if (ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma) {
-    const vector<Energy> & onshellMasses = SudakovFormFactor()->virtualMasses(ids);
+    const vector<Energy> & onshellMasses = sudakov1to2_->virtualMasses(ids);
     m22 =  sqr(onshellMasses[0]);
   }
 
@@ -109,10 +113,10 @@ updateParent(const tShowerParticlePtr parent,
 	     unsigned int,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
-  splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
+  sudakov1to2_->evaluateInitialStateScales(partnerType,scale(),z(),parent,
 					    children[0],children[1]);
   // set proper colour connections
-  splittingFn()->colourConnection(parent,children[0],children[1],
+  sudakov1to2_->colourConnection(parent,children[0],children[1],
 				  partnerType,true);
   // set proper parent/child relationships
   parent->addChild(children[0]);
@@ -142,7 +146,7 @@ updateParent(const tShowerParticlePtr parent,
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),false));
+  vertex->ME(sudakov1to2_->matrixElement(z(),t,ids,phi(),false));
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);

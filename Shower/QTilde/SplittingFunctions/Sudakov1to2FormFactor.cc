@@ -12,6 +12,8 @@
 //
 
 #include "Sudakov1to2FormFactor.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -109,7 +111,7 @@ void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
   double lower = integOverP(zlimits_.first ,ids,pdfopt);
   double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
-                 * alpha_->showerOverestimateValue()/Constants::twopi*enhance*detune);
+                 * alpha()->showerOverestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {

@@ -24,6 +24,9 @@
 
 using namespace Herwig;
 
+FS_QTildeShowerKinematics1to2::FS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+  : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
+
 void FS_QTildeShowerKinematics1to2::
 updateParameters(tShowerParticlePtr theParent,
 		 tShowerParticlePtr theChild0,
@@ -58,13 +61,13 @@ updateChildren(const tShowerParticlePtr parent,
 	       ShowerPartnerType partnerType) const {
   assert(children.size()==2);
   // calculate the scales
-  splittingFn()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
+  sudakov1to2_->evaluateFinalStateScales(partnerType,scale(),z(),parent,
 					  children[0],children[1]);
 
   // update the parameters
   updateParameters(parent, children[0], children[1], true);
   // set up the colour connections
-  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
+  sudakov1to2_->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
@@ -88,7 +91,7 @@ updateChildren(const tShowerParticlePtr parent,
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),true));
+  vertex->ME(sudakov1to2_->matrixElement(z(),t,ids,phi(),true));
   RhoDMatrix mapping;
   SpinPtr inspin;
   bool needMapping = parent->getMapping(inspin,mapping);
@@ -161,7 +164,7 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   ids[0] = parent->dataPtr();
   ids[1] = children[0]->dataPtr();
   ids[2] = children[1]->dataPtr();
-  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  const vector<Energy> & virtualMasses = sudakov1to2_->virtualMasses(ids);
   if(children[0]->children().empty()) children[0]->virtualMass(virtualMasses[1]);
   if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
   // compute the new pT of the branching
