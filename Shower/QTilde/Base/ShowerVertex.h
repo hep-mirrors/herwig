@@ -76,6 +76,14 @@ public:
     inMatrix_ = conv;
   }
 
+  /**
+   *  Set the change of basis for the outgoing particle's
+   */
+  inline void outgoingBasisTransform(unsigned int iloc, RhoDMatrix conv) {
+    convertOut_[iloc] = true;
+    outMatrix_[iloc] = conv;
+  }
+
 public:
   
   /**
