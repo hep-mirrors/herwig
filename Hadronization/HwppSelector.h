@@ -33,7 +33,6 @@ public:
    * The default constructor.
    */
   HwppSelector() : StandardModelHadronSpectrum(1),
-		   _pwtDIquark(1.0 ),
 		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
 		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
@@ -137,18 +136,6 @@ private:
    */
   HwppSelector & operator=(const HwppSelector &) = delete;
 
-private:
-
-  /**
-   *  The weights for the diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a diquark.
-   */
-  double _pwtDIquark;
-  //@}
-  
 private:
 
   /**

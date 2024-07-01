@@ -255,11 +255,14 @@ tcPDPair HadronSpectrum::chooseHadronPair(const Energy cluMass,
   useMe();
   // if either of the input partons is a diquark don't allow diquarks to be
   // produced
-  bool diquark0 = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
-  bool diquark1 = diquark0;
+  bool isDiquark1 = DiquarkMatcher::Check(par1->id());
+  bool isDiquark2 = DiquarkMatcher::Check(par2->id());
+  bool noDiquarkInCluster = !(isDiquark1 || isDiquark2);
+  bool oneDiquarkInCluster = (isDiquark1 != isDiquark2);
   bool quark = true;
   // decide is baryon or meson production
-  if(diquark0) std::tie(quark,diquark0,diquark1) = selectBaryon(cluMass,par1,par2);
+  if(noDiquarkInCluster) std::tie(quark,noDiquarkInCluster,oneDiquarkInCluster)
+  						= selectBaryon(cluMass,par1,par2);
   // weights for the different possibilities
   Energy weight, wgtsum(ZERO);
   // loop over all hadron pairs with the allowed flavours
@@ -270,8 +273,8 @@ tcPDPair HadronSpectrum::chooseHadronPair(const Energy cluMass,
     if(!quark && std::find(hadronizingQuarks().begin(), hadronizingQuarks().end(),
         abs(quarktopick->id())) != hadronizingQuarks().end()) continue;
     if(DiquarkMatcher::Check(quarktopick->id()) &&
-       ((!diquark0 && quarktopick->iSpin()==1) ||
-	(!diquark1 && quarktopick->iSpin()==3))) continue;
+       ((!noDiquarkInCluster && quarktopick->iSpin()==1) ||
+	(!oneDiquarkInCluster && quarktopick->iSpin()==3))) continue;
     HadronTable::const_iterator
       tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));
     HadronTable::const_iterator
