@@ -11,7 +11,7 @@
 // functions of the SplittingFunction class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"

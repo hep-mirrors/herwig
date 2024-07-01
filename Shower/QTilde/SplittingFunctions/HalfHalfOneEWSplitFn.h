@@ -5,7 +5,7 @@
 // This is the declaration of the HalfHalfOneEWSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 

@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"

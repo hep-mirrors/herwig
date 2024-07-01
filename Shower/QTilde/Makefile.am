@@ -49,6 +49,6 @@ SplittingFunctions/SudakovCutOff.cc SplittingFunctions/SudakovCutOff.h Splitting
 SplittingFunctions/PTCutOff.cc SplittingFunctions/PTCutOff.h \
 SplittingFunctions/MassCutOff.cc SplittingFunctions/MassCutOff.h \
 SplittingFunctions/VariableMassCutOff.cc SplittingFunctions/VariableMassCutOff.h \
-SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
-SplittingFunctions/SplittingFunction.cc  \
+SplittingFunctions/Sudakov1to2FormFactor.h SplittingFunctions/Sudakov1to2FormFactor.fh \
+SplittingFunctions/Sudakov1to2FormFactor.cc  \
 Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

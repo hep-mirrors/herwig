@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// SplittingFunction.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Sudakov1to2FormFactor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -19,7 +19,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "SplittingFunction.fh"
+#include "Sudakov1to2FormFactor.fh"
 
 namespace Herwig {
 

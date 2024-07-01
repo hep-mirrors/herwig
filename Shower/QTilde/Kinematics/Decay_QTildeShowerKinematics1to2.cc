@@ -13,7 +13,7 @@
 
 #include "Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include <cassert>
 #include "Herwig/Shower/ShowerHandler.h"

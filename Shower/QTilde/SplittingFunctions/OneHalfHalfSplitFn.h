@@ -12,7 +12,7 @@
 // This is the declaration of the OneHalfHalfSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 

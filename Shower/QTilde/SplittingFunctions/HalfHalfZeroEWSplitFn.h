@@ -5,7 +5,7 @@
 // This is the declaration of the HalfHalfZeroEWSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
