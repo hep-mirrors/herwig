@@ -14,7 +14,6 @@
 #include "CluHadConfig.h"
 #include "HadronSpectrum.h"
 #include "ClusterDecayer.fh"
-#include "HadronSpectrum.h"
 
 namespace Herwig {
 using namespace ThePEG;

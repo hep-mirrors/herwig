@@ -56,7 +56,7 @@ namespace {
 
 StandardModelHadronSpectrum::StandardModelHadronSpectrum(unsigned int opt) 
   : HadronSpectrum(),
-	_hadronizingStrangeDiquarks(1),
+	_hadronizingStrangeDiquarks(2),
     _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
     _pwtBquark( 0.0 ),
     _sngWt( 1.0 ),_decWt( 1.0 ), 
