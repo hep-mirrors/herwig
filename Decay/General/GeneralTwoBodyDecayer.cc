@@ -332,10 +332,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
              && out2->iColour()==PDT::DarkColourAntiFundamental) ||
 	    (out1->iColour()==PDT::DarkColourAntiFundamental
          && out2->iColour()==PDT::DarkColourFundamental)) {
-      throw Exception() << "The GeneralTwoBodyDecayer cannot yet handle "
-            << "decays to dark coloured particles. Please include these "
-            << "decays in the hard process"
-			<< Exception::runerror;
+      output *= 3.;
     }
     else 
       throw Exception() << "Unknown colour for the outgoing particles"
