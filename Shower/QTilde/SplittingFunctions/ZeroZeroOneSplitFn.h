@@ -12,7 +12,8 @@
 // This is the declaration of the ZeroZeroOneSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
+#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 namespace Herwig {
 
@@ -35,7 +36,7 @@ using namespace ThePEG;
  * @see \ref ZeroZeroOneSplitFnInterfaces "The interfaces"
  * defined for ZeroZeroOneSplitFn.
  */
-class ZeroZeroOneSplitFn: public SplittingFunction {
+class ZeroZeroOneSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -44,30 +45,27 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    if(ids[0]!=ids[1]) return false;
+    if(ids[0]->iSpin()!=PDT::Spin0 ||
+       ids[2]->iSpin()!=PDT::Spin1) return false;
+    return true;
+  }
 
   /**
    *   Methods to return the splitting function.
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   bool mass, const RhoDMatrix & rho) const;
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  double overestimateP(const double z, const IdList & ) const { 
+    return 2./(1.-z); 
+  }
 
   /**
    * The concrete implementation of the
@@ -79,8 +77,15 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			bool mass, const RhoDMatrix & rho) const;
+  double ratioP(const double z, const Energy2 t,
+                const IdList & ids, const bool mass, const RhoDMatrix &) const { 
+    double val = z;
+    if(mass) {
+      Energy m = ids[0]->mass();
+      val-=sqr(m)*(1.-z)/t;
+    }
+    return val;
+  } 
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -91,8 +96,11 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
-			    unsigned int PDFfactor=0) const;
+  double integOverP(const double z, const IdList &, 
+                    unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    return -2.*log(1.-z); 
+  }
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -102,8 +110,11 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
-			       unsigned int PDFfactor=0) const;
+  double invIntegOverP(const double r, const IdList &, 
+                       unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    return 1. - exp(- 0.5*r);
+  }
   //@}
 
   /**
@@ -116,9 +127,13 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+  vector<pair<int,Complex> >
+  generatePhiForward(const double, const Energy2, const IdList &,
+	      const RhoDMatrix &) {
+    // scalar so no dependence
+    return {{ {0, 1.} }};
+  }
+
   /**
    * Method to calculate the azimuthal angle for backward
    * Shouldn't be needed and NOT IMPLEMENTED
@@ -130,9 +145,12 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
+  vector<pair<int,Complex> >
+  generatePhiBackward(const double, const Energy2, const IdList &,
+		      const RhoDMatrix &) {
+    // scalar so no dependence
+    return {{ {0, 1.} }};
+  }
   
   /**
    * Calculate the matrix element for the splitting
@@ -143,8 +161,15 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+                           const IdList & ids, const double phi, bool timeLike) {
+    // calculate the kernal
+    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
+    Energy m = timeLike ? ids[0]->mass() : ZERO;
+    (*kernal)(0,0,0) = -exp(Complex(0.,1.)*phi)*sqrt(1.-(1.-z)*sqr(m)/z/t)*sqrt(z/(1.-z));
+    (*kernal)(0,0,2) = -conj((*kernal)(0,0,0));
+    return kernal;
+  }
 
 public:
 

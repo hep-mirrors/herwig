@@ -139,7 +139,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->splittingFn()->accept(ids))
+  if(!s->accept(ids))
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // add to map
   addToMap(ids,s,final);
@@ -172,7 +172,7 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->splittingFn()->accept(ids))
+  if(!s->accept(ids))
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // delete from map
   deleteFromMap(ids,s,final);
@@ -270,7 +270,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       rhoCalc = true;
     }
     // whether or not this interaction should be angular ordered
-    bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
+    bool angularOrdered = cit->second.sudakov->angularOrdered();
     ShoKinPtr newKin;
     ShowerPartnerType type;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
@@ -286,7 +286,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       // special for octets
       if(particle.dataPtr()->iColour()==PDT::Colour8) {
 	// octet -> octet octet
-	if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+	if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
     	  type = ShowerPartnerType::QCDColourLine;
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
     	  newKin= cit->second.sudakov->
@@ -341,7 +341,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 			// special for octets
 			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
-		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+		if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
 				type = ShowerPartnerType::DARKColourLine;
 		Energy startingScale = angularOrdered ? particle.scales().DARK_c : particle.scales().DARK_c_noAO;
 				newKin= cit->second.sudakov->
@@ -437,7 +437,7 @@ chooseDecayBranching(ShowerParticle &particle,
     // check either right interaction or doing both
     if(!checkInteraction(interaction,cit->second.sudakov->interactionType(),_darkInteraction)) continue;
     // whether or not this interaction should be angular ordered
-    bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
+    bool angularOrdered = cit->second.sudakov->angularOrdered();
     ShoKinPtr newKin;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
     ShowerPartnerType type;
@@ -456,7 +456,7 @@ chooseDecayBranching(ShowerParticle &particle,
       // special for octets
       if(particle.dataPtr()->iColour()==PDT::Colour8) {
 	// octet -> octet octet
-	if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+	if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
 	  Energy stoppingColour = angularOrdered ? stoppingScales.QCD_c     : stoppingScales.QCD_c_noAO;
 	  Energy stoppingAnti   = angularOrdered ? stoppingScales.QCD_ac    : stoppingScales.QCD_ac_noAO;
 	  Energy startingColour = angularOrdered ? particle.scales().QCD_c  : particle.scales().QCD_c_noAO;
@@ -518,7 +518,7 @@ chooseDecayBranching(ShowerParticle &particle,
 			// special for octets
 			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
-		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+		if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
 			Energy stoppingColour = angularOrdered ? stoppingScales.DARK_c     : stoppingScales.DARK_c_noAO;
 		  Energy stoppingAnti   = angularOrdered ? stoppingScales.DARK_ac    : stoppingScales.DARK_ac_noAO;
 		  Energy startingColour = angularOrdered ? particle.scales().DARK_c  : particle.scales().DARK_c_noAO;
@@ -618,7 +618,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
       rhoCalc = true;
     }
     // whether or not this interaction should be angular ordered
-    bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
+    bool angularOrdered = cit->second.sudakov->angularOrdered();
     ShoKinPtr newKin;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
     ShowerPartnerType type;
@@ -633,7 +633,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
       // special for octets
       if(particle.dataPtr()->iColour()==PDT::Colour8) {
 	// octet -> octet octet
-	if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+	if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
     	  type = ShowerPartnerType::QCDColourLine;
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
 	  newKin = cit->second.sudakov->
@@ -685,7 +685,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			// special for octets
 			if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
 		// octet -> octet octet
-		if(cit->second.sudakov->splittingFn()->colourStructure()==OctetOctetOctet) {
+		if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
 					type = ShowerPartnerType::DARKColourLine;
 			Energy startingScale = angularOrdered ? particle.scales().DARK_c : particle.scales().DARK_c_noAO;
 			newKin = cit->second.sudakov->

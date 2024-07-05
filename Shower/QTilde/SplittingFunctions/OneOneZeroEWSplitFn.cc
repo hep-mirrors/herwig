@@ -35,7 +35,7 @@ void OneOneZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
 }
 
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<OneOneZeroEWSplitFn,SplittingFunction>
+DescribeClass<OneOneZeroEWSplitFn,Sudakov1to2FormFactor>
 describeHerwigOneOneZeroEWSplitFn("Herwig::OneOneZeroEWSplitFn", "HwShower.so");
 
 
@@ -60,7 +60,7 @@ void OneOneZeroEWSplitFn::Init() {
 
 
 void OneOneZeroEWSplitFn::doinit() {
-  SplittingFunction::doinit();
+  Sudakov1to2FormFactor::doinit();
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   // W -> W H coupling      g = e/sin theta_W

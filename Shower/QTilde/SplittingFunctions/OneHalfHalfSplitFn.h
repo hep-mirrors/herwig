@@ -12,7 +12,7 @@
 // This is the declaration of the OneHalfHalfSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 
@@ -36,7 +36,7 @@ using namespace ThePEG;
  * @see \ref OneHalfHalfSplitFnInterfaces "The interfaces"
  * defined for OneHalfHalfSplitFn.
  */
-class OneHalfHalfSplitFn: public SplittingFunction {
+class OneHalfHalfSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -45,31 +45,27 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  virtual bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    if(ids[1]!=ids[2]->CC()) return false;
+    if(ids[1]->iSpin()!=PDT::Spin1Half) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1) return false;
+    return true;
+  }
 
   /**
    *   Methods to return the splitting function.
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
-  
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    return 1.;
+  }
 
   /**
    * The concrete implementation of the
@@ -82,7 +78,15 @@ public:
    * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const;
+			const bool mass, const RhoDMatrix & rho) const {
+    double zz = z*(1.-z);
+    double val = 1.-2.*zz;
+    if(mass) {
+      Energy m = ids[1]->mass();
+      val+= 2.*sqr(m)/t;
+    }
+    return val;
+  }
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -133,8 +137,11 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
+  generatePhiBackward(const double, const Energy2, const IdList &,
+		      const RhoDMatrix &) { 
+    // no dependance
+    return {{ {0, 1.} }};
+  }
   
   /**
    * Calculate the matrix element for the splitting

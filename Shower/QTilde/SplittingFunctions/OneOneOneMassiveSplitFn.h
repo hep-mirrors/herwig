@@ -12,7 +12,7 @@
 // This is the declaration of the OneOneOneMassiveSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 
@@ -37,7 +37,7 @@ using namespace ThePEG;
  * @see \ref OneOneOneMassiveSplitFnInterfaces "The interfaces"
  * defined for OneOneOneMassiveSplitFn.
  */
-class OneOneOneMassiveSplitFn: public SplittingFunction {
+class OneOneOneMassiveSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -46,22 +46,13 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
-
-  /**
-   *   Methods to return the splitting function.
-   */
-  //@{
-  /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
+  virtual bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      if(ids[0]->iSpin()!=PDT::Spin1) return false;
+    }
+    return true;
+  }
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -69,7 +60,9 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList &) const {
+    return 2.*(1/z + 1/(1.-z)); 
+  }
 
   /**
    * The concrete implementation of the
@@ -82,7 +75,13 @@ public:
    * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const;
+			const bool, const RhoDMatrix & rho) const {
+    Energy2 m2 = sqr(ids[0]->mass());
+    double rho00 = rho(1,1).real();
+    return (sqr(z)-z*(1.-z)*m2/t
+            + (1.-rho00)*sqr(1.-z)*( 1. + sqr(z) -z*(1.-z)*m2/t )
+            + 2.*rho00*z*(1.-z)*sqr(1.-z)*m2/t);
+  }
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -93,8 +92,12 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids,
-			    unsigned int PDFfactor=0) const;
+  virtual double integOverP(const double z, const IdList &,
+			    unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    assert(z>0.&&z<1.);
+    return 2.*log(z/(1.-z));
+  }
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -104,8 +107,11 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids,
-			       unsigned int PDFfactor=0) const;
+  virtual double invIntegOverP(const double r, const IdList &,
+			       unsigned int PDFfactor=0) const {
+    assert(PDFfactor==0);
+    return 1./(1.+exp(-0.5*r)); 
+  }
   //@}
 
   /**

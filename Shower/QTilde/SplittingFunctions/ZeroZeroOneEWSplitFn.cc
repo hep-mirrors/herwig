@@ -12,7 +12,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 #include "Herwig/Models/StandardModel/SMFFHVertex.h"
 #include "ThePEG/Interface/Parameter.h"
 
@@ -35,7 +34,7 @@ void ZeroZeroOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
 }
 
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<ZeroZeroOneEWSplitFn,SplittingFunction>
+DescribeClass<ZeroZeroOneEWSplitFn,Sudakov1to2FormFactor>
 describeHerwigZeroZeroOneEWSplitFn("Herwig::ZeroZeroOneEWSplitFn", "HwShower.so");
 
 
@@ -56,150 +55,4 @@ void ZeroZeroOneEWSplitFn::Init() {
      &ZeroZeroOneEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
      false, false, Interface::limited);
 
-}
-
-
-void ZeroZeroOneEWSplitFn::doinit() {
-  SplittingFunction::doinit();
-}
-
-
-void ZeroZeroOneEWSplitFn::getCouplings(Complex & g, const IdList &) const {
-  g = Complex(_couplingValueRe,_couplingValueIm);
-}
-
-
-double ZeroZeroOneEWSplitFn::P(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
-  Complex ghhv(0.,0.);
-  getCouplings(ghhv,ids);
-  // the splitting in the massless limit
-  double val = 2*z/(1.-z);
-  // the massive limit
-  if(mass){
-    // get the running mass
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += (2*z/(1.-z))*m0t2 - (2./(1.-z))*m1t2 + (1./2.)*m2t2;
-  }
-  return norm(ghhv)*val;
-}
-
-
-double ZeroZeroOneEWSplitFn::overestimateP(const double z,
-					   const IdList & ids) const {
-  Complex ghhv(0.,0.);
-  getCouplings(ghhv,ids);
-  return norm(ghhv)*2*z/(1.-z);
-}
-
-
-double ZeroZeroOneEWSplitFn::ratioP(const double z, const Energy2 t,
-				    const IdList & ids, const bool mass,
-				    const RhoDMatrix &) const {
-  // ratio in the massless limit
-  double val = 1.;
-  // the massive limit
-  if(mass){
-    // get the running mass
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-    val += m0t2-(1./z)*m1t2+((1.-z)/(4.*z))*m2t2;
-  }
-  return val;
-}
-
-
-double ZeroZeroOneEWSplitFn::integOverP(const double z,
-				      const IdList & ids,
-				      unsigned int PDFfactor) const {
-  Complex ghhv(0.,0.);
-  getCouplings(ghhv,ids);
-  double pre = norm(ghhv)*2.;
-  switch (PDFfactor) {
-  case 0:
-    return -pre*(z+log(1.-z));
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "ZeroZeroOneEWSplitFn::integOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-}
-
-
-double ZeroZeroOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
-					   unsigned int PDFfactor) const {
-  Complex ghhv(0.,0.);
-  getCouplings(ghhv,ids);
-  double pre = norm(ghhv)*2.;
-  switch (PDFfactor) {
-  case 0:
-    return 1.-exp(-(1.+r/pre));;
-  case 1:
-  case 2:
-  case 3:
-  default:
-    throw Exception() << "ZeroZeroOneEWSplitFn::invIntegOverP() invalid PDFfactor = "
-		      << PDFfactor << Exception::runerror;
-  }
-}
-
-
-bool ZeroZeroOneEWSplitFn::accept(const IdList &ids) const {
-  if(ids.size()!=3)
-    return false;
-  if(_couplingValueIm==0.&&_couplingValueRe==0.)
-    return false;
-  if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge())
-    return false;
-  if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin1 && ids[2]->iSpin()==PDT::Spin0)
-    return true;
-  else if(ids[0]->iSpin()==PDT::Spin0 && ids[1]->iSpin()==PDT::Spin0 && ids[2]->iSpin()==PDT::Spin1)
-    return true;
-  else
-    return false;
-}
-
-
-vector<pair<int, Complex> >
-ZeroZeroOneEWSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
-				       const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return vector<pair<int, Complex> >(1,make_pair(0,1.));
-}
-
-
-vector<pair<int, Complex> >
-ZeroZeroOneEWSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
-					const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return vector<pair<int, Complex> >(1,make_pair(0,1.));
-}
-
-
-DecayMEPtr ZeroZeroOneEWSplitFn::matrixElement(const double z, const Energy2 t,
-                                             const IdList & ids, const double phi,
-                                             bool) {
-  Complex ghhv(0.,0.);
-  getCouplings(ghhv,ids);
-  // calculate the kernal
-  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
-  double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-  double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-  double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
-  Complex phase  = exp(Complex(0.,1.)*phi);
-  Complex cphase = conj(phase);
-  double sqrtmass = sqrt(m0t2*z*(1.-z)-m1t2*(1.-z)-m2t2*z+z*(1.-z));
-  // assign kernel
-  (*kernal)(0,0,0) = -phase*ghhv*sqrtmass/(1.-z);        // 111
-  (*kernal)(1,0,0) = -sqrt(m2t2)*(1.+z)/sqrt(2.*(1.-z)); // 211 -> 411
-  (*kernal)(2,0,0) = cphase*ghhv*sqrtmass/(1.-z);        // 311
-  // return the answer
-  return kernal;
 }

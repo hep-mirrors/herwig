@@ -34,7 +34,7 @@ void HalfHalfOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
 }
 
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<HalfHalfOneEWSplitFn,SplittingFunction>
+DescribeClass<HalfHalfOneEWSplitFn,Sudakov1to2FormFactor>
 describeHerwigHalfHalfOneEWSplitFn("Herwig::HalfHalfOneEWSplitFn", "HwShower.so");
 
 void HalfHalfOneEWSplitFn::Init() {
@@ -69,7 +69,7 @@ void HalfHalfOneEWSplitFn::Init() {
 }
 
 void HalfHalfOneEWSplitFn::doinit() {
-  SplittingFunction::doinit();
+  Sudakov1to2FormFactor::doinit();
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   // left-handled W coupling
@@ -110,32 +110,6 @@ void HalfHalfOneEWSplitFn::getCouplings(Complex & gL, Complex & gR, const IdList
   if(ids[0]->id()<0) swap(gL,gR);
 }
 
-double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
-  Complex gL(0.,0.),gR(0.,0.);
-  getCouplings(gL,gR,ids);
-  double val = (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*(1.+sqr(z))/(1.-z);
-  Energy m0, m1, m2;
-  if(mass) {
-    m0 = ids[0]->mass();
-    m1 = ids[1]->mass();
-    m2 = ids[2]->mass();
-    double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
-    val += (norm(gL)*abs(rho(0,0))+norm(gR)*abs(rho(1,1)))*((1.+sqr(z))/(1.-z)*sqr(m0t)-(1.+z)/(1.-z)*sqr(m1t)-sqr(m2t))
-           + (norm(gR)*abs(rho(0,0))+norm(gL)*abs(rho(1,1)))*z*sqr(m0t)
-           - 2.*(gR*conj(gL)).real()*(abs(rho(1,1))+abs(rho(0,0)))*m0t*m1t;
-  }
-  return colourFactor(ids)*val;
-}
-
-
-double HalfHalfOneEWSplitFn::overestimateP(const double z,
-					   const IdList & ids) const {
-  Complex gL(0.,0.),gR(0.,0.);
-  getCouplings(gL,gR,ids);
-  return 2.*max(norm(gL),norm(gR))*colourFactor(ids)/(1.-z); //FIXME//
-}
-
 double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
 				    const RhoDMatrix & rho) const {
@@ -161,7 +135,7 @@ double HalfHalfOneEWSplitFn::integOverP(const double z,
 				      unsigned int PDFfactor) const {
   Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*max(norm(gL),norm(gR));
+  double pre = max(norm(gL),norm(gR));
   switch (PDFfactor) {
   case 0:
     return -2.*pre*Math::log1m(z);
@@ -180,7 +154,7 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
   Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*max(norm(gL),norm(gR));
+  double pre = max(norm(gL),norm(gR));
   switch (PDFfactor) {
   case 0:
     return 1. - exp(- 0.5*r/pre);
@@ -213,22 +187,6 @@ bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
     if(ids[0]->iCharge()==out) return true;
   }
   return false;
-}
-
-vector<pair<int, Complex> >
-HalfHalfOneEWSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
-				       const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return vector<pair<int, Complex> >(1,make_pair(0,1.));
-}
-
-vector<pair<int, Complex> >
-HalfHalfOneEWSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
-					const RhoDMatrix &) {
-  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-  // and rest = splitting function for Tr(rho)=1 as required by defn
-  return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
 DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,

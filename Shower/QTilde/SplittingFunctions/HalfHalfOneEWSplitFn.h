@@ -5,7 +5,7 @@
 // This is the declaration of the HalfHalfOneEWSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 
 namespace Herwig {
 
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref HalfHalfOneEWSplitFnInterfaces "The interfaces"
  * defined for HalfHalfOneEWSplitFn.
  */
-class HalfHalfOneEWSplitFn: public SplittingFunction {
+class HalfHalfOneEWSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -34,23 +34,16 @@ public:
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    Complex gL(0.,0.),gR(0.,0.);
+    getCouplings(gL,gR,ids);
+    return 2.*max(norm(gL),norm(gR))/(1.-z); //FIXME//
+  }
 
   /**
    * The concrete implementation of the
@@ -98,8 +91,11 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+  generatePhiForward(const double, const Energy2, const IdList &, const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
+  }
 
   /**
    * Method to calculate the azimuthal angle for backward evolution
@@ -110,8 +106,11 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> > 
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
+  generatePhiBackward(const double, const Energy2, const IdList &, const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
+  }
   
   /**
    * Calculate the matrix element for the splitting

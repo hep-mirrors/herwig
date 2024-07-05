@@ -16,11 +16,10 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
-DescribeNoPIOClass<OneHalfHalfDarkSplitFn,Herwig::SplittingFunction>
+DescribeNoPIOClass<OneHalfHalfDarkSplitFn,Herwig::Sudakov1to2FormFactor>
 describeOneHalfHalfDarkSplitFn ("Herwig::OneHalfHalfDarkSplitFn","HwShower.so");
 
 void OneHalfHalfDarkSplitFn::Init() {
@@ -75,12 +74,12 @@ double OneHalfHalfDarkSplitFn::P(const double z, const Energy2 t,
     Energy m = ids[1]->mass();
     val +=2.*sqr(m)/t;
   }
-  return colourFactor(ids)*val;
+  return val;
 }
 
 double OneHalfHalfDarkSplitFn::overestimateP(const double,
 					 const IdList &ids) const {
-  return colourFactor(ids);
+  return 1.;
 }
 
 double OneHalfHalfDarkSplitFn::ratioP(const double z, const Energy2 t,
@@ -98,17 +97,17 @@ double OneHalfHalfDarkSplitFn::integOverP(const double z, const IdList & ids,
 				      unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return colourFactor(ids)*z;
+    return z;
   case 1:
-    return colourFactor(ids)*log(z);
+    return log(z);
   case 2:
-    return -colourFactor(ids)*log(1.-z);
+    return -log(1.-z);
   case 3:
-    return colourFactor(ids)*log(z/(1.-z));
+    return log(z/(1.-z));
   case 4:
-    return colourFactor(ids)*2.*sqrt(z);
+    return 2.*sqrt(z);
   case 5:
-    return colourFactor(ids)*(2./3.)*z*sqrt(z);
+    return (2./3.)*z*sqrt(z);
   default:
     throw Exception() << "OneHalfHalfDarkSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -120,17 +119,17 @@ double OneHalfHalfDarkSplitFn::invIntegOverP(const double r,
 					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return r/colourFactor(ids);
+    return r;
   case 1:
-    return exp(r/colourFactor(ids));
+    return exp(r);
   case 2:
-    return 1.-exp(-r/colourFactor(ids));
+    return 1.-exp(-r);
   case 3:
-    return 1./(1.+exp(-r/colourFactor(ids)));
+    return 1./(1.+exp(-r));
   case 4:
-    return 0.25*sqr(r/colourFactor(ids));
+    return 0.25*sqr(r);
   case 5:
-    return pow(1.5*r/colourFactor(ids),2./3.);
+    return pow(1.5*r,2./3.);
   default:
     throw Exception() << "OneHalfHalfDarkSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;

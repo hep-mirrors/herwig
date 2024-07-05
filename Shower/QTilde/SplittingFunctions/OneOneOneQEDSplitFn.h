@@ -5,7 +5,7 @@
 // This is the declaration of the OneOneOneQEDSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref OneOneOneQEDSplitFnInterfaces "The interfaces"
  * defined for OneOneOneQEDSplitFn.
  */
-class OneOneOneQEDSplitFn: public SplittingFunction {
+class OneOneOneQEDSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
