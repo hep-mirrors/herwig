@@ -143,14 +143,14 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	rm -rf $(subst .yoda,,$@)
 
 Rivet-%.run : Rivet/%.in
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
 
 Rivet-%.yoda : Rivet-%.run
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN) $<
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
 
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
@@ -200,14 +200,14 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.in ) \
 	          $(shell echo Rivet/EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.in ) \
                   $(shell echo Rivet/EE-Gamma-Direct-tautau-{189,196,206}.in ) \
-                  $(shell echo Rivet/EE-Gamma-{pi0,Eta,EtaPrime}-10.58.in ) \
+                  $(shell echo Rivet/EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.in ) \
                   $(shell echo Rivet/EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
-Analyses/RivetHerwig.so: Analyses/*.cc
-	rivet-build Analyses/RivetHerwig.so Analyses/*.cc 
+Analysis/RivetHerwig.so: Analysis/*.cc
+	rivet-build Analysis/RivetHerwig.so Analysis/*.cc 
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
@@ -223,12 +223,12 @@ Rivet-EE-Gamma: Rivet-EE-Gamma/done
 
 Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
-	             $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime}-10.58.yoda ) \
+	             $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.yoda ) \
                      $(shell echo Rivet-EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.yoda ) \
 	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
 	touch $@
 
 Rivet-EE : Rivet-EE/done
@@ -245,9 +245,17 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 	python/plot-EE Rivet-EE
 	touch $@
 
+Onium-%.yoda:
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
+
+Onium-Sigma: Analysis/RivetHerwig.so
+	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSigma.py --fast --analyse
+
 Rivet-LowEnergy-%.yoda:
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	export RIVET_ANALYSIS_PATH=`pwd`/Analyses; $(HWRUN)  $(subst .yoda,.run,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
 
 Rivet-LowEnergy-EE-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -402,7 +410,7 @@ clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt
 	rm -rf Rivet-*
 	rm -rf Onium-Splitting
-	rm -rf Analyses/*.so
+	rm -rf Analysis/*.so
 
 distclean-local:
 	rm -rf .cache
