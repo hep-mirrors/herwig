@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GammaGammaAmplitude class.
+//
+#ifndef Herwig_GammaGammaAmplitude_FH
+#define Herwig_GammaGammaAmplitude_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class GammaGammaAmplitude;
+
+ThePEG_DECLARE_POINTERS(Herwig::GammaGammaAmplitude,GammaGammaAmpPtr);
+
+}
+
+#endif
