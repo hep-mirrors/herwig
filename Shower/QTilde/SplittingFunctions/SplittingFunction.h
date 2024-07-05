@@ -40,13 +40,13 @@ using namespace ThePEG;
  *
  *  This is an abstract class which defines the common interface
  *  for all \f$1\to2\f$ splitting functions, for both initial-state
- *  and final-state radiation. 
+ *  and final-state radiation.
  *
  *  The SplittingFunction class contains a number of purely virtual members
  *  which must be implemented in the inheriting classes. The class also stores
  *  the interaction type of the spltting function.
  *
- *  The inheriting classes need to specific the splitting function 
+ *  The inheriting classes need to specific the splitting function
  *  \f$P(z,2p_j\cdot p_k)\f$, in terms of the energy fraction \f$z\f$ and
  *  the evolution scale. In order to allow the splitting functions to be used
  *  with different choices of evolution functions the scale is given by
@@ -56,8 +56,8 @@ using namespace ThePEG;
  *  $p_T$ is the relative transverse momentum of the branching products and
  *  \f$\tilde{q}^2\f$ is the angular variable described in hep-ph/0310083.
  *
- *  In addition an overestimate of the 
- *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$, 
+ *  In addition an overestimate of the
+ *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$,
  *  the integral, inverse of the integral for this overestimate and
  *  ratio of the true splitting function to the overestimate must be provided
  *  as they are necessary for the veto alogrithm used to implement the evolution.
@@ -70,7 +70,7 @@ class SplittingFunction: public Interfaced {
 public:
 
   /**
-   * The default constructor.   
+   * The default constructor.
    * @param b All splitting functions must have an interaction order
    */
   SplittingFunction()
@@ -144,7 +144,7 @@ public:
   //@{
   /**
    * Purely virtual method which should return the exact value of the splitting function,
-   * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale 
+   * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale
    \f$\tilde{q}^2\f$.
    * @param z   The energy fraction.
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
@@ -163,7 +163,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const = 0; 
+  virtual double overestimateP(const double z, const IdList & ids) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -179,21 +179,21 @@ public:
 			const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
-   * Purely virtual method which should return the indefinite integral of the 
+   * Purely virtual method which should return the indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z         The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   *                  
+   *
    */
-  virtual double integOverP(const double z, const IdList & ids, 
-			    unsigned int PDFfactor=0) const = 0; 
+  virtual double integOverP(const double z, const IdList & ids,
+			    unsigned int PDFfactor=0) const = 0;
 
   /**
-   * Purely virtual method which should return the inverse of the 
-   * indefinite integral of the 
+   * Purely virtual method which should return the inverse of the
+   * indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$ which is used to
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
@@ -202,12 +202,12 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const = 0;
   //@}
 
   /**
-   * Purely virtual method which should make the proper colour connection 
+   * Purely virtual method which should make the proper colour connection
    * between the emitting parent and the branching products.
    * @param parent The parent for the branching
    * @param first  The first  branching product
@@ -218,7 +218,7 @@ public:
   virtual void colourConnection(tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
-				ShowerPartnerType partnerType, 
+				ShowerPartnerType partnerType,
 				const bool back) const;
 
   /**
@@ -229,7 +229,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 		     const RhoDMatrix &) = 0;
 
@@ -240,7 +240,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 		      const RhoDMatrix &) = 0;
 
@@ -252,7 +252,7 @@ public:
    * @param phi The azimuthal angle, \f$\phi\f$.
    * @param timeLike Whether timelike or spacelike, affects inclusive of mass terms
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
 				   const IdList & ids, const double phi,
                                    bool timeLike) = 0;
 
@@ -380,7 +380,7 @@ private:
   unsigned int scaleChoice_;
 
   /**
-   *   Enforce strict AO 
+   *   Enforce strict AO
    */
   bool strictAO_;
 

@@ -24,11 +24,11 @@ using namespace ThePEG;
 /** \ingroup Decay
  *
  * The <code>PhaseSpaceMode</code> class is designed to store a group
- * of phase-space channels for use by the DecayIntegrator class to 
+ * of phase-space channels for use by the DecayIntegrator class to
  * generate the phase-space for a given decay mode.
  *
  * Additional phase-space channels can be added using the addChannel member.
- * 
+ *
  *  In practice the modes are usually constructed together with the a number of
  *  <code>PhaseSpaceChannel</code> objects. In classes inheriting from the
  *  DecayIntegrator class.
@@ -37,7 +37,7 @@ using namespace ThePEG;
  * @see PhaseSpaceChannel
  *
  * @author  Peter Richardson
- * 
+ *
  */
 class PhaseSpaceMode: public Base {
 
@@ -54,7 +54,7 @@ public:
 		     testOnShell_(false), eMax_(ZERO),
 		     eps_(ZERO), nRand_(0)
   {};
-  
+
   /**
    * The default constructor.
    */
@@ -69,12 +69,12 @@ public:
   //@}
 
 public:
-  
+
   /**
    * Generate the decay.
    * @param intermediates Whether or not to generate the intermediate particle
    *                      in the decay channel.
-   * @param cc Whether we are generating the mode specified or the charge 
+   * @param cc Whether we are generating the mode specified or the charge
    *           conjugate mode.
    * @param inpart The incoming particle.
    * @return The outgoing particles.
@@ -82,9 +82,9 @@ public:
   ParticleVector generateDecay(const Particle & inpart,
 			       tcDecayIntegratorPtr decayer,
 			       bool intermediates,bool cc);
-  
+
   /**
-   * Add a new channel. 
+   * Add a new channel.
    * @param channel A pointer to the new PhaseChannel
    */
   void addChannel(PhaseSpaceChannel channel) {
@@ -106,7 +106,7 @@ public:
   }
 
   /**
-   * Reset the properties of one of the intermediate particles. All the channels 
+   * Reset the properties of one of the intermediate particles. All the channels
    * are reset.
    * @param part The ParticleData object of the particle to reset
    * @param mass The mass of the intermediate.
@@ -145,7 +145,7 @@ public:
    *  Set whether of not decays are generated on-shell
    */
   void checkOnShell(bool in) {testOnShell_=in;}
-  
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -182,20 +182,20 @@ public :
   /**
    *   Initialisation before the run stage
    */
-  void initrun(); 
+  void initrun();
 
   /**
    * Get the maximum weight for the decay.
    * @return The maximum weight.
    */
   double maxWeight() const {return maxWeight_;}
-  
+
   /**
    * Set the maximum weight for the decay.
    * @return The maximum weight.
    */
   void maxWeight(double wgt) const {maxWeight_=wgt;}
-  
+
   /**
    * Initialise the phase space.
    * @param init Perform the initialization.
@@ -207,13 +207,13 @@ public :
    *   The incoming particles
    */
   pair<PDPtr,PDPtr> incoming() const {return incoming_;}
-  
+
   /**
    * Access to the outging particles.
    * @return A pointer to the ParticleData object.
    */
   tPDVector outgoing() const {return outgoing_;}
-  
+
   /**
    * Access to the outging particles.
    * @return A pointer to the ParticleData object.
@@ -232,17 +232,20 @@ public :
    * @param in The partial width to use.
    */
   void setPartialWidth(int in) {partial_=in;}
-  
+
   /**
    *  Access to the epsilon parameter
    */
   Energy epsilonPS() const {return eps_;}
-  
+
   /**
    *   Fill the stack
    */
   void fillStack(const double * r) {
-    assert(rStack_.empty());
+    if(!rStack_.empty()) {
+      throw Veto();
+    }
+    //assert(rStack_.empty());
     for(unsigned int ix=nRand_;ix>0;--ix)
       rStack_.push(r[nRand_-1]);
   }
@@ -251,7 +254,10 @@ public :
    *   Fill the stack
    */
   void fillStack() {
-    assert(rStack_.empty());
+    if(!rStack_.empty()) {
+      throw Veto();
+    }
+    //assert(rStack_.empty());
     for(unsigned int ix=0;ix<nRand_;++ix) rStack_.push(UseRandom::rnd());
   }
 
@@ -259,7 +265,7 @@ public :
    * Return the weight for a given phase-space point.
    * @param in The momentum of the incoming particle
    * @param momenta The momenta of the outgoing particles
-   * @param onShell Whether or not to force the intermediates to be on-shell 
+   * @param onShell Whether or not to force the intermediates to be on-shell
    * @return The weight.
    */
   Energy weight(int & ichan, const Lorentz5Momentum & in,
@@ -292,25 +298,25 @@ public :
     return os;
   }
 
-private: 
-    
+private:
+
   /**
    * Return the weight and momenta for a flat phase-space decay.
    * @param in The momentum of the incoming particle
    * @param momenta The momenta of the outgoing particles
-   * @param onShell Whether or not to force the intermediates to be on-shell 
+   * @param onShell Whether or not to force the intermediates to be on-shell
    * @return The weight.
    */
   Energy flatPhaseSpace(const Lorentz5Momentum & in,
 			vector<Lorentz5Momentum> & momenta,
 			bool onShell=false) const;
-  
+
   /**
    * Generate a phase-space point using multichannel phase space.
    * @param ichan The channel to use
    * @param in The momentum of the incoming particle
    * @param momenta The momenta of the outgoing particles
-   * @param onShell Whether or not to force the intermediates to be on-shell 
+   * @param onShell Whether or not to force the intermediates to be on-shell
    * @return The weight.
    */
   Energy channelPhaseSpace(int & ichan, const Lorentz5Momentum & in,
@@ -332,7 +338,7 @@ private:
    */
   void constructVertex(const Particle & in, const ParticleVector & out,
 		       tcDecayIntegratorPtr decayer) const;
-  
+
 private:
 
   /**

@@ -118,9 +118,9 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   string sudakov = StringUtils::cdr(arg);
   vector<tPDPtr> products;
   string::size_type next = partons.find("->");
-  if(next == string::npos) 
+  if(next == string::npos)
     return "Error: Invalid string for splitting " + arg;
-  if(partons.find(';') == string::npos) 
+  if(partons.find(';') == string::npos)
     return "Error: Invalid string for splitting " + arg;
   tPDPtr parent = Repository::findParticle(partons.substr(0,next));
   partons = partons.substr(next+2);
@@ -139,7 +139,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->splittingFn()->accept(ids)) 
+  if(!s->splittingFn()->accept(ids))
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // add to map
   addToMap(ids,s,final);
@@ -151,9 +151,9 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
   string sudakov = StringUtils::cdr(arg);
   vector<tPDPtr> products;
   string::size_type next = partons.find("->");
-  if(next == string::npos) 
+  if(next == string::npos)
     return "Error: Invalid string for splitting " + arg;
-  if(partons.find(';') == string::npos) 
+  if(partons.find(';') == string::npos)
     return "Error: Invalid string for splitting " + arg;
   tPDPtr parent = Repository::findParticle(partons.substr(0,next));
   partons = partons.substr(next+2);
@@ -172,7 +172,7 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->splittingFn()->accept(ids)) 
+  if(!s->splittingFn()->accept(ids))
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // delete from map
   deleteFromMap(ids,s,final);
@@ -203,17 +203,17 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
         throw Exception()<<"SplittingGenerator: Trying to insert existing splitting.\n"
         << Exception::setuperror;
     }
-    
+
     _fbranchings.insert(binsert);
     s->addSplitting(ids);
   }
 }
 
-void SplittingGenerator::deleteFromMap(const IdList &ids, 
+void SplittingGenerator::deleteFromMap(const IdList &ids,
 				       const SudakovPtr &s, bool final) {
   bool didRemove=false;
   if(!final) {
-    pair<BranchingList::iterator,BranchingList::iterator> 
+    pair<BranchingList::iterator,BranchingList::iterator>
       range = _bbranchings.equal_range(abs(ids[1]->id()));
     for(BranchingList::iterator it=range.first;
 	it!=range.second&&it!=_bbranchings.end();++it) {
@@ -227,7 +227,7 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
     s->removeSplitting(ids);
   }
   else {
-    pair<BranchingList::iterator,BranchingList::iterator> 
+    pair<BranchingList::iterator,BranchingList::iterator>
       range = _fbranchings.equal_range(abs(ids[0]->id()));
     for(BranchingList::iterator it=range.first;
 	it!=range.second&&it!=_fbranchings.end();++it) {
@@ -258,10 +258,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
-  if( _fbranchings.find(index) == _fbranchings.end() ) 
+  if( _fbranchings.find(index) == _fbranchings.end() )
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
   // otherwise select branching
-  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
+  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index);
       cit != _fbranchings.upper_bound(index); ++cit) {
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType(),_darkInteraction)) continue;
@@ -305,13 +305,13 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     	}
      	// other g -> q qbar
      	else {
-     	  Energy startingScale = angularOrdered ? 
-	    max(particle.scales().QCD_c     , particle.scales().QCD_ac     ) : 
+     	  Energy startingScale = angularOrdered ?
+	    max(particle.scales().QCD_c     , particle.scales().QCD_ac     ) :
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.sudakov->
     	    generateNextTimeBranching(startingScale,particles,rho,enhance,
 				      _deTuning);
-    	  type = UseRandom::rndbool() ? 
+    	  type = UseRandom::rndbool() ?
     	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	}
       }
@@ -334,8 +334,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
       Energy startingScale = particle.scales().EW;
-      newKin = cit->second.sudakov->
-    	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning);
+    	newKin = cit->second.sudakov->
+				generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning);
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
 			// special for octets
@@ -392,7 +392,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       assert(false);
     // if no kinematics contine
     if(!newKin) continue;
-    // select highest scale 
+    // select highest scale
     if( newKin->scale() > newQ ) {
       kinematics  = newKin;
       newQ        = newKin->scale();
@@ -427,10 +427,10 @@ chooseDecayBranching(ShowerParticle &particle,
   // First, find the eventual branching, corresponding to the lowest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
-  if(_fbranchings.find(index) == _fbranchings.end()) 
+  if(_fbranchings.find(index) == _fbranchings.end())
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
   // otherwise select branching
-  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
+  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index);
       cit != _fbranchings.upper_bound(index); ++cit)  {
     // check interaction doesn't change flavour
     if(cit->second.particles[1]->id()!=index&&cit->second.particles[2]->id()!=index) continue;
@@ -446,7 +446,7 @@ chooseDecayBranching(ShowerParticle &particle,
       type = ShowerPartnerType::QED;
       Energy stoppingScale = angularOrdered ? stoppingScales.QED    : stoppingScales.QED_noAO;
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
-      if(startingScale < stoppingScale ) { 
+      if(startingScale < stoppingScale ) {
     	newKin = cit->second.sudakov->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,particles,rho,
 				     enhance,_deTuning);
@@ -463,11 +463,11 @@ chooseDecayBranching(ShowerParticle &particle,
 	  Energy startingAnti   = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
 	  type = ShowerPartnerType::QCDColourLine;
 	  if(startingColour<stoppingColour) {
-	    newKin= cit->second.sudakov->	
+	    newKin= cit->second.sudakov->
 	      generateNextDecayBranching(startingColour,stoppingColour,minmass,
 					 particles,rho,0.5*enhance,_deTuning);
 	  }
-	  ShoKinPtr newKin2; 
+	  ShoKinPtr newKin2;
 	  if(startingAnti<stoppingAnti) {
 	    newKin2 = cit->second.sudakov->
 	      generateNextDecayBranching(startingAnti,stoppingAnti,minmass,
@@ -509,7 +509,7 @@ chooseDecayBranching(ShowerParticle &particle,
       type = ShowerPartnerType::EW;
       Energy stoppingScale  = stoppingScales.EW;
       Energy startingScale  = particle.scales().EW;
-      if(startingScale < stoppingScale && startingScale > ZERO ) { 
+      if(startingScale < stoppingScale && startingScale > ZERO ) {
     	newKin = cit->second.sudakov->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,particles,rho,enhance,_deTuning);
       }
@@ -606,7 +606,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
   if(_bbranchings.find(index) == _bbranchings.end())
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
   // otherwise select branching
-  for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
+  for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index);
       cit != _bbranchings.upper_bound(index); ++cit ) {
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType(),_darkInteraction)) continue;
@@ -629,7 +629,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     	generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,
 				   beam,_deTuning);
     }
-    else if(cit->second.sudakov->interactionType()==ShowerInteraction::QCD) { 
+    else if(cit->second.sudakov->interactionType()==ShowerInteraction::QCD) {
       // special for octets
       if(particle.dataPtr()->iColour()==PDT::Colour8) {
 	// octet -> octet octet
@@ -651,10 +651,10 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	  }
 	}
 	else {
-     	  Energy startingScale = angularOrdered ? 
-	    max(particle.scales().QCD_c     , particle.scales().QCD_ac    ) : 
+     	  Energy startingScale = angularOrdered ?
+	    max(particle.scales().QCD_c     , particle.scales().QCD_ac    ) :
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
-	  type = UseRandom::rndbool() ? 
+	  type = UseRandom::rndbool() ?
 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	  newKin=cit->second.sudakov->
 	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,beam,_deTuning);
@@ -745,7 +745,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 		     ShowerPartnerType::Undefined);
   }
-  // initialize the ShowerKinematics 
+  // initialize the ShowerKinematics
   // and generate phi
   kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics,rho));
   // return the answer
@@ -780,16 +780,16 @@ IVector SplittingGenerator::getReferences() {
   BranchingList::iterator cit;
   for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit) {
     ret.push_back((cit->second).sudakov);
-    for(unsigned int ix=0;ix<(cit->second).particles.size();++ix) 
+    for(unsigned int ix=0;ix<(cit->second).particles.size();++ix)
       ret.push_back(const_ptr_cast<tPDPtr>((cit->second).particles[ix]));
-    for(unsigned int ix=0;ix<(cit->second).conjugateParticles.size();++ix) 
+    for(unsigned int ix=0;ix<(cit->second).conjugateParticles.size();++ix)
       ret.push_back(const_ptr_cast<tPDPtr>((cit->second).conjugateParticles[ix]));
   }
   for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit) {
     ret.push_back((cit->second).sudakov);
-    for(unsigned int ix=0;ix<(cit->second).particles.size();++ix) 
+    for(unsigned int ix=0;ix<(cit->second).particles.size();++ix)
       ret.push_back(const_ptr_cast<tPDPtr>((cit->second).particles[ix]));
-    for(unsigned int ix=0;ix<(cit->second).conjugateParticles.size();++ix) 
+    for(unsigned int ix=0;ix<(cit->second).conjugateParticles.size();++ix)
       ret.push_back(const_ptr_cast<tPDPtr>((cit->second).conjugateParticles[ix]));
   }
   return ret;

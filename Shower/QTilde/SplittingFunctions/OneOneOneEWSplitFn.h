@@ -129,7 +129,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(double & gvvv, const IdList & ids) const;
+  void getCouplings(Complex & gvvv, const IdList & ids) const;
 
 public:
 
@@ -205,6 +205,12 @@ private:
    *  W^{\pm} -> W^{\pm} Z couplings
    */
   double gWWZ_;
+
+  /** 
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValueIm = 0.; 
+  double _couplingValueRe = 0.; 
 
   /**
    * Pointer to the SM object.
