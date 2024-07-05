@@ -98,6 +98,9 @@ void SplittingFunction::Init() {
   static SwitchOption interfaceInteractionTypeEW
     (interfaceInteractionType,
      "EW","EW",ShowerInteraction::EW);
+  static SwitchOption interfaceInteractionTypeDARK
+    (interfaceInteractionType,
+     "DARK","DARK",ShowerInteraction::DARK);
 
   static Switch<SplittingFunction,bool> interfaceAngularOrdered
     ("AngularOrdered",
@@ -174,10 +177,15 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       ColinePair cparent = ColinePair(parent->colourLine(),
                                       parent->antiColourLine());
       // ensure input consistency
-      assert((  cparent.first && !cparent.second &&
+      assert(( cparent.first && !cparent.second &&
 		partnerType==ShowerPartnerType::QCDColourLine) ||
-             ( !cparent.first &&  cparent.second &&
-		partnerType==ShowerPartnerType::QCDAntiColourLine));
+             (!cparent.first &&  cparent.second &&
+		partnerType==ShowerPartnerType::QCDAntiColourLine) ||
+             ( cparent.first && !cparent.second &&
+        partnerType==ShowerPartnerType::DARKColourLine) ||
+             (!cparent.first &&  cparent.second &&
+        partnerType==ShowerPartnerType::DARKAntiColourLine));
+
       // q -> q g
       if(cparent.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -203,7 +211,12 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       assert((  cfirst.first && !cfirst.second &&
 		partnerType==ShowerPartnerType::QCDColourLine) ||
              ( !cfirst.first &&  cfirst.second &&
-		partnerType==ShowerPartnerType::QCDAntiColourLine));
+		partnerType==ShowerPartnerType::QCDAntiColourLine) ||
+             (  cfirst.first && !cfirst.second &&
+        partnerType==ShowerPartnerType::DARKColourLine) ||
+             ( !cfirst.first &&  cfirst.second &&
+        partnerType==ShowerPartnerType::DARKAntiColourLine));
+
       // q -> q g
       if(cfirst.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -230,24 +243,26 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // ensure input consistency
       assert(cparent.first&&cparent.second);
       // ensure first gluon is hardest
-      if( first->id()==second->id() && parent->showerKinematics()->z()<0.5 )
-	swap(first,second);
+      if(first->id()==second->id() && parent->showerKinematics()->z()<0.5)
+        swap(first,second);
       // colour line radiates
-      if(partnerType==ShowerPartnerType::QCDColourLine) {
-	// The colour line is radiating
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(second);
-	cparent.second->addAntiColoured(first);
-	newline->addColoured(first);
-	newline->addAntiColoured(second);
+      if(partnerType==ShowerPartnerType::QCDColourLine ||
+         partnerType==ShowerPartnerType::DARKColourLine) {
+        // The colour line is radiating
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
       }
       // anti colour line radiates
-      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(first);
-	cparent.second->addAntiColoured(second);
-	newline->addColoured(second);
-	newline->addAntiColoured(first);
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine ||
+              partnerType==ShowerPartnerType::DARKAntiColourLine) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addAntiColoured(first);
       }
       else
 	assert(false);
@@ -258,7 +273,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
       // The colour line is radiating
-      if(partnerType==ShowerPartnerType::QCDColourLine) {
+      if(partnerType==ShowerPartnerType::QCDColourLine ||
+         partnerType==ShowerPartnerType::DARKColourLine) {
 	ColinePtr newline=new_ptr(ColourLine());
 	cfirst.first->addAntiColoured(second);
 	cfirst.second->addAntiColoured(parent);
@@ -266,7 +282,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 	newline->addColoured(second);
       }
       // anti colour line radiates
-      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine ||
+              partnerType==ShowerPartnerType::DARKAntiColourLine) {
 	ColinePtr newline=new_ptr(ColourLine());
 	cfirst.first->addColoured(parent);
 	cfirst.second->addColoured(second);
@@ -571,9 +588,10 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 void SplittingFunction::doinit() {
   Interfaced::doinit();
   assert(_interactionType!=ShowerInteraction::UNDEFINED);
-  assert((_colourStructure>0&&_interactionType==ShowerInteraction::QCD) ||
-	 (_colourStructure<0&&(_interactionType==ShowerInteraction::QED ||
-			       _interactionType==ShowerInteraction::EW)) );
+  assert((_colourStructure>0&&(_interactionType==ShowerInteraction::QCD ||
+                               _interactionType==ShowerInteraction::DARK)) ||
+	     (_colourStructure<0&&(_interactionType==ShowerInteraction::QED ||
+			                   _interactionType==ShowerInteraction::EW)) );
   if(_colourFactor>0.) return;
   // compute the colour factors if need
   if(_colourStructure==TripletTripletOctet) {
@@ -660,12 +678,14 @@ namespace {
 
   bool hasColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
-    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6;
+    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6||
+           colour==PDT::DarkColourFundamental || colour==PDT::DarkColourAdjoint;
   }
 
   bool hasAntiColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
-    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar;
+    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar ||
+           colour==PDT::DarkColourAntiFundamental || colour==PDT::DarkColourAdjoint;
   }
 
 }
@@ -698,35 +718,50 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
   // QED
   if(partnerType==ShowerPartnerType::QED) {
     assert(colourStructure()==ChargedChargedNeutral ||
-	   colourStructure()==ChargedNeutralCharged ||
-	   colourStructure()==NeutralChargedCharged ||
+       colourStructure()==ChargedNeutralCharged ||
+       colourStructure()==NeutralChargedCharged ||
      colourStructure()==EW);
     // normal case
     if(!bosonSplitting) {
-      assert(colourStructure()==ChargedChargedNeutral);
+      assert(colourStructure()==ChargedChargedNeutral ||
+             colourStructure()==ChargedNeutralCharged);
       // set the scales
       // emitter
       emitter->scales().QED         = zEmitter*scale;
       emitter->scales().QED_noAO    =          scale;
-      if(strictAO_)
-	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
-      else
-	emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c      );
-      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
-      if(strictAO_)
-	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
-      else
-	emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac     );
-      emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
-      emitter->scales().EW          = min(scale,parent->scales().EW         );
+      if(strictAO_) {
+        emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c  );
+        emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c );
+      }
+      else {
+	      emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c  );
+        emitter->scales().DARK_c      = min(         scale,parent->scales().DARK_c );
+      }
+      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO);
+      emitter->scales().DARK_c_noAO = min(scale,parent->scales().DARK_c_noAO);
+      if(strictAO_) {
+	      emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac );
+        emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac);
+      }
+      else {
+	      emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac );
+        emitter->scales().DARK_ac     = min(         scale,parent->scales().DARK_ac);
+      }
+      emitter->scales().QCD_ac_noAO  = min(scale,parent->scales().QCD_ac_noAO );
+      emitter->scales().DARK_ac_noAO = min(scale,parent->scales().DARK_ac_noAO);
+      emitter->scales().EW           = min(scale,parent->scales().EW          );
       // emitted
-      emitted->scales().QED         = zEmitted*scale;
-      emitted->scales().QED_noAO    =          scale;
-      emitted->scales().QCD_c       = ZERO;
-      emitted->scales().QCD_c_noAO  = ZERO;
-      emitted->scales().QCD_ac      = ZERO;
-      emitted->scales().QCD_ac_noAO = ZERO;
-      emitted->scales().EW          = min(scale,parent->scales().EW         );
+      emitted->scales().QED          = zEmitted*scale;
+      emitted->scales().QED_noAO     =          scale;
+      emitted->scales().QCD_c        = ZERO;
+      emitted->scales().QCD_c_noAO   = ZERO;
+      emitted->scales().QCD_ac       = ZERO;
+      emitted->scales().QCD_ac_noAO  = ZERO;
+      emitted->scales().DARK_c       = zEmitted*scale;
+      emitted->scales().DARK_c_noAO  =          scale;
+      emitted->scales().DARK_ac      = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO =          scale;
+      emitted->scales().EW           = min(scale,parent->scales().EW         );
     }
     // gamma -> f fbar
     else {
@@ -738,24 +773,32 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitter->scales().QED           = zEmitter*scale;
       emitter->scales().QED_noAO      =          scale;
       if(hasColour(emitter)) {
-	emitter->scales().QCD_c       = zEmitter*scale;
-	emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().QCD_c       = zEmitter*scale;
+        emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().DARK_c      = zEmitter*scale;
+        emitter->scales().DARK_c_noAO =          scale;
       }
       if(hasAntiColour(emitter)) {
-	emitter->scales().QCD_ac      = zEmitter*scale;
-	emitter->scales().QCD_ac_noAO =          scale;
+	      emitter->scales().QCD_ac      = zEmitter*scale;
+	      emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().DARK_ac     = zEmitter*scale;
+        emitter->scales().DARK_ac_noAO=          scale;
       }
       emitter->scales().EW            = zEmitter*scale;
       // emitted
       emitted->scales().QED           = zEmitted*scale;
       emitted->scales().QED_noAO      =          scale;
       if(hasColour(emitted)) {
-	emitted->scales().QCD_c       = zEmitted*scale;
-	emitted->scales().QCD_c_noAO  =          scale;
+      	emitted->scales().QCD_c       = zEmitted*scale;
+      	emitted->scales().QCD_c_noAO  =          scale;
+        emitted->scales().DARK_c      = zEmitted*scale;
+        emitted->scales().DARK_c_noAO =          scale;
       }
       if(hasAntiColour(emitted)) {
-	emitted->scales().QCD_ac      = zEmitted*scale;
-	emitted->scales().QCD_ac_noAO =          scale;
+	      emitted->scales().QCD_ac      = zEmitted*scale;
+	      emitted->scales().QCD_ac_noAO =          scale;
+        emitted->scales().DARK_ac     = zEmitted*scale;
+        emitted->scales().DARK_ac_noAO=          scale;
       }
       emitted->scales().EW            = zEmitted*scale;
     }
@@ -772,16 +815,24 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitter->scales().QED_noAO      = min(scale,parent->scales().QED_noAO);
       emitter->scales().EW            = min(scale,parent->scales().EW     );
       if(partnerType==ShowerPartnerType::QCDColourLine) {
-	emitter->scales().QCD_c       = zEmitter*scale;
-	emitter->scales().QCD_c_noAO  =          scale;
-	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
-	emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO);
+        emitter->scales().QCD_c       = zEmitter*scale;
+        emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac      );
+        emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO );
+        emitter->scales().DARK_c      = zEmitter*scale;
+        emitter->scales().DARK_c_noAO =          scale;
+        emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac     );
+        emitter->scales().DARK_ac_noAO= min(         scale,parent->scales().DARK_ac_noAO);
       }
       else {
-	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
-	emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
-	emitter->scales().QCD_ac      = zEmitter*scale;
-	emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+        emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
+        emitter->scales().QCD_ac      = zEmitter*scale;
+        emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c     );
+        emitter->scales().DARK_c_noAO = min(         scale,parent->scales().DARK_c_noAO);
+        emitter->scales().DARK_ac     = zEmitter*scale;
+        emitter->scales().DARK_ac_noAO=          scale;
       }
       // emitted
       emitted->scales().QED         = ZERO;
@@ -791,19 +842,27 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitted->scales().QCD_ac      = zEmitted*scale;
       emitted->scales().QCD_ac_noAO =          scale;
       emitted->scales().EW          = min(scale,parent->scales().EW     );
+      emitted->scales().DARK_c      = ZERO;
+      emitted->scales().DARK_c_noAO = ZERO;
+      emitted->scales().DARK_ac     = ZERO;
+      emitted->scales().DARK_ac_noAO= ZERO;
     }
     // g -> q qbar
     else {
       // emitter
       if(emitter->dataPtr()->charged()) {
-	emitter->scales().QED         = zEmitter*scale;
-	emitter->scales().QED_noAO    =          scale;
+        emitter->scales().QED         = zEmitter*scale;
+        emitter->scales().QED_noAO    =          scale;
       }
       emitter->scales().EW            = zEmitter*scale;
       emitter->scales().QCD_c         = zEmitter*scale;
       emitter->scales().QCD_c_noAO    =          scale;
       emitter->scales().QCD_ac        = zEmitter*scale;
       emitter->scales().QCD_ac_noAO   =          scale;
+      emitter->scales().DARK_c        = zEmitter*scale;
+      emitter->scales().DARK_c_noAO   =          scale;
+      emitter->scales().DARK_ac       = zEmitter*scale;
+      emitter->scales().DARK_ac_noAO  =          scale;
       // emitted
       if(emitted->dataPtr()->charged()) {
 	emitted->scales().QED         = zEmitted*scale;
@@ -814,6 +873,10 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitted->scales().QCD_c_noAO    =          scale;
       emitted->scales().QCD_ac        = zEmitted*scale;
       emitted->scales().QCD_ac_noAO   =          scale;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
     }
   }
   else if(partnerType==ShowerPartnerType::EW) {
@@ -845,6 +908,79 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
     emitted->scales().QCD_ac      = ZERO;
     emitted->scales().QCD_ac_noAO = ZERO;
   }
+  // DARK
+  else if (partnerType==ShowerPartnerType::DARKColourLine ||
+           partnerType==ShowerPartnerType::DARKAntiColourLine) {
+   // normal case eg q -> q g and g -> g g
+    if(!bosonSplitting) {
+      if(strictAO_)
+	emitter->scales().QED         = min(zEmitter*scale,parent->scales().QED     );
+      else
+	emitter->scales().QED         = min(         scale,parent->scales().QED     );
+      emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	emitter->scales().QCD_c       = zEmitter*scale;
+	emitter->scales().QCD_c_noAO  =          scale;
+	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
+	emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO);
+  emitter->scales().DARK_c      = zEmitter*scale;
+  emitter->scales().DARK_c_noAO =          scale;
+  emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac    );
+  emitter->scales().DARK_ac_noAO= min(         scale,parent->scales().DARK_ac_noAO);
+      }
+      else {
+	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+	emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
+	emitter->scales().QCD_ac      = zEmitter*scale;
+	emitter->scales().QCD_ac_noAO =          scale;
+  emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c     );
+  emitter->scales().DARK_c_noAO = min(         scale,parent->scales().DARK_c_noAO);
+  emitter->scales().DARK_ac     = zEmitter*scale;
+  emitter->scales().DARK_ac_noAO=          scale;
+      }
+      // emitted
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+      emitted->scales().QCD_c       = ZERO;
+      emitted->scales().QCD_c_noAO  = ZERO;
+      emitted->scales().QCD_ac      = ZERO;
+      emitted->scales().QCD_ac_noAO = ZERO;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
+    }
+    // g -> q qbar
+    else {
+      // emitter
+      if(emitter->dataPtr()->charged()) {
+	emitter->scales().QED         = zEmitter*scale;
+	emitter->scales().QED_noAO    =          scale;
+      }
+      emitter->scales().QCD_c       = zEmitter*scale;
+      emitter->scales().QCD_c_noAO  =          scale;
+      emitter->scales().QCD_ac      = zEmitter*scale;
+      emitter->scales().QCD_ac_noAO =          scale;
+      emitter->scales().DARK_c      = zEmitter*scale;
+      emitter->scales().DARK_c_noAO =          scale;
+      emitter->scales().DARK_ac     = zEmitter*scale;
+      emitter->scales().DARK_ac_noAO=          scale;
+      // emitted
+      if(emitted->dataPtr()->charged()) {
+	emitted->scales().QED         = zEmitted*scale;
+	emitted->scales().QED_noAO    =          scale;
+      }
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
+    }
+  }
+  //shouldn't be anything else
   else
     assert(false);
 }
@@ -866,6 +1002,10 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
       parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
       parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
       parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
       // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
@@ -873,28 +1013,40 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
       timelike->scales().QCD_c_noAO  =    ZERO;
       timelike->scales().QCD_ac      =    ZERO;
       timelike->scales().QCD_ac_noAO =    ZERO;
+      timelike->scales().DARK_c      =    ZERO;
+      timelike->scales().DARK_c_noAO =    ZERO;
+      timelike->scales().DARK_ac     =    ZERO;
+      timelike->scales().DARK_ac_noAO=    ZERO;
     }
     else if(parent->id()==timelike->id()) {
       parent   ->scales().QED         =   scale;
       parent   ->scales().QED_noAO    =   scale;
       if(hasColour(parent)) {
-	parent   ->scales().QCD_c       = scale;
-	parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().QCD_c       = scale;
+        parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().DARK_c      = scale;
+        parent   ->scales().DARK_c_noAO = scale;
       }
       if(hasAntiColour(parent)) {
-	parent   ->scales().QCD_ac      = scale;
-	parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().QCD_ac      = scale;
+        parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().DARK_ac     = scale;
+        parent   ->scales().DARK_ac_noAO= scale;
       }
       // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
       if(hasColour(timelike)) {
-	timelike->scales().QCD_c       = AOScale;
-	timelike->scales().QCD_c_noAO  =   scale;
+        timelike->scales().QCD_c       = AOScale;
+        timelike->scales().QCD_c_noAO  =   scale;
+        timelike->scales().DARK_c      = AOScale;
+        timelike->scales().DARK_c_noAO =   scale;
       }
       if(hasAntiColour(timelike)) {
-	timelike->scales().QCD_ac      = AOScale;
-	timelike->scales().QCD_ac_noAO =   scale;
+        timelike->scales().QCD_ac      = AOScale;
+        timelike->scales().QCD_ac_noAO =   scale;
+        timelike->scales().DARK_ac     = AOScale;
+        timelike->scales().DARK_ac_noAO=   scale;
       }
     }
     else {
@@ -904,16 +1056,24 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
       parent   ->scales().QCD_c_noAO  = ZERO ;
       parent   ->scales().QCD_ac      = ZERO ;
       parent   ->scales().QCD_ac_noAO = ZERO ;
+      parent   ->scales().DARK_c      = ZERO ;
+      parent   ->scales().DARK_c_noAO = ZERO ;
+      parent   ->scales().DARK_ac     = ZERO ;
+      parent   ->scales().DARK_ac_noAO= ZERO ;
       // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
       if(hasColour(timelike)) {
-	timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac     );
-	timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO);
+        timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac      );
+        timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO );
+        timelike->scales().DARK_c      = min(AOScale,spacelike->scales().DARK_ac     );
+        timelike->scales().DARK_c_noAO = min(  scale,spacelike->scales().DARK_ac_noAO);
       }
       if(hasAntiColour(timelike)) {
-	timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c      );
-	timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO );
+        timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c       );
+        timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO  );
+        timelike->scales().DARK_ac     = min(AOScale,spacelike->scales().DARK_c      );
+        timelike->scales().DARK_ac_noAO= min(  scale,spacelike->scales().DARK_c_noAO );
       }
     }
   }
@@ -928,10 +1088,14 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
     if(hasColour(timelike)) {
       timelike->scales().QCD_c       = AOScale;
       timelike->scales().QCD_c_noAO  =   scale;
+      timelike->scales().DARK_c      = AOScale;
+      timelike->scales().DARK_c_noAO =   scale;
     }
     if(hasAntiColour(timelike)) {
       timelike->scales().QCD_ac      = AOScale;
       timelike->scales().QCD_ac_noAO =   scale;
+      timelike->scales().DARK_ac     = AOScale;
+      timelike->scales().DARK_ac_noAO=   scale;
     }
     if(parent->id()==spacelike->id()) {
       parent   ->scales().QED         = min(scale,spacelike->scales().QED        );
@@ -940,19 +1104,27 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
       parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
       parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
       parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
     }
     else {
       if(parent->dataPtr()->charged()) {
-	parent   ->scales().QED         = scale;
-	parent   ->scales().QED_noAO    = scale;
+        parent   ->scales().QED         = scale;
+        parent   ->scales().QED_noAO    = scale;
       }
       if(hasColour(parent)) {
-	parent   ->scales().QCD_c      = scale;
-	parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().QCD_c      = scale;
+        parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().DARK_c      = scale;
+        parent   ->scales().DARK_c_noAO = scale;
       }
       if(hasAntiColour(parent)) {
-	parent   ->scales().QCD_ac      = scale;
-	parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().QCD_ac      = scale;
+        parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().DARK_ac     = scale;
+        parent   ->scales().DARK_ac_noAO= scale;
       }
     }
   }
@@ -987,6 +1159,57 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
     }
     else assert(false);
   }
+  // DARK
+  else if(partnerType==ShowerPartnerType::DARKColourLine ||
+          partnerType==ShowerPartnerType::DARKAntiColourLine ) {
+    // timelike
+    if(timelike->dataPtr()->charged()) {
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+    }
+    if(hasColour(timelike)) {
+      timelike->scales().QCD_c       = AOScale;
+      timelike->scales().QCD_c_noAO  =   scale;
+      timelike->scales().DARK_c      = AOScale;
+      timelike->scales().DARK_c_noAO =   scale;
+    }
+    if(hasAntiColour(timelike)) {
+      timelike->scales().QCD_ac      = AOScale;
+      timelike->scales().QCD_ac_noAO =   scale;
+      timelike->scales().DARK_ac     = AOScale;
+      timelike->scales().DARK_ac_noAO=   scale;
+    }
+    if(parent->id()==spacelike->id()) {
+      parent   ->scales().QED         = min(scale,spacelike->scales().QED         );
+      parent   ->scales().QED_noAO    = min(scale,spacelike->scales().QED_noAO    );
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c       );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO  );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac      );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO );
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
+    }
+    else {
+      if(parent->dataPtr()->charged()) {
+	parent   ->scales().QED         = scale;
+	parent   ->scales().QED_noAO    = scale;
+      }
+      if(hasColour(parent)) {
+	parent   ->scales().QCD_c      = scale;
+	parent   ->scales().QCD_c_noAO = scale;
+  parent   ->scales().DARK_c     = scale;
+  parent   ->scales().DARK_c_noAO= scale;
+      }
+      if(hasAntiColour(parent)) {
+	parent   ->scales().QCD_ac      = scale;
+	parent   ->scales().QCD_ac_noAO = scale;
+  parent   ->scales().DARK_ac     = scale;
+  parent   ->scales().DARK_ac_noAO= scale;
+      }
+    }
+  }
   else
     assert(false);
 }
@@ -1008,7 +1231,11 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
     timelike->scales().QCD_c_noAO  =    ZERO;
     timelike->scales().QCD_ac      =    ZERO;
     timelike->scales().QCD_ac_noAO =    ZERO;
-    timelike->scales().EW          = ZERO;
+    timelike->scales().EW          =    ZERO;
+    timelike->scales().DARK_c      =    ZERO;
+    timelike->scales().DARK_c_noAO =    ZERO;
+    timelike->scales().DARK_ac     =    ZERO;
+    timelike->scales().DARK_ac_noAO=    ZERO;
     // spacelike
     spacelike->scales().QED         =   scale;
     spacelike->scales().QED_noAO    =   scale;
@@ -1025,6 +1252,10 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
     timelike->scales().QCD_ac      = AOScale;
     timelike->scales().QCD_ac_noAO =   scale;
     timelike->scales().EW          = ZERO;
+    timelike->scales().DARK_c      = ZERO;
+    timelike->scales().DARK_c_noAO = ZERO;
+    timelike->scales().DARK_ac     = ZERO;
+    timelike->scales().DARK_ac_noAO= ZERO;
     // spacelike
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
@@ -1046,10 +1277,33 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
   }
+  //DARK
+  else if(partnerType==ShowerPartnerType::DARKColourLine ||
+          partnerType==ShowerPartnerType::DARKAntiColourLine ) {
+    // timelike
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    timelike->scales().QCD_c       = ZERO;
+    timelike->scales().QCD_c_noAO  = ZERO;
+    timelike->scales().QCD_ac      = ZERO;
+    timelike->scales().QCD_ac_noAO = ZERO;
+    timelike->scales().DARK_c      = AOScale;
+    timelike->scales().DARK_c_noAO = scale;
+    timelike->scales().DARK_ac     = AOScale;
+    timelike->scales().DARK_ac_noAO = scale;
+    // spacelike
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+  }
+  //shouldn't be anything else
   else
     assert(false);
   spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
   spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
   spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );
   spacelike->scales().QCD_ac_noAO = max(scale,parent->scales().QCD_ac_noAO);
+  spacelike->scales().DARK_c      = max(scale,parent->scales().DARK_c      );
+  spacelike->scales().DARK_c_noAO = max(scale,parent->scales().DARK_c_noAO );
+  spacelike->scales().DARK_ac     = max(scale,parent->scales().DARK_ac     );
+  spacelike->scales().DARK_ac_noAO= max(scale,parent->scales().DARK_ac_noAO);
 }

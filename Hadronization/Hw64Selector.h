@@ -12,7 +12,7 @@
 // This is the declaration of the Hw64Selector class.
 //
 
-#include "HadronSelector.h"
+#include "StandardModelHadronSpectrum.h"
 
 namespace Herwig {
 
@@ -25,17 +25,15 @@ using namespace ThePEG;
  * @see \ref Hw64SelectorInterfaces "The interfaces"
  * defined for Hw64Selector.
  */
-class Hw64Selector: public HadronSelector {
+class Hw64Selector: public StandardModelHadronSpectrum {
 
 public:
 
   /**
    * The default constructor.
    */
-  Hw64Selector() : HadronSelector(0),
-		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-		   _pwtBquark( 0.0 ),_pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 ),
-		   _sngWt( 1.0 ), _decWt( 1.0 )
+  Hw64Selector() : StandardModelHadronSpectrum(0),
+		   _pwtDIquarkS0( 1.0 ),_pwtDIquarkS1( 1.0 )
   {}
 
   /**
@@ -122,34 +120,9 @@ private:
 private:
 
   /**
-   *  The weights for the different quarks and diquarks
+   *  The weights for the diquarks
    */
   //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-
   /**
    * The probability of producting a spin-0 diquark.
    */
@@ -159,21 +132,6 @@ private:
    * The probability of producting a spin-1 diquark.
    */
   double _pwtDIquarkS1;
-  //@}
-
-  /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt;
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt;
   //@}
 
 };

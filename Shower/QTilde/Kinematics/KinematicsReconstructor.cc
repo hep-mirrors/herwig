@@ -1097,7 +1097,7 @@ deconstructColourSinglets(HardTreePtr tree,
 	deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					systems[ix].jets,type);
     }
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }
@@ -1122,7 +1122,7 @@ deconstructColourSinglets(HardTreePtr tree,
     toRest = LorentzRotation(ptotal.findBoostToCM());
     fromRest = toRest;
     fromRest.invert();
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }
@@ -2739,7 +2739,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
 	reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					systems[ix].jets);
     }
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }

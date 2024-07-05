@@ -12,7 +12,7 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
-#include "HadronSelector.h"
+#include "HadronSpectrum.h"
 #include "ClusterDecayer.fh"
 
 namespace Herwig {
@@ -28,9 +28,9 @@ using namespace ThePEG;
  *  enough for fission, and not too light to decay into one hadron.
  *
  *  This class is directs the production of hadrons via 2-body cluster decays.
- *  The selection of the hadron flavours is given by Herwig::HadronSelector.
+ *  The selection of the hadron flavours is given by Herwig::HadronSpectrum.
  *
- *  @see HadronSelector
+ *  @see HadronSpectrum
  * @see \ref ClusterDecayerInterfaces "The interfaces"
  * defined for ClusterDecayer.
  */
@@ -55,6 +55,13 @@ public:
    */
   void decay(const ClusterVector & clusters, tPVector & finalhadrons)
    ;
+
+  /**
+   * Return the hadron spectrum
+   */
+  Ptr<HadronSpectrum>::tptr spectrum() const {
+    return _hadronSpectrum;
+  }
 
 public:
 
@@ -89,6 +96,19 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+  
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+//@}
 
 private:
 
@@ -124,26 +144,19 @@ private:
 			   const Lorentz5Momentum &, const Lorentz5Momentum &,
 			   LorentzPoint &, LorentzPoint &) const;
 
-  /**
-   * Pointer to a Herwig::HadronSelector for choosing decay types
-   */
-  Ptr<HadronSelector>::pointer _hadronsSelector;
-
   //@{
   /**
    * Whether a cluster decays along the perturbative parton direction.
    */
   bool _clDirLight;
-  bool _clDirBottom;
-  bool _clDirCharm;
+  map<long,bool> _clDirHeavy;
   bool _clDirExotic;
 
    /**
    * The S parameter from decayIntoTwoHadrons
    */
   double _clSmrLight;
-  double _clSmrBottom;
-  double _clSmrCharm;
+  map<long,double> _clSmrHeavy;
   double _clSmrExotic;
   //@}
 
@@ -158,6 +171,10 @@ private:
    */
   unsigned int _masstry;
 
+  /**
+   * The hadron spectrum to consider
+   */
+  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
 
 };
 

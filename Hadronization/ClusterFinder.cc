@@ -14,18 +14,17 @@
 #include "ClusterFinder.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Interface/Switch.h>
-#include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/EventRecord/Collision.h>
-#include "CheckId.h"
 #include "Herwig/Utilities/EnumParticles.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include "ThePEG/Interface/Reference.h"
 
 using namespace Herwig;
 
@@ -40,19 +39,22 @@ IBPtr ClusterFinder::fullclone() const {
   return new_ptr(*this);
 }
 void ClusterFinder::persistentOutput(PersistentOStream & os) const {
-  os << heavyDiquarks_ << diQuarkSelection_
-     << diQuarkOnShell_ << hadronSelector_;
+  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_ << _hadronSpectrum;
 }
 
 void ClusterFinder::persistentInput(PersistentIStream & is, int) {
-  is >> heavyDiquarks_ >> diQuarkSelection_
-     >> diQuarkOnShell_ >> hadronSelector_;
+  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_ >> _hadronSpectrum;
 }
 
 void ClusterFinder::Init() {
 
   static ClassDocumentation<ClusterFinder> documentation
     ("This class is responsible of finding clusters.");
+
+  static Reference<ClusterFinder,HadronSpectrum> interfaceHadronSpectrum
+    ("HadronSpectrum",
+     "Set the hadron spectrum for this parton splitter.",
+     &ClusterFinder::_hadronSpectrum, false, false, false, false, false);
 
   static Switch<ClusterFinder,unsigned int> interfaceHeavyDiquarks
     ("HeavyDiquarks",
@@ -66,7 +68,7 @@ void ClusterFinder::Init() {
   static SwitchOption interfaceHeavyDiquarksNoDoublyHeavy
     (interfaceHeavyDiquarks,
      "NoDoublyHeavy",
-     "Avoid having diquarks with twoo heavy quarks",
+     "Avoid having diquarks with two heavy quarks",
      1);
   static SwitchOption interfaceHeavyDiquarksNoHeavy
     (interfaceHeavyDiquarks,
@@ -103,12 +105,6 @@ void ClusterFinder::Init() {
      "No",
      "Leave off-shell",
      false);
-  
-  static Reference<ClusterFinder,HadronSelector>
-    interfaceHadronSelector("HadronSelector",
-			    "A reference to the HadronSelector object",
-			    &Herwig::ClusterFinder::hadronSelector_,
-			    false, false, true, false);
 
 }
 
@@ -187,14 +183,14 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 			      << **pit << "in ClusterFinder::formClusters"
 			      << " for a coloured particle."
 			      << " Failed to find particles from a source"
-			      << Exception::eventerror;
+			      << Exception::runerror;
 	  }
 	}
 	else {
 	  throw Exception() << "Colour connections fail in the hadronization for "
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " a coloured particle"
-			    << Exception::eventerror;
+			    << Exception::runerror;
 	}
       }
     }
@@ -232,14 +228,14 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 			      << **pit << "in ClusterFinder::formClusters for"
 			      << " an anti-coloured particle."
 			      << " Failed to find particles from a sink"
-			      << Exception::eventerror;
+			      << Exception::runerror;
 	  }
 	}
 	else {
 	  throw Exception() << "Colour connections fail in the hadronization for "
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " an anti-coloured particle"
-			    << Exception::eventerror;
+			    << Exception::runerror;
 	}
       }
     }
@@ -410,10 +406,10 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     tcPDPtr temp2  = vec[1]->dataPtr();
     if(!other) other = vec[2];
 
-    tcPDPtr dataDiquark  = hadronSelector_->makeDiquark(temp1,temp2);
-
-    if(!dataDiquark)
-      throw Exception() << "Could not make a diquark from"
+    tcPDPtr dataDiquark  = _hadronSpectrum->makeDiquark(temp1,temp2);
+    
+    if(!dataDiquark) 
+      throw Exception() << "Could not make a diquark from "
 			<< temp1->PDGName() << " and "
 			<< temp2->PDGName()
 			<< " in ClusterFinder::reduceToTwoComponents()"

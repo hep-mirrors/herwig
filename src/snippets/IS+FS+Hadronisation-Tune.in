@@ -26,6 +26,6 @@ set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
 set ClusterFissioner:ClMaxLight            2.9157
 set ClusterFissioner:ClPowLight            2.5967
 set ClusterFissioner:PSplitLight           0.9756
-set ClusterFissioner:ProbablityPowerFactor 4.8642
-set ClusterFissioner:ProbablityShift      -0.1587
+set ClusterFissioner:ProbabilityPowerFactor 4.8642
+set ClusterFissioner:ProbabilityShift      -0.1587
 set ClusterFissioner:KineticThresholdShift 0.1971

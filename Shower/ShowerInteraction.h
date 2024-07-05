@@ -23,6 +23,7 @@ namespace Herwig {
 enum class ShowerInteraction { 
 	UNDEFINED=-1, 
 	QCD, 
+    DARK,
 	QED, 
 	QEDQCD,
 	EW,
@@ -36,6 +37,8 @@ enum class ShowerPartnerType {
 	Undefined,
 	QCDColourLine,
 	QCDAntiColourLine,
+    DARKColourLine,
+ 	DARKAntiColourLine,
 	QED,
 	EW
 };

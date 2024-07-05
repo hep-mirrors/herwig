@@ -30,6 +30,7 @@
 #include "CluHadConfig.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include <ThePEG/Interface/Command.h>
 
 using namespace Herwig;
 
@@ -48,18 +49,24 @@ IBPtr ClusterHadronizationHandler::fullclone() const {
 
 void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
   const {
-  os << _partonSplitter << _clusterFinder << _colourReconnector
+  os << _partonSplitters << _clusterFinders << _colourReconnectors
+     << _clusterFissioners << _lightClusterDecayers << _clusterDecayers
+     << _gluonMassGenerators
+     << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
-     << reshuffle_ << reshuffleMode_ << gluonMassGenerator_
+     << reshuffle_ << _gluonMassGenerator
      << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
      << _underlyingEventHandler << _reduceToTwoComponents;
 }
 
 
 void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
+  is >> _partonSplitters >> _clusterFinders >> _colourReconnectors
+     >> _clusterFissioners >> _lightClusterDecayers >> _clusterDecayers
+     >> _gluonMassGenerators
+     >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
-     >> reshuffle_ >> reshuffleMode_ >> gluonMassGenerator_
+     >> reshuffle_ >> _gluonMassGenerator
      >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
      >> _underlyingEventHandler >> _reduceToTwoComponents;
 }
@@ -79,11 +86,37 @@ void ClusterHadronizationHandler::Init() {
      // main manual
      );
 
+
   static Reference<ClusterHadronizationHandler,PartonSplitter>
     interfacePartonSplitter("PartonSplitter",
-		      "A reference to the PartonSplitter object",
-		      &Herwig::ClusterHadronizationHandler::_partonSplitter,
-		      false, false, true, false);
+			    "A reference to the PartonSplitter object",
+			    &Herwig::ClusterHadronizationHandler::_partonSplitter,
+			    false, false, true, false);
+
+  static Reference<ClusterHadronizationHandler,GluonMassGenerator> interfaceGluonMassGenerator
+    ("GluonMassGenerator",
+     "Set a reference to a gluon mass generator.",
+     &ClusterHadronizationHandler::_gluonMassGenerator, false, false, true, true, false);
+
+  static Switch<ClusterHadronizationHandler,int> interfaceReshuffle
+    ("Reshuffle",
+     "Perform reshuffling if constituent masses have not yet been included by the shower",
+     &ClusterHadronizationHandler::reshuffle_, 0, false, false);
+  static SwitchOption interfaceReshuffleColourConnected
+    (interfaceReshuffle,
+     "ColourConnected",
+     "Separate reshuffling for colour connected partons.",
+     2);
+  static SwitchOption interfaceReshuffleGlobal
+    (interfaceReshuffle,
+     "Global",
+     "Reshuffle globally.",
+     1);
+  static SwitchOption interfaceReshuffleNo
+    (interfaceReshuffle,
+     "No",
+     "Do not reshuffle.",
+     0);
 
   static Reference<ClusterHadronizationHandler,ClusterFinder>
     interfaceClusterFinder("ClusterFinder",
@@ -115,41 +148,9 @@ void ClusterHadronizationHandler::Init() {
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,GluonMassGenerator> interfaceGluonMassGenerator
-    ("GluonMassGenerator",
-     "Set a reference to a gluon mass generator.",
-     &ClusterHadronizationHandler::gluonMassGenerator_, false, false, true, true, false);
-
-  static Switch<ClusterHadronizationHandler,bool> interfaceReshuffle
-    ("Reshuffle",
-     "Perform reshuffling if constituent masses have not yet been included by the shower",
-     &ClusterHadronizationHandler::reshuffle_, false, false, false);
-  static SwitchOption interfaceReshuffleYes
-    (interfaceReshuffle,
-     "Global",
-     "Do reshuffle.",
-     true);
-  static SwitchOption interfaceReshuffleNo
-    (interfaceReshuffle,
-     "No",
-     "Do not reshuffle.",
-     false);
-   
-  static Switch<ClusterHadronizationHandler,int> interfaceReshuffleMode
-    ("ReshuffleMode",
-     "Which mode is used for the reshuffling to constituent masses",
-     &ClusterHadronizationHandler::reshuffleMode_, 0, false, false);
-  static SwitchOption interfaceReshuffleModeGlobal
-    (interfaceReshuffleMode,
-     "Global",
-     "Global reshuffling on all final state partons",
-     0);
-  static SwitchOption interfaceReshuffleModeColourConnected
-    (interfaceReshuffleMode,
-     "ColourConnected",
-     "Separate reshuffling for colour connected partons",
-     1);
-
+  // functions to move the handlers so they are set
+  
+  
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
@@ -183,6 +184,95 @@ void ClusterHadronizationHandler::Init() {
      "Treat as three components",
      false);
 
+  static Command<ClusterHadronizationHandler> interfaceUseHandlersForInteraction
+    ("UseHandlersForInteraction",
+     "Use the current set of handlers for the given interaction.",
+     &ClusterHadronizationHandler::_setHandlersForInteraction, false);
+
+}
+
+void ClusterHadronizationHandler::rebind(const TranslationMap & trans) {
+  for (auto iter : _partonSplitters) {
+     _partonSplitters[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterFinders) {
+     _clusterFinders[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _colourReconnectors) {
+     _colourReconnectors[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterFissioners) {
+     _clusterFissioners[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _lightClusterDecayers) {
+     _lightClusterDecayers[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _clusterDecayers) {
+     _clusterDecayers[iter.first] = trans.translate(iter.second);
+  }
+  for (auto iter : _gluonMassGenerators) {
+     _gluonMassGenerators[iter.first] = trans.translate(iter.second);
+  }
+  HandlerBase::rebind(trans);
+}
+
+IVector ClusterHadronizationHandler::getReferences() {
+  IVector ret = HandlerBase::getReferences();
+  for (auto iter : _partonSplitters) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterFinders) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _colourReconnectors) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterFissioners) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _lightClusterDecayers) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _clusterDecayers) {
+     ret.push_back(iter.second);
+  }
+  for (auto iter : _gluonMassGenerators) {
+     ret.push_back(iter.second);
+  }
+  return ret;
+}
+
+void ClusterHadronizationHandler::doinit() {
+  HadronizationHandler::doinit();
+  // put current handlers into action for QCD to guarantee default behaviour
+  if ( _partonSplitters.empty() ) {
+    _partonSplitters[PDT::ColouredQCD] = _partonSplitter;
+    _clusterFinders[PDT::ColouredQCD] = _clusterFinder;
+    _colourReconnectors[PDT::ColouredQCD] = _colourReconnector;
+    _clusterFissioners[PDT::ColouredQCD] = _clusterFissioner;
+    _lightClusterDecayers[PDT::ColouredQCD] = _lightClusterDecayer;
+    _clusterDecayers[PDT::ColouredQCD] = _clusterDecayer; 
+    _gluonMassGenerators[PDT::ColouredQCD] = _gluonMassGenerator; 
+  }
+}
+
+string ClusterHadronizationHandler::_setHandlersForInteraction(string interaction) {
+  int interactionId = -1;
+  if ( interaction == " QCD" ) {
+    interactionId = PDT::ColouredQCD;
+  } else if ( interaction == " Dark" ) {
+    interactionId = PDT::ColouredDark;
+  } else {
+    return "unknown interaction " + interaction;
+  }
+  _partonSplitters[interactionId] = _partonSplitter;
+  _clusterFinders[interactionId] = _clusterFinder;
+  _colourReconnectors[interactionId] = _colourReconnector;
+  _clusterFissioners[interactionId] = _clusterFissioner;
+  _lightClusterDecayers[interactionId] = _lightClusterDecayer;
+  _clusterDecayers[interactionId] = _clusterDecayer; 
+  _gluonMassGenerators[interactionId] = _gluonMassGenerator; 
+  return "";
 }
 
 namespace {
@@ -205,145 +295,182 @@ handle(EventHandler & ch, const tPVector & tagged,
 
   PVector theList(tagged.begin(),tagged.end());
   
-  if ( reshuffle_ ) {
-    
-    vector<PVector> reshufflelists;
-
-    if (reshuffleMode_==0){ // global reshuffling
-      reshufflelists.push_back(theList);
-    }
-    else if (reshuffleMode_==1){// colour connected reshuffling
-      splitIntoColourSinglets(theList, reshufflelists);
-    }
-
-    for (auto currentlist : reshufflelists){
-      // get available energy and energy needed for constituent mass shells
-      LorentzMomentum totalQ;
-      Energy needQ = ZERO;
-      size_t nGluons = 0; // number of gluons for which a mass need be generated
-      for ( auto p : currentlist ) {
-	totalQ += p->momentum();
-	if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
-	  ++nGluons;
-	  continue;
-	}
-	needQ += p->dataPtr()->constituentMass();
-      }
-      Energy Q = totalQ.m();
-      if ( needQ > Q )
-	throw Exception() << "cannot reshuffle to constituent mass shells" << Exception::eventerror;
-
-      // generate gluon masses if needed
-      list<Energy> gluonMasses;
-      if ( nGluons && gluonMassGenerator() )
-	gluonMasses = gluonMassGenerator()->generateMany(nGluons,Q-needQ);
-
-      // set masses for inidividual particles
-      vector<Energy> masses;
-      for ( auto p : currentlist ) {
-	if ( p->id() == ParticleID::g && gluonMassGenerator() ) {
-	  list<Energy>::const_iterator it = gluonMasses.begin();
-	  advance(it,UseRandom::irnd(gluonMasses.size()));
-	  masses.push_back(*it);
-	  gluonMasses.erase(it);
-	} 
-	else {
-	  masses.push_back(p->dataPtr()->constituentMass());
-	}
-      }
-
-      // reshuffle to new masses
-      reshuffle(currentlist,masses);
-
-    }
-
-  }
-  
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
-  Energy2 Q02 = 1.01*sqr(getParticleData(ParticleID::g)->constituentMass());
-  for(unsigned int ix=0;ix<theList.size();++ix) {
-    if(theList[ix]->scale()<Q02) theList[ix]->scale(Q02);
+
+  // TODO: Should this be hard-coded here, or defined in inputs?
+  map<int,int> interactions = {{PDT::ColouredQCD, ParticleID::g}, {PDT::ColouredDark, ParticleID::darkg}};
+  
+  // PVector currentlist(tagged.begin(),tagged.end());
+  map<int,PVector> currentlists;
+  for ( const auto & p : theList ) {
+    for ( auto i : interactions ) {
+      if ( p->data().colouredInteraction() == i.first ) {
+	currentlists[i.first].push_back(p);
+    Energy2 Q02 = 1.01*sqr(getParticleData(i.second)->constituentMass());
+	if(currentlists[i.first].back()->scale()<Q02) currentlists[i.first].back()->scale(Q02);
+      }
+    }
   }
 
-  // split the gluons
-  _partonSplitter->split(theList);
+  map<int,ClusterVector> clusters;
 
-  // form the clusters
-  ClusterVector clusters =
-    _clusterFinder->formClusters(theList);
-  // reduce BV clusters to two components now if needed
-  if(_reduceToTwoComponents)
-    _clusterFinder->reduceToTwoComponents(clusters);
+  // ATTENTION this needs to have changes to include the new hadron spectrum functionality (gluon mass generator)
+  for ( auto i : interactions ) {
+
+    // reshuffle to the constituents
+    if ( reshuffle_ ) {
+    
+      vector<PVector> reshufflelists;
+
+      if ( reshuffle_ == 1 ) { // global reshuffling
+	reshufflelists.push_back(currentlists[i.first]);
+      }
+      else if ( reshuffle_ == 2 ) {// colour connected reshuffling
+	splitIntoColourSinglets(currentlists[i.first], reshufflelists, i.first);
+      }
+
+      Ptr<GluonMassGenerator>::ptr gMassGenerator;
+      auto git = _gluonMassGenerators.find(i.first);
+      if ( git != _gluonMassGenerators.end() )
+	gMassGenerator = git->second;
+
+      for (auto currentlist : reshufflelists){
+	// get available energy and energy needed for constituent mass shells
+	LorentzMomentum totalQ;
+	Energy needQ = ZERO;
+	size_t nGluons = 0; // number of gluons for which a mass need be generated
+	for ( auto p : currentlist ) {
+	  totalQ += p->momentum();
+	  if ( p->id() == i.second && gMassGenerator ) {
+	    ++nGluons;
+	    needQ += gMassGenerator->minGluonMass();
+	    continue;
+	  }
+	  needQ += p->dataPtr()->constituentMass();
+	}
+	Energy Q = totalQ.m();
+	if ( needQ > Q )
+	  throw Exception() << "cannot reshuffle to constituent mass shells" << Exception::eventerror;
+
+	// generate gluon masses if needed
+	list<Energy> gluonMasses;
+	if ( nGluons && gMassGenerator )
+	  gluonMasses = gMassGenerator->generateMany(nGluons,Q-needQ);
+
+	// set masses for inidividual particles
+	vector<Energy> masses;
+	for ( auto p : currentlist ) {
+	  if ( p->id() == i.second && gMassGenerator ) {
+	    list<Energy>::const_iterator it = gluonMasses.begin();
+	    advance(it,UseRandom::irnd(gluonMasses.size()));
+	    masses.push_back(*it);
+	    gluonMasses.erase(it);
+	  } 
+	  else {
+	    masses.push_back(p->dataPtr()->constituentMass());
+	  }
+	}
+
+	// reshuffle to new masses
+	reshuffle(currentlist,masses);
+
+      }
+
+    }
+
+    // split the gluons
+    if ( !currentlists[i.first].empty() ) {
+      assert(_partonSplitters.find(i.first) != _partonSplitters.end());
+      _partonSplitters[i.first]->split(currentlists[i.first]);
+    }
+
+    // form the clusters
+    if ( !currentlists[i.first].empty() ) {
+      assert(_clusterFinders.find(i.first) != _clusterFinders.end());
+      clusters[i.first] = _clusterFinders[i.first]->formClusters(currentlists[i.first]);
+      // reduce BV clusters to two components now if needed
+      if(_reduceToTwoComponents)
+	_clusterFinders[i.first]->reduceToTwoComponents(clusters[i.first]);
+    }
+  }
 
   // perform colour reconnection if needed and then
   // decay the clusters into one hadron
-  bool lightOK = false;
-  short tried = 0;
-  const ClusterVector savedclusters = clusters;
-  tPVector finalHadrons; // only needed for partonic decayer
-  while (!lightOK && tried++ < 10) {
-    // no colour reconnection with baryon-number-violating (BV) clusters
-    ClusterVector CRclusters, BVclusters;
-    CRclusters.reserve( clusters.size() );
-    BVclusters.reserve( clusters.size() );
-    for (size_t ic = 0; ic < clusters.size(); ++ic) {
-      ClusterPtr cl = clusters.at(ic);
-      bool hasClusterParent = false;
-      for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
-        if (cl->parents()[ix]->id() == ParticleID::Cluster) {
-          hasClusterParent = true;
-          break;
-        }
+  for ( auto i : interactions ) {
+    if ( clusters[i.first].empty() )
+      continue;
+    bool lightOK = false;
+    short tried = 0;
+    const ClusterVector savedclusters = clusters[i.first];
+    tPVector finalHadrons; // only needed for partonic decayer
+    while (!lightOK && tried++ < 10) {
+      // no colour reconnection with baryon-number-violating (BV) clusters
+      ClusterVector CRclusters, BVclusters;
+      CRclusters.reserve( clusters[i.first].size() );
+      BVclusters.reserve( clusters[i.first].size() );
+      for (size_t ic = 0; ic < clusters[i.first].size(); ++ic) {
+	ClusterPtr cl = clusters[i.first].at(ic);
+	bool hasClusterParent = false;
+	for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
+	  if (cl->parents()[ix]->id() == ParticleID::Cluster) {
+	    hasClusterParent = true;
+	    break;
+	  }
+	}
+	if (cl->numComponents() > 2 || hasClusterParent) BVclusters.push_back(cl);
+	else CRclusters.push_back(cl);
       }
-      if (cl->numComponents() > 2 || hasClusterParent) BVclusters.push_back(cl);
-      else CRclusters.push_back(cl);
-    }
 
-    // colour reconnection
-    _colourReconnector->rearrange(CRclusters);
+      // colour reconnection
+      assert(_colourReconnectors.find(i.first) != _colourReconnectors.end());
+      _colourReconnectors[i.first]->rearrange(CRclusters);
 
 
-    // tag new clusters as children of the partons to hadronize
-    _setChildren(CRclusters);
+      // tag new clusters as children of the partons to hadronize
+      _setChildren(CRclusters);
     
    
-    // forms diquarks
-    _clusterFinder->reduceToTwoComponents(CRclusters);
+      // forms diquarks
+      // we should already have used  _clusterFinder[i.first]
+      _clusterFinders[i.first]->reduceToTwoComponents(CRclusters);
     
-    // recombine vectors of (possibly) reconnected and BV clusters
-    clusters.clear();
-    clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
-    clusters.insert( clusters.end(), BVclusters.begin(), BVclusters.end() );
+      // recombine vectors of (possibly) reconnected and BV clusters
+      clusters[i.first].clear();
+      clusters[i.first].insert( clusters[i.first].end(), CRclusters.begin(), CRclusters.end() );
+      clusters[i.first].insert( clusters[i.first].end(), BVclusters.begin(), BVclusters.end() );
 
-    // fission of heavy clusters
-    // NB: during cluster fission, light hadrons might be produced straight away
-    finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
+      // fission of heavy clusters
+      // NB: during cluster fission, light hadrons might be produced straight away
+      assert(_clusterFissioners.find(i.first) != _clusterFissioners.end());
+      finalHadrons = _clusterFissioners[i.first]->fission(clusters[i.first],i.first == PDT::ColouredQCD ? isSoftUnderlyingEventON() : false);
 
 
-    // if clusters not previously reduced to two components do it now
-    if(!_reduceToTwoComponents)
-      _clusterFinder->reduceToTwoComponents(clusters);
-
-    lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
-
-    // if the decay of the light clusters was not successful, undo the cluster
-    // fission and decay steps and revert to the original state of the event
-    // record
-    if (!lightOK) {
-      clusters = savedclusters;
-      for_each(clusters.begin(),
-	       clusters.end(),
-	       std::mem_fn(&Particle::undecay));
+      // if clusters not previously reduced to two components do it now
+      if(!_reduceToTwoComponents)
+	_clusterFinders[i.first]->reduceToTwoComponents(clusters[i.first]);
+      assert(_lightClusterDecayers.find(i.first) != _lightClusterDecayers.end());
+      lightOK = _lightClusterDecayers[i.first]->decay(clusters[i.first],finalHadrons);
+      // if the decay of the light clusters was not successful, undo the cluster
+      // fission and decay steps and revert to the original state of the event
+      // record
+      if (!lightOK) {
+	clusters[i.first] = savedclusters;
+	for_each(clusters[i.first].begin(),
+		 clusters[i.first].end(),
+		 std::mem_fn(&Particle::undecay));
+      }
     }
-  }
-  if (!lightOK) {
-    throw Exception( "CluHad::handle(): tried LightClusterDecayer 10 times!",
-		    Exception::eventerror);
-  }
+    if (!lightOK) {
+      throw Exception( "CluHad::handle(): tried LightClusterDecayer 10 times!",
+		       Exception::eventerror);
+    }
 
-  // decay the remaining clusters
-  _clusterDecayer->decay(clusters,finalHadrons);
+    // decay the remaining clusters
+    assert(_clusterDecayers[i.first]);
+    _clusterDecayers[i.first]->decay(clusters[i.first],finalHadrons);
+    
+  }
 
   // *****************************************
   // *****************************************
@@ -413,7 +540,8 @@ void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) c
 }
 
 void ClusterHadronizationHandler::splitIntoColourSinglets(PVector copylist,
-							  vector<PVector>& reshufflelists){
+							  vector<PVector>& reshufflelists,
+							  int){
  
   PVector currentlist;
   bool gluonloop;

@@ -773,6 +773,11 @@ private :
   ShowerInteraction interaction_;
 
   /**
+   *  Whether to also include dark interactions in the shower
+   */
+  bool darkInteraction_;
+
+  /**
    *  Truncated shower switch
    */
   bool _trunc_Mode;

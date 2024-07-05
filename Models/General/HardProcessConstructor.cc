@@ -90,6 +90,9 @@ colourFlow(const tcPDVector & extpart) const {
     else if( outa == PDT::Colour3 && outb == PDT::Colour3bar ) {
       return GeneralHardME::Colour11to33bar;
     } 
+    else if( outa == PDT::DarkColourFundamental && outb == PDT::DarkColourAntiFundamental) {
+      return GeneralHardME::Colour11to33bar;
+    } 
     else if( outa == PDT::Colour8 && outb == PDT::Colour8 ) {
       return GeneralHardME::Colour11to88;
     } 

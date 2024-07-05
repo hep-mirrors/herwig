@@ -19,7 +19,6 @@
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-
 #include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Interface/Parameter.h>
 
@@ -778,6 +777,7 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         bcand = false;
         candidate = cit;
       }
+
     }
 
     if ( rapq < 0.0 && rapqbar >0.0
@@ -805,7 +805,6 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         }
       }
     }
-
   }
 
   if (bcand == true) {
@@ -1730,3 +1729,4 @@ void ColourReconnector::Init() {
    1);
 
 }
+
