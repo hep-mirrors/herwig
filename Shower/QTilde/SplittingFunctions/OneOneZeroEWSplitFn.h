@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The OneOneZeroEWSplitFn class implements the splitting function for
- * \f$\1\to q\1 0\f$ where the spin-1 particles are the W / Z massive
+ * \f$1\to 1 0\f$ where the spin-1 particles are the W / Z massive
  * electroweak gauge bosons and the spin-0 particle is the massive Higgs
  * boson.
  *
