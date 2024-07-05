@@ -384,16 +384,18 @@ rm /Herwig/Widths/hWidth
                     splitname = '{name}SplitFnQCD'.format(name=p.name)
                     sudname = '{name}SudakovQCD'.format(name=p.name)
                     splittings.append(
-    """
-    create Herwig::{s}{s}OneSplitFn {name}
-    set {name}:InteractionType QCD
-    set {name}:ColourStructure {c}{c}Octet
-    cp /Herwig/Shower/SudakovCommon {sudname}
-    set {sudname}:SplittingFunction {name}
-    do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudname}
-    """.format(s=spin_name(p.spin), name=splitname,
-               c=col_name(p.color), pname=p.name, sudname=sudname)
-                    )
+"""
+create Herwig::{s}{s}OneSplitFn {name}
+set {name}:InteractionType QCD
+set {name}:Alpha /Herwig/Shower/AlphaQCDFSR
+set {name}:Cutoff /Herwig/Shower/PTCutOff
+set {name}:ColourStructure {c}{c}Octet
+set {name}:AngularOrdered Yes
+set {name}:StrictAO Yes
+set {name}:PDFmax 1.9
+do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {name}
+""".format(s=spin_name(p.spin), name=splitname,
+           c=col_name(p.color), pname=p.name, sudname=sudname))
             except SkipMe:
                 pass
             # QED splitting functions
@@ -403,16 +405,17 @@ rm /Herwig/Widths/hWidth
                     splitname = '{name}SplitFnQED'.format(name=p.name)
                     sudname = '{name}SudakovQED'.format(name=p.name)
                     splittings.append(
-    """
-    create Herwig::{s}{s}OneSplitFn {name}
-    set {name}:InteractionType QED
-    set {name}:ColourStructure ChargedChargedNeutral
-    cp /Herwig/Shower/SudakovCommon {sudname}
-    set {sudname}:SplittingFunction {name}
-    set {sudname}:Alpha /Herwig/Shower/AlphaQED
-    do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {sudname}
-    """.format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname)
-                    )
+"""
+create Herwig::{s}{s}OneSplitFn {name}
+set {name}:ColourStructure ChargedChargedNeutral
+set {name}:AngularOrdered Yes
+set {name}:StrictAO Yes
+set {name}:InteractionType QED
+set {name}:Alpha /Herwig/Shower/AlphaQED
+set {name}:Cutoff /Herwig/Shower/PTCutOff
+set {name}:PDFmax 1.9
+do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {name}
+""".format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname))
             except SkipMe:
                 pass
 
@@ -557,6 +560,9 @@ rm /Herwig/Widths/hWidth
 create Herwig::{s0}{s1}{s2}EWSplitFn {name}
 set {name}:InteractionType EW
 set {name}:ColourStructure EW
+set {name}:Alpha /Herwig/Shower/AlphaEW
+set {name}:Cutoff /Herwig/Shower/PTCutOff
+set {name}:PDFmax 1.9
 """.format(s0=s[0],s1=s[1],s2=s[2],name=splitname)
                             )
                             if s[0]=='Half' and s[1]=='Half' and s[2]=='Zero':
@@ -582,10 +588,7 @@ set {name}:CouplingValue.Re {j}
 """.format(name=splitname,i=V[3].imag,j=V[3].real)
                                 )
                             splittings.append(
-"""cp /Herwig/Shower/SudakovCommon {sudname}
-set {sudname}:SplittingFunction {name}
-set {sudname}:Alpha /Herwig/Shower/AlphaEW
-do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {sudname}
+"""do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {name}
 """.format(name=splitname,p0=p0name,p1=p1name,p2=p2name,sudname=sudname)
                             )
             except SkipMe:
