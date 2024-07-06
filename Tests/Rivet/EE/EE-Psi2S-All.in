@@ -37,7 +37,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1120737
 # psi(2S) -> p pbar phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1722111
 # psi(2S) -> Lambda Lambdabar eta
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2128095
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2167804
 # psi(2S) -> p nbar pi- +cc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I716589
 ########### Decay to gamma chi_c correlations ###########
