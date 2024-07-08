@@ -17,14 +17,14 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**  \ingroup Shower
+/** \ingroup Shower
  * Enum to define the possible types of colour structure which can occur in
  * the branching.
  */
 enum ColourStructure {Undefined=0,
-		      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
-		      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
-		      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
+                      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
+                      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
+                      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
 		      OctetOctetSinglet    = 7, Epsilon               = 8,
 		      OctetSinglet         = 9,
 		      ChargedChargedNeutral=-1,
@@ -60,8 +60,8 @@ public:
    */
   SudakovFormFactor() : interactionType_(ShowerInteraction::UNDEFINED),
                         angularOrdered_(true),
-			colourStructure_(Undefined),
-			pdfMax_(35.0), pdfFactor_(0)
+                        colourStructure_(Undefined),
+                        pdfMax_(35.0), pdfFactor_(0)
   {}
   //@}
 
@@ -158,7 +158,7 @@ public:
    *  Return the colour structure
    */
   ColourStructure colourStructure() const {return colourStructure_;}
-
+  
   /**
    *  Method to check the colours are correct
    */
@@ -187,7 +187,7 @@ public:
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
   virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt) = 0;
-  
+
   /**
    *  Return the type of the interaction
    */
@@ -214,7 +214,7 @@ protected:
   /**
    *  Access the potential branchings
    */
-  const vector<IdList> & particles() const { return particles_;}
+  const vector<IdList> & particles() const { return particles_; }
 
   /**
    *  The PDF factor
@@ -224,8 +224,8 @@ protected:
   /**
    * Maximum value of the PDF weight
    */
-  double pdfMax() const {return pdfMax_;}
-
+  double pdfMax() const { return pdfMax_;}
+  
   /**
    * Veto on the PDF for the initial-state shower
    * @param t The scale
@@ -341,7 +341,7 @@ private:
    * Maximum value of the PDF weight
    */
   double pdfMax_;
-
+  
   /**
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */

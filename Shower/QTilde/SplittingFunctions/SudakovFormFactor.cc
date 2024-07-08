@@ -9,9 +9,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
-#include "ThePEG/EventRecord/Particle.h"
-#include "ThePEG/Repository/UseRandom.h"
-#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,14 +17,13 @@
 
 using namespace Herwig;
 
-
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << alpha_ << pdfMax_ << pdfFactor_ << angularOrdered_
-     << oenum(interactionType_) << oenum(colourStructure_) << particles_ ;
+  os  << alpha_ << pdfMax_ << pdfFactor_ << angularOrdered_
+      << oenum(interactionType_) << oenum(colourStructure_) << particles_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> alpha_ >> pdfMax_ >> pdfFactor_ >> angularOrdered_ 
+  is >> alpha_ >> pdfMax_ >> pdfFactor_ >> angularOrdered_
      >> ienum(interactionType_) >> ienum(colourStructure_) >> particles_;
 }
 
@@ -48,11 +44,11 @@ void SudakovFormFactor::Init() {
 		   &Herwig::SudakovFormFactor::alpha_,
 		   false, false, true, false);
 
-  static Switch<SudakovFormFactor,ShowerInteraction> 
+  static Switch<SudakovFormFactor,ShowerInteraction>
     interfaceInteractionType
     ("InteractionType",
      "Type of the interaction",
-     &SudakovFormFactor::interactionType_, 
+     &SudakovFormFactor::interactionType_,
      ShowerInteraction::UNDEFINED, false, false);
   static SwitchOption interfaceInteractionTypeQCD
     (interfaceInteractionType,
@@ -63,6 +59,9 @@ void SudakovFormFactor::Init() {
   static SwitchOption interfaceInteractionTypeEW
     (interfaceInteractionType,
      "EW","EW",ShowerInteraction::EW);
+  static SwitchOption interfaceInteractionTypeDARK
+    (interfaceInteractionType,
+     "DARK","DARK",ShowerInteraction::DARK);
 
   static Switch<SudakovFormFactor,bool> interfaceAngularOrdered
     ("AngularOrdered",
@@ -79,7 +78,7 @@ void SudakovFormFactor::Init() {
      "No",
      "Interaction isn't angular ordered",
      false);
-  
+
   static Switch<SudakovFormFactor,ColourStructure> interfaceColourStructure
     ("ColourStructure",
      "The colour structure for the splitting function",
@@ -103,7 +102,7 @@ void SudakovFormFactor::Init() {
     (interfaceColourStructure,
      "TripletOctetTriplet",
      "3 -> 8 3",
-     TripletOctetTriplet); 
+     TripletOctetTriplet);
   static SwitchOption interfaceColourStructureSextetSextetOctet
     (interfaceColourStructure,
      "SextetSextetOctet",
@@ -271,7 +270,7 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     assert(false);
   }
   return false;
-}
+} 
 
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
@@ -315,15 +314,15 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
 }
 
 bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x, const double z,
-				const tcPDPtr parton0, const tcPDPtr parton1,
-				Ptr<BeamParticleData>::transient_const_pointer beam) const {
+	const tcPDPtr parton0, const tcPDPtr parton1,
+	Ptr<BeamParticleData>::transient_const_pointer beam) const {
   double ratio=PDFVetoRatio(t,x,z,parton0,parton1,beam,1.);
   return UseRandom::rnd() > ratio;
 }
 
 double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const double z,
-					   const tcPDPtr parton0, const tcPDPtr parton1,
-					   Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
+                                       const tcPDPtr parton0, const tcPDPtr parton1,
+                                       Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
   assert(pdf_);
   Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
@@ -333,7 +332,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const do
 
   const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
   if(oldpdf<=0.) return 1.;
-  
+
   const double ratio = newpdf/oldpdf;
   double maxpdf = pdfMax_;
 
@@ -347,7 +346,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const do
   default :
     throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
 		      << pdfFactor_ << Exception::runerror;
-    
+
   }
 
   if (ratio > maxpdf) {
@@ -368,5 +367,5 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
   if(ShowerHandler::currentHandlerIsSet())
     factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-  return alpha_->ratio(pt2, factor);
+  return alpha_->showerRatio(pt2, factor);
 }

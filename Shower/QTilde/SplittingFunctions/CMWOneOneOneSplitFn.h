@@ -37,7 +37,7 @@ using namespace ThePEG;
  * defined for CMWOneOneOneSplitFn.
  */
 class CMWOneOneOneSplitFn: public Sudakov1to2FormFactor {
-    
+
 public:
 
   /**
@@ -48,7 +48,7 @@ public:
   bool accept(const IdList & ids) const {
     if(ids.size()!=3) return false;
     for(unsigned int ix=0;ix<ids.size();++ix) {
-      if(ids[0]->iSpin()!=PDT::Spin1) return false;
+      if(ids[ix]->iSpin()!=PDT::Spin1) return false;
     }
     return true;
   }
@@ -89,11 +89,11 @@ public:
    *  in the first place we can keep the same overestimation related functions
    *  for the CMW kernels.
    */
-  virtual double ratioP(const double z, const Energy2 t,
-			const IdList & , const bool, const RhoDMatrix &) const {
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ,
+                        const bool , const RhoDMatrix & ) const {
     Energy2 scale2=t;
-    if (!isIS_) scale2 *= pTScale() ? z*(1.-z) : 1.;
-    else        scale2 *= pTScale() ? z*(1.-z) :  z;
+    if (!isIS_) scale2*=pTScale() ? z*(1.-z):1.;
+    else scale2*=pTScale() ? z*(1.-z):z;
     return alpha()->value(scale2)  * Kg(scale2)/2./Constants::pi;
   }
 
@@ -106,7 +106,7 @@ public:
     int Nf=5;//alpha_->Nf(t)
     return (3.*(67./18.-1./6.*sqr(Constants::pi))-5./9.*Nf);
   }
-
+  
   /**
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.

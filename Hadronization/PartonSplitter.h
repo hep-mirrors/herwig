@@ -13,6 +13,7 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/Utilities/Selector.h>
 #include "PartonSplitter.fh"
+#include "HadronSpectrum.h"
 
 namespace Herwig {
 
@@ -49,15 +50,12 @@ public:
    *  Default constructor
    */
   PartonSplitter() :
-	 _splitPwtUquark(1),
-	 _splitPwtDquark(1),
-	 _splitPwtSquark(0.5),
-	 _gluonDistance(ZERO),
-	 _splitGluon(0),
-   _enhanceSProb(0),
-   _m0(10.*GeV),
-   _massMeasure(0)
-  {}
+    Interfaced(),
+    _gluonDistance(ZERO),
+    _splitGluon(0),
+    _enhanceSProb(0),
+    _m0(10.*GeV),
+    _massMeasure(0) {}
 
   /**
    * This method does the nonperturbative splitting of:
@@ -138,7 +136,7 @@ private:
    * @param quark The quark produced in the splitting
    * @param anti  The antiquark produced in the splitting
    */
-  void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
+  virtual void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
 
   /**
@@ -165,15 +163,20 @@ private:
    */
   double enhanceStrange(size_t i);
 
+  /**
+   * Return the hadron spectrum
+   */
+  Ptr<HadronSpectrum>::ptr spectrum() const {
+    return _hadronSpectrum;
+  }
+
 private:
 
   /**
   *  Different variables for the weight for splitting into various
   *  light quark species.
   */
-  double _splitPwtUquark;
-  double _splitPwtDquark;
-  double _splitPwtSquark;
+  map<long,double> _splitPwt;
 
   /**
    *  The selector to pick the type of quark
@@ -224,6 +227,11 @@ private:
   *  becoming too large
   */
   const double _maxScale = 20.;
+
+  /**
+   * The hadron spectrum to consider
+   */
+  Ptr<HadronSpectrum>::ptr _hadronSpectrum;
 
 };
 

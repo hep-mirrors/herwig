@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HadronSpectrum class.
+//
+#ifndef HERWIG_HadronSpectrum_FH
+#define HERWIG_HadronSpectrum_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class HadronSpectrum;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::HadronSpectrum,HadronSpectrumPtr);
+
+}
+
+#endif

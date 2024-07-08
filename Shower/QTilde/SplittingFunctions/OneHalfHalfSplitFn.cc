@@ -29,18 +29,7 @@ void OneHalfHalfSplitFn::Init() {
 
 }
 
-double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t, 
-				  const IdList &ids, const bool mass, const RhoDMatrix &) const {
-  double zz = z*(1.-z);
-  double val = 1.-2.*zz;
-  if(mass) {
-    Energy m = ids[1]->mass();
-    val+= 2.*sqr(m)/t;
-  }
-  return val;
-}
-
-double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ,
+double OneHalfHalfSplitFn::integOverP(const double z, const IdList &,
 				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
@@ -61,7 +50,8 @@ double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ,
   }
 }
 
-double OneHalfHalfSplitFn::invIntegOverP(const double r, const IdList & ,
+double OneHalfHalfSplitFn::invIntegOverP(const double r,
+					 const IdList &,
 					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
@@ -80,14 +70,6 @@ double OneHalfHalfSplitFn::invIntegOverP(const double r, const IdList & ,
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
   }
-}
-
-bool OneHalfHalfSplitFn::accept(const IdList &ids) const {
-  if(ids.size()!=3) return false;
-  if(ids[1]!=ids[2]->CC()) return false;
-  if(ids[1]->iSpin()!=PDT::Spin1Half) return false;
-  if(ids[0]->iSpin()!=PDT::Spin1) return false;
-  return true;
 }
 
 vector<pair<int, Complex> > 

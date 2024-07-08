@@ -41,6 +41,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/lu.hpp>
+#include <boost/throw_exception.hpp>
 
 namespace boost { namespace numeric { namespace ublas {
 
@@ -57,7 +58,7 @@ template<typename MATRIX> MATRIX expm_pad(const MATRIX &H, const int p = 6) {
   // Calcuate Pade coefficients  (1-based instead of 0-based as in the c vector)
   vector<real_value_type> c(p+2);
   c(1)=1;  
-  for(size_type i = 1; i <= p; ++i) 
+  for(size_type i = 1; i <= (unsigned) p; ++i) 
     c(i+1) = c(i) * ((p + 1.0 - i)/(i * (2.0 * p + 1 - i)));
   // Calcuate the infinty norm of H, which is defined as the largest row sum of a matrix
   for(size_type i=0; i<n; ++i)
@@ -134,7 +135,7 @@ template<typename MATRIX> MATRIX expm_pad(const MATRIX &H, const int p = 6) {
   else
     U.assign( I + 2.0 * prod(H2, P));
   // Squaring 
-  for(size_t i = 0; i < s; ++i)
+  for(size_t i = 0; i < (unsigned) s; ++i)
     {
       U = (prod(U,U));
     }

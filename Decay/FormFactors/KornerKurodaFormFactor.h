@@ -11,7 +11,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The KornerKurodaFormFactor class implements the simple model of PRD 16, 2165, 1997 for the
+ * The KornerKurodaFormFactor class implements the simple model of PRD 16, 2165, 1977 for the
  * form factors of the baryon octet/
  *
  * @see \ref KornerKurodaFormFactorInterfaces "The interfaces"

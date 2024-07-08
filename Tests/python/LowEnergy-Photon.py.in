@@ -20,12 +20,12 @@ opts, args = op.parse_args()
 path=opts.path
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
-analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      : {},
-             "EtaPi" : {}, "4Pi"       : {}, "EtaEta"  : {}, "EtaOmega" : {},
-             "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
-             "EtaPiPi"      : {}, "EtaPrimePiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
-             "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
-             "5Pi"          : {}, "LL"        : {}, "Baryon"  : {} }
+analyses = { 'KK'           : {}, 'PiPi'         : {}, 'PPbar'     : {}, "3Pi"      : {},
+             "EtaPi"        : {}, "4Pi"          : {}, "EtaEta"    : {}, "EtaOmega" : {},
+             "2K1Pi"        : {}, "2K2Pi"        : {}, "4K"        : {}, "6m"       : {},
+             "EtaPiPi"      : {}, "EtaPrimePiPi" : {}, "OmegaPi"   : {}, "PiGamma"  : {},
+             "EtaGamma"     : {}, "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"       : {},
+             "BB"           : {}, "5Pi"          : {}, "LL"        : {}, "Baryon"   : {} }
 # pi+pi-
 analyses["PiPi"]["ALEPH_2003_I626022"   ] = ["d03-x01-y01"]
 analyses["PiPi"]["BELLE_2005_I667712"   ] = ["d01-x01-y02",

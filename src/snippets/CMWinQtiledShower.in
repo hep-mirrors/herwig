@@ -1,8 +1,5 @@
+# -*- ThePEG-repository -*-
 #  Here we add the CMW kernels.
-
-
-
-
 cd /Herwig/Shower
 
 
@@ -18,14 +15,11 @@ set CMWQtoQGSudakov:ColourStructure TripletTripletOctet
 set CMWQtoQGSudakov:AngularOrdered Yes
 set CMWQtoQGSudakov:Alpha AlphaQCDFSR
 
-
 create Herwig::CMWOneOneOneSplitFn CMWGtoGGSudakov
 set CMWGtoGGSudakov:InteractionType QCD
 set CMWGtoGGSudakov:ColourStructure OctetOctetOctet
 set CMWGtoGGSudakov:AngularOrdered Yes
 set CMWGtoGGSudakov:Alpha AlphaQCDFSR
-
-
 
 cp CMWGtoGGSudakov CMWGtoGGSudakovIS
 cp CMWQtoQGSudakov CMWQtoQGSudakovIS
@@ -34,10 +28,17 @@ set CMWQtoQGSudakovIS:Alpha AlphaQCDFSR
 set CMWQtoGGSudakovIS:Alpha AlphaQCDFSR
 
 
+cp CMWGtoGGSudakov CMWGtoGGSudakovIS
+cp CMWQtoQGSudakov CMWQtoQGSudakovIS
 
+set CMWQtoQGSudakovIS:Alpha AlphaQCDFSR
+set CMWQtoGGSudakovIS:Alpha AlphaQCDFSR
 
+set CMWGtoGGSudakovIS:isInititalState Yes
+set CMWQtoQGSudakovIS:isInititalState Yes
 
-
+set CMWGtoGGSudakov:isInititalState No
+set CMWQtoQGSudakov:isInititalState No
 
 #
 # Now add the final splittings

@@ -27,7 +27,6 @@ using namespace Herwig;
 FS_QTildeShowerKinematics1to2::FS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
   : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
 
-
 void FS_QTildeShowerKinematics1to2::
 updateParameters(tShowerParticlePtr theParent,
 		 tShowerParticlePtr theChild0,
@@ -63,7 +62,7 @@ updateChildren(const tShowerParticlePtr parent,
   assert(children.size()==2);
   // calculate the scales
   sudakov1to2_->evaluateFinalStateScales(partnerType,scale(),z(),parent,
-						children[0],children[1]);
+					  children[0],children[1]);
 
   // update the parameters
   updateParameters(parent, children[0], children[1], true);

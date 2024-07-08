@@ -70,7 +70,7 @@ void EtaPiGammaGammaDecayer::doinit() {
     _dconst[ix]=fact[ix]*pre;
     _econst[ix]=fact[ix]*pre;
   }
-  // set up the phsae space for the decays
+  // set up the phase space for the decays
   tPDPtr eta[2]={getParticleData(ParticleID::eta),
 		 getParticleData(ParticleID::etaprime)};
   tPDVector out = {getParticleData(ParticleID::pi0),

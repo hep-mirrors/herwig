@@ -35,6 +35,7 @@ create Herwig::ShowerAlphaQED AlphaQED
 set AlphaQED:CouplingSource Thompson
 create Herwig::ShowerAlphaQED AlphaEW
 set AlphaEW:CouplingSource MZ
+create Herwig::HiddenValleyAlpha AlphaDARK
 create Herwig::PartnerFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 0
 newdef PartnerFinder:ScaleChoice 0
@@ -119,6 +120,10 @@ newdef AlphaQCDFSR:NPAlphaS 2
 newdef AlphaQCDFSR:Qmin 0.935
 newdef AlphaQCDFSR:NumberOfLoops 2
 newdef AlphaQCDFSR:AlphaIn 0.102337
+newdef AlphaDARK:ScaleFactor 1.0
+newdef AlphaDARK:NPAlphaS 2
+newdef AlphaDARK:Qmin 0.935
+newdef AlphaDARK:NumberOfLoops 2
 #
 #
 # Lets set up all the splittings and Sudakovs
@@ -136,6 +141,15 @@ newdef QtoQGSudakov:ColourStructure TripletTripletOctet
 newdef QtoQGSudakov:AngularOrdered Yes
 newdef QtoQGSudakov:StrictAO Yes
 newdef QtoQGSudakov:PDFmax 1.9
+
+create Herwig::HalfHalfOneDarkSplitFn QtoQGDARKSudakov
+newdef QtoQGDARKSudakov:InteractionType DARK
+newdef QtoQGDARKSudakov:Alpha AlphaDARK
+newdef QtoQGDARKSudakov:Cutoff PTCutOff
+newdef QtoQGDARKSudakov:ColourStructure TripletTripletOctet
+newdef QtoQGDARKSudakov:AngularOrdered Yes
+newdef QtoQGDARKSudakov:StrictAO Yes
+newdef QtoQGDARKSudakov:PDFmax 1.9
 
 # q -> q gamma 
 create Herwig::HalfHalfOneSplitFn QtoQGammaSudakov
@@ -244,12 +258,22 @@ newdef QtoQHSudakov:ColourStructure EW
 newdef QtoQHSudakov:Alpha AlphaEW
 newdef QtoQHSudakov:PDFmax 1.9
 newdef QtoQHSudakov:Cutoff PTCutOff
+cp QtoQHSudakov LtoLHSudakov
 
 create Herwig::OneOneOneEWSplitFn VtoVVSudakov
 newdef VtoVVSudakov:InteractionType EW
 newdef VtoVVSudakov:ColourStructure EW
 newdef VtoVVSudakov:Alpha AlphaQED
 newdef VtoVVSudakov:Cutoff PTCutOff
+
+create Herwig::OneOneOneDarkSplitFn GtoGGDARKSudakov 
+newdef GtoGGDARKSudakov:InteractionType DARK
+newdef GtoGGDARKSudakov:ColourStructure OctetOctetOctet
+newdef GtoGGDARKSudakov:AngularOrdered Yes
+newdef GtoGGDARKSudakov:Alpha AlphaDARK
+newdef GtoGGDARKSudakov:StrictAO Yes
+newdef GtoGGDARKSudakov:PDFmax 2.0
+newdef GtoGGDARKSudakov:Cutoff PTCutOff
 
 create Herwig::OneOneOneQEDSplitFn GammatoWWSudakov
 newdef GammatoWWSudakov:InteractionType QED
@@ -264,6 +288,22 @@ newdef VtoVHSudakov:ColourStructure EW
 newdef VtoVHSudakov:Alpha AlphaEW
 newdef VtoVHSudakov:PDFmax 1.9
 newdef VtoVHSudakov:Cutoff PTCutOff
+
+create Herwig::OneHalfHalfDarkSplitFn GtoQQbarDARKSudakov 
+newdef GtoQQbarDARKSudakov:InteractionType DARK
+newdef GtoQQbarDARKSudakov:ColourStructure OctetTripletTriplet
+newdef GtoQQbarDARKSudakov:AngularOrdered Yes
+newdef GtoQQbarDARKSudakov:StrictAO Yes
+newdef GtoQQbarDARKSudakov:Alpha AlphaDARK
+newdef GtoQQbarDARKSudakov:PDFmax 120.0
+newdef GtoQQbarDARKSudakov:Cutoff PTCutOff
+
+create Herwig::ZeroZeroZeroEWSplitFn HtoHHSudakov
+newdef HtoHHSudakov:InteractionType EW
+newdef HtoHHSudakov:ColourStructure EW
+newdef HtoHHSudakov:Alpha AlphaEW
+newdef HtoHHSudakov:PDFmax 1.9
+newdef HtoHHSudakov:Cutoff PTCutOff
 
 #Use a different Sudakov for FS QCD splittings in order to use a different value of alphaS
 cp QtoQGSudakov    QtoQGSudakovFSR
@@ -415,6 +455,8 @@ do SplittingGenerator:AddFinalSplitting W+->W+,Z0; VtoVVSudakov
 
 do SplittingGenerator:AddFinalSplitting W+->W+,h0; VtoVHSudakov
 do SplittingGenerator:AddFinalSplitting Z0->Z0,h0; VtoVHSudakov
+
+do SplittingGenerator:AddFinalSplitting h0->h0,h0; HtoHHSudakov
 
 #
 #  Electroweak l -> l V

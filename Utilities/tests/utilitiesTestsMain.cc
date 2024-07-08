@@ -26,7 +26,7 @@
  * Include here the sub tests
  */
 #include "Herwig/Utilities/tests/utilitiesTestsKinematics.h"
-#include "Herwig/Utilities/tests/utilitiesTestMaths.h"
+#include "Herwig/Utilities/tests/utilitiesTestsMaths.h"
 #include "Herwig/Utilities/tests/utilitiesTestsStatistic.h"
 
 

@@ -90,9 +90,9 @@ void MEee2gZ2qqPowheg::Init() {
      "QED",
      "Only include the QED corrections",
      2);
-  static SwitchOption interfaceCorrectionsQCDandQED
+  static SwitchOption interfaceCorrectionsQCDQED
     (interfaceCorrections,
-     "QCDandQED",
+     "QCDQED",
      "Include both QED and QCD corrections",
      3);
 

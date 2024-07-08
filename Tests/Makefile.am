@@ -217,7 +217,6 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
-
 Analysis/RivetHerwig.so: Analysis/*.cc
 	rivet-build Analysis/RivetHerwig.so Analysis/*.cc 
 
@@ -262,7 +261,6 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 Rivet-LowEnergy-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
-
 
 Onium-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)

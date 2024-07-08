@@ -37,6 +37,7 @@ all-local: $(POSTPROCESSING)
 done-all-links: Herwig.la
 	find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
   -not -name 'lib*' -not -path '$(top_builddir)/lib/*' \
+  -not -path '$(top_builddir)/Tests/*' \
   -not -path '$(top_builddir)/.hg/*' -exec $(LN_S) -f \{\} \;
 	$(LN_S) -f .libs/Herwig*so* .
 	echo "stamp" > $@

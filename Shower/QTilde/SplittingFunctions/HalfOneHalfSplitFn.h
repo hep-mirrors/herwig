@@ -63,7 +63,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double z, const IdList &) const { 
+  double overestimateP(const double z, const IdList & ) const { 
     return 2./z; 
   }
 
@@ -77,8 +77,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  double ratioP(const double z, const Energy2 t,
-		const IdList &ids,const bool mass, const RhoDMatrix & ) const {
+  double ratioP(const double z, const Energy2 t, const IdList & ids,
+                const bool mass, const RhoDMatrix & ) const {
     double val=2.*(1.-z)+sqr(z);
     if(mass) {
       Energy m=ids[0]->mass();
@@ -97,7 +97,7 @@ public:
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
   double integOverP(const double z, const IdList & , 
-			    unsigned int PDFfactor=0) const { 
+                    unsigned int PDFfactor=0) const {
     switch(PDFfactor) {
     case 0:
       return 2.*log(z); 
@@ -108,7 +108,7 @@ public:
     case 3:
     default:
       throw Exception() << "HalfOneHalfSplitFn::integOverP() invalid PDFfactor = "
-			<< PDFfactor << Exception::runerror;
+                        << PDFfactor << Exception::runerror;
     }
   }
 

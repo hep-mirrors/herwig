@@ -21,10 +21,8 @@
 
 using namespace Herwig;
 
-
 Decay_QTildeShowerKinematics1to2::Decay_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud)
   : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
-
 
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
@@ -34,7 +32,7 @@ updateChildren(const tShowerParticlePtr parent,
   assert(children.size() == 2);
   // calculate the scales
   sudakov1to2_->evaluateDecayScales(partnerType,scale(),z(),parent,
-					   children[0],children[1]);
+				     children[0],children[1]);
   // set the maximum virtual masses
   IdList ids(3);
   ids[0] = parent->dataPtr();

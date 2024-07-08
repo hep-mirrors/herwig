@@ -39,7 +39,7 @@ utilities_test_SOURCES = \
 tests/utilitiesTestsMain.cc \
 tests/utilitiesTestsGlobalFixture.h \
 tests/utilitiesTestsKinematics.h \
-tests/utilitiesTestMaths.h \
+tests/utilitiesTestsMaths.h \
 tests/utilitiesTestsStatistic.h
 utilities_test_LDADD = $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(THEPEGLIB) -ldl libHwUtils.la
 utilities_test_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS) $(THEPEGLDFLAGS)

@@ -783,6 +783,7 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         bcand = false;
         candidate = cit;
       }
+
     }
     if ( rapq < 0.0 && rapqbar >0.0
          && rapqbar > maxrapNormal
@@ -821,7 +822,6 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         }
       }
     }
-
   }
 
   if (bcand == true) {
@@ -1771,3 +1771,4 @@ void ColourReconnector::Init() {
      false);
 
 }
+
