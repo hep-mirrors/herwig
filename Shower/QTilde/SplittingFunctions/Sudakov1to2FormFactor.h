@@ -147,10 +147,9 @@ public:
   /**
    * The default constructor.
    */
-  Sudakov1to2FormFactor() : 
-			z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
-			strictAO_(true), colourFactor_(-1.),
-			enhancementFactor_(1.)
+  Sudakov1to2FormFactor() :  z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
+                             strictAO_(true), colourFactor_(-1.),
+                             enhancementFactor_(1.)
   {}
 
   /**
@@ -251,9 +250,10 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   double P(const double z, const Energy2 t, const IdList & ids,
-	   const bool mass, const RhoDMatrix & rho) {
+	   const bool mass, const RhoDMatrix & rho) const {
     return ratioP(z,t,ids,mass,rho)*overestimateP(z,ids);
   }
 
@@ -275,6 +275,7 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
 			const bool mass, const RhoDMatrix & rho) const = 0;
@@ -386,8 +387,10 @@ public:
    * @param partnerType The type of evolution partner
    * @param back Whether this is foward or backward evolution.
    */
-  void colourConnection(tShowerParticlePtr parent, tShowerParticlePtr first,
-			tShowerParticlePtr second, ShowerPartnerType partnerType, 
+  void colourConnection(tShowerParticlePtr parent,
+                        tShowerParticlePtr first,
+			tShowerParticlePtr second,
+                        ShowerPartnerType partnerType, 
 			const bool back) const;
 
   /**
@@ -573,7 +576,7 @@ protected:
 			      const IdList &ids,
 			      const bool mass,
 			      const RhoDMatrix & rho,
-			      double detune) const {
+			      const double & detune) const {
     return ratioP(z_, t, ids,mass,rho)/detune;
   }
   //@}
@@ -670,6 +673,7 @@ private:
   vector<Energy2> masssquared_;
 
 private:
+
   /**
    *  The choice of scale
    */

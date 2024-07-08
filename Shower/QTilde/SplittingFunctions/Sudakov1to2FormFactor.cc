@@ -50,7 +50,7 @@ void Sudakov1to2FormFactor::Init() {
 
   static ClassDocumentation<Sudakov1to2FormFactor> documentation
     ("The Sudakov1to2FormFactor class is the base class for the implementation of Sudakov"
-     " form factors in Herwig");
+     " form factors for 1->2 branchings in Herwig");
 
   static Reference<Sudakov1to2FormFactor,SudakovCutOff>
     interfaceCutoff("Cutoff",

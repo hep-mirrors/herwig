@@ -39,7 +39,8 @@ describeHerwigSudakovFormFactor("Herwig::SudakovFormFactor", "HwShower.so");
 void SudakovFormFactor::Init() {
 
   static ClassDocumentation<SudakovFormFactor> documentation
-    ("There is no documentation for the SudakovFormFactor class");
+    ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
+     " form factors in Herwig");
 
   static Reference<SudakovFormFactor,ShowerAlpha>
     interfaceAlpha("Alpha",
@@ -149,7 +150,7 @@ void SudakovFormFactor::Init() {
      "q -> q W/Z, q -> q h0, V -> V' V'', V -> V H",
      EW);
 
-  static Parameter<SudakovFormFactor,double> interfacePdfMax
+  static Parameter<SudakovFormFactor,double> interfacePDFMax
     ("PDFmax",
      "Maximum value of PDF weight. ",
      &SudakovFormFactor::pdfMax_, 35.0, 1.0, 1000000.0,

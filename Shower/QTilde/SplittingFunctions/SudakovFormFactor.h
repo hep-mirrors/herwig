@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef Herwig_SudakovFormFactor_H
-#define Herwig_SudakovFormFactor_H
+#ifndef HERWIG_SudakovFormFactor_H
+#define HERWIG_SudakovFormFactor_H
 //
 // This is the declaration of the SudakovFormFactor class.
 //
@@ -11,6 +11,7 @@
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig/Shower/ShowerAlpha.h"
+#include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
@@ -164,10 +165,6 @@ public:
   bool checkColours(const IdList & ids) const;
 
   /**
-   *  Methods to provide public access to the private member variables
-   */
-  //@{
-  /**
    * Return the pointer to the ShowerAlpha object.
    */
   tShowerAlphaPtr alpha() const { return alpha_; }
@@ -184,8 +181,6 @@ public:
    *  @param ids The PDG codes for the particles in the splitting.
    */
   virtual bool accept(const IdList & ids) const = 0;
-  //@}
-
 
   /**
    *  Method to return the evolution scale given the
@@ -202,6 +197,7 @@ public:
    *  Whether or not the interaction is angular ordered
    */
   bool angularOrdered() const {return angularOrdered_;}
+  //@}
 
 protected:
 
@@ -361,4 +357,4 @@ private:
 
 }
 
-#endif /* Herwig_SudakovFormFactor_H */
+#endif /* HERWIG_SudakovFormFactor_H */
