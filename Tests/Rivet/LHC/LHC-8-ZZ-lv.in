@@ -4,3 +4,5 @@
 ##################################################
 # general analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1298807
+# ATLAS 4l
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1494075

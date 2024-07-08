@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import yoda,os,subprocess,optparse
 import numpy as np

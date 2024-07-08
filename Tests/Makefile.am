@@ -165,6 +165,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.in) \
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.in) \
 		  $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.in) \
+		  $(shell echo Rivet/Photo-{Direct,Resolved}-{300,318}-e+-Jets-{1..3}.in ) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
 	          $(shell echo Rivet/TVT-Powheg-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
@@ -187,7 +188,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/SppS{,-Dipole}-{53,63,200,500,546,900}-UE.in ) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{{,8-}W-{e,mu},13-W-mu,{2760-,,8-,13-}Z-{e,mu}-Mass{1..5},13-Z-nu,Z-mu-SOPHTY,WZ,WW-{emu,ll},13-WW-ll,13-ZZ-ll,ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
-                  $(shell echo Rivet/LHC{,-Dipole}-8-ZGamma-{e,mu}.in) \
+                  $(shell echo Rivet/LHC{,-Dipole}-8-ZGamma-{e,mu,nu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
 	          $(shell echo Rivet/LHC{-Matchbox,-Matchbox-Powheg,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{Z-b,Z-bb,8-Z-b,8-Z-bb,13-Z-b,13-Z-bb,W-b,8-Z-jj}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole}-{7,8,13}-PromptPhoton-{1..5}.in) Rivet/LHC-GammaGamma-7.in \
@@ -257,7 +258,8 @@ Rivet-DIS : Rivet-DIS/done
 
 Rivet-DIS/done: $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.yoda) \
 		$(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-{296,300,318}-e--{VeryLow,Low,Med,High}Q2.yoda) \
-                $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)
+                $(shell echo Rivet{-DIS,-NoME-DIS,-Powheg-DIS}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.yoda)\
+                $(shell echo Rivet-Photo-{Direct,Resolved}-{300,318}-e+-Jets-{1..3}.yoda)
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS
 	python/merge-DIS Powheg-DIS
@@ -342,7 +344,7 @@ Rivet-LHC-EW/done: \
 		$(shell echo Rivet{,-Powheg}-LHC-{{,8-}W-{e,mu},13-W-mu,{2760-,,8-,13-}Z-{e,mu}-Mass{1..5},13-Z-nu,Z-mu-SOPHTY,WZ,WW-{emu,ll},13-WW-ll,ZZ-{ll,lv},{8,13}-WZ,13-ZZ-ll,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
 		$(shell echo Rivet-LHC-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 		$(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) \
-		$(shell echo Rivet-LHC-8-ZGamma-{e,mu}.yoda)
+		$(shell echo Rivet-LHC-8-ZGamma-{e,mu,nu}.yoda)
 	rm -rf Rivet-LHC-EW;
 	python/merge-LHC-EW LHC
 	python/merge-LHC-EW Powheg-LHC

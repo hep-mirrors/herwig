@@ -26,6 +26,7 @@ def identifyCollider(name) :
             break
     del cand_collider
     if "EHS" in name : collider="SPS"
+    if "Photo" == name[0:5] : collider="DIS"
     assert collider
     have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
     return (collider,have_hadronic_collider)
@@ -146,6 +147,13 @@ def identifySimulation(name,collider,have_hadronic_collider) :
                 templateName="EE-Gamma-Double-Resolved.in"
             else :
                 templateName="EE.in"
+        elif collider=="DIS" and "Photo" == name[0:5] :
+            if("Direct" in name) :
+                templateName="Photo-Direct.in"
+            elif "Resolved" in name : 
+                templateName="Photo-Resolved.in"
+            else :
+                templateName="DIS.in"
         elif collider=="GammaGamma" :
             templateName="GammaGamma.in"
         elif collider != "BFactory" :
@@ -158,10 +166,8 @@ def identifySimulation(name,collider,have_hadronic_collider) :
             if simulation == "Merging" :
                 if "Charm" in name or "Bottom" in name or "Top" in name :
                     templateName= "Hadron-Merging-Massive.in"
-        elif collider != "BFactory" :
-            templateName= "%s-%s.in" % (collider,simulation)
         else :
-            templateName= "EE-%s.in" % simulation
+            templateName= "%s-%s.in" % (collider,simulation)
     # work out the name of the parameter file
     parameterName="-".join(name.split("-")[istart:])
     del istart

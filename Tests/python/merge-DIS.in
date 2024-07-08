@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys,subprocess,math,time
 
@@ -44,6 +45,19 @@ for energy in [225,251,296,300,318,"318-CMS"] :
             mergeargs.append("-a")
             mergeargs.append("HERA_2015_I1377206:BEAM=%s" %beam)
         fname = "Rivet-%s-%s-%s.yoda"% (args[0], energy ,process)
+        mergeargs.append("-o")
+        mergeargs.append(fname)
+        yodafiles.append(fname)
+        p = subprocess.Popen(mergeargs)
+if args[0]=="DIS":
+    for energy in [300,318] :
+        mergeargs=["rivet-merge","--assume-reentrant"]
+        for process in ["Direct","Resolved"] :
+            for i in range(1,4) :
+                fname = "Rivet-Photo-%s-%s-e+-Jets-%s.yoda" %(process,energy,i)
+                if(os.path.isfile(fname)) : mergeargs.append(fname)
+        if len(mergeargs)==2 : continue
+        fname = "Rivet-Photo-%s.yoda"%  energy
         mergeargs.append("-o")
         mergeargs.append(fname)
         yodafiles.append(fname)

@@ -25,6 +25,35 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                    sqrts<=h.bins()[i].xMax()) :
                     desthisto.bins()[i] += h.bins()[i]
                     break
+    elif(type(desthisto)==yoda.core.BinnedEstimate1D) :
+        for sqrts, h in sorted(temp.items()) :
+            if h.numBins() == len(h.xEdges()) :
+                nearest=-1
+                delta  =1e30
+                for i,xx in enumerate(h.xEdges()) :
+                    try : 
+                        x = float(xx)
+                    except :
+                        try : 
+                            temp = xx.split("-")
+                            x = 0.5*(float(temp[0])+float(temp[1]))
+                        except :
+                            raise TypeError("Not double bin in %s" %  desthisto.path())
+                    if abs(x-sqrts)<delta : 
+                        delta=abs(x-sqrts)
+                        nearest = i
+                if math.isnan(h.bins()[nearest].val()) : continue
+                desthisto.bins()[nearest].setVal(h.bins()[nearest].val())
+                for key in  h.bins()[nearest].sources() :
+                    desthisto.bins()[nearest].setErr(h.bins()[nearest].err(key),key)
+            else :
+                for i,bin in enumerate(h.bins()) :
+                    xmin = bin.xMin()
+                    xmax = bin.xMax()
+                    if(sqrts>=xmin and sqrts<=xmax) :
+                        desthisto.bins()[i].setVal(bin.val())
+                        for key in  bin.sources() :
+                            desthisto.bins()[i].setErr(bin.err(key),key)
     else :
         logging.error("Unknown analysis object" + desthisto.path)
         sys.exit(1)
@@ -67,6 +96,7 @@ if __name__ == "__main__":
 yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
            "-Direct-mumu-189","-Direct-mumu-196","-Direct-mumu-206",
            "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
+           "-Direct-Jets-196","-Single-Resolved-Jets-196","-Double-Resolved-Jets-196",
            "-Direct-Jets-198","-Single-Resolved-Jets-198","-Double-Resolved-Jets-198",
            "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206"]
 
@@ -121,6 +151,11 @@ for hpath,hsets in inhistos.items():
             for i in range(0,histo.numBins) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),
                                         histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.BinnedEstimate1D) :
+            outhistos[hpath] = yoda.core.BinnedEstimate1D(histo.xEdges(),histo.path(),
+                                                          histo.title())
+            if len(histo.maskedBins()) > 0:
+                outhistos[hpath].maskBins(histo.maskedBins())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
