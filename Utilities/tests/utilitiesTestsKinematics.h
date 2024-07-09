@@ -40,12 +40,12 @@ BOOST_AUTO_TEST_CASE(LorentzTest)
 {
 	Energy mi,mj,mq;
 	Energy Pi,Pj,Pq;
-	double Phi_i,Phi_j,Phi_q;
-	double The_i,The_j,The_q;
+	double Phi_i,Phi_j;
+	double The_i,The_j;
 	Energy mRes_q;
-	Energy P_Res_q;
-	double Phi_Res_q;
-	double The_Res_q;
+	// Energy P_Res_q;
+	// double Phi_Res_q;
+	// double The_Res_q;
 	using namespace ThePEG;
 	mi = 0.0*GeV;
 	Pi = 0.0*GeV;
