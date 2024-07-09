@@ -281,6 +281,106 @@ set MEGammaGammaPowheg:ShowerAlphaQCD /Herwig/Shower/AlphaQCDISR
 set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
 
 ##########################################################
+# Hadron Hadron onium matrix elements
+##########################################################
+
+# g g -> eta_c(1S)
+create Herwig::MEGGto1S0 MEgg2EtaC1S HwMEHadronOnium.so
+set MEgg2EtaC1S:Parameters /Herwig/OniumParameters
+set MEgg2EtaC1S:State ccbar
+set MEgg2EtaC1S:PrincipalQuantumNumber 1
+
+# g g -> eta_c(2S)
+create Herwig::MEGGto1S0 MEgg2EtaC2S HwMEHadronOnium.so
+set MEgg2EtaC2S:Parameters /Herwig/OniumParameters
+set MEgg2EtaC2S:State ccbar
+set MEgg2EtaC2S:PrincipalQuantumNumber 2
+
+# g g -> chi_c0(1P)
+create Herwig::MEGGto3P0 MEgg2ChiC01P HwMEHadronOnium.so
+set MEgg2ChiC01P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC01P:State ccbar
+set MEgg2ChiC01P:PrincipalQuantumNumber 1
+
+# g g -> chi_c2(1P)
+create Herwig::MEGGto3P2 MEgg2ChiC21P HwMEHadronOnium.so
+set MEgg2ChiC21P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC21P:State ccbar
+set MEgg2ChiC21P:PrincipalQuantumNumber 1
+
+# g g -> chi_c0(2P)
+create Herwig::MEGGto3P0 MEgg2ChiC02P HwMEHadronOnium.so
+set MEgg2ChiC02P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC02P:State ccbar
+set MEgg2ChiC02P:PrincipalQuantumNumber 2
+
+# g g -> chi_c2(2P)
+create Herwig::MEGGto3P2 MEgg2ChiC22P HwMEHadronOnium.so
+set MEgg2ChiC22P:Parameters /Herwig/OniumParameters
+set MEgg2ChiC22P:State ccbar
+set MEgg2ChiC22P:PrincipalQuantumNumber 2
+
+# g g -> eta_b(1S)
+create Herwig::MEGGto1S0 MEgg2EtaB1S HwMEHadronOnium.so
+set MEgg2EtaB1S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB1S:State bbbar
+set MEgg2EtaB1S:PrincipalQuantumNumber 1
+
+# g g -> eta_b(2S)
+create Herwig::MEGGto1S0 MEgg2EtaB2S HwMEHadronOnium.so
+set MEgg2EtaB2S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB2S:State bbbar
+set MEgg2EtaB2S:PrincipalQuantumNumber 2
+
+# g g -> eta_b(3S)
+create Herwig::MEGGto1S0 MEgg2EtaB3S HwMEHadronOnium.so
+set MEgg2EtaB3S:Parameters /Herwig/OniumParameters
+set MEgg2EtaB3S:State bbbar
+set MEgg2EtaB3S:PrincipalQuantumNumber 3
+
+# g g -> chi_b0(1P)
+create Herwig::MEGGto3P0 MEgg2ChiB01P HwMEHadronOnium.so
+set MEgg2ChiB01P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB01P:State bbbar
+set MEgg2ChiB01P:PrincipalQuantumNumber 1
+
+# g g -> chi_b0(2P)
+create Herwig::MEGGto3P0 MEgg2ChiB02P HwMEHadronOnium.so
+set MEgg2ChiB02P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB02P:State bbbar
+set MEgg2ChiB02P:PrincipalQuantumNumber 2
+
+# g g -> chi_b0(3P)
+create Herwig::MEGGto3P0 MEgg2ChiB03P HwMEHadronOnium.so
+set MEgg2ChiB03P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB03P:State bbbar
+set MEgg2ChiB03P:PrincipalQuantumNumber 3
+
+# g g -> chi_b2(1P)
+create Herwig::MEGGto3P2 MEgg2ChiB21P HwMEHadronOnium.so
+set MEgg2ChiB21P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB21P:State bbbar
+set MEgg2ChiB21P:PrincipalQuantumNumber 1
+
+# g g -> chi_b2(2P)
+create Herwig::MEGGto3P2 MEgg2ChiB22P HwMEHadronOnium.so
+set MEgg2ChiB22P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB22P:State bbbar
+set MEgg2ChiB22P:PrincipalQuantumNumber 2
+
+# g g -> chi_b2(3P)
+create Herwig::MEGGto3P2 MEgg2ChiB23P HwMEHadronOnium.so
+set MEgg2ChiB23P:Parameters /Herwig/OniumParameters
+set MEgg2ChiB23P:State bbbar
+set MEgg2ChiB23P:PrincipalQuantumNumber 3
+
+# g g -> eta_b2(1D)
+create Herwig::MEGGto1D2 MEgg2EtaB21D HwMEHadronOnium.so
+set MEgg2EtaB21D:Parameters /Herwig/OniumParameters
+set MEgg2EtaB21D:State bbbar
+set MEgg2EtaB21D:PrincipalQuantumNumber 1
+
+##########################################################
 # DIS matrix elements
 ##########################################################
 
@@ -307,10 +407,190 @@ newdef PowhegMEDISCC:Contribution 1
 ##########################################################
 
 # fermion-antiferimon
-create Herwig::MEGammaGamma2ff MEgg2ff HwMEGammaGamma.so
+create Herwig::MEGammaGamma2X MEgg2ff HwMEGammaGamma.so
+create Herwig::GammaGamma2ffAmplitude gg2ffAmp
+newdef MEgg2ff:Amplitude gg2ffAmp
 
 # W+ W-
 create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so
+
+# f f -> f f pi0,eta,eta' via 2 photon process
+# pi0
+create Herwig::MEff2ffX MEff2ffpi0
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2pi0
+newdef MEff2ffpi0:Amplitude AmpGG2pi0
+set AmpGG2pi0:FTT 0.274
+set AmpGG2pi0:LambdaP2 0.6
+set AmpGG2pi0:Particle /Herwig/Particles/pi0
+# eta
+create Herwig::MEff2ffX MEff2ffeta
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2eta
+newdef MEff2ffeta:Amplitude AmpGG2eta
+set AmpGG2eta:FTT 0.274
+set AmpGG2eta:LambdaP2 0.6
+set AmpGG2eta:Particle /Herwig/Particles/eta
+# eta'
+create Herwig::MEff2ffX MEff2ffetaPrime
+create Herwig::GammaGamma2PseudoScalarAmplitude AmpGG2etaPrime
+set AmpGG2etaPrime:Particle /Herwig/Particles/eta'
+set AmpGG2etaPrime:FTT 0.344
+set AmpGG2etaPrime:LambdaP2 0.6
+set AmpGG2etaPrime:MassOption OffShell
+newdef MEff2ffetaPrime:Amplitude AmpGG2etaPrime
+
+# f f -> f f eta_c via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaC1S
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaC1S HwMEGammaGammaOnium.so
+set AmpGG2EtaC1S:Parameters /Herwig/OniumParameters
+set AmpGG2EtaC1S:State ccbar
+set AmpGG2EtaC1S:MassOption OffShell
+set AmpGG2EtaC1S:PrincipalQuantumNumber 1
+set MEff2ffEtaC1S:Amplitude AmpGG2EtaC1S
+
+# f f -> f f eta_c(2S) via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaC2S
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaC2S HwMEGammaGammaOnium.so
+set AmpGG2EtaC2S:Parameters /Herwig/OniumParameters
+set AmpGG2EtaC2S:State ccbar
+set AmpGG2EtaC2S:MassOption OffShell
+set AmpGG2EtaC2S:PrincipalQuantumNumber 2
+set MEff2ffEtaC2S:Amplitude AmpGG2EtaC2S
+
+# f f -> f f chi_c0(1P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiC01P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiC01P HwMEGammaGammaOnium.so
+set AmpGG2ChiC01P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiC01P:State ccbar
+set AmpGG2ChiC01P:MassOption OffShell
+set AmpGG2ChiC01P:PrincipalQuantumNumber 1
+set MEff2ffChiC01P:Amplitude AmpGG2ChiC01P
+
+# f f -> f f chi_c2(1P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiC21P
+create Herwig::GammaGamma2Onium3P2Amplitude AmpGG2ChiC21P HwMEGammaGammaOnium.so
+set AmpGG2ChiC21P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiC21P:State ccbar
+set AmpGG2ChiC21P:MassOption OffShell
+set AmpGG2ChiC21P:PrincipalQuantumNumber 1
+set MEff2ffChiC21P:Amplitude AmpGG2ChiC21P
+
+# f f -> f f chi_c0(2P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiC02P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiC02P HwMEGammaGammaOnium.so
+set AmpGG2ChiC02P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiC02P:State ccbar
+set AmpGG2ChiC02P:MassOption OffShell
+set AmpGG2ChiC02P:PrincipalQuantumNumber 2
+set MEff2ffChiC02P:Amplitude AmpGG2ChiC02P
+
+# f f -> f f chi_c2(2P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiC22P
+create Herwig::GammaGamma2Onium3P2Amplitude AmpGG2ChiC22P HwMEGammaGammaOnium.so
+set AmpGG2ChiC22P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiC22P:State ccbar
+set AmpGG2ChiC22P:MassOption OffShell
+set AmpGG2ChiC22P:PrincipalQuantumNumber 2
+set MEff2ffChiC22P:Amplitude AmpGG2ChiC22P
+
+# f f -> f f eta_b via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaB1S
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaB1S HwMEGammaGammaOnium.so
+set AmpGG2EtaB1S:Parameters /Herwig/OniumParameters
+set AmpGG2EtaB1S:State bbbar
+set AmpGG2EtaB1S:MassOption OffShell
+set AmpGG2EtaB1S:PrincipalQuantumNumber 1
+set AmpGG2EtaB1S:Lambda2 89.4916
+set MEff2ffEtaB1S:Amplitude AmpGG2EtaB1S
+
+# f f -> f f eta_b(2S) via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaB2S
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaB2S HwMEGammaGammaOnium.so
+set AmpGG2EtaB2S:Parameters /Herwig/OniumParameters
+set AmpGG2EtaB2S:State bbbar
+set AmpGG2EtaB2S:MassOption OffShell
+set AmpGG2EtaB2S:PrincipalQuantumNumber 2
+set AmpGG2EtaB2S:Lambda2 89.4916
+set MEff2ffEtaB2S:Amplitude AmpGG2EtaB2S
+
+# f f -> f f eta_b(3S) via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaB3S
+create Herwig::GammaGamma2Onium1S0Amplitude AmpGG2EtaB3S HwMEGammaGammaOnium.so
+set AmpGG2EtaB3S:Parameters /Herwig/OniumParameters
+set AmpGG2EtaB3S:State bbbar
+set AmpGG2EtaB3S:MassOption OffShell
+set AmpGG2EtaB3S:PrincipalQuantumNumber 3
+set AmpGG2EtaB3S:Lambda2 89.4916
+set MEff2ffEtaB3S:Amplitude AmpGG2EtaB3S
+
+# f f -> f f chi_b0(1P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB01P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiB01P HwMEGammaGammaOnium.so
+set AmpGG2ChiB01P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB01P:State bbbar
+set AmpGG2ChiB01P:MassOption OffShell
+set AmpGG2ChiB01P:PrincipalQuantumNumber 1
+set AmpGG2ChiB01P:Lambda2 89.4916
+set MEff2ffChiB01P:Amplitude AmpGG2ChiB01P
+
+# f f -> f f chi_b2(1P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB21P
+create Herwig::GammaGamma2Onium3P2Amplitude AmpGG2ChiB21P HwMEGammaGammaOnium.so
+set AmpGG2ChiB21P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB21P:State bbbar
+set AmpGG2ChiB21P:MassOption OffShell
+set AmpGG2ChiB21P:PrincipalQuantumNumber 1
+set AmpGG2ChiB21P:Lambda2 89.4916
+set MEff2ffChiB21P:Amplitude AmpGG2ChiB21P
+
+# f f -> f f chi_b0(2P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB02P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiB02P HwMEGammaGammaOnium.so
+set AmpGG2ChiB02P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB02P:State bbbar
+set AmpGG2ChiB02P:MassOption OffShell
+set AmpGG2ChiB02P:PrincipalQuantumNumber 2
+set AmpGG2ChiB02P:Lambda2 89.4916
+set MEff2ffChiB02P:Amplitude AmpGG2ChiB02P
+
+# f f -> f f chi_b2(2P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB22P
+create Herwig::GammaGamma2Onium3P2Amplitude AmpGG2ChiB22P HwMEGammaGammaOnium.so
+set AmpGG2ChiB22P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB22P:State bbbar
+set AmpGG2ChiB22P:MassOption OffShell
+set AmpGG2ChiB22P:PrincipalQuantumNumber 2
+set AmpGG2ChiB22P:Lambda2 89.4916
+set MEff2ffChiB22P:Amplitude AmpGG2ChiB22P
+
+# f f -> f f chi_b0(3P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB03P
+create Herwig::GammaGamma2Onium3P0Amplitude AmpGG2ChiB03P HwMEGammaGammaOnium.so
+set AmpGG2ChiB03P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB03P:State bbbar
+set AmpGG2ChiB03P:MassOption OffShell
+set AmpGG2ChiB03P:PrincipalQuantumNumber 3
+set AmpGG2ChiB03P:Lambda2 89.4916
+set MEff2ffChiB03P:Amplitude AmpGG2ChiB03P
+
+# f f -> f f chi_b2(3P) via 2 photon process
+create Herwig::MEff2ffX MEff2ffChiB23P
+create Herwig::GammaGamma2Onium3P2Amplitude AmpGG2ChiB23P HwMEGammaGammaOnium.so
+set AmpGG2ChiB23P:Parameters /Herwig/OniumParameters
+set AmpGG2ChiB23P:State bbbar
+set AmpGG2ChiB23P:MassOption OffShell
+set AmpGG2ChiB23P:PrincipalQuantumNumber 3
+set AmpGG2ChiB23P:Lambda2 89.4916
+set MEff2ffChiB23P:Amplitude AmpGG2ChiB23P
+
+# f f -> f f eta_b2(1D) via 2 photon process
+create Herwig::MEff2ffX MEff2ffEtaB21D
+create Herwig::GammaGamma2Onium1D2Amplitude AmpGG2EtaB21D HwMEGammaGammaOnium.so
+set AmpGG2EtaB21D:Parameters /Herwig/OniumParameters
+set AmpGG2EtaB21D:State bbbar
+set AmpGG2EtaB21D:MassOption OffShell
+set AmpGG2EtaB21D:PrincipalQuantumNumber 1
+set AmpGG2EtaB21D:Lambda2 89.4916
+set MEff2ffEtaB21D:Amplitude AmpGG2EtaB21D
 
 ##########################################################
 # Gamma-Hadron matrix elements

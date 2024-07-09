@@ -860,11 +860,11 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   if(particle->spinInfo()) particle->spinInfo()->develop();
- 
+
   if(!theChildren.empty()){
     particle->showerKinematics()->resetChildren(newParent,theChildren);
   }
-  
+
 
   return true;
 }
@@ -2274,6 +2274,9 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
         progenitor()->progenitor()->scales().DARK_ac      = progenitor()->progenitor()->mass();
         progenitor()->progenitor()->scales().DARK_ac_noAO = progenitor()->progenitor()->mass();
 	  }
+    if(progenitor()->progenitor()->id()!=ParticleID::g) {
+      progenitor()->progenitor()->scales().EW = progenitor()->progenitor()->mass();
+    }
 	  // perform the shower
 	  progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
 							     interaction_));
@@ -2283,7 +2286,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
       kinematicsReconstructor()->
-      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,generalRecon) :
+      reconstructHardJets(currentTree(),intrinsicpT(),interaction_,generalRecon) :
       kinematicsReconstructor()->
       reconstructDecayJets(currentTree(),interaction_);
     if(!reconstructed) continue;
@@ -2891,13 +2894,15 @@ void QTildeShowerHandler::decay(ShowerTreePtr tree, ShowerDecayMap & decay) {
   // find particle after the shower
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
     tit = tree->parent()->treelinks().find(tree);
-  assert(tit!=tree->parent()->treelinks().end());
-  ShowerParticlePtr newparent=tit->second.second;
-  PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
-  newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
-  DecayProcessMap decayMap;
-  ShowerHandler::decay(newProcess,decayMap);
-  ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
+  if(tit->second.second) {
+    assert(tit!=tree->parent()->treelinks().end());
+    ShowerParticlePtr newparent=tit->second.second;
+    PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
+    newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
+    DecayProcessMap decayMap;
+    ShowerHandler::decay(newProcess,decayMap);
+    ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
+  }
 }
 
 namespace {

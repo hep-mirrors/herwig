@@ -12,7 +12,8 @@
 // This is the declaration of the OneHalfHalfDarkSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/Sudakov1to2FormFactor.h"
+#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 namespace Herwig {
 
@@ -36,7 +37,7 @@ using namespace ThePEG;
  * @see \ref OneHalfHalfDarkSplitFnInterfaces "The interfaces"
  * defined for OneHalfHalfDarkSplitFn.
  */
-class OneHalfHalfDarkSplitFn: public SplittingFunction {
+class OneHalfHalfDarkSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

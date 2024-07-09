@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /**  \ingroup Decay
  *
- *  Weak current for the production of two mesons via the \f$\rho\f$ or \f$K^*\f$
+ *  Weak current for the production of two mesons via the \f$\rho\f$ 
  *  resonances.
  *  These currents are taken from tau decays.
  *
@@ -37,14 +37,13 @@ using namespace ThePEG;
  *    meson \f$R_k\f$.
  *  - \f$\alpha_k\f$ is the weight for the resonance.
  *
- *   The Breit-Wigner term is summed over the \f$\rho\f$ or \f$K^*\f$ resonances that
+ *   The Breit-Wigner term is summed over the \f$\rho\f$ resonances that
  *   can contribute to a given decay.
  *
  *  The models of either Kuhn and Santamaria (Z. Phys. C48, 445 (1990))
  *  or Gounaris and Sakurai Phys. Rev. Lett. 21, 244 (1968) are supported for the
  *  shape of the Breit-Wigner distribution. The mixing parameters
- *  are taken from Phys.Rev.D61:112002,2000 (CLEO) for the decay \f$\pi^\pm\pi^0\f$ and
- *  the CLEO version of TAUOLA for the \f$K\pi\f$ decays.
+ *  are taken from Phys.Rev.D61:112002,2000 (CLEO) for the decay \f$\pi^\pm\pi^0\f$.
  *
  * @see WeakCurrent.
  * 

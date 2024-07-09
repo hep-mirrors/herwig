@@ -12,6 +12,9 @@ SplittingFunctions/HalfHalfZeroEWSplitFn.h SplittingFunctions/HalfHalfZeroEWSpli
 SplittingFunctions/OneOneOneEWSplitFn.h SplittingFunctions/OneOneOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneQEDSplitFn.h SplittingFunctions/OneOneOneQEDSplitFn.cc\
 SplittingFunctions/OneOneZeroEWSplitFn.h SplittingFunctions/OneOneZeroEWSplitFn.cc\
+SplittingFunctions/ZeroZeroZeroEWSplitFn.h SplittingFunctions/ZeroZeroZeroEWSplitFn.cc\
+SplittingFunctions/OneZeroZeroEWSplitFn.h SplittingFunctions/OneZeroZeroEWSplitFn.cc\
+SplittingFunctions/ZeroZeroOneEWSplitFn.h SplittingFunctions/ZeroZeroOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/OneOneOneMassiveSplitFn.h SplittingFunctions/OneOneOneMassiveSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
@@ -53,6 +56,6 @@ SplittingFunctions/SudakovCutOff.cc SplittingFunctions/SudakovCutOff.h Splitting
 SplittingFunctions/PTCutOff.cc SplittingFunctions/PTCutOff.h \
 SplittingFunctions/MassCutOff.cc SplittingFunctions/MassCutOff.h \
 SplittingFunctions/VariableMassCutOff.cc SplittingFunctions/VariableMassCutOff.h \
-SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
-SplittingFunctions/SplittingFunction.cc  \
+SplittingFunctions/Sudakov1to2FormFactor.h SplittingFunctions/Sudakov1to2FormFactor.fh \
+SplittingFunctions/Sudakov1to2FormFactor.cc  \
 Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

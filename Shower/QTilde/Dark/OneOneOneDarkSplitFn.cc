@@ -16,11 +16,10 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
-DescribeNoPIOClass<OneOneOneDarkSplitFn,Herwig::SplittingFunction>
+DescribeNoPIOClass<OneOneOneDarkSplitFn,Herwig::Sudakov1to2FormFactor>
 describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwShower.so");
 
 void OneOneOneDarkSplitFn::Init() {
@@ -69,15 +68,12 @@ bool OneOneOneDarkSplitFn::checkColours(const IdList & ids) const {
 
 double OneOneOneDarkSplitFn::P(const double z, const Energy2,
 			   const IdList & ids, const bool, const RhoDMatrix &)const {
-  // (this is historically important! the first physics - two years
-  // after the birth of the project - in the Herwig shower! Alberto
-  // & Stefan, 25/04/2002).
-  return colourFactor(ids)*sqr(1.-z*(1.-z))/(z*(1.-z));
+  return sqr(1.-z*(1.-z))/(z*(1.-z));
 }
 
 double OneOneOneDarkSplitFn::overestimateP(const double z,
 				       const IdList & ids) const {
-  return colourFactor(ids)*(1/z + 1/(1.-z));
+  return (1/z + 1/(1.-z));
 }
 
 
@@ -91,7 +87,7 @@ double OneOneOneDarkSplitFn::invIntegOverP(const double r,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return 1./(1.+exp(-r/colourFactor(ids)));
+    return 1./(1.+exp(-r));
   case 1:
   case 2:
   case 3:
@@ -106,7 +102,7 @@ double OneOneOneDarkSplitFn::integOverP(const double z, const IdList & ids,
   switch(PDFfactor) {
   case 0:
     assert(z>0.&&z<1.);
-    return colourFactor(ids)*log(z/(1.-z));
+    return log(z/(1.-z));
   case 1:
   case 2:
   case 3:

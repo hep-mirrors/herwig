@@ -164,6 +164,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Powheg/Makefile
 		MatrixElement/Gamma/Makefile
 		MatrixElement/Reweighters/Makefile
+		MatrixElement/Onium/Makefile
 		MatrixElement/Matchbox/Makefile
 		MatrixElement/Matchbox/Base/Makefile
 		MatrixElement/Matchbox/Utility/Makefile
@@ -243,6 +244,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_check        ])
 AC_CONFIG_FILES([Tests/python/LowEnergy-EE.py    ],[chmod +x Tests/python/LowEnergy-EE.py    ])
 AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEnergy-Photon.py])
+AC_CONFIG_FILES([Tests/python/OniumSigma.py      ],[chmod +x Tests/python/OniumSigma.py      ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
 AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 

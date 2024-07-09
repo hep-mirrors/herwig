@@ -5,7 +5,7 @@
 // This is the declaration of the OneOneOneQEDSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
@@ -14,12 +14,12 @@ using namespace ThePEG;
 
 /**
  * The OneOneOneQEDSplitFn class implements the splitting function for
- * \f$\1\to q\1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
+ * \f$1\to 1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
  *
  * @see \ref OneOneOneQEDSplitFnInterfaces "The interfaces"
  * defined for OneOneOneQEDSplitFn.
  */
-class OneOneOneQEDSplitFn: public SplittingFunction {
+class OneOneOneQEDSplitFn: public Sudakov1to2FormFactor {
 
 public:
 

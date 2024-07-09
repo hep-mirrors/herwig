@@ -112,7 +112,7 @@ private :
   //@}
 
   /**
-   *  Parameters for \f$\eta^_0\f$
+   *  Parameters for \f$\eta^0\f$
    */
   //@{
   /**

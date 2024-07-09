@@ -8,11 +8,11 @@ set /Herwig/Shower/PowhegShowerHandler:EvolutionScheme pT
 set /Herwig/Shower/ShowerHandler:EvolutionScheme pT
 set /Herwig/Shower/KinematicsReconstructor:FinalFinalWeight No
 # don't enforce strict angular ordering
-set /Herwig/Shower/QtoQGammaSplitFn:StrictAO No
-set /Herwig/Shower/QtoQGSplitFn:StrictAO No
-set /Herwig/Shower/GtoGGSplitFn:StrictAO No
-set /Herwig/Shower/WtoWGammaSplitFn:StrictAO No
-set /Herwig/Shower/GtoQQbarSplitFn:StrictAO No
-set /Herwig/Shower/GammatoQQbarSplitFn:StrictAO No
-set /Herwig/Shower/QtoGQSplitFn:StrictAO No
-set /Herwig/Shower/QtoGammaQSplitFn:StrictAO No
+set /Herwig/Shower/QtoQGammaSudakov:StrictAO No
+set /Herwig/Shower/QtoQGSudakov:StrictAO No
+set /Herwig/Shower/GtoGGSudakov:StrictAO No
+set /Herwig/Shower/WtoWGammaSudakov:StrictAO No
+set /Herwig/Shower/GtoQQbarSudakov:StrictAO No
+set /Herwig/Shower/GammatoQQbarSudakov:StrictAO No
+set /Herwig/Shower/QtoGQSudakov:StrictAO No
+set /Herwig/Shower/QtoGammaQSudakov:StrictAO No

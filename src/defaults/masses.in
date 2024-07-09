@@ -2406,3 +2406,12 @@ newdef /Herwig/Masses/B_c(2S)*+mass:WidthOption 0
 newdef /Herwig/Particles/B_c(2S)*+:Mass_generator B_c(2S)*+mass
 newdef /Herwig/Particles/B_c(2S)*-:Mass_generator B_c(2S)*+mass
 #
+create Herwig::GenericMassGenerator  chi_c02Pmass
+newdef chi_c02Pmass:Particle /Herwig/Particles/chi_c0(2P) 
+newdef /Herwig/Masses/chi_c02Pmass:BreitWignerShape 0
+newdef /Herwig/Masses/chi_c02Pmass:MaximumWeight 0.897008
+newdef /Herwig/Masses/chi_c02Pmass:NGenerate 100
+newdef /Herwig/Masses/chi_c02Pmass:WidthOption 0
+
+newdef /Herwig/Particles/chi_c0(2P):Mass_generator chi_c02Pmass
+#
