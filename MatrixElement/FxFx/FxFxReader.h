@@ -509,7 +509,7 @@ protected:
    */
   template <typename T>
   static const char * mread(const char * pos, T & t, size_t n = 1) {
-    std::memcpy(&t, pos, n*sizeof(T));
+    std::memcpy((void *)&t, pos, n*sizeof(T));
     return pos + n*sizeof(T);
   }
 
