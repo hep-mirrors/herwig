@@ -65,7 +65,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double z, const IdList & ids) const {
+  double overestimateP(const double z, const IdList &) const {
     return 1/z + 1/(1.-z); 
   }
 
