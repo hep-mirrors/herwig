@@ -249,6 +249,10 @@ Onium-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
 
+Onium-Splitting: Analysis/RivetHerwig.so
+	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSplitting.py --fast --analyse
+
 Onium-Sigma: Analysis/RivetHerwig.so
 	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSigma.py --fast --analyse

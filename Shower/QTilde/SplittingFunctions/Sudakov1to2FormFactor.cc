@@ -1433,6 +1433,65 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
+  else if(colourStructure() == OctetOctetSinglet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      cparent.first->addColoured(first);
+      cparent.second->addAntiColoured(first);
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      cfirst.first->addColoured(parent);
+      cfirst.second->addAntiColoured(parent);
+    }
+  }
+  else if(colourStructure() == TripletTripletSinglet) {
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q 
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar 
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // q -> q 
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar 
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(colourStructure() == Epsilon) {
+    if(!back) {
+      ColinePair newlines(new_ptr(ColourLine()),new_ptr(ColourLine()));
+      if(parent->colourLine()) {
+	newlines.first ->addAntiColoured(first );
+	newlines.second->addAntiColoured(second);
+	parent->colourLine()->setSinkNeighbours(newlines.first,
+						newlines.second);
+      }
+      else if(parent->antiColourLine()) {
+	newlines.first ->addColoured(first );
+	newlines.second->addColoured(second);
+	parent->antiColourLine()->setSourceNeighbours(newlines.first,
+						      newlines.second);
+      }
+    }
+    else
+      assert(false);
+  }
   else if(colourStructure() == ChargedChargedNeutral) {
     if(!parent->data().coloured()) return;
     if(!back) {

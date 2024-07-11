@@ -194,6 +194,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
+		Shower/QTilde/SplittingFunctions/Onium/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile
@@ -245,6 +246,7 @@ AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_
 AC_CONFIG_FILES([Tests/python/LowEnergy-EE.py    ],[chmod +x Tests/python/LowEnergy-EE.py    ])
 AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEnergy-Photon.py])
 AC_CONFIG_FILES([Tests/python/OniumSigma.py      ],[chmod +x Tests/python/OniumSigma.py      ])
+AC_CONFIG_FILES([Tests/python/OniumSplitting.py  ],[chmod +x Tests/python/OniumSplitting.py  ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
 AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 
