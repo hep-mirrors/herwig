@@ -115,7 +115,26 @@ void SudakovFormFactor::Init() {
      "SextetSextetOctet",
      "6 -> 6 8",
      SextetSextetOctet);
-
+  static SwitchOption interfaceColourStructureTripletTripletSinglet
+    (interfaceColourStructure,
+     "TripletTripletSinglet",
+     "3 -> 3 1",
+     TripletTripletSinglet);
+  static SwitchOption interfaceColourStructureOctetOctetSinglet
+    (interfaceColourStructure,
+     "OctetOctetSinglet",
+     "8 -> 8 1",
+     OctetOctetSinglet);
+  static SwitchOption interfaceColourStructureEpsilon
+    (interfaceColourStructure,
+     "Epsilon",
+     "3 -> 3 3",
+     Epsilon);
+  static SwitchOption interfaceColourStructureOctetSinglet
+    (interfaceColourStructure,
+     "OctetSinglet",
+     "8 -> 8 1",
+     OctetSinglet);
   static SwitchOption interfaceColourStructureChargedChargedNeutral
     (interfaceColourStructure,
      "ChargedChargedNeutral",
@@ -212,6 +231,27 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[0]!=ids[1]) return false;
     if((ids[0]->iColour()==PDT::Colour6 || ids[0]->iColour()==PDT::Colour6bar) &&
        ids[2]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(colourStructure_==TripletTripletSinglet) {
+    if(ids[0]->iColour()!=ids[1]->iColour()) return false;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[2]->iColour()==PDT::Colour0) return true;
+    return false;
+  }
+  else if(colourStructure_==OctetOctetSinglet) {
+    if(ids[0]!=ids[1]) return false;
+    if(ids[0]->iColour()==PDT::Colour8 && ids[2]->iColour()==PDT::Colour0) return true;
+    return false;
+  }
+  else if(colourStructure_==Epsilon) {
+    if(ids[0]->iColour()!=PDT::Colour3&&ids[0]->iColour()!=PDT::Colour3bar) return false;
+    if(ids[0]->iColour()!=-ids[1]->iColour()) return false;
+    if(ids[0]->iColour()!=-ids[2]->iColour()) return false;
+    return true;
+  }
+  else if(colourStructure_==OctetSinglet) {
+    if(ids[0]->iColour()==PDT::Colour8 && ids[1]->iColour()==PDT::Colour0) return true;
     return false;
   }
   else if(colourStructure_==ChargedChargedNeutral) {

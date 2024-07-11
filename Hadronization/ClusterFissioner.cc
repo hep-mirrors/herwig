@@ -1260,8 +1260,8 @@ void ClusterFissioner::drawNewFlavourDiquarks(PPtr& newPtrPos,PPtr& newPtrNeg,
 			tPDPtr diq = getParticleData(id);
 			if (Mc < spectrum()->massLightestBaryonPair(pD1,pD2)) {
 				throw Exception() << "Found Diquark Cluster:\n" << *clu << "\nwith  MassCluster = "
-					<< ounit(Mc,GeV) <<" GeV MassLightestBaryonPair = "
-					<< ounit(spectrum()->massLightestBaryonPair(pD1,pD2) ,GeV)
+					<< Mc/GeV <<" GeV MassLightestBaryonPair = "
+					<< spectrum()->massLightestBaryonPair(pD1,pD2)/GeV
 					<< " GeV cannot decay" << Exception::eventerror;
 			}
 			minMass = spectrum()->massLightestBaryonPair(pD1,diq)

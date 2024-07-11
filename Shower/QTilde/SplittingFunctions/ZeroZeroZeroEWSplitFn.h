@@ -56,8 +56,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const {
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ,
+			const bool , const RhoDMatrix & ) const {
     return z*(1.-z)/t*GeV2;
   }
 
