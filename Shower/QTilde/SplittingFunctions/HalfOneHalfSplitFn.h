@@ -56,7 +56,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const { 
+  virtual double overestimateP(const double z, const IdList & ) const { 
     return 2./z; 
   } 
 
@@ -71,7 +71,7 @@ public:
    * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const {
+			const bool mass, const RhoDMatrix &) const {
     double val=2.*(1.-z)+sqr(z);
     if(mass) {
       Energy m=ids[0]->mass();

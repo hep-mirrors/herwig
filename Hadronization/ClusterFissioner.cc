@@ -1259,10 +1259,10 @@ void ClusterFissioner::drawNewFlavourDiquarks(PPtr& newPtrPos,PPtr& newPtrNeg,
 		for ( const long& id : spectrum()->lightHadronizingDiquarks() ) {
 			tPDPtr diq = getParticleData(id);
 			if (Mc < spectrum()->massLightestBaryonPair(pD1,pD2)) {
-                          throw Exception() << "Found Diquark Cluster:\n" << *clu << "\nwith  MassCluster = "
-                                            << Mc/GeV <<" GeV MassLightestBaryonPair = "
-                                            << spectrum()->massLightestBaryonPair(pD1,pD2)/GeV
-                                            << " GeV cannot decay" << Exception::eventerror;
+				throw Exception() << "Found Diquark Cluster:\n" << *clu << "\nwith  MassCluster = "
+					<< Mc/GeV <<" GeV MassLightestBaryonPair = "
+					<< spectrum()->massLightestBaryonPair(pD1,pD2)/GeV
+					<< " GeV cannot decay" << Exception::eventerror;
 			}
 			minMass = spectrum()->massLightestBaryonPair(pD1,diq)
 					+ spectrum()->massLightestBaryonPair(diq,pD2);

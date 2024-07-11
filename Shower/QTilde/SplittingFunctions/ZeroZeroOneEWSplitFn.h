@@ -73,7 +73,7 @@ public:
    * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const {
+			const bool mass, const RhoDMatrix & ) const {
     // ratio in the massless limit
     double val = 1.;
     // the massive limit
@@ -132,8 +132,8 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &) {
+  generatePhiForward(const double , const Energy2 , const IdList & ,
+                     const RhoDMatrix &) {
     // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
     // and rest = splitting function for Tr(rho)=1 as required by defn
     return vector<pair<int, Complex> >(1,make_pair(0,1.));
@@ -148,7 +148,7 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
+  generatePhiBackward(const double , const Energy2 , const IdList & ,
 		      const RhoDMatrix &) {
     // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
     // and rest = splitting function for Tr(rho)=1 as required by defn
@@ -163,7 +163,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
-				   const IdList & ids, const double phi, bool timeLike) {
+				   const IdList & ids, const double phi, bool ) {
     Complex ghhv(0.,0.);
     getCouplings(ghhv,ids);
     // calculate the kernal
@@ -187,7 +187,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(Complex & g, const IdList & ids) const  {
+  void getCouplings(Complex & g, const IdList & ) const  {
     g = Complex(_couplingValueRe,_couplingValueIm);
   }
 

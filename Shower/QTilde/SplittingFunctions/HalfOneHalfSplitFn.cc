@@ -29,7 +29,7 @@ void HalfOneHalfSplitFn::Init() {
      "function for q -> g q");
 
 }
-double HalfOneHalfSplitFn::integOverP(const double z, const IdList & ids,
+double HalfOneHalfSplitFn::integOverP(const double z, const IdList &,
 				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
@@ -46,7 +46,7 @@ double HalfOneHalfSplitFn::integOverP(const double z, const IdList & ids,
 }
 
 double HalfOneHalfSplitFn::invIntegOverP(const double r, 
-					 const IdList & ids,
+					 const IdList & ,
 					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
