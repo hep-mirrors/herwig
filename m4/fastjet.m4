@@ -16,8 +16,7 @@ AC_DEFUN([FASTJET_CHECK_FASTJET],
 [
 dnl ckeck if a directory is specified for FastJet
 AC_ARG_WITH(fastjet,
-            [AC_HELP_STRING([--with-fastjet=dir], 
-                            [Assume the given directory for FastJet])])
+            [AS_HELP_STRING([--with-fastjet=dir],[Assume the given directory for FastJet])])
 
 dnl search for the fastjet-config script
 if test "$with_fastjet" = ""; then
