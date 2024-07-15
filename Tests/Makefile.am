@@ -196,7 +196,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.in) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in) \
-                  $(shell echo Rivet/ISR{,-Dipole}-{{30,44,53,62}-UE,{44,62}-Z-mu}.in Rivet/EHS{,-Dipole}-UE.in) \
+                  $(shell echo Rivet/ISR{,-Dipole}-{{30,44,53,62}-UE,{44,62}-Z-mu}.in Rivet/EHS{,-Pion}-{,-Dipole}-UE.in) \
                   $(shell echo Rivet/SPS{,-Dipole}-{17.4-UE,200-Z-mu}.in ) \
                   $(shell echo Rivet/Fermilab{,-Dipole}-{27.4,38.8}-Z-mu.in ) \
 	          $(shell echo Rivet/EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.in ) \
@@ -326,7 +326,7 @@ Rivet-Fixed : Rivet-Fixed/done
 
 
 Rivet-Fixed/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
-	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda ) Rivet-EHS-UE.yoda \
+	          $(shell echo Rivet-ISR-{{30,44,53,62}-UE,{44,62}-Z-mu}.yoda Rivet-EHS{,-Pion}-UE.yoda ) \
                   $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) \
                   $(shell echo Rivet-SPS-{17.4-UE,200-Z-mu}.yoda ) \
                   $(shell echo Rivet-Fermilab-{27.4,38.8}-Z-mu.yoda )
