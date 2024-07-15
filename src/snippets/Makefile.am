@@ -20,6 +20,7 @@ MonacoSampler.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
 PDF-NNPDF30NLO.in \
+PionPDF.in \
 PPCollider.in \
 RivetFixedOrder.in \
 Rivet.in \

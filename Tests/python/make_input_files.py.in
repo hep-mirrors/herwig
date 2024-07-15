@@ -498,6 +498,7 @@ elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == 
                 process+="read snippets/MB-DipoleShower.in\n"
             else:
                 process+="read snippets/MB.in\n"
+            if "EHS" not in name :
                 process+="read snippets/Diffraction.in\n"
         else :
             logging.error(" SppS and ISR not supported for %s " % simulation)
@@ -1565,6 +1566,11 @@ elif(collider=="LHC-GammaGamma" ) :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
+pion=False
+if "Pion-" in parameterName and have_hadronic_collider:
+    parameterName = parameterName.replace("Pion-","")
+    pion = True
+
 if "EHS" in name :
     pFile = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
 elif "Photo" == name[0:5] :
@@ -1581,6 +1587,11 @@ if have_hadronic_collider :
         parameters['collider'] = "PPCollider.in\nread snippets/FixedTarget-PP.in"
     else :
         parameters['collider'] = "PPCollider.in"
+if pion :
+    parameters['collider'] +="\nread snippets/PionPDF.in\nset /Herwig/Generators/EventGenerator:EventHandler:BeamA /Herwig/Particles/pi+\n"
+    parameters['collider'] +="set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/PionPDF\nset /Herwig/Shower/ShowerHandler:PDFARemnant /Herwig/Partons/PionPDF\n"
+    parameters['collider'] +="set /Herwig/Partons/PPExtractor:FirstPDF /Herwig/Partons/PionPDF\nset /Herwig/Partons/MPIExtractor:FirstPDF /Herwig/Partons/PionPDF\n"
+    parameters['collider'] +="set /Herwig/EventHandlers/FixedTargetLuminosity:BeamParticle /Herwig/Particles/pi+\n"
 
 #check if selecteddecaymode and addedBRReweighter is consistent
 

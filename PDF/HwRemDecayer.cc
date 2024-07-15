@@ -104,7 +104,7 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   int lastID(parton->id());
   Energy oldQ(_forcedSplitScale);
   _pdf = pdf;
-  //do nothing if already valence quark
+  // do nothing if already valence quark
   if(first && content.isValenceQuark(parton)) { 
     //set the extracted value, because otherwise no RemID could be generated.
     content.extract(lastID);
@@ -219,7 +219,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
     }
   }
   // forced splitting for first parton
-  if(isPartonic(partons.first )) { 
+  if(isPartonic(partons.first )) {
     try {
       split(partons.first, theContent.first, theRems.first, 
 	    theUsed.first, theMaps.first, pdfs.first, first);
@@ -1685,6 +1685,14 @@ HwRemDecayer::getHadronContent(tcPPtr hadron) const {
     for(int ix=1;ix<3;++ix) {
       hc.flav.push_back( ix);
       hc.flav.push_back(-ix);
+    }
+  }
+  else {
+    hc.sign = id < 0? -1: 1;
+    hc.flav.push_back(-(id = abs(id)/10)%10);
+    hc.flav.push_back((id = abs(id)/10)%10);
+    if(hc.flav.back()%2!=0) {
+      for(int & i : hc.flav) i *=-1;
     }
   }
   hc.pomeronStructure = pomeronStructure_;
