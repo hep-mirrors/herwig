@@ -12,7 +12,8 @@
 // This is the declaration of the HalfHalfOneSplitFn class.
 //
 
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
+#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 namespace Herwig {
 
@@ -36,7 +37,7 @@ using namespace ThePEG;
  * @see \ref HalfHalfOneSplitFnInterfaces "The interfaces"
  * defined for HalfHalfOneSplitFn.
  */
-class HalfHalfOneSplitFn: public SplittingFunction {
+class HalfHalfOneSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -45,30 +46,27 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  bool accept(const IdList & ids) const {
+    // 3 particles and in and out fermion same
+    if(ids.size()!=3 || ids[0]!=ids[1]) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1Half ||
+       ids[2]->iSpin()!=PDT::Spin1) return false;
+    return true;
+  }
 
   /**
    *   Methods to return the splitting function.
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  double overestimateP(const double z, const IdList & ) const { 
+    return 2./(1.-z); 
+  }
 
   /**
    * The concrete implementation of the
@@ -80,8 +78,15 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const;
+  double ratioP(const double z, const Energy2 t,
+                const IdList & ids, const bool mass, const RhoDMatrix & ) const {
+    double val = 1. + sqr(z);
+    if(mass) {
+      Energy m = ids[0]->mass();
+      val -= 2.*sqr(m)*(1.-z)/t;
+    } 
+    return 0.5*val;
+  }
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -92,8 +97,21 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
-			    unsigned int PDFfactor=0) const;
+  double integOverP(const double z, const IdList & , 
+                    unsigned int PDFfactor) const {
+    switch (PDFfactor) {
+    case 0:
+      return -2.*Math::log1m(z);
+    case 1:
+      return  2.*log(z/(1.-z));
+    case 2:
+      return  2./(1.-z);
+    case 3:
+    default:
+      throw Exception() << "HalfHalfOneSplitFn::integOverP() invalid PDFfactor = "
+                        << PDFfactor << Exception::runerror;
+    } 
+  }
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -103,8 +121,21 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
-			       unsigned int PDFfactor=0) const;
+  double invIntegOverP(const double r, const IdList & , 
+                       unsigned int PDFfactor) const {
+    switch (PDFfactor) {
+    case 0:
+      return 1. - exp(- 0.5*r); 
+    case 1:
+      return 1./(1.-exp(-0.5*r));
+    case 2:
+      return 1.-2./r;
+    case 3:
+    default:
+      throw Exception() << "HalfHalfOneSplitFn::invIntegOverP() invalid PDFfactor = "
+                        << PDFfactor << Exception::runerror;
+    } 
+  }
   //@}
 
   /**
@@ -115,9 +146,12 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+  vector<pair<int,Complex> >
+  generatePhiForward(const double, const Energy2, const IdList & , const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return {{ {0, 1.} }};
+  }
 
   /**
    * Method to calculate the azimuthal angle for backward evolution
@@ -127,10 +161,13 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
-  
+  vector<pair<int,Complex> > 
+  generatePhiBackward(const double, const Energy2, const IdList & , const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return {{ {0, 1.} }};
+  }
+
   /**
    * Calculate the matrix element for the splitting
    * @param z The energy fraction
@@ -138,8 +175,27 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+                           const IdList & ids, const double phi,
+                           bool timeLike) {
+    // calculate the kernal
+    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+    Energy m = !timeLike ? ZERO : ids[0]->mass();
+    double mt = m/sqrt(t);
+    double root = sqrt(1.-(1.-z)*sqr(m)/z/t);
+    double romz = sqrt(1.-z); 
+    double rz   = sqrt(z);
+    Complex phase = exp(Complex(0.,1.)*phi);
+    (*kernal)(0,0,0) = -root/romz*phase;
+    (*kernal)(1,1,2) =  -conj((*kernal)(0,0,0));
+    (*kernal)(0,0,2) =  root/romz*z/phase;
+    (*kernal)(1,1,0) = -conj((*kernal)(0,0,2));
+    (*kernal)(1,0,2) =  mt*(1.-z)/rz;
+    (*kernal)(0,1,0) =  conj((*kernal)(1,0,2));
+    (*kernal)(0,1,2) =  0.;
+    (*kernal)(1,0,0) =  0.;
+    return kernal;
+  }
 
 public:
 

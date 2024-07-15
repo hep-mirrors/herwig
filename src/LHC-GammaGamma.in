@@ -48,7 +48,7 @@ cd /Herwig/MatrixElements
 
 # fermion-antifermion 
 insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
-set /Herwig/MatrixElements/MEgg2ff:Process Muon
+set /Herwig/MatrixElements/MEgg2ff:Amplitude:Process Muon
 # W+W-
 #insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgg2WW
 

@@ -34,7 +34,7 @@ void OneOneOneQEDSplitFn::persistentInput(PersistentIStream & is, int) {
 }
 
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<OneOneOneQEDSplitFn,SplittingFunction>
+DescribeClass<OneOneOneQEDSplitFn,Sudakov1to2FormFactor>
 describeHerwigOneOneOneQEDSplitFn("Herwig::OneOneOneQEDSplitFn", "HwShower.so");
 
 
@@ -47,7 +47,7 @@ void OneOneOneQEDSplitFn::Init() {
 
 
 void OneOneOneQEDSplitFn::doinit() {
-  SplittingFunction::doinit();
+  Sudakov1to2FormFactor::doinit();
   tcSMPtr sm = generator()->standardModel();
   // WWG coupling
   gWWG_ = 1.;

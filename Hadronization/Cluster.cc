@@ -235,12 +235,12 @@ bool Cluster::isStatusFinal() const {
   return ( s > 0);
 }
 
-tPPtr Cluster::particle(int i) const {
-  return (i < (int)_numComp) ? _component[i] : PPtr();
+tPPtr Cluster::particle(unsigned int i) const { 
+  return (i < _numComp) ? _component[i] : PPtr(); 
 }
 
-tPPtr Cluster::particleB(int i) const{
-        return (i < (int)_numComp) ? _original[i] : tPPtr();
+tPPtr Cluster::particleB(unsigned int i) const {
+        return (i < _numComp) ? _original[i] : tPPtr();
 }
 
 tPPtr Cluster::colParticle(bool anti) const {
@@ -254,16 +254,17 @@ tPPtr Cluster::antiColParticle() const {
   return colParticle(true);
 }
 
-bool Cluster::isPerturbative(int i) const {
-  return _isPerturbative[i];
+bool Cluster::isPerturbative(unsigned int i) const { 
+  return _isPerturbative[i]; 
 }
 
-bool Cluster::isBeamRemnant(int i) const {
-  return _isBeamRemnant[i];
+bool Cluster::isBeamRemnant(unsigned int i) const { 
+  return _isBeamRemnant[i]; 
 }
 
-void Cluster::setBeamRemnant(int i, bool b) {
-  if(i < int(_numComp)) _isBeamRemnant[i] = b;
+void Cluster::setBeamRemnant(unsigned int i, bool b) {
+  if(i < _numComp)
+    _isBeamRemnant[i] = b;
 }
 
 bool Cluster::initPerturbative(tPPtr p)

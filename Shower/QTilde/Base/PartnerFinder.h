@@ -77,6 +77,7 @@ public:
   virtual void setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
 					 ShowerInteraction,
+					 bool darkInteraction,
 					 const bool setPartners=true);
   //@}
 protected:
@@ -152,6 +153,14 @@ protected:
   //@}
 
   /**
+   *  Set initial scales for a DARK interaction
+   */
+  virtual void setInitialDARKEvolutionScales(const ShowerParticleVector &particles,
+					   const bool isDecayCase,
+					   const bool setPartners=true);
+  //@}
+
+  /**
    *  Find the QCD partners
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
@@ -167,6 +176,15 @@ protected:
   vector< pair<double, tShowerParticlePtr> >
   findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
 		  const bool isDecayCase);
+
+    /**
+   *  Find the DARK partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> >
+  findDARKPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
 
 public:
   /**
@@ -226,8 +244,8 @@ protected:
       is = true;
     if ((id>=1 && id<=6 ) || (id>=11 && id<=16))
       is = true;
-    // for SUSY and excited particles
-    if(id > 25) {
+    // for SUSY and excited particles (but not dark sector)
+    if(id > 25 && (id < 4900000 || id > 4999999)) {
       long bsm_id = id % 1000000;
       if ( bsm_id==ParticleID::Wplus || bsm_id ==ParticleID::Z0 || bsm_id ==ParticleID::h0 || bsm_id ==ParticleID::gamma)
         is = true;

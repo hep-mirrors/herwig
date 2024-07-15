@@ -13,7 +13,6 @@
 #include "Cluster.fh"
 #include "ClusterDecayer.fh"
 #include "ClusterFissioner.fh"
-#include "HadronSelector.fh"
 
 namespace Herwig { 
 using namespace ThePEG;

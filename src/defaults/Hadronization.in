@@ -25,7 +25,7 @@ create Herwig::ColourReconnector ColourReconnector
 create Herwig::ClusterFissioner ClusterFissioner
 create Herwig::LightClusterDecayer LightClusterDecayer
 create Herwig::ClusterDecayer ClusterDecayer
-create Herwig::HwppSelector HadronSelector
+create Herwig::HwppSelector SMHadronSpectrum
 
 newdef ClusterHadHandler:PartonSplitter PartonSplitter
 newdef ClusterHadHandler:ClusterFinder ClusterFinder
@@ -33,14 +33,18 @@ newdef ClusterHadHandler:ColourReconnector ColourReconnector
 newdef ClusterHadHandler:ClusterFissioner ClusterFissioner
 newdef ClusterHadHandler:LightClusterDecayer LightClusterDecayer
 newdef ClusterHadHandler:ClusterDecayer ClusterDecayer
+
+do ClusterHadHandler:UseHandlersForInteraction QCD
+
 newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
 newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
 newdef ClusterHadHandler:UnderlyingEventHandler NULL
 
-newdef ClusterFissioner:HadronSelector HadronSelector 
-newdef LightClusterDecayer:HadronSelector HadronSelector
-newdef ClusterDecayer:HadronSelector HadronSelector
-newdef ClusterFinder:HadronSelector HadronSelector
+newdef PartonSplitter:HadronSpectrum SMHadronSpectrum
+newdef ClusterFinder:HadronSpectrum SMHadronSpectrum
+newdef ClusterFissioner:HadronSpectrum SMHadronSpectrum
+newdef ClusterDecayer:HadronSpectrum SMHadronSpectrum
+newdef LightClusterDecayer:HadronSpectrum SMHadronSpectrum
 
 # ColourReconnector Default Parameters
 newdef ColourReconnector:ColourReconnection Yes
@@ -77,34 +81,41 @@ newdef ColourReconnector:CausalCR No
 newdef ColourReconnector:Debug No
 
 # set ClusterFissioner parameters
-set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
-set /Herwig/Hadronization/ClusterFissioner:KineticThresholdShift   0.08844
-set /Herwig/Hadronization/ClusterFissioner:ProbablityPowerFactor   6.486
-set /Herwig/Hadronization/ClusterFissioner:ProbablityShift        -0.87875
+newdef ClusterFissioner:KinematicThreshold Dynamic
+newdef ClusterFissioner:KineticThresholdShift   0.08844
+newdef ClusterFissioner:ProbabilityPowerFactor   6.486
+newdef ClusterFissioner:ProbabilityShift        -0.87875
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  3.528693
+newdef ClusterFissioner:ClMaxLight  3.528693*GeV
 newdef ClusterFissioner:ClPowLight  1.849375
 newdef ClusterFissioner:PSplitLight 0.914156
+insert ClusterFissioner:FissionPwt 1 1.0
+insert ClusterFissioner:FissionPwt 2 1.0
+insert ClusterFissioner:FissionPwt 3 0.374094
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-newdef ClusterFissioner:ClMaxBottom  3.757
-newdef ClusterFissioner:ClPowBottom  0.547
-newdef ClusterFissioner:PSplitBottom 0.625
-newdef ClusterDecayer:ClDirBottom 1
-newdef ClusterDecayer:ClSmrBottom 0.078
-newdef HadronSelector:SingleHadronLimitBottom 0.000
+insert ClusterFissioner:ClMaxHeavy 5 3.757*GeV
+insert ClusterFissioner:ClPowHeavy 5  0.547
+insert ClusterFissioner:PSplitHeavy 5 0.625
+insert ClusterDecayer:ClDirHeavy 5 1
+insert ClusterDecayer:ClSmrHeavy 5 0.078
+newdef SMHadronSpectrum:SingleHadronLimitBottom 0.000
 
 # Clustering parameters for c-quarks
-newdef ClusterFissioner:ClMaxCharm  3.950
-newdef ClusterFissioner:ClPowCharm  2.559
-newdef ClusterFissioner:PSplitCharm 0.994
-newdef ClusterDecayer:ClDirCharm 1
-newdef ClusterDecayer:ClSmrCharm  0.163
-newdef HadronSelector:SingleHadronLimitCharm 0.000
+insert ClusterFissioner:ClMaxHeavy 4 3.950*GeV
+insert ClusterFissioner:ClPowHeavy 4  2.559
+insert ClusterFissioner:PSplitHeavy 4 0.994
+insert ClusterDecayer:ClDirHeavy 4 1
+insert ClusterDecayer:ClSmrHeavy 4 0.163
+newdef SMHadronSpectrum:SingleHadronLimitCharm 0.000
 
+# Cluster Paramters for light Diquark  Cluster 
+# currently set according to Light quark defaults
+newdef ClusterFissioner:ClMaxDiquark 3.528693*GeV
+newdef ClusterFissioner:ClPowDiquark 1.849375
 # Clustering parameters for exotic quarks
 # (e.g. hadronizing Susy particles)
 newdef ClusterFissioner:ClMaxExotic  2.7*GeV
@@ -112,20 +123,24 @@ newdef ClusterFissioner:ClPowExotic  1.46
 newdef ClusterFissioner:PSplitExotic 1.00
 newdef ClusterDecayer:ClDirExotic 1
 newdef ClusterDecayer:ClSmrExotic 0.
-newdef HadronSelector:SingleHadronLimitExotic 0.
+newdef SMHadronSpectrum:SingleHadronLimitExotic 0.
+
+#
+insert PartonSplitter:SplitPwt 1 1.0
+insert PartonSplitter:SplitPwt 2 1.0
+insert PartonSplitter:SplitPwt 3 0.824135
+newdef PartonSplitter:Split Light
+
 # 
-newdef PartonSplitter:SplitPwtSquark 0.824135
-newdef PartonSplitter:Split uds
-# 
-newdef HadronSelector:PwtDquark  1.0
-newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark  0.374094
-newdef HadronSelector:PwtCquark  0.0
-newdef HadronSelector:PwtBquark  0.0
-newdef HadronSelector:PwtDIquark 0.33107
-newdef HadronSelector:SngWt      0.89050
-newdef HadronSelector:DecWt      0.41628
-newdef HadronSelector:Mode 1
-newdef HadronSelector:BelowThreshold All
+newdef SMHadronSpectrum:PwtDquark  1.0
+newdef SMHadronSpectrum:PwtUquark  1.0
+newdef SMHadronSpectrum:PwtSquark  0.374094
+newdef SMHadronSpectrum:PwtCquark  0.0
+newdef SMHadronSpectrum:PwtBquark  0.0
+newdef SMHadronSpectrum:PwtDIquark  0.33107
+newdef SMHadronSpectrum:SngWt      0.89050
+newdef SMHadronSpectrum:DecWt      0.41628
+newdef SMHadronSpectrum:Mode 1
+newdef SMHadronSpectrum:BelowThreshold All
 
 create Herwig::SpinHadronizer SpinHadronizer

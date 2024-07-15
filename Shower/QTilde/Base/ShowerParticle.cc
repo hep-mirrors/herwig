@@ -19,6 +19,8 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/Rank3TensorWaveFunction.h"
 #include <ostream>
 
 using namespace Herwig;
@@ -35,13 +37,17 @@ ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 
 void ShowerParticle::vetoEmission(ShowerPartnerType, Energy scale) {
-  scales_.QED         = min(scale,scales_.QED        );
-  scales_.QED_noAO    = min(scale,scales_.QED_noAO   );
-  scales_.QCD_c       = min(scale,scales_.QCD_c      );
-  scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
-  scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
-  scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
-  scales_.EW          = min(scale,scales_.EW         );
+  scales_.QED         = min(scale,scales_.QED         );
+  scales_.QED_noAO    = min(scale,scales_.QED_noAO    );
+  scales_.QCD_c       = min(scale,scales_.QCD_c       );
+  scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO  );
+  scales_.QCD_ac      = min(scale,scales_.QCD_ac      );
+  scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO );
+  scales_.EW          = min(scale,scales_.EW          );
+  scales_.DARK_c      = min(scale,scales_.DARK_c      );
+  scales_.DARK_c_noAO = min(scale,scales_.DARK_c_noAO );
+  scales_.DARK_ac     = min(scale,scales_.DARK_ac     );
+  scales_.DARK_ac_noAO= min(scale,scales_.DARK_ac_noAO);
   if(spinInfo()) spinInfo()->undecay();
 }
 
@@ -450,14 +456,26 @@ void ShowerParticle::constructSpinInfo(bool timeLike) {
   }
   // calculate the basis states and construct the SpinInfo for a spin-1 particle
   else if(spin==PDT::Spin1) {
-    bool massless(id()==ParticleID::g||id()==ParticleID::gamma);
+    bool massless(id()==ParticleID::g||id()==ParticleID::gamma||id()==ParticleID::darkg);
     vector<Helicity::LorentzPolarizationVector> vtemp;
     VectorWaveFunction::calculateWaveFunctions(vtemp,this,outgoing,massless,vector_phase);
     VectorWaveFunction::constructSpinInfo(vtemp,this,outgoing,timeLike,massless);
   }
+  // calculate the basis states and construct SpinInfo for a spin-2 particle
+  else if(spin==PDT::Spin2) {
+    vector<Helicity::LorentzTensor<double> > ttemp;
+    TensorWaveFunction::calculateWaveFunctions(ttemp,this,outgoing,false,tensor_phase);
+    TensorWaveFunction::constructSpinInfo(ttemp,this,outgoing,timeLike,false);
+  }
+  // calculate the basis states and construct SpinInfo for a spin-3 particle
+  else if(spin==PDT::Spin3) {
+    vector<Helicity::LorentzRank3Tensor<double> > ttemp;
+    Rank3TensorWaveFunction::calculateWaveFunctions(ttemp,this,outgoing,false);
+    Rank3TensorWaveFunction::constructSpinInfo(ttemp,this,outgoing,timeLike,false);
+  }
   else {
-    throw Exception() << "Spins higher than 1 are not yet implemented in "
-		      << "FS_QtildaShowerKinematics1to2::constructVertex() "
+    throw Exception() << "Spins higher than 3 are not yet implemented in "
+		      << "ShowerParticle::constructVertex() "
 		      << Exception::runerror;
   }
 }

@@ -265,74 +265,7 @@ def isGhost(p) :
         return False
     return p.GhostNumber != 0
 
-def convertToPython3(ufodir) :
-    # find all the python files
-    fNames=glob.glob(path.abspath(ufodir)+"/*.py")
-    mNames=[]
-    for i in range(0,len(fNames)) :
-        mNames.append(path.split(fNames[i])[-1].replace(".py",""))
-    # convert them
-    for fName in fNames :
-        convertFileToPython3(fName,mNames)
-
 def copy(path1, path2):
     path1 = format_path(path1)
     path2 = format_path(path2)
     shutil.copy(path1, path2)
-
-def prepForConversion(ufodir) :
-    import os
-    path=os.path.abspath(ufodir)
-    if not os.path.isdir(path):
-        raise Exception( 'path to the UFO directory seems to be wrong!')
-    model_dir = path
-    text = open(os.path.join(model_dir, 'object_library.py')).read()
-    text = text.replace('.iteritems()', '.items()')
-    text = re.sub('raise (\w+)\s*,\s*["\']([^"]+)["\']','raise \g<1>("\g<2>")', text)
-    text = open(os.path.join(model_dir, 'object_library.py'),'w').write(text)
-    text = open(os.path.join(model_dir, '__init__.py')).read()
-    mod = False
-    to_check =  ['object_library', 'function_library']
-    for lib in to_check:
-        if 'import %s' % lib in text:
-            continue
-        mod = True
-        text = "import %s \n" % lib + text
-    if mod:
-        open(os.path.join(model_dir, '__init__.py'),'w').write(text)
-
-def convertFileToPython3(fName,names) :
-    output=""
-    inFile=open(fName)
-    line=inFile.readline()
-    isInit = "__init__.py" in fName
-    tNames=[]
-    for val in names : tNames.append(val)
-    while line :
-        # iteritems -> items
-        line=line.replace("iteritems","items")
-        # fix imports
-        if("import" in line) :
-            for val in names :
-                if("import %s" %val in line) :
-                    line=line.replace("import %s"  %val,
-                                      "from . import %s" %val)
-                    if(val in tNames) : tNames.remove(val)
-                if("from %s" %val in line) :
-                    line=line.replace("from %s"  %val,
-                                      "from .%s" %val)
-        # add brackets to print statements
-        if("print" in line) :
-            if line.strip()[0:5] == "print" :
-                line=line.strip("\n").replace("print","print(")+")\n"
-        output += line
-        line=inFile.readline()
-    inFile.close()
-    if(isInit) :
-        if "__init__" in tNames : tNames.remove("__init__")
-        temp=""
-        for val in tNames :
-            temp+= "from . import %s\n" % val
-        output = temp+output
-    with open(fName,'w') as dest:
-        dest.write(output)

@@ -25,8 +25,8 @@ using namespace ThePEG;
  *  
  * The matrix element is
  * given by \f[\mathcal{M}= \epsilon_1^{\beta_1\beta_2} \epsilon_1^{\alpha} \epsilon_2^{\gamma} 
- * \left(g_{\beta_1\alpha}+\frac{p_{0\beta_1}p_{1\alpha}{p_0\cdot p_1-m_0m_1}\right)
- * \left(g_{\beta_2\gamma}+\frac{p_{2\beta_2}p_{1\gamma}{p_0\cdot p_1-m_1m_2}\right)\f]
+ * \left(g_{\beta_1\alpha}+\frac{p_{0\beta_1}p_{1\alpha}}{p_0\cdot p_1-m_0m_1}\right)
+ * \left(g_{\beta_2\gamma}+\frac{p_{2\beta_2}p_{1\gamma}}{p_0\cdot p_1-m_1m_2}\right)\f]
  * where \f$p_{0,1,2}\f$ are the momenta of the incoming vector and outgoing tensor and vector mesons, respectively,
  * and \f$\epsilon_{1}\f$ is the polarization tensor of the outgoing tensor meson and $\epslion_{0,2}$ are those of the incoming and outgoing
  * vector mesons.

@@ -45,16 +45,6 @@ namespace Herwig {
       //@{
     /**
      *  Very similar to HalfHalfOneSplitFn.
-     *  Here the kernel only contains the soft part multiplied by the
-     *  alphas/2pi * Kg from
-     *  Nucl.Phys. B349 (1991) 635-654
-     *
-     */
-    virtual double P(const double z, const Energy2 t, const IdList & ids,
-                     const bool mass, const RhoDMatrix & rho) const;
-    
-    /**
-     *  Very similar to HalfHalfOneSplitFn.
      *  Since we use only the 1/1-z part for overestimating the kernel
      *  in the first place we can keep the same overestimation related functions
      *  for the CMW kernels.

@@ -111,17 +111,17 @@ private:
   /**
    *  Which \f$K-matrix\f$ to do
    */
-  unsigned int imat_;
+  unsigned int imat_ = 0;
 
   /**
    *  Which channel to use from the K-matrix
    */
-  unsigned int channel_;
+  unsigned int channel_ = 0;
 
   /**
    *  Expansion point for the constant terms
    */
-  Energy2 sc_;
+  Energy2 sc_ = ZERO;
 
   /**
    *  Coefficients of the poles
@@ -131,7 +131,7 @@ private:
   /**
    *  Type of expansion
    */
-  unsigned int expType_;
+  unsigned int expType_ = 0;
 
   /**
    *  Coefficients for the series expansion

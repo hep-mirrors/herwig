@@ -5,7 +5,7 @@
 // This is the declaration of the HalfHalfZeroEWSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
@@ -13,13 +13,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The HalfHalfZeroEWSplitFn class implements the splitting function for 
+ * The HalfHalfZeroEWSplitFn class implements the splitting function for
  * \f$\frac12\to q\frac12 h\f$ where the spin-0 higgs particle is a massive scalar boson.
  *
  * @see \ref HalfHalfZeroEWSplitFnInterfaces "The interfaces"
  * defined for HalfHalfZeroEWSplitFn.
  */
-class HalfHalfZeroEWSplitFn: public SplittingFunction {
+class HalfHalfZeroEWSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -28,30 +28,34 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) const;
+  virtual bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    if(ids[2]->iSpin()==PDT::Spin0 && _couplingValue0Re==0 && _couplingValue0Im==0 && _couplingValue1Re==0 && _couplingValue1Im==0) {
+      if(ids[0]->id()==ids[1]->id() && (ids[0]->id()==4 || ids[0]->id()==5 || ids[0]->id()==6)) return true;
+    }
+    else if(ids[2]->iSpin()==PDT::Spin0 && !(_couplingValue0Re==0 && _couplingValue0Im==0 && _couplingValue1Re==0 && _couplingValue1Im==0)) {
+      if(ids[0]->iCharge()!=ids[1]->iCharge()+ids[2]->iCharge()) return false;
+      if((abs(ids[0]->id())>=1 && abs(ids[0]->id())<=6) && (abs(ids[1]->id())>=1 && abs(ids[1]->id())<=6)) return true;
+    }
+    return false;
+  }
 
   /**
    *   Methods to return the splitting function.
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
-   * @param z   The energy fraction.
-   * @param t   The scale.
-   * @param ids The PDG codes for the particles in the splitting.
-   * @param mass Whether or not to include the mass dependent terms
-   * @param rho The spin density matrix
-   */
-  virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass, const RhoDMatrix & rho) const;
-
-  /**
    * The concrete implementation of the overestimate of the splitting function,
    * \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    Complex gH0(0.,0.);
+    Complex gH1(0.,0.);
+    getCouplings(gH0,gH1,ids);
+    return (norm(gH0)+norm(gH1)+2*abs((gH0*gH1).real())+2*abs((gH0*gH1).imag()))*(1.-z)/2.;
+  }
 
   /**
    * The concrete implementation of the
@@ -67,7 +71,7 @@ public:
 			const bool mass, const RhoDMatrix & rho) const;
 
   /**
-   * The concrete implementation of the indefinite integral of the 
+   * The concrete implementation of the indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
@@ -75,7 +79,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
+  virtual double integOverP(const double z, const IdList & ids,
 			    unsigned int PDFfactor=0) const;
 
   /**
@@ -85,8 +89,8 @@ public:
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+   */
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const;
   //@}
 
@@ -99,8 +103,12 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+  generatePhiForward(const double, const Energy2, const IdList &,
+                     const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
+  }
 
   /**
    * Method to calculate the azimuthal angle for backward evolution
@@ -110,10 +118,14 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
-  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix &);
-  
+  virtual vector<pair<int,Complex> >
+  generatePhiBackward(const double, const Energy2, const IdList & ,
+		      const RhoDMatrix &) {
+    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+    // and rest = splitting function for Tr(rho)=1 as required by defn
+    return vector<pair<int, Complex> >(1,make_pair(0,1.));
+  }
+
   /**
    * Calculate the matrix element for the splitting
    * @param z The energy fraction
@@ -121,7 +133,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
 				   const IdList & ids, const double phi, bool timeLike);
 
 protected:
@@ -129,12 +141,12 @@ protected:
   /**
    *   Get the couplings without running masses
    */
-  void getCouplings(double & gH, const IdList & ids) const;
+  void getCouplings(Complex & gH0, Complex & gH1, const IdList & ids) const;
 
   /**
    *   Get the couplings with running masses
    */
-  void getCouplings(double & gH, const IdList & ids, const Energy2 t) const;
+  void getCouplings(Complex & gH0, Complex & gH1, const IdList & ids, const Energy2 t) const;
 
 public:
 
@@ -206,6 +218,13 @@ private:
    */
   double ghqq_;
 
+  /**
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValue0Re = 0.;
+  double _couplingValue0Im = 0.;
+  double _couplingValue1Re = 0.;
+  double _couplingValue1Im = 0.;
 
   /**
    * Pointer to the SM object.

@@ -105,12 +105,12 @@ public:
   /**
    * Returns the ith constituent.
    */
-  tPPtr particle(int i) const;
+  tPPtr particle(unsigned int i) const;
 
   /**
    * Returns the ith original constituent.
    */
-  tPPtr particleB(int i) const;
+  tPPtr particleB(unsigned int i) const;
   
   /**
    * Returns the original constituent carrying colour
@@ -125,17 +125,17 @@ public:
   /**
    * Returns whether the ith constituent is from a perturbative process.
    */
-  bool isPerturbative(int) const;
+  bool isPerturbative(unsigned int) const;
   
   /**
    * Indicates whether the ith constituent is a beam remnant.
    */
-  bool isBeamRemnant(int) const;
+  bool isBeamRemnant(unsigned int) const;
   
   /**
    * Sets whether the ith constituent is a beam remnant.
    */
-  void setBeamRemnant(int,bool);
+  void setBeamRemnant(unsigned int,bool);
   
   /**
    * Returns the clusters id, not the same as the PDG id.

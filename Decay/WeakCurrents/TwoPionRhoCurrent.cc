@@ -180,16 +180,14 @@ void TwoPionRhoCurrent::Init() {
      "Santamaria (Z. Phys. C48, 445 (1990)) or Gounaris and Sakurai Phys. Rev. "
      "Lett. 21, 244 (1968).  The mixing parameters are taken from "
      "Phys. Rev. D61:112002,2000 (CLEO), although the PDG values for the "
-     "masses and widths are used, for the decay pi+/- pi0."
-     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "masses and widths are used, for the decay pi+/- pi0.",
      "The weak "
      "decay current to two scalar mesons is implemented "
      "using the models of either Kuhn and "
      "Santamaria \\cite{Kuhn:1990ad} or Gounaris and Sakurai \\cite{Gounaris:1968mw}. "
      "The mixing parameters are taken from "
      "\\cite{Asner:1999kj}, although the PDG values for the "
-     "masses and widths are used, for the decay pi+/- pi0."
-     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "masses and widths are used, for the decay pi+/- pi0.",
      "%\\cite{Kuhn:1990ad}\n"
      "\\bibitem{Kuhn:1990ad}\n"
      "  J.~H.~Kuhn and A.~Santamaria,\n"

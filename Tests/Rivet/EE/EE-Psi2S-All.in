@@ -46,8 +46,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1227512
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2013_I1120737
 # psi(2S) -> p pbar phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1722111
-# psi(2S) -> Lambda Lambdabar omega
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2122392
 # psi(2S) -> Lambda Lambdabar eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2167804
 # psi(2S) -> Lambda Lambdabar eta'

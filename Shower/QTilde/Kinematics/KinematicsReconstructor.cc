@@ -23,7 +23,7 @@
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -1097,7 +1097,7 @@ deconstructColourSinglets(HardTreePtr tree,
 	deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					systems[ix].jets,type);
     }
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }
@@ -1122,7 +1122,7 @@ deconstructColourSinglets(HardTreePtr tree,
     toRest = LorentzRotation(ptotal.findBoostToCM());
     fromRest = toRest;
     fromRest.invert();
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }
@@ -2739,7 +2739,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
 	reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					systems[ix].jets);
     }
-    if(type!=ShowerInteraction::QCD) {
+    if(type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK) {
       combineFinalState(systems);
       general=false;
     }

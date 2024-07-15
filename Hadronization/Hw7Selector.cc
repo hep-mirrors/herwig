@@ -20,13 +20,12 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Utilities/Selector.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "CheckId.h"
 #include <cassert>
 #include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-DescribeClass<Hw7Selector,HadronSelector>
+DescribeClass<Hw7Selector,StandardModelHadronSpectrum>
 describeHw7Selector("Herwig::Hw7Selector","Herwig.so");
 
 IBPtr Hw7Selector::clone() const {
@@ -41,35 +40,35 @@ void Hw7Selector::doinit() {
   // the default partons allowed
   // the quarks
   for ( int ix=1; ix<=5; ++ix ) {
-    partons().push_back(getParticleData(ix));
+    _partons.push_back(getParticleData(ix));
   }
   // the diquarks
   for(unsigned int ix=1;ix<=5;++ix) {
     for(unsigned int iy=1; iy<=ix;++iy) {
-      partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(3))));
+      _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(3))));
       if(ix!=iy)
-        partons().push_back(getParticleData(CheckId::makeDiquarkID(ix,iy,long(1))));
+        _partons.push_back(getParticleData(makeDiquarkID(ix,iy,long(1))));
     }
   }
   // weights for the different quarks etc
   for(unsigned int ix=0; ix<partons().size(); ++ix) {
-    pwt()[partons()[ix]->id()]=0.;
+    _pwt[partons()[ix]->id()]=0.;
   }
-  pwt()[1]  = _pwtDquark;
-  pwt()[2]  = _pwtUquark;
-  pwt()[3]  = _pwtSquark;
-  pwt()[4]  = _pwtCquark;
-  pwt()[5]  = _pwtBquark;
-  pwt()[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
-  pwt()[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
-  pwt()[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
-  pwt()[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
-  pwt()[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
-  pwt()[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
-  pwt()[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
-  pwt()[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
-  pwt()[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
-  HadronSelector::doinit();
+  _pwt[1]  = _pwtDquark;
+  _pwt[2]  = _pwtUquark;
+  _pwt[3]  = _pwtSquark;
+  _pwt[4]  = _pwtCquark;
+  _pwt[5]  = _pwtBquark;
+  _pwt[1103] = _pwtDIquarkS1 * _pwtDquark * _pwtDquark;
+  _pwt[2101] = _pwtDIquarkS0 * _pwtUquark * _pwtDquark;
+  _pwt[2103] = _pwtDIquarkS1 * _pwtUquark * _pwtDquark;
+  _pwt[2203] = _pwtDIquarkS1 * _pwtUquark * _pwtUquark;
+  _pwt[3101] = _pwtDIquarkS0 * _pwtSquark * _pwtDquark;
+  _pwt[3103] = _pwtDIquarkS1 * _pwtSquark * _pwtDquark;
+  _pwt[3201] = _pwtDIquarkS0 * _pwtSquark * _pwtUquark;
+  _pwt[3203] = _pwtDIquarkS1 * _pwtSquark * _pwtUquark;
+  _pwt[3303] = _pwtDIquarkS1 * _pwtSquark * _pwtSquark;
+  StandardModelHadronSpectrum::doinit();
   // lightest members (baryons)
   for(const PDPtr & p1 : partons()) {
     if(DiquarkMatcher::Check(p1->id())) continue;
@@ -82,18 +81,14 @@ void Hw7Selector::doinit() {
 }
 
 void Hw7Selector::persistentOutput(PersistentOStream & os) const {
-  os << _pwtDquark  << _pwtUquark << _pwtSquark
-     << _pwtCquark << _pwtBquark << _pwtDIquarkS0 << _pwtDIquarkS1
-     << _sngWt << _decWt 
+  os << _pwtDIquarkS0 << _pwtDIquarkS1
      << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure
      << _scHadronWtFactor << _sbHadronWtFactor
      << lightestBaryonsS0_ << lightestBaryonsS1_;
 }
 
 void Hw7Selector::persistentInput(PersistentIStream & is, int) {
-  is >> _pwtDquark  >> _pwtUquark >> _pwtSquark
-     >> _pwtCquark >> _pwtBquark >> _pwtDIquarkS0 >> _pwtDIquarkS1
-     >> _sngWt >> _decWt 
+  is >> _pwtDIquarkS0 >> _pwtDIquarkS1
      >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure
      >> _scHadronWtFactor >> _sbHadronWtFactor
      >> lightestBaryonsS0_ >> lightestBaryonsS1_;
@@ -112,32 +107,6 @@ void Hw7Selector::Init() {
      "  arXiv:hep-ph/9906412.\n"
      "  %%CITATION = HEP-PH/9906412;%%\n"
      );
-  
-  static Parameter<Hw7Selector,double>
-    interfacePwtDquark("PwtDquark","Weight for choosing a quark D",
-		       &Hw7Selector::_pwtDquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfacePwtUquark("PwtUquark","Weight for choosing a quark U",
-		       &Hw7Selector::_pwtUquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfacePwtSquark("PwtSquark","Weight for choosing a quark S",
-		       &Hw7Selector::_pwtSquark, 0, 1.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
-		       &Hw7Selector::_pwtCquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
-		       &Hw7Selector::_pwtBquark, 0, 0.0, 0.0, 10.0,
-		       false,false,false);
-
   static Parameter<Hw7Selector,double>
     interfacePwtDIquarkS0("PwtDIquarkS0","Weight for choosing a spin-0 DIquark",
 			&Hw7Selector::_pwtDIquarkS0, 0, 1.0, 0.0, 100.0,
@@ -147,16 +116,6 @@ void Hw7Selector::Init() {
     interfacePwtDIquarkS1("PwtDIquarkS1","Weight for choosing a spin-1 DIquark",
       &Hw7Selector::_pwtDIquarkS1, 0, 1.0, 0.0, 100.0,
     	false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfaceSngWt("SngWt","Weight for singlet baryons",
-                  &Hw7Selector::_sngWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
-
-  static Parameter<Hw7Selector,double>
-    interfaceDecWt("DecWt","Weight for decuplet baryons",
-                  &Hw7Selector::_decWt, 0, 1.0, 0.0, 10.0,
-		   false,false,false);
   
   static Switch<Hw7Selector,unsigned int> interfaceMode
     ("Mode",
@@ -358,43 +317,43 @@ void Hw7Selector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
     // first the uu1 d type piece
     a.wt = 1./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
     // also need ud1 u type
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,3);
+    long f3 = makeDiquarkID(iq1,flav2,3);
     a.overallWeight /= a.wt;
     a.wt = 1./6.;
     a.overallWeight *= a.wt;
-    table()[make_pair(iq1,f3 )].insert(a);
-    table()[make_pair(f3 ,iq1)].insert(a);
+    _table[make_pair(iq1,f3 )].insert(a);
+    _table[make_pair(f3 ,iq1)].insert(a);
     // and       ud0 u type
-    f3 = CheckId::makeDiquarkID(iq1,flav2,1);
+    f3 = makeDiquarkID(iq1,flav2,1);
     a.overallWeight /= a.wt;
     a.wt = 0.5;
     a.overallWeight *= a.wt;
-    table()[make_pair(iq1,f3 )].insert(a);
-    table()[make_pair(f3 ,iq1)].insert(a);
+    _table[make_pair(iq1,f3 )].insert(a);
+    _table[make_pair(f3 ,iq1)].insert(a);
   }
   else if(iq1==flav2) {
     // ud1 u type
     a.wt = 1./6.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
     // also need ud0 u type
-    long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
+    long f3 = makeDiquarkID(iq1,iq2,1);
     a.overallWeight /= a.wt;
     a.wt = 0.5;
     a.overallWeight *= a.wt;
-    table()[make_pair(f3    ,flav2)].insert(a);
-    table()[make_pair(flav2 ,f3   )].insert(a);
+    _table[make_pair(f3    ,flav2)].insert(a);
+    _table[make_pair(flav2 ,f3   )].insert(a);
     // and uu1 d type
-    f3 = CheckId::makeDiquarkID(iq1,iq1,3);
+    f3 = makeDiquarkID(iq1,iq1,3);
     a.overallWeight /= a.wt;
     a.wt = 1./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(f3 ,iq2)].insert(a);
-    table()[make_pair(iq2, f3)].insert(a);
+    _table[make_pair(f3 ,iq2)].insert(a);
+    _table[make_pair(iq2, f3)].insert(a);
   }
   else if(iq2==flav2) assert(false);
   else {
@@ -405,19 +364,19 @@ void Hw7Selector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
     double wgt0(1./4.),wgt1(1./12.);
     // only spin-0
     if(it1<it2) {
-      long f3 = CheckId::makeDiquarkID(iq1,iq2,1);
+      long f3 = makeDiquarkID(iq1,iq2,1);
       a.wt = 1./3.;
       a.overallWeight *= a.wt;
-      table()[make_pair(f3,flav2)].insert(a);
-      table()[make_pair(flav2,f3)].insert(a);
+      _table[make_pair(f3,flav2)].insert(a);
+      _table[make_pair(flav2,f3)].insert(a);
       swap(wgt0,wgt1);
     }
     // only spin-1
     else {
       a.wt = 1./3.;
       a.overallWeight *= a.wt;
-      table()[make_pair(flav1,flav2)].insert(a);
-      table()[make_pair(flav2,flav1)].insert(a);
+      _table[make_pair(flav1,flav2)].insert(a);
+      _table[make_pair(flav2,flav1)].insert(a);
     }
     // not sure here
     // spin 0
@@ -425,25 +384,25 @@ void Hw7Selector::insertOneHalf(HadronInfo a, int flav1, int flav2) {
     a.wt = wgt0;
     a.overallWeight *= a.wt;
     // second perm
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,1);
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    long f3 = makeDiquarkID(iq1,flav2,1);
+    _table[make_pair(iq2,f3)].insert(a);
+    _table[make_pair(f3,iq2)].insert(a);
     // 3rd perm
-    f3 = CheckId::makeDiquarkID(iq2,flav2,1);
-    table()[make_pair(iq1,f3)].insert(a);
-    table()[make_pair(f3,iq1)].insert(a);
+    f3 = makeDiquarkID(iq2,flav2,1);
+    _table[make_pair(iq1,f3)].insert(a);
+    _table[make_pair(f3,iq1)].insert(a);
     // spin 1
     a.overallWeight /= a.wt;
     a.wt = wgt1;
     a.overallWeight *= a.wt;
     // second perm
-    f3 = CheckId::makeDiquarkID(iq1,flav2,3);
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    f3 = makeDiquarkID(iq1,flav2,3);
+    _table[make_pair(iq2,f3)].insert(a);
+    _table[make_pair(f3,iq2)].insert(a);
     // 3rd perm
-    f3 = CheckId::makeDiquarkID(iq2,flav2,3);
-    table()[make_pair(iq1,f3)].insert(a);
-    table()[make_pair(f3,iq1)].insert(a);
+    f3 = makeDiquarkID(iq2,flav2,3);
+    _table[make_pair(iq1,f3)].insert(a);
+    _table[make_pair(f3,iq1)].insert(a);
   }
 }
 
@@ -454,36 +413,36 @@ void Hw7Selector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
   if(iq1==iq2 && iq1==flav2) {
     a.wt = 1.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
   }
   else if(iq1==iq2) {
     // first option uu1 d
     a.wt = 1./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
     // also need ud1 u type
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,3);
+    long f3 = makeDiquarkID(iq1,flav2,3);
     a.overallWeight /= a.wt;
     a.wt = 2./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(iq1,f3 )].insert(a);
-    table()[make_pair(f3 ,iq1)].insert(a);
+    _table[make_pair(iq1,f3 )].insert(a);
+    _table[make_pair(f3 ,iq1)].insert(a);
   }
   else if(iq1==flav2) {
     // also need ud1 u type
     a.wt = 2./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
     // and uu1 d type
-    long f3 = CheckId::makeDiquarkID(iq1,iq1,3);
+    long f3 = makeDiquarkID(iq1,iq1,3);
     a.overallWeight /= a.wt;
     a.wt = 1./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    _table[make_pair(iq2,f3)].insert(a);
+    _table[make_pair(f3,iq2)].insert(a);
   }
   else if(iq2==flav2) assert(false);
   else {
@@ -491,16 +450,16 @@ void Hw7Selector::insertThreeHalf(HadronInfo a, int flav1, int flav2) {
     // first perm
     a.wt = 1./3.;
     a.overallWeight *= a.wt;
-    table()[make_pair(flav1,flav2)].insert(a);
-    table()[make_pair(flav2,flav1)].insert(a);
+    _table[make_pair(flav1,flav2)].insert(a);
+    _table[make_pair(flav2,flav1)].insert(a);
     // 2nd perm
-    long f3 = CheckId::makeDiquarkID(iq1,flav2,3);
-    table()[make_pair(iq2,f3)].insert(a);
-    table()[make_pair(f3,iq2)].insert(a);
+    long f3 = makeDiquarkID(iq1,flav2,3);
+    _table[make_pair(iq2,f3)].insert(a);
+    _table[make_pair(f3,iq2)].insert(a);
     // 3rd perm
-    f3 = CheckId::makeDiquarkID(iq2,flav2,3);
-    table()[make_pair(iq1,f3)].insert(a);
-    table()[make_pair(f3,iq1)].insert(a);
+    f3 = makeDiquarkID(iq2,flav2,3);
+    _table[make_pair(iq1,f3)].insert(a);
+    _table[make_pair(f3,iq1)].insert(a);
   }
 }
 
@@ -510,7 +469,7 @@ PDPtr Hw7Selector::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
   if(id1!=id2) {
     if(UseRandom::rnd()<_pwtDIquarkS0/(_pwtDIquarkS0+_pwtDIquarkS1)) pspin = 1;
   }
-  long idnew = CheckId::makeDiquarkID(id1,id2, pspin);
+  long idnew = makeDiquarkID(id1,id2, pspin);
   return getParticleData(idnew);
 }
 

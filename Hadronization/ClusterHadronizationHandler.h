@@ -50,7 +50,7 @@ using namespace ThePEG;
  * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
  * defined for ClusterHadronizationHandler.
  */ 
-class ClusterHadronizationHandler: 
+class ClusterHadronizationHandler:
     public HadronizationHandler, public Reshuffler {
 
 public:
@@ -99,13 +99,6 @@ public:
     return currentHandler_;
   }
 
-  /**
-   * A pointer to a gluon mass generator for the reshuffling
-   */
-  Ptr<GluonMassGenerator>::tptr gluonMassGenerator() const {
-    return gluonMassGenerator_;
-  }
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -146,12 +139,77 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  virtual void rebind(const TranslationMap & trans);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
+  //@}
+
 private:
 
   /**
    * Private and non-existent assignment operator.
    */
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &) = delete;
+
+  /**
+   * This is a pointer to a Herwig::PartonSplitter object.
+   */
+  map<int,PartonSplitterPtr>      _partonSplitters;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFinder object.
+   */
+  map<int,ClusterFinderPtr>       _clusterFinders;
+
+  /**
+   * This is a pointer to a Herwig::ColourReconnector object.
+   */
+  map<int,ColourReconnectorPtr>   _colourReconnectors;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFissioner object.
+   */
+  map<int,ClusterFissionerPtr>    _clusterFissioners;
+
+  /**
+   * This is a pointer to a Herwig::LightClusterDecayer object.
+   */
+  map<int,LightClusterDecayerPtr> _lightClusterDecayers;
+  
+  /**
+   * This is a pointer to a Herwig::ClusterDecayer object.
+   */
+  map<int,ClusterDecayerPtr>      _clusterDecayers; 
+
+  /**
+   * A pointer to a gluon mass generator for the reshuffling
+   */
+  map<int,Ptr<GluonMassGenerator>::ptr> _gluonMassGenerators;
 
   /**
    * This is a pointer to a Herwig::PartonSplitter object.
@@ -181,22 +239,17 @@ private:
   /**
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
-  ClusterDecayerPtr      _clusterDecayer; 
+  ClusterDecayerPtr      _clusterDecayer;
 
-  /**
-   * Perform reshuffling to constituent masses.
-   */
-  bool reshuffle_ = false;
-  
-  /**
-   *  Which type of reshuffling (global (default) or colour connected) is used
-   */
-  int reshuffleMode_ = 0;
-  
   /**
    * A pointer to a gluon mass generator for the reshuffling
    */
-  Ptr<GluonMassGenerator>::ptr gluonMassGenerator_;
+  Ptr<GluonMassGenerator>::ptr _gluonMassGenerator;
+
+  /**
+   * Perform reshuffling to constituent masses (0 = no reshuffling, 1 = global reshuffling, 2 = colour connected reshuffling).
+   */
+  int reshuffle_ = 0;
 
   /**
    * The minimum virtuality^2 of partons to use in calculating 
@@ -225,19 +278,22 @@ private:
    */
   void _setChildren(const ClusterVector & clusters) const;
 
-   
-   /**
-    * Split the list of partons into colour connected sub-lists before reshuffling
-    */
-   void splitIntoColourSinglets(PVector thelist,
-				vector<PVector>& reshufflelists);
+  /**
+   * Split the list of partons into colour connected sub-lists before reshuffling
+   */
+  void splitIntoColourSinglets(PVector thelist,
+			       vector<PVector>& reshufflelists,
+			       int interaction);
 
+  /**
+   * Use the currently set list of handlers to hadronize the given interaction
+   */
+  string _setHandlersForInteraction(string); 
   
   /**
    *  pointer to "this", the current HadronizationHandler.
    */
   static ClusterHadronizationHandler * currentHandler_;
-
 
 };
 

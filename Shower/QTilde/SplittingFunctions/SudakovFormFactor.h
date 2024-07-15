@@ -13,20 +13,31 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
-#include "Herwig/Shower/ShowerAlpha.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
-#include "ThePEG/Repository/UseRandom.h"
-#include "ThePEG/PDF/BeamParticleData.h"
-#include "ThePEG/EventRecord/RhoDMatrix.h"
-#include "ThePEG/EventRecord/SpinInfo.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
+#include "ThePEG/PDF/BeamParticleData.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 #include "SudakovFormFactor.fh"
-#include "SudakovCutOff.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+/** \ingroup Shower
+ * Enum to define the possible types of colour structure which can occur in
+ * the branching.
+ */
+enum ColourStructure {Undefined=0,
+                      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
+                      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
+                      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
+		      OctetOctetSinglet    = 7, Epsilon               = 8,
+		      OctetSinglet         = 9,
+		      ChargedChargedNeutral=-1,
+		      ChargedNeutralCharged=-2,
+		      NeutralChargedCharged=-3,
+		      EW=-4};
 
 /**
  *  A typedef for the BeamParticleData
@@ -134,11 +145,19 @@ class SudakovFormFactor: public Interfaced {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			z_( 0.0 ),phi_(0.0), pT_(){}
+  SudakovFormFactor() : interactionType_(ShowerInteraction::UNDEFINED),
+                        angularOrdered_(true),
+                        colourStructure_(Undefined),
+                        pdfMax_(35.0), pdfFactor_(0)
+  {}
+  //@}
+
+public:
 
   /**
    *  Members to generate the scale of the next branching
@@ -155,7 +174,7 @@ public:
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,
 					      const RhoDMatrix & rho,
-					      double enhance, double detuning);
+					      double enhance, double detuning) = 0;
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -168,12 +187,12 @@ public:
    * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
-					       const Energy stoppingScale,
-					       const Energy minmass,
-					       const IdList &ids,
-					       const RhoDMatrix & rho,
-					       double enhance,
-					       double detuning);
+						 const Energy stoppingScale,
+						 const Energy minmass,
+						 const IdList &ids,
+						 const RhoDMatrix & rho,
+						 double enhance,
+						 double detuning) = 0;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -185,14 +204,18 @@ public:
    * @param beam The beam particle
    * @param enhance The radiation enhancement factor
    */
-  virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
-					       const IdList &ids,double x,
-					       const RhoDMatrix & rho,
-					       double enhance,
-					       tcBeamPtr beam,
-					       double detuning);
+   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
+						 const IdList &ids,double x,
+						 const RhoDMatrix & rho,
+						 double enhance,
+						 tcBeamPtr beam,
+						 double detuning) = 0;
   //@}
 
+  /**
+   *  Azimuthal angle generation
+   */
+  //@{
   /**
    * Generate the azimuthal angle of the branching for forward evolution
    * @param particle The branching particle
@@ -200,8 +223,7 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
-				    ShoKinPtr kinematics,
-				    const RhoDMatrix & rho);
+				    ShoKinPtr kinematics, const RhoDMatrix & rho)=0;
 
   /**
    *  Generate the azimuthal angle of the branching for backward evolution
@@ -210,8 +232,7 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
-				     ShoKinPtr kinematics,
-				     const RhoDMatrix & rho);
+				     ShoKinPtr kinematics, const RhoDMatrix & rho)=0;
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -220,62 +241,122 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
-				  ShoKinPtr kinematics,
-				  const RhoDMatrix & rho);
+				  ShoKinPtr kinematics, const RhoDMatrix & rho)=0;
+  //@}
+  
+public:
 
   /**
-   *  Methods to provide public access to the private member variables
+   *  Return the colour structure
    */
-  //@{
-  /** 
-   * Return the pointer to the SplittingFunction object.
+  ColourStructure colourStructure() const {return colourStructure_;}
+  
+  /**
+   *  Method to check the colours are correct
    */
-  tSplittingFnPtr splittingFn() const { return splittingFn_; }
+  bool checkColours(const IdList & ids) const;
 
   /**
    * Return the pointer to the ShowerAlpha object.
    */
   tShowerAlphaPtr alpha() const { return alpha_; }
 
-  /**
-   *  The type of interaction
-   */
-  inline ShowerInteraction interactionType() const 
-  {return splittingFn_->interactionType();}
-  //@}
-
 public:
 
   /**
-   *  Methods to access the kinematic variables for the branching
+   *  Methods to return the interaction type and order for the Sudakov form factor
    */
   //@{
   /**
-   *  The energy fraction
+   *  Purely virtual method which should determine whether this splitting
+   *  function can be used for a given set of particles.
+   *  @param ids The PDG codes for the particles in the splitting.
    */
-  double z() const { return z_; }
-
-  /**
-   *  The azimuthal angle
-   */
-  double phi() const { return phi_; }
-
-  /**
-   *  The transverse momentum
-   */
-  Energy pT() const { return pT_; }
-  //@}
-
-  /**
-   *  Access the maximum weight for the PDF veto
-   */
-  double pdfMax() const { return pdfmax_;}
+  virtual bool accept(const IdList & ids) const = 0;
 
   /**
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
-  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt) = 0;
+
+  /**
+   *  Return the type of the interaction
+   */
+  ShowerInteraction interactionType() const {return interactionType_;}
+
+  /**
+   *  Whether or not the interaction is angular ordered
+   */
+  bool angularOrdered() const {return angularOrdered_;}
+  //@}
+
+protected:
+
+  /**
+   *  Set the particles in the splittings
+   */
+  void addSplitting(const IdList &);
+
+  /**
+   *  Delete the particles in the splittings
+   */
+  void removeSplitting(const IdList &);
+
+  /**
+   *  Access the potential branchings
+   */
+  const vector<IdList> & particles() const { return particles_; }
+
+  /**
+   *  The PDF factor
+   */
+  unsigned pdfFactor() const {return pdfFactor_;}
+
+  /**
+   * Maximum value of the PDF weight
+   */
+  double pdfMax() const { return pdfMax_;}
+  
+  /**
+   * Veto on the PDF for the initial-state shower
+   * @param t The scale
+   * @param x The fraction of the beam momentum
+   * @param parton0 Pointer to the particleData for the 
+   *                new parent (this is the particle we evolved back to)
+   * @param parton1 Pointer to the particleData for the 
+   *                original particle
+   * @param beam The BeamParticleData object
+   */
+  bool PDFVeto(const Energy2 t, const double x, const double z,
+	       const tcPDPtr parton0, const tcPDPtr parton1,
+	       tcBeamPtr beam) const;
+  /**
+   * The PDF veto ratio
+   */
+  double PDFVetoRatio(const Energy2 t, const double x, const double z,
+               const tcPDPtr parton0, const tcPDPtr parton1,
+               tcBeamPtr beam,double factor) const;
+
+  /**
+   *   Set the PDF
+   */
+  void setPDF(tcPDFPtr pdf, Energy scale) {
+    pdf_ = pdf;
+    freeze_ = scale;
+  }
+
+  /**
+   *  The veto on the coupling constant
+   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
+   * @return true if vetoed
+   */
+  bool alphaSVeto(Energy2 pt2) const;
+
+  /**
+   * The alpha S veto ratio
+   */
+  virtual double alphaSVetoRatio(Energy2 pt2,double factor) const;
 
 public:
 
@@ -303,216 +384,6 @@ public:
    */
   static void Init();
 
-protected:
-  /**
-   *  Methods to provide the next value of the scale before the vetos
-   *  are applied.
-   */
-  //@{
-  /**
-   *  Value of the energy fraction and scale for time-like branching
-   * @param t  The scale
-   * @param tmin The minimum scale
-   * @param enhance The radiation enhancement factor
-   * @return False if scale less than minimum, true otherwise
-   */
-  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, double detune);
-
-  /**
-   * Value of the energy fraction and scale for time-like branching
-   * @param t  The scale
-   * @param tmax The maximum scale
-   * @param minmass The minimum mass of the particle after the branching
-   * @param enhance The radiation enhancement factor
-   */
-  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
-		  double enhance, double detune);
-
-  /**
-   * Value of the energy fraction and scale for space-like branching
-   * @param t  The scale
-   * @param tmin The minimum scale
-   * @param x Fraction of the beam momentum.
-   * @param enhance The radiation enhancement factor
-   */
-  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-		      double enhance, double detune);
-  //@}
-
-  /**
-   *  Initialize the values of the cut-offs and scales
-   * @param tmin The minimum scale
-   * @param ids  The ids of the partics in the branching
-   */
-  void initialize(const IdList & ids,Energy2 &tmin);
-
-  /**
-   *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
-   *  so that the emission is within the allowed phase space.
-   * @param t  The scale
-   * @param maxQ2 The maximum virtuality
-   * @return true if vetoed
-   */
-  bool PSVeto(const Energy2 t);
-
-  /**
-   * Compute the limits on \f$z\f$ for time-like branching
-   * @param scale The scale of the particle
-   * @return True if lower limit less than upper, otherwise false
-   */
-  bool computeTimeLikeLimits(Energy2 & scale);
-
-  /**
-   * Compute the limits on \f$z\f$ for space-like branching
-   * @param scale The scale of the particle
-   * @param x The energy fraction of the parton
-   * @return True if lower limit less than upper, otherwise false
-   */
-  bool computeSpaceLikeLimits(Energy2 & scale, double x);
-
-protected:
-
-  /**
-   *  Methods to implement the veto algorithm to generate the scale of 
-   *  the next branching
-   */
-  //@{
-  /**
-   * Value of the energy fraction and value of the scale for the veto algorithm
-   * @param iopt The option for calculating z
-   * @param ids The PDG codes of the particles in the splitting
-   * - 0 is final-state
-   * - 1 is initial-state for the hard process
-   * - 2 is initial-state for particle decays
-   * @param t1 The starting valoe of the scale
-   * @param enhance The radiation enhancement factor
-   * @param identical Whether or not the outgoing particles are identical
-   * @param t_main rerurns the value of the energy fraction for the veto algorithm
-   * @param z_main returns the value of the scale for the veto algorithm
-   */
-  void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
-	      double enhance,bool ident,
-	      double detune, Energy2 &t_main, double &z_main);
-
-  /**
-   * Veto on the PDF for the initial-state shower
-   * @param t The scale
-   * @param x The fraction of the beam momentum
-   * @param parton0 Pointer to the particleData for the 
-   *                new parent (this is the particle we evolved back to)
-   * @param parton1 Pointer to the particleData for the 
-   *                original particle
-   * @param beam The BeamParticleData object
-   */
-  bool PDFVeto(const Energy2 t, const double x,
-	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       tcBeamPtr beam) const;
-  /**
-   * The PDF veto ratio
-   */
-  double PDFVetoRatio(const Energy2 t, const double x,
-               const tcPDPtr parton0, const tcPDPtr parton1,
-               tcBeamPtr beam,double factor) const;
-
-  /**
-   *  The veto on the splitting function.
-   * @param t The scale
-   * @param ids The PDG codes of the particles in the splitting
-   * @param mass Whether or not to use the massive splitting functions 
-   * @return true if vetoed
-   */
-  bool SplittingFnVeto(const Energy2 t, 
-		       const IdList &ids, 
-		       const bool mass,
-		       const RhoDMatrix & rho,
-		       const double & detune) const {
-    return UseRandom::rnd()>SplittingFnVetoRatio(t,ids,mass,rho,detune);
-  }
-  
-  /**
-   * The Splitting function veto ratio
-   */
-  
-  double SplittingFnVetoRatio(const Energy2 t,
-			      const IdList &ids,
-			      const bool mass,
-			      const RhoDMatrix & rho,
-			      const double & detune) const {
-    return splittingFn_->ratioP(z_, t, ids,mass,rho)/detune;
-  }
-
-  /**
-   *  The veto on the coupling constant
-   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
-   * @return true if vetoed
-   */
-  bool alphaSVeto(Energy2 pt2) const;
-
-  /**
-   * The alpha S veto ratio
-   */
-   
-  double alphaSVetoRatio(Energy2 pt2,double factor) const;
-
-
-  //@}
-
-  /**
-   *  Set the particles in the splittings
-   */
-  void addSplitting(const IdList &);
-
-  /**
-   *  Delete the particles in the splittings
-   */
-  void removeSplitting(const IdList &);
-
-  /**
-   *  Access the potential branchings
-   */
-  const vector<IdList> & particles() const { return particles_; }
-
-public:
-
-  /**
-   *   Set the PDF
-   */
-  void setPDF(tcPDFPtr pdf, Energy scale) {
-    pdf_ = pdf;
-    freeze_ = scale;
-  }
-
-public:
-
-  /**
-   *  Calculate the virtual masses for a branchings
-   */
-  const vector<Energy> & virtualMasses(const IdList & ids) {
-  	return cutoff_->virtualMasses(ids);
-  }
-
-  /**
-   *  The minimum pT2
-   */
-  Energy2 pT2min() { return cutoff_->pT2min(); }
-
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
 private:
 
   /**
@@ -524,63 +395,25 @@ private:
 private:
 
   /**
-   *  Pointer to the splitting function for this Sudakov form factor
+   *  The interaction type for the splitting function.
    */
-  SplittingFnPtr splittingFn_;
+  ShowerInteraction interactionType_;
 
   /**
-   *  Pointer to the coupling for this Sudakov form factor
+   *  Whether or not this interaction is angular-ordered
    */
-  ShowerAlphaPtr alpha_;
+  bool angularOrdered_;
 
   /**
-   *  Pointer to the coupling for this Sudakov form factor
+   *  The colour structure
    */
-  SudakovCutOffPtr cutoff_;
-
-  /**
-   * Maximum value of the PDF weight
-   */
-  double pdfmax_;
+  ColourStructure colourStructure_;
 
   /**
    * List of the particles this Sudakov is used for to aid in setting up
    * interpolation tables if needed
    */
   vector<IdList> particles_;
-
-  /**
-   *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
-   */
-  unsigned pdffactor_;
-
-private:
-
-  /**
-   * Member variables to keep the shower kinematics information
-   * generated by a call to generateNextTimeBranching or generateNextSpaceBranching
-   */
-  //@{
-  /**
-   *  The energy fraction
-   */
-  double z_;
-
-  /**
-   *  The azimuthal angle
-   */
-  double phi_;
-
-  /**
-   *  The transverse momentum
-   */
-  Energy pT_;
-  //@}
-
-  /**
-   *  The limits of \f$z\f$ in the splitting
-   */
-  pair<double,double> zlimits_;
 
   /**
    *  Stuff for the PDFs
@@ -595,29 +428,22 @@ private:
    *  Freezing scale
    */
   Energy freeze_;
-  //@}
 
-private:
+  /**
+   * Maximum value of the PDF weight
+   */
+  double pdfMax_;
   
   /**
-   *  The evolution scale, \f$\tilde{q}\f$.
+   *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
-  Energy q_;
+  unsigned pdfFactor_;
+  //@}
 
   /**
-   *  The Ids of the particles in the current branching
+   *  Pointer to the coupling for this Sudakov form factor
    */
-  IdList ids_;
-
-  /**
-   *  The masses of the particles in the current branching
-   */
-  vector<Energy> masses_;
-
-  /**
-   *  The mass squared of the particles in the current branching
-   */
-  vector<Energy2> masssquared_;
+  ShowerAlphaPtr alpha_;
 
 };
 

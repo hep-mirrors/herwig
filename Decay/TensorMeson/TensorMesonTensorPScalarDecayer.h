@@ -25,7 +25,7 @@ using namespace ThePEG;
  *  handled by this class are for a pseudotensor meson to a tensor and a pseudoscalar meson,
  *  which has the same structure. The matrix element is
  *  given by \f[\mathcal{M}=\epsilon_0^{\alpha_1\alpha_2} \epsilon_1^{\beta_1\beta_2} 
- *  \left(g_{\alpha_1\beta_1}+\frac{p_{1\alpha_1}p_{0\beta_1}{p_0\cdot p_1-m_0m_1}\right)
+ *  \left(g_{\alpha_1\beta_1}+\frac{p_{1\alpha_1}p_{0\beta_1}}{p_0\cdot p_1-m_0m_1}\right)
  *  \epsilon_{\mu\nu\alpha_2\beta_2} p_{1\mu}p_{2\nu}\f]
  * where \f$p_{0,1}\f$ are the momenta of the incoming and outgoing tensor mesons,
  * and \f$\epsilon_{0,1}\f$ are the polarization tensors of the 

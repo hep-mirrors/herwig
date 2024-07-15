@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.63])
+AC_PREREQ([2.71])
 AC_INIT([Herwig],[devel],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
@@ -164,6 +164,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Powheg/Makefile
 		MatrixElement/Gamma/Makefile
 		MatrixElement/Reweighters/Makefile
+		MatrixElement/Onium/Makefile
 		MatrixElement/Matchbox/Makefile
 		MatrixElement/Matchbox/Base/Makefile
 		MatrixElement/Matchbox/Utility/Makefile
@@ -193,6 +194,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
+		Shower/QTilde/SplittingFunctions/Onium/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile
@@ -243,16 +245,18 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 AC_CONFIG_FILES([Tests/python/rivet_check        ],[chmod +x Tests/python/rivet_check        ])
 AC_CONFIG_FILES([Tests/python/LowEnergy-EE.py    ],[chmod +x Tests/python/LowEnergy-EE.py    ])
 AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEnergy-Photon.py])
+AC_CONFIG_FILES([Tests/python/OniumSigma.py      ],[chmod +x Tests/python/OniumSigma.py      ])
+AC_CONFIG_FILES([Tests/python/OniumSplitting.py  ],[chmod +x Tests/python/OniumSplitting.py  ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
 AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE-Gamma	 ],[chmod +x Tests/python/merge-EE-Gamma     ])	 
 AC_CONFIG_FILES([Tests/python/merge-Fixed	 ],[chmod +x Tests/python/merge-Fixed	     ])
-AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])	 
+AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-EW	 ],[chmod +x Tests/python/merge-LHC-EW	     ])
-AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])	 
-AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])	 
-AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])	 
+AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])
+AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])
+AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW	 ],[chmod +x Tests/python/merge-TVT-EW	     ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])	 
 AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])	 

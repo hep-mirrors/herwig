@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Utilities/Kinematics.h"
+#include "Herwig/Shower/QTilde/Dark/HiddenValleyModel.h"
 
 using namespace Herwig;
 
@@ -50,7 +51,7 @@ void GeneralTwoBodyDecayer::doinit() {
 				 maxWeight_)));
 }
 
-int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
 				      const tPDVector & children) const {
   long parentID = parent->id();
   long id1 = children[0]->id();
@@ -326,6 +327,12 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
     // colour octet colour octet
     else if(out1->iColour()==PDT::Colour8 && out2->iColour()==PDT::Colour8 ) {
       output *= 8.;
+    }
+    else if((out1->iColour()==PDT::DarkColourFundamental
+             && out2->iColour()==PDT::DarkColourAntiFundamental) ||
+	    (out1->iColour()==PDT::DarkColourAntiFundamental
+         && out2->iColour()==PDT::DarkColourFundamental)) {
+      output *= 3.;
     }
     else 
       throw Exception() << "Unknown colour for the outgoing particles"

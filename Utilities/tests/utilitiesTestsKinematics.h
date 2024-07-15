@@ -36,6 +36,36 @@ BOOST_AUTO_TEST_SUITE(utilitiesKinematicsTest)
  * Boost unit tests
  *
  */
+BOOST_AUTO_TEST_CASE(LorentzTest)
+{
+	Energy mi,mj,mq;
+	Energy Pi,Pj,Pq;
+	double Phi_i,Phi_j;
+	double The_i,The_j;
+	Energy mRes_q;
+	// Energy P_Res_q;
+	// double Phi_Res_q;
+	// double The_Res_q;
+	using namespace ThePEG;
+	mi = 0.0*GeV;
+	Pi = 0.0*GeV;
+	Phi_i = 0.0;
+	The_i = 0.0;
+	Lorentz5Momentum pi(mi,Momentum3(Pi*cos(Phi_i)*sin(The_i),Pi*sin(Phi_i)*sin(The_i),Pi*cos(The_i)));
+	mj = 0.0*GeV;
+	Pj = 0.0*GeV;
+	Phi_j = 0.0;
+	The_j = 0.0;
+	Lorentz5Momentum pj(mj,Momentum3(Pj*cos(Phi_j)*sin(The_j),Pj*sin(Phi_j)*sin(The_j),Pj*cos(The_j)));
+	// Lorentz5Momentum pq(mq,Momentum3(Pj*cos(Phi_j)*sin(The_j),Pj*sin(Phi_j)*sin(The_j),Pj*cos(The_j)));
+
+	double eps=1e-14;
+	BOOST_CHECK_CLOSE(pi.mass()/GeV, pi.mass()/GeV, eps);
+	BOOST_CHECK_CLOSE(pi.m()/GeV   , pi.m()/GeV, eps);
+	BOOST_CHECK_CLOSE(pi.x()/GeV   , pi.x()/GeV, eps);
+	BOOST_CHECK_CLOSE(pi.y()/GeV   , pi.y()/GeV, eps);
+	BOOST_CHECK_CLOSE(pi.z()/GeV   , pi.z()/GeV, eps);
+}
 BOOST_AUTO_TEST_CASE(generateAnglesTest)
 {
   double flatMinusPiToPlusPi, flatNullToTwoPi;

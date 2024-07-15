@@ -147,19 +147,17 @@ insert ShowerHandler:DecayInShower 0 6000113
 insert ShowerHandler:DecayInShower 0 6000223
 insert ShowerHandler:DecayInShower 0 6000213
 
-create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSplitFn
-set SDiquarktoSDiquarkSplitFn:InteractionType QCD
-set SDiquarktoSDiquarkSplitFn:ColourStructure SextetSextetOctet
+create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSudakov
+set SDiquarktoSDiquarkSudakov:Alpha AlphaQCDFSR
+set SDiquarktoSDiquarkSudakov:Cutoff PTCutOff
+set SDiquarktoSDiquarkSudakov:InteractionType QCD
+set SDiquarktoSDiquarkSudakov:ColourStructure SextetSextetOctet
 
-create Herwig::OneOneOneSplitFn VDiquarktoVDiquarkSplitFn
-set VDiquarktoVDiquarkSplitFn:InteractionType QCD
-set VDiquarktoVDiquarkSplitFn:ColourStructure SextetSextetOctet
-
-cp SudakovCommon SDiquarktoSDiquarkSudakov
-set SDiquarktoSDiquarkSudakov:SplittingFunction SDiquarktoSDiquarkSplitFn
-
-cp SudakovCommon VDiquarktoVDiquarkSudakov
-set VDiquarktoVDiquarkSudakov:SplittingFunction VDiquarktoVDiquarkSplitFn
+create Herwig::OneOneOneSplitFn VDiquarktoVDiquarkSudakov
+set VDiquarktoVDiquarkSudakov:Alpha AlphaQCDFSR
+set VDiquarktoVDiquarkSudakov:Cutoff PTCutOff
+set VDiquarktoVDiquarkSudakov:InteractionType QCD
+set VDiquarktoVDiquarkSudakov:ColourStructure SextetSextetOctet
 
 do SplittingGenerator:AddFinalSplitting DQPhi_1''->DQPhi_1'',g; SDiquarktoSDiquarkSudakov
 do SplittingGenerator:AddFinalSplitting DQPhi_1->DQPhi_1,g; SDiquarktoSDiquarkSudakov

@@ -20,7 +20,7 @@ using namespace Herwig;
  * \f[\mathcal{M} = i f \epsilon^{\epsilon^*_2\delta p_0p_1} \bar{B} \gamma_5.B^*_\delta\bar{\gamma }^{\delta}\f]
  *
  * - \f$\frac32^+\to\frac12^+\f$ \f$M1\f$ transition
- * \f[\mathcal{M} = i f \epsilon^{\epsilon^*_2\delta p_0p_1} \bar{B} \gamma_5 \gamma_^\delta B^*\f]
+ * \f[\mathcal{M} = i f \epsilon^{\epsilon^*_2\delta p_0p_1} \bar{B} \gamma_5 \gamma_\delta B^*\f]
  *
  * where \f$p_0\f$ is the momentum of the decaying baryon \f$B^*\f$ is the field for
  * the decaying baryon, \f$B\f$ is the field for the baryon produced in the decay and $\epsilon_2$ is the polarization vector

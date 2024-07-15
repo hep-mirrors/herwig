@@ -166,25 +166,35 @@ void FxFxHandler::Init() {
      &FxFxHandler::drjmin_, 0.7, 0.0, 4.0,
      false, false, Interface::limited);
 
-  static Parameter<FxFxHandler,bool> interfacehighestMultiplicity
+  static Switch<FxFxHandler,bool> interfacehighestMultiplicity
     ("highestMultiplicity",
-     "If true it indicates that this is the highest multiplicity input "
-     "ME-level configuration to be processed.",
-     &FxFxHandler::highestMultiplicity_, 0, 0, 1,
-     false, false, Interface::limited);
+     "If true it indicates that this is the highest multiplicity input ME-level configuration to be processed.",
+     &FxFxHandler::highestMultiplicity_, false, false, false);
+  static SwitchOption interfacehighestMultiplicityYes
+    (interfacehighestMultiplicity,
+     "Yes",
+     "Highest Multiplicity",
+     true);
+  static SwitchOption interfacehighestMultiplicityNo
+    (interfacehighestMultiplicity,
+     "No",
+     "Not the highest multiplicity",
+     false);
 
-  static Parameter<FxFxHandler,bool> interfaceETClusFixed
+  static Switch<FxFxHandler,bool> interfaceETClusFixed
     ("ETClusFixed",
-     "If false, indicates that the jet merging scale, etclus_ is allowed to vary"
-     "according to epsetclus_",
-     &FxFxHandler::etclusfixed_, 1, 0, 1,
-     false, false, Interface::limited);
-
- static Parameter<FxFxHandler,Energy> interfaceEpsilonETClus
-    ("EpsilonETClus",
-     "The ET threshold defining a jet in the merging procedure",
-     &FxFxHandler::epsetclus_, GeV, 2.5*GeV, 0*GeV, 100.0*GeV,
-     false, false, Interface::limited);
+     "If false, indicates that the jet merging scale, etclus_ is allowed to vary according to epsetclus_",
+     &FxFxHandler::etclusfixed_, true, false, false);
+  static SwitchOption interfaceETClusFixedYes
+    (interfaceETClusFixed,
+     "Yes",
+     "Fixed",
+     true);
+  static SwitchOption interfaceETClusFixedNo
+    (interfaceETClusFixed,
+     "No",
+     "Varying",
+     false);
 
   static Switch<FxFxHandler,int> interfaceJetAlgorithm
     ("JetAlgorithm",

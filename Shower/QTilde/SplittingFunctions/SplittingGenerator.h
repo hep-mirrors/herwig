@@ -181,6 +181,7 @@ public:
   const BranchingList & initialStateBranchings() const { return _bbranchings; }
   //@}
 
+  void setDarkInteraction(const bool darkInteraction) {_darkInteraction = darkInteraction;}
 
 public:
 
@@ -314,6 +315,11 @@ private:
    *   The detuning parameter
    */
   double _deTuning;
+  
+  /**
+   * Whether to additionally perform the dark parton shower
+   */
+  bool _darkInteraction=false;
 };
 
 }

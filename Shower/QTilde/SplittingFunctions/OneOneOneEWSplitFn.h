@@ -5,7 +5,7 @@
 // This is the declaration of the OneOneOneEWSplitFn class.
 //
 
-#include "SplittingFunction.h"
+#include "Sudakov1to2FormFactor.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
@@ -14,12 +14,12 @@ using namespace ThePEG;
 
 /**
  * The OneOneOneEWSplitFn class implements the splitting function for
- * \f$\1\to q\1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
+ * \f$1\to 1 1\f$ where the spin-1 particles are massive electroweak gauge bosons.
  *
  * @see \ref OneOneOneEWSplitFnInterfaces "The interfaces"
  * defined for OneOneOneEWSplitFn.
  */
-class OneOneOneEWSplitFn: public SplittingFunction {
+class OneOneOneEWSplitFn: public Sudakov1to2FormFactor {
 
 public:
 
@@ -129,7 +129,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(double & gvvv, const IdList & ids) const;
+  void getCouplings(Complex & gvvv, const IdList & ids) const;
 
 public:
 
@@ -205,6 +205,12 @@ private:
    *  W^{\pm} -> W^{\pm} Z couplings
    */
   double gWWZ_;
+
+  /** 
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValueIm = 0.; 
+  double _couplingValueRe = 0.; 
 
   /**
    * Pointer to the SM object.

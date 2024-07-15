@@ -12,7 +12,7 @@
 // This is the declaration of the HwppSelector class.
 //
 
-#include "HadronSelector.h"
+#include "StandardModelHadronSpectrum.h"
 
 namespace Herwig {
 
@@ -25,17 +25,14 @@ using namespace ThePEG;
  * @see \ref HwppSelectorInterfaces "The interfaces"
  * defined for HwppSelector.
  */
-class HwppSelector: public HadronSelector {
+class HwppSelector: public StandardModelHadronSpectrum {
 
 public:
 
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1),
-		   _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
-		   _pwtBquark( 0.0 ),_pwtDIquark(1.0 ),
-		   _sngWt( 1.0 ), _decWt( 1.0 ),
+  HwppSelector() : StandardModelHadronSpectrum(1),
 		   _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV),
 		   _scHadronWtFactor(1.), _sbHadronWtFactor(1.)
   {}
@@ -96,7 +93,7 @@ protected:
   }
   
   /**
-   *  Returns the mass of the lightest pair of baryons.
+   *  Returns the lightest pair of baryons.
    * @param ptr1 is the first  constituent
    * @param ptr2 is the second constituent
    */
@@ -139,58 +136,6 @@ private:
    */
   HwppSelector & operator=(const HwppSelector &) = delete;
 
-private:
-
-  /**
-   *  The weights for the different quarks and diquarks
-   */
-  //@{
-  /**
-   * The probability of producting a down quark.
-   */
-  double _pwtDquark;
-
-  /**
-   * The probability of producting an up quark.
-   */
-  double _pwtUquark;
-
-  /**
-   * The probability of producting a strange quark.
-   */
-  double _pwtSquark;
-
-  /**
-   * The probability of producting a charm quark.
-   */
-  double _pwtCquark;
-
-  /**
-   * The probability of producting a bottom quark.
-   */
-  double _pwtBquark;
-
-  /**
-   * The probability of producting a diquark.
-   */
-  double _pwtDIquark;
-  //@}
-
-  /**
-   * Singlet and Decuplet weights
-   */
-  //@{
-  /**
-   *  The singlet weight
-   */
-  double _sngWt;
-
-  /**
-   *  The decuplet weight
-   */
-  double _decWt;
-  //@}
-  
 private:
 
   /**
