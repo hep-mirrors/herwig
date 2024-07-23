@@ -158,6 +158,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1841899
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729723
 # B+ -> K+ K- pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2099998
+# B- -> D0 rho-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2024_I2778312
 # BELLE B -> Dbar0 pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2007_I733011
 # B -> D* + pions

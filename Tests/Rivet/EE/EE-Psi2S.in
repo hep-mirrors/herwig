@@ -8,7 +8,7 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.6861
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-do /Herwig/Particles/psi(2S):SelectDecayModes psi(2S)->n0,nbar0; psi(2S)->p+,pbar-; psi(2S)->Sigma0,Sigmabar0; psi(2S)->Sigma+,Sigmabar-; psi(2S)->Lambda0,Lambdabar0; psi(2S)->Sigma*-,Sigma*bar+; psi(2S)->Sigma-,Sigmabar+;  psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Sigma*+,Sigma*bar-; psi(2S)->Xi-,Xibar+; psi(2S)->Xi0,Xibar0; psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Xi*-,Xi*bar+;  psi(2S)->Xi*0,Xi*bar0; psi(2S)->eta_c,e-,e+; psi(2S)->eta',e-,e+; psi(2S)->chi_c0,e-,e+; psi(2S)->chi_c1,e-,e+; psi(2S)->chi_c2,e-,e+;
+do /Herwig/Particles/psi(2S):SelectDecayModes psi(2S)->n0,nbar0; psi(2S)->p+,pbar-; psi(2S)->Sigma0,Sigmabar0; psi(2S)->Sigma+,Sigmabar-; psi(2S)->Lambda0,Lambdabar0; psi(2S)->Sigma*-,Sigma*bar+; psi(2S)->Sigma-,Sigmabar+;  psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Sigma*+,Sigma*bar-; psi(2S)->Xi-,Xibar+; psi(2S)->Xi0,Xibar0; psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Xi*-,Xi*bar+;  psi(2S)->Xi*0,Xi*bar0;
 ########### Decay to two baryons (correlations) ####################
 # psi(2S) -> lambda anti-lambda and sigma anti-sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563

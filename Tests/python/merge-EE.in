@@ -390,7 +390,7 @@ for f in yodafiles:
                     htemp2=htemp+outhistos[aopath]
                     htemp2.setPath(aopath)
                     area = htemp2.areaUnderCurve()
-                    htemp2.scale(1./area)
+                    if area!=0 : htemp2.scale(1./area)
                     outhistos[aopath]=htemp2
                 else :
                     outhistos[aopath]=htemp
@@ -1346,11 +1346,20 @@ if("/ARGUS_1993_I342061/d04-x01-y01" in outhistos) :
                     bin.setErr(src.err(key),key)
 
 if "/ARGUS_1990_I295621/d01-x01-y01" in outhistos and "/ARGUS_1990_I295621/d04-x01-y01" in outhistos :
-    tmp = outhistos["/ARGUS_1990_I295621/d04-x01-y01"]/outhistos["/ARGUS_1990_I295621/d01-x01-y01"]
+    edges = ["$\\Upsilon_{1.2}/\\textrm{continuum}$"]
+    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d04-x01-y01")
+    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d04-x01-y01"].bin(1))
+    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d01-x01-y01")
+    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d01-x01-y01"].bin(1))
+    tmp = nTemp/dTemp
     tmp.setPath("/ARGUS_1990_I295621/d07-x01-y01")
     outhistos["/ARGUS_1990_I295621/d07-x01-y01"] = tmp
 if "/ARGUS_1990_I295621/d02-x01-y01" in outhistos and "/ARGUS_1990_I295621/d05-x01-y01" in outhistos :
-    tmp = outhistos["/ARGUS_1990_I295621/d05-x01-y01"]/outhistos["/ARGUS_1990_I295621/d02-x01-y01"]
+    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d05-x01-y01")
+    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d05-x01-y01"].bin(1))
+    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d02-x01-y01")
+    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d02-x01-y01"].bin(1))
+    tmp = nTemp/dTemp
     tmp.setPath("/ARGUS_1990_I295621/d08-x01-y01")
     outhistos["/ARGUS_1990_I295621/d08-x01-y01"] = tmp
 useOne("/ARGUS_1990_I278933/d01-x01-y01","9.46")
