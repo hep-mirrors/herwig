@@ -65,9 +65,9 @@ void ShowerAlphaQCDNP::Init() {
     ("This (concrete) class describes the QCD alpha running.");
 
   // default such that as(qmin) = 1 in the current parametrization.
-  static Parameter<ShowerAlphaQCDNP,Energy> intQmin
+  static Parameter<ShowerAlphaQCDNP,Energy> interfaceQmin
     ("Qmin", "Q < Qmin is treated with NP parametrization as of (unit [GeV])",
-     &ShowerAlphaQCDNP::_qmin, GeV, 1*GeV, 1*GeV,
+     &ShowerAlphaQCDNP::_qmin, GeV, 1*GeV, 0*GeV,
      100.0*GeV,false,false,false);
 
   static Parameter<ShowerAlphaQCDNP,unsigned int> interfaceNumberOfLoops
@@ -160,8 +160,9 @@ void ShowerAlphaQCDNP::Init() {
   static Parameter<ShowerAlphaQCDNP,double> interfaceNPPower
     ("NPPower",
      "The non-perturbative power law",
-     &ShowerAlphaQCDNP::_npPower, 2.0, 1.0, 0,
-     false, false, Interface::lowerlim);
+     &ShowerAlphaQCDNP::_npPower, 2.0, 1.0, 10.,
+     false, false, false);
+
 
 }
 
@@ -202,7 +203,7 @@ void ShowerAlphaQCDNP::doinit() {
   _asMaxNP = value(q*q)*1.05;
 
   //_absoluteCutoff=_qmin*pow(100.*log(10.),-1./_npPower);   
-  _absoluteCutoff=2.0*GeV;
+  _absoluteCutoff=_qmin*pow(log(10e100*GeV/_qmin),-1./_npPower);
 
   _nfMaxNP = nfNP(sqr(_absoluteCutoff));
 
@@ -316,14 +317,16 @@ string ShowerAlphaQCDNP::checkscaleNP(string args) {
 double ShowerAlphaQCDNP::value(const Energy2 scale) const {
 
   Energy q = scaleFactor()*sqrt(scale);
-  
-  if ( q > _absoluteCutoff ) {  
+
+  if (q<_absoluteCutoff){
+    auto nflam = getLamNf(_absoluteCutoff);
+    double as = alphaS(scaleNP(_absoluteCutoff), nflam.second, nflam.first, _nloop);
+    return as*pow(q/_absoluteCutoff,_npPower);
+  } else {
     auto nflam = getLamNf(q);
-    return alphaS(scaleNP(q), nflam.second, nflam.first, _nloop);    
+    return alphaS(scaleNP(q), nflam.second, nflam.first, _nloop);
   }
-
-
-  return 0.;
+  
 
 }
 
@@ -376,7 +379,7 @@ double ShowerAlphaQCDNP::nfNP(const Energy2 q2) const {
   Energy q=sqrt(q2);
 
   if (q<_absoluteCutoff){
-    return 0.;
+    return nfNP(_absoluteCutoff*_absoluteCutoff)*pow(_absoluteCutoff/q,_npPower);
   }
   else{
 
