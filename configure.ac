@@ -137,6 +137,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Feynrules/python/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
+        Models/HiddenValley/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile

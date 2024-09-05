@@ -11,7 +11,7 @@
 // functions of the HiddenValleyAlpha class.
 //
 #include "HiddenValleyAlpha.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/Dark/HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"

@@ -12,7 +12,7 @@
 //
 
 #include "OneOneOneDarkSplitFn.h"
-#include "HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
