@@ -268,11 +268,11 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << incoming_ << outgoing_ << maxWeight_;
+  os << incoming_ << outgoing_ << maxWeight_ << _HVmodel;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> incoming_ >> outgoing_ >> maxWeight_;
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> _HVmodel;
 }
 
 // The following static variable is needed for the type

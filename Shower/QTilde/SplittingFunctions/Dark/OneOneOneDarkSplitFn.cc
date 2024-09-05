@@ -20,7 +20,7 @@
 using namespace Herwig;
 
 DescribeNoPIOClass<OneOneOneDarkSplitFn,Herwig::Sudakov1to2FormFactor>
-describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwShower.so");
+describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwDarkShower.so");
 
 void OneOneOneDarkSplitFn::Init() {
 
