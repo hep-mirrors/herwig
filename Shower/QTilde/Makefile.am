@@ -1,4 +1,4 @@
-SUBDIRS = Matching SplittingFunctions/Onium
+SUBDIRS = Matching SplittingFunctions/Onium SplittingFunctions/Dark
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 30:0:0
 HwShower_la_SOURCES =  \
@@ -23,11 +23,6 @@ SplittingFunctions/OneHalfHalfSplitFn.h SplittingFunctions/OneHalfHalfSplitFn.cc
 SplittingFunctions/HalfOneHalfSplitFn.h SplittingFunctions/HalfOneHalfSplitFn.cc\
 SplittingFunctions/CMWOneOneOneSplitFn.h SplittingFunctions/CMWOneOneOneSplitFn.cc\
 SplittingFunctions/CMWHalfHalfOneSplitFn.h SplittingFunctions/CMWHalfHalfOneSplitFn.cc\
-SplittingFunctions/Dark/HiddenValleyModel.cc SplittingFunctions/Dark/HiddenValleyModel.h \
-SplittingFunctions/Dark/HiddenValleyFFZPrimeVertex.cc SplittingFunctions/Dark/HiddenValleyFFZPrimeVertex.h \
-SplittingFunctions/Dark/OneHalfHalfDarkSplitFn.cc SplittingFunctions/Dark/OneHalfHalfDarkSplitFn.h \
-SplittingFunctions/Dark/OneOneOneDarkSplitFn.cc SplittingFunctions/Dark/OneOneOneDarkSplitFn.h \
-SplittingFunctions/Dark/HalfHalfOneDarkSplitFn.cc SplittingFunctions/Dark/HalfHalfOneDarkSplitFn.h \
 Kinematics/Decay_QTildeShowerKinematics1to2.cc \
 Kinematics/Decay_QTildeShowerKinematics1to2.h  \
 Kinematics/IS_QTildeShowerKinematics1to2.cc    Kinematics/IS_QTildeShowerKinematics1to2.h  \

@@ -195,6 +195,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
 		Shower/QTilde/SplittingFunctions/Onium/Makefile
+		Shower/QTilde/SplittingFunctions/Dark/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile
