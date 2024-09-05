@@ -29,6 +29,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I768236
 # B0 -> rho,pi B+ -> rho,omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
 # B -> rho,pi ell nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2024_I2810686
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I855306
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2003_I616827
 # B+ -> omega l nu
@@ -39,7 +40,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1125973
 # B0 -> pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2163247
-# # BELLE B+ -> pi+pi- l nu
+# BELLE B+ -> pi+pi- l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
 # BELLE B0 -> D*- tau+ nu_tau D* polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068

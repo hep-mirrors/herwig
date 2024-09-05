@@ -141,6 +141,8 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                        "FENICE_1996_I426675" in hpath):
                         x=np.sqrt(x)
                         delta=1e-3
+                    elif "SND_2024_I2809929" in hpath or "SND_2024_I2696331" in hpath:
+                        x=2.*x
                     if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
                         duplicate = False
                         outhistos[hpath].bin(bin.index()).setVal(bin.val())

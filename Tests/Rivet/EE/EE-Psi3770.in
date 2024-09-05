@@ -21,6 +21,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I769777
 # D0 -> K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2819140
 # D+ -> eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660

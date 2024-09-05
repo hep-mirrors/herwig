@@ -46,52 +46,57 @@ analyses['PiPi']["ND_1991_I321108"     ] = ["d11-x01-y01"]
 analyses['PiPi']["OLYA_1984_I208231"   ] = ["d01-x01-y01"]
 analyses['PiPi']["SND_2020_I1789269"   ] = ["d01-x01-y01"]
 analyses['PiPi']["CMD3_2023_I2634277"  ] = ["d01-x01-y01","d01-x02-y01","d01-x03-y01"]
-# K+K- and K_S^0 K_L^0
-analyses['KK']["BESIII_2018_I1704558"] = ["d01-x01-y01"]
+# K+K-
 analyses['KK']["BABAR_2013_I1238807" ] = ["d01-x01-y01"]
-analyses['KK']["DM1_1981_I156053"    ] = ["d01-x01-y01"]
-analyses['KK']["DM1_1981_I156054"    ] = ["d01-x01-y01"]
-analyses['KK']["CLEOC_2005_I693873"  ] = ["d01-x01-y02"]
 analyses['KK']["BABAR_2015_I1383130" ] = ["d01-x01-y04"]
-analyses['KK']["DM2_1988_I262690"    ] = ["d01-x01-y01"]
-analyses['KK']["SND_2007_I755881"    ] = ["d01-x01-y01"]
-analyses['KK']["SND_2001_I533574"    ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03",
-                                          "d02-x01-y01","d02-x01-y02","d02-x01-y03"]
-analyses['KK']["SND_2006_I720035"    ] = ["d01-x01-y01"]
-analyses['KK']["BABAR_2014_I1287920" ] = ["d09-x01-y01"]
-analyses['KK']["CMD2_2003_I601222"   ] = ["d01-x01-y01"]
-analyses['KK']["CMD3_2016_I1444990"  ] = ["d01-x01-y06"]
+analyses['KK']["BESIII_2018_I1704558"] = ["d01-x01-y01"]
+analyses['KK']["CLEOC_2005_I693873"  ] = ["d01-x01-y02"]
 analyses['KK']["CMD2_1995_I406880"   ] = ["d01-x01-y01","d01-x01-y02"]
-analyses['KK']["CMD2_1999_I502164"   ] = ["d01-x01-y01","d02-x01-y01",
-                                          "d03-x01-y01","d04-x01-y01"]
 analyses['KK']["CMD2_2008_I782516"   ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['KK']["DM1_1981_I156054"    ] = ["d01-x01-y01"]
+analyses['KK']["DM2_1988_I262690"    ] = ["d01-x01-y01"]
 analyses['KK']["ND_1991_I321108"     ] = ["d12-x01-y01","d13-x01-y01"]
 analyses['KK']["OLYA_1981_I173076"   ] = ["d01-x01-y01"]
+analyses['KK']["SND_2001_I533574"    ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03",
+                                          "d02-x01-y01","d02-x01-y02","d02-x01-y03"]
+analyses['KK']["SND_2007_I755881"    ] = ["d01-x01-y01"]
 analyses['KK']["SND_2016_I1484677"   ] = ["d01-x01-y01","d02-x01-y01"]
+# K_S^0 K_L^0
+analyses['KK']["BABAR_2014_I1287920" ] = ["d09-x01-y01"]
 analyses['KK']["BABAR_2020_I1769654" ] = ["d01-x01-y01"]
 analyses['KK']["BESIII_2021_I1866051"] = ["d01-x01-y01"]
 analyses['KK']["BESIII_2024_I2738509"] = ["d01-x01-y02"]
+analyses['KK']["CMD2_1999_I502164"   ] = ["d01-x01-y01","d02-x01-y01",
+                                          "d03-x01-y01","d04-x01-y01"]
+analyses['KK']["CMD2_2003_I601222"   ] = ["d01-x01-y01"]
+analyses['KK']["CMD3_2016_I1444990"  ] = ["d01-x01-y06"]
+analyses['KK']["DM1_1981_I156053"    ] = ["d01-x01-y01"]
+analyses['KK']["SND_2006_I720035"    ] = ["d01-x01-y01"]
+analyses['KK']["SND_2024_I2809918"   ] = ["d01-x01-y01"]
 # proton-antiproton
+analyses['PPbar']["BABAR_2006_I700020"  ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['PPbar']["BABAR_2013_I1217421" ] = ["d01-x01-y01"]
+analyses['PPbar']["BABAR_2013_I1247058" ] = ["d01-x01-y01"]
 analyses['PPbar']["BESII_2005_I685906"  ] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
 analyses['PPbar']["BESIII_2015_I1358937"] = ["d01-x01-y05"]
 analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
 analyses['PPbar']["BESIII_2021_I1847766"] = ["d01-x01-y01"]
-analyses['PPbar']["BESIII_2021_I1966612"] = ["d01-x01-y01"]
-analyses['PPbar']["BESIII_2023_I2614192"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
-analyses['PPbar']["BABAR_2013_I1217421" ] = ["d01-x01-y01"]
-analyses['PPbar']["BABAR_2013_I1247058" ] = ["d01-x01-y01"]
-analyses['PPbar']["SND_2014_I1321689"   ] = ["d01-x01-y01","d02-x01-y01"]
-analyses['PPbar']["SND_2022_I2102082"   ] = ["d01-x01-y01"]
-analyses['PPbar']["CMD3_2016_I1385598"  ] = ["d01-x01-y06"]
 analyses['PPbar']["CLEOC_2005_I693873"  ] = ["d01-x01-y03"]
-analyses['PPbar']["BABAR_2006_I700020"  ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['PPbar']["CMD3_2016_I1385598"  ] = ["d01-x01-y06"]
+analyses["PPbar"]["DM1_1979_I141565"    ] = ["d01-x01-y01"]
 analyses['PPbar']["DM2_1983_I190558"    ] = ["d01-x01-y01"]
 analyses["PPbar"]["DM2_1990_I297706"    ] = ["d01-x01-y01"]
-analyses["PPbar"]["DM1_1979_I141565"    ] = ["d01-x01-y01"]
-analyses["PPbar"]["FENICE_1998_I471263" ] = ["d01-x01-y01"]
 analyses["PPbar"]["FENICE_1994_I377833" ] = ["d01-x01-y01"]
+# neutron-antineutron
+analyses['PPbar']["BESIII_2021_I1966612"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2023_I2614192"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["PPbar"]["FENICE_1998_I471263" ] = ["d01-x01-y01"]
+analyses['PPbar']["SND_2014_I1321689"   ] = ["d01-x01-y01","d02-x01-y01"]
+analyses['PPbar']["SND_2022_I2102082"   ] = ["d01-x01-y01"]
+analyses['PPbar']["SND_2024_I2696331"  ] = ["d01-x01-y01"]
+analyses['PPbar']["SND_2024_I2809929"   ] = ["d01-x01-y01"]
 # pi0 gamma
 analyses["PiGamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
 analyses["PiGamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
@@ -337,6 +342,7 @@ analyses["Baryon"]["BESIII_2022_I2512962"  ] = ["d01-x01-y01"]
 analyses["Baryon"]["BESIII_2022_I2593281"  ] = ["d01-x01-y01"]
 analyses["Baryon"]["BESIII_2023_I2674370"  ] = ["d01-x01-y01"]
 analyses["Baryon"]["BESIII_2023_I2661512"  ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["Baryon"]["BESIII_2024_I2802333"  ] = ["d01-x01-y01","d02-x01-y01"]
 # DD
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -442,6 +448,7 @@ analyses["LL"]["BESIII_2024_I2748736"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2024_I2739177"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
 analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2024_I2824143"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2021_I1940960"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2021_I1900124"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2023_I2686032"] = ["d01-x01-y01","d01-x01-y02"]
@@ -658,6 +665,10 @@ for process in processes:
             if(analysis=="KLOE_2009_I797438"   or analysis=="KLOE_2005_I655225" or
                analysis=="KLOE2_2017_I1634981" or analysis=="FENICE_1994_I377833") :
                 eTemp = np.sqrt(eTemp)
+            # plots with beam energy not sqrt(s)
+            elif (analysis == "SND_2024_I2809929" or
+                  analysis == "SND_2024_I2696331" ) :
+                eTemp *=2.
             if(eTemp[0]>200) :
                 eTemp *= 0.001
             for energy in eTemp :
