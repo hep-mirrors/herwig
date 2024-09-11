@@ -139,7 +139,7 @@ public:
    * @return The weight
    */
   vector<pair<int,Complex> >
-  generatePhiForward(const double z, const Energy2 t, const IdList &,
+  generatePhiForward(const double , const Energy2 , const IdList &,
 		     const RhoDMatrix & rho) {
     assert(rho.iSpin()==PDT::Spin1);
     // double r = sqr(m_)/(t-4.*sqr(m_));
@@ -164,7 +164,7 @@ public:
    * @return The weight
    */
   vector<pair<int,Complex> >
-  generatePhiBackward(const double z, const Energy2, const IdList &,
+  generatePhiBackward(const double , const Energy2, const IdList &,
 		      const RhoDMatrix & rho) {
     assert(false);
     assert(rho.iSpin()==PDT::Spin1);
@@ -187,8 +187,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  DecayMEPtr matrixElement(const double z, const Energy2 t, 
-			   const IdList &, const double phi, bool) {
+  DecayMEPtr matrixElement(const double , const Energy2 ,
+			   const IdList &, const double, bool) {
     // calculate the kernal
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
     // Complex ii(0.,1.);

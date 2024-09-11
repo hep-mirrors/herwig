@@ -11,7 +11,7 @@
 // functions of the HiddenValleyAlpha class.
 //
 #include "HiddenValleyAlpha.h"
-#include "HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -274,8 +274,8 @@ void HiddenValleyAlpha::doinit() {
     else _nf_light++;
   }
   _lambda.resize(_thresholds.size());
-  
-  
+
+
   unsigned int nf = _nf_light;
 
   // Set lambda below heavy quark thresholds to input value

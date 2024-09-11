@@ -22,6 +22,8 @@ HiddenValleyModel::HiddenValleyModel() : groupType_(SU), Nc_(3), Nf_(1),
 					 qCharge_(1,-0.2)
 {}
 
+HiddenValleyModel::~HiddenValleyModel() {}
+
 IBPtr HiddenValleyModel::clone() const {
   return new_ptr(*this);
 }

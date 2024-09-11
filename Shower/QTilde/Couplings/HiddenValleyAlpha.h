@@ -323,7 +323,7 @@ struct ClassTraits<Herwig::HiddenValleyAlpha>
    * libraries will be dynamically linked in the order they are
    * specified.
    */
-  static string library() { return "HwShower.so HwHiddenValley.so"; }
+  static string library() { return "HwShower.so Herwig.so"; }
 };
 
 /** @endcond */

@@ -21,16 +21,24 @@ using namespace ThePEG;
 class HiddenValleyModel: public BSMModel {
 
 /**
- *  Enumeration to define the type of the confining group 
+ *  Enumeration to define the type of the confining group
  */
   enum GroupType { SU, SO, SP };
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * The default constructor.
+   * Default constructor
    */
   HiddenValleyModel();
+
+  /**
+   * Destructor
+   */
+  virtual ~HiddenValleyModel();
+  //@}
 
 public:
 
@@ -102,10 +110,10 @@ public:
     }
     return 0.;
   }
-  
+
   /**
    *  The type of the group
-   */ 
+   */
   GroupType groupType() const {return groupType_;}
 
   /**
@@ -127,17 +135,17 @@ public:
    *  Charge of the left-handed quarks
    */
   double qL() const {return qL_;}
-  
+
   /**
    *  Charge of the right-handed up-type quarks
    */
   double uR() const {return uR_;}
-  
+
   /**
    *  Charge of the right-handed down-type quarks
    */
   double dR() const {return dR_;}
-  
+
   /**
    *  Charge of the left-handed leptons
    */
@@ -326,7 +334,7 @@ struct ClassTraits<Herwig::HiddenValleyModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so HwHiddenValley.so"; }
+  static string library() { return "Herwig.so"; }
 };
 
 ThePEG_DECLARE_POINTERS(Herwig::HiddenValleyModel,HiddenValleyPtr);
