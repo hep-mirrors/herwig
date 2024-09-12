@@ -109,16 +109,12 @@ public:
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum
-   * defined.
-   * @param beam The beam particle
    * @param enhance The radiation enhancement factor
    */
   ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
                                        const IdList &ids,double x,
                                        const RhoDMatrix & rho,
-                                       double enhance,
-                                       tcBeamPtr beam,
-                                       double detuning);
+                                       double enhance, double detuning);
   //@}
 
 public:

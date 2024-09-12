@@ -294,7 +294,6 @@ generateNextSpaceBranching(const Energy startingQ,
 			   double x,
 			   const RhoDMatrix & rho,
 			   double enhance,
-			   Ptr<BeamParticleData>::transient_const_pointer beam,
 			   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
@@ -321,7 +320,7 @@ generateNextSpaceBranching(const Energy startingQ,
         z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
-          PDFVeto(t,x,z(),ids[0],ids[1],beam));
+          PDFVeto(t,x,z(),ids[0],ids[1]));
   }
   // shower variations
   else {
@@ -334,52 +333,48 @@ generateNextSpaceBranching(const Energy startingQ,
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
       alphaRew=alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t);
-      PDFRew=PDFVeto(t,x,z(),ids[0],ids[1],beam);
-      double factor=PDFVetoRatio(t,x,z(),ids[0],ids[1],beam,1.)*
-                    alphaSVetoRatio(pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+      PDFRew=PDFVeto(t,x,z(),ids[0],ids[1]);
+      double factor=PDFVetoRatio(t,x,z(),ids[0],ids[1],1.)*
+        alphaSVetoRatio(pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
 	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
-
+      
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
-
+      
       if( !(PDFRew || SplitRew || alphaRew) ) {
         //Emission
         q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
         if (q_ <= ZERO) break;
       }
+      
+      for ( map<string,ShowerVariation>::const_iterator var =
+              ch->showerVariations().begin();
+            var != ch->showerVariations().end(); ++var ) {
+        if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+             ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+          double newfactor = PDFVetoRatio(t,x,z(),ids[0],ids[1],var->second.factorizationScaleFactor)*
+            alphaSVetoRatio(pTScale() ?
+                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
+            *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
+          
+          double varied;
+          if( PDFRew || SplitRew || alphaRew) {
+            // No Emission
+            varied = (1. - newfactor) / (1. - factor);
+          } else {
+            // Emission
+            varied = newfactor / factor;
+          }
+          
 
-        for ( map<string,ShowerVariation>::const_iterator var =
-	          ch->showerVariations().begin();
-	          var != ch->showerVariations().end(); ++var ) {
-          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
-	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
-
-
-
-            double newfactor = PDFVetoRatio(t,x,z(),ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
-                           alphaSVetoRatio(pTScale() ?
-                           sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
-
-            double varied;
-            if( PDFRew || SplitRew || alphaRew) {
-                // No Emission
-                varied = (1. - newfactor) / (1. - factor);
-            } else {
-                // Emission
-                varied = newfactor / factor;
-            }
-
-
-            map<string,double>::iterator wi = ch->currentWeights().find(var->first);
-            if ( wi != ch->currentWeights().end() )
-	      wi->second *= varied;
-	    else {
-	      assert(false);
-	      //ch->currentWeights()[var->first] = varied;
-            }
-	  }
+          map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+          if ( wi != ch->currentWeights().end() )
+            wi->second *= varied;
+          else {
+            assert(false);
+            //ch->currentWeights()[var->first] = varied;
+          }
         }
-
+      }
     }
     while( PDFRew || SplitRew || alphaRew);
   }
