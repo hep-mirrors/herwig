@@ -135,6 +135,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1808166
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2017_I1519168
 # D0 -> 2pi+ 2pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I741543
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2730532
 # range of D+/D0 -> pion decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2102455
 # D0 -> K+ pi- e+e- /mu+mu-
