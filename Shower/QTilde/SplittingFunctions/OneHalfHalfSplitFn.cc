@@ -149,6 +149,10 @@ void OneHalfHalfSplitFn::guesstz(Energy2 t1,unsigned int iopt,
     if(cit== mq_.end()) findZero();
     cit = mq_.find(PDF());
     mq2_ = cit->second[abs(ids[1]->id())-4];
+    if(t1-mq2_<1e-10*GeV2) {
+      t_main = ZERO;
+      return;
+    }
   }
   unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor();
   double lower = integOverP(zLimits().first ,ids,pdfopt);
@@ -193,8 +197,9 @@ double OneHalfHalfSplitFn::PDFVetoRatio(const Energy2 t, const double x, const d
   
   double ratio = newpdf/oldpdf;
   double maxpdf = pdfMax();
-  if(mq2_!=ZERO) ratio *= (t-mq2_)/t;
-  
+  if(mq2_!=ZERO) {
+    ratio *= (t-mq2_)/t;
+  }
   switch (pdfFactor()) {
   case 0: break;
   case 1: maxpdf /= z; break;
@@ -208,12 +213,9 @@ double OneHalfHalfSplitFn::PDFVetoRatio(const Energy2 t, const double x, const d
     
   }
   
-  if (ratio > maxpdf) {
+  if (ratio > maxpdf && (mq2_==ZERO || (mq2_!=ZERO && (t-mq2_)/t >1e-6  ) ) ) 
     generator()->log() << "OneHalfHalfSplitFn::PDFVetoRatio PDFVeto warning: Ratio > " << name()
-                       << ":PDFmax (by a factor of "
-                       << ratio/maxpdf <<") for "
-                       << parton0->PDGName() << " to "
-                       << parton1->PDGName() << "\n";
-  }
+                       << ":PDFmax (by a factor of " << ratio/maxpdf <<") for "
+                       << parton0->PDGName() << " to " << parton1->PDGName() << " " << (t-mq2_)/t << "\n";
   return ratio/maxpdf ;
 }
