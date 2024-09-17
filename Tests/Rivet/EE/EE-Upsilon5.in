@@ -8,9 +8,30 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(5S)
-set /Herwig/MatrixElements/MEUpsilon:Coupling 0.001
+set /Herwig/MatrixElements/MEUpsilon:Coupling 91.95576
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 # CLEO phi spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
 # D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
+# LHCb BS0 -> p Lambdabar0 K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1596893
+# BELLE BS0 -> Lambda_c+ Lambdabar0 pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1230342
+# BELLE BS0 -> Ds* Ds*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1124584
+# BELLE BS0 -> pi+ pi- J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I889524
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1081268
+#  BS0 -> pi+ pi-  psi(2S)/chi_c1(3872)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2023_I2635083
+# BELLE Upsilon(ns) pi0 pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1247463
+# B_s -> D_s* mu- nu_mubar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2020_I1787090
+# BELLE Upsilon(ns) pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1283743
+# D0/D_s spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2660525:MODE=DECAY
+# branching ratios
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_BS

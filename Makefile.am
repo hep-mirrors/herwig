@@ -1,5 +1,5 @@
 SUBDIRS = include \
-	Utilities PDT Decay PDF Models \
+	Utilities PDT PDF Models Decay \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Analysis Looptools Sampling \
 	API lib src Doc Contrib Tests

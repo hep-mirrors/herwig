@@ -12,7 +12,7 @@
 //
 
 #include "OneHalfHalfDarkSplitFn.h"
-#include "HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -20,7 +20,7 @@
 using namespace Herwig;
 
 DescribeNoPIOClass<OneHalfHalfDarkSplitFn,Herwig::Sudakov1to2FormFactor>
-describeOneHalfHalfDarkSplitFn ("Herwig::OneHalfHalfDarkSplitFn","HwShower.so");
+describeOneHalfHalfDarkSplitFn ("Herwig::OneHalfHalfDarkSplitFn","HwDarkShower.so");
 
 void OneHalfHalfDarkSplitFn::Init() {
 
@@ -78,12 +78,12 @@ double OneHalfHalfDarkSplitFn::P(const double z, const Energy2 t,
 }
 
 double OneHalfHalfDarkSplitFn::overestimateP(const double,
-					 const IdList &ids) const {
+                                             const IdList &) const {
   return 1.;
 }
 
 double OneHalfHalfDarkSplitFn::ratioP(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass, const RhoDMatrix &) const {
+                                      const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double zz = z*(1.-z);
   double val = 1.-2.*zz;
   if(mass) {
@@ -93,8 +93,8 @@ double OneHalfHalfDarkSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 }
 
-double OneHalfHalfDarkSplitFn::integOverP(const double z, const IdList & ids,
-				      unsigned int PDFfactor) const {
+double OneHalfHalfDarkSplitFn::integOverP(const double z, const IdList & ,
+                                          unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return z;
@@ -115,8 +115,8 @@ double OneHalfHalfDarkSplitFn::integOverP(const double z, const IdList & ids,
 }
 
 double OneHalfHalfDarkSplitFn::invIntegOverP(const double r,
-					 const IdList & ids,
-					 unsigned int PDFfactor) const {
+                                             const IdList & ,
+                                             unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return r;

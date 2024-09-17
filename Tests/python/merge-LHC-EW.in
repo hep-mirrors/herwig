@@ -63,8 +63,9 @@ yodafiles=["-13-Z-nu","-W-e","-W-mu","-Z-mu-Short","-8-W-e","-8-W-mu",
            "-WW-emu","-WW-ll","-13-WW-ll","-WZ","-ZZ-ll","-ZZ-lv","-13-ZZ-ll",
            "-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
            "-7-W-Jet-1-e","-7-W-Jet-2-e","-7-W-Jet-3-e","-7-Z-Jet-1-e","-7-Z-Jet-2-e","-7-Z-Jet-3-e",
-           "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu"]
-for energy in ["","8-","13-"] :
+           "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu",
+           "-8-ZGamma-e","-8-ZGamma-mu","-8-ZGamma-nu"]
+for energy in ["2760-","","8-","13-"] :
     for ll in ["e","mu"] :
         mergeargs=["rivet-merge","--assume-reentrant"]
         for mass in range(1,6) : 
@@ -224,6 +225,11 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif fname.find("Z")>0 and "d09" in aopath :
                 outhistos[aopath] = ao
+        elif (aopath.find("CMS_2014_I1322726")>=0) :
+            if fname.find("-e")>0 and ("d02" in aopath or "d04" in aopath) :
+                outhistos[aopath] = ao
+            elif fname.find("-mu")>0 and ("d01" in aopath or "d03" in aopath) :
+                outhistos[aopath] = ao
         # elif (aopath.find("ATLAS_2015_I1351916")>=0) :
         #     if(aopath.find("-y02")>=0) :
         #         pathBase = "/%s/" % aopath.split("/")[1]
@@ -277,23 +283,26 @@ for f in yodafiles:
             if("d26" in aopath or "d27" in aopath or "d28" in aopath) :
                 if ("y01" in aopath and "=MU" in aopath) or ("y02" in aopath and "=EL" in aopath) :
                     outhistos[aopath] = ao
-                elif ("y03" in aopath and "=EMU" in aopath) :
+                elif "y03" in aopath :
                     if aopath in outhistos :
                         outhistos[aopath] += ao
-                    else :
-                        outhistos[aopath] = ao
-            elif  "=EMU" in aopath:
-                if aopath in outhistos :
-                    outhistos[aopath] += ao
-                    if "d29" not in aopath :
                         if hasattr(outhistos[aopath], 'scale') :
                             outhistos[aopath].scale(0.5)
                         else :
                             outhistos[aopath].scaleW(0.5)
+                    else :
+                        outhistos[aopath] = ao
+            else :
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                    if hasattr(outhistos[aopath], 'scale') :
+                        outhistos[aopath].scale(0.5)
+                    else :
+                        outhistos[aopath].scaleW(0.5)
                 else :
                     outhistos[aopath]  = ao
         elif "CMS_2018_I1667854" in aopath :
-            if "=EMU" in aopath:
+            if "=EL" in aopath:
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :
@@ -303,9 +312,26 @@ for f in yodafiles:
                     outhistos[aopath] += ao
                 else :
                     outhistos[aopath]  = ao
-        elif (aopath.find("CMS_2021_I1920187")>=0) :
+        elif "CMS_2021_I1920187" in aopath :
             ao.setPath(ao.path().replace(":MODE=ZJET",""))
             outhistos[aopath.replace(":MODE=ZJET","")]  = ao
+        elif "ATLAS_2016_I1448301" in aopath :
+            if "d01-x01-y01" in aopath or "d03-x01-y01" in aopath :
+                if "=EL" in aopath : outhistos[aopath] = ao
+            elif "d01-x01-y02" in aopath or "d03-x01-y02" in aopath:
+                if "=MU" in aopath : outhistos[aopath] = ao
+            elif ("d02-x01-y01" in aopath or "d04-x01-y01" in aopath or
+                  "d07-x01-y01" in aopath or "d08-x01-y01" in aopath ):
+                if "=NU" in aopath : outhistos[aopath] = ao
+            elif  "=NU" not in aopath :
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                    if hasattr(outhistos[aopath], 'scale') :
+                        outhistos[aopath].scale(0.5)
+                    else :
+                        outhistos[aopath].scaleW(0.5)
+                else :
+                    outhistos[aopath] = ao
         else :
             outhistos[aopath] = ao
 # sort out ratios for ATLAS W+c

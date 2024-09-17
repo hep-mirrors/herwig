@@ -15,7 +15,6 @@ opts, args = op.parse_args()
 skip = [ "ATLAS_2010_I849050",        # alias
          "TOTEM_2012_002"    ,        # alias
          "TEST"              ,        # test analysis
-         "ATLAS_2015_I1351916",       # same as _EL version
          "ATLAS_2015_CONF_2015_041",  # superseeded
          "ALICE_2012_I1127497",       # lead-lead
          "ALICE_2012_I930312",        # lead-lead
@@ -27,7 +26,6 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "STAR_2008_S7993412",        # heavy ion
          "STAR_BES_CALIB",            # heavy ion
          "DELPHI_2002_069_CONF_603",  # superseeded
-         "CMS_2015_I1370682_PARTON",  # parton-level version
         ]
 searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 

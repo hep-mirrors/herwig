@@ -4,6 +4,7 @@
 ##################################################
 # ATLAS Z pT and phi*
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516:LMODE=EL
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1631985:LMODE=EL
 # ATLAS high mass drell-yan
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454:LMODE=EL
 # ATLAS splittings
@@ -14,3 +15,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1499471
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1744201
 # CMS Z + jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1497519
+# CMS Z+ charm
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1634835

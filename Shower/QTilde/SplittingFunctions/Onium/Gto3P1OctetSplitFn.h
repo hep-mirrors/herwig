@@ -106,11 +106,9 @@ public:
    * @param enhance The radiation enhancement factor
    */
    virtual ShoKinPtr generateNextSpaceBranching(const Energy ,
-						 const IdList &,double ,
-						 const RhoDMatrix & ,
-						 double ,
-						 tcBeamPtr ,
-						 double )
+                                                const IdList &,double ,
+                                                const RhoDMatrix & ,
+                                                double , double )
   {assert(false);}
   //@}
   

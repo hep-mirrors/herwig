@@ -12,7 +12,7 @@
 //
 
 #include "OneOneOneDarkSplitFn.h"
-#include "HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -20,7 +20,7 @@
 using namespace Herwig;
 
 DescribeNoPIOClass<OneOneOneDarkSplitFn,Herwig::Sudakov1to2FormFactor>
-describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwShower.so");
+describeOneOneOneDarkSplitFn ("Herwig::OneOneOneDarkSplitFn","HwDarkShower.so");
 
 void OneOneOneDarkSplitFn::Init() {
 
@@ -67,24 +67,24 @@ bool OneOneOneDarkSplitFn::checkColours(const IdList & ids) const {
 }
 
 double OneOneOneDarkSplitFn::P(const double z, const Energy2,
-			   const IdList & ids, const bool, const RhoDMatrix &)const {
+                               const IdList & , const bool, const RhoDMatrix &)const {
   return sqr(1.-z*(1.-z))/(z*(1.-z));
 }
 
 double OneOneOneDarkSplitFn::overestimateP(const double z,
-				       const IdList & ids) const {
+                                           const IdList & ) const {
   return (1/z + 1/(1.-z));
 }
 
 
 double OneOneOneDarkSplitFn::ratioP(const double z, const Energy2,
-				const IdList & , const bool, const RhoDMatrix &) const {
+                                    const IdList & , const bool, const RhoDMatrix &) const {
   return sqr(1.-z*(1.-z));
 }
 
 double OneOneOneDarkSplitFn::invIntegOverP(const double r,
-				       const IdList & ids,
-				       unsigned int PDFfactor) const {
+                                           const IdList & ,
+                                           unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 1./(1.+exp(-r));
@@ -97,8 +97,8 @@ double OneOneOneDarkSplitFn::invIntegOverP(const double r,
   }
 }
 
-double OneOneOneDarkSplitFn::integOverP(const double z, const IdList & ids,
-				    unsigned int PDFfactor) const {
+double OneOneOneDarkSplitFn::integOverP(const double z, const IdList & ,
+                                        unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     assert(z>0.&&z<1.);

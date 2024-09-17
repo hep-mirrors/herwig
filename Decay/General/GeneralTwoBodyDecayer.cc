@@ -20,7 +20,7 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Utilities/Kinematics.h"
-#include "Herwig/Shower/QTilde/Dark/HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 
 using namespace Herwig;
 
@@ -49,6 +49,8 @@ void GeneralTwoBodyDecayer::doinit() {
   //create phase space mode
   addMode(new_ptr(PhaseSpaceMode(incoming_,{outgoing_[0],outgoing_[1]},
 				 maxWeight_)));
+
+	_HVmodel = dynamic_ptr_cast<tHiddenValleyPtr>(generator()->standardModel());
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
@@ -266,11 +268,11 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << incoming_ << outgoing_ << maxWeight_;
+  os << incoming_ << outgoing_ << maxWeight_ << _HVmodel;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> incoming_ >> outgoing_ >> maxWeight_;
+  is >> incoming_ >> outgoing_ >> maxWeight_ >> _HVmodel;
 }
 
 // The following static variable is needed for the type
@@ -332,7 +334,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
              && out2->iColour()==PDT::DarkColourAntiFundamental) ||
 	    (out1->iColour()==PDT::DarkColourAntiFundamental
          && out2->iColour()==PDT::DarkColourFundamental)) {
-      output *= 3.;
+      output *= _HVmodel->NC();
     }
     else 
       throw Exception() << "Unknown colour for the outgoing particles"

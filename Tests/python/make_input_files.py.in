@@ -101,7 +101,7 @@ set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
 process=StringBuilder()
 
 # DIS
-if(collider=="DIS") :
+if(collider=="DIS" and "Photo" not in name) :
     if(simulation=="") :
         if "NoME" in name :
             process = StringBuilder("set /Herwig/Shower/ShowerHandler:HardEmission None")
@@ -155,9 +155,25 @@ if(collider=="DIS") :
         Q2Min=1000.
         parameterName=parameterName.replace("-HighQ2","")
     if "CC" in name :
-        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+        process+="set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 %s\nset /Herwig/Cuts/ChargedCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
     else :
-        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 2%s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+        process+="set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 %s\nset /Herwig/Cuts/NeutralCurrentCut:MinQ2 %s\n" %(Q2Max,Q2Min)
+# DIS photoproduction
+elif(collider=="DIS" and "Photo" in name) :
+    assert(simulation=="")
+    ecms=float(parameterName.split("-")[1])
+    cuts=[3.,6.,10.,ecms]
+    if "Direct" in parameterName :
+        parameterName=parameterName.replace("Direct-","")
+        process = StringBuilder(insert_ME("MEGammaP2Jets",None,"Process","SubProcess"))
+    elif "Resolved" in parameterName : 
+        process = StringBuilder(insert_ME("MEQCD2to2"))
+        parameterName=parameterName.replace("Resolved-","")
+    for i in range(1,len(cuts)) :
+        tstring = "-Jets-%s"%i
+        if tstring in parameterName :
+            process+=jet_kt_cut(cuts[i-1],cuts[i])
+            parameterName=parameterName.replace(tstring,"")
 # EE
 elif(collider=="EE") :
     if(simulation=="") :
@@ -226,17 +242,22 @@ elif(collider=="EE-Gamma") :
         if("mumu" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff","Muon"))
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+            parameterName=parameterName.replace("Direct-","")
         elif( "tautau" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff","Tau"))
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+            parameterName=parameterName.replace("Direct-","")
         elif( "Jets" in parameterName) :
             if("Direct" in parameterName ) :
                 process = StringBuilder(insert_ME("MEgg2ff","Quarks"))
+                parameterName=parameterName.replace("Direct-","")
             elif("Single-Resolved" in parameterName ) :
                 process = StringBuilder(insert_ME("MEGammaP2Jets",None,"Process","SubProcess"))
                 process+= insert_ME("MEGammaP2Jets",None,"Process","SubProcess2")
+                parameterName=parameterName.replace("Single-Resolved-","")
             else :
                 process = StringBuilder(insert_ME("MEQCD2to2"))
+                parameterName=parameterName.replace("Double-Resolved-","")
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
         elif ("pi0"  in parameterName or "Eta" in parameterName or "EtaPrime" in parameterName or
@@ -527,6 +548,7 @@ elif ( collider=="ISR" or collider =="SppS" or collider == "SPS" or collider == 
                 process+="read snippets/MB-DipoleShower.in\n"
             else:
                 process+="read snippets/MB.in\n"
+            if "EHS" not in name :
                 process+="read snippets/Diffraction.in\n"
         else :
             logging.error(" SppS and ISR not supported for %s " % simulation)
@@ -560,7 +582,7 @@ elif(collider=="LHC") :
     elif parameterName.startswith("900")  : ecms = 900.0
     elif parameterName.startswith("2360") : ecms = 2360.0
     elif parameterName.startswith("2760") : ecms = 2760.0
-    elif parameterName.startswith("5-")   : ecms = 5000.0
+    elif parameterName.startswith("5-")   : ecms = 5020.0
     else                                  : ecms = 7000.0
     process = StringBuilder(collider_lumi(ecms))
     if(simulation=="") :
@@ -894,8 +916,11 @@ elif(collider=="LHC") :
             if "-e" in parameterName :
                 process+=selectDecayMode("Z0",["Z0->e-,e+;"])
                 addedBRReweighter=True
-            else :
+            elif "-mu" in parameterName :
                 process+=selectDecayMode("Z0",["Z0->mu-,mu+;"])
+                addedBRReweighter=True
+            elif "-nu" in parameterName :
+                process+=selectDecayMode("Z0",["Z0->nu_e,nu_ebar;","Z0->nu_mu,nu_mubar;","Z0->nu_tau,nu_taubar;"])
                 addedBRReweighter=True
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
@@ -1578,20 +1603,28 @@ elif(collider=="LHC") :
             sys.exit(1)
 # LHC-GammaGamma
 elif(collider=="LHC-GammaGamma" ) :
-    if   "-7-" in parameterName : process = StringBuilder(collider_lumi(7000.0))
-    elif "-8-" in parameterName : process = StringBuilder(collider_lumi(8000.0))
-    else :                        process = StringBuilder(collider_lumi(7000.0))
+    if   "7"  in parameterName : process = StringBuilder(collider_lumi( 7000.0))
+    elif "8"  in parameterName : process = StringBuilder(collider_lumi( 8000.0))
+    elif "13" in parameterName : process = StringBuilder(collider_lumi(13000.0))
+    else :                       process = StringBuilder(collider_lumi( 7000.0))
     if(simulation=="") :
-        if "7" in parameterName : process += insert_ME("MEgg2ff","Muon")
-        else :
-            logging.error(" Process %s not supported for default matrix elements" % name)
-            sys.exit(1)
+        process += "cp MEgg2ff MEgg2ee\n"
+        process += insert_ME("MEgg2ee","Electron")
+        process += "cp MEgg2ff MEgg2mm\n"
+        process += insert_ME("MEgg2mm","Muon")
     else :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
+pion=False
+if "Pion-" in parameterName and have_hadronic_collider:
+    parameterName = parameterName.replace("Pion-","")
+    pion = True
+
 if "EHS" in name :
     pFile = os.path.join(collider,"{c}-{pn}.in".format(c="EHS", pn=parameterName))
+elif "Photo" == name[0:5] :
+    pFile = os.path.join(collider,"{c}-{pn}.in".format(c="Photo", pn=parameterName))
 else :
     pFile = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 with open(os.path.join("Rivet",pFile), 'r') as f:
@@ -1604,6 +1637,11 @@ if have_hadronic_collider :
         parameters['collider'] = "PPCollider.in\nread snippets/FixedTarget-PP.in"
     else :
         parameters['collider'] = "PPCollider.in"
+if pion :
+    parameters['collider'] +="\nread snippets/PionPDF.in\nset /Herwig/Generators/EventGenerator:EventHandler:BeamA /Herwig/Particles/pi+\n"
+    parameters['collider'] +="set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/PionPDF\nset /Herwig/Shower/ShowerHandler:PDFARemnant /Herwig/Partons/PionPDF\n"
+    parameters['collider'] +="set /Herwig/Partons/PPExtractor:FirstPDF /Herwig/Partons/PionPDF\nset /Herwig/Partons/MPIExtractor:FirstPDF /Herwig/Partons/PionPDF\n"
+    parameters['collider'] +="set /Herwig/EventHandlers/FixedTargetLuminosity:BeamParticle /Herwig/Particles/pi+\n"
 
 #check if selecteddecaymode and addedBRReweighter is consistent
 

@@ -19,10 +19,14 @@ do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
 # D_s+ -> eta, eta' semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712742
-# D_s -> K+K- e+ nu_e
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2667117
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2679776
+# D_s -> K+K- l+ nu_l
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I790461
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2674768
 # D_s -> f0 e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2038523
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2645182
 # 3-body dalitz
 # Dalitz plot analysis of D_s+ -> K+K-pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I878120
@@ -43,12 +47,15 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2001_I530319
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I792597
 # Dalitz plot analysis of D_s+ -> pi+pi0pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1929365
-# Dalitz decay of D_s+ -> pi+ pi0 eta
+# D_s+ -> pi+ pi0 eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724547
 # Dalitz decay of D_s+ -> pi+ pi0 eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2030993
-# CLEO D_s+ -> omega pi+ pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1998_I466173
+# D_s+ -> omega pi+ pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2009_I822856
+# D_s+ -> omega pi+ eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2630813
 ############## 4-body dalitz ##################
 # D_s+ -> K+K-pi+pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1849747

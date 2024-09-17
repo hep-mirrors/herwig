@@ -1,0 +1,23 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/Generators
+set EventGenerator:EventHandler:BeamB /Herwig/Particles/p+
+set EventGenerator:EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
+set EventGenerator:EventHandler:BeamA /Herwig/Particles/e+
+set EventGenerator:EventHandler:LuminosityFunction:BeamEMaxA 27.5*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinQ2 0
+set /Herwig/Cuts/ChargedCurrentCut:MinQ2 0
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
+set /Herwig/Cuts/Cuts:MHatMin 0.
+set /Herwig/ACDCSampler:Ntry 100000
+set /Herwig/Generators/EventGenerator:EventHandler:Sampler:Ntry 30000
+insert /Herwig/Generators/EventGenerator:EventHandler:Cuts:OneCuts 0 /Herwig/Cuts/JetKtCut
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:ScaleMin 6.25*GeV2
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:X1Min 1e-5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:X2Min 1e-5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:X1Max 1.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:X2Max 1.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.5*GeV
+# analyses
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2001_I568665
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_1997_I450085

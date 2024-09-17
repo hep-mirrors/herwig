@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SudakovFormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2019 The Herwig Collaboration
+//
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SudakovFormFactor class.
 //
@@ -189,6 +196,7 @@ void SudakovFormFactor::Init() {
      "RootZ",
      "Include an additional factor of sqrt(z)",
      5);
+
 }
 
 bool SudakovFormFactor::checkColours(const IdList & ids) const {
@@ -263,14 +271,11 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     if(ids[1]->iCharge()==-ids[2]->iCharge()) return true;
     return false;
   }
-  else if(colourStructure_==EW) {
-    return true;
-  }
   else {
     assert(false);
   }
   return false;
-} 
+}
 
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
@@ -314,23 +319,21 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
 }
 
 bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x, const double z,
-	const tcPDPtr parton0, const tcPDPtr parton1,
-	Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  double ratio=PDFVetoRatio(t,x,z,parton0,parton1,beam,1.);
+	const tcPDPtr parton0, const tcPDPtr parton1) const {
+  double ratio=PDFVetoRatio(t,x,z,parton0,parton1,1.);
   return UseRandom::rnd() > ratio;
 }
 
 double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x, const double z,
-                                       const tcPDPtr parton0, const tcPDPtr parton1,
-                                       Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
+                                       const tcPDPtr parton0, const tcPDPtr parton1,double factor) const {
   assert(pdf_);
   Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
-  const double newpdf=pdf_->xfx(beam,parton0,theScale,x/z);
+  const double newpdf=pdf_->xfx(beam_,parton0,theScale,x/z);
   if(newpdf<=0.) return 0.;
 
-  const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
+  const double oldpdf=pdf_->xfx(beam_,parton1,theScale,x);
   if(oldpdf<=0.) return 1.;
 
   const double ratio = newpdf/oldpdf;

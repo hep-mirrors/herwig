@@ -96,7 +96,7 @@ void QtoQ3D2SplitFn::guesstz(Energy2 t1,unsigned int iopt,
   double upper = integOverP(zLimits().second,ids,pdfopt);
   Energy m = ids[0]->mass();
   double aS2 = fixedAlphaS_ < 0 ? sqr(alpha()->overestimateValue()) : sqr(fixedAlphaS_);
-  Energy2 pre =  4./135.*aS2*O1_/m/sqr(m*m);
+  Energy2 pre =  4./405.*aS2*O1_/m/sqr(m*m);
   Energy2 c = (upper - lower) * colourFactor() * pre * enhance * detune;
   double r = UseRandom::rnd();
   assert(iopt<=2);
@@ -158,4 +158,3 @@ DecayMEPtr QtoQ3D2SplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,1,4)=(-8*r23*r*(8*sqr(r)*pow(1 + z,3) + z*(5 - 6*z + 3*sqr(z) - 2*pow(z,3)) - r*(5 + 17*z + 5*sqr(z) - 5*pow(z,3) + 2*pow(z,4))))/(sqr(phase)*sqr(1.-z)*rz*(1 + z));
   return kernal;
 }
-

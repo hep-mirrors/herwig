@@ -3,6 +3,7 @@ Config/ltmain.sh
 m4/lt~obsolete.m4
 m4/ltsugar.m4
 m4/libtool.m4
+m4/ltversion.m4
 Makefile\.in$
 \.deps$
 \.libs$
@@ -106,7 +107,6 @@ Tests/python/OniumSplitting.py
 Tests/python/OniumSigma.py
 Tests/python/plot-EE
 Tests/python/rivet_check
-Tests/python/onium_input_files.py
 PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$

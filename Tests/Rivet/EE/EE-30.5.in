@@ -2,11 +2,10 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 198.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 30.5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 21*GeV
 ##################################################
 # select the analyses 
 ##################################################
-# L3 jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I661114
-# OPAL jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2003_I611415
+# tasso event shapes at various energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333

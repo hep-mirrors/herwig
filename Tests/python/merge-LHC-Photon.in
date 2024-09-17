@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys, os, yoda, math, subprocess, time
 
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 # merge the prompt photon results
-files=["-GammaGamma-7.yoda"]
+files=["-GammaGamma-7.yoda","-GammaGamma-13.yoda"]
 for en in [7,8,13] :
     files.append("-%s-DiPhoton-GammaGamma.yoda"%en)
     files.append("-%s-DiPhoton-GammaJet.yoda"  %en)
@@ -60,31 +61,23 @@ for f in files:
         continue
     ## Get histos from this YODA fname
     for aopath, ao in aos.items() :
-        if("RAW" in aopath) :continue
+        if("RAW" in aopath or "/TMP" in aopath) :continue
         if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
         if(fname.find("PromptPhoton")>=0) :
             outhistos[aopath] = ao
         else : 
             if ( aopath in outhistos ) :
                 aotype = type(ao)
-                if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D):
+                if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D, yoda.core.BinnedEstimate1D, yoda.core.Estimate0D):
                     outhistos[aopath] += ao
                 else :
+                    print("quitting")
                     quit()
             else:
                 outhistos[aopath] = ao
 # Choose output file
 name = args[0]+"-Photon.yoda"
-# remove any scatters with nans, causes yoda to crash
-remove = [] 
-for key in outhistos.keys() :
-    ao = outhistos[key]
-    if type(ao)==yoda.core.Scatter2D :
-        skip=False
-        for p in ao.points() :
-            if math.isnan(p.y()) : skip=True
-        if(skip) : remove.append(key)
-for key in remove : del outhistos[key]
+print(name,outhistos)
 # output histos
 yoda.writeYODA(outhistos,name)
 sys.exit(0)

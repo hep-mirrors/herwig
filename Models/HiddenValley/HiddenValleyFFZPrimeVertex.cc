@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "HiddenValleyModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
@@ -20,8 +21,9 @@ void HiddenValleyFFZPrimeVertex::persistentInput(PersistentIStream & is, int) {
   is >> _gl >> _gr >> _gql >> _gqr >> _gPrime;
 }
 
-ClassDescription<HiddenValleyFFZPrimeVertex> HiddenValleyFFZPrimeVertex::initHiddenValleyFFZPrimeVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<HiddenValleyFFZPrimeVertex,FFVVertex>
+describeHerwigHiddenValleyFFZPrimeVertex("Herwig::HiddenValleyFFZPrimeVertex", "Herwig.so");
 
 void HiddenValleyFFZPrimeVertex::Init() {
 

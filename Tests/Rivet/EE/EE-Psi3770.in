@@ -21,6 +21,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I769777
 # D0 -> K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697371
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I1091435
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2819140
 # D+ -> eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
@@ -36,6 +37,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 # D0 -> pi-, K- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I654843
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I715430
 # D+ -> K0 pi0 semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
 # D+ -> K- pi+ semi-leptonic
@@ -46,6 +48,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1386254
 ######### Two body decays ###################
 # D0 -> omega phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1900094
+# D0 -> KS0 phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1987_I247005
 ########## 3-body decays ####################
 # Dalitz plot analysis of D -> Kpipi decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E691_1992_I342947
@@ -56,6 +60,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I913909
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2014_I1277070
 # Dalitz plot analysis of D0 -> K0S pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2003_I633196
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2014_I1289224
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2018_I1668123
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2615968
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I352983
 # Dalitz plot analysis of D+ -> K- pi+ pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E791_2002_I585322
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I750701
@@ -67,10 +75,14 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I722905
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I649917
 # Dalitz decay of D0 -> K-pi+eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1785816
+# Dalitz decay of D+ -> K0S pi+ eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2696635
 # D -> K pi omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1940222
 # D -> K pi eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1693610
+# D0 -> pi+pi-eta and K+K-eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1867474
 # Dalitz plot analysis of D0 -> K0S K+ K-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1799437
 # Dalitz plot analysis of D0 -> K0S pi+ pi- and  D0 -> K0S K+ K-
@@ -110,21 +122,34 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1725265
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1511280
 # D+ -> KS0 pi+ pi0 pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2088337
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2662580
 # D0 -> K-K-K+pi+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2003_I626320
 # D0 -> K+ K- pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2012_I1086166
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2004_I663820
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1704426
+# D+ -> K+ K- pi+ pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1808166
 # D0 -> K+ K- pi+ pi- and 2pi+ 2pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2017_I1519168
 # D0 -> 2pi+ 2pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2007_I741543
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2730532
 # range of D+/D0 -> pion decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2102455
+# D0 -> K+ pi- e+e- /mu+mu-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2019_I1691954
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1401225
+# D0,+ -> pi+ pi+ pi-X 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2621481
 ########## Spectra ##############################
 # CLEO eta, eta' phi spectra in D decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2006_I728043
+# D -> phi X
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1749793
+# D -> KS0 X
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2637232
 ########## psi(3770) decays ######################################
 # Lambda Lambdabar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1974025

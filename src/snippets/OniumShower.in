@@ -87,7 +87,6 @@ set gtogcc13P2SplittingSudakov:StrictAO Yes
 set gtogcc13P2SplittingSudakov:InteractionType QCD
 set gtogcc13P2SplittingSudakov:State ccbar
 do SplittingGenerator:AddFinalSplitting g->g,chi_c2; gtogcc13P2SplittingSudakov
-
 #
 #  quark initiated
 #

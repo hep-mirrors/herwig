@@ -1,4 +1,3 @@
-#
 #-*- ThePEG-repository -*-
 
 ################################################################################
@@ -30,7 +29,7 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 read snippets/MB.in
 
 # Diffraction model
-read Diffraction.in
+read snippets/Diffraction.in
 
 #################################################
 # Single Diffractive Events Only

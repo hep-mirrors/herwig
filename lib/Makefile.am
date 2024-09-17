@@ -6,6 +6,7 @@ Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/libHwStandardModel.la \
+$(top_builddir)/Models/libHwHiddenValley.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Decay/libHwFormFactor.la \
 $(top_builddir)/Decay/libHwDecRad.la \

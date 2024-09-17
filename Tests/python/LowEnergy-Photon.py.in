@@ -263,8 +263,10 @@ for process in processes:
                         energy = bin.edge(0)
                     else :
                         energy = bin.mid(0)
-                    if analysis=="ARGUS_1994_I372451" and plot=="d02-x01-y01" and energy=="1.9 - 2.3":
-                        energy=2.1
+                    if isinstance(energy, str) :
+                        if "-" in energy :
+                            temp = energy.split("-")
+                            energy = 0.5*(float(temp[0])+float(temp[1]))
                     energy=float(energy)
                     eTemp.append(energy)
             elif hasattr(histo,'points') :

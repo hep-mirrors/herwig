@@ -65,10 +65,10 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double z, const IdList & ) const {
+  double overestimateP(const double z, const IdList &) const {
     return 1/z + 1/(1.-z); 
   }
-  
+
   /**
    * The concrete implementation of the
    * the ratio of the splitting function to the overestimate, i.e.
@@ -79,8 +79,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  double ratioP(const double z, const Energy2, const IdList &,
-                const bool, const RhoDMatrix &) const {
+  virtual double ratioP(const double z, const Energy2, const IdList &,
+                        const bool, const RhoDMatrix &) const {
     return sqr(1.-z*(1.-z));
   }
 
@@ -93,8 +93,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  double integOverP(const double z, const IdList &,
-                    unsigned int PDFfactor=0) const {
+  virtual double integOverP(const double z, const IdList &,
+			    unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
     assert(z>0.&&z<1.);
     return log(z/(1.-z)); 
@@ -107,9 +107,9 @@ public:
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   */
-  double invIntegOverP(const double r, const IdList &,
-                       unsigned int PDFfactor=0) const {
+   */ 
+  virtual double invIntegOverP(const double r, const IdList &,
+			       unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
     return 1./(1.+exp(-r)); 
   }
@@ -130,7 +130,6 @@ public:
     double modRho = abs(rho(0,2));
     double max = 2.*z*modRho*(1.-z)+sqr(1.-(1.-z)*z)/(z*(1.-z));
     vector<pair<int, Complex> > output;
-    output.reserve(3);
     output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*sqr(1.-(1.-z)*z)/(z*(1.-z))/max));
     output.push_back(make_pair(-2,-rho(0,2)*z*(1.-z)/max));
     output.push_back(make_pair( 2,-rho(2,0)*z*(1.-z)/max));
@@ -153,7 +152,6 @@ public:
     double off  = (1.-z)/z;
     double max  = 2.*abs(rho(0,2))*off+diag;
     vector<pair<int, Complex> > output;
-    output.reserve(3);
     output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
     output.push_back(make_pair( 2,-rho(0,2)           * off/max));
     output.push_back(make_pair(-2,-rho(2,0)           * off/max));
@@ -167,8 +165,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  DecayMEPtr matrixElement(const double z, const Energy2, 
-                           const IdList &, const double phi, bool) {
+  virtual DecayMEPtr matrixElement(const double z, const Energy2, 
+				   const IdList &, const double phi, bool) {
     // calculate the kernal
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
     double omz = 1.-z;

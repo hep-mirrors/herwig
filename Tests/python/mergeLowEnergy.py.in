@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import yoda,glob,optparse
 import numpy as np
@@ -35,7 +36,7 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
         energyMeV = energy*1000.
         aos = yoda.read(fileName)
         for hpath,histo in aos.items():
-            if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue   
+            if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
             if(len(opts.plots_fixed)>0 and hpath in opts.plots_fixed) :
                 if hpath in inhistos :
                     inhistos[hpath][energy] = histo
@@ -68,7 +69,11 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                 if hasattr(aos[hpath],'points') :
                     outhistos[hpath] = yoda.core.Scatter2D(path,title)
                 else :
-                    outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges(),path,title)
+                    try : 
+                        outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges(),path,title)
+                    except :
+                        print(hpath,aos[hpath])
+                        quit()
             matched = False
             if hasattr(aos[hpath],"points") :
                 for i in range(0,aos[hpath].numPoints()) :
@@ -114,20 +119,33 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                         x = bin.edge(0)
                     else :
                         x = bin.mid(0)
-                    if hpath=="/ARGUS_1994_I372451/d02-x01-y01" and x=="1.9 - 2.3":
-                        x=2.1
-                    x = float(x)
+                    if isinstance(x, str) :
+                        x = x.split("_")[0]
+                        if "-" in x and len(x)>1:
+                            elim =x.split("-")
+                            x=0.5*(float(elim[0])+float(elim[1]))
+                        elif hpath=="/DM1_1979_I132828/d01-x01-y01" :
+                            if x == '-'         : x = 985
+                        elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :
+                            if x=="1900 (2012)" : x = 1900
+                    try :
+                        x = float(x)
+                    except :
+                        print("Cannot convert %s to float in %s" % (x,hpath) )
+                        quit()
                     delta=1e-5
                     if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
                        "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
                        "FENICE_1996_I426675" in hpath):
                         x=np.sqrt(x)
                         delta=1e-3
+                    elif "SND_2024_I2809929" in hpath or "SND_2024_I2696331" in hpath:
+                        x=2.*x
                     if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
                         duplicate = False
-                        outhistos[hpath].bins()[i].setVal(bin.val())
+                        outhistos[hpath].bin(bin.index()).setVal(bin.val())
                         for key in bin.sources() :
-                            outhistos[hpath].bins()[i].setErr(bin.err(key),key)
+                            outhistos[hpath].bin(bin.index()).setErr(bin.err(key),key)
                         matched = True
                         break
                 if(matched) : continue

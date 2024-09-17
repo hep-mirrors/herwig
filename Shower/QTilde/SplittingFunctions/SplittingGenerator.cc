@@ -139,7 +139,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back(*it);
   // check splitting can handle this
-  if(!s->checkColours(ids) || !s->accept(ids)) 
+  if(!s->accept(ids))
     return "Error: Sudakov " + sudakov + " SplittingFunction can't handle particles\n";
   // add to map
   addToMap(ids,s,final);
@@ -611,7 +611,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType(),_darkInteraction)) continue;
     // setup the PDF
-    cit->second.sudakov->setPDF(pdf,freeze);
+    cit->second.sudakov->setPDF(pdf,beam,freeze);
     //calc rho as needed
     if(!rhoCalc && particle.dataPtr()->iSpin()!=PDT::Spin0) {
       rho = particle.extractRhoMatrix(false);
@@ -626,8 +626,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
       type = ShowerPartnerType::QED;
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin=cit->second.sudakov->
-    	generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,
-				   beam,_deTuning);
+    	generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::QCD) {
       // special for octets
@@ -637,12 +636,11 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     	  type = ShowerPartnerType::QCDColourLine;
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
 	  newKin = cit->second.sudakov->
-	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,
-				       beam,_deTuning);
+	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,_deTuning);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
 	  ShoKinPtr newKin2 = cit->second.sudakov->
 	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,
-				       0.5*enhance,beam,_deTuning);
+				       0.5*enhance,_deTuning);
 	  // pick the one with the highest scale
 	  if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
 	      (!newKin&&newKin2) ) {
@@ -657,7 +655,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	  type = UseRandom::rndbool() ?
 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	  newKin=cit->second.sudakov->
-	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,beam,_deTuning);
+	    generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
 	}
       }
       // everything else
@@ -672,14 +670,58 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
 	}
     	newKin=cit->second.sudakov->
-    	  generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,beam,_deTuning);
+    	  generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,_deTuning);
       }
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
       Energy startingScale = particle.scales().EW;
       newKin=cit->second.sudakov->
-    	generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,beam,_deTuning);
+    	generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,_deTuning);
+    }
+    else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
+      // special for octets
+      if(particle.dataPtr()->iColour()==PDT::DarkColourAdjoint) {
+        // octet -> octet octet
+        if(cit->second.sudakov->colourStructure()==OctetOctetOctet) {
+          type = ShowerPartnerType::DARKColourLine;
+          Energy startingScale = angularOrdered ? particle.scales().DARK_c : particle.scales().DARK_c_noAO;
+          newKin = cit->second.sudakov->
+            generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,_deTuning);
+          startingScale = angularOrdered ? particle.scales().DARK_ac : particle.scales().DARK_ac_noAO;
+          ShoKinPtr newKin2 = cit->second.sudakov->
+            generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,_deTuning);
+          // pick the one with the highest scale
+          if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
+              (!newKin&&newKin2) ) {
+            newKin = newKin2;
+            type = ShowerPartnerType::DARKAntiColourLine;
+          }
+        }
+        else {
+          Energy startingScale = angularOrdered ?
+            max(particle.scales().DARK_c     , particle.scales().DARK_ac    ) :
+            max(particle.scales().DARK_c_noAO, particle.scales().DARK_ac_noAO);
+          type = UseRandom::rndbool() ?
+            ShowerPartnerType::DARKColourLine : ShowerPartnerType::DARKAntiColourLine;
+          newKin=cit->second.sudakov->
+            generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
+        }
+      }
+      // everything else
+      else {
+        Energy startingScale;
+        if(particle.hasColour()) {
+          type = ShowerPartnerType::DARKColourLine;
+          startingScale = angularOrdered ? particle.scales().DARK_c  : particle.scales().DARK_c_noAO;
+        }
+        else {
+          type = ShowerPartnerType::DARKAntiColourLine;
+          startingScale = angularOrdered ? particle.scales().DARK_ac : particle.scales().DARK_ac_noAO;
+        }
+        newKin=cit->second.sudakov->
+          generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
+      }
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::DARK) {
 			// special for octets
@@ -689,10 +731,10 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 					type = ShowerPartnerType::DARKColourLine;
 			Energy startingScale = angularOrdered ? particle.scales().DARK_c : particle.scales().DARK_c_noAO;
 			newKin = cit->second.sudakov->
-				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,beam,_deTuning);
+				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,_deTuning);
 			startingScale = angularOrdered ? particle.scales().DARK_ac : particle.scales().DARK_ac_noAO;
 			ShoKinPtr newKin2 = cit->second.sudakov->
-				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,beam,_deTuning);
+				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,0.5*enhance,_deTuning);
 			// pick the one with the highest scale
 			if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
 					(!newKin&&newKin2) ) {
@@ -707,7 +749,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			type = UseRandom::rndbool() ?
 				ShowerPartnerType::DARKColourLine : ShowerPartnerType::DARKAntiColourLine;
 			newKin=cit->second.sudakov->
-				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,beam,_deTuning);
+				generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
 		}
 				}
 				// everything else
@@ -722,7 +764,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			startingScale = angularOrdered ? particle.scales().DARK_ac : particle.scales().DARK_ac_noAO;
 		}
 				newKin=cit->second.sudakov->
-					generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,beam,_deTuning);
+					generateNextSpaceBranching(startingScale,particles, particle.x(),rho,enhance,_deTuning);
 				}
     }
     // shouldn't be anything else

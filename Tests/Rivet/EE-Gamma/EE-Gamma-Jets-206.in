@@ -6,5 +6,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 206
 ##################################################
 # select the analyses 
 ##################################################
-# L3 mu+mu-
+# OPAL jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2008_I754316

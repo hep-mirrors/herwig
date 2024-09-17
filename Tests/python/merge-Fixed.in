@@ -1,4 +1,5 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
 import logging, sys, math
 
@@ -109,6 +110,7 @@ yodafiles=["ISR%s-44-Z-mu.yoda"        %name,
            "SppS%s-546-UE.yoda"        %name,
            "SppS%s-53-UE.yoda"         %name,
            "EHS%s-UE.yoda"             %name,
+           "EHS-Pion%s-UE.yoda"        %name,
            "SPS%s-17.4-UE.yoda"        %name,
            "SPS%s-200-Z-mu.yoda"       %name,
            "Fermilab%s-27.4-Z-mu.yoda" %name,

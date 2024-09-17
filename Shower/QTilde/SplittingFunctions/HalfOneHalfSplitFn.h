@@ -45,13 +45,7 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  bool accept(const IdList & ids) const {
-    // 3 particles and in and out fermion same
-    if(ids.size()!=3 || ids[0]!=ids[2]) return false;
-    if(ids[0]->iSpin()!=PDT::Spin1Half ||
-       ids[1]->iSpin()!=PDT::Spin1) return false;
-    return true;
-  }
+  bool accept(const IdList & ids) const;
 
   /**
    *   Methods to return the splitting function.
@@ -63,7 +57,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double z, const IdList & ) const { 
+  virtual double overestimateP(const double z, const IdList & ) const {
     return 2./z; 
   }
 
@@ -77,8 +71,8 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  double ratioP(const double z, const Energy2 t, const IdList & ids,
-                const bool mass, const RhoDMatrix & ) const {
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass, const RhoDMatrix &) const {
     double val=2.*(1.-z)+sqr(z);
     if(mass) {
       Energy m=ids[0]->mass();
@@ -97,20 +91,7 @@ public:
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
   double integOverP(const double z, const IdList & , 
-                    unsigned int PDFfactor=0) const {
-    switch(PDFfactor) {
-    case 0:
-      return 2.*log(z); 
-    case 1:
-      return -2./z;
-    case 2:
-      return 2.*log(z/(1.-z));
-    case 3:
-    default:
-      throw Exception() << "HalfOneHalfSplitFn::integOverP() invalid PDFfactor = "
-                        << PDFfactor << Exception::runerror;
-    }
-  }
+                    unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -121,20 +102,7 @@ public:
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
   double invIntegOverP(const double r, const IdList &, 
-		       unsigned int PDFfactor=0) const {
-    switch(PDFfactor) {
-    case 0:
-      return exp(0.5*r); 
-    case 1:
-      return -2./r;
-    case 2:
-      return 1./(1.+exp(-0.5*r));
-    case 3:
-    default:
-      throw Exception() << "HalfOneHalfSplitFn::integOverP() invalid PDFfactor = "
-			<< PDFfactor << Exception::runerror;
-    }
-  }
+		       unsigned int PDFfactor=0) const;
   //@}
 
   /**
@@ -147,11 +115,7 @@ public:
    */
   vector<pair<int,Complex> >
   generatePhiForward(const double, const Energy2, const IdList & ,
-		     const RhoDMatrix &) {
-    // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
-    // and rest = splitting function for Tr(rho)=1 as required by defn
-    return {{ {0, 1.} }};
-  }
+		     const RhoDMatrix &);
 
   /**
    * Method to calculate the azimuthal angle for backward evolution
@@ -163,19 +127,7 @@ public:
    */
   vector<pair<int,Complex> >
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
-		      const RhoDMatrix & rho) {
-    assert(rho.iSpin()==PDT::Spin1);
-    double mt = sqr(ids[0]->mass())/t;
-    double diag = (1.+sqr(1.-z))/z - 2.*mt;
-    double off  = 2.*(1.-z)/z*(1.-mt*z/(1.-z));
-    double max = diag+2.*abs(rho(0,2))*off;
-    vector<pair<int, Complex> > output;
-    output.reserve(3);
-    output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
-    output.push_back(make_pair( 2, -rho(0,2)          * off/max)); 
-    output.push_back(make_pair(-2, -rho(2,0)          * off/max));
-    return output;
-  }
+		      const RhoDMatrix & rho);
 
   /**
    * Calculate the matrix element for the splitting
@@ -186,25 +138,7 @@ public:
    */
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
 			   const IdList & ids, const double phi,
-			   bool timeLike) {
-    // calculate the kernal
-    DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1,PDT::Spin1Half)));
-    Energy m = !timeLike ? ZERO : ids[0]->mass();
-    double mt = m/sqrt(t);
-    double root = sqrt(1.-z*sqr(m)/(1.-z)/t);
-    double romz = sqrt(1.-z); 
-    double rz   = sqrt(z);
-    Complex phase = exp(-Complex(0.,1.)*phi);
-    (*kernal)(0,0,0) = -root/rz/phase;
-    (*kernal)(1,2,1) = -conj((*kernal)(0,0,0));
-    (*kernal)(0,2,0) =  root/rz*(1.-z)*phase;
-    (*kernal)(1,0,1) = -conj((*kernal)(0,2,0));
-    (*kernal)(1,2,0) =  mt*z/romz;
-    (*kernal)(0,0,1) =  conj((*kernal)(1,2,0));
-    (*kernal)(0,2,1) =  0.;
-    (*kernal)(1,0,0) =  0.;
-    return kernal;
-  }
+			   bool timeLike);
 
 public:
 

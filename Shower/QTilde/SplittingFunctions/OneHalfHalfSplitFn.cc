@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 
 using namespace Herwig;
 
@@ -106,4 +107,116 @@ DecayMEPtr OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(0,1,1) = 0.;
   (*kernal)(2,0,0) = 0.;
   return kernal;
+}
+
+void OneHalfHalfSplitFn::findZero() {
+  const double xTest = 0.2;
+  vector<Energy2> m2;
+  for(int id=4;id<=6;++id) {
+    tPDPtr parton = getParticleData(id);
+    Energy2 sMin(0.5*GeV2),sMax(4.*sqr(parton->mass()));
+    // ensure min and max in correct regions
+    while (PDF()->xfx(beam(),parton,sMin,xTest)!=0. && sMin>0.01*GeV2) {
+      sMin *=0.5;
+    }
+    while (PDF()->xfx(beam(),parton,sMax,xTest)==0. && sMax<1e10*GeV2) {
+      sMax *=2.;
+    }
+    if(sMin<0.01*GeV2 || sMax>1e10*GeV2) {
+      m2.push_back(ZERO);
+      continue;
+    }
+    // bisect to find zero
+    while(sMax-sMin>1e-10*GeV2) {
+      Energy2 sMid = 0.5*(sMax+sMin);
+      double test = PDF()->xfx(beam(),parton,sMid,xTest);
+      if(test!=0.) sMax = sMid;
+      else         sMin = sMid;
+    }
+    m2.push_back(sMin);
+  }
+  mq_[PDF()] = m2;
+}
+
+void OneHalfHalfSplitFn::guesstz(Energy2 t1,unsigned int iopt,
+                                 const IdList &ids,
+                                 double enhance,bool ident,
+                                 double detune,
+                                 Energy2 &t_main, double &z_main) {
+  mq2_ = ZERO;
+  // get the mass to fix
+  if(iopt==1 && abs(ids[1]->id())>3) {
+    map<cPDFPtr,vector<Energy2>>::const_iterator cit = mq_.find(PDF());
+    if(cit== mq_.end()) findZero();
+    cit = mq_.find(PDF());
+    mq2_ = cit->second[abs(ids[1]->id())-4];
+    if(t1-mq2_<1e-10*GeV2) {
+      t_main = ZERO;
+      return;
+    }
+  }
+  unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor();
+  double lower = integOverP(zLimits().first ,ids,pdfopt);
+  double upper = integOverP(zLimits().second,ids,pdfopt);
+  double c = 1./((upper - lower) * colourFactor()
+                 * alpha()->showerOverestimateValue()/Constants::twopi*enhance*detune);
+  double r = UseRandom::rnd();
+  assert(iopt<=2);
+  if(iopt==1) {
+    c/=pdfMax();
+    //symmetry of FS gluon splitting
+    if(ident) c*=0.5;
+  }
+  else if(iopt==2) c*=-1.;
+  // guessing t
+  if(mq2_!=ZERO) {
+    t_main = (t1-mq2_)*pow(r,c) + mq2_;
+  }
+  else {
+    if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
+      t_main = t1*pow(r,c);
+    }
+    else
+      t_main = Constants::MaxEnergy2;
+  }
+  // guessing z
+  z_main = invIntegOverP(lower + UseRandom::rnd()
+                         *(upper - lower),ids,pdfopt);
+}
+
+double OneHalfHalfSplitFn::PDFVetoRatio(const Energy2 t, const double x, const double z,
+                                        const tcPDPtr parton0, const tcPDPtr parton1,double factor) const {
+  assert(PDF());
+  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
+  if (theScale < sqr(freeze())) theScale = sqr(freeze());
+  
+  const double newpdf=PDF()->xfx(beam(),parton0,theScale,x/z);
+  if(newpdf<=0.) return 0.;
+
+  const double oldpdf=PDF()->xfx(beam(),parton1,theScale,x);
+  if(oldpdf<=0.) return 1.;
+  
+  double ratio = newpdf/oldpdf;
+  double maxpdf = pdfMax();
+  if(mq2_!=ZERO) {
+    ratio *= (t-mq2_)/t;
+  }
+  switch (pdfFactor()) {
+  case 0: break;
+  case 1: maxpdf /= z; break;
+  case 2: maxpdf /= 1.-z; break;
+  case 3: maxpdf /= (z*(1.-z)); break;
+  case 4: maxpdf /= sqrt(z); break;
+  case 5: maxpdf *= sqrt(z); break;
+  default :
+    throw Exception() << "OneHalfHalfSplitFn::PDFVetoRatio invalid PDFfactor = "
+		      << pdfFactor() << Exception::runerror;
+    
+  }
+  
+  if (ratio > maxpdf && (mq2_==ZERO || (mq2_!=ZERO && (t-mq2_)/t >1e-6  ) ) ) 
+    generator()->log() << "OneHalfHalfSplitFn::PDFVetoRatio PDFVeto warning: Ratio > " << name()
+                       << ":PDFmax (by a factor of " << ratio/maxpdf <<") for "
+                       << parton0->PDGName() << " to " << parton1->PDGName() << " " << (t-mq2_)/t << "\n";
+  return ratio/maxpdf ;
 }

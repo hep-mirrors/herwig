@@ -63,7 +63,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const {
+  virtual double overestimateP(const double , const IdList & ) const {
     return 1.;
   }
 
@@ -78,7 +78,7 @@ public:
    * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass, const RhoDMatrix & rho) const {
+			const bool mass, const RhoDMatrix &) const {
     double zz = z*(1.-z);
     double val = 1.-2.*zz;
     if(mass) {
@@ -153,6 +153,35 @@ public:
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
 			   const IdList & ids, const double phi, bool timeLike);
 
+protected:
+  
+  /**
+   * Value of the energy fraction and value of the scale for the veto algorithm
+   * @param iopt The option for calculating z
+   * @param ids The PDG codes of the particles in the splitting
+   * - 0 is final-state
+   * - 1 is initial-state for the hard process
+   * - 2 is initial-state for particle decays
+   * @param t1 The starting valoe of the scale
+   * @param enhance The radiation enhancement factor
+   * @param identical Whether or not the outgoing particles are identical
+   * @param t_main rerurns the value of the energy fraction for the veto algorithm
+   * @param z_main returns the value of the scale for the veto algorithm
+   */
+  virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
+                       double enhance,bool ident,
+                       double detune, Energy2 &t_main, double &z_main);
+  /**
+   *   Interpolation routine
+   */
+  void findZero();
+
+  /**
+   *   Override PDF veto function
+   */
+  virtual double PDFVetoRatio(const Energy2 t, const double x, const double z,
+                              const tcPDPtr parton0, const tcPDPtr parton1, double factor) const;
+
 public:
 
   /**
@@ -188,6 +217,17 @@ private:
    */
   OneHalfHalfSplitFn & operator=(const OneHalfHalfSplitFn &) = delete;
 
+private:
+
+  /**
+   *   Storage of masses for sampling of q2
+   */
+  map<cPDFPtr,vector<Energy2>> mq_;
+
+  /**
+   *  Current mass
+   */
+  Energy2 mq2_;
 };
 
 }

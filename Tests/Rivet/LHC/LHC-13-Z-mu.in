@@ -11,12 +11,18 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1736531
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1635889
 # CMS Z
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=MU
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=MU
 # CMS mass spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1711625
 # ATLAS high pt jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2077570
 # CMS substructure
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1920187:MODE=ZJET
-
+# CMS double parton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1866118
+# CMS mass dependent pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2022_I2079374:LMODE=MU
+# LHCb forward Z production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2021_I1990313
+# CMS c/b jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2020_I1776758

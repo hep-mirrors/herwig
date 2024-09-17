@@ -10,16 +10,28 @@ create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
 set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+# B meson angular dist
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I296188
 ####### semileptonic decays #######################
 # B0 -> D* l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1693396
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2624324
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I340585
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I267206
 # B0/B+ -> D l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2169621
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1997_I443704
+# B0/B+ -> D** l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2512112
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I768236
 # B0 -> rho,pi B+ -> rho,omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
-# B -> eho,pi ell nu
+# B -> rho,pi ell nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2024_I2810686
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I855306
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2003_I616827
 # B+ -> omega l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1116411
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1247460
@@ -27,78 +39,292 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1247460
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1125973
 # B0 -> pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
-# # BELLE B+ -> pi+pi- l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2163247
+# BELLE B+ -> pi+pi- l nu
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1796822
 # BELLE B0 -> D*- tau+ nu_tau D* polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1724068
 # BELLE B -> D* tau+ nu_tau  tau polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1621272
-# BABAR e- spectrum
+# e- spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1498564
-# Crystal Ball e- spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I665011
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I357133
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I298245
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1989_I263581
-# BELLE B-> Xu l nu
+# B -> Xc l nu (moments)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I827787
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2007_I732595
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1917200
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2649712
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2004_I647287
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2004_I647288
+# B -> Xu l nu
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1079912
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1895149
 ############ b -> s gamma #################################
-# BELLE b->s gamma
+# b->s gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
-# BABAR b->s gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2167323
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I769107
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1123662
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1122031
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2016_I1409292
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1337783
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I825222
+# B -> eta K gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I785439
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1663447
+# B -> phi K gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I897683
+# b -> s l+l-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I679052
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I899499
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1272843
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2016_I1283183
+# B -> K l+ l-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1748231
+# B -> K* l+ l-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I817326
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1111233
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2016_I1391152
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2016_I1504055
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1728173
 ####### spectra ###################################
 # ARGUS pi,K, proton
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I340894
+# CLEO kaon
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1982_I180612
 # ARGUS K*, rho, omega
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I356616
-# phi spectrum (CLEO and BaBar)
+# phi spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I632399
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I218314
 # D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2002_I582184
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I401599
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319829
+# D0/D_s spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2660525:MODE=DECAY
 # ARGUS charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
 # CLEO Xi_c spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I442910
 # CLEO Sigma_c spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1994_I361356
-# CLEO baryon spectra
+# baryon spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1992_I315181
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I334962
 # BABAR Omega_c spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I746745
 # BABAR Xi'_c spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722622
 # multiplicities
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_UPSILON4S_HADRON_MULTIPLICITIES
 # CLEO multiplicty in Upsilon(4S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1999_I504672
 # kaons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
 # charm hadrons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
-# # MC analyses based on old internal ones
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I440969
+# MC analyses based on old internal ones
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DECAY_MESON_MESON_LEPTONS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DALITZ_D
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DECAY_ONIUM_PIPI
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DECAY_SEMILEPTONIC
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
 # BELLE Upsilon(4S) -> pi+pi- Upsilon(1S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I810744
 # BABAR Upsilon(4S) -> pi+pi- Upsilon(1,2S) decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714448
-# CLEO J/psi and psi(2s) in b decays
+# charmonium in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1986_I230961
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1995_I382221
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I606309
 # BABAR eta' in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I642355
 # BELLE eta in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I835104
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1996_I398228
 # BELLE charm hadron producion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
 # BELLE Upsilon 4S -> Upsilon 1,2S pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1610301
 # BELLE B+ -> phi phi K+
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1841899
-# BELLE B0 -> p pbar pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729311
-# BELLE B0 -> KS0 K-+ pi+-
+# B0 -> KS0 K-+ pi+-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729723
+# B+ -> K+ K- pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2099998
+# B- -> D0 rho-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2024_I2778312
+# BELLE B -> Dbar0 pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2007_I733011
+# B -> D* + pions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I658085
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2003_I611745
+# B+ -> D(*)- pi+pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I623102
+# B -> D* + 4 pions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I557084
+# BABAR B0 -> D*- 3pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2016_I1487722
+# B- -> D*- D0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I677084
+# BELLE chi_c1,2, spectra and inclusive B decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2016_I1408873
+# BABAR B0 -> K+ pi- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I897848
+# B+ -> K+ pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I626730
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I782405
+# BABAR B0 -> D*0 omega
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I920989
+# B -> D(*) omega pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1369998
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I713862
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2001_I554175
+# B- -> D K*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I714147
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_I667017
+# B- -> D*0 K*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I626518
+# B -> D K K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2002_I590700
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2655951
+# BELLE B0 -> p Lambdabar0 D(*)-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1392799
+# B -> D D K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1335269
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I756554
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I758167
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I623994
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I723331
+# BELLE B0 -> Ds K0 pi and B+ Ds K K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1326905
+# BABAR B- -> Ds(*) K- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I755245
+# BELLE B+ -> D_s(*) K pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I816632
+# BELLE B0 -> D*+ D*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2012_I1123656
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_I686355
+# B0 -> D*s+ D*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2003_I613283
+# BABAR B -> Ds1(2460) D
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I656424
+# BABAR B -> KKK
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1086537
+# BABAR B0-> pi+pi- K*0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1081760
+# BABAR B+ -> pi+ pi0 KS0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2017_I1336340
+# BELLE Bbar0 ->J/psi K- pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2014_I1312626
+# BELLE B ->psi(2s) K pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1239347
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I820737
+# BABAR B ->J/psi psi(2s) K pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I801589
+# B -> psi(2S) K*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2001_I535113
+# BABAR B -> K* Jpsi, psi(2s), chi_c1
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I748372
+# B -> J/psi K*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I680703
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I376001
+# BELLE B -> chi_c1 K*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I689881
+# BELLE B+ -> J/psi psi(2S) K+ pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I871475
+#  B+ -> K+ eta' J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2023_I2643022
+# B+ -> K+ pi+pi-, K+K+K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I667959
+# BELLE B+ -> K+ K- pi+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1598461
+# BELLE B0 -> K+ K- KS0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I862241
+# BABAR B-> J/psi phi K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1308513
+# BABAR B-> J/psi omega K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I767506
+# B0 -> phi K pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1247059
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I792439
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I677873
+# BABAR B -> phi phi K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I901433
+# B+ -> phi K_1+/K_2+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I789278
+# BABAR B- > D+ pi-pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I810694
+# BABAR B0 > a1+ a1-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I825406
+# BABAR B+ -> pi+ pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I813140
+# B -> omega K/pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I735859
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I754030
+# B0 -> KS-0 pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I821188
+# B -> K X(3872)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I916712
+# B -> K* eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I722710
+# B -> K* eta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I722820
+# B -> K*0 Kbar*0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I758472
+# B+ -> omega rho+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_I664717
+# B -> rho rho
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2003_I620180
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2004_I632736
+# B -> rho pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I651511
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2022_I2131772
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I688850
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2002_I589587
+######################## B decays involving baryons #########################################
+# B- > Lambda_c+ pbar pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I791879
+# B -> p pbar K/pi K* 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I754259
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I630328
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I778726
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_I686573
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1729311
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_I755548
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I679165
+# B- > Lambda_c+ Lambdabar_c- K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2008_I766290
+# B -> p Lambdabar + gamma/pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2007_I748975
+# Bbar0 -> Lambda_c+ Lambdabar0 K-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2011_I924163
+# Xi(2930)  in B -> Lambda_c+ Lambdabar_c- K
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1642436
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2018_I1679584
+# B- -> pbar Lambda0 D0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I924618
+# p Lambdabar0 pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1596893
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I819092
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2023_I2663731
+# B -> Lambda Lambdabar K(*)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2009_I803343
+# B- -> Sigmac++ pbar pi- pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I1127599
+# B- -> Lambda_c+ pbar pi+ pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1217425
+# B -> D(*) p pbar + pions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2012_I946659
+# B- -> Lambda_c+ pbar  pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I658082
+# branching ratios
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_B0
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_BPLUS

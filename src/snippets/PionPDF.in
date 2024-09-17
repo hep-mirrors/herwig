@@ -1,0 +1,21 @@
+# -*- ThePEG-repository -*-
+
+#=============================================================================
+#  Set up for charged pion beams
+#
+# The LHAPDF6 library must be available to use this snippet.
+#=============================================================================
+
+cd /Herwig/Partons
+create ThePEG::LHAPDF PionPDF ThePEGLHAPDF.so
+set PionPDF:PDFName xFitterPI_NLO_EIG
+cp HadronRemnants PionRemnants
+cp RemnantDecayer PionRemnantDecayer
+set PionRemnantDecayer:AllowTop Yes
+set  PionRemnants:RemnantDecayer PionRemnantDecayer
+set PionPDF:RemnantHandler PionRemnants
+set /Herwig/Particles/pi+:PDF PionPDF
+set /Herwig/Particles/pi-:PDF PionPDF
+
+cd /
+

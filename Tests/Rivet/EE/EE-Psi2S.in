@@ -4,11 +4,11 @@ create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEPsi2S HwMELepton.so
 set /Herwig/MatrixElements/MEPsi2S:VectorMeson /Herwig/Particles/psi(2S)
 set /Herwig/MatrixElements/MEPsi2S:Coupling  19.25684
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEPsi2S
-set EventGenerator:EventHandler:LuminosityFunction:Energy 3.686097
+set EventGenerator:EventHandler:LuminosityFunction:Energy 3.6861
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-do /Herwig/Particles/psi(2S):SelectDecayModes psi(2S)->n0,nbar0; psi(2S)->p+,pbar-; psi(2S)->Sigma0,Sigmabar0; psi(2S)->Sigma+,Sigmabar-; psi(2S)->Lambda0,Lambdabar0; psi(2S)->Sigma*-,Sigma*bar+;  psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Sigma*+,Sigma*bar-; psi(2S)->Xi-,Xibar+; psi(2S)->Xi0,Xibar0; psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Xi*-,Xi*bar+;  psi(2S)->Xi*0,Xi*bar0; 
+do /Herwig/Particles/psi(2S):SelectDecayModes psi(2S)->n0,nbar0; psi(2S)->p+,pbar-; psi(2S)->Sigma0,Sigmabar0; psi(2S)->Sigma+,Sigmabar-; psi(2S)->Lambda0,Lambdabar0; psi(2S)->Sigma*-,Sigma*bar+; psi(2S)->Sigma-,Sigmabar+;  psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Sigma*+,Sigma*bar-; psi(2S)->Xi-,Xibar+; psi(2S)->Xi0,Xibar0; psi(2S)->Sigma*0,Sigma*bar0; psi(2S)->Xi*-,Xi*bar+;  psi(2S)->Xi*0,Xi*bar0;
 ########### Decay to two baryons (correlations) ####################
 # psi(2S) -> lambda anti-lambda and sigma anti-sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563
@@ -26,4 +26,16 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1921775
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2020_I1791570
 # psi(2S) -> xi- xi+bar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2099144
-
+# psi(2S) -> xi0 xi0bar correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2634735
+# psi(2S) -> Sigma- Sigmabar+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2158325
+# direct  psi(2S) -> gamma gamma J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1097066
+#################### Dalitz decays ##################################
+# psi(2S) -> eta_c e+ e-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2141748
+# psi(2S) -> eta' e+ e-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1664315
+# psi(2S) -> chi_c e+ e-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1509920

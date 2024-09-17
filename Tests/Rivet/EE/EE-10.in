@@ -37,3 +37,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1986_I227324
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I282570
 # ARGUS Delta++
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932
+# pp and lambda lambda pairs
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I295621
+# baryon-antibaryon correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I266892

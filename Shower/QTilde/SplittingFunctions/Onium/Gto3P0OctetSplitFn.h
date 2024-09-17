@@ -108,9 +108,7 @@ public:
    virtual ShoKinPtr generateNextSpaceBranching(const Energy ,
 						 const IdList &,double ,
 						 const RhoDMatrix & ,
-						 double ,
-						 tcBeamPtr ,
-						 double )
+						 double , double )
   {assert(false);}
   //@}
   

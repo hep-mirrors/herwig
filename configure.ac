@@ -1,6 +1,6 @@
 	dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.63])
+AC_PREREQ([2.71])
 AC_INIT([Herwig],[devel],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
@@ -137,6 +137,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Feynrules/python/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
+        Models/HiddenValley/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
@@ -195,6 +196,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
 		Shower/QTilde/SplittingFunctions/Onium/Makefile
+		Shower/QTilde/SplittingFunctions/Dark/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile
@@ -253,11 +255,11 @@ AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	   
 AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE-Gamma	 ],[chmod +x Tests/python/merge-EE-Gamma     ])	 
 AC_CONFIG_FILES([Tests/python/merge-Fixed	 ],[chmod +x Tests/python/merge-Fixed	     ])
-AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])	 
+AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-EW	 ],[chmod +x Tests/python/merge-LHC-EW	     ])
-AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])	 
-AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])	
-AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])	 
+AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])
+AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])
+AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW	 ],[chmod +x Tests/python/merge-TVT-EW	     ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])
