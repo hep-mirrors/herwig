@@ -88,6 +88,7 @@ Tests/python/LowEnergy-EE.py
 Tests/python/LowEnergy-Photon.py
 Tests/python/R.py
 Tests/python/make_input_files.py
+Tests/python/onium_input_files.py
 Tests/python/merge-DIS
 Tests/python/merge-EE
 Tests/python/merge-EE-Gamma
