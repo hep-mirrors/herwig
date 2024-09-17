@@ -12,7 +12,7 @@
 //
 
 #include "OneHalfHalfDarkSplitFn.h"
-#include "HiddenValleyModel.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -20,7 +20,7 @@
 using namespace Herwig;
 
 DescribeNoPIOClass<OneHalfHalfDarkSplitFn,Herwig::Sudakov1to2FormFactor>
-describeOneHalfHalfDarkSplitFn ("Herwig::OneHalfHalfDarkSplitFn","HwShower.so");
+describeOneHalfHalfDarkSplitFn ("Herwig::OneHalfHalfDarkSplitFn","HwDarkShower.so");
 
 void OneHalfHalfDarkSplitFn::Init() {
 

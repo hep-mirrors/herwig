@@ -137,6 +137,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Feynrules/python/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
+        Models/HiddenValley/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
@@ -195,6 +196,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
 		Shower/QTilde/SplittingFunctions/Onium/Makefile
+		Shower/QTilde/SplittingFunctions/Dark/Makefile
 		Shower/Dipole/Makefile
 		Shower/Dipole/Base/Makefile
 		Shower/Dipole/Kernels/Makefile

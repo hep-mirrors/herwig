@@ -1,6 +1,6 @@
 SUBDIRS = RSModel  StandardModel General Susy UED Zprime \
           Transplanckian ADD Leptoquarks Sextet TTbAsymm \
-          LH LHTP Feynrules DarkMatter
+          LH LHTP Feynrules DarkMatter HiddenValley
 
 noinst_LTLIBRARIES = libHwStandardModel.la
 nodist_libHwStandardModel_la_SOURCES = \
@@ -16,6 +16,12 @@ General/ModelGenerator__all.cc
 libHwModelGenerator_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/General
 
+noinst_LTLIBRARIES += libHwHiddenValley.la
+nodist_libHwHiddenValley_la_SOURCES = \
+HiddenValley/HV__all.cc
+
+libHwHiddenValley_la_CPPFLAGS = \
+$(AM_CPPFLAGS) -I$(srcdir)/HiddenValley
 
 
 

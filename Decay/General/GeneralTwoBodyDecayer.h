@@ -15,6 +15,7 @@
 #include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 #include "GeneralTwoBodyDecayer.fh"
 
 namespace Herwig {
@@ -250,6 +251,11 @@ private:
    * Store colour factors for ME calc.
    */
   vector<DVector> colour_;
+
+  /**
+   * Pointer to the Hiddwn Valley object.
+   */
+  tHiddenValleyPtr _HVmodel;
 
 };
 
