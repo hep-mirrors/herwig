@@ -55,6 +55,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
   _nReWeight(100), _reWeight(false),
   interaction_(ShowerInteraction::ALL),
+  darkInteraction_(false),
   _trunc_Mode(true), _hardEmission(1),
   _softOpt(2), _hardPOWHEG(false), muPt(ZERO), _oneToOneMode(0)
 {}
@@ -74,7 +75,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV)
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
      << _trunc_Mode << _hardEmission << _evolutionScheme 
-     << ounit(muPt,GeV) << _oneToOneMode << oenum(interaction_) 
+     << ounit(muPt,GeV) << _oneToOneMode << oenum(interaction_) << darkInteraction_
      << _reconstructor << _partnerfinder;
 }
 
@@ -85,7 +86,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
      >> _trunc_Mode >> _hardEmission >> _evolutionScheme
-     >> iunit(muPt,GeV) >> _oneToOneMode >> ienum(interaction_)
+     >> iunit(muPt,GeV) >> _oneToOneMode >> ienum(interaction_) >> darkInteraction_
      >> _reconstructor >> _partnerfinder;
 }
 
@@ -295,6 +296,11 @@ void QTildeShowerHandler::Init() {
      "EWOnly",
      "Only EW",
      ShowerInteraction::EW);
+  static SwitchOption interfaceInteractionDARK
+    (interfaceInteractions,
+     "DARK",
+     "DARK interaction only, overides DarkInteraction",
+     ShowerInteraction::DARK);
   static SwitchOption interfaceInteractionQEDQCD
     (interfaceInteractions,
      "QEDQCD",
@@ -305,6 +311,22 @@ void QTildeShowerHandler::Init() {
      "ALL",
      "QED, QCD and EW",
      ShowerInteraction::ALL);
+
+ 
+  static Switch<QTildeShowerHandler,bool> interfaceDarkInteraction
+    ("DarkInteraction",
+     "Whether to include dark interactions in the shower, in addition to those specified by Interactions",
+     &QTildeShowerHandler::darkInteraction_, false, false, false);
+  static SwitchOption interfaceInteractionsDarkOn
+    (interfaceDarkInteraction,
+     "Yes",
+     "Include DARK interactions",
+     true);
+  static SwitchOption interfaceInteractionsDarkOff
+    (interfaceDarkInteraction,
+     "No",
+     "Don't include DARK interactions",
+     false);
 
   static Deleted<QTildeShowerHandler> delReconstructionOption
     ("ReconstructionOption", "The old reconstruction option switch has been replaced with"
@@ -851,11 +873,11 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   if(particle->spinInfo()) particle->spinInfo()->develop();
- 
+
   if(!theChildren.empty()){
     particle->showerKinematics()->resetChildren(newParent,theChildren);
   }
-  
+
 
   return true;
 }
@@ -967,6 +989,8 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
 }
 
 vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
+  // set the dark interaction in the splittingGenerator now (should this go somewhere else?)
+  _splittingGenerator->setDarkInteraction(darkInteraction_);
   RealEmissionProcessPtr real;
   // generate hard me if needed
   if(_hardEmission==1) {
@@ -986,7 +1010,7 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
 }
 
 void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
-					       bool clear) {
+        bool clear) {
   // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
@@ -1025,7 +1049,7 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 
   // Set the initial evolution scales
   partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,interaction_,!_hardtree);
+    setInitialEvolutionScales(particles,!hard,interaction_,darkInteraction_,!_hardtree);
   if(hardTree() && _hardPOWHEG) {
     bool tooHard=false;
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator
@@ -1062,6 +1086,12 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 	else if(type==ShowerPartnerType::EW) {
 	  tooHard |= particles[ix]->scales().EW<hardScale;
 	}
+    else if(type==ShowerPartnerType::DARKColourLine) {
+      tooHard |= particles[ix]->scales().DARK_c_noAO<hardScale;
+    }
+    else if(type==ShowerPartnerType::DARKAntiColourLine) {
+      tooHard |= particles[ix]->scales().DARK_ac_noAO<hardScale;
+    }
       }
     }
     if(tooHard) convertHardTree(hard,type);
@@ -2249,11 +2279,18 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
 	  if(progenitor()->progenitor()->hasColour()) {
 	    progenitor()->progenitor()->scales().QCD_c       = progenitor()->progenitor()->mass();
 	    progenitor()->progenitor()->scales().QCD_c_noAO  = progenitor()->progenitor()->mass();
+        progenitor()->progenitor()->scales().DARK_c       = progenitor()->progenitor()->mass();
+        progenitor()->progenitor()->scales().DARK_c_noAO  = progenitor()->progenitor()->mass();
 	  }
 	  if(progenitor()->progenitor()->hasAntiColour()) {
 	    progenitor()->progenitor()->scales().QCD_ac      = progenitor()->progenitor()->mass();
 	    progenitor()->progenitor()->scales().QCD_ac_noAO = progenitor()->progenitor()->mass();
+        progenitor()->progenitor()->scales().DARK_ac      = progenitor()->progenitor()->mass();
+        progenitor()->progenitor()->scales().DARK_ac_noAO = progenitor()->progenitor()->mass();
 	  }
+    if(progenitor()->progenitor()->id()!=ParticleID::g) {
+      progenitor()->progenitor()->scales().EW = progenitor()->progenitor()->mass();
+    }
 	  // perform the shower
 	  progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
 							     interaction_));
@@ -2263,7 +2300,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
       kinematicsReconstructor()->
-      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,generalRecon) :
+      reconstructHardJets(currentTree(),intrinsicpT(),interaction_,generalRecon) :
       kinematicsReconstructor()->
       reconstructDecayJets(currentTree(),interaction_);
     if(!reconstructed) continue;
@@ -2874,11 +2911,13 @@ void QTildeShowerHandler::decay(ShowerTreePtr tree, ShowerDecayMap & decay) {
   // find particle after the shower
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
     tit = tree->parent()->treelinks().find(tree);
-  assert(tit!=tree->parent()->treelinks().end());
-  ShowerParticlePtr newparent=tit->second.second;
-  PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
-  newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
-  DecayProcessMap decayMap;
-  ShowerHandler::decay(newProcess,decayMap);
-  ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
+  if(tit->second.second) {
+    assert(tit!=tree->parent()->treelinks().end());
+    ShowerParticlePtr newparent=tit->second.second;
+    PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
+    newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
+    DecayProcessMap decayMap;
+    ShowerHandler::decay(newProcess,decayMap);
+    ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
+  }
 }

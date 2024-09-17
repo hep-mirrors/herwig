@@ -45,7 +45,13 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  bool accept(const IdList & ids) const;
+  virtual bool accept(const IdList & ids) const {
+    if(ids.size()!=3) return false;
+    if(ids[1]!=ids[2]->CC()) return false;
+    if(ids[1]->iSpin()!=PDT::Spin1Half) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1) return false;
+    return true;
+  }
 
   /**
    *   Methods to return the splitting function.
@@ -57,8 +63,8 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double, const IdList &) const {
-    return 1.; 
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    return 1.;
   }
 
   /**
@@ -71,8 +77,16 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    * @param rho The spin density matrix
    */
-  double ratioP(const double z, const Energy2 t, const IdList & ids,
-		const bool mass, const RhoDMatrix & rho) const;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass, const RhoDMatrix & rho) const {
+    double zz = z*(1.-z);
+    double val = 1.-2.*zz;
+    if(mass) {
+      Energy m = ids[1]->mass();
+      val+= 2.*sqr(m)/t;
+    }
+    return val;
+  }
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -122,9 +136,9 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  vector<pair<int,Complex> >
-  generatePhiBackward(const double , const Energy2 , const IdList & ,
-		      const RhoDMatrix &) {
+  virtual vector<pair<int,Complex> >
+  generatePhiBackward(const double, const Energy2, const IdList &,
+		      const RhoDMatrix &) { 
     // no dependance
     return {{ {0, 1.} }};
   }

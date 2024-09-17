@@ -205,7 +205,6 @@ def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
             result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
         else :
             result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
-
     return result
 
 def particlegroup(factory,name,*particles):

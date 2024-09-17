@@ -358,7 +358,6 @@ elif(collider=="TVT") :
                 elif "900" in parameterName :
                     cuts=[5.,]
                 cuts.append(ecms)
-                print("before name loop ",parameterName)
                 for i in range(1,len(cuts)) :
                     tstring = "-Jets-%s"%i
                     if tstring in parameterName :

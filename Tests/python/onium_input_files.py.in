@@ -37,7 +37,8 @@ singletEnhance = { "Jpsi" : 1e3, "eta_c" : 1e3 , "psi(2S)" : 1e3,  "chi_c0" : 1e
                    "chi_b0" : 1e4, "chi_b1" : 1e4, "chi_b2" : 1e4,
                    "chi_b0(2P)" : 1e4, "chi_b1(2P)" : 1e5, "chi_b2(2P)" : 1e5,
                    "chi_b0(3P)" : 1e6, "chi_b1(3P)" : 1e6, "chi_b2(3P)" : 1e6,
-                   "B_c+" : 1e2, "B_c*+" : 1e2, "B_c(2S)+" : 1e2, "B_c(2S)*+" : 1e2 }
+                   "B_c+" : 1e2, "B_c*+" : 1e2, "B_c(2S)+" : 1e2, "B_c(2S)*+" : 1e2,
+                   "cc_1" : 1e2, "bc_0" : 1e2, "bc_1" : 1e2, "bb_1" : 1e2}
 gluonSingletEnhance= { "Jpsi" : 1e4, "psi(2S)" : 1e4,  "chi_c0" : 1e4, "chi_c1" : 1e4, "chi_c2" : 1e4,
                        "Upsilon" : 1e5, "Upsilon(2S)" : 1e5, "Upsilon(3S)" : 1e5,
                        "chi_b0" : 1e4, "chi_b1" : 1e4, "chi_b2" : 1e4,
@@ -216,9 +217,13 @@ else:
         line=sfile.readline()
 
     # switch off hadronization and MPI
-    process += "set /Herwig/Shower/ShowerHandler:MPIHandler NULL\n"
-    process += "set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL\n"
-    process += "set /Herwig/Analysis/Basics:CheckQuark No\n"
+    if particle != "cc_1"  and particle !="bc_0" and particle !="bc_1" and particle !="bb_1" : 
+        process += "set /Herwig/Shower/ShowerHandler:MPIHandler NULL\n"
+        process += "set /Herwig/Generators/EventGenerator:EventHandler:HadronizationHandler NULL\n"
+        process += "set /Herwig/Analysis/Basics:CheckQuark No\n"
+    else :
+        process +="decaymode Xi_cc++->Lambda_c+,K-,pi+,pi+; 0.5 1 /Herwig/Decays/Mambo\n"
+        process +="do /Herwig/Particles/Xi_cc++:SelectDecayModes Xi_cc++->Lambda_c+,K-,pi+,pi+;\n"
 
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)

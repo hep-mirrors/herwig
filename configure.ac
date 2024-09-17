@@ -256,7 +256,7 @@ AC_CONFIG_FILES([Tests/python/merge-Fixed	 ],[chmod +x Tests/python/merge-Fixed	
 AC_CONFIG_FILES([Tests/python/merge-GammaGamma	 ],[chmod +x Tests/python/merge-GammaGamma   ])	 
 AC_CONFIG_FILES([Tests/python/merge-LHC-EW	 ],[chmod +x Tests/python/merge-LHC-EW	     ])
 AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC-Jets     ])	 
-AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])	 
+AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])	
 AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])	 
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW	 ],[chmod +x Tests/python/merge-TVT-EW	     ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])

@@ -24,6 +24,8 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include "ThePEG/Interface/ParMap.h"
+#include "Herwig/Utilities/AlphaS.h"
 
 using namespace Herwig;
 
@@ -32,22 +34,19 @@ describeClusterFissioner("Herwig::ClusterFissioner","Herwig.so");
 
 ClusterFissioner::ClusterFissioner() :
   _clMaxLight(3.35*GeV),
-  _clMaxBottom(3.35*GeV),
-  _clMaxCharm(3.35*GeV),
+  _clMaxDiquark(3.35*GeV),
   _clMaxExotic(3.35*GeV),
   _clPowLight(2.0),
-  _clPowBottom(2.0),
-  _clPowCharm(2.0),
+  _clPowDiquark(2.0),
   _clPowExotic(2.0),
   _pSplitLight(1.0),
-  _pSplitBottom(1.0),
-  _pSplitCharm(1.0),
   _pSplitExotic(1.0),
-  _fissionPwtUquark(1),
-  _fissionPwtDquark(1),
-  _fissionPwtSquark(0.5),
+  _phaseSpaceWeights(0),
+  _dim(4),
   _fissionCluster(0),
   _kinematicThresholdChoice(0),
+  _pwtDIquark(0.0),
+  _diquarkClusterFission(0),
   _btClM(1.0*GeV),
   _iopRem(1),
   _kappa(1.0e15*GeV/meter),
@@ -56,9 +55,15 @@ ClusterFissioner::ClusterFissioner() :
   _massMeasure(0),
   _probPowFactor(4.0),
   _probShift(0.0),
-  _kinThresholdShift(1.0*sqr(GeV))
-{}
-
+  _kinThresholdShift(1.0*sqr(GeV)),
+  _strictDiquarkKinematics(0),
+  _covariantBoost(false),
+	_hadronizingStrangeDiquarks(2),
+	_writeOut(0)
+{
+}
+ClusterFissioner::~ClusterFissioner(){
+}
 IBPtr ClusterFissioner::clone() const {
   return new_ptr(*this);
 }
@@ -68,27 +73,80 @@ IBPtr ClusterFissioner::fullclone() const {
 }
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronSelector << ounit(_clMaxLight,GeV)
-     << ounit(_clMaxBottom,GeV) << ounit(_clMaxCharm,GeV)
-     << ounit(_clMaxExotic,GeV) << _clPowLight << _clPowBottom
-     << _clPowCharm << _clPowExotic << _pSplitLight
-     << _pSplitBottom << _pSplitCharm << _pSplitExotic
-     << _fissionCluster << _fissionPwtUquark << _fissionPwtDquark << _fissionPwtSquark
-     << ounit(_btClM,GeV) << _iopRem << _kinematicThresholdChoice
-     << ounit(_kappa, GeV/meter) << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
-     << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV));
+  os << ounit(_clMaxLight,GeV) << ounit(_clMaxHeavy,GeV) << ounit(_clMaxDiquark,GeV) << ounit(_clMaxExotic,GeV)
+		 << _clPowLight << _clPowHeavy << _clPowDiquark << _clPowExotic
+		 << _pSplitLight << _pSplitHeavy << _pSplitExotic
+     << _fissionCluster << _fissionPwt
+	 << _pwtDIquark
+	 << _diquarkClusterFission
+     << ounit(_btClM,GeV)
+     << _iopRem  << ounit(_kappa, GeV/meter)
+     << _enhanceSProb << ounit(_m0Fission,GeV) << _massMeasure
+		 << _dim << _phaseSpaceWeights
+     << _hadronSpectrum << _kinematicThresholdChoice
+     << _probPowFactor << _probShift << ounit(_kinThresholdShift,sqr(GeV))
+	 << _strictDiquarkKinematics
+	 << _covariantBoost
+	 << _hadronizingStrangeDiquarks
+	 << _writeOut
+	 ;
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronSelector >> iunit(_clMaxLight,GeV)
-     >> iunit(_clMaxBottom,GeV) >> iunit(_clMaxCharm,GeV)
-     >> iunit(_clMaxExotic,GeV) >> _clPowLight >> _clPowBottom
-     >> _clPowCharm >> _clPowExotic >> _pSplitLight
-     >> _pSplitBottom >> _pSplitCharm >> _pSplitExotic
-     >> _fissionCluster >> _fissionPwtUquark >> _fissionPwtDquark >> _fissionPwtSquark
-     >> iunit(_btClM,GeV) >> _iopRem >> _kinematicThresholdChoice
-     >> iunit(_kappa, GeV/meter) >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
-     >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV));
+  is >> iunit(_clMaxLight,GeV) >> iunit(_clMaxHeavy,GeV) >> iunit(_clMaxDiquark,GeV) >> iunit(_clMaxExotic,GeV)
+		 >> _clPowLight >> _clPowHeavy >> _clPowDiquark >> _clPowExotic
+		 >> _pSplitLight >> _pSplitHeavy >> _pSplitExotic
+     >> _fissionCluster >> _fissionPwt
+	 >> _pwtDIquark
+	 >> _diquarkClusterFission
+   >> iunit(_btClM,GeV)
+	 	 >> _iopRem >> iunit(_kappa, GeV/meter)
+     >> _enhanceSProb >> iunit(_m0Fission,GeV) >> _massMeasure
+		 >> _dim >> _phaseSpaceWeights
+     >> _hadronSpectrum >> _kinematicThresholdChoice
+     >> _probPowFactor >> _probShift >> iunit(_kinThresholdShift,sqr(GeV))
+	 >> _strictDiquarkKinematics
+	 >> _covariantBoost
+	 >> _hadronizingStrangeDiquarks
+	 >> _writeOut
+	 ;
+}
+
+void ClusterFissioner::doinit() {
+  Interfaced::doinit();
+	if (_writeOut){
+		std::ofstream out("data_CluFis.dat", std::ios::out);
+		out.close();
+	}
+  for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+    if ( _pSplitHeavy.find(id) == _pSplitHeavy.end() ||
+	 _clPowHeavy.find(id) == _clPowHeavy.end() ||
+	 _clMaxHeavy.find(id) == _clMaxHeavy.end() ){
+			std::cout << "id = "<<id << std::endl;
+      throw InitException() << "not all parameters have been set for heavy quark cluster fission";
+  }
+  }
+  // for default Pwts not needed to initialize
+  if (_fissionCluster==0) return;  
+  for ( const long& id : spectrum()->lightHadronizingQuarks() ) {
+    if ( _fissionPwt.find(id) == _fissionPwt.end() )
+		  // check that all relevant weights are set
+      throw InitException() << "fission weights for light quarks have not been set";
+  }
+  double pwtDquark=_fissionPwt.find(ParticleID::d)->second;
+  double pwtUquark=_fissionPwt.find(ParticleID::u)->second;
+  double pwtSquark=_fissionPwt.find(ParticleID::s)->second;
+  // TODO better solution for this magic  number alternative
+  _fissionPwt[1103] =       _pwtDIquark * pwtDquark * pwtDquark;
+  _fissionPwt[2101] = 0.5 * _pwtDIquark * pwtUquark * pwtDquark;
+  _fissionPwt[2203] =       _pwtDIquark * pwtUquark * pwtUquark;
+	if (_hadronizingStrangeDiquarks>0) {
+		_fissionPwt[3101] = 0.5 * _pwtDIquark * pwtSquark * pwtDquark;
+		_fissionPwt[3201] = 0.5 * _pwtDIquark * pwtSquark * pwtUquark;
+		if (_hadronizingStrangeDiquarks==2) {
+			_fissionPwt[3303] =       _pwtDIquark* pwtSquark * pwtSquark;
+		}
+	}
 }
 
 void ClusterFissioner::Init() {
@@ -96,40 +154,42 @@ void ClusterFissioner::Init() {
   static ClassDocumentation<ClusterFissioner> documentation
     ("Class responsibles for chopping up the clusters");
 
-  static Reference<ClusterFissioner,HadronSelector>
-    interfaceHadronSelector("HadronSelector",
-                             "A reference to the HadronSelector object",
-                             &Herwig::ClusterFissioner::_hadronSelector,
-			     false, false, true, false);
+  static Reference<ClusterFissioner,HadronSpectrum> interfaceHadronSpectrum
+    ("HadronSpectrum",
+     "Set the Hadron spectrum for this cluster fissioner.",
+     &ClusterFissioner::_hadronSpectrum, false, false, true, false);
 
   // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxLight ("ClMaxLight","cluster max mass for light quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, ZERO, 10.0*GeV,
-		    false,false,false);
+                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, ZERO, 100.0*GeV,
+		    false,false,false);  
   static Parameter<ClusterFissioner,Energy>
-    interfaceClMaxBottom ("ClMaxBottom","cluster max mass  for b quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, ZERO, 10.0*GeV,
-		    false,false,false);
-  static Parameter<ClusterFissioner,Energy>
-    interfaceClMaxCharm ("ClMaxCharm","cluster max mass for c quarks  (unit [GeV])",
-                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, ZERO, 10.0*GeV,
-		    false,false,false);
+    interfaceClMaxDiquark ("ClMaxDiquark","cluster max mass for light hadronizing diquarks (unit [GeV])",
+                    &ClusterFissioner::_clMaxDiquark, GeV, 3.35*GeV, ZERO, 100.0*GeV,
+		    false,false,false);  
+  static ParMap<ClusterFissioner,Energy> interfaceClMaxHeavy
+    ("ClMaxHeavy",
+     "ClMax for heavy quarks",
+     &ClusterFissioner::_clMaxHeavy, GeV, -1, 3.35*GeV, ZERO, 100.0*GeV,
+     false, false, Interface::upperlim);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxExotic ("ClMaxExotic","cluster max mass  for exotic quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, ZERO, 10.0*GeV,
+                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, ZERO, 100.0*GeV,
 		    false,false,false);
 
  // ClPow for light, Bottom, Charm and exotic (e.g. Susy) quarks
  static Parameter<ClusterFissioner,double>
     interfaceClPowLight ("ClPowLight","cluster mass exponent for light quarks",
-                    &ClusterFissioner::_clPowLight, 0, 2.0, 0.0, 10.0,false,false,false);
+                    &ClusterFissioner::_clPowLight, 0, 2.0, 0.0, 10.0,false,false,false); 
+  static ParMap<ClusterFissioner,double> interfaceClPowHeavy
+    ("ClPowHeavy",
+     "ClPow for heavy quarks",
+     &ClusterFissioner::_clPowHeavy, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::upperlim); 
  static Parameter<ClusterFissioner,double>
-    interfaceClPowBottom ("ClPowBottom","cluster mass exponent for b quarks",
-                    &ClusterFissioner::_clPowBottom, 0, 2.0, 0.0, 10.0,false,false,false);
- static Parameter<ClusterFissioner,double>
-    interfaceClPowCharm ("ClPowCharm","cluster mass exponent for c quarks",
-                    &ClusterFissioner::_clPowCharm, 0, 2.0, 0.0, 10.0,false,false,false);
+    interfaceClPowDiquark ("ClPowDiquark","cluster mass exponent for light hadronizing diquarks",
+                    &ClusterFissioner::_clPowDiquark, 0, 2.0, 0.0, 10.0,false,false,false); 
  static Parameter<ClusterFissioner,double>
     interfaceClPowExotic ("ClPowExotic","cluster mass exponent for exotic quarks",
                     &ClusterFissioner::_clPowExotic, 0, 2.0, 0.0, 10.0,false,false,false);
@@ -138,12 +198,11 @@ void ClusterFissioner::Init() {
   static Parameter<ClusterFissioner,double>
     interfacePSplitLight ("PSplitLight","cluster mass splitting param for light quarks",
                     &ClusterFissioner::_pSplitLight, 0, 1.0, 0.0, 10.0,false,false,false);
-  static Parameter<ClusterFissioner,double>
-    interfacePSplitBottom ("PSplitBottom","cluster mass splitting param for b quarks",
-                    &ClusterFissioner::_pSplitBottom, 0, 1.0, 0.0, 10.0,false,false,false);
- static Parameter<ClusterFissioner,double>
-    interfacePSplitCharm ("PSplitCharm","cluster mass splitting param for c quarks",
-                    &ClusterFissioner::_pSplitCharm, 0, 1.0, 0.0, 10.0,false,false,false);
+  static ParMap<ClusterFissioner,double> interfacePSplitHeavy
+    ("PSplitHeavy",
+     "PSplit for heavy quarks",
+     &ClusterFissioner::_pSplitHeavy, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::upperlim);
  static Parameter<ClusterFissioner,double>
     interfacePSplitExotic ("PSplitExotic","cluster mass splitting param for exotic quarks",
                     &ClusterFissioner::_pSplitExotic, 0, 1.0, 0.0, 10.0,false,false,false);
@@ -155,32 +214,53 @@ void ClusterFissioner::Init() {
      &ClusterFissioner::_fissionCluster, 1, false, false);
   static SwitchOption interfaceFissionDefault
     (interfaceFission,
-     "default",
-     "Normal cluster fission which depends on the hadron selector class.",
+     "Default",
+     "Normal cluster fission which depends on the hadron spectrum class.",
      0);
   static SwitchOption interfaceFissionNew
     (interfaceFission,
-     "new",
-     "Alternative cluster fission which does not depend on the hadron selector class",
+     "New",
+     "Alternative cluster fission which does not depend on the hadron spectrum class",
      1);
+  static SwitchOption interfaceFissionNewDiquarkSuppression
+    (interfaceFission,
+     "NewDiquarkSuppression",
+     "Alternative cluster fission which does not depend on the hadron spectrum class"
+		 " and includes a suppression of AlphaS^2(Mc) for Diquark Production during "
+		 "Cluster Fission",
+     -1);
 
 
-  static Parameter<ClusterFissioner,double> interfaceFissionPwtUquark
-    ("FissionPwtUquark",
-     "Weight for fission in U quarks",
-     &ClusterFissioner::_fissionPwtUquark, 1, 0.0, 1.0,
-     false, false, Interface::limited);
-  static Parameter<ClusterFissioner,double> interfaceFissionPwtDquark
-    ("FissionPwtDquark",
-     "Weight for fission in D quarks",
-     &ClusterFissioner::_fissionPwtDquark, 1, 0.0, 1.0,
-     false, false, Interface::limited);
-  static Parameter<ClusterFissioner,double> interfaceFissionPwtSquark
-    ("FissionPwtSquark",
-     "Weight for fission in S quarks",
-     &ClusterFissioner::_fissionPwtSquark, 0.5, 0.0, 1.0,
-     false, false, Interface::limited);
+  static Switch<ClusterFissioner,int> interfaceDiquarkClusterFission
+    ("DiquarkClusterFission",
+     "Allow clusters to fission to 1 or 2 diquark Clusters or Turn off diquark fission completely",
+     &ClusterFissioner::_diquarkClusterFission, 0, false, false);
+  static SwitchOption interfaceDiquarkClusterFissionAll
+	(interfaceDiquarkClusterFission,
+     "All",
+     "Allow diquark clusters and baryon clusters to fission to new diquark Clusters",
+     2);
+  static SwitchOption interfaceDiquarkClusterFissionOnlyBaryonClusters
+	(interfaceDiquarkClusterFission,
+     "OnlyBaryonClusters",
+     "Allow only baryon clusters to fission to new diquark Clusters",
+     1);
+  static SwitchOption interfaceDiquarkClusterFissionNo
+    (interfaceDiquarkClusterFission,
+     "No",
+     "Don't allow clusters to fission to new diquark Clusters",
+     0);
+  static SwitchOption interfaceDiquarkClusterFissionOff
+    (interfaceDiquarkClusterFission,
+     "Off",
+     "Don't allow clusters fission to draw diquarks ",
+     -1);
 
+  static ParMap<ClusterFissioner,double> interfaceFissionPwt
+    ("FissionPwt",
+     "The weights for quarks in the fission process.",
+     &ClusterFissioner::_fissionPwt, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::upperlim);
 
   static Switch<ClusterFissioner,int> interfaceRemnantOption
     ("RemnantOption",
@@ -259,20 +339,20 @@ void ClusterFissioner::Init() {
      false, false, Interface::limited);
 
   static Parameter<ClusterFissioner,double> interfaceProbPowFactor
-     ("ProbablityPowerFactor",
-      "Power factor in ClausterFissioner bell probablity function",
-      &ClusterFissioner::_probPowFactor, 2.0, 1.0, 20.0,
+     ("ProbabilityPowerFactor",
+      "Power factor in ClusterFissioner bell probablity function",
+      &ClusterFissioner::_probPowFactor, 2.0, 0.001, 20.0,
       false, false, Interface::limited);
 
   static Parameter<ClusterFissioner,double> interfaceProbShift
-     ("ProbablityShift",
+     ("ProbabilityShift",
       "Shifts from the center in ClausterFissioner bell probablity function",
       &ClusterFissioner::_probShift, 0.0, -10.0, 10.0,
       false, false, Interface::limited);
 
   static Parameter<ClusterFissioner,Energy2> interfaceKineticThresholdShift
      ("KineticThresholdShift",
-      "Shifts from the kinetic threshold in ClausterFissioner",
+      "Shifts from the kinetic threshold in ClusterFissioner",
       &ClusterFissioner::_kinThresholdShift, sqr(GeV), 0.*sqr(GeV), -10.0*sqr(GeV), 10.0*sqr(GeV),
       false, false, Interface::limited);
 
@@ -290,6 +370,99 @@ void ClusterFissioner::Init() {
      "Dynamic",
      "Set dynamic kinematic thresholds for cluster splittings.",
      1);
+
+  static Switch<ClusterFissioner,bool> interfaceCovariantBoost
+    ("CovariantBoost",
+     "Use single Covariant Boost for Cluster Fission",
+     &ClusterFissioner::_covariantBoost, false, false, false);
+  static SwitchOption interfaceCovariantBoostYes
+    (interfaceCovariantBoost,
+     "Yes",
+     "Use Covariant boost",
+     true);
+  static SwitchOption interfaceCovariantBoostNo
+    (interfaceCovariantBoost,
+     "No",
+     "Do NOT use Covariant boost",
+     false);
+  
+
+  static Switch<ClusterFissioner,int> interfaceStrictDiquarkKinematics
+    ("StrictDiquarkKinematics",
+     "Option for selecting different selection criterions of diquarks for ClusterFission",
+     &ClusterFissioner::_strictDiquarkKinematics, 0, false, false);
+  static SwitchOption interfaceStrictDiquarkKinematicsLoose
+    (interfaceStrictDiquarkKinematics,
+     "Loose",
+     "No kinematic threshold for diquark selection except for Mass bigger than 2 baryons",
+     0);
+  static SwitchOption interfaceStrictDiquarkKinematicsStrict
+    (interfaceStrictDiquarkKinematics,
+     "Strict",
+     "Resulting clusters are at least as heavy as 2 lightest baryons",
+     1);
+
+  static Parameter<ClusterFissioner,double> interfacePwtDIquark
+     ("PwtDIquark",
+      "specific probability for choosing a d diquark",
+      &ClusterFissioner::_pwtDIquark, 0.0, 0.0, 10.0,
+      false, false, Interface::limited);
+
+  static Switch<ClusterFissioner,int> interfacePhaseSpaceWeights
+    ("PhaseSpaceWeights",
+     "Include phase space weights.",
+     &ClusterFissioner::_phaseSpaceWeights, 0, false, false);
+  static SwitchOption interfacePhaseSpaceWeightsNo
+    (interfacePhaseSpaceWeights,
+     "No",
+     "Do not include the effect of cluster phase space",
+     0);
+  static SwitchOption interfacePhaseSpaceWeightsYes
+    (interfacePhaseSpaceWeights,
+     "Yes",
+     "Do include the effect of cluster fission phase space "
+		 "related to constituent masses."
+		 "Note: Need static Threshold choice",
+     1);
+  static SwitchOption interfacePhaseSpaceWeightsUseHadronMasses
+    (interfacePhaseSpaceWeights,
+     "UseHadronMasses",
+     "Do include the effect of cluster fission phase space "
+		 "related to hadron masses."
+		 "Note: Need static Threshold choice",
+     2);
+  static SwitchOption interfacePhaseSpaceWeightsNoConstituentMasses
+    (interfacePhaseSpaceWeights,
+     "NoConstituentMasses",
+     "Do not include the effect of cluster fission phase space "
+		 "related to constituent masses."
+		 "Note: Need static Threshold choice",
+     3);
+
+  static Parameter<ClusterFissioner,double>
+    interfaceDim ("Dimension","Dimension in which phase space weights are calculated",
+		  &ClusterFissioner::_dim, 0, 4.0, 0.0, 10.0,false,false,false);
+
+	// Allowing for strange diquarks in the ClusterFission
+  static Switch<ClusterFissioner,unsigned int> interfaceHadronizingStrangeDiquarks
+    ("HadronizingStrangeDiquarks",
+     "Option for adding strange diquarks to Cluster Fission (if Fission = New or Hybrid is enabled)",
+     &ClusterFissioner::_hadronizingStrangeDiquarks, 0, false, false);
+  static SwitchOption interfaceHadronizingStrangeDiquarksNo
+    (interfaceHadronizingStrangeDiquarks,
+     "No",
+     "No strangeness containing diquarks during Cluster Fission",
+     0);
+  static SwitchOption interfaceHadronizingStrangeDiquarksOnlySingleStrange
+    (interfaceHadronizingStrangeDiquarks,
+     "OnlySingleStrange",
+     "Only one strangeness containing diquarks during Cluster Fission i.e. su,sd",
+     1);
+  static SwitchOption interfaceHadronizingStrangeDiquarksAll
+    (interfaceHadronizingStrangeDiquarks,
+     "All",
+     "All strangeness containing diquarks during Cluster Fission  i.e. su,sd,ss",
+     2);
 
 }
 
@@ -384,7 +557,7 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
     //    iCluster->addChild(ct.second.second);
     //    ct.second.second->addChild(ct.second.first);
 
-    // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
+    // Sometimes the clusters decay C -> H + C' or C -> H + H' rather then C -> C' + C''
     if(one) {
       clusters.push_back(one);
       if(one->isBeamCluster() && softUEisOn)
@@ -399,24 +572,6 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
       if(isHeavy(two) && two->isAvailable())
 	clusterStack.push(two);
     }
-  }
-}
-
-namespace {
-
-  /**
-   *  Check if can't make a hadron from the partons
-   */
-  bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
-    return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
-  }
-
-  /**
-   *  Check if can't make a diquark from the partons
-   */
-  bool cantMakeDiQuark(tcPPtr p1, tcPPtr p2) {
-    long id1 = p1->id(), id2 = p2->id();
-    return ! (QuarkMatcher::Check(id1) && QuarkMatcher::Check(id2) && id1*id2>0);
   }
 }
 
@@ -455,15 +610,12 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
   PPtr newPtr2 = PPtr ();
   bool succeeded = false;
   Lorentz5Momentum pClu1, pClu2, pQ1, pQone, pQtwo, pQ2;
-  // pClu1(Mc1), pClu2(Mc2), pQ1(m1), pQone(m), pQtwo(m), pQ2(m2);
   do
     {
       succeeded = false;
       ++counter;
-
       // get a flavour for the qqbar pair
       drawNewFlavour(newPtr1,newPtr2,cluster);
-
       // check for right ordering
       assert (ptrQ2);
       assert (newPtr2);
@@ -492,16 +644,22 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       pQtwo.setMass(m);
       pQ2.setMass(m2);
 
-      pair<Energy,Energy> res = drawNewMasses(Mc, soft1, soft2, pClu1, pClu2,
+      double weightMasses = drawNewMasses(Mc, soft1, soft2, pClu1, pClu2,
 					      ptrQ1, pQ1, newPtr1, pQone,
 					      newPtr2, pQtwo, ptrQ2, pQ2);
+			if (weightMasses==0.0)
+				continue;
 
       // derive the masses of the children
-      Mc1 = res.first;
-      Mc2 = res.second;
+      Mc1 = pClu1.mass();
+      Mc2 = pClu2.mass();
       // static kinematic threshold
       if(_kinematicThresholdChoice == 0) {
-        if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+        if (Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
+				if (_phaseSpaceWeights==2 && 
+						(   Mc1 < spectrum()->massLightestHadronPair(ptrQ1->dataPtr(),newPtr1->dataPtr())
+						 || Mc2 < spectrum()->massLightestHadronPair(ptrQ2->dataPtr(),newPtr2->dataPtr()) ))
+						continue;
       // dynamic kinematic threshold
       }
       else if(_kinematicThresholdChoice == 1) {
@@ -510,6 +668,11 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
         bool C3 = ( sqr(Mc1) + sqr(Mc2) )/( sqr(Mc) ) > 1.0 ? true : false;
 
         if( C1 || C2 || C3 ) continue;
+      }
+      if ( _phaseSpaceWeights && phaseSpaceVeto(Mc,Mc1,Mc2,m,m1,m2, ptrQ1, ptrQ2, newPtr1, 0.0) ) {
+				// reduce counter as it regards only the mass sampling
+				counter--;
+	  continue;
       }
 
       /**************************
@@ -534,11 +697,10 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
        * procedure that would be necessary if we used LightClusterDecayer
        * to decay the light cluster to the lightest hadron.
        ****************************/
-
       // override chosen masses if needed
-      toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
+      toHadron1 = _hadronSpectrum->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
       if(toHadron1) { Mc1 = toHadron1->mass(); pClu1.setMass(Mc1); }
-      toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
+      toHadron2 = _hadronSpectrum->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
       if(toHadron2) { Mc2 = toHadron2->mass(); pClu2.setMass(Mc2); }
       // if a beam cluster not allowed to decay to hadrons
       if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
@@ -547,11 +709,11 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       // force the one-hadron decay for the other cluster as well.
       if(Mc1 + Mc2  >  Mc) {
 	if(!toHadron1) {
-	  toHadron1 = _hadronSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
+	  toHadron1 = _hadronSpectrum->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
 	  if(toHadron1) { Mc1 = toHadron1->mass(); pClu1.setMass(Mc1); }
 	}
 	else if(!toHadron2) {
-	  toHadron2 = _hadronSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
+	  toHadron2 = _hadronSpectrum->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
 	  if(toHadron2) { Mc2 = toHadron2->mass(); pClu2.setMass(Mc2); }
 	}
       }
@@ -675,18 +837,18 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
 
     // get a flavour for the qqbar pair
     drawNewFlavour(newPtr1,newPtr2,cluster);
-
+    
     // randomly pick which will be (anti)diquark and which a mesonic cluster
     if(UseRandom::rndbool()) {
       swap(iq1,iq2);
       swap(rem1,rem2);
     }
     // check first order
-    if(cantMakeHadron(ptrQ[iq1], newPtr1) || cantMakeDiQuark(ptrQ[iq2], newPtr2)) {
+    if(cantMakeHadron(ptrQ[iq1], newPtr1) || !spectrum()->canMakeDiQuark(ptrQ[iq2], newPtr2)) {
       swap(newPtr1,newPtr2);
     }
     // check again
-    if(cantMakeHadron(ptrQ[iq1], newPtr1) || cantMakeDiQuark(ptrQ[iq2], newPtr2)) {
+    if(cantMakeHadron(ptrQ[iq1], newPtr1) || !spectrum()->canMakeDiQuark(ptrQ[iq2], newPtr2)) {
       throw Exception()
 	<< "ClusterFissioner cannot split the cluster ("
 	<< ptrQ[iq1]->PDGName() << ' ' << ptrQ[iq2]->PDGName()
@@ -705,20 +867,29 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     pQtwo.setMass(m);
     pQ2.setMass(m2);
 
-    pair<Energy,Energy> res = drawNewMasses(mmax, soft1, soft2, pClu1, pClu2,
+    double weightMasses = drawNewMasses(mmax, soft1, soft2, pClu1, pClu2,
 					    ptrQ[iq1], pQ1, newPtr1, pQone,
 					    newPtr2, pQtwo, ptrQ[iq1], pQ2);
 
-    Mc1 = res.first; Mc2 = res.second;
+		if (weightMasses == 0.0) continue;
+
+    Mc1 = pClu1.mass();
+		Mc2 = pClu2.mass();
 
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
 
+    if ( _phaseSpaceWeights && phaseSpaceVeto(mmax,Mc1,Mc2,m,m1,m2) ) {
+				// reduce counter as it regards only the mass sampling
+				counter--;
+	continue;
+    }
+    
     // check if need to force meson clster to hadron
-    toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
+    toHadron = _hadronSpectrum->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
     if(toHadron) { Mc1 = toHadron->mass(); pClu1.setMass(Mc1); }
     // check if need to force diquark cluster to be on-shell
     toDiQuark = false;
-    diquark = _hadronSelector->makeDiquark(ptrQ[iq2]->dataPtr(),newPtr2->dataPtr());
+    diquark = spectrum()->makeDiquark(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
     if(Mc2 < diquark->constituentMass()) {
       Mc2 = diquark->constituentMass(); pClu2.setMass(Mc2);
       toDiQuark = true;
@@ -730,11 +901,11 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     // force the one-hadron decay for the other cluster as well.
     if(Mc1 + Mc2  >  mmax) {
       if(!toHadron) {
-	toHadron = _hadronSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
+	toHadron = _hadronSpectrum->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
 	if(toHadron) { Mc1 = toHadron->mass(); pClu1.setMass(Mc1); }
       }
       else if(!toDiQuark) {
-	Mc2 = _hadronSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr()); pClu2.setMass(Mc2);
+	Mc2 = _hadronSpectrum->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr()); pClu2.setMass(Mc2);
 	toDiQuark = true;
       }
     }
@@ -780,7 +951,7 @@ ClusterFissioner::produceHadron(tcPDPtr hadron, tPPtr newPtr, const Lorentz5Mome
 				const LorentzPoint &b) const {
   PPair rval;
   if(hadron->coloured()) {
-    rval.first = (_hadronSelector->lightestHadron(hadron,newPtr->dataPtr()))->produceParticle();
+    rval.first = (_hadronSpectrum->lightestHadron(hadron,newPtr->dataPtr()))->produceParticle();
   }
   else
     rval.first = hadron->produceParticle();
@@ -811,7 +982,314 @@ ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr ptrQ, tPPtr newPt
   return rval;
 }
 
-void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
+/**
+ * Calculate the phase space weight for  M1*M2*(2 body PhaseSpace) ignore constituent masses
+ */
+double ClusterFissioner::weightFlatPhaseSpaceNoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2) const {
+	double M_temp = Mc/GeV;
+	double M1_temp = Mc1/GeV;
+	double M2_temp = Mc2/GeV;
+	if (sqr(M_temp)<sqr(M1_temp+M2_temp)) {
+		// This should be checked before
+		throw Exception()
+			<< "ERROR in ClusterFissioner::weightFlatPhaseSpaceNoConstituentMasses\n"
+			<< "ClusterFissioner has not checked Masses properly\n"
+			<< "Mc  = " << M_temp << "\n"
+			<< "Mc1 = " << M1_temp << "\n"
+			<< "Mc2 = " << M2_temp << "\n"
+			<< Exception::warning;
+		return 0.0;
+	}
+	double lam = Kinematics::kaellen(M_temp,  M1_temp, M2_temp);
+	double ratio;
+	//  new weight with the Jacobi factor M1*M2 of the Mass integration
+	double PSweight = M1_temp*M2_temp*pow(sqrt(lam),_dim-3.);
+	// overestimate only possible for dim>=3.0
+	assert(_dim>=3.0);
+	//  new improved overestimate with the Jacobi factor M1*M2 of the Mass integration
+	double overEstimate = pow(6.0*sqrt(3.0), 3.0 - _dim)*pow(M_temp, 2.*(_dim-2.));
+	ratio = PSweight/overEstimate;
+	if (!(ratio>=0) || !(ratio<=1)) {
+		throw Exception()
+			<< "ERROR in ClusterFissioner::weightFlatPhaseSpaceNoConstituentMasses\n"
+			<< "ratio = " <<ratio
+			<<" M "<<M_temp
+			<<" M1 "<<M1_temp
+			<<" M2 "<<M2_temp <<"\t"<<_dim<<"\t" << lam 
+			<<"\t"<< overEstimate<<"\n\n"
+			<< Exception::runerror;
+	}
+	return ratio;
+}
+/**
+ * Calculate the phase space weight for  M1*M2*(2 body PhaseSpace)^3
+ */
+double ClusterFissioner::weightPhaseSpaceConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2,
+		const Energy m, const Energy m1, const Energy m2, const double power) const {
+	double M_temp = Mc/GeV;
+	double M1_temp = Mc1/GeV;
+	double M2_temp = Mc2/GeV;
+	double m_temp = m/GeV;
+	double m1_temp = m1/GeV;
+	double m2_temp = m2/GeV;
+	if (sqr(M_temp)<sqr(M1_temp+M2_temp)
+			|| sqr(M1_temp)<sqr(m1_temp+m_temp)
+			|| sqr(M2_temp)<sqr(m2_temp+m_temp)
+			) {
+		// This should be checked before
+		throw Exception()
+			<< "ERROR in ClusterFissioner::weightPhaseSpaceConstituentMasses\n"
+			<< "ClusterFissioner has not checked Masses properly\n"
+			<< "Mc  = " << M_temp << "\n"
+			<< "Mc1 = " << M1_temp << "\n"
+			<< "Mc2 = " << M2_temp << "\n"
+			<< "m1  = " << m1_temp << "\n"
+			<< "m2  = " << m2_temp << "\n"
+			<< "m   = " << m_temp << "\n"
+			<< Exception::warning;
+		return 0.0;
+	}
+	double lam1 = Kinematics::kaellen(M1_temp, m1_temp, m_temp);
+	double lam2 = Kinematics::kaellen(M2_temp, m2_temp, m_temp);
+	double lam3 = Kinematics::kaellen(M_temp,  M1_temp, M2_temp);
+	double ratio;
+	//  new weight with the Jacobi factor M1*M2 of the Mass integration
+	double PSweight = pow(lam1*lam2*lam3,(_dim-3.)/2.0)*pow(M1_temp*M2_temp,3.-_dim);
+	// overestimate only possible for dim>=3.0
+	assert(_dim>=3.0);
+	//  new improved overestimate with the Jacobi factor M1*M2 of the Mass integration
+	double overEstimate = pow(6.0*sqrt(3.0), 3.0 - _dim)*pow(M_temp, 4.*_dim-12.);
+	ratio = PSweight/overEstimate;
+	if (!(ratio>=0)) std::cout << "ratio = " <<ratio<<" M "<<M_temp<<" M1 "<<M1_temp<<" M2 "<<M2_temp<<" m1 "<<m1_temp<<" m2 "<<m2_temp<<" m "<<m_temp<<"\t"<<_dim<<"\t" << lam1<<"\t"<< lam2<<"\t" << lam3 <<"\t"<< overEstimate<<"\n\n";
+	if (!(ratio>=0) || !(ratio<=1)) {
+		throw Exception()
+			<< "ERROR in ClusterFissioner::weightPhaseSpaceConstituentMasses\n"
+			<< "ratio = " <<ratio
+			<<" M "<<M_temp
+			<<" M1 "<<M1_temp
+			<<" M2 "<<M2_temp
+			<<" m1 "<<m1_temp
+			<<" m2 "<<m2_temp
+			<<" m "<<m_temp <<"\t"<<_dim
+			<<"\t" << lam1<<"\t"<< lam2<<"\t" << lam3
+			<<"\t"<< overEstimate<<"\n\n"
+			<< Exception::runerror;
+	}
+	// multiply by overestimate of power of matrix element to modulate the phase space with (M1*M2)^power
+	if (power) {
+		double powerLawOver = power<0 ? pow(Mc1*Mc2/((m1+m)*(m2+m)),power):pow(Mc1*Mc2/((Mc-(m1+m))*(Mc-(m2+m))),power);
+		ratio*=powerLawOver;
+	}
+	return ratio;
+}
+/**
+ * Calculate the phase space weight for  M1*M2*(2 body PhaseSpace)^3
+ * using Hadron Masses
+ */
+double ClusterFissioner::weightFlatPhaseSpaceHadronMasses(const Energy Mc, const Energy Mc1, const Energy Mc2, tcPPtr pQ, tcPPtr pQ1, tcPPtr pQ2) const {
+	auto LHP1 = spectrum()->lightestHadronPair(pQ1->dataPtr(),pQ->dataPtr());
+	auto LHP2 = spectrum()->lightestHadronPair(pQ2->dataPtr(),pQ->dataPtr());
+	if (sqr(Mc1)<sqr(LHP1.first->mass()+LHP1.second->mass()))
+		return true;
+	if (sqr(Mc2)<sqr(LHP2.first->mass()+LHP2.second->mass()))
+		return true;
+	double lam1 = sqrt(Kinematics::kaellen(Mc1/GeV, LHP1.first->mass()/GeV, LHP1.second->mass()/GeV));
+	double lam2 = sqrt(Kinematics::kaellen(Mc2/GeV, LHP2.first->mass()/GeV, LHP2.second->mass()/GeV));
+	double lam3 = sqrt(Kinematics::kaellen(Mc/GeV,  Mc1/GeV, Mc2/GeV));
+	double ratio;
+	//  new weight with the Jacobi factor M1*M2 of the Mass integration
+	double PSweight = pow(lam1*lam2*lam3,_dim-3.)*pow(Mc1*Mc2/GeV2,3.-_dim);
+	// overestimate only possible for dim>=3.0
+	assert(_dim>=3.0);
+	//  new improved overestimate with the Jacobi factor M1*M2 of the Mass integration
+	double overEstimate = pow(6.0*sqrt(3.0), 3.0 - _dim)*pow(Mc/GeV, 4.*_dim-12.);
+	ratio = PSweight/overEstimate;
+	if (!(ratio>=0) || !(ratio<=1)) {
+		throw Exception()
+			<< "ERROR in ClusterFissioner::weightFlatPhaseSpaceHadronMasses\n"
+			<< "ratio = " <<ratio
+			<<" M "<<Mc/GeV
+			<<" M1 "<<Mc1/GeV
+			<<" M2 "<<Mc2/GeV <<"\t"<<_dim<<"\t" << lam1<<"\t" << lam2  <<"\t" << lam3 
+			<<"\t"<< overEstimate<<"\n\n"
+			<< Exception::runerror;
+	}
+	return ratio;
+}
+
+/**
+ * Veto for the phase space weight
+ * returns true if proposed Masses are rejected
+ * 					else returns false
+ */
+bool ClusterFissioner::phaseSpaceVeto(const Energy Mc, const Energy Mc1, const Energy Mc2,
+		const Energy m, const Energy m1, const Energy m2, tcPPtr pQ1, tcPPtr pQ2, tcPPtr pQ, const double power) const {
+	switch (_phaseSpaceWeights)
+	{
+		case 1:
+			return phaseSpaceVetoConstituentMasses(Mc, Mc1, Mc2, m, m1, m2, power);
+		case 2:
+			return phaseSpaceVetoHadronPairs(Mc, Mc1, Mc2, pQ, pQ1, pQ2);
+		case 3:
+			return phaseSpaceVetoNoConstituentMasses(Mc, Mc1, Mc2);
+		default:
+			assert(false);
+	}
+}
+
+/**
+ * Veto for the phase space weight
+ * returns true if proposed Masses are rejected
+ * 					else returns false
+ */
+bool ClusterFissioner::phaseSpaceVetoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2,
+		const Energy m, const Energy m1, const Energy m2, const double power) const {
+	return (UseRandom::rnd()>weightPhaseSpaceConstituentMasses(Mc, Mc1, Mc2, m, m1, m2, power));
+}
+bool ClusterFissioner::phaseSpaceVetoNoConstituentMasses(const Energy Mc, const Energy Mc1, const Energy Mc2) const {
+	return (UseRandom::rnd()>weightFlatPhaseSpaceNoConstituentMasses(Mc, Mc1, Mc2));
+}
+
+bool ClusterFissioner::phaseSpaceVetoHadronPairs(const Energy Mc, const Energy Mc1, const Energy Mc2, tcPPtr pQ, tcPPtr pQ1, tcPPtr pQ2) const {
+	return (UseRandom::rnd()>weightFlatPhaseSpaceHadronMasses(Mc, Mc1, Mc2, pQ, pQ1, pQ2));
+}
+
+/**
+ * Calculate the masses and possibly kinematics of the cluster
+ * fission at hand; if calculateKineamtics is perfomring non-trivial
+ * steps kinematics claulcated here will be overriden. Currentl;y resorts to the default
+ */
+double ClusterFissioner::drawNewMasses(const Energy Mc, const bool soft1, const bool soft2,
+		Lorentz5Momentum& pClu1, Lorentz5Momentum& pClu2,
+		tcPPtr ptrQ1, const Lorentz5Momentum& pQ1,
+		tcPPtr, const Lorentz5Momentum& pQone,
+		tcPPtr, const Lorentz5Momentum& pQtwo,
+		tcPPtr ptrQ2,  const Lorentz5Momentum& pQ2) const {
+	// power for splitting
+	double exp1 = !spectrum()->isExotic(ptrQ1->dataPtr()) ? _pSplitLight : _pSplitExotic;
+	double exp2 = !spectrum()->isExotic(ptrQ2->dataPtr()) ? _pSplitLight : _pSplitExotic;
+	for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+		assert(_pSplitHeavy.find(id) != _pSplitHeavy.end());
+		if ( spectrum()->hasHeavy(id,ptrQ1->dataPtr()) ) exp1 = _pSplitHeavy.find(id)->second;
+		if ( spectrum()->hasHeavy(id,ptrQ2->dataPtr()) ) exp2 = _pSplitHeavy.find(id)->second;
+	}
+
+	Energy M1 = drawChildMass(Mc,pQ1.mass(),pQ2.mass(),pQone.mass(),exp1,soft1);
+	Energy M2 = drawChildMass(Mc,pQ2.mass(),pQ1.mass(),pQtwo.mass(),exp2,soft2);
+
+	pClu1.setMass(M1);
+	pClu2.setMass(M2);
+
+	return 1.0; // succeeds
+}
+
+
+void ClusterFissioner::drawNewFlavourDiquarks(PPtr& newPtrPos,PPtr& newPtrNeg,
+		const ClusterPtr & clu) const {
+
+	// Flavour is assumed to be only  u, d, s,  with weights
+	// (which are not normalized probabilities) given
+	// by the same weights as used in HadronsSelector for
+	// the decay of clusters into two hadrons.
+
+	unsigned hasDiquarks=0;
+	assert(clu->numComponents()==2);
+	tcPDPtr pD1=clu->particle(0)->dataPtr();
+	tcPDPtr pD2=clu->particle(1)->dataPtr();
+	bool isDiq1=DiquarkMatcher::Check(pD1->id());
+	if (isDiq1) hasDiquarks++;
+	bool isDiq2=DiquarkMatcher::Check(pD2->id());
+	if (isDiq2) hasDiquarks++;
+	assert(hasDiquarks<=2);
+	Energy Mc=(clu->momentum().mass());
+  Energy minMass;
+  double weight;
+  Selector<long> choice;
+  // adding quark-antiquark pairs to the selection list
+  for ( const long& id : spectrum()->lightHadronizingQuarks() ) {
+		minMass=spectrum()->massLightestHadronPair(pD1,pD2);
+	  if (_fissionCluster==0) choice.insert(_hadronSpectrum->pwtQuark(id),id);
+		else if (abs(_fissionCluster)==1) choice.insert(_fissionPwt.find(id)->second,id);
+	  else assert(false);
+  }
+  // adding diquark-antidiquark pairs to the selection list
+  switch (hasDiquarks)
+  {
+  	case 0:
+		for ( const long& id : spectrum()->lightHadronizingDiquarks() ) {
+			if (_strictDiquarkKinematics) {
+				tPDPtr cand = getParticleData(id);
+				Energy mH1=spectrum()->massLightestHadron(pD2,cand);
+				Energy mH2=spectrum()->massLightestHadron(cand,pD1);
+				minMass = mH1 + mH2;
+			}
+			else {
+				minMass = spectrum()->massLightestBaryonPair(pD1,pD2);
+			}
+			if (Mc < minMass) continue;
+			if (_fissionCluster==0) weight = _hadronSpectrum->pwtQuark(id);
+			else if (abs(_fissionCluster)==1) weight = _fissionPwt.find(id)->second;
+			else assert(false); 
+			if (_fissionCluster==-1)
+				weight*=sqr(Herwig::Math::alphaS(Mc, 0.25*GeV,3, 2));
+			choice.insert(weight,id);
+		}
+  		break;
+  	case 1:
+		if (_diquarkClusterFission<1) break;
+		for ( const long& id : spectrum()->lightHadronizingDiquarks() ) {
+			tPDPtr diq = getParticleData(id);
+			if (isDiq1)
+				minMass = spectrum()->massLightestHadron(pD2,diq)
+						+ spectrum()->massLightestBaryonPair(diq,pD1);
+			else
+				minMass = spectrum()->massLightestHadron(pD1,diq)
+						+ spectrum()->massLightestBaryonPair(diq,pD2);
+			if (Mc < minMass) continue;
+			if (_fissionCluster==0) weight = _hadronSpectrum->pwtQuark(id);
+			else if (abs(_fissionCluster)==1) weight = _fissionPwt.find(id)->second;
+			else assert(false); 
+			if (_fissionCluster==-1)
+				weight*=sqr(Herwig::Math::alphaS(Mc, 0.25*GeV,3, 2));
+			choice.insert(weight,id);
+		}
+		break;
+  	case 2:
+		if (_diquarkClusterFission<2) break;
+		for ( const long& id : spectrum()->lightHadronizingDiquarks() ) {
+			tPDPtr diq = getParticleData(id);
+			if (Mc < spectrum()->massLightestBaryonPair(pD1,pD2)) {
+				throw Exception() << "Found Diquark Cluster:\n" << *clu << "\nwith  MassCluster = "
+					<< Mc/GeV <<" GeV MassLightestBaryonPair = "
+					<< spectrum()->massLightestBaryonPair(pD1,pD2)/GeV
+					<< " GeV cannot decay" << Exception::eventerror;
+			}
+			minMass = spectrum()->massLightestBaryonPair(pD1,diq)
+					+ spectrum()->massLightestBaryonPair(diq,pD2);
+			if (Mc < minMass) continue;
+			if (_fissionCluster==0) weight = _hadronSpectrum->pwtQuark(id);
+			else if (abs(_fissionCluster)==1) weight = _fissionPwt.find(id)->second;
+			else assert(false); 
+			if (_fissionCluster==-1)
+				weight*=sqr(Herwig::Math::alphaS(Mc, 0.25*GeV,3, 2));
+			choice.insert(weight,id);
+		}
+  		break;
+  	default:
+  		assert(false);
+  }
+  assert(choice.size()>0);
+  long idNew = choice.select(UseRandom::rnd());
+  newPtrPos = getParticle(idNew);
+  newPtrNeg = getParticle(-idNew);
+  assert(newPtrPos);
+  assert(newPtrNeg);
+  assert(newPtrPos->dataPtr());
+  assert(newPtrNeg->dataPtr());
+
+}
+
+void ClusterFissioner::drawNewFlavourQuarks(PPtr& newPtrPos,PPtr& newPtrNeg) const {
 
   // Flavour is assumed to be only  u, d, s,  with weights
   // (which are not normalized probabilities) given
@@ -819,30 +1297,20 @@ void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
   // the decay of clusters into two hadrons.
 
 
-  double prob_d;
-  double prob_u;
-  double prob_s;
-  switch(_fissionCluster){
+  Selector<long> choice;
+  switch(abs(_fissionCluster)){
   case 0:
-    prob_d = _hadronSelector->pwt(1);
-    prob_u = _hadronSelector->pwt(2);
-    prob_s = _hadronSelector->pwt(3);
+    for ( const long& id : spectrum()->lightHadronizingQuarks() )
+      choice.insert(_hadronSpectrum->pwtQuark(id),id);
     break;
   case 1:
-    prob_d = _fissionPwtDquark;
-    prob_u = _fissionPwtUquark;
-    prob_s = _fissionPwtSquark;
+    for ( const long& id : spectrum()->lightHadronizingQuarks() )
+      choice.insert(_fissionPwt.find(id)->second,id);
     break;
   default :
     assert(false);
   }
-  int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
-  long idNew = 0;
-  switch (choice) {
-  case 0: idNew = ThePEG::ParticleID::u; break;
-  case 1: idNew = ThePEG::ParticleID::d; break;
-  case 2: idNew = ThePEG::ParticleID::s; break;
-  }
+  long idNew = choice.select(UseRandom::rnd());
   newPtrPos = getParticle(idNew);
   newPtrNeg = getParticle(-idNew);
   assert (newPtrPos);
@@ -855,39 +1323,43 @@ void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
 void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
                                               Energy2 mass2) const {
 
+  if ( spectrum()->gluonId() != ParticleID::g )
+    throw Exception() << "strange enhancement only working with Standard Model hadronization"
+		      << Exception::runerror;
+  
   // Flavour is assumed to be only  u, d, s,  with weights
   // (which are not normalized probabilities) given
   // by the same weights as used in HadronsSelector for
   // the decay of clusters into two hadrons.
 
-  double prob_d;
-  double prob_u;
-  double prob_s = 0.;
-  double scale = abs(double(sqr(_m0Fission)/mass2));
-  // Choose which splitting weights you wish to use
-  switch(_fissionCluster){
-    // 0: ClusterFissioner and ClusterDecayer use the same weights
+    double prob_d = 0.;
+    double prob_u = 0.;
+    double prob_s = 0.;
+    double scale = abs(double(sqr(_m0Fission)/mass2));
+    // Choose which splitting weights you wish to use
+switch(abs(_fissionCluster)){
+  // 0: ClusterFissioner and ClusterDecayer use the same weights
   case 0:
-    prob_d = _hadronSelector->pwt(1);
-    prob_u = _hadronSelector->pwt(2);
-    /* Strangeness enhancement:
-       Case 1: probability scaling
-       Case 2: Exponential scaling
-    */
-    if (_enhanceSProb == 1)
-      prob_s = (_maxScale < scale) ? 0. : pow(_hadronSelector->pwt(3),scale);
-    else if (_enhanceSProb == 2)
-      prob_s = (_maxScale < scale) ? 0. : exp(-scale);
+    prob_d = _hadronSpectrum->pwtQuark(ParticleID::d);
+     prob_u = _hadronSpectrum->pwtQuark(ParticleID::u);
+     /* Strangeness enhancement:
+        Case 1: probability scaling
+        Case 2: Exponential scaling
+     */
+     if (_enhanceSProb == 1)
+        prob_s = (_maxScale < scale) ? 0. : pow(_hadronSpectrum->pwtQuark(ParticleID::s),scale);
+     else if (_enhanceSProb == 2)
+        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
     /* 1: ClusterFissioner uses its own unique set of weights,
        i.e. decoupled from ClusterDecayer */
   case 1:
-    prob_d = _fissionPwtDquark;
-    prob_u = _fissionPwtUquark;
-    if (_enhanceSProb == 1)
-      prob_s = (_maxScale < scale) ? 0. : pow(_fissionPwtSquark,scale);
-    else if (_enhanceSProb == 2)
-      prob_s = (_maxScale < scale) ? 0. : exp(-scale);
+    prob_d = _fissionPwt.find(ParticleID::d)->second;
+    prob_u = _fissionPwt.find(ParticleID::u)->second;
+     if (_enhanceSProb == 1)
+       prob_s = (_maxScale < scale) ? 0. : pow(_fissionPwt.find(ParticleID::s)->second,scale);
+     else if (_enhanceSProb == 2)
+        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
   default:
     assert(false);
@@ -910,7 +1382,7 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
 }
 
 
-Energy2 ClusterFissioner::clustermass(const ClusterPtr & cluster) const{
+Energy2 ClusterFissioner::clustermass(const ClusterPtr & cluster) const {
   Lorentz5Momentum pIn = cluster->momentum();
   Energy2 endpointmass2 = sqr(cluster->particle(0)->mass() +
   cluster->particle(1)->mass());
@@ -1122,38 +1594,47 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
 }
 
-bool ClusterFissioner::ProbablityFunction(double scale, double threshold) {
+bool ClusterFissioner::ProbabilityFunction(double scale, double threshold) {
   double cut = UseRandom::rnd(0.0,1.0);
   return 1./(1.+pow(abs((threshold-_probShift)/scale),_probPowFactor)) > cut ? true : false;
 }
+bool ClusterFissioner::ProbabilityFunctionPower(double Mass, double threshold) {
+  double cut = UseRandom::rnd(0.0,1.0);
+	if ((Mass-threshold)<=0)
+		return false;
+	return 1.0/(1.0 + _probPowFactor*pow(1.0/(Mass-threshold),_clPowLight)) > cut ? true : false;
+}
+
 
 bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
-
-  // default
-  double clpow = _clPowLight;
-  Energy clmax = _clMaxLight;
   // particle data for constituents
   tcPDPtr cptr[3]={tcPDPtr(),tcPDPtr(),tcPDPtr()};
-  for(unsigned int ix=0;ix<min(clu->numComponents(),3);++ix) {
+	bool hasDiquark=0;
+  for(size_t ix=0;ix<min(clu->numComponents(),3);++ix) {
     cptr[ix]=clu->particle(ix)->dataPtr();
+		// Assuming diquark masses are ordered with larger id corresponding to larger masses
+		if (DiquarkMatcher::Check(*(cptr[ix]))) {
+			hasDiquark=true;
+			break;
+		}
   }
   // different parameters for exotic, bottom and charm clusters
-  if(CheckId::isExotic(cptr[0],cptr[1],cptr[1])) {
-    clpow = _clPowExotic;
-    clmax = _clMaxExotic;
-  }
-  else if(CheckId::hasBottom(cptr[0],cptr[1],cptr[1])) {
-    clpow = _clPowBottom;
-    clmax = _clMaxBottom;
-  }
-  else if(CheckId::hasCharm(cptr[0],cptr[1],cptr[1])) {
-    clpow = _clPowCharm;
-    clmax = _clMaxCharm;
-  }
+  double clpow = !spectrum()->isExotic(cptr[0],cptr[1],cptr[1]) ? _clPowLight : _clPowExotic;
+  Energy clmax = !spectrum()->isExotic(cptr[0],cptr[1],cptr[1]) ? _clMaxLight : _clMaxExotic;
+	// if no heavy quark is found in the cluster, but diquarks are present use 
+	// different ClMax and ClPow
+	if ( hasDiquark) {
+		clpow = _clPowDiquark;
+		clmax = _clMaxDiquark;
+	}
 
-  //regular checks
-
-  // required test for SUSY clusters, since aboveCutoff alone
+  for ( const long& id : spectrum()->heavyHadronizingQuarks() ) {
+		if ( spectrum()->hasHeavy(id,cptr[0],cptr[1],cptr[1])) {
+      clpow = _clPowHeavy[id];
+      clmax = _clMaxHeavy[id];
+    }
+  }
+   // required test for SUSY clusters, since aboveCutoff alone
   // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
   static const Energy minmass
     = getParticleData(ParticleID::d)->constituentMass();
@@ -1175,12 +1656,21 @@ bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
     double scale     = pow(clu->mass()/GeV , clpow);
     double threshold = pow(clmax/GeV, clpow)
                      + pow(clu->sumConstituentMasses()/GeV, clpow);
-    aboveCutoff = ProbablityFunction(scale,threshold);
+		aboveCutoff = ProbabilityFunction(scale,threshold);
 
     scale     = clu->mass()/GeV;
     threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
 
-    canSplitMinimally = ProbablityFunction(scale,threshold);
+		canSplitMinimally = ProbabilityFunction(scale,threshold);
+	}
+	// probablistic kinematic threshold
+	else if(_kinematicThresholdChoice == 2) {
+		// Consistent power law for CF probability
+		double Mass     = clu->mass()/GeV;
+		double threshold = clu->sumConstituentMasses()/GeV + 2.0 * minmass/GeV;
+		aboveCutoff = ProbabilityFunctionPower(Mass,threshold + clmax/GeV);
+
+		canSplitMinimally = Mass - threshold>ZERO;
   }
 
   return aboveCutoff && canSplitMinimally;

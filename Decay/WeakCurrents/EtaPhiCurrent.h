@@ -12,7 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The EtaPhiCurrent class implements the current for $\eta\phi$ using the results of 
+ * The EtaPhiCurrent class implements the current for \f$\eta\phi\f$ using the results of 
  * Phys.Atom.Nucl. 81 (2018) no.2, 205-213
  *
  * @see \ref EtaPhiCurrentInterfaces "The interfaces"

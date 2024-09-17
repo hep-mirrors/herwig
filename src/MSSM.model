@@ -372,7 +372,6 @@ set GluinotoGluinoGSudakov:Cutoff PTCutOff
 set GluinotoGluinoGSudakov:InteractionType QCD
 set GluinotoGluinoGSudakov:ColourStructure OctetOctetOctet
 
-
 do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov

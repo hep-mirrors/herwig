@@ -26,7 +26,6 @@
 
 using namespace Herwig;
 
-
 IS_QTildeShowerKinematics1to2::IS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
   : ShowerKinematics(scale,z,phi,pt,sud), sudakov1to2_(dynamic_ptr_cast<tSudakov1to2Ptr>(sud)) {}
 
@@ -115,10 +114,10 @@ updateParent(const tShowerParticlePtr parent,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
   sudakov1to2_->evaluateInitialStateScales(partnerType,scale(),z(),parent,
-						  children[0],children[1]);
+					    children[0],children[1]);
   // set proper colour connections
   sudakov1to2_->colourConnection(parent,children[0],children[1],
-					partnerType,true);
+				  partnerType,true);
   // set proper parent/child relationships
   parent->addChild(children[0]);
   parent->addChild(children[1]);
@@ -151,6 +150,12 @@ updateParent(const tShowerParticlePtr parent,
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);
+  // check if rotating basis
+  RhoDMatrix mapping;
+  SpinPtr output;
+  bool needMapping = children[0]->getMapping(output,mapping);
+  if(needMapping)
+    vertex->outgoingBasisTransform(0,mapping);
   // construct the spin infos
   parent     ->constructSpinInfo(false);
   children[1]->constructSpinInfo(true);

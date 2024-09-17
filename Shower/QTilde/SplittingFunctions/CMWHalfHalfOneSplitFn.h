@@ -53,7 +53,7 @@ public:
        ids[2]->iSpin()!=PDT::Spin1) return false;
     return true;
   }
-
+  
   /**
    *   Methods to return the splitting function.
    */
@@ -75,25 +75,27 @@ public:
    *  for the CMW kernels.
    */
   virtual double ratioP(const double z, const Energy2 t,
-                                     const IdList &, const bool , const RhoDMatrix & ) const {
-    Energy2 scale2=t;
-    //See pt definitions in QTildeSudakov.cc
-    // Note: t here is t * f(z)
-    if (!isIS_)    scale2 *= pTScale() ? z*(1.-z): 1.;
-    else           scale2 *= pTScale() ? z*(1.-z): z ;
-    return 0.5 * Kg(scale2) * alpha()->value(scale2)/2./Constants::pi;
-  }
+                        const IdList &, const bool , const RhoDMatrix & ) const {
+      Energy2 scale2=t;
+      //See pt definitions in QTildeSudakov.cc
+      // Note: t here is t * f(z)
+      if (!isIS_)    scale2*=pTScale() ? z*(1.-z):1.;
+      else           scale2*=pTScale() ? z*(1.-z):z;
+      
+      return 0.5 * Kg(scale2) * alpha()->value(scale2)/2./Constants::pi;
+    }
+    //@}
     
   /**
    * Return the correction term from:
    * Nucl.Phys. B349 (1991) 635-654
    */
-  double Kg(Energy2 ) const{
+  double Kg(Energy2 )const{
     //TODO: Should be t-dependent
     int Nf=5;//alpha()->Nf(t)
     return (3.*(67./18.-1./6.*sqr(Constants::pi))-5./9.*Nf);
-  }  
-
+  }
+  
   /**
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.

@@ -14,14 +14,15 @@
 #include "Sudakov1to2FormFactor.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Utilities/EnumIO.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
@@ -37,20 +38,20 @@ DescribeAbstractClass<Sudakov1to2FormFactor,SudakovFormFactor>
 describeSudakov1to2FormFactor ("Herwig::Sudakov1to2FormFactor","HwShower.so");
 
 void Sudakov1to2FormFactor::persistentOutput(PersistentOStream & os) const {
-  os << cutoff_ << scaleChoice_ << strictAO_ << colourFactor_
-     << enhancementFactor_;
+   os << cutoff_  << scaleChoice_ << strictAO_<< colourFactor_
+      << enhancementFactor_;
 }
 
 void Sudakov1to2FormFactor::persistentInput(PersistentIStream & is, int) {
-  is  >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_
-      >> enhancementFactor_;
+  is >> cutoff_ >> scaleChoice_ >> strictAO_ >> colourFactor_
+     >> enhancementFactor_;
 }
 
 void Sudakov1to2FormFactor::Init() {
 
   static ClassDocumentation<Sudakov1to2FormFactor> documentation
     ("The Sudakov1to2FormFactor class is the base class for the implementation of Sudakov"
-     " form factors in Herwig");
+     " form factors for 1->2 branchings in Herwig");
 
   static Reference<Sudakov1to2FormFactor,SudakovCutOff>
     interfaceCutoff("Cutoff",
@@ -99,19 +100,18 @@ void Sudakov1to2FormFactor::Init() {
      "Factor by which to enhance the splitting, compenstated by weight events.",
      &Sudakov1to2FormFactor::enhancementFactor_, 1., 0.0, 1e8,
      false, false, Interface::limited);
-
 }
 
 void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
-				    const IdList &ids,
-				    double enhance,bool ident,
-				    double detune, 
-				    Energy2 &t_main, double &z_main) {
+                                    const IdList &ids,
+                                    double enhance,bool ident,
+                                    double detune,
+                                    Energy2 &t_main, double &z_main){
   unsigned int pdfopt = iopt!=1 ? 0 : pdfFactor();
   double lower = integOverP(zlimits_.first ,ids,pdfopt);
   double upper = integOverP(zlimits_.second,ids,pdfopt);
   double c = 1./((upper - lower) * colourFactor()
-		 * alpha()->overestimateValue()/Constants::twopi*enhance*detune);
+                 * alpha()->showerOverestimateValue()/Constants::twopi*enhance*detune);
   double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {
@@ -128,11 +128,11 @@ void Sudakov1to2FormFactor::guesstz(Energy2 t1,unsigned int iopt,
     t_main = Constants::MaxEnergy2;
   // guessing z
   z_main = invIntegOverP(lower + UseRandom::rnd()
-         *(upper - lower),ids,pdfopt);
+                         *(upper - lower),ids,pdfopt);
 }
 
 bool Sudakov1to2FormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
-				  double detune) {
+                                          double detune) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
@@ -149,8 +149,8 @@ bool Sudakov1to2FormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance
 }
 
 bool Sudakov1to2FormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-				   double enhance,
-				   double detune) {
+                                           double enhance,
+                                           double detune) {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
@@ -198,6 +198,7 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
   initialize(ids,tmin);
   // check max > min
   if(tmax<=tmin) return ShoKinPtr();
+
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   // no shower variations to calculate
@@ -210,8 +211,8 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
     }
     while(PSVeto(t) ||
-	  SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
-	  alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+        SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) ||
+        alphaSVeto(pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
   else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
@@ -233,35 +234,36 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextTimeBranching(const Energy starting
         q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
         if (q_ <= ZERO) break;
       }
+
       // loop over the variations
       for ( map<string,ShowerVariation>::const_iterator var =
-	      ch->showerVariations().begin();
-	    var != ch->showerVariations().end(); ++var ) {
-	if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
-	     ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
-	  
-	  double newfactor = alphaSVetoRatio(pTScale() ?
-					     sqr(z()*(1.-z()))*t :
-					     z()*(1.-z())*t,var->second.renormalizationScaleFactor)
-	    * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
-	  
-	  double varied;
-	  if ( SplitRew || alphaRew ) {
-	    // No Emission
-	    varied = (1. - newfactor) / (1. - factor);
-	  } else {
-	    // Emission
-	    varied = newfactor / factor;
-	  }
-	  
-	  map<string,double>::iterator wi = ch->currentWeights().find(var->first);
-	  if ( wi != ch->currentWeights().end() )
-	    wi->second *= varied;
-	  else {
-	    assert(false);
-	    //ch->currentWeights()[var->first] = varied;
-	  }
-	}
+              ch->showerVariations().begin();
+            var != ch->showerVariations().end(); ++var ) {
+        if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+             ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+          
+          double newfactor = alphaSVetoRatio(pTScale() ?
+                                             sqr(z()*(1.-z()))*t :
+                                             z()*(1.-z())*t,var->second.renormalizationScaleFactor)
+            * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
+          
+          double varied;
+          if ( SplitRew || alphaRew ) {
+            // No Emission
+            varied = (1. - newfactor) / (1. - factor);
+          } else {
+            // Emission
+            varied = newfactor / factor;
+          }
+          
+          map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+          if ( wi != ch->currentWeights().end() )
+            wi->second *= varied;
+          else {
+            assert(false);
+            //ch->currentWeights()[var->first] = varied;
+          }
+        }
       }
       // for the enhancement adjust the central weight
       if(enhancementFactor_!=1.) {
@@ -308,7 +310,7 @@ generateNextSpaceBranching(const Energy startingQ,
   Energy2 t(tmax),pt2(ZERO);
   // no shower variations
   if(!ShowerHandler::currentHandlerIsSet() ||
-     ShowerHandler::currentHandler()->showerVariations().empty()) {
+     ShowerHandler::currentHandler()->showerVariations().empty()){
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
@@ -319,7 +321,7 @@ generateNextSpaceBranching(const Energy startingQ,
         z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
-	  PDFVeto(t,x,z(),ids[0],ids[1],beam));
+          PDFVeto(t,x,z(),ids[0],ids[1],beam));
   }
   // shower variations
   else {
@@ -424,7 +426,7 @@ ShoKinPtr Sudakov1to2FormFactor::generateNextDecayBranching(const Energy startin
     if(!guessDecay(t,tmax,minmass,enhance,detuning)) break;
     pt2 = QTildeKinematics::pT2_Decay(t,z(),masssquared_[0],masssquared_[2]);
   }
-  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)||
 	alphaSVeto(pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<cutoff_->pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
@@ -670,7 +672,7 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
   if(softAllowed) {
     // find the partner for the soft correlations
     tShowerParticlePtr partner=findCorrelationPartner(particle,true,interactionType());
-    // remember we want the softer gluon 
+    // remember we want the softer gluon
     bool swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
     double zFact = !swapOrder ? (1.-z) : z;
     // compute the transforms to the shower reference frame
@@ -1108,9 +1110,8 @@ double Sudakov1to2FormFactor::generatePhiDecay(ShowerParticle & particle,
   return phi;
 }
 
-
 Energy Sudakov1to2FormFactor::calculateScale(double zin, Energy pt, IdList ids,
-					 unsigned int iopt) {
+				     unsigned int iopt) {
   Energy2 tmin;
   initialize(ids,tmin);
   // final-state branching
@@ -1135,19 +1136,24 @@ Energy Sudakov1to2FormFactor::calculateScale(double zin, Energy pt, IdList ids,
 }
 
 void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
-					     tShowerParticlePtr first,
-					     tShowerParticlePtr second,
-					     ShowerPartnerType partnerType, 
-					     const bool back) const {
+                                         tShowerParticlePtr first,
+                                         tShowerParticlePtr second,
+					                               ShowerPartnerType partnerType,
+                                         const bool back) const {
   if(colourStructure()==TripletTripletOctet) {
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
                                       parent->antiColourLine());
       // ensure input consistency
-      assert((  cparent.first && !cparent.second && 
-		partnerType==ShowerPartnerType::QCDColourLine) || 
-             ( !cparent.first &&  cparent.second && 
-		partnerType==ShowerPartnerType::QCDAntiColourLine));
+      assert(( cparent.first && !cparent.second &&
+		partnerType==ShowerPartnerType::QCDColourLine) ||
+             (!cparent.first &&  cparent.second &&
+		partnerType==ShowerPartnerType::QCDAntiColourLine) ||
+             ( cparent.first && !cparent.second &&
+        partnerType==ShowerPartnerType::DARKColourLine) ||
+             (!cparent.first &&  cparent.second &&
+        partnerType==ShowerPartnerType::DARKAntiColourLine));
+
       // q -> q g
       if(cparent.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -1167,13 +1173,18 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
       second->progenitor(parent->progenitor());
     }
     else {
-      ColinePair cfirst = ColinePair(first->colourLine(), 
+      ColinePair cfirst = ColinePair(first->colourLine(),
                                      first->antiColourLine());
       // ensure input consistency
-      assert((  cfirst.first && !cfirst.second && 
-		partnerType==ShowerPartnerType::QCDColourLine) || 
-             ( !cfirst.first &&  cfirst.second && 
-		partnerType==ShowerPartnerType::QCDAntiColourLine));
+      assert((  cfirst.first && !cfirst.second &&
+		partnerType==ShowerPartnerType::QCDColourLine) ||
+             ( !cfirst.first &&  cfirst.second &&
+		partnerType==ShowerPartnerType::QCDAntiColourLine) ||
+             (  cfirst.first && !cfirst.second &&
+        partnerType==ShowerPartnerType::DARKColourLine) ||
+             ( !cfirst.first &&  cfirst.second &&
+        partnerType==ShowerPartnerType::DARKAntiColourLine));
+
       // q -> q g
       if(cfirst.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -1195,40 +1206,43 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
   }
   else if(colourStructure()==OctetOctetOctet) {
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
                                       parent->antiColourLine());
       // ensure input consistency
       assert(cparent.first&&cparent.second);
       // ensure first gluon is hardest
-      if( first->id()==second->id() && parent->showerKinematics()->z()<0.5 ) 
-	swap(first,second);
+      if(first->id()==second->id() && parent->showerKinematics()->z()<0.5)
+        swap(first,second);
       // colour line radiates
-      if(partnerType==ShowerPartnerType::QCDColourLine) {
-	// The colour line is radiating
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(second);
-	cparent.second->addAntiColoured(first);
-	newline->addColoured(first);
-	newline->addAntiColoured(second);
+      if(partnerType==ShowerPartnerType::QCDColourLine ||
+         partnerType==ShowerPartnerType::DARKColourLine) {
+        // The colour line is radiating
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
       }
       // anti colour line radiates
-      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(first);
-	cparent.second->addAntiColoured(second);
-	newline->addColoured(second);
-	newline->addAntiColoured(first);
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine ||
+              partnerType==ShowerPartnerType::DARKAntiColourLine) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addAntiColoured(first);
       }
       else
 	assert(false);
     }
     else {
-      ColinePair cfirst = ColinePair(first->colourLine(), 
+      ColinePair cfirst = ColinePair(first->colourLine(),
                                      first->antiColourLine());
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
       // The colour line is radiating
-      if(partnerType==ShowerPartnerType::QCDColourLine) {
+      if(partnerType==ShowerPartnerType::QCDColourLine ||
+         partnerType==ShowerPartnerType::DARKColourLine) {
 	ColinePtr newline=new_ptr(ColourLine());
 	cfirst.first->addAntiColoured(second);
 	cfirst.second->addAntiColoured(parent);
@@ -1236,7 +1250,8 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
 	newline->addColoured(second);
       }
       // anti colour line radiates
-      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine ||
+              partnerType==ShowerPartnerType::DARKAntiColourLine) {
 	ColinePtr newline=new_ptr(ColourLine());
 	cfirst.first->addColoured(parent);
 	cfirst.second->addColoured(second);
@@ -1245,11 +1260,11 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
       }
       else
 	assert(false);
-    }    
+    }
   }
   else if(colourStructure() == OctetTripletTriplet) {
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
                                       parent->antiColourLine());
       // ensure input consistency
       assert(cparent.first&&cparent.second);
@@ -1260,7 +1275,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
       second->progenitor(parent->progenitor());
     }
     else {
-      ColinePair cfirst = ColinePair(first->colourLine(), 
+      ColinePair cfirst = ColinePair(first->colourLine(),
                                      first->antiColourLine());
       // ensure input consistency
       assert(( cfirst.first && !cfirst.second) ||
@@ -1270,7 +1285,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
 	ColinePtr newline=new_ptr(ColourLine());
 	cfirst.first->addColoured(parent);
 	newline->addAntiColoured(second);
-	newline->addAntiColoured(parent);	
+	newline->addAntiColoured(parent);
       }
       // g -> qbar q
       else {
@@ -1286,10 +1301,10 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
   }
   else if(colourStructure() == TripletOctetTriplet) {
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
                                       parent->antiColourLine());
       // ensure input consistency
-      assert(( cparent.first && !cparent.second) || 
+      assert(( cparent.first && !cparent.second) ||
              (!cparent.first &&  cparent.second));
       // q -> g q
       if(cparent.first) {
@@ -1303,14 +1318,14 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
 	ColinePtr newline=new_ptr(ColourLine());
 	cparent.second->addAntiColoured(first);
 	newline->addColoured    ( first);
-	newline->addAntiColoured(second);	
+	newline->addAntiColoured(second);
       }
       // Set progenitor
       first->progenitor(parent->progenitor());
       second->progenitor(parent->progenitor());
     }
     else {
-      ColinePair cfirst = ColinePair(first->colourLine(), 
+      ColinePair cfirst = ColinePair(first->colourLine(),
                                      first->antiColourLine());
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
@@ -1334,20 +1349,20 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
 
     //make sure something sensible
     assert(parent->colourLine() || parent->antiColourLine());
-   
+
     //get the colour lines or anti-colour lines
     bool isAntiColour=true;
     ColinePair cparent;
     if(parent->colourLine()) {
-      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[0]), 
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[0]),
 			   const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[1]));
       isAntiColour=false;
     }
     else {
-      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[0]), 
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[0]),
 			   const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[1]));
     }
-    
+
     //check for sensible input
     //    assert(cparent.first && cparent.second);
 
@@ -1367,14 +1382,14 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
         cparent.first->addColoured(first);
         cparent.second->addColoured(second);
         newline->addColoured(first);
-        newline->addAntiColoured(second); 
+        newline->addAntiColoured(second);
       }
       else if(topology >= 0.5 && topology < 0.75) {
         ColinePtr newline=new_ptr(ColourLine());
         cparent.first->addColoured(second);
-        cparent.second->addColoured(first); 
-        newline->addColoured(first); 
-        newline->addAntiColoured(second); 
+        cparent.second->addColoured(first);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
       }
       else {
         ColinePtr newline=new_ptr(ColourLine());
@@ -1399,14 +1414,14 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
         cparent.first->addAntiColoured(first);
         cparent.second->addAntiColoured(second);
         newline->addAntiColoured(first);
-        newline->addColoured(second); 
+        newline->addColoured(second);
       }
       else if(topology >= 0.5 && topology < 0.75) {
         ColinePtr newline=new_ptr(ColourLine());
         cparent.first->addAntiColoured(second);
         cparent.second->addAntiColoured(first);
         newline->addAntiColoured(first);
-        newline->addColoured(second); 
+        newline->addColoured(second);
       }
       else {
         ColinePtr newline=new_ptr(ColourLine());
@@ -1415,7 +1430,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
         newline->addAntiColoured(first);
         newline->addColoured(second);
       }
-    }   
+    }
   }
   else if(colourStructure() == OctetOctetSinglet) {
     if(!back) {
@@ -1479,7 +1494,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
   else if(colourStructure() == ChargedChargedNeutral) {
     if(!parent->data().coloured()) return;
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
 				      parent->antiColourLine());
       // q -> q g
       if(cparent.first) {
@@ -1491,7 +1506,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
       }
     }
     else {
-      ColinePair cfirst = ColinePair(first->colourLine(), 
+      ColinePair cfirst = ColinePair(first->colourLine(),
 				     first->antiColourLine());
       // q -> q g
       if(cfirst.first) {
@@ -1506,7 +1521,7 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
   else if(colourStructure() == ChargedNeutralCharged) {
     if(!parent->data().coloured()) return;
     if(!back) {
-      ColinePair cparent = ColinePair(parent->colourLine(), 
+      ColinePair cparent = ColinePair(parent->colourLine(),
 				      parent->antiColourLine());
       // q -> q g
       if(cparent.first) {
@@ -1533,36 +1548,36 @@ void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
   else if(colourStructure() == NeutralChargedCharged ) {
     if(!back) {
       if(first->dataPtr()->coloured()) {
-	ColinePtr newline=new_ptr(ColourLine());
-	if(first->dataPtr()->iColour()==PDT::Colour3) {
-	  newline->addColoured    (first );
-	  newline->addAntiColoured(second);
-	}
-	else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
-	  newline->addColoured    (second);
-	  newline->addAntiColoured(first );
-	}
-	else if(parent->dataPtr()->coloured()||
-		first ->dataPtr()->coloured()||
-		second->dataPtr()->coloured())
-	  assert(false);
+  ColinePtr newline=new_ptr(ColourLine());
+  if(first->dataPtr()->iColour()==PDT::Colour3) {
+    newline->addColoured    (first );
+    newline->addAntiColoured(second);
+  }
+  else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
+    newline->addColoured    (second);
+    newline->addAntiColoured(first );
+  }
+  else if(parent->dataPtr()->coloured()||
+    first ->dataPtr()->coloured()||
+    second->dataPtr()->coloured())
+    assert(false);
       }
     }
-    else {   
-      ColinePair cfirst = ColinePair(first->colourLine(), 
-				     first->antiColourLine());
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(),
+             first->antiColourLine());
       // gamma -> q qbar
       if(cfirst.first) {
-	cfirst.first->addAntiColoured(second);
+  cfirst.first->addAntiColoured(second);
       }
       // gamma -> qbar q
       else if(cfirst.second) {
-	cfirst.second->addColoured(second);
+  cfirst.second->addColoured(second);
       }
       else if(parent->dataPtr()->coloured()||
-	      first ->dataPtr()->coloured()||
-	      second->dataPtr()->coloured())
-	assert(false);
+        first ->dataPtr()->coloured()||
+        second->dataPtr()->coloured())
+  assert(false);
     }
   }
   else if(colourStructure() == EW) {
@@ -1601,14 +1616,16 @@ namespace {
 
   bool hasColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
-    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6;
+    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6||
+           colour==PDT::DarkColourFundamental || colour==PDT::DarkColourAdjoint;
   }
 
   bool hasAntiColour(tPPtr p) {
     PDT::Colour colour = p->dataPtr()->iColour();
-    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar;
+    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar ||
+           colour==PDT::DarkColourAntiFundamental || colour==PDT::DarkColourAdjoint;
   }
-  
+
 }
 
 void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerType,
@@ -1639,63 +1656,199 @@ void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerTy
   // QED
   if(partnerType==ShowerPartnerType::QED) {
     assert(colourStructure()==ChargedChargedNeutral ||
-	   colourStructure()==ChargedNeutralCharged ||
-	   colourStructure()==NeutralChargedCharged );
+       colourStructure()==ChargedNeutralCharged ||
+       colourStructure()==NeutralChargedCharged ||
+     colourStructure()==EW);
     // normal case
     if(!bosonSplitting) {
       assert(colourStructure()==ChargedChargedNeutral ||
-	     colourStructure()==ChargedNeutralCharged );
+             colourStructure()==ChargedNeutralCharged);
       // set the scales
       // emitter
       emitter->scales().QED         = zEmitter*scale;
       emitter->scales().QED_noAO    =          scale;
-      if(strictAO_)
-	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
-      else
-	emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c      );
-      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
-      if(strictAO_)
-	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
-      else
-	emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac     );
-      emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
-      // emitted 
-      emitted->scales().QED         = zEmitted*scale;
-      emitted->scales().QED_noAO    =          scale;
-      emitted->scales().QCD_c       = ZERO;
-      emitted->scales().QCD_c_noAO  = ZERO;
-      emitted->scales().QCD_ac      = ZERO;
-      emitted->scales().QCD_ac_noAO = ZERO;
+      if(strictAO_) {
+        emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c  );
+        emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c );
+      }
+      else {
+	      emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c  );
+        emitter->scales().DARK_c      = min(         scale,parent->scales().DARK_c );
+      }
+      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO);
+      emitter->scales().DARK_c_noAO = min(scale,parent->scales().DARK_c_noAO);
+      if(strictAO_) {
+	      emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac );
+        emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac);
+      }
+      else {
+	      emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac );
+        emitter->scales().DARK_ac     = min(         scale,parent->scales().DARK_ac);
+      }
+      emitter->scales().QCD_ac_noAO  = min(scale,parent->scales().QCD_ac_noAO );
+      emitter->scales().DARK_ac_noAO = min(scale,parent->scales().DARK_ac_noAO);
+      emitter->scales().EW           = min(scale,parent->scales().EW          );
+      // emitted
+      emitted->scales().QED          = zEmitted*scale;
+      emitted->scales().QED_noAO     =          scale;
+      emitted->scales().QCD_c        = ZERO;
+      emitted->scales().QCD_c_noAO   = ZERO;
+      emitted->scales().QCD_ac       = ZERO;
+      emitted->scales().QCD_ac_noAO  = ZERO;
+      emitted->scales().DARK_c       = zEmitted*scale;
+      emitted->scales().DARK_c_noAO  =          scale;
+      emitted->scales().DARK_ac      = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO =          scale;
+      emitted->scales().EW           = min(scale,parent->scales().EW         );
     }
     // gamma -> f fbar
     else {
-      assert(colourStructure()==NeutralChargedCharged );
+      if (parent->id()==22 && abs(emitter->id())==24 && emitter->id() == - emitted->id())
+        ;
+      else
+        assert(colourStructure()==NeutralChargedCharged  || colourStructure()==EW);
       // emitter
-      emitter->scales().QED         = zEmitter*scale;
-      emitter->scales().QED_noAO    =          scale;
+      emitter->scales().QED           = zEmitter*scale;
+      emitter->scales().QED_noAO      =          scale;
       if(hasColour(emitter)) {
-	emitter->scales().QCD_c       = zEmitter*scale;
-	emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().QCD_c       = zEmitter*scale;
+        emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().DARK_c      = zEmitter*scale;
+        emitter->scales().DARK_c_noAO =          scale;
       }
       if(hasAntiColour(emitter)) {
-	emitter->scales().QCD_ac      = zEmitter*scale;
-	emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().QCD_ac      = zEmitter*scale;
+        emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().DARK_ac     = zEmitter*scale;
+        emitter->scales().DARK_ac_noAO=          scale;
       }
-      // emitted 
-      emitted->scales().QED         = zEmitted*scale;
-      emitted->scales().QED_noAO    =          scale;
+      emitter->scales().EW            = zEmitter*scale;
+      // emitted
+      emitted->scales().QED           = zEmitted*scale;
+      emitted->scales().QED_noAO      =          scale;
       if(hasColour(emitted)) {
-	emitted->scales().QCD_c       = zEmitted*scale;
-	emitted->scales().QCD_c_noAO  =          scale;
+      	emitted->scales().QCD_c       = zEmitted*scale;
+      	emitted->scales().QCD_c_noAO  =          scale;
+        emitted->scales().DARK_c      = zEmitted*scale;
+        emitted->scales().DARK_c_noAO =          scale;
       }
       if(hasAntiColour(emitted)) {
-	emitted->scales().QCD_ac      = zEmitted*scale;
-	emitted->scales().QCD_ac_noAO =          scale;
+        emitted->scales().QCD_ac      = zEmitted*scale;
+        emitted->scales().QCD_ac_noAO =          scale;
+        emitted->scales().DARK_ac     = zEmitted*scale;
+        emitted->scales().DARK_ac_noAO=          scale;
       }
+      emitted->scales().EW            = zEmitted*scale;
     }
   }
   // QCD
-  else {
+  else if (partnerType==ShowerPartnerType::QCDColourLine ||
+	   partnerType==ShowerPartnerType::QCDAntiColourLine) {
+   // normal case eg q -> q g and g -> g g
+    if(!bosonSplitting) {
+      if(strictAO_)
+	emitter->scales().QED         = min(zEmitter*scale,parent->scales().QED     );
+      else
+	emitter->scales().QED         = min(         scale,parent->scales().QED     );
+      emitter->scales().QED_noAO      = min(scale,parent->scales().QED_noAO);
+      emitter->scales().EW            = min(scale,parent->scales().EW     );
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+        emitter->scales().QCD_c       = zEmitter*scale;
+        emitter->scales().QCD_c_noAO  =          scale;
+        emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac      );
+        emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO );
+        emitter->scales().DARK_c      = zEmitter*scale;
+        emitter->scales().DARK_c_noAO =          scale;
+        emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac     );
+        emitter->scales().DARK_ac_noAO= min(         scale,parent->scales().DARK_ac_noAO);
+      }
+      else {
+        emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+        emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
+        emitter->scales().QCD_ac      = zEmitter*scale;
+        emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c     );
+        emitter->scales().DARK_c_noAO = min(         scale,parent->scales().DARK_c_noAO);
+        emitter->scales().DARK_ac     = zEmitter*scale;
+        emitter->scales().DARK_ac_noAO=          scale;
+      }
+      // emitted
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().EW          = min(scale,parent->scales().EW     );
+      emitted->scales().DARK_c      = ZERO;
+      emitted->scales().DARK_c_noAO = ZERO;
+      emitted->scales().DARK_ac     = ZERO;
+      emitted->scales().DARK_ac_noAO= ZERO;
+    }
+    // g -> q qbar
+    else {
+      // emitter
+      if(emitter->dataPtr()->charged()) {
+        emitter->scales().QED         = zEmitter*scale;
+        emitter->scales().QED_noAO    =          scale;
+      }
+      emitter->scales().EW            = zEmitter*scale;
+      emitter->scales().QCD_c         = zEmitter*scale;
+      emitter->scales().QCD_c_noAO    =          scale;
+      emitter->scales().QCD_ac        = zEmitter*scale;
+      emitter->scales().QCD_ac_noAO   =          scale;
+      emitter->scales().DARK_c        = zEmitter*scale;
+      emitter->scales().DARK_c_noAO   =          scale;
+      emitter->scales().DARK_ac       = zEmitter*scale;
+      emitter->scales().DARK_ac_noAO  =          scale;
+      // emitted
+      if(emitted->dataPtr()->charged()) {
+	emitted->scales().QED         = zEmitted*scale;
+	emitted->scales().QED_noAO    =          scale;
+      }
+      emitted->scales().EW            = zEmitted*scale;
+      emitted->scales().QCD_c         = zEmitted*scale;
+      emitted->scales().QCD_c_noAO    =          scale;
+      emitted->scales().QCD_ac        = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO   =          scale;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
+    }
+  }
+  else if(partnerType==ShowerPartnerType::EW) {
+    // EW
+    emitter->scales().EW          = zEmitter*scale;
+    emitted->scales().EW          = zEmitted*scale;
+    // QED
+    // W radiation AO
+    if(emitted->dataPtr()->charged()) {
+      emitter->scales().QED       = zEmitter*scale;
+      emitter->scales().QED_noAO  =          scale;
+      emitted->scales().QED       = zEmitted*scale;
+      emitted->scales().QED_noAO  =          scale;
+    }
+    // Z don't
+    else {
+      emitter->scales().QED         = min(scale,parent->scales().QED     );
+      emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+    }
+    // QCD
+    emitter->scales().QCD_c       = min(scale,parent->scales().QCD_c      );
+    emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
+    emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
+    emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
+    emitted->scales().QCD_c       = ZERO;
+    emitted->scales().QCD_c_noAO  = ZERO;
+    emitted->scales().QCD_ac      = ZERO;
+    emitted->scales().QCD_ac_noAO = ZERO;
+  }
+  // DARK
+  else if (partnerType==ShowerPartnerType::DARKColourLine ||
+           partnerType==ShowerPartnerType::DARKAntiColourLine) {
    // normal case eg q -> q g and g -> g g
     if(!bosonSplitting) {
       if(strictAO_)
@@ -1708,20 +1861,32 @@ void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerTy
 	emitter->scales().QCD_c_noAO  =          scale;
 	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
 	emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO);
+        emitter->scales().DARK_c      = zEmitter*scale;
+        emitter->scales().DARK_c_noAO =          scale;
+        emitter->scales().DARK_ac     = min(zEmitter*scale,parent->scales().DARK_ac    );
+        emitter->scales().DARK_ac_noAO= min(         scale,parent->scales().DARK_ac_noAO);
       }
       else {
 	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
 	emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
 	emitter->scales().QCD_ac      = zEmitter*scale;
 	emitter->scales().QCD_ac_noAO =          scale;
+        emitter->scales().DARK_c      = min(zEmitter*scale,parent->scales().DARK_c     );
+        emitter->scales().DARK_c_noAO = min(         scale,parent->scales().DARK_c_noAO);
+        emitter->scales().DARK_ac     = zEmitter*scale;
+        emitter->scales().DARK_ac_noAO=          scale;
       }
-      // emitted 
+      // emitted
       emitted->scales().QED         = ZERO;
       emitted->scales().QED_noAO    = ZERO;
-      emitted->scales().QCD_c       = zEmitted*scale;
-      emitted->scales().QCD_c_noAO  =          scale;
-      emitted->scales().QCD_ac      = zEmitted*scale;
-      emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().QCD_c       = ZERO;
+      emitted->scales().QCD_c_noAO  = ZERO;
+      emitted->scales().QCD_ac      = ZERO;
+      emitted->scales().QCD_ac_noAO = ZERO;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
     }
     // g -> q qbar
     else {
@@ -1734,7 +1899,11 @@ void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerTy
       emitter->scales().QCD_c_noAO  =          scale;
       emitter->scales().QCD_ac      = zEmitter*scale;
       emitter->scales().QCD_ac_noAO =          scale;
-      // emitted 
+      emitter->scales().DARK_c      = zEmitter*scale;
+      emitter->scales().DARK_c_noAO =          scale;
+      emitter->scales().DARK_ac     = zEmitter*scale;
+      emitter->scales().DARK_ac_noAO=          scale;
+      // emitted
       if(emitted->dataPtr()->charged()) {
 	emitted->scales().QED         = zEmitted*scale;
 	emitted->scales().QED_noAO    =          scale;
@@ -1743,8 +1912,15 @@ void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerTy
       emitted->scales().QCD_c_noAO  =          scale;
       emitted->scales().QCD_ac      = zEmitted*scale;
       emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().DARK_c      = zEmitted*scale;
+      emitted->scales().DARK_c_noAO =          scale;
+      emitted->scales().DARK_ac     = zEmitted*scale;
+      emitted->scales().DARK_ac_noAO=          scale;
     }
   }
+  //shouldn't be anything else
+  else
+    assert(false);
 }
 
 void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partnerType,
@@ -1764,6 +1940,10 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
       parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
       parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
       parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
       // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
@@ -1771,28 +1951,40 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
       timelike->scales().QCD_c_noAO  =    ZERO;
       timelike->scales().QCD_ac      =    ZERO;
       timelike->scales().QCD_ac_noAO =    ZERO;
+      timelike->scales().DARK_c      =    ZERO;
+      timelike->scales().DARK_c_noAO =    ZERO;
+      timelike->scales().DARK_ac     =    ZERO;
+      timelike->scales().DARK_ac_noAO=    ZERO;
     }
     else if(parent->id()==timelike->id()) {
       parent   ->scales().QED         =   scale;
       parent   ->scales().QED_noAO    =   scale;
       if(hasColour(parent)) {
-	parent   ->scales().QCD_c       = scale;
-	parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().QCD_c       = scale;
+        parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().DARK_c      = scale;
+        parent   ->scales().DARK_c_noAO = scale;
       }
       if(hasAntiColour(parent)) {
-	parent   ->scales().QCD_ac      = scale;
-	parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().QCD_ac      = scale;
+        parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().DARK_ac     = scale;
+        parent   ->scales().DARK_ac_noAO= scale; 
       }
-      // timelike 
+      // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
       if(hasColour(timelike)) {
-	timelike->scales().QCD_c       = AOScale;
-	timelike->scales().QCD_c_noAO  =   scale;
+        timelike->scales().QCD_c       = AOScale;
+        timelike->scales().QCD_c_noAO  =   scale;
+        timelike->scales().DARK_c      = AOScale;
+        timelike->scales().DARK_c_noAO =   scale;
       }
       if(hasAntiColour(timelike)) {
-	timelike->scales().QCD_ac      = AOScale;
-	timelike->scales().QCD_ac_noAO =   scale;
+        timelike->scales().QCD_ac      = AOScale;
+        timelike->scales().QCD_ac_noAO =   scale;
+        timelike->scales().DARK_ac     = AOScale;
+        timelike->scales().DARK_ac_noAO=   scale;
       }
     }
     else {
@@ -1802,22 +1994,31 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
       parent   ->scales().QCD_c_noAO  = ZERO ;
       parent   ->scales().QCD_ac      = ZERO ;
       parent   ->scales().QCD_ac_noAO = ZERO ;
-      // timelike 
+      parent   ->scales().DARK_c      = ZERO ;
+      parent   ->scales().DARK_c_noAO = ZERO ;
+      parent   ->scales().DARK_ac     = ZERO ;
+      parent   ->scales().DARK_ac_noAO= ZERO ;
+      // timelike
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
       if(hasColour(timelike)) {
-	timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac     );
-	timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO);
+        timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac      );
+        timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO );
+        timelike->scales().DARK_c      = min(AOScale,spacelike->scales().DARK_ac     );
+        timelike->scales().DARK_c_noAO = min(  scale,spacelike->scales().DARK_ac_noAO);
       }
       if(hasAntiColour(timelike)) {
-	timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c      );
-	timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO );
+        timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c       );
+        timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO  );
+        timelike->scales().DARK_ac     = min(AOScale,spacelike->scales().DARK_c      );
+        timelike->scales().DARK_ac_noAO= min(  scale,spacelike->scales().DARK_c_noAO );
       }
     }
   }
   // QCD
-  else {
-    // timelike 
+  else if (partnerType==ShowerPartnerType::QCDColourLine ||
+	   partnerType==ShowerPartnerType::QCDAntiColourLine) {
+    // timelike
     if(timelike->dataPtr()->charged()) {
       timelike->scales().QED         = AOScale;
       timelike->scales().QED_noAO    =   scale;
@@ -1825,10 +2026,14 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
     if(hasColour(timelike)) {
       timelike->scales().QCD_c       = AOScale;
       timelike->scales().QCD_c_noAO  =   scale;
+      timelike->scales().DARK_c      = AOScale;
+      timelike->scales().DARK_c_noAO =   scale;
     }
     if(hasAntiColour(timelike)) {
       timelike->scales().QCD_ac      = AOScale;
       timelike->scales().QCD_ac_noAO =   scale;
+      timelike->scales().DARK_ac     = AOScale;
+      timelike->scales().DARK_ac_noAO=   scale;
     }
     if(parent->id()==spacelike->id()) {
       parent   ->scales().QED         = min(scale,spacelike->scales().QED        );
@@ -1837,6 +2042,92 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
       parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
       parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
       parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
+    }
+    else {
+      if(parent->dataPtr()->charged()) {
+        parent   ->scales().QED         = scale;
+        parent   ->scales().QED_noAO    = scale;
+      }
+      if(hasColour(parent)) {
+        parent   ->scales().QCD_c      = scale;
+        parent   ->scales().QCD_c_noAO  = scale;
+        parent   ->scales().DARK_c      = scale;
+        parent   ->scales().DARK_c_noAO = scale;
+      }
+      if(hasAntiColour(parent)) {
+        parent   ->scales().QCD_ac      = scale;
+        parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().DARK_ac     = scale;
+        parent   ->scales().DARK_ac_noAO= scale;
+      }
+    }
+  }
+  else if(partnerType==ShowerPartnerType::EW) {
+    if(abs(spacelike->id())!=ParticleID::Wplus &&
+       spacelike->id() !=ParticleID::Z0 ) {
+      // QCD scales
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c      );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      timelike->scales().QCD_c       =    ZERO;
+      timelike->scales().QCD_c_noAO  =    ZERO;
+      timelike->scales().QCD_ac      =    ZERO;
+      timelike->scales().QCD_ac_noAO =    ZERO;
+      // QED scales
+      if(timelike->id()==ParticleID::Z0) {
+	parent   ->scales().QED       = min(scale,spacelike->scales().QED      );
+	parent   ->scales().QED_noAO  = min(scale,spacelike->scales().QED_noAO );
+	timelike->scales().QED       =    ZERO;
+	timelike->scales().QED_noAO  =    ZERO;
+      }
+      else {
+	parent   ->scales().QED         =   scale;
+	parent   ->scales().QED_noAO    =   scale;
+	timelike->scales().QED          = AOScale;
+	timelike->scales().QED_noAO     =   scale;
+      }
+      // EW scales
+	parent   ->scales().EW         =   scale;
+	timelike->scales().EW          = AOScale;
+    }
+    else assert(false);
+  }
+  // DARK
+  else if(partnerType==ShowerPartnerType::DARKColourLine ||
+          partnerType==ShowerPartnerType::DARKAntiColourLine ) {
+    // timelike
+    if(timelike->dataPtr()->charged()) {
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+    }
+    if(hasColour(timelike)) {
+      timelike->scales().QCD_c       = AOScale;
+      timelike->scales().QCD_c_noAO  =   scale;
+      timelike->scales().DARK_c      = AOScale;
+      timelike->scales().DARK_c_noAO =   scale;
+    }
+    if(hasAntiColour(timelike)) {
+      timelike->scales().QCD_ac      = AOScale;
+      timelike->scales().QCD_ac_noAO =   scale;
+      timelike->scales().DARK_ac     = AOScale;
+      timelike->scales().DARK_ac_noAO=   scale;
+    }
+    if(parent->id()==spacelike->id()) {
+      parent   ->scales().QED         = min(scale,spacelike->scales().QED         );
+      parent   ->scales().QED_noAO    = min(scale,spacelike->scales().QED_noAO    );
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c       );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO  );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac      );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO );
+      parent   ->scales().DARK_c      = min(scale,spacelike->scales().DARK_c      );
+      parent   ->scales().DARK_c_noAO = min(scale,spacelike->scales().DARK_c_noAO );
+      parent   ->scales().DARK_ac     = min(scale,spacelike->scales().DARK_ac     );
+      parent   ->scales().DARK_ac_noAO= min(scale,spacelike->scales().DARK_ac_noAO);
     }
     else {
       if(parent->dataPtr()->charged()) {
@@ -1845,14 +2136,20 @@ void Sudakov1to2FormFactor::evaluateInitialStateScales(ShowerPartnerType partner
       }
       if(hasColour(parent)) {
 	parent   ->scales().QCD_c      = scale;
-	parent   ->scales().QCD_c_noAO  = scale;
+	parent   ->scales().QCD_c_noAO = scale;
+        parent   ->scales().DARK_c     = scale;
+        parent   ->scales().DARK_c_noAO= scale;
       }
       if(hasAntiColour(parent)) {
 	parent   ->scales().QCD_ac      = scale;
 	parent   ->scales().QCD_ac_noAO = scale;
+        parent   ->scales().DARK_ac     = scale;
+        parent   ->scales().DARK_ac_noAO= scale;
       }
     }
   }
+  else
+    assert(false);
 }
 
 void Sudakov1to2FormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
@@ -1872,35 +2169,90 @@ void Sudakov1to2FormFactor::evaluateDecayScales(ShowerPartnerType partnerType,
     timelike->scales().QCD_c_noAO  =    ZERO;
     timelike->scales().QCD_ac      =    ZERO;
     timelike->scales().QCD_ac_noAO =    ZERO;
+    timelike->scales().EW          =    ZERO;
+    timelike->scales().DARK_c      =    ZERO;
+    timelike->scales().DARK_c_noAO =    ZERO;
+    timelike->scales().DARK_ac     =    ZERO;
+    timelike->scales().DARK_ac_noAO=    ZERO;
     // spacelike
     spacelike->scales().QED         =   scale;
     spacelike->scales().QED_noAO    =   scale;
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
   }
   // QCD
-  else {
-    // timelike 
+  else if(partnerType==ShowerPartnerType::QCDColourLine ||
+	  partnerType==ShowerPartnerType::QCDAntiColourLine) {
+    // timelike
     timelike->scales().QED         = ZERO;
     timelike->scales().QED_noAO    = ZERO;
     timelike->scales().QCD_c       = AOScale;
     timelike->scales().QCD_c_noAO  =   scale;
     timelike->scales().QCD_ac      = AOScale;
     timelike->scales().QCD_ac_noAO =   scale;
+    timelike->scales().EW          = ZERO;
+    timelike->scales().DARK_c      = ZERO;
+    timelike->scales().DARK_c_noAO = ZERO;
+    timelike->scales().DARK_ac     = ZERO;
+    timelike->scales().DARK_ac_noAO= ZERO;
+    // spacelike
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+  }
+  else if(partnerType==ShowerPartnerType::EW) {
+    // EW
+    timelike->scales().EW           = AOScale;
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    // QCD
+    timelike->scales().QCD_c       =    ZERO;
+    timelike->scales().QCD_c_noAO  =    ZERO;
+    timelike->scales().QCD_ac      =    ZERO;
+    timelike->scales().QCD_ac_noAO =    ZERO;
+    timelike->scales().EW          = ZERO;
+    // QED
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+  }
+  //DARK
+  else if(partnerType==ShowerPartnerType::DARKColourLine ||
+          partnerType==ShowerPartnerType::DARKAntiColourLine ) {
+    // timelike
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    timelike->scales().QCD_c       = ZERO;
+    timelike->scales().QCD_c_noAO  = ZERO;
+    timelike->scales().QCD_ac      = ZERO;
+    timelike->scales().QCD_ac_noAO = ZERO;
+    timelike->scales().DARK_c      = AOScale;
+    timelike->scales().DARK_c_noAO = scale;
+    timelike->scales().DARK_ac     = AOScale;
+    timelike->scales().DARK_ac_noAO = scale;
     // spacelike
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
   }
+  //shouldn't be anything else
+  else
+    assert(false);
   spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
   spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
   spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );
   spacelike->scales().QCD_ac_noAO = max(scale,parent->scales().QCD_ac_noAO);
+  spacelike->scales().DARK_c      = max(scale,parent->scales().DARK_c      );
+  spacelike->scales().DARK_c_noAO = max(scale,parent->scales().DARK_c_noAO );
+  spacelike->scales().DARK_ac     = max(scale,parent->scales().DARK_ac     );
+  spacelike->scales().DARK_ac_noAO= max(scale,parent->scales().DARK_ac_noAO);
 }
 
 void Sudakov1to2FormFactor::doinit() {
   SudakovFormFactor::doinit();
   assert(interactionType()!=ShowerInteraction::UNDEFINED);
-  assert((colourStructure()>0&&interactionType()==ShowerInteraction::QCD) ||
+  assert((colourStructure()>0&&(interactionType()==ShowerInteraction::QCD ||
+                                interactionType()==ShowerInteraction::DARK)) ||
 	 (colourStructure()<0&&(interactionType()==ShowerInteraction::QED ||
-				interactionType()==ShowerInteraction::EW)) );
+                                interactionType()==ShowerInteraction::EW)) );
   // compute the colour factors if need
   if(colourStructure()==TripletTripletOctet) {
     colourFactor_ = 4./3.;
@@ -1941,7 +2293,7 @@ double Sudakov1to2FormFactor::colourFactor() const {
     else if(colourStructure()==NeutralChargedCharged) {
       double fact = sqr(double(ids_[1]->iCharge())/3.);
       if(ids_[1]->coloured())
-	fact *= abs(double(ids_[1]->iColour()));
+        fact *= abs(double(ids_[1]->iColour()));
       return fact;
     }
     else if(colourStructure()==EW) {

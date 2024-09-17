@@ -79,7 +79,7 @@ public:
    * @param rho The spin density matrix
    */
   double ratioP(const double z, const Energy2 t,
-		const IdList & ids, const bool mass, const RhoDMatrix & ) const {
+                const IdList & ids, const bool mass, const RhoDMatrix & ) const {
     double val = 1. + sqr(z);
     if(mass) {
       Energy m = ids[0]->mass();
@@ -97,8 +97,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  double integOverP(const double z, const IdList & ,
-		    unsigned int PDFfactor) const {
+  double integOverP(const double z, const IdList & , 
+                    unsigned int PDFfactor) const {
     switch (PDFfactor) {
     case 0:
       return -2.*Math::log1m(z);
@@ -109,8 +109,8 @@ public:
     case 3:
     default:
       throw Exception() << "HalfHalfOneSplitFn::integOverP() invalid PDFfactor = "
-			<< PDFfactor << Exception::runerror;
-    }
+                        << PDFfactor << Exception::runerror;
+    } 
   }
 
   /**
@@ -121,8 +121,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  double invIntegOverP(const double r, const IdList & ,
-		       unsigned int PDFfactor) const {
+  double invIntegOverP(const double r, const IdList & , 
+                       unsigned int PDFfactor) const {
     switch (PDFfactor) {
     case 0:
       return 1. - exp(- 0.5*r); 
@@ -133,7 +133,7 @@ public:
     case 3:
     default:
       throw Exception() << "HalfHalfOneSplitFn::invIntegOverP() invalid PDFfactor = "
-			<< PDFfactor << Exception::runerror;
+                        << PDFfactor << Exception::runerror;
     } 
   }
   //@}
@@ -161,13 +161,13 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  vector<pair<int,Complex> >
+  vector<pair<int,Complex> > 
   generatePhiBackward(const double, const Energy2, const IdList & , const RhoDMatrix &) {
     // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
     // and rest = splitting function for Tr(rho)=1 as required by defn
     return {{ {0, 1.} }};
   }
-  
+
   /**
    * Calculate the matrix element for the splitting
    * @param z The energy fraction
@@ -176,8 +176,8 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
-			   const IdList & ids, const double phi,
-			   bool timeLike) {
+                           const IdList & ids, const double phi,
+                           bool timeLike) {
     // calculate the kernal
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
     Energy m = !timeLike ? ZERO : ids[0]->mass();

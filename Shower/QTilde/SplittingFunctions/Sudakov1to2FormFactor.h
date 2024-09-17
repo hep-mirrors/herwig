@@ -13,111 +13,30 @@
 //
 
 #include "SudakovFormFactor.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
-#include "ThePEG/Repository/UseRandom.h"
-#include "ThePEG/EventRecord/SpinInfo.h"
-#include "Sudakov1to2FormFactor.fh"
-#include "SudakovCutOff.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig/Decay/DecayMatrixElement.h"
-
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
+#include "ThePEG/EventRecord/ColourLine.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "SudakovCutOff.h"
+#include "Sudakov1to2FormFactor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**  \ingroup Shower
- *
- *  This is the definition of the Sudakov form factor class. In general this
- *  is the base class for the implementation of Sudakov form factors in Herwig.
- *  The methods generateNextTimeBranching(), generateNextDecayBranching() and
- *  generateNextSpaceBranching need to be implemented in classes inheriting from this
- *  one.
- *
- *  In addition a number of methods are implemented to assist with the calculation
- *  of the form factor using the veto algorithm in classes inheriting from this one.
- *  
- *  In general the Sudakov form-factor, for final-state radiation, is given
- *  by
- *  \f[\Delta_{ba}(\tilde{q}_{i+1},\tilde{q}_i)=
- *  \exp\left\{
- *     -\int^{\tilde{q}^2_i}_{\tilde{q}^2_{i+1}}
- *     \frac{{\rm d}\tilde{q}^2}{\tilde{q}^2} 
- *      \int\frac{\alpha_S(z,\tilde{q})}{2\pi}
- *      P_{ba}(z,\tilde{q})\Theta(p_T)
- *      \right\}.
- *  \f]
- *  We can solve this to obtain the next value of the scale \f$\tilde{q}_{i+1}\f$
- *  given the previous value \f$\tilde{q}_i\f$
- *  in the following way. First we obtain a simplified form of the integrand
- *  which is greater than or equal to the true integrand for all values of
- *  \f$\tilde{q}\f$.
- *
- *  In practice it is easiest to obtain this over estimate in pieces. The ShowerAlpha
- *  object contains an over estimate for \f$\alpha_S\f$, the splitting function
- *  contains both an over estimate of the spltting function and its integral
- *  which is needed to compute the over estimate of the \f$\tilde{q}\f$ integrand,
- *  together with an over estimate of the limit of the \f$z\f$ integral.
- *
- *  This gives an overestimate of the integrand
- *  \f[g(\tilde{q}^2) = \frac{c}{\tilde{q}^2}, \f]
- *  where because the over estimates are chosen to be independent of \f$\tilde{q}\f$ the 
- *  parameter 
- *  \f[c = \frac{\alpha_{\rm over}}{2\pi}\int^{z_1}_{z_0}P_{\rm over}(z),\f]
- * is a constant independent of \f$\tilde{q}\f$.
- *
- *  The guesstz() member can then be used to generate generate the value of 
- *  \f$\tilde{q}^2\f$ according to this result. This is done by solving the Sudakov
- *  form factor, with the over estimates, is equal to a random number 
- *  \f$r\f$ in the interval \f$[0,1]\f$. This gives
- *  \f[\tilde{q}^2_{i+1}=G^{-1}\left[G(\tilde{q}^2_i)+\ln r\right],\f]
- *  where \f$G(\tilde{q}^2)=c\ln(\tilde{q}^2)\f$ is the infinite integral 
- *  of \f$g(\tilde{q}^2)\f$ and \f$G^{-1}(x)=\exp\left(\frac{x}c\right)\f$
- *  is its inverse.
- *  It this case we therefore obtain
- *  \f[\tilde{q}^2_{i+1}=\tilde{q}^2_ir^{\frac1c}.\f]
- *  The value of \f$z\f$ can then be calculated in a similar way
- *  \f[z = I^{-1}\left[I(z_0)+r\left(I(z_1)-I(z_0)\right)\right],\f]
- *  using the guesstz() member,
- *  where \f$I=\int P(z){\rm d}z\f$ and \f$I^{-1}\f$ is its inverse.
- *  
- *  The veto algorithm then uses rejection using the ratio of the 
- *  true value to the overestimated one to obtain the original distribution.
- *  This is accomplished using the 
- *  - alphaSVeto()      member for the \f$\alpha_S\f$ veto
- *  - SplittingFnVeto() member for the veto on the value of the splitting function.
- *  in general there must also be a chech that the emission is in the allowed
- *  phase space but this is left to the inheriting classes as it will depend
- *  on the ordering variable.
- *
- *  The Sudakov form factor for the initial-scale shower is different because
- *  it must include the PDF which guides the backward evolution.
- *  It is given by
- *  \f[\Delta_{ba}(\tilde{q}_{i+1},\tilde{q}_i)=
- *  \exp\left\{
- *     -\int^{\tilde{q}^2_i}_{\tilde{q}^2_{i+1}}
- *     \frac{{\rm d}\tilde{q}^2}{\tilde{q}^2} 
- *      \int\frac{\alpha_S(z,\tilde{q})}{2\pi}
- *      P_{ba}(z,\tilde{q})\frac{x'f_a(\frac{x}z,\tilde{q}^2)}{xf_b(x,\tilde{q^2})}
- *      \right\},
- *  \f]
- *  where \f$x\f$ is the fraction of the beam momentum the parton \f$b\f$ had before
- *  the backward evolution.
- *  This can be solve in the same way as for the final-state branching but the constant
- *  becomes
- *  \f[c = \frac{\alpha_{\rm over}}{2\pi}\int^{z_1}_{z_0}P_{\rm over}(z)PDF_{\rm max},\f]
- *  where 
- * \f[PDF_{\rm max}=\max\frac{x'f_a(\frac{x}z,\tilde{q}^2)}{xf_b(x,\tilde{q^2})},\f]
- *  which can be set using an interface.
+/** \ingroup Shower
  *
  *  This is an abstract class which defines the common interface
  *  for all \f$1\to2\f$ splitting functions, for both initial-state
- *  and final-state radiation. 
+ *  and final-state radiation.
  *
- *  The SplittingFunction class contains a number of purely virtual members
+ *  The Sudakov1to2FormFactor class contains a number of purely virtual members
  *  which must be implemented in the inheriting classes. The class also stores
  *  the interaction type of the spltting function.
  *
- *  The inheriting classes need to specific the splitting function 
+ *  The inheriting classes need to specific the splitting function
  *  \f$P(z,2p_j\cdot p_k)\f$, in terms of the energy fraction \f$z\f$ and
  *  the evolution scale. In order to allow the splitting functions to be used
  *  with different choices of evolution functions the scale is given by
@@ -127,18 +46,15 @@ using namespace ThePEG;
  *  $p_T$ is the relative transverse momentum of the branching products and
  *  \f$\tilde{q}^2\f$ is the angular variable described in hep-ph/0310083.
  *
- *  In addition an overestimate of the 
- *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$, 
+
+ *  In addition an overestimate of the
+ *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$,
  *  the integral, inverse of the integral for this overestimate and
  *  ratio of the true splitting function to the overestimate must be provided
  *  as they are necessary for the veto alogrithm used to implement the evolution.
  *
- *  In addition the PDFVeto() member then is needed to implement the relevant veto.
- *
- *  @see SplittingGenerator
- *  @see ShowerAlpha
- *  @see \ref Sudakov1to2FormFactorInterfaces "The interfaces"
- *  defined for Sudakov1to2FormFactor.
+ * @see \ref Sudakov1to2FormFactorInterfaces "The interfaces"
+ * defined for Sudakov1to2FormFactor.
  */
 class Sudakov1to2FormFactor: public SudakovFormFactor {
 
@@ -146,11 +62,11 @@ public:
 
   /**
    * The default constructor.
+   * @param b All splitting functions must have an interaction order
    */
-  Sudakov1to2FormFactor() : 
-			z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
-			strictAO_(true), colourFactor_(-1.),
-			enhancementFactor_(1.)
+  Sudakov1to2FormFactor() : z_( 0.0 ),phi_(0.0), pT_(), scaleChoice_(2),
+                            strictAO_(true), colourFactor_(-1.),
+                            enhancementFactor_(1.)
   {}
 
   /**
@@ -166,9 +82,9 @@ public:
    * defined.
    */
   ShoKinPtr generateNextTimeBranching(const Energy startingScale,
-				      const IdList &ids,
-				      const RhoDMatrix & rho,
-				      double enhance, double detuning);
+                                      const IdList &ids,
+                                      const RhoDMatrix & rho,
+                                      double enhance, double detuning);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -181,12 +97,12 @@ public:
    * @param enhance The radiation enhancement factor
    */
   ShoKinPtr generateNextDecayBranching(const Energy startingScale,
-				       const Energy stoppingScale,
-				       const Energy minmass,
-				       const IdList &ids,
-				       const RhoDMatrix & rho,
-				       double enhance,
-				       double detuning);
+                                       const Energy stoppingScale,
+                                       const Energy minmass,
+                                       const IdList &ids,
+                                       const RhoDMatrix & rho,
+                                       double enhance,
+                                       double detuning);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -199,12 +115,14 @@ public:
    * @param enhance The radiation enhancement factor
    */
   ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
-				       const IdList &ids,double x,
-				       const RhoDMatrix & rho,
-				       double enhance,
-				       tcBeamPtr beam,
-				       double detuning);
+                                       const IdList &ids,double x,
+                                       const RhoDMatrix & rho,
+                                       double enhance,
+                                       tcBeamPtr beam,
+                                       double detuning);
   //@}
+
+public:
 
   /**
    * Generate the azimuthal angle of the branching for forward evolution
@@ -213,9 +131,8 @@ public:
    * @param The Shower kinematics
    */
   double generatePhiForward(ShowerParticle & particle,const IdList & ids,
-			    ShoKinPtr kinematics,
-			    const RhoDMatrix & rho);
-
+                            ShoKinPtr kinematics,
+                            const RhoDMatrix & rho);
   /**
    *  Generate the azimuthal angle of the branching for backward evolution
    * @param particle The branching particle
@@ -223,8 +140,8 @@ public:
    * @param The Shower kinematics
    */
   double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
-			     ShoKinPtr kinematics,
-			     const RhoDMatrix & rho);
+                             ShoKinPtr kinematics,
+                             const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -233,27 +150,28 @@ public:
    * @param The Shower kinematics
    */
   double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
-			  ShoKinPtr kinematics,
-			  const RhoDMatrix & rho);
+                          ShoKinPtr kinematics,
+                          const RhoDMatrix & rho);
   //@}
 
 public:
-
+  
   /**
    *   Methods to return the splitting function.
    */
   //@{
   /**
    * Purely virtual method which should return the exact value of the splitting function,
-   * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale 
+   * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale
    \f$\tilde{q}^2\f$.
    * @param z   The energy fraction.
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   double P(const double z, const Energy2 t, const IdList & ids,
-	   const bool mass, const RhoDMatrix & rho) {
+           const bool mass, const RhoDMatrix & rho) const {
     return ratioP(z,t,ids,mass,rho)*overestimateP(z,ids);
   }
 
@@ -265,7 +183,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const = 0; 
+  virtual double overestimateP(const double z, const IdList & ids) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -275,26 +193,27 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
 			const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
-   * Purely virtual method which should return the indefinite integral of the 
+   * Purely virtual method which should return the indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z         The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   *                  
+   *
    */
-  virtual double integOverP(const double z, const IdList & ids, 
-			    unsigned int PDFfactor=0) const = 0; 
+  virtual double integOverP(const double z, const IdList & ids,
+			    unsigned int PDFfactor=0) const = 0;
 
   /**
-   * Purely virtual method which should return the inverse of the 
-   * indefinite integral of the 
+   * Purely virtual method which should return the inverse of the
+   * indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$ which is used to
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
@@ -303,7 +222,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const = 0;
   //@}
 
@@ -315,7 +234,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 		     const RhoDMatrix &) = 0;
 
@@ -326,7 +245,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 		      const RhoDMatrix &) = 0;
 
@@ -338,7 +257,7 @@ public:
    * @param phi The azimuthal angle, \f$\phi\f$.
    * @param timeLike Whether timelike or spacelike, affects inclusive of mass terms
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
 				   const IdList & ids, const double phi,
                                    bool timeLike) = 0;
 
@@ -378,7 +297,7 @@ public:
   }
 
   /**
-   * Method which should make the proper colour connection 
+   * Method which should make the proper colour connection
    * between the emitting parent and the branching products.
    * @param parent The parent for the branching
    * @param first  The first  branching product
@@ -386,9 +305,11 @@ public:
    * @param partnerType The type of evolution partner
    * @param back Whether this is foward or backward evolution.
    */
-  void colourConnection(tShowerParticlePtr parent, tShowerParticlePtr first,
-			tShowerParticlePtr second, ShowerPartnerType partnerType, 
-			const bool back) const;
+  void colourConnection(tShowerParticlePtr parent,
+                        tShowerParticlePtr first,
+                        tShowerParticlePtr second,
+                        ShowerPartnerType partnerType,
+                        const bool back) const;
 
   /**
    *  Functions to state scales after branching happens
@@ -547,8 +468,8 @@ protected:
    * @param z_main returns the value of the scale for the veto algorithm
    */
   virtual void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
-		       double enhance,bool ident,
-		       double detune, Energy2 &t_main, double &z_main);
+                       double enhance,bool ident,
+                       double detune, Energy2 &t_main, double &z_main);
 
   /**
    *  The veto on the splitting function.
@@ -573,7 +494,7 @@ protected:
 			      const IdList &ids,
 			      const bool mass,
 			      const RhoDMatrix & rho,
-			      double detune) const {
+			      const double & detune) const {
     return ratioP(z_, t, ids,mass,rho)/detune;
   }
   //@}
@@ -619,8 +540,6 @@ private:
    */
   SudakovCutOffPtr cutoff_;
 
-private:
-
   /**
    * Member variables to keep the shower kinematics information
    * generated by a call to generateNextTimeBranching or generateNextSpaceBranching
@@ -646,7 +565,7 @@ private:
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zlimits_;
-
+  
 private:
   
   /**
@@ -668,8 +587,9 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy2> masssquared_;
-
+  
 private:
+
   /**
    *  The choice of scale
    */
@@ -679,7 +599,7 @@ private:
    *   Enforce strict AO
    */
   bool strictAO_;
-
+  
   /**
    *  The colour factor
    */
@@ -689,7 +609,6 @@ private:
    *  Enhancement factor
    */
   double enhancementFactor_;
-
 };
 
 }

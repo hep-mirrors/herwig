@@ -63,7 +63,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  double overestimateP(const double z, const IdList & ) const {
+  double overestimateP(const double z, const IdList & ) const { 
     return 2./(1.-z); 
   }
 
@@ -78,14 +78,14 @@ public:
    * @param rho The spin density matrix
    */
   double ratioP(const double z, const Energy2 t,
-		const IdList &ids,const bool mass, const RhoDMatrix &) const { 
+                const IdList & ids, const bool mass, const RhoDMatrix &) const { 
     double val = z;
     if(mass) {
       Energy m = ids[0]->mass();
-      val -= sqr(m)*(1.-z)/t;
+      val-=sqr(m)*(1.-z)/t;
     }
     return val;
-  }
+  } 
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -96,12 +96,12 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  double integOverP(const double z, const IdList & , 
-		    unsigned int PDFfactor=0) const {
+  double integOverP(const double z, const IdList &, 
+                    unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
     return -2.*log(1.-z); 
   }
-  
+
   /**
    * The concrete implementation of the inverse of the indefinite integral.
    * @param r Value of the splitting function to be inverted
@@ -110,8 +110,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  double invIntegOverP(const double r, const IdList & , 
-		       unsigned int PDFfactor=0) const {
+  double invIntegOverP(const double r, const IdList &, 
+                       unsigned int PDFfactor=0) const {
     assert(PDFfactor==0);
     return 1. - exp(- 0.5*r);
   }
@@ -129,7 +129,7 @@ public:
    */
   vector<pair<int,Complex> >
   generatePhiForward(const double, const Energy2, const IdList &,
-		     const RhoDMatrix &) {
+	      const RhoDMatrix &) {
     // scalar so no dependence
     return {{ {0, 1.} }};
   }
@@ -151,7 +151,7 @@ public:
     // scalar so no dependence
     return {{ {0, 1.} }};
   }
-
+  
   /**
    * Calculate the matrix element for the splitting
    * @param particle The particle which is branching
@@ -162,7 +162,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   DecayMEPtr matrixElement(const double z, const Energy2 t, 
-			   const IdList & ids, const double phi, bool timeLike) {
+                           const IdList & ids, const double phi, bool timeLike) {
     // calculate the kernal
     DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
     Energy m = timeLike ? ids[0]->mass() : ZERO;

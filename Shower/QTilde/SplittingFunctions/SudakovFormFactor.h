@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef Herwig_SudakovFormFactor_H
-#define Herwig_SudakovFormFactor_H
+#ifndef HERWIG_SudakovFormFactor_H
+#define HERWIG_SudakovFormFactor_H
 //
 // This is the declaration of the SudakovFormFactor class.
 //
@@ -11,19 +11,20 @@
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig/Shower/ShowerAlpha.h"
+#include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**  \ingroup Shower
+/** \ingroup Shower
  * Enum to define the possible types of colour structure which can occur in
  * the branching.
  */
 enum ColourStructure {Undefined=0,
-		      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
-		      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
-		      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
+                      TripletTripletOctet  = 1, OctetOctetOctet       = 2,
+                      OctetTripletTriplet  = 3, TripletOctetTriplet   = 4,
+                      SextetSextetOctet    = 5, TripletTripletSinglet = 6,
 		      OctetOctetSinglet    = 7, Epsilon               = 8,
 		      OctetSinglet         = 9,
 		      ChargedChargedNeutral=-1,
@@ -59,8 +60,8 @@ public:
    */
   SudakovFormFactor() : interactionType_(ShowerInteraction::UNDEFINED),
                         angularOrdered_(true),
-			colourStructure_(Undefined),
-			pdfMax_(35.0), pdfFactor_(0)
+                        colourStructure_(Undefined),
+                        pdfMax_(35.0), pdfFactor_(0)
   {}
   //@}
 
@@ -157,16 +158,12 @@ public:
    *  Return the colour structure
    */
   ColourStructure colourStructure() const {return colourStructure_;}
-
+  
   /**
    *  Method to check the colours are correct
    */
   bool checkColours(const IdList & ids) const;
 
-  /**
-   *  Methods to provide public access to the private member variables
-   */
-  //@{
   /**
    * Return the pointer to the ShowerAlpha object.
    */
@@ -184,15 +181,13 @@ public:
    *  @param ids The PDG codes for the particles in the splitting.
    */
   virtual bool accept(const IdList & ids) const = 0;
-  //@}
-
 
   /**
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
   virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt) = 0;
-  
+
   /**
    *  Return the type of the interaction
    */
@@ -202,6 +197,7 @@ public:
    *  Whether or not the interaction is angular ordered
    */
   bool angularOrdered() const {return angularOrdered_;}
+  //@}
 
 protected:
 
@@ -218,7 +214,7 @@ protected:
   /**
    *  Access the potential branchings
    */
-  const vector<IdList> & particles() const { return particles_;}
+  const vector<IdList> & particles() const { return particles_; }
 
   /**
    *  The PDF factor
@@ -228,8 +224,8 @@ protected:
   /**
    * Maximum value of the PDF weight
    */
-  double pdfMax() const {return pdfMax_;}
-
+  double pdfMax() const { return pdfMax_;}
+  
   /**
    * Veto on the PDF for the initial-state shower
    * @param t The scale
@@ -345,7 +341,7 @@ private:
    * Maximum value of the PDF weight
    */
   double pdfMax_;
-
+  
   /**
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
@@ -361,4 +357,4 @@ private:
 
 }
 
-#endif /* Herwig_SudakovFormFactor_H */
+#endif /* HERWIG_SudakovFormFactor_H */

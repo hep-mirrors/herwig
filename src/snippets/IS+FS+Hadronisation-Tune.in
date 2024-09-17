@@ -1,0 +1,31 @@
+# -*- ThePEG-repository -*-
+#
+# tuning for IS+FS shower and hadronisation parameters
+# IS shower parameters tuned to LHC inclusive Drell-Yan data 
+# FS shower and hadronisation parameters tuned to inclusive e+e- data
+#
+# Dot-product scheme
+read snippets/EvolutionScheme-DotProduct.in
+# QCD+QED+EW shower
+set /Herwig/Shower/ShowerHandler:Interactions ALL
+#
+# IS+FS shower parameters
+cd /Herwig/Shower
+set AlphaQCDISR:AlphaIn                    0.1194
+set AlphaQCDFSR:AlphaIn                    0.1158
+set PTCutOff:pTmin                         0.9384
+set ShowerHandler:IntrinsicPtGaussian      2.0075
+# Hadronization parameters
+cd /Herwig/Hadronization
+set HadronSelector:PwtSquark               0.2034
+set HadronSelector:PwtDIquark              0.8612
+set HadronSelector:SngWt                   0.4392
+set HadronSelector:DecWt                   0.4967
+# dynamic kinematic threshold scheme
+set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
+set ClusterFissioner:ClMaxLight            2.9157
+set ClusterFissioner:ClPowLight            2.5967
+set ClusterFissioner:PSplitLight           0.9756
+set ClusterFissioner:ProbabilityPowerFactor 4.8642
+set ClusterFissioner:ProbabilityShift      -0.1587
+set ClusterFissioner:KineticThresholdShift 0.1971

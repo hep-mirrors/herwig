@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * The OneOneZeroEWSplitFn class implements the splitting function for
- * \f$\1\to q\1 0\f$ where the spin-1 particles are the W / Z massive
+ * \f$1\to 1 0\f$ where the spin-1 particles are the W / Z massive
  * electroweak gauge bosons and the spin-0 particle is the massive Higgs
  * boson.
  *
@@ -131,7 +131,7 @@ protected:
   /**
    *   Get the couplings
    */
-  void getCouplings(double & g, const IdList & ids) const;
+  void getCouplings(Complex & g, const IdList & ids) const;
 
 public:
 
@@ -212,6 +212,19 @@ private:
    * Pointer to the SM object.
    */
   tcHwSMPtr _theSM;
+
+  /**
+   *   numerical value of the splitting coupling to be imported for BSM splittings
+   */
+  double _couplingValueIm = 0.;
+  double _couplingValueRe = 0.;
+
+public:
+
+  /**
+   *   booleans to sort cases
+   */
+  mutable bool sm_ = true;
 };
 
 }
