@@ -4,6 +4,8 @@
 ##################################################
 # ALICE Xi_c
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2021_I1862793
+# ALICE Lambda_c and Sigma_c
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2022_I1868463
 # CMS charm hadrons
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1876550
 # LHCb charm hadrons
