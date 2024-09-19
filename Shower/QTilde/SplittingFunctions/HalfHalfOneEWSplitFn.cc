@@ -190,12 +190,12 @@ bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
 }
 
 DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,
-                                             const IdList & ids, const double phi,
-                                             bool) {
+                                               const IdList & ids, const double phi,
+                                               bool timelike) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
-  Energy m0 = ids[0]->mass();
-  Energy m1 = ids[1]->mass();
+  Energy m0 = timelike ? ids[0]->mass() : ZERO;
+  Energy m1 = timelike ? ids[1]->mass() : ZERO;
   Energy m2 = ids[2]->mass();
   Complex gL(0.,0.),gR(0.,0.);
   getCouplings(gL,gR,ids);

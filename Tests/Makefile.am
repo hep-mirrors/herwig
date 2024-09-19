@@ -130,7 +130,7 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 
 
 tests-Rivet : Rivet-EE Rivet-DIS Rivet-Fixed \
-	      Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
+	      Rivet-TVT-EW Rivet-TVT-Photon Rivet-TVT-Jets \
 	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
 Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
