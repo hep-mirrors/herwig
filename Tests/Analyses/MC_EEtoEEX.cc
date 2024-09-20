@@ -179,12 +179,8 @@ namespace Rivet {
     /// Normalise histograms etc., after the run
     void finalize() {
       // normalize the cross sections
-      for(vector<Histo1DPtr> & hv : _h_m)
-	for(Histo1DPtr & hist : hv)
-	  scale(hist, crossSection()/picobarn/sumW());
-      for(vector<Histo1DPtr> & hv : _h_onium)
-	for(Histo1DPtr & hist : hv)
-	  scale(hist, crossSection()/picobarn/sumW());
+      scale(_h_m, crossSection()/picobarn/sumW());
+      scale(_h_onium, crossSection()/picobarn/sumW());
     }
 
     ///@}
