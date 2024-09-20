@@ -207,8 +207,9 @@ def collider_lumi(energy):
 def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
     result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
     if process is not None:
-        if me=="MEgg2ff" :
-            result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
+        if me=="MEgg2ff" or me =="MEgg2ee" or me == "MEgg2mm":
+            amp=me.replace("ME","")+"Amp"
+            result += "set /Herwig/MatrixElements/{amp}:{ifname} {process}".format(**locals())
         else :
             result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
     return result

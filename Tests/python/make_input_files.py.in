@@ -1608,8 +1608,10 @@ elif(collider=="LHC-GammaGamma" ) :
     else :                       process = StringBuilder(collider_lumi( 7000.0))
     if(simulation=="") :
         process += "cp MEgg2ff MEgg2ee\n"
+        process += "cp gg2ffAmp gg2eeAmp\nset MEgg2ee:Amplitude gg2ffAmp\n"
         process += insert_ME("MEgg2ee","Electron")
         process += "cp MEgg2ff MEgg2mm\n"
+        process += "cp gg2ffAmp gg2mmAmp\nset MEgg2mm:Amplitude gg2ffAmp\n"
         process += insert_ME("MEgg2mm","Muon")
     else :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
