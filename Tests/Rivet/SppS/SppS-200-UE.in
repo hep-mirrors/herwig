@@ -2,7 +2,7 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1989_S1926373
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1988_S1867512
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA1_1990_S2044935
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1986_S1583476
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1989_I267179
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1988_I263399
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA1_1990_I280412
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1986_I233599

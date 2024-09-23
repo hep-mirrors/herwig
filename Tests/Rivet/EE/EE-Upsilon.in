@@ -12,8 +12,8 @@ set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon
 set /Herwig/MatrixElements/MEUpsilon:Coupling 41.15810
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 # BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I356616
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I342061
 # ARGUS pi0 and eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
 # Crystal Ball pi0 and eta
@@ -26,21 +26,37 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1981_I165122
 # CLEO eta' spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_2002_I601701
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2006_I728679
+# MD1 Lambda spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MD1_1994_I362599
 # LENA thrust and mult
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
 # ARGUS thrust
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1986_I227324
-# BABAR D*=/- spectrum
+# BABAR D*+/- spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2009_I836615
 # CLEO Identified particle spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I205668
 # ARGUS Delta++
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I278932
-# ARGUS anti-deuteron
+# anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I283027
-# BABAR anti-deuteron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1286317
-# ARGUS photon spectrtum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2006_I733995
+# photon spectrtum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2006_I701217
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1987_I248655
-# Crystal Ball photon spectrtum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1991_I315873
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1986_I220652
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CUSB_1984_I204307
+# J/psi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2004_I654639
+# J/psi, psi(2S)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2016_I1454405
+#  BELLE chi_c1
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1499706
+# Upsilon -> gamma pi+pi- K+K- p pbar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOIII_2006_I694170
+# pp and lambda lambda pairs
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I295621
+# baryon-antibaryon correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I266892

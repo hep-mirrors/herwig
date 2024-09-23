@@ -3,11 +3,10 @@
 # select the analyses
 ##################################################
 # ATLAS Z
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_EL
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1514251
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041:LMODE=EL
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1514251:LMODE=EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EL
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753680:LMODE=EMU
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EMU
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1667854:LMODE=EL
 # ATLAS Z+b jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1788444
 # CMS mass spectrum

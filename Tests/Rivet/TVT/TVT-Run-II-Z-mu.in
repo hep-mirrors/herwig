@@ -3,20 +3,20 @@
 # select the analyses
 ##################################################
 # D0 run II Z pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8671338
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_I856972
 # CDF Z+b jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8095620
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I806082
 # CDF Z+b jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_S6653332
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_I717572
 # CDF underlying event
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_NOTE_9351
 # D0 Run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8349509
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_I826756
 # D0 Run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7863608
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_I792812
 # D0 run II
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8821313
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_I871787
 # D0 run II UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_DY
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_I849042:MODE=DY
 # D0 run II phi star
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2015_I1324946

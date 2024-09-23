@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # run I CDF UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_I647490

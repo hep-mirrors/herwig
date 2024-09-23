@@ -7,4 +7,4 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 # BABAR Xi_c production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_I679961

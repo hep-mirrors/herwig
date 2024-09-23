@@ -5,7 +5,7 @@ defaultlocation="${prefix}"
 test "x$defaultlocation" = xNONE && defaultlocation="${ac_default_prefix}"
 AC_MSG_CHECKING([for libThePEG in])
 AC_ARG_WITH(thepeg,
-        AC_HELP_STRING([--with-thepeg=DIR],[location of ThePEG installation]),
+        AS_HELP_STRING([--with-thepeg=DIR],[location of ThePEG installation]),
         [],
 	[with_thepeg="${defaultlocation}"])
 AC_MSG_RESULT([$with_thepeg])
@@ -66,7 +66,7 @@ LDFLAGS="$oldldflags"
 
 AC_MSG_CHECKING([for ThePEG headers in])
 AC_ARG_WITH([thepeg-headers],
-        AC_HELP_STRING([--with-thepeg-headers=DIR],[location of ThePEG include directory]),
+        AS_HELP_STRING([--with-thepeg-headers=DIR],[location of ThePEG include directory]),
         [],
 	[with_thepeg_headers="${with_thepeg}/include"])
 AC_MSG_RESULT([$with_thepeg_headers])
@@ -744,8 +744,7 @@ AC_DEFUN([HERWIG_CHECK_PYTHIA],
 [
 dnl check if a directory is specified for Pythia
 AC_ARG_WITH(pythia,
-            [AC_HELP_STRING([--with-pythia=dir],
-                            [Assume the given directory for Pythia])])
+            [AS_HELP_STRING([--with-pythia=dir],[Assume the given directory for Pythia])])
 
 dnl search for the pythia-config script
 if test "$with_pythia" = ""; then
@@ -847,7 +846,7 @@ GSLINCLUDE=""
 GSLLIBS=""
 
 AC_ARG_WITH(gsl,
-        AC_HELP_STRING([--with-gsl=DIR],[location of gsl installation @<:@default=system libs@:>@]),
+        AS_HELP_STRING([--with-gsl=DIR],[location of gsl installation @<:@default=system libs@:>@]),
         [],
 	[with_gsl=system])
 
@@ -902,7 +901,7 @@ AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOST_C
 
 AC_MSG_CHECKING([for debugging mode])
 AC_ARG_ENABLE(debug,
-        AC_HELP_STRING([--enable-debug],[debug mode, use --enable-debug=slow for additional options that slow down the run.]),
+        AS_HELP_STRING([--enable-debug],[debug mode, use --enable-debug=slow for additional options that slow down the run.]),
         [],
         [enable_debug=no]
         )
@@ -960,7 +959,7 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 AC_MSG_CHECKING([if BSM models should be built])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--disable-models],[Turn off compilation of BSM models.]),
+        AS_HELP_STRING([--disable-models],[Turn off compilation of BSM models.]),
         [],
         [enable_models=yes]
         )

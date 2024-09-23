@@ -6,11 +6,11 @@
 #
 # the 1^1S_0 multiplet
 #
-create ThePEG::ParticleData pi+
+create ThePEG::BeamParticleData pi+
 setup pi+ 211 pi+ 0.13957039 2.5283740149914E-17 0 7804.5 3 0 1 1 
 create ThePEG::ParticleData pi0
 setup pi0 111 pi0 0.1349768 7.7994841897233E-9 0 2.53E-5 0 0 1 0 
-create ThePEG::ParticleData pi-
+create ThePEG::BeamParticleData pi-
 setup pi- -211 pi- 0.13957039 2.5283740149914E-17 0 7804.5 -3 0 1 1 
 makeanti pi- pi+
 create ThePEG::ParticleData eta

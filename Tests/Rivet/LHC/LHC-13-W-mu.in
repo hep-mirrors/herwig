@@ -6,3 +6,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1610623
 # CMS W+charm
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1705068
+# ATLAS W+charm
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2023_I2628732

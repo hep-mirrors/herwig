@@ -208,7 +208,6 @@ public:
 						 const IdList &ids,double x,
 						 const RhoDMatrix & rho,
 						 double enhance,
-						 tcBeamPtr beam,
 						 double detuning) = 0;
   //@}
 
@@ -326,25 +325,38 @@ protected:
    *                new parent (this is the particle we evolved back to)
    * @param parton1 Pointer to the particleData for the 
    *                original particle
-   * @param beam The BeamParticleData object
    */
   bool PDFVeto(const Energy2 t, const double x, const double z,
-	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       tcBeamPtr beam) const;
+	       const tcPDPtr parton0, const tcPDPtr parton1) const;
   /**
    * The PDF veto ratio
    */
-  double PDFVetoRatio(const Energy2 t, const double x, const double z,
-               const tcPDPtr parton0, const tcPDPtr parton1,
-               tcBeamPtr beam,double factor) const;
+  virtual double PDFVetoRatio(const Energy2 t, const double x, const double z,
+                              const tcPDPtr parton0, const tcPDPtr parton1, double factor) const;
 
   /**
    *   Set the PDF
    */
-  void setPDF(tcPDFPtr pdf, Energy scale) {
+  void setPDF(tcPDFPtr pdf, tcBeamPtr beam, Energy scale) {
     pdf_ = pdf;
+    beam_ = beam;
     freeze_ = scale;
   }
+
+  /**
+   *  Access the PDF
+   */
+  tcPDFPtr PDF() const {return pdf_;}
+  
+  /**
+   *  Access the beam
+   */
+  tcBeamPtr beam() const {return beam_;}
+
+  /**
+   *  PDF freeze scale
+   */
+  Energy freeze() const {return freeze_;}
 
   /**
    *  The veto on the coupling constant
@@ -423,6 +435,11 @@ private:
    *  PDf
    */
   tcPDFPtr pdf_;
+
+  /**
+   *  The beam particle
+   */
+  tcBeamPtr beam_;
 
   /**
    *  Freezing scale

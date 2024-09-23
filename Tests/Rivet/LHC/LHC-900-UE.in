@@ -3,37 +3,37 @@
 # select the analyses
 ##################################################
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I891834
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I882098
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I879407
 # ATLAS charged particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8591806
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I849050
 # ALICE charged particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8706239
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_I860416
 # ALICE charged particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_I852264
 # ALICE charged particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_I852450
 # ALICE particle spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_I885104
 # ALICE strange particle production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8909580
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_I881474
 # CMS particle spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I890166
 # CMS charged particle multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I879315
 # CMS charged particle pT and rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_I845323
 # CMS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I916908
 # LHCB k_s0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_S8758301
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_I865584
 # LHCB promt hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
 # CMS forward energy flow
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I930319
 # LHC K0s/Lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 # ATLAS Azimuthal ordering of charged hadrons

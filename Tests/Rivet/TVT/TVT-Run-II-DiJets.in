@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # D0 dijet invariant mass
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2010_S8566488
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2010_I846483
 # D0 dijet angles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2009_S8320160
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2009_I824127
 # CDF dijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8093652
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I805902

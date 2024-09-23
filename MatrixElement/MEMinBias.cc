@@ -32,11 +32,27 @@ inline bool checkValence(int i,int side,Ptr<StandardEventHandler>::tptr eh){
    // eh:    pointer to the eventhandler
    int beam= ( side == 0 ) ? eh->incoming().first->id() : eh->incoming().second->id();
    vector<int> val;
-   if( beam == ParticleID::pplus || beam == ParticleID::n0 ) val = {1,2};
-   if( beam == ParticleID::pbarminus || beam == ParticleID::nbar0 ) val = { -1 , -2 };
-   if( val.size() == 0 )
-      {cerr<<"\n\n MEMinBias: Valence Quarks not defined for pid "<<beam;assert(false);}
-   for(auto v:val)if(v==i)return true;
+   switch (beam) {
+   case ParticleID::pplus :
+   case ParticleID::n0 :
+     val = { 1,  2 };
+     break;
+   case ParticleID::pbarminus:
+   case ParticleID::nbar0:
+     val = { -1, -2 };
+     break;
+   case ParticleID::piplus :
+     val = { -1,  2 };
+     break;
+   case ParticleID::piminus :
+     val = {  1,  -2 };
+     break;
+   default :
+     cerr << "\n\n MEMinBias: Valence Quarks not defined for pid " << beam;
+     assert(false);
+   };
+   for(const int & v : val )
+     if(v==i) return true;
    return false;
 }
 

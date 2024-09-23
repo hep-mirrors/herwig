@@ -3,5 +3,5 @@
 # select the analyses
 ##################################################
 # CDF Run I Z pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_S4155203
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_I505738
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2000_I503361

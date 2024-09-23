@@ -14,3 +14,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1764472
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1750330
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2021_I1941095
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1707015
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1901295
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2037744
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2023_I2703254

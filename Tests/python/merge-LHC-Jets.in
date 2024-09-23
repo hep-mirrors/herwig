@@ -13,18 +13,23 @@ import os, yoda
 
 def rescale(path,scale) :
     if(path not in outhistos) : return
-    outhistos[path].scaleW(scale)
+    if hasattr(outhistos[path],'scaleW') :
+        outhistos[path].scaleW(scale)
+    elif hasattr(outhistos[path],'scale') :
+        outhistos[path].scale(scale)
+    else :
+        print("Can't scale ",path)
 
 def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     pthigh= 1e100
     ptlow =-1e100
-    for pt, h in sorted(sourcehistosbyptmin.items(),reverse=True):
+    temp={}
+    for (pt, h) in sorted(sourcehistosbyptmin.items(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints()) :
-                xMin = h.points()[i].x()-h.points()[i].xErrs().minus
-                if( xMin*scale >= ptlow and 
-                    xMin*scale <  pthigh ) :
+                xMin = h.points()[i].x-h.points()[i].xErrs().minus
+                if( xMin*scale >= ptlow and xMin*scale <  pthigh ) :
                     desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins()) :
@@ -36,28 +41,30 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
                 if(h.bins()[i].xMin()*scale  >= ptlow and 
                    h.bins()[i].xMin()*scale  <  pthigh ) :
                     desthisto.bins()[i] += h.bins()[i]
-        elif(type(desthisto)==yoda.core.Counter) :
-                    desthisto += h
+        elif(type(desthisto)==yoda.core.BinnedEstimate1D) :
+            for b in h.bins() :
+                if(b.xMin()*scale  >= ptlow and 
+                   b.xMin()*scale  <  pthigh ) :
+                    desthisto.bin(b.index()).setVal(b.val())
+                    for key in  b.sources() :
+                        desthisto.bin(b.index()).setErr(b.err(key),key)
         else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path())
+            logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
         pthigh=pt
 
 def mergeByPt(hpath, sqrts, scale=1.) :
     global inhistos_pt
     global outhistos
-    try:
-        fillAbove(scale,outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
-    except:
-        pass
+    if hpath not in outhistos or hpath not in inhistos_pt :
+        print("Histograms not found for %s, can't merge by pT" % hpath)
+        return
+    fillAbove(scale,outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
 
 def mergeByMass(hpath, sqrts, scale=1.):
     global inhistos_mass
     global outhistos
-    try:
-        fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
-    except:
-        pass
+    fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
 
 def useOnePt(hpath, sqrts, ptmin):
     global inhistos_pt
@@ -230,18 +237,18 @@ for f in yodafiles:
         aopath=aopath.replace(":MODE=DIJET","")
         ao.setPath(ao.path().replace(":MODE=DIJET",""))
         if "RAW" in aopath : continue
-        if("S8924791" in aopath or "S8971293" in aopath or
-           "S8817804" in aopath or "I1082936" in aopath or
-           "S8994773" in aopath or "S8918562" in aopath or
-           "S8624100" in aopath or "S8625980" in aopath or
-           "S8894728" in aopath or "S8957746" in aopath or
-           "S9126244" in aopath or "S9120041" in aopath or
-           "S8950903" in aopath or "S9086218" in aopath or
-           "S9088458" in aopath or "I919017"  in aopath or
-           "I926145"  in aopath or "S8941262" in aopath or
-           "S8973270" in aopath or "I1118269" in aopath or
+        if("I882984" in aopath or "I889546" in aopath or
+           "871366" in aopath or "I1082936" in aopath or
+           "I891834" in aopath or "I882098" in aopath or
+           "I852450" in aopath or "852264"   in aopath or
+           "I879407" in aopath or "I886332" in aopath or
+           "917526"   in aopath or "916908"   in aopath or
+           "I885663" in aopath or "902309" in aopath or
+           "I912560" in aopath or "I919017"  in aopath or
+           "I926145"  in aopath or "I884811" in aopath or
+           "I889807" in aopath or "I1118269" in aopath or
            "I1188891" in aopath or "I1082009" in aopath or
-           "I1087342" in aopath or "S9035664" in aopath or
+           "I1087342" in aopath or "I896268" in aopath or
            "I1125575" in aopath or "I1094564" in aopath or
            "I930220"  in aopath or "I1224539" in aopath or
            "I1273574" in aopath or "I1261026" in aopath or
@@ -259,8 +266,9 @@ for f in yodafiles:
            "I1643640" in aopath or "I1808726" in aopath or
            "I1724098" in aopath or "I1719955" in aopath or
            "I1740909" in aopath or "I1913061" in aopath or
-           "I1932460" in aopath or
+           "I1932460" in aopath or "I2625697" in aopath or
            "I1972986" in aopath or "I1920187" in aopath or 
+           "I2170533" in aopath or 
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -317,28 +325,14 @@ for f in yodafiles:
                     else :
                         title=""
                         path=""
-                        if hasattr(ao, 'title'):
-                            title=ao.title()
-                        if hasattr(ao, 'path'):
-                            path=ao.path()
-                        temp = yoda.core.Histo1D(path,title)
-                        for i in range(0,ao.numBins()) :
-                            temp.addBin(ao.bins()[i].xMin(),ao.bins()[i].xMax())
                         if("-SL" in file) :
-                            temp.bins()[0] += outhistos[aopath].bins()[0]
-                            temp.bins()[1] += outhistos[aopath].bins()[1]
-                            temp.bins()[2] += ao.bins()[2]
-                            temp.bins()[3] += ao.bins()[3]
-                            temp.bins()[2] += ao.bins()[2]
-                            temp.bins()[3] += ao.bins()[3]
+                            outhistos[aopath].set(3,outhistos[aopath].bin(3) + ao.bin(3) + ao.bin(3))
+                            outhistos[aopath].set(4,outhistos[aopath].bin(4) + ao.bin(4) + ao.bin(4))
                         else :
-                            temp.bins()[0] += ao.bins()[0]
-                            temp.bins()[1] += ao.bins()[1]
-                            temp.bins()[2] += outhistos[aopath].bins()[2]
-                            temp.bins()[3] += outhistos[aopath].bins()[3]
-                            temp.bins()[2] += outhistos[aopath].bins()[2]
-                            temp.bins()[3] += outhistos[aopath].bins()[3]
-                        outhistos[aopath] = temp
+                            outhistos[aopath].set(1,outhistos[aopath].bin(1) + ao.bin(1))
+                            outhistos[aopath].set(2,outhistos[aopath].bin(2) + ao.bin(2))
+                            outhistos[aopath].set(3,outhistos[aopath].bin(3) + outhistos[aopath].bin(3) )
+                            outhistos[aopath].set(4,outhistos[aopath].bin(4) + outhistos[aopath].bin(4) )
             elif "ATLAS_2018_I1707015" in aopath :
                 if "d03" in aopath or "d04" in aopath or "d05" in aopath:
                     if "Top-SL" in file:
@@ -346,6 +340,24 @@ for f in yodafiles:
                 else :
                     if( "Top-L" in file ) :
                         outhistos[aopath] = ao
+            elif "ATLAS_2015_I1390114" in aopath :
+                if "d02" in aopath :
+                    if "Top-L" in file : outhistos[aopath] = ao
+                elif "d01" in aopath :
+                    if aopath not in outhistos :
+                        outhistos[aopath] = yoda.core.BinnedEstimate1D(ao.xEdges(),aopath)
+                    if "Top-L" in file :
+                        for i in range(2,5) :
+                            outhistos[aopath].set(i,ao.bin(i))
+                    else : 
+                        outhistos[aopath].set(1,ao.bin(1))
+            elif "ALICE_2012_I1181770" in aopath :
+                if aopath not in outhistos :
+                    outhistos[aopath] = ao
+                else :
+                    if   sqrts ==  900 : outhistos[aopath].set(1,ao.bin(1))
+                    elif sqrts == 2760 : outhistos[aopath].set(3,ao.bin(3))
+                    elif sqrts == 7000 : outhistos[aopath].set(5,ao.bin(5))
             else :
                 outhistos[aopath] = ao
 
@@ -408,7 +420,7 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.items() :
         if("RAW" in aopath) :continue
-        if(aopath.find("8817804")>0 or aopath.find("8968497")>0 or 
+        if(aopath.find("871366")>0 or aopath.find("889175")>0 or 
            aopath.find("1082936")>0 or aopath.find("I930220")>0 or
            aopath.find("1261026")>0 or aopath.find("1090423")>0 or
            aopath.find("1268975")>0 or aopath.find("1519995") >0 or
@@ -432,16 +444,18 @@ for f in yodafiles:
         
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.items():
-    if( "8924791"  in hpath or "8971293" in hpath or 
-        "8817804"  in hpath or "8968497" in hpath or 
-        ("9120041" in hpath and ("d01" in hpath or "d02" in hpath)) or 
-        "9126244"  in hpath or "926145"     in hpath or 
-        "9086218"  in hpath or "1082936"    in hpath or 
-        "8941262"  in hpath or "1118269"    in hpath or 
+    if( "882984"  in hpath or "889546" in hpath or 
+        "871366"  in hpath or "889175" in hpath or 
+        ("916908" in hpath and ("d01" in hpath or "d02" in hpath)) or 
+        "917526"  in hpath or "926145"     in hpath or 
+        "902309"  in hpath or "1082936"    in hpath or 
+        "884811"  in hpath or "1118269"    in hpath or 
         "1087342"  in hpath or "1188891"    in hpath or
-        "919017"   in hpath or "9035664"    in hpath or
-        "1125575"  in hpath or "1094564"    in hpath or
-        "I930220"  in hpath or "S9088458"   in hpath or 
+        "919017"   in hpath or "896268"    in hpath or
+        ("1125575"  in hpath and "nEvents" not in hpath) or
+        "1094564"    in hpath or
+        ("I930220"  in hpath and "Counter" not in hpath) or
+        "I912560"   in hpath or "2170533" in hpath or
         "I1273574" in hpath or "I1261026"   in hpath or 
         "I1090423" in hpath or "QCD_11_010" in hpath or
         "1298811"  in hpath or "I1325553"   in hpath or
@@ -474,8 +488,12 @@ for hpath,hsets in inhistos_pt.items():
             for i in range(0,histo.numBins()) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),
                                         histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.BinnedEstimate1D) :
+            outhistos[hpath] = yoda.core.BinnedEstimate1D(histo.xEdges(),path,title)
+            if len(histo.maskedBins()) > 0:
+                outhistos[hpath].maskBins(histo.maskedBins())
         else :
-            logging.error("Histogram %s is of unknown type" % hpath)
+            logging.error("Histogram %s is of unknown type %s" % (hpath,type(ao)))
             sys.exit(1) 
 
 ## Make empty output histos if needed
@@ -502,340 +520,344 @@ for hpath,hsets in inhistos_mass.items():
             for i in range(0,histo.numBins()) :
                 outhistos[hpath].addBin(histo.bins()[i].xMin(),
                                         histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.BinnedEstimate1D) :
+            outhistos[hpath] = yoda.core.BinnedEstimate1D(histo.xEdges(),path,title)
+            if len(histo.maskedBins()) > 0:
+                outhistos[hpath].maskBins(histo.maskedBins())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
         
 
-logging.info("Processing CMS_2011_S8957746")
-useOnePt("/CMS_2011_S8957746/d01-x01-y01", "7000", "80" )
-useOnePt("/CMS_2011_S8957746/d02-x01-y01", "7000", "80" )
-useOnePt("/CMS_2011_S8957746/d03-x01-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8957746/d04-x01-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8957746/d05-x01-y01", "7000", "210" )
-useOnePt("/CMS_2011_S8957746/d06-x01-y01", "7000", "210" )
+logging.debug("Processing CMS_2011_I886332")
+useOnePt("/CMS_2011_I886332/d01-x01-y01", "7000", "80" )
+useOnePt("/CMS_2011_I886332/d02-x01-y01", "7000", "80" )
+useOnePt("/CMS_2011_I886332/d03-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_I886332/d04-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_I886332/d05-x01-y01", "7000", "210" )
+useOnePt("/CMS_2011_I886332/d06-x01-y01", "7000", "210" )
 
-logging.info("Processing ATLAS_2010_S8894728")
-useOnePt("/ATLAS_2010_S8894728/d01-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d01-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d01-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d02-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d02-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d02-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d03-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d03-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d03-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d04-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d04-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d04-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d05-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d06-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d07-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d08-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d09-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d09-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d09-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d10-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d10-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d10-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d11-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d11-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d11-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d12-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d12-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d12-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d13-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d13-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d13-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d13-x01-y04",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d14-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d14-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d14-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d14-x01-y04", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d15-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d15-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d15-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d15-x01-y04",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d16-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d16-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d16-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d16-x01-y04", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d17-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d17-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d17-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d18-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d18-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d18-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d19-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d19-x01-y02",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d19-x01-y03",  "900", "0" )
-useOnePt("/ATLAS_2010_S8894728/d20-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d20-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d20-x01-y03", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d21-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8894728/d22-x01-y01", "7000", "0" )
+logging.debug("Processing ATLAS_2010_I879407")
+useOnePt("/ATLAS_2010_I879407/d01-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d01-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d01-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d02-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d02-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d02-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d03-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d03-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d03-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d04-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d04-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d04-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d05-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d06-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d07-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d08-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d09-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d09-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d09-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d10-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d10-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d10-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d11-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d11-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d11-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d12-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d12-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d12-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d13-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d13-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d13-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d13-x01-y04",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d14-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d14-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d14-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d14-x01-y04", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d15-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d15-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d15-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d15-x01-y04",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d16-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d16-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d16-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d16-x01-y04", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d17-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d17-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d17-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d18-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d18-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d18-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d19-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d19-x01-y02",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d19-x01-y03",  "900", "0" )
+useOnePt("/ATLAS_2010_I879407/d20-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d20-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d20-x01-y03", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d21-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I879407/d22-x01-y01", "7000", "0" )
 
-logging.info("Processing ATLAS_2011_S8994773")
-useOnePt("/ATLAS_2011_S8994773/d01-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2011_S8994773/d02-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2011_S8994773/d03-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2011_S8994773/d04-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2011_S8994773/d13-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2011_S8994773/d13-x01-y02", "900", "0" )
-useOnePt("/ATLAS_2011_S8994773/d13-x01-y03", "900", "0" )
-useOnePt("/ATLAS_2011_S8994773/d14-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2011_S8994773/d14-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2011_S8994773/d14-x01-y03", "7000", "0" )
+logging.debug("Processing ATLAS_2011_I891834")
+useOnePt("/ATLAS_2011_I891834/d01-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_I891834/d02-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_I891834/d03-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_I891834/d04-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_I891834/d13-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_I891834/d13-x01-y02", "900", "0" )
+useOnePt("/ATLAS_2011_I891834/d13-x01-y03", "900", "0" )
+useOnePt("/ATLAS_2011_I891834/d14-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_I891834/d14-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2011_I891834/d14-x01-y03", "7000", "0" )
 
-logging.info("Processing ALICE_2010_S8624100")
-useOnePt("/ALICE_2010_S8624100/d11-x01-y01", "900", "0" )
-useOnePt("/ALICE_2010_S8624100/d12-x01-y01", "900", "0" )
-useOnePt("/ALICE_2010_S8624100/d13-x01-y01", "900", "0" )
-useOnePt("/ALICE_2010_S8624100/d17-x01-y01","2360", "0" )
-useOnePt("/ALICE_2010_S8624100/d18-x01-y01","2360", "0" )
-useOnePt("/ALICE_2010_S8624100/d19-x01-y01","2360", "0" )
+logging.debug("Processing ALICE_2010_I852450")
+useOnePt("/ALICE_2010_I852450/d11-x01-y01", "900", "0" )
+useOnePt("/ALICE_2010_I852450/d12-x01-y01", "900", "0" )
+useOnePt("/ALICE_2010_I852450/d13-x01-y01", "900", "0" )
+useOnePt("/ALICE_2010_I852450/d17-x01-y01","2360", "0" )
+useOnePt("/ALICE_2010_I852450/d18-x01-y01","2360", "0" )
+useOnePt("/ALICE_2010_I852450/d19-x01-y01","2360", "0" )
 
-logging.info("Processing ALICE_2010_S8625980")
-useOnePt("/ALICE_2010_S8625980/d03-x01-y01", "7000", "0" )
-useOnePt("/ALICE_2010_S8625980/d04-x01-y01",  "900", "0" )
-useOnePt("/ALICE_2010_S8625980/d05-x01-y01", "2360", "0" )
-useOnePt("/ALICE_2010_S8625980/d06-x01-y01", "7000", "0" )
+logging.debug("Processing ALICE_2010_I852264")
+useOnePt("/ALICE_2010_I852264/d03-x01-y01", "7000", "0" )
+useOnePt("/ALICE_2010_I852264/d04-x01-y01",  "900", "0" )
+useOnePt("/ALICE_2010_I852264/d05-x01-y01", "2360", "0" )
+useOnePt("/ALICE_2010_I852264/d06-x01-y01", "7000", "0" )
 
-logging.info("Processing ATLAS_2010_S8918562")
-useOnePt("/ATLAS_2010_S8918562/d01-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d02-x01-y01", "2360", "0" )
-useOnePt("/ATLAS_2010_S8918562/d03-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d04-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d05-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d06-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d07-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d08-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d09-x01-y01", "2360", "0" )
-useOnePt("/ATLAS_2010_S8918562/d10-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d11-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d12-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d13-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d14-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d15-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d16-x01-y01", "2360", "0" )
-useOnePt("/ATLAS_2010_S8918562/d17-x01-y01", "7000", "0" )
-
-
-useOnePt("/ATLAS_2010_S8918562/d18-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d19-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d20-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d21-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d22-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d23-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d24-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d25-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d26-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d27-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d28-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d29-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d30-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d31-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d32-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d33-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d34-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d35-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d36-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d37-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8918562/d38-x01-y01",  "900", "0" )
-useOnePt("/ATLAS_2010_S8918562/d39-x01-y01", "7000", "0" )
+logging.debug("Processing ATLAS_2010_I882098")
+useOnePt("/ATLAS_2010_I882098/d01-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d02-x01-y01", "2360", "0" )
+useOnePt("/ATLAS_2010_I882098/d03-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d04-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d05-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d06-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d07-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d08-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d09-x01-y01", "2360", "0" )
+useOnePt("/ATLAS_2010_I882098/d10-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d11-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d12-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d13-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d14-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d15-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d16-x01-y01", "2360", "0" )
+useOnePt("/ATLAS_2010_I882098/d17-x01-y01", "7000", "0" )
 
 
+useOnePt("/ATLAS_2010_I882098/d18-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d19-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d20-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d21-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d22-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d23-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d24-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d25-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d26-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d27-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d28-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d29-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d30-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d31-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d32-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d33-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d34-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d35-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d36-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d37-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2010_I882098/d38-x01-y01",  "900", "0" )
+useOnePt("/ATLAS_2010_I882098/d39-x01-y01", "7000", "0" )
 
-logging.info("Processing ATLAS_2011_S8971293")
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y03", "7000", "210" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y04", "7000", "260" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y05", "7000", "260" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y06", "7000", "400" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y07", "7000", "400" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y08", "7000", "600" )
-useOnePt("/ATLAS_2011_S8971293/d01-x01-y09", "7000", "600" )
-logging.info("Processing ATLAS_2011_S8924791")
+
+
+logging.debug("Processing ATLAS_2011_I889546")
+useOnePt("/ATLAS_2011_I889546/d01-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y03", "7000", "210" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y04", "7000", "260" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y05", "7000", "260" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y06", "7000", "400" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y07", "7000", "400" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y08", "7000", "600" )
+useOnePt("/ATLAS_2011_I889546/d01-x01-y09", "7000", "600" )
+logging.debug("Processing ATLAS_2011_I882984")
 if( not opts.ue) :
-    useOnePt("/ATLAS_2011_S8924791/d01-x01-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x01-y02", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x02-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x02-y02", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x03-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x03-y02", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x04-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x04-y02", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x05-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x05-y02", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x06-y01", "7000", "10" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x06-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x01-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x01-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x02-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x02-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x03-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x03-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x04-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x04-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x05-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x05-y02", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x06-y01", "7000", "10" )
+    useOnePt("/ATLAS_2011_I882984/d01-x06-y02", "7000", "10" )
 else :
-    useOnePt("/ATLAS_2011_S8924791/d01-x01-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x01-y02", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x02-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x02-y02", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x03-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x03-y02", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x04-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x04-y02", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x05-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x05-y02", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x06-y01", "7000", "20" )
-    useOnePt("/ATLAS_2011_S8924791/d01-x06-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x01-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x01-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x02-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x02-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x03-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x03-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x04-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x04-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x05-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x05-y02", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x06-y01", "7000", "20" )
+    useOnePt("/ATLAS_2011_I882984/d01-x06-y02", "7000", "20" )
 
-useOnePt("/ATLAS_2011_S8924791/d02-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x02-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x02-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x03-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x03-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x04-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x04-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x05-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x05-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x06-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d02-x06-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x02-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x02-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x03-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x03-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x04-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x04-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x05-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x05-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x06-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d03-x06-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S8924791/d04-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x01-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x02-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x02-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x03-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x03-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x04-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x04-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x05-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x05-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x06-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d04-x06-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S8924791/d05-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x02-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x02-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x03-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x03-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x04-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x04-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x05-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x05-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x06-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d05-x06-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x02-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x02-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x03-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x03-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x04-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x04-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x05-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x05-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x06-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d06-x06-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S8924791/d07-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x02-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x02-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x03-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x03-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x04-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x04-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x05-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x05-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x06-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d07-x06-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S8924791/d08-x01-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x01-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x02-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x02-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x03-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x03-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x04-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x04-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x05-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x05-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x06-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d08-x06-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x01-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x01-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x02-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x02-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x03-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x03-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x04-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x04-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x05-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x05-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x06-y01", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d09-x06-y02", "7000", "260" )
-useOnePt("/ATLAS_2011_S8924791/d10-x01-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x01-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x02-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x02-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x03-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x03-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x04-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x04-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x05-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x05-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x06-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d10-x06-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x01-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x01-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x02-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x02-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x03-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x03-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x04-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x04-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x05-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x05-y02", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x06-y01", "7000", "400" )
-useOnePt("/ATLAS_2011_S8924791/d11-x06-y02", "7000", "400" )
-logging.info("Processing ATLAS_2010_S8817804")
-mergeByPt("/ATLAS_2010_S8817804/d01-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d02-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d03-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d04-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d05-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d06-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d07-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d08-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d09-x01-y01", "7000")
-mergeByPt("/ATLAS_2010_S8817804/d10-x01-y01", "7000")
+useOnePt("/ATLAS_2011_I882984/d02-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x02-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x02-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x03-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x03-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x04-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x04-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x05-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x05-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x06-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d02-x06-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x02-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x02-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x03-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x03-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x04-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x04-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x05-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x05-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x06-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d03-x06-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I882984/d04-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x02-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x02-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x03-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x03-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x04-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x04-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x05-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x05-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x06-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d04-x06-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I882984/d05-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x02-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x02-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x03-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x03-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x04-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x04-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x05-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x05-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x06-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d05-x06-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x02-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x02-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x03-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x03-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x04-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x04-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x05-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x05-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x06-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d06-x06-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I882984/d07-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x02-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x02-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x03-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x03-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x04-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x04-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x05-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x05-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x06-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d07-x06-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I882984/d08-x01-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x01-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x02-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x02-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x03-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x03-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x04-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x04-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x05-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x05-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x06-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d08-x06-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x01-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x01-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x02-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x02-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x03-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x03-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x04-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x04-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x05-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x05-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x06-y01", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d09-x06-y02", "7000", "260" )
+useOnePt("/ATLAS_2011_I882984/d10-x01-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x01-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x02-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x02-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x03-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x03-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x04-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x04-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x05-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x05-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x06-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d10-x06-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x01-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x01-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x02-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x02-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x03-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x03-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x04-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x04-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x05-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x05-y02", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x06-y01", "7000", "400" )
+useOnePt("/ATLAS_2011_I882984/d11-x06-y02", "7000", "400" )
+logging.debug("Processing ATLAS_2010_I871366")
+mergeByPt("/ATLAS_2010_I871366/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d06-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d07-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d08-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d09-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_I871366/d10-x01-y01", "7000")
 
-mergeByMass("/ATLAS_2010_S8817804/d11-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d12-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d13-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d14-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d15-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d16-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d17-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d18-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d19-x01-y01", "7000")
-mergeByMass("/ATLAS_2010_S8817804/d20-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d11-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d12-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d13-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d14-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d15-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d16-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d17-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d18-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d19-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_I871366/d20-x01-y01", "7000")
 
-useOneMass("/ATLAS_2010_S8817804/d21-x01-y01", "7000", "250" )
-useOneMass("/ATLAS_2010_S8817804/d22-x01-y01", "7000", "250" )
-useOneMass("/ATLAS_2010_S8817804/d23-x01-y01", "7000", "650" )
-useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "250" )
-useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "250" )
-useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "650" )
+useOneMass("/ATLAS_2010_I871366/d21-x01-y01", "7000", "250" )
+useOneMass("/ATLAS_2010_I871366/d22-x01-y01", "7000", "250" )
+useOneMass("/ATLAS_2010_I871366/d23-x01-y01", "7000", "500" )
+useOneMass("/ATLAS_2010_I871366/d24-x01-y01", "7000", "250" )
+useOneMass("/ATLAS_2010_I871366/d25-x01-y01", "7000", "250" )
+useOneMass("/ATLAS_2010_I871366/d26-x01-y01", "7000", "500" )
 
 
-logging.info("Processing ATLAS_2011_I930220")
+logging.debug("Processing ATLAS_2011_I930220")
 mergeByPt("/ATLAS_2011_I930220/d01-x01-y01",  "7000" )
 mergeByPt("/ATLAS_2011_I930220/d02-x01-y01",  "7000" )
 mergeByPt("/ATLAS_2011_I930220/d03-x01-y01",  "7000" )
@@ -847,7 +869,7 @@ useOneMass("/ATLAS_2011_I930220/d08-x01-y01", "7000", "110" )
 useOneMass("/ATLAS_2011_I930220/d09-x01-y01", "7000", "110" )
 useOneMass("/ATLAS_2011_I930220/d10-x01-y01", "7000", "370" )
 
-logging.info("Processing ATLAS_2012_I1082936")
+logging.debug("Processing ATLAS_2012_I1082936")
 mergeByPt("/ATLAS_2012_I1082936/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1082936/d01-x01-y02", "7000")
 mergeByPt("/ATLAS_2012_I1082936/d01-x01-y03", "7000")
@@ -883,174 +905,174 @@ mergeByMass("/ATLAS_2012_I1082936/d04-x01-y08", "7000", 1000.)
 mergeByMass("/ATLAS_2012_I1082936/d04-x01-y09", "7000", 1000.)
 
 
-logging.info("Processing CMS_2011_S8968497")
+logging.debug("Processing CMS_2011_I889175")
 
-useOneMass("/CMS_2011_S8968497/d01-x01-y01", "7000", "1700" )
-useOneMass("/CMS_2011_S8968497/d02-x01-y01", "7000", "1700" )
-useOneMass("/CMS_2011_S8968497/d03-x01-y01", "7000", "1100" )
-useOneMass("/CMS_2011_S8968497/d04-x01-y01", "7000", "1100" )
-useOneMass("/CMS_2011_S8968497/d05-x01-y01", "7000", "650" )
-useOneMass("/CMS_2011_S8968497/d06-x01-y01", "7000", "650" )
-useOneMass("/CMS_2011_S8968497/d07-x01-y01", "7000", "250" )
-useOneMass("/CMS_2011_S8968497/d08-x01-y01", "7000", "250" )
-useOneMass("/CMS_2011_S8968497/d09-x01-y01", "7000", "250" )
-
-
-logging.info("Processing ATLAS_2011_S9126244")
-mergeByPt("/ATLAS_2011_S9126244/d01-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d01-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d02-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d02-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d03-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d03-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d04-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d04-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d05-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d05-x01-y02", "7000")
+useOneMass("/CMS_2011_I889175/d01-x01-y01", "7000", "1600" )
+useOneMass("/CMS_2011_I889175/d02-x01-y01", "7000", "1600" )
+useOneMass("/CMS_2011_I889175/d03-x01-y01", "7000", "1000" )
+useOneMass("/CMS_2011_I889175/d04-x01-y01", "7000", "1000" )
+useOneMass("/CMS_2011_I889175/d05-x01-y01", "7000", "500" )
+useOneMass("/CMS_2011_I889175/d06-x01-y01", "7000", "500" )
+useOneMass("/CMS_2011_I889175/d07-x01-y01", "7000", "250" )
+useOneMass("/CMS_2011_I889175/d08-x01-y01", "7000", "250" )
+useOneMass("/CMS_2011_I889175/d09-x01-y01", "7000", "250" )
 
 
-useOnePt("/ATLAS_2011_S9126244/d06-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d06-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d07-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d07-x01-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d08-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d08-x01-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d09-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d09-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d10-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d10-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d11-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d11-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d12-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d12-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d13-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d13-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d14-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d14-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d15-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d15-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d16-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d16-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d17-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d17-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d18-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d18-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d19-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d20-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d21-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d22-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d23-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d24-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d25-x01-y01", "7000", "210" )
-mergeByPt("/ATLAS_2011_S9126244/d26-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d26-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d27-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d27-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d28-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d28-x01-y02", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d29-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9126244/d29-x01-y02", "7000")
-useOnePt("/ATLAS_2011_S9126244/d30-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d31-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d32-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d33-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d34-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d35-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d36-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d37-x01-y01", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d37-x01-y02", "7000", "40" )
-useOnePt("/ATLAS_2011_S9126244/d38-x01-y01", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d38-x01-y02", "7000", "80" )
-useOnePt("/ATLAS_2011_S9126244/d39-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d39-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d40-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d40-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d41-x01-y01", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d41-x01-y02", "7000", "110" )
-useOnePt("/ATLAS_2011_S9126244/d42-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d42-x01-y02", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d43-x01-y01", "7000", "210" )
-useOnePt("/ATLAS_2011_S9126244/d43-x01-y02", "7000", "210" )
+logging.debug("Processing ATLAS_2011_I917526")
+mergeByPt("/ATLAS_2011_I917526/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d01-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d02-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d03-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d04-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d05-x01-y02", "7000")
 
-# CMS_2011_S9120041 UE analysis
-logging.info("Processing CMS_2011_S9120041")
-mergeByPt("/CMS_2011_S9120041/d01-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9120041/d02-x01-y01", "7000")
+
+useOnePt("/ATLAS_2011_I917526/d06-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d06-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d07-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d07-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d08-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d08-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d09-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d09-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d10-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d10-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d11-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d11-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d12-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d12-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d13-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d13-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d14-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d14-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d15-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d15-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d16-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d16-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d17-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d17-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d18-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d18-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d19-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d20-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d21-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d22-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d23-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d24-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d25-x01-y01", "7000", "210" )
+mergeByPt("/ATLAS_2011_I917526/d26-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d26-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d27-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d27-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d28-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d28-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_I917526/d29-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I917526/d29-x01-y02", "7000")
+useOnePt("/ATLAS_2011_I917526/d30-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d31-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d32-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d33-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d34-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d35-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d36-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d37-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d37-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_I917526/d38-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d38-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_I917526/d39-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d39-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d40-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d40-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d41-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d41-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_I917526/d42-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d42-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d43-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_I917526/d43-x01-y02", "7000", "210" )
+
+# CMS_2011_I916908 UE analysis
+logging.debug("Processing CMS_2011_I916908")
+mergeByPt("/CMS_2011_I916908/d01-x01-y01", "7000")
+mergeByPt("/CMS_2011_I916908/d02-x01-y01", "7000")
 if(opts.ue) :
-    useOnePt("/CMS_2011_S9120041/d03-x01-y01",  "900", "0" )
-    useOnePt("/CMS_2011_S9120041/d04-x01-y01",  "900", "0" )
-    useOnePt("/CMS_2011_S9120041/d05-x01-y01", "7000", "0" )
-    useOnePt("/CMS_2011_S9120041/d06-x01-y01", "7000", "0" )
-    useOnePt("/CMS_2011_S9120041/d07-x01-y01", "7000", "0" )
-    useOnePt("/CMS_2011_S9120041/d11-x01-y01",  "900", "0" )
-    useOnePt("/CMS_2011_S9120041/d12-x01-y01",  "900", "0" )
-    useOnePt("/CMS_2011_S9120041/d13-x01-y01",  "900", "0" )
-    useOnePt("/CMS_2011_S9120041/d08-x01-y01", "7000", "20" )
-    useOnePt("/CMS_2011_S9120041/d09-x01-y01", "7000", "20" )
-    useOnePt("/CMS_2011_S9120041/d10-x01-y01", "7000", "20" )
+    useOnePt("/CMS_2011_I916908/d03-x01-y01",  "900", "0" )
+    useOnePt("/CMS_2011_I916908/d04-x01-y01",  "900", "0" )
+    useOnePt("/CMS_2011_I916908/d05-x01-y01", "7000", "0" )
+    useOnePt("/CMS_2011_I916908/d06-x01-y01", "7000", "0" )
+    useOnePt("/CMS_2011_I916908/d07-x01-y01", "7000", "0" )
+    useOnePt("/CMS_2011_I916908/d11-x01-y01",  "900", "0" )
+    useOnePt("/CMS_2011_I916908/d12-x01-y01",  "900", "0" )
+    useOnePt("/CMS_2011_I916908/d13-x01-y01",  "900", "0" )
+    useOnePt("/CMS_2011_I916908/d08-x01-y01", "7000", "20" )
+    useOnePt("/CMS_2011_I916908/d09-x01-y01", "7000", "20" )
+    useOnePt("/CMS_2011_I916908/d10-x01-y01", "7000", "20" )
 else :
-    useOnePt("/CMS_2011_S9120041/d08-x01-y01", "7000", "10" )
-    useOnePt("/CMS_2011_S9120041/d09-x01-y01", "7000", "10" )
-    useOnePt("/CMS_2011_S9120041/d10-x01-y01", "7000", "10" )
+    useOnePt("/CMS_2011_I916908/d08-x01-y01", "7000", "10" )
+    useOnePt("/CMS_2011_I916908/d09-x01-y01", "7000", "10" )
+    useOnePt("/CMS_2011_I916908/d10-x01-y01", "7000", "10" )
 
 # CMS dijet decorrelation
-logging.info("Processing CMS_2011_S8950903")
-useOnePt("/CMS_2011_S8950903/d01-x01-y01", "7000", "80" )
-useOnePt("/CMS_2011_S8950903/d02-x01-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8950903/d03-x01-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8950903/d04-x01-y01", "7000", "210" )
-useOnePt("/CMS_2011_S8950903/d05-x01-y01", "7000", "260" )
+logging.debug("Processing CMS_2011_I885663")
+useOnePt("/CMS_2011_I885663/d01-x01-y01", "7000", "80" )
+useOnePt("/CMS_2011_I885663/d02-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_I885663/d03-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_I885663/d04-x01-y01", "7000", "210" )
+useOnePt("/CMS_2011_I885663/d05-x01-y01", "7000", "260" )
 
 # CMS jet cross section
-logging.info("Processing CMS_2011_S9086218")
-mergeByPt("/CMS_2011_S9086218/d01-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9086218/d02-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9086218/d03-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9086218/d04-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9086218/d05-x01-y01", "7000")
-mergeByPt("/CMS_2011_S9086218/d06-x01-y01", "7000")
+logging.debug("Processing CMS_2011_I902309")
+mergeByPt("/CMS_2011_I902309/d01-x01-y01", "7000")
+mergeByPt("/CMS_2011_I902309/d02-x01-y01", "7000")
+mergeByPt("/CMS_2011_I902309/d03-x01-y01", "7000")
+mergeByPt("/CMS_2011_I902309/d04-x01-y01", "7000")
+mergeByPt("/CMS_2011_I902309/d05-x01-y01", "7000")
+mergeByPt("/CMS_2011_I902309/d06-x01-y01", "7000")
 
 # CMS 2/3 jet cross section ratio
-logging.info("Processing CMS_2011_S9086218")
-mergeByPt("/CMS_2011_S9088458/d01-x01-y01", "7000",500.)
+logging.debug("Processing CMS_2011_I902309")
+mergeByPt("/CMS_2011_I912560/d01-x01-y01", "7000",500.)
 
 # ATLAS track jet
-logging.info("Processing ATLAS_2011_I919017")
+logging.debug("Processing ATLAS_2011_I919017")
 for d in range(1,3) :
     for y in range(1,5) :
-        mergeByPt("/ATLAS_2011_I919017/d0%s-x01-y0%s" % (d,y), "7000")
-        if( opts.ue) :
-            for x in range(2,6) :
-                for y in ["01","02","06","07","11","12","16","17","21","22"] :
-                    useOnePt("/ATLAS_2011_I919017/d0%s-x0%s-y%s" % (d,x,y),  "7000",  "0" )
-                for y in ["03","04","08","09","13","14","18","19","23","24"] :
-                    useOnePt("/ATLAS_2011_I919017/d0%s-x0%s-y%s" % (d,x,y),  "7000",  "4" )
-                for y in range(5,30,5) :
-                    useOnePt("/ATLAS_2011_I919017/d0%s-x%02d-y%02d" % (d,x,y) ,  "7000", "20" )
-        else :
-            for x in range(2,6) :
-                for y in range(5,30,5) :
-                    useOnePt("/ATLAS_2011_I919017/d0%s-x%02d-y%02d" % (d,x,y) ,  "7000", "10" )
+        mergeByPt("/ATLAS_2011_I919017/d0%s-x01-y0%s" % (y,d), "7000")
+    if( opts.ue) :
+        for x in range(0,4) :
+            for y in [0,1,5,6,10,11,15,16,20,21] :
+                useOnePt("/ATLAS_2011_I919017/d%02d-x01-y%02d" % (5+25*x+y,d),  "7000",  "0" )
+            for y in [2,3,7,8,12,13,17,18,22,23] :
+                useOnePt("/ATLAS_2011_I919017/d%02d-x01-y%02d" % (5+25*x+y,d),  "7000",  "4" )
+            for y in range(4,29,5) :
+                useOnePt("/ATLAS_2011_I919017/d%02d-x01-y%02d" % (5+25*x+y,d) ,  "7000", "20" )
+    else :
+        for x in range(0,4) :
+            for y in range(4,29,5) :
+                useOnePt("/ATLAS_2011_I919017/d%02d-x%02d-y%02d" % (d,x,y) ,  "7000", "10" )
 
-logging.info("Processing ATLAS_2011_I926145")
+logging.debug("Processing ATLAS_2011_I926145")
 mergeByPt("/ATLAS_2011_I926145/d01-x01-y01", "7000",1.5)
 mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000",1.5)
 mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000",1.5)
 
-logging.info("Processing CMS_2011_S8941262")
-useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "10" )
-useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "10" )
-mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000",1.5)
+logging.debug("Processing CMS_2011_I884811")
+useOnePt("/CMS_2011_I884811/d01-x01-y01",  "7000", "10" )
+useOnePt("/CMS_2011_I884811/d03-x01-y01",  "7000", "10" )
+mergeByPt("/CMS_2011_I884811/d02-x01-y01", "7000",1.5)
 
-logging.info("Processing CMS_2011_S8973270")
-useOnePt("/CMS_2011_S8973270/d01-x01-y01",  "7000", "70" )
-useOnePt("/CMS_2011_S8973270/d02-x01-y01",  "7000", "100" )
-useOnePt("/CMS_2011_S8973270/d03-x01-y01",  "7000", "130" )
-useOnePt("/CMS_2011_S8973270/d04-x01-y01",  "7000", "70" )
-useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "100" )
-useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "130" )
+logging.debug("Processing CMS_2011_I889807")
+useOnePt("/CMS_2011_I889807/d01-x01-y01",  "7000", "70" )
+useOnePt("/CMS_2011_I889807/d02-x01-y01",  "7000", "100" )
+useOnePt("/CMS_2011_I889807/d03-x01-y01",  "7000", "130" )
+useOnePt("/CMS_2011_I889807/d04-x01-y01",  "7000", "70" )
+useOnePt("/CMS_2011_I889807/d05-x01-y01",  "7000", "100" )
+useOnePt("/CMS_2011_I889807/d06-x01-y01",  "7000", "130" )
 
-logging.info("Processing ATLAS_2012_I1082009")
+logging.debug("Processing ATLAS_2012_I1082009")
 useOnePt("/ATLAS_2012_I1082009/d08-x01-y01", "7000", "40" )
 useOnePt("/ATLAS_2012_I1082009/d09-x01-y01", "7000", "40" )
 useOnePt("/ATLAS_2012_I1082009/d10-x01-y01", "7000", "40" )
@@ -1058,11 +1080,11 @@ useOnePt("/ATLAS_2012_I1082009/d11-x01-y01", "7000", "80" )
 useOnePt("/ATLAS_2012_I1082009/d12-x01-y01", "7000", "80" )
 useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "40" )
 
-logging.info("Processing ATLAS_2012_I1118269")
+logging.debug("Processing ATLAS_2012_I1118269")
 mergeByPt("/ATLAS_2012_I1118269/d01-x01-y01", "7000")
 useOnePt("/ATLAS_2012_I1118269/d02-x01-y01", "7000", "10" )
 
-logging.info("Processing ATLAS_2012_I1188891")
+logging.debug("Processing ATLAS_2012_I1188891")
 mergeByPt("/ATLAS_2012_I1188891/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1188891/d02-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1188891/d03-x01-y01", "7000")
@@ -1070,31 +1092,31 @@ mergeByPt("/ATLAS_2012_I1188891/d04-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1188891/d05-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1188891/d06-x01-y01", "7000")
 
-logging.info("Processing CMS_2012_I1087342")
+logging.debug("Processing CMS_2012_I1087342")
 mergeByPt("/CMS_2012_I1087342/d01-x01-y01", "7000")
 mergeByPt("/CMS_2012_I1087342/d02-x01-y01", "7000")
 mergeByPt("/CMS_2012_I1087342/d03-x01-y01", "7000")
-logging.info("Processing CMS_2012_PAS_QCD_11_010")
+logging.debug("Processing CMS_2012_PAS_QCD_11_010")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d01-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d02-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d03-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d04-x01-y01", "7000")
 
-logging.info("Processing ATLAS_2011_S9035664")
-mergeByPt("/ATLAS_2011_S9035664/d11-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d12-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d13-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d14-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d15-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d16-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d17-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d18-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d20-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d21-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d22-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_S9035664/d23-x01-y01", "7000")
+logging.debug("Processing ATLAS_2011_I896268")
+mergeByPt("/ATLAS_2011_I896268/d11-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d12-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d13-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d14-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d15-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d16-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d17-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d18-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d20-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d21-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d22-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I896268/d23-x01-y01", "7000")
 
-logging.info("Processing ATLAS_2012_I1125575")
+logging.debug("Processing ATLAS_2012_I1125575")
 mergeByPt("/ATLAS_2012_I1125575/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2012_I1125575/d01-x01-y02", "7000")
 mergeByPt("/ATLAS_2012_I1125575/d01-x02-y01", "7000")
@@ -1178,7 +1200,7 @@ useOnePt("/ATLAS_2012_I1094564/d34-x01-y01",  "7000", "260" )
 useOnePt("/ATLAS_2012_I1094564/d35-x01-y01",  "7000", "400" )
 useOnePt("/ATLAS_2012_I1094564/d36-x01-y01",  "7000", "400" )
 
-logging.info("Processing CMS_2013_I1224539_DIJET")
+logging.debug("Processing CMS_2013_I1224539_DIJET")
 useOnePt("/CMS_2013_I1224539_DIJET/d01-x01-y01",  "7000", "210" )
 useOnePt("/CMS_2013_I1224539_DIJET/d02-x01-y01",  "7000", "260" )
 useOnePt("/CMS_2013_I1224539_DIJET/d03-x01-y01",  "7000", "400" )
@@ -1239,19 +1261,19 @@ useOnePt("/CMS_2013_I1261026/d16-x01-y01",  "7000", "0" )
 useOnePt("/CMS_2013_I1261026/d17-x01-y01",  "7000", "0" )
 
 
-logging.info("Processing CMS_2012_I1090423")
-useOneMass("/CMS_2012_I1090423/d01-x01-y01", "7000", "2900" )
-useOneMass("/CMS_2012_I1090423/d02-x01-y01", "7000", "2300" )
-useOneMass("/CMS_2012_I1090423/d03-x01-y01", "7000", "1700" )
-useOneMass("/CMS_2012_I1090423/d04-x01-y01", "7000", "1100" )
-useOneMass("/CMS_2012_I1090423/d05-x01-y01", "7000", "1100" )
-useOneMass("/CMS_2012_I1090423/d06-x01-y01", "7000", "650" )
-useOneMass("/CMS_2012_I1090423/d07-x01-y01", "7000", "650" )
+logging.debug("Processing CMS_2012_I1090423")
+useOneMass("/CMS_2012_I1090423/d01-x01-y01", "7000", "2200" )
+useOneMass("/CMS_2012_I1090423/d02-x01-y01", "7000", "2200" )
+useOneMass("/CMS_2012_I1090423/d03-x01-y01", "7000", "1600" )
+useOneMass("/CMS_2012_I1090423/d04-x01-y01", "7000", "1000" )
+useOneMass("/CMS_2012_I1090423/d05-x01-y01", "7000", "1000" )
+useOneMass("/CMS_2012_I1090423/d06-x01-y01", "7000", "500" )
+useOneMass("/CMS_2012_I1090423/d07-x01-y01", "7000", "500" )
 useOneMass("/CMS_2012_I1090423/d08-x01-y01", "7000", "250" )
 useOneMass("/CMS_2012_I1090423/d09-x01-y01", "7000", "250" )
 
 
-logging.info("Processing ATLAS_2014_I1298811")
+logging.debug("Processing ATLAS_2014_I1298811")
 mergeByPt("/ATLAS_2014_I1298811/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2014_I1298811/d01-x01-y02", "7000")
 mergeByPt("/ATLAS_2014_I1298811/d02-x01-y01", "7000")
@@ -1328,7 +1350,7 @@ useOnePt("/ATLAS_2014_I1298811/d36-x01-y01",  "7000", "210" )
 useOnePt("/ATLAS_2014_I1298811/d36-x01-y02",  "7000", "210" )
 
 
-logging.info("Processing ATLAS_2014_I1268975")
+logging.debug("Processing ATLAS_2014_I1268975")
 mergeByMass("/ATLAS_2014_I1268975/d01-x01-y01", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d01-x01-y02", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d01-x01-y03", "7000", 1000.)
@@ -1343,7 +1365,7 @@ mergeByMass("/ATLAS_2014_I1268975/d02-x01-y04", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d02-x01-y05", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d02-x01-y06", "7000", 1000.)
 
-logging.info("Processing ATLAS_2014_I1307243")
+logging.debug("Processing ATLAS_2014_I1307243")
 useOnePt( "/ATLAS_2014_I1307243/d01-x01-y01",  "7000", "80" )
 mergeByPt("/ATLAS_2014_I1307243/d02-x01-y01", "7000")
 useOnePt( "/ATLAS_2014_I1307243/d03-x01-y01",  "7000", "80" )
@@ -1386,7 +1408,7 @@ useOnePt( "/ATLAS_2014_I1307243/d39-x01-y01",  "7000", "80" )
 mergeByPt("/ATLAS_2014_I1307243/d40-x01-y01", "7000")
 
 
-logging.info("Processing ATLAS_2014_I1325553")
+logging.debug("Processing ATLAS_2014_I1325553")
 mergeByPt("/ATLAS_2014_I1325553/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y01", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d03-x01-y01", "7000")
@@ -1400,47 +1422,11 @@ mergeByPt("/ATLAS_2014_I1325553/d10-x01-y01", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d11-x01-y01", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d12-x01-y01", "7000")
 
-logging.info("Processing ATLAS_2016_I1419070")
+logging.debug("Processing ATLAS_2016_I1419070")
 for i in range(1,13) :
-    if(i<10) :
-        mergeByPt("/ATLAS_2016_I1419070/d0%s-x01-y01" % i, "8000")
-    else :
-        mergeByPt("/ATLAS_2016_I1419070/d%s-x01-y01"  % i, "8000")
+    mergeByPt("/ATLAS_2016_I1419070/d%02d-x01-y01" % i, "8000")
 
-# remake differences and sums
-for ihist in range(1,4) :
-    if not ("/ATLAS_2016_I1419070/d0%s-x01-y01" % ihist) in outhistos :
-        continue
-    h1 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % ihist  ]
-    h2 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % (ihist+3)]
-    sstring = "/ATLAS_2016_I1419070/d%s-x01-y01"  % (9+ihist)
-    dstring = "/ATLAS_2016_I1419070/d0%s-x01-y01" % (6+ihist)
-    hdiff = yoda.Scatter2D(dstring,dstring)
-    hsum  = yoda.Scatter2D(sstring,sstring)
-    outhistos[dstring]= hdiff
-    outhistos[sstring]= hsum
-    for nbin in range(0,h2.numBins()) :
-        bsum  = h1.bins()[nbin]+h2.bins()[nbin]
-        try:
-          ydiff = h2.bins()[nbin].mean()-h1.bins()[nbin].mean()
-        except:
-          ydiff = 0
-        try:
-          ysum  = bsum.mean()
-          bstderr = bsum.stdErr()
-        except:
-          ysum  = 0
-          bstderr = 0
-        try:
-          yerr  = math.sqrt(h1.bins()[nbin].stdErr()**2+h2.bins()[nbin].stdErr()**2)
-        except:
-          yerr  = 0
-        x    = h1.bins()[nbin].xMid()
-        xerr = 0.5*h1.bins()[nbin].xWidth()
-        hdiff.addPoint(x,ydiff,xerr,yerr)
-        hsum.addPoint(x,ysum ,xerr,bstderr)
-
-logging.info("Processing ATLAS_2015_I1394679")
+logging.debug("Processing ATLAS_2015_I1394679")
 for i in range(1,5) :
     mergeByPt("/ATLAS_2015_I1394679/d0%s-x01-y01" % i, "8000")
 for i in range(5,11) :
@@ -1461,19 +1447,19 @@ for i in range(0,5) :
     useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (29+4*i),  "8000", "400" )
     useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (30+4*i),  "8000", "400" )
 
-logging.info("Processing CMS_2013_I1208923")
+logging.debug("Processing CMS_2013_I1208923")
 for i in range(1,6) :
     mergeByPt  ("/CMS_2013_I1208923/d01-x01-y0%s" % i, "7000")
     mergeByMass("/CMS_2013_I1208923/d02-x01-y0%s" % i, "7000", 1.)
 
-logging.info("Processing CMS_2014_I1298810")
+logging.debug("Processing CMS_2014_I1298810")
 for i in range(1,19) :
     if(i<10) :
         mergeByPt("/CMS_2014_I1298810/d0"+str(i)+"-x01-y01", "7000")
     else :
         mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
 
-logging.info("Processing CMS_2014_I1305624")
+logging.debug("Processing CMS_2014_I1305624")
 for x in range(1,6) :
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y01" % x,  "7000", "110" )
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y02" % x,  "7000", "110" )
@@ -1481,7 +1467,7 @@ for x in range(1,6) :
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y04" % x,  "7000", "260" )
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y05" % x,  "7000", "400" )
 
-logging.info("Processing ATLAS_2011_I929691")
+logging.debug("Processing ATLAS_2011_I929691")
 
 for x in range(0,3) :
     useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 1),  "7000", "20" )
@@ -1495,19 +1481,19 @@ for x in range(0,3) :
     useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 9),  "7000", "260" )
     useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+10),  "7000", "400" )
 
-logging.info("Processing ATLAS_2015_I1393758")
+logging.debug("Processing ATLAS_2015_I1393758")
 for i in range(1,13) :
     mergeByPt("/ATLAS_2015_I1393758/d%02d-x01-y01" % i, "8000")
 
-logging.info("Processing CMS_2016_I1459051")
+logging.debug("Processing CMS_2016_I1459051")
 for i in range(1,15) :
     mergeByPt("/CMS_2016_I1459051/d%02d-x01-y01" % i, "13000")
     
-logging.info("Processing ATLAS_2016_CONF_2016_092")
+logging.debug("Processing ATLAS_2016_CONF_2016_092")
 for i in range(1,7) :
     mergeByPt("/ATLAS_2016_CONF_2016_092/d%02d-x01-y01" % i, "13000")
     
-logging.info("Processing ATLAS_2017_I1609253")
+logging.debug("Processing ATLAS_2017_I1609253")
 useOnePt( "/ATLAS_2017_I1609253/d01-x01-y01",  "8000", "260" )
 useOnePt( "/ATLAS_2017_I1609253/d02-x01-y01",  "8000", "260" )
 useOnePt( "/ATLAS_2017_I1609253/d03-x01-y01",  "8000", "260" )
@@ -1521,7 +1507,7 @@ useOnePt( "/ATLAS_2017_I1609253/d10-x01-y01",  "8000", "400" )
 useOnePt( "/ATLAS_2017_I1609253/d11-x01-y01",  "8000", "600" )
 useOnePt( "/ATLAS_2017_I1609253/d12-x01-y01",  "8000", "600" )
 
-logging.info("Processing CMS_2016_I1487277")
+logging.debug("Processing CMS_2016_I1487277")
 mergeByPt("/CMS_2016_I1487277/d01-x01-y01", "8000")
 mergeByPt("/CMS_2016_I1487277/d02-x01-y01", "8000")
 mergeByPt("/CMS_2016_I1487277/d03-x01-y01", "8000")
@@ -1530,7 +1516,7 @@ mergeByPt("/CMS_2016_I1487277/d05-x01-y01", "8000")
 mergeByPt("/CMS_2016_I1487277/d06-x01-y01", "8000")
 mergeByPt("/CMS_2016_I1487277/d07-x01-y01", "8000")
 
-logging.info("Processing CMS_2016_I1421646")
+logging.debug("Processing CMS_2016_I1421646")
 useOnePt( "/CMS_2016_I1421646/d01-x01-y01",  "8000", "210" )
 useOnePt( "/CMS_2016_I1421646/d02-x01-y01",  "8000", "260" )
 useOnePt( "/CMS_2016_I1421646/d03-x01-y01",  "8000", "400" )
@@ -1540,7 +1526,7 @@ useOnePt( "/CMS_2016_I1421646/d06-x01-y01",  "8000", "900" )
 useOnePt( "/CMS_2016_I1421646/d07-x01-y01",  "8000", "900" )
 
 
-logging.info("Processing CMS_2017_I1605749")
+logging.debug("Processing CMS_2017_I1605749")
 for i in [1,2,3,4,5,6,7,8,9,10,13,16] :
     useOnePt("/CMS_2017_I1605749/d%02d-x01-y01" % i, "8000", "400" )
 for i in [11,14,17]:
@@ -1548,36 +1534,31 @@ for i in [11,14,17]:
 for i in [12,15,18]:
     useOnePt("/CMS_2017_I1605749/d%02d-x01-y01" % i, "8000", "900" )
 
-def CMS_2012_I1111014_name(i,j) :
-    if(i+j<100) :
-        return "/CMS_2012_I1111014/d%02d-x01-y01" % (i+j)
-    else :
-        return "/CMS_2012_I1111014/d%03d-x01-y01" % (i+j)
-
-logging.info("Processing CMS_2012_I1111014")
+logging.debug("Processing CMS_2012_I1111014")
 for j in [0,22,44,66,87,106]:
     for i in [1,2,3] :
-        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "20" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "20" )
     for i in [4,5,6,7]:
-        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "40" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "40" )
     for i in [8,9,10]:
-        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "80" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "80" )
     for i in [11,12,13,14,15,16]:
-        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "110" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "110" )
     for i in [17,18]:
-        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "210" )
-    useOnePt(CMS_2012_I1111014_name(19,j), "7000", "260" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "210" )
+    useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (19+j) , "7000", "260" )
     if(j<87) :
         for i in [20,21]:
-            useOnePt(CMS_2012_I1111014_name(i,j), "7000", "400" )
+            useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (i+j), "7000", "400" )
     if(j<66) :
-        useOnePt(CMS_2012_I1111014_name(22,j), "7000", "600" )
+        useOnePt("/CMS_2012_I1111014/d%02d-x01-y01" % (22+j), "7000", "600" )
 
-for i in [126,127,128] :
+for i in [126,127] :
     for j in [1,2] :
         mergeByPt("/CMS_2012_I1111014/d%03d-x01-y%02d" % (i,j), "7000")
+mergeByPt("/CMS_2012_I1111014/d128-x01-y01", "7000")
         
-logging.info("Processing CMS_2018_I1682495")
+logging.debug("Processing CMS_2018_I1682495")
 for i in [0,1,2,3] :
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 1), "13000", "110" )
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 2), "13000", "260" )
@@ -1592,12 +1573,12 @@ for i in [0,1,2,3] :
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+11), "13000", "900" )
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+12), "13000", "900" )
     
-logging.info("Processing CMS_2015_I1385107")
+logging.debug("Processing CMS_2015_I1385107")
 for i in range(1,9) :
     mergeByPt("/CMS_2015_I1385107/d%02d-x01-y01" % i, "2760")
 
 
-logging.info("Processing CMS_2018_I1663452")
+logging.debug("Processing CMS_2018_I1663452")
 useOneMass("/CMS_2018_I1663452/d01-x01-y01", "13000", "5900" )
 useOneMass("/CMS_2018_I1663452/d02-x01-y01", "13000", "4900" )
 useOneMass("/CMS_2018_I1663452/d03-x01-y01", "13000", "3900" )
@@ -1606,7 +1587,7 @@ useOneMass("/CMS_2018_I1663452/d05-x01-y01", "13000", "2800" )
 useOneMass("/CMS_2018_I1663452/d06-x01-y01", "13000", "2800" )
 useOneMass("/CMS_2018_I1663452/d07-x01-y01", "13000", "2200" )
     
-logging.info("Processing CMS_2017_I1519995")
+logging.debug("Processing CMS_2017_I1519995")
 useOneMass("/CMS_2017_I1519995/d01-x01-y01", "13000", "3900" )
 useOneMass("/CMS_2017_I1519995/d02-x01-y01", "13000", "3900" )
 useOneMass("/CMS_2017_I1519995/d03-x01-y01", "13000", "2800" )
@@ -1614,28 +1595,28 @@ useOneMass("/CMS_2017_I1519995/d04-x01-y01", "13000", "2800" )
 useOneMass("/CMS_2017_I1519995/d05-x01-y01", "13000", "2200" )
 useOneMass("/CMS_2017_I1519995/d06-x01-y01", "13000", "1600" )
 
-logging.info("Processing CMS_2016_I1486238")
+logging.debug("Processing CMS_2016_I1486238")
 for i in [1,5,9,10,12,13,14,16,17] :
     useOnePt("/CMS_2016_I1486238/d%02d-x01-y01" % i, "7000", "20" )
 mergeByPt("/CMS_2016_I1486238/d11-x01-y01", "7000")
 mergeByPt("/CMS_2016_I1486238/d15-x01-y01", "7000")
 
-logging.info("Processing ATLAS_2018_I1634970")
+logging.debug("Processing ATLAS_2018_I1634970")
 for i in range(1,7) :
     mergeByPt("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000")
 for i in range(7,13) :
     mergeByMass("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000", 1.)
 
 
-logging.info("Processing ATLAS_2017_I1604271")
+logging.debug("Processing ATLAS_2017_I1604271")
 for i in range(1,13) :
     mergeByPt("/ATLAS_2017_I1604271/d%02d-x01-y01" % i, "8000")
     
-logging.info("Processing CMS_2017_I1598460")
-for i in range(1,7) :
+logging.debug("Processing CMS_2017_I1598460")
+for i in range(1,12,2) :
     mergeByPt("/CMS_2017_I1598460/d%02d-x01-y01" % i, "8000")
 
-logging.info("Processing ATLAS_2019_I1724098")
+logging.debug("Processing ATLAS_2019_I1724098")
 for i in range(1,45) :
     if(i<=6 or (i>=23 and i<=28)) :
         useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "400")
@@ -1643,7 +1624,7 @@ for i in range(1,45) :
         useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "0")
 
 
-logging.info("Processing CMS_2018_I1643640")
+logging.debug("Processing CMS_2018_I1643640")
 
 for i in range(0,5) :
     if i == 0 : ioff = 0
@@ -1659,7 +1640,7 @@ for i in range(0,5) :
     if(i==0) :
         useOnePt("/CMS_2018_I1643640/d%02d-x01-y01"%(ioff+9), "13000", "900")
 
-logging.info("Processing CMS_2019_I1719955")
+logging.debug("Processing CMS_2019_I1719955")
 
 for i in range(0,2) :
     useOnePt("/CMS_2019_I1719955/d%02d-x01-y01"%(9*i+1), "13000", "110")
@@ -1672,7 +1653,7 @@ for i in range(0,2) :
     useOnePt("/CMS_2019_I1719955/d%02d-x01-y01"%(9*i+8), "13000", "900")
     useOnePt("/CMS_2019_I1719955/d%02d-x01-y01"%(9*i+9), "13000", "900")
         
-logging.info("Processing ATLAS_2020_I1808726")
+logging.debug("Processing ATLAS_2020_I1808726")
 pts=["400","600","900"]    
 for  i in range (0,3) :
     useOnePt("/ATLAS_2020_I1808726/d%02d-x01-y01"%(73+i),"13000",pts[i])
@@ -1680,12 +1661,12 @@ for  i in range (0,3) :
         for k in range(1,5) :
             useOnePt("/ATLAS_2020_I1808726/d%02d-x01-y01"%(4*i+12*j+k),"13000",pts[i])
 
-logging.info("Processing CMS_2021_I1972986")
+logging.debug("Processing CMS_2021_I1972986")
 for i in range(1,5) :
     for j in range(0,40,20) :
         mergeByPt("/CMS_2021_I1972986/d%02d-x01-y01" % (i+j), "13000")
 
-logging.info("Processing CMS_2021_I1920187")
+logging.debug("Processing CMS_2021_I1920187")
 for ihist in [2,4,6,8,10,14,16,18]:
     useOnePt("/CMS_2021_I1920187/d%02d-x01-y01" % ihist, "13000","110")
 useOnePt("/CMS_2021_I1920187/d12-x01-y01", "13000","900")
@@ -1716,7 +1697,7 @@ for ihist in [155,179,209,234,265,291,322,348,379,405,436,462,492,517,547,572,
     useOnePt("/CMS_2021_I1920187/d%s-x01-y01" % (ihist+ 9+ioff), "13000","600") # 614-800
     useOnePt("/CMS_2021_I1920187/d%s-x01-y01" % (ihist+10+ioff), "13000","600") # 800-1000
 
-logging.info("Processing CMS_2021_I1932460")
+logging.debug("Processing CMS_2021_I1932460")
 for i in range(1,5):
     mergeByPt("/CMS_2021_I1932460/d%02d-x01-y01" % i, "13000")
 for i in range(5,15):
@@ -1724,7 +1705,7 @@ for i in range(5,15):
 for i in range(45,51):
     useOnePt("/CMS_2021_I1932460/d%02d-x01-y01" % i, "13000","40")
 
-logging.info("Processing ATLAS_2019_I1740909")
+logging.debug("Processing ATLAS_2019_I1740909")
 for i in [1,2,9]:
     mergeByPt("/ATLAS_2019_I1740909/d%02d-x01-y01" % i, "13000")
 pts = ["80" ,"110","260","400","400",
@@ -1738,7 +1719,7 @@ for i in [13,27,41,55,69,83,97,111,125,139,153,167] :
         else :
             useOnePt("/ATLAS_2019_I1740909/d%03d-x01-y01" % ihist, "13000",pts[j])
 
-logging.info("Processing ATLAS_2021_I1913061")
+logging.debug("Processing ATLAS_2021_I1913061")
 for i in range(1,5) :
     useOnePt("/ATLAS_2021_I1913061/d%02d-x01-y01" % ihist, "13000","40")
 for i in range(5,7) :
@@ -1746,6 +1727,28 @@ for i in range(5,7) :
 for i in range(7,9) :
     mergeByPt("/ATLAS_2021_I1913061/d%02d-x01-y01" % i, "13000")
 
+# CMS multijets
+for i in range(1,4) :
+    useOnePt("/CMS_2022_I2170533/d%02d-x01-y01" %   i  , "13000", "210")
+    useOnePt("/CMS_2022_I2170533/d%02d-x01-y01" % (3+i), "13000", "400")
+    useOnePt("/CMS_2022_I2170533/d%02d-x01-y01" % (6+i), "13000", "600")
+for i in range(10,14) :
+    mergeByPt("/CMS_2022_I2170533/d%02d-x01-y01" % i,"13000")
+    
+# ATLAS EEC
+logging.debug("Processing ATLAS_2023_I2625697")
+for ioff in range(0,2) :
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  1), "13000","400")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  2), "13000","400")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  3), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  4), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  5), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  6), "13000","600")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  7), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  8), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  9), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 10), "13000","900")
+    useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 11), "13000","900")
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)

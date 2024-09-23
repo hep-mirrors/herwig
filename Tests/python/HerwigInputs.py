@@ -26,6 +26,7 @@ def identifyCollider(name) :
             break
     del cand_collider
     if "EHS" in name : collider="SPS"
+    if "Photo" == name[0:5] : collider="DIS"
     assert collider
     have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","SPS","Fermilab"]
     return (collider,have_hadronic_collider)
@@ -146,6 +147,13 @@ def identifySimulation(name,collider,have_hadronic_collider) :
                 templateName="EE-Gamma-Double-Resolved.in"
             else :
                 templateName="EE.in"
+        elif collider=="DIS" and "Photo" == name[0:5] :
+            if("Direct" in name) :
+                templateName="Photo-Direct.in"
+            elif "Resolved" in name : 
+                templateName="Photo-Resolved.in"
+            else :
+                templateName="DIS.in"
         elif collider=="GammaGamma" :
             templateName="GammaGamma.in"
         elif collider != "BFactory" :
@@ -158,10 +166,8 @@ def identifySimulation(name,collider,have_hadronic_collider) :
             if simulation == "Merging" :
                 if "Charm" in name or "Bottom" in name or "Top" in name :
                     templateName= "Hadron-Merging-Massive.in"
-        elif collider != "BFactory" :
-            templateName= "%s-%s.in" % (collider,simulation)
         else :
-            templateName= "EE-%s.in" % simulation
+            templateName= "%s-%s.in" % (collider,simulation)
     # work out the name of the parameter file
     parameterName="-".join(name.split("-")[istart:])
     del istart
@@ -201,8 +207,9 @@ def collider_lumi(energy):
 def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
     result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
     if process is not None:
-        if me=="MEgg2ff" :
-            result += "set /Herwig/MatrixElements/gg2ffAmp:{ifname} {process}".format(**locals())
+        if me=="MEgg2ff" or me =="MEgg2ee" or me == "MEgg2mm":
+            amp=me.replace("ME","")+"Amp"
+            result += "set /Herwig/MatrixElements/{amp}:{ifname} {process}".format(**locals())
         else :
             result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
     return result

@@ -10,3 +10,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKI_1976_I109792
+# D spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKI_1979_I133123

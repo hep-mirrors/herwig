@@ -3,28 +3,28 @@
 # select the analyses
 ##################################################
 # ATLAS jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I882984
 # ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I871366
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082936
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I891834
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I879407
 # ATLAS fragmentation function
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_CONF_2010_049
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I882098
 # ALICE charged particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_I852264
 # CMS particle spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I890166
 # CMS charged particle multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I879315
 # CMS charged particle pT and rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8656010
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_I855299
 # CMS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I916908
 # ATLAS track jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # LHCB phi production
@@ -36,7 +36,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
 # ATLAS rap gap
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
 # CMS forward energy flow
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I930319
 # LHC K0s/Lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 # TOTEM at large rapidity

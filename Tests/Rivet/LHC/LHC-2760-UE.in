@@ -8,3 +8,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1385107
 # ALICE neutral pion cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1512110
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
+# ALICE rho production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1672860

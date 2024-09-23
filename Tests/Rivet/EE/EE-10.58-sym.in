@@ -11,4 +11,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1777678
 # BABAR azimuthal
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1254862
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1377201
+# BELLE azimuthal
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1752523

@@ -1,9 +1,12 @@
 #! @PYTHON@
+# -*- mode: python -*-
 from __future__ import print_function
-import yoda,glob,math,optparse
+import yoda,glob,optparse
+import numpy as np
 import subprocess,os
 op = optparse.OptionParser(usage=__doc__)
-op.add_option("-m"         , dest="plots"       , default=[], action="append")
+op.add_option("-e"         , dest="plots_energy" , default=[], action="append")
+op.add_option("-f"         , dest="plots_fixed"  , default=[], action="append")
 
 opts, args = op.parse_args()
 
@@ -29,13 +32,19 @@ labels={ "NonPerturbative" : "Non-Pert" ,
          "Resonance"       : "Res"      }
 for runType in ["NonPerturbative","Perturbative","Resonance"]:
     outhistos={}
+    inhistos={}
     for fileName in glob.glob("Rivet-LowEnergy-%s-%s-*.yoda" % (name[0],runType) ):
         energy = float(fileName.split("-")[-1].strip(".yoda"))
         energyMeV = energy*1000.
         aos = yoda.read(fileName)
         for hpath,histo in aos.items():
             if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
-            if(len(opts.plots)>0 and hpath not in opts.plots) : continue
+            if(len(opts.plots_fixed)>0 and hpath in opts.plots_fixed) :
+                if hpath in inhistos :
+                    inhistos[hpath][energy] = histo
+                else :
+                    inhistos[hpath] = { energy : histo}
+            if(len(opts.plots_energy)>0 and hpath not in opts.plots_energy) : continue
             if(type(histo)==yoda.core.Histo1D or
                (type(histo)==yoda.core.Scatter2D and hpath=="/BESIII_2019_I1726357/d03-x01-y01") ) :
                 if( "CMD3_2019_I1770428" in hpath ) :
@@ -59,77 +68,110 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                     title=histo.title()
                 if hasattr(histo, 'path'):
                     path=histo.path()
-                outhistos[hpath] = yoda.core.Scatter2D(path,title)
+                if hasattr(aos[hpath],'points') :
+                    outhistos[hpath] = yoda.core.Scatter2D(path,title)
+                else :
+                    try : 
+                        outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges(),path,title)
+                    except :
+                        print(hpath,aos[hpath])
+                        quit()
             matched = False
-            for i in range(0,aos[hpath].numPoints()) :
-                x = aos[hpath].points()[i].x()
-                delta=1e-5
-                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                   "FENICE_1996_I426675" in hpath):
-                   x=math.sqrt(x)
-                   delta=1e-3
-                if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
-                    duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints()) :
-                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                            duplicate = True
-                            break
-                    if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points()[i])
-                    matched = True
-                    break
-            if(matched) : continue
-            for i in range(0,aos[hpath].numPoints()) :
-                xmin = aos[hpath].points()[i].xMin()
-                xmax = aos[hpath].points()[i].xMax()
-                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                   "FENICE_1996_I426675" in hpath) :
-                   xmin=math.sqrt(xmin)
-                   xmax=math.sqrt(xmax)
-                if((energy    > xmin and energy    < xmax) or
-                   (energyMeV > xmin and energyMeV < xmax) ) :
-                    duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints()) :
-                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                            duplicate = True
-                            break
-                    if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points()[i])
-                    break
-    if len(outhistos) == 0: continue
-    p = subprocess.Popen(["rivet-config", "--datadir"],stdout=subprocess.PIPE)
-    path=p.communicate()[0]
-    if not isinstance(path, bytes) :
-        path = path.encode("UTF-8").strip()
-    else :
-        path=path.strip().decode('utf-8')
-    temp = list(outhistos.keys())
-    for val in  temp :
-        if type(outhistos[val]) is yoda.core.Scatter2D :
-            if(outhistos[val].numPoints()==0) :
-                del outhistos[val]
-                continue
-            analysis = val.split("/")[1]
-            aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
-            ref = aos["/REF"+val]
-            for point in ref.points() :
-                matched=False
-                for point2 in outhistos[val].points() :
-                    if(point2.x()==point.x()) :
-                        matched=True
+            if hasattr(aos[hpath],"points") :
+                for i in range(0,aos[hpath].numPoints()) :
+                    x = aos[hpath].points()[i].x()
+                    delta=1e-5
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath):
+                        x=np.sqrt(x)
+                        delta=1e-3
+                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
+                        duplicate = False
+                        for j in range(0,outhistos[hpath].numPoints()) :
+                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
+                                duplicate = True
+                                break
+                        if(not duplicate) :
+                            outhistos[hpath].addPoint(aos[hpath].points()[i])
+                        matched = True
                         break
                 if(matched) : continue
-                outhistos[val].addPoint(point.x(),0,point.xErrs(),(0.,0.))
-        elif (type(outhistos[val]) is yoda.core.Histo1D or
-              type(outhistos[val]) is yoda.core.Profile1D) :
-            if(outhistos[val].numBins()==0) :
-                del outhistos[val]
-                continue
+                for i in range(0,aos[hpath].numPoints()) :
+                    xmin = aos[hpath].points()[i].xMin()
+                    xmax = aos[hpath].points()[i].xMax()
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath) :
+                        xmin=np.sqrt(xmin)
+                        xmax=np.sqrt(xmax)
+                    if((energy    > xmin and energy    < xmax) or
+                       (energyMeV > xmin and energyMeV < xmax) ) :
+                        duplicate = False
+                        for j in range(0,outhistos[hpath].numPoints()) :
+                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
+                                duplicate = True
+                                break
+                        if(not duplicate) :
+                            outhistos[hpath].addPoint(aos[hpath].points()[i])
+                        break
+            else :
+                for i,bin in enumerate(aos[hpath].bins()) :
+                    if bin.edge(0) :
+                        x = bin.edge(0)
+                    else :
+                        x = bin.mid(0)
+                    if isinstance(x, str) :
+                        x = x.split("_")[0]
+                        if "-" in x and len(x)>1:
+                            elim =x.split("-")
+                            x=0.5*(float(elim[0])+float(elim[1]))
+                        elif hpath=="/DM1_1979_I132828/d01-x01-y01" :
+                            if x == '-'         : x = 985
+                        elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :
+                            if x=="1900 (2012)" : x = 1900
+                    try :
+                        x = float(x)
+                    except :
+                        print("Cannot convert %s to float in %s" % (x,hpath) )
+                        quit()
+                    delta=1e-5
+                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                       "FENICE_1996_I426675" in hpath):
+                        x=np.sqrt(x)
+                        delta=1e-3
+                    elif "SND_2024_I2809929" in hpath or "SND_2024_I2696331" in hpath:
+                        x=2.*x
+                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
+                        duplicate = False
+                        outhistos[hpath].bin(bin.index()).setVal(bin.val())
+                        for key in bin.sources() :
+                            outhistos[hpath].bin(bin.index()).setErr(bin.err(key),key)
+                        matched = True
+                        break
+                if(matched) : continue
+    for key,histos in inhistos.items() :
+        if(len(histos)==1) :
+            for (key2,val2) in histos.items():
+                outhistos[key] = val2
         else :
-            print  (type(outhistos[val]) )
-    
+            for (key2,val2) in histos.items():
+                outhistos[key] = yoda.BinnedEstimate1D(val2.xEdges(),key)
+                break
+            fact = 1./len(histos)
+            for i in range(0,outhistos[key].numBins()) :
+                val=0.
+                errs={}
+                for (key2,val2) in histos.items() :
+                    val += val2.bin(i+1).val()
+                    for src in  val2.bin(i+1).sources() :
+                        if src not in errs : errs[src] = val2.bin(i+1).errAvg(src)**2
+                        else               : errs[src] + val2.bin(i+1).errAvg(src)**2
+                val *=fact
+                outhistos[key].bin(i+1).setVal(val)
+                for src in errs :
+                    outhistos[key].bin(i+1).setErr(np.sqrt(errs[src])*fact,src)
     yoda.writeYODA(outhistos,"LowEnergy-%s-%s.yoda" % (runType,args[0]))
     output+="LowEnergy-%s-%s.yoda:%s " % (runType,args[0],labels[runType])
 print(output)
