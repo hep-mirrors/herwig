@@ -13,13 +13,13 @@ set /Herwig/Hadronization/ClusterFissioner:ClPowLight              2.000
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 		   0.935
 set /Herwig/Hadronization/SMHadronSpectrum:PwtSquark     		   0.650
 set /Herwig/Hadronization/SMHadronSpectrum:PwtDIquark    		   0.306
-set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm              3.796
-set /Herwig/Hadronization/ClusterFissioner:ClPowCharm 		   2.235
-set /Herwig/Hadronization/ClusterFissioner:PSplitCharm		   0.990
-set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm  		   0.139
+set /Herwig/Hadronization/ClusterFissioner:ClMaxHeavy 4              3.796
+set /Herwig/Hadronization/ClusterFissioner:ClPowHeavy 4 		   2.235
+set /Herwig/Hadronization/ClusterFissioner:PSplitHeavy 4		   0.990
+set /Herwig/Hadronization/ClusterDecayer:ClSmrHeavy 4  		   0.139
 set /Herwig/Hadronization/SMHadronSpectrum:SingleHadronLimitCharm	   0.000
-set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom             6.000
-set /Herwig/Hadronization/ClusterFissioner:ClPowBottom 		   0.680
-set /Herwig/Hadronization/ClusterFissioner:PSplitBottom		   0.550
-set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom  		   0.105
+set /Herwig/Hadronization/ClusterFissioner:ClMaxHeavy 5             6.000
+set /Herwig/Hadronization/ClusterFissioner:ClPowHeavy 5 		   0.680
+set /Herwig/Hadronization/ClusterFissioner:PSplitHeavy 5		   0.550
+set /Herwig/Hadronization/ClusterDecayer:ClSmrHeavy 5  		   0.105
 set /Herwig/Hadronization/SMHadronSpectrum:SingleHadronLimitBottom   0.000

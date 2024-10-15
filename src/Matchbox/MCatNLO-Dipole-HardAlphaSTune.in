@@ -94,18 +94,18 @@ set ClusterFissioner:PSplitLight                 1.29
 set ClusterDecayer:ClDirLight                    1
 set ClusterDecayer:ClSmrLight                    3.118342
 
-set ClusterFissioner:ClMaxCharm                  3.11*GeV
-set ClusterFissioner:ClPowCharm                  1.62
-set ClusterFissioner:PSplitCharm                 2.54
+set ClusterFissioner:ClMaxHeavy 4                  3.11*GeV
+set ClusterFissioner:ClPowHeavy 4                  1.62
+set ClusterFissioner:PSplitHeavy 4                 2.54
 set ClusterDecayer:ClDirCharm                    1
-set ClusterDecayer:ClSmrCharm                    0.
+set ClusterDecayer:ClSmrHeavy 4                    0.
 set SMHadronSpectrum:SingleHadronLimitCharm   0.0
 
-set ClusterFissioner:ClMaxBottom                 1.38*GeV
-set ClusterFissioner:ClPowBottom                 0.62
-set ClusterFissioner:PSplitBottom                0.20
+set ClusterFissioner:ClMaxHeavy 5                 1.38*GeV
+set ClusterFissioner:ClPowHeavy 5                 0.62
+set ClusterFissioner:PSplitHeavy 5                0.20
 set ClusterDecayer:ClDirBottom                   1
-set ClusterDecayer:ClSmrBottom                   0.
+set ClusterDecayer:ClSmrHeavy 5                   0.
 set SMHadronSpectrum:SingleHadronLimitBottom  0.12
 
 set SMHadronSpectrum:PwtUquark                     1.0
