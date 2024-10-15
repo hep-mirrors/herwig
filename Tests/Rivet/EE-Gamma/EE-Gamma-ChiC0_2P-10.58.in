@@ -1,0 +1,18 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 3.5*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 8.*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 3.6
+set /Herwig/Generators/EventGenerator:EventHandler:StatLevel Full
+set /Herwig/Partons/EEExtractor:FlatSHatY 1
+set /Herwig/ACDCSampler:Ntry 100000
+set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
+##################################################
+# select the analyses 
+##################################################
+# BELLE chi_c0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I841003
