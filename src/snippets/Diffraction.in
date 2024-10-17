@@ -93,7 +93,8 @@ insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaLeft
 insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaRight
 #insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaDouble
 # No cluster fission (set to E/2, if needed. Here E=7TeV.)
-#set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
+#set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500*GeV
+#set /Herwig/Hadronization/ClusterFissioner:ClMaxDiquark 3500*GeV
 
 
 # The DiffractionMEs need to know the MPIHandler for the cross section.

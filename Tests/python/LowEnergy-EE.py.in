@@ -333,7 +333,10 @@ analyses["6m"]["BESIII_2017_I1607253"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["6m"]["BESIII_2022_I2165175"] = ["d01-x01-y01"]
 analyses["6m"]["BESII_2009_I835937"  ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y06","d01-x01-y07"]
 # other baryon processes
+# p pbar pi0
 analyses['Baryon']["BESIII_2017_I1509241"  ] = ["d01-x01-y01"]
+analyses['Baryon']["BESIII_2024_I2785382"  ] = ["d01-x01-y01"]
+# p pbar omega/eta
 analyses['Baryon']["BESIII_2021_I1845443"  ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['Baryon']["BESIII_2021_I1859248"  ] = ["d01-x01-y01"]
 analyses["Baryon"]["BESIII_2021_I1929314"  ] = ["d01-x01-y04","d01-x01-y08"]
