@@ -9,7 +9,9 @@ read snippets/EvolutionScheme-Q2.in
 set /Herwig/Shower/AlphaQCDFSR:AlphaIn                             0.1244
 set /Herwig/Shower/PTCutOff:pTmin                                  1.136
 set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              3.141
+set /Herwig/Hadronization/ClusterFissioner:ClMaxDiquark            3.141
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight              1.353
+set /Herwig/Hadronization/ClusterFissioner:ClPowDiquark            1.353
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 		   0.831
 set /Herwig/Hadronization/SMHadronSpectrum:PwtSquark     		   0.737
 set /Herwig/Hadronization/SMHadronSpectrum:PwtDIquark    		   0.383

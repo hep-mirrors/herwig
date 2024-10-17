@@ -88,7 +88,10 @@ set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 0.45*GeV
 ##################################################
 cd /Herwig/Hadronization
 
-set ClusterFissioner:ClMaxLight                  3.30
+set ClusterFissioner:ClMaxDiquark                  3.30*GeV
+set ClusterFissioner:ClPowDiquark                  2.50
+
+set ClusterFissioner:ClMaxLight                  3.30*GeV
 set ClusterFissioner:ClPowLight                  2.50
 set ClusterFissioner:PSplitLight                 1.29
 set ClusterDecayer:ClDirLight                    1

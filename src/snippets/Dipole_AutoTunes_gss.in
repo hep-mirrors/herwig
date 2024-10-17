@@ -12,10 +12,12 @@ set ClusterDecayer:ClSmrLight                 0.698877
 set ClusterDecayer:ClSmrHeavy 4                 0.246296
 set ClusterFissioner:ClPowHeavy 5              0.591646
 set ClusterFissioner:ClPowLight               0.99945
+set ClusterFissioner:ClPowDiquark               0.99945
 set ClusterFissioner:ClPowHeavy 4               3.386187
 set ClusterFissioner:ClMaxHeavy 5              3.771649
 set ClusterFissioner:ClMaxHeavy 4               4.780456
 set ClusterFissioner:ClMaxLight               3.055256
+set ClusterFissioner:ClMaxDiquark               3.055256
 set ClusterFissioner:PSplitLight              0.7779
 set ClusterFissioner:PSplitHeavy 4              0.628766
 set ClusterFissioner:PSplitHeavy 5             0.662911

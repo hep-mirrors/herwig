@@ -27,6 +27,8 @@ set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.153990372939367
 set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.000299561191703
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.8473684210526315
 set /Herwig/Hadronization/ClusterDecayer:ClSmrLight 0.78
+set /Herwig/Hadronization/ClusterFissioner:ClMaxDiquark 3.153990372939367
+set /Herwig/Hadronization/ClusterFissioner:ClPowDiquark 2.000299561191703
 set /Herwig/Hadronization/SMHadronSpectrum:PwtSquark 0.44791808545341966
 set /Herwig/Hadronization/SMHadronSpectrum:PwtDIquark 0.399325692181664 
 set /Herwig/Particles/g:ConstituentMass 1.0401307334907268
