@@ -61,6 +61,7 @@ set MEDiffractionRight:SingleDiffractionOnly Yes
 
 
 #set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
+#set /Herwig/Hadronization/ClusterFissioner:ClMaxDiquark 3500
 # Turn off colour reconnection
 set /Herwig/Hadronization/ColourReconnector:ColourReconnection No
 
