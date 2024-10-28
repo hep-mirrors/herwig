@@ -1,0 +1,180 @@
+##################################################
+# Common setup for Hidden Valley models
+#
+# See LHC-HiddenValley.in or ILC-HiddenValley.in
+# for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-HiddenValley.in and dark_shower_frag.in
+#
+###################################################
+#
+#  Particle Data object for the new mediator
+#
+###################################################
+cd /Herwig/Particles
+create /ThePEG/ParticleData ZPrime
+setup ZPrime 32 ZPrime 1000.0 0.0 0.0 0.0 0 0 3 0
+###################################################
+#
+#  Create the new model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/HiddenValley
+cd /Herwig/NewPhysics/HiddenValley
+create Herwig::HiddenValleyModel Model 
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set Model:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+
+###################################################
+#
+#  Hard process vertices
+#
+###################################################
+# create Hidden valley vertices
+mkdir /Herwig/Vertices/HiddenValley
+cd /Herwig/Vertices/HiddenValley
+create Herwig::HiddenValleyFFZPrimeVertex HiddenValley_FFZPVertex
+cd /Herwig/NewPhysics/HiddenValley
+# SM vertices
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH  /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
+set Model:Vertex/FFZPrime  /Herwig/Vertices/HiddenValley/HiddenValley_FFZPVertex
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/ZPrime
+###################################################
+#
+#  Setting to ensure spin correlations
+#  and generation of processes and decays
+#
+###################################################
+cd /Herwig/NewPhysics
+# Set up the model framework
+set HiddenValley/Model:ModelGenerator NewModel
+# don't do three-body decays as some weird-stuff gets generated
+erase /Herwig/NewPhysics/DecayConstructor:NBodyDecayConstructors 1
+
+###################################################
+#
+#  Choose Hidden valley over SM
+#
+###################################################
+cd /Herwig/Generators
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/HiddenValley/Model
+
+
+###################################################
+#
+#  Setup Dark Shower Alpha and Splittings
+#
+###################################################
+
+cd /Herwig/Shower
+
+create Herwig::HiddenValleyAlpha AlphaDARK
+
+set AlphaDARK:ScaleFactor 1.0
+set AlphaDARK:NPAlphaS 2
+set AlphaDARK:Qmin 0.935
+set AlphaDARK:NumberOfLoops 2
+
+library HwDarkShower.so
+
+create Herwig::HalfHalfOneDarkSplitFn QtoQGDARKSudakov HwDarkShower.so
+set QtoQGDARKSudakov:InteractionType DARK
+set QtoQGDARKSudakov:Alpha AlphaDARK
+set QtoQGDARKSudakov:Cutoff PTCutOff
+set QtoQGDARKSudakov:ColourStructure TripletTripletOctet
+set QtoQGDARKSudakov:AngularOrdered Yes
+set QtoQGDARKSudakov:StrictAO Yes
+set QtoQGDARKSudakov:PDFmax 1.9
+
+create Herwig::OneOneOneDarkSplitFn GtoGGDARKSudakov HwDarkShower.so
+set GtoGGDARKSudakov:InteractionType DARK
+set GtoGGDARKSudakov:ColourStructure OctetOctetOctet
+set GtoGGDARKSudakov:AngularOrdered Yes
+set GtoGGDARKSudakov:Alpha AlphaDARK
+set GtoGGDARKSudakov:StrictAO Yes
+set GtoGGDARKSudakov:PDFmax 2.0
+set GtoGGDARKSudakov:Cutoff PTCutOff
+
+create Herwig::OneHalfHalfDarkSplitFn GtoQQbarDARKSudakov HwDarkShower.so
+set GtoQQbarDARKSudakov:InteractionType DARK
+set GtoQQbarDARKSudakov:ColourStructure OctetTripletTriplet
+set GtoQQbarDARKSudakov:AngularOrdered Yes
+set GtoQQbarDARKSudakov:StrictAO Yes
+set GtoQQbarDARKSudakov:Alpha AlphaDARK
+set GtoQQbarDARKSudakov:PDFmax 120.0
+set GtoQQbarDARKSudakov:Cutoff PTCutOff
+
+# Turn the dark shower on
+set ShowerHandler:DarkInteraction Yes
+
+###################################################
+#
+#  Choose Hidden valley over SM
+#
+###################################################
+
+cd /Herwig/Hadronization
+do ClusterHadHandler:UseHandlersForInteraction QCD
+
+create Herwig::PartonSplitter DarkPartonSplitter
+create Herwig::ClusterFinder DarkClusterFinder
+create Herwig::ClusterFissioner DarkClusterFissioner
+create Herwig::ColourReconnector DarkColourReconnector
+create Herwig::LightClusterDecayer DarkLightClusterDecayer
+create Herwig::ClusterDecayer DarkClusterDecayer
+create Herwig::DarkHwppSelector DarkHadSpec
+
+set DarkHadSpec:Mode 1
+
+set DarkPartonSplitter:HadronSpectrum DarkHadSpec
+set DarkClusterFinder:HadronSpectrum DarkHadSpec
+set DarkClusterFissioner:HadronSpectrum DarkHadSpec
+set DarkClusterDecayer:HadronSpectrum DarkHadSpec
+set DarkLightClusterDecayer:HadronSpectrum DarkHadSpec
+
+# Turn off baryon production (not yet implemented)
+set DarkColourReconnector:ColourReconnection No
+set DarkHadSpec:PwtDIquark  0
+
+set DarkPartonSplitter:Split Light
+
+# Clustering parameters for light quarks
+set DarkClusterFissioner:ClPowLight  2.780
+set DarkClusterFissioner:PSplitLight 0.899
+set DarkClusterDecayer:ClDirLight 1
+set DarkClusterDecayer:ClSmrLight 0.78
+
+set ClusterHadHandler:PartonSplitter DarkPartonSplitter
+set ClusterHadHandler:ClusterFinder DarkClusterFinder
+set ClusterHadHandler:ClusterFissioner DarkClusterFissioner
+set ClusterHadHandler:LightClusterDecayer DarkLightClusterDecayer
+set ClusterHadHandler:ClusterDecayer DarkClusterDecayer
+set ClusterHadHandler:ColourReconnector DarkColourReconnector
+
+do ClusterHadHandler:UseHandlersForInteraction Dark
