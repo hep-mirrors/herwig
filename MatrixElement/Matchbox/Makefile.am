@@ -14,7 +14,8 @@ Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
 Matching/libHwMatchboxMatching.la \
 External/BLHAGeneric/libHwMatchboxExternalBLHAGeneric.la \
-Tests/libHwMatchboxTests.la
+Tests/libHwMatchboxTests.la \
+CVolver/libHwCVolver.la
 
 libHwMatchbox_la_SOURCES =  \
 MatchboxFactory.h MatchboxFactory.fh MatchboxFactory.cc

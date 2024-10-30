@@ -108,6 +108,7 @@ namespace CVolver {
 
     /**
      * Conjugate this basis tensor
+		 * (Inverse permutation)
      */
     ColourFlow& conjugate() {
       std::vector<std::size_t> tmp = thePermutation;
