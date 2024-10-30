@@ -23,6 +23,7 @@ create Herwig::PartonSplitter PartonSplitter
 create Herwig::ClusterFinder ClusterFinder
 create Herwig::ColourReconnector ColourReconnector
 create Herwig::ClusterFissioner ClusterFissioner
+create Herwig::MatrixElementClusterFissioner MEClusterFissioner
 create Herwig::LightClusterDecayer LightClusterDecayer
 create Herwig::ClusterDecayer ClusterDecayer
 create Herwig::HwppSelector SMHadronSpectrum
@@ -126,6 +127,43 @@ newdef ClusterDecayer:ClDirExotic 1
 newdef ClusterDecayer:ClSmrExotic 0.
 newdef SMHadronSpectrum:SingleHadronLimitExotic 0.
 
+################################################
+# BEG  MEClusterFissioner initialization:      #
+################################################
+# Note that we copy the tuned values from the default
+# ClusterFissioner but we need to set them here explicitly
+newdef MEClusterFissioner:HadronSpectrum SMHadronSpectrum
+newdef MEClusterFissioner:KinematicThreshold Dynamic
+newdef MEClusterFissioner:KineticThresholdShift   0.08844
+newdef MEClusterFissioner:ProbabilityPowerFactor   6.486
+newdef MEClusterFissioner:ProbabilityShift        -0.87875
+# Clustering parameters for light quarks
+newdef MEClusterFissioner:ClMaxLight  3.528693*GeV
+newdef MEClusterFissioner:ClPowLight  1.849375
+newdef MEClusterFissioner:PSplitLight 0.914156
+insert MEClusterFissioner:FissionPwt 1 1.0
+insert MEClusterFissioner:FissionPwt 2 1.0
+insert MEClusterFissioner:FissionPwt 3 0.374094
+# Clustering parameters for b-quarks
+insert MEClusterFissioner:ClMaxHeavy 5 3.757*GeV
+insert MEClusterFissioner:ClPowHeavy 5  0.547
+insert MEClusterFissioner:PSplitHeavy 5 0.625
+# Clustering parameters for c-quarks
+insert MEClusterFissioner:ClMaxHeavy 4 3.950*GeV
+insert MEClusterFissioner:ClPowHeavy 4  2.559
+insert MEClusterFissioner:PSplitHeavy 4 0.994
+# Cluster Paramters for light Diquark  Cluster 
+# currently set according to Light quark defaults
+newdef MEClusterFissioner:ClMaxDiquark 3.528693*GeV
+newdef MEClusterFissioner:ClPowDiquark 1.849375
+# Clustering parameters for exotic quarks
+# (e.g. hadronizing Susy particles)
+newdef MEClusterFissioner:ClMaxExotic  2.7*GeV
+newdef MEClusterFissioner:ClPowExotic  1.46
+newdef MEClusterFissioner:PSplitExotic 1.00
+################################################
+# END  MEClusterFissioner initialization:      #
+################################################
 #
 insert PartonSplitter:SplitPwt 1 1.0
 insert PartonSplitter:SplitPwt 2 1.0
