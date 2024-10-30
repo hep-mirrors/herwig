@@ -112,7 +112,7 @@ void StandardModelHadronSpectrum::persistentOutput(PersistentOStream & os) const
 void StandardModelHadronSpectrum::persistentInput(PersistentIStream & is, int) {
   is >> _hadronizingStrangeDiquarks
      >> _pwtDquark  >> _pwtUquark >> _pwtSquark 
-     >> _pwtCquark >> _pwtBquark 
+     >> _pwtCquark >> _pwtBquark
      >> _etamix >> _phimix >> _h1mix >> _f0mix >> _f1mix >> _f2mix 
      >> _eta2mix >> _omhmix >> _ph3mix >> _eta2Smix >> _phi2Smix 
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
