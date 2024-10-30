@@ -1,0 +1,12 @@
+##################################################
+## Tchannel Cluster Decayer (CD)                ##
+##################################################
+
+## author: Stefan Kiebacher
+
+cd /Herwig/Hadronization
+## need to set all diquarks on their constituent mass shell
+set ClusterFinder:DiQuarkOnShell Yes
+## Set Tchannel like matrix element sampling for the CD model
+set ClusterDecayer:Kinematics Tchannel
+
