@@ -89,7 +89,7 @@ void HiddenValleyFFZPrimeVertex::doinit() {
   for(int ix=0;ix<int(model->NF());++ix) {
     int id = ParticleID::darkg+1+ix;
     addToList(-id,id,32);
-    _gql[ix+1] = model->qCharge()[ix];
-    _gqr[ix+1] = model->qCharge()[ix]-2.;
+    _gql[ix+1] = model->qChargeLeft()[ix];
+    _gqr[ix+1] = model->qChargeRight()[ix];
   }
 }

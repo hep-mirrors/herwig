@@ -52,6 +52,7 @@ public:
   enum ColourStructure {UNDEFINED,
                         Colour11to11,Colour11to33bar,Colour11to88,
                         Colour33to33,Colour33barto11,Colour33barto33bar,
+                        Colour11toDarkAntiDark,Colour33bartoDarkAntiDark,
                         Colour33barto66bar, Colour33barto6bar6,
 			Colour33to61, Colour3bar3barto6bar1,
                         Colour33to16, Colour3bar3barto16bar,
