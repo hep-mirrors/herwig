@@ -42,14 +42,14 @@ IBPtr PartonSplitter::fullclone() const {
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _quarkSelector << ounit(_gluonDistance,femtometer)
-     << _splitGluon << _splitPwt
+     << _splitGluon << _splitPwt << _kinematics
      << _enhanceSProb << ounit(_m0,GeV) << _massMeasure
      << _hadronSpectrum;
 }
 
 void PartonSplitter::persistentInput(PersistentIStream & is, int) {
   is >> _quarkSelector >> iunit(_gluonDistance,femtometer)
-     >> _splitGluon >> _splitPwt
+     >> _splitGluon >> _splitPwt >> _kinematics
      >>_enhanceSProb >> iunit(_m0,GeV) >> _massMeasure
      >> _hadronSpectrum;
 }
@@ -77,6 +77,23 @@ void PartonSplitter::Init() {
      "Light",
      "Alternative cluster splitting where only lighht quarks can be drawn.",
      1);
+
+  static Switch<PartonSplitter,int> interfaceKinematics
+    ("Kinematics",
+     "Option for different splitting Kinematic options",
+     &PartonSplitter::_kinematics, 0, false, false);
+  static SwitchOption interfaceKinematicsIsotropic
+    (interfaceKinematics,
+     "Isotropic",
+     "All kinematics are done isotropically (default)",
+     0);
+  static SwitchOption interfaceKinematicsAligned
+    (interfaceKinematics,
+     "Aligned",
+     "All kinematics are done aligned to the gluon"
+		 "NOTE: This option is experimental and just for debugging!!",
+     1);
+
 
   static ParMap<PartonSplitter,double> interfaceSplitPwt
     ("SplitPwt",
@@ -207,9 +224,6 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
   // Solve the kinematics of the two body decay  G --> Q + Qbar
   Lorentz5Momentum momentumQ;
   Lorentz5Momentum momentumQbar;
-  double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
-  using Constants::pi;
-  double phiStar = UseRandom::rnd( -pi , pi );
 
   Energy constituentQmass = quark->constituentMass();
 
@@ -217,9 +231,31 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
     throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
 		      << Exception::eventerror;
   }
-  Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
-			   constituentQmass, cosThetaStar, phiStar, momentumQ,
-			   momentumQbar );
+	switch (_kinematics)
+	{
+		case 0:
+			{
+				// Isotropic default
+				double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
+				using Constants::pi;
+				double phiStar = UseRandom::rnd( -pi , pi );
+				Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
+						constituentQmass, cosThetaStar, phiStar, momentumQ,
+						momentumQbar );
+				break;
+			}
+		case 1:
+			{
+				// Aligned
+				Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
+						constituentQmass, ptrGluon->momentum().vect().unit(), momentumQ,
+						momentumQbar );
+				break;
+			}
+		default:
+			assert(false);
+	}
+	
 
   // Create quark and anti-quark particles of the chosen flavour
   // and set they 5-momentum (the mass is the constituent one).
@@ -490,20 +526,38 @@ void PartonSplitter::massSplitTimeLikeGluon(tcPPtr ptrGluon,
   // Solve the kinematics of the two body decay  G --> Q + Qbar
   Lorentz5Momentum momentumQ;
   Lorentz5Momentum momentumQbar;
-  double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
-  using Constants::pi;
-  double phiStar = UseRandom::rnd( -pi , pi );
-
-  Energy constituentQmass;
-  constituentQmass = ptrQ->data().constituentMass();
+  Energy constituentQmass = ptrQ->data().constituentMass();
 
  if (ptrGluon->momentum().m() < 2.0*constituentQmass) {
     throw Exception() << "Impossible Kinematics in PartonSplitter::massSplitTimeLikeGluon()"
           << Exception::eventerror;
   }
-  Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
-         constituentQmass, cosThetaStar, phiStar, momentumQ,
-         momentumQbar );
+
+	switch (_kinematics)
+	{
+		case 0:
+			{
+				// Isotropic default
+				double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
+				using Constants::pi;
+				double phiStar = UseRandom::rnd( -pi , pi );
+				Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
+						constituentQmass, cosThetaStar, phiStar, momentumQ,
+						momentumQbar );
+				break;
+			}
+		case 1:
+			{
+				// Aligned
+				Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass,
+						constituentQmass, ptrGluon->momentum().vect().unit(), momentumQ,
+						momentumQbar );
+				break;
+			}
+		default:
+			assert(false);
+	}
+	
   // Create quark and anti-quark particles of the chosen flavour
   // and set they 5-momentum (the mass is the constituent one).
   ptrQ    ->set5Momentum( momentumQ    );
