@@ -131,6 +131,8 @@ public:
    *  number [0,1].
    */
   pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr);
+  pair<PPtr,PPtr> decayIntoTwoHadronsDefault(tClusterPtr ptr);
+  pair<PPtr,PPtr> decayIntoTwoHadronsNew(tClusterPtr ptr);
 
 private:
 
@@ -170,6 +172,11 @@ private:
    * Number of tries to generate the masses of the decay products
    */
   unsigned int _masstry;
+
+  /**
+   * Use new Kinematics
+   */
+  int _kinematics;
 
   /**
    * The hadron spectrum to consider
