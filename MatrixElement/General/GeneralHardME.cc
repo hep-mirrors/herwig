@@ -19,6 +19,7 @@
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Utilities/Debug.h"
 #include <numeric>
+#include "Herwig/Models/HiddenValley/HiddenValleyModel.h"
 
 using namespace Herwig;
 
@@ -80,6 +81,16 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     colour_ = vector<DVector>(1,DVector(1,3.));
     numberOfFlows_ = 1;
     break;
+  case Colour11toDarkAntiDark:
+    {
+      assert(generator());
+      tHiddenValleyPtr model = dynamic_ptr_cast<tHiddenValleyPtr>
+        (generator()->standardModel());
+      float NC_dark = model->NC();
+      colour_ = vector<DVector>(1,DVector(1,NC_dark));
+      numberOfFlows_ = 1;
+      break;
+    }
   // colour neutral -> 8 8    process or swap
   case Colour11to88: case Colour88to11 :
     colour_ = vector<DVector>(1,DVector(1,8.));
@@ -100,6 +111,19 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     colour_[2][3] = colour_[3][2] = 3.;
     numberOfFlows_ = 4;
     break;
+  // colour 33 -> dark-sector 3 3bar -> dark anti-dark
+  case Colour33bartoDarkAntiDark:
+    {
+      assert(generator());
+      tHiddenValleyPtr model = dynamic_ptr_cast<tHiddenValleyPtr>
+        (generator()->standardModel());
+      float NC_dark = model->NC();
+      colour_ = vector<DVector>(1,DVector(1,3*NC_dark));
+      numberOfFlows_ = 1;
+      break;
+    }
+
+
   // colour 3 3bar -> 6 6bar
   case Colour33barto66bar: case Colour33barto6bar6:
     colour_ = vector<DVector>(10, DVector(10, 0.));
@@ -483,7 +507,7 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f11to11("");
     sel.insert(1.,&f11to11);
     break;
-  case Colour11to33bar:
+  case Colour11to33bar: case Colour11toDarkAntiDark:
     static ColourLines f11to33bar[2]={ColourLines("4 -5"),
 				      ColourLines("4 2 -5")};
     if(current.channelType == HPDiagram::tChannel)
@@ -549,7 +573,7 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
       sel.insert(1.,current.ordered.second ? 
 		 &f3bar3barto3bar3bar[2] : &f3bar3barto3bar3bar[3]);
     break;
-  case Colour33barto33bar:
+  case Colour33barto33bar: case Colour33bartoDarkAntiDark:
     static ColourLines 
       f33barto33bar[5]={ColourLines("1 2 -3, 4 -2 -5"),
 			ColourLines("1 3 4, -2 -3 -5"),

@@ -95,6 +95,11 @@ insert ClusterFissioner:FissionPwt 2 1.0
 insert ClusterFissioner:FissionPwt 3 0.374094
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
+#
+# Cluster Paramters for light Diquark  Cluster 
+# currently set according to Light quark defaults
+newdef ClusterFissioner:ClMaxDiquark 3.528693*GeV
+newdef ClusterFissioner:ClPowDiquark 1.849375
 
 # Clustering parameters for b-quarks
 insert ClusterFissioner:ClMaxHeavy 5 3.757*GeV
@@ -112,10 +117,6 @@ insert ClusterDecayer:ClDirHeavy 4 1
 insert ClusterDecayer:ClSmrHeavy 4 0.163
 newdef SMHadronSpectrum:SingleHadronLimitCharm 0.000
 
-# Cluster Paramters for light Diquark  Cluster 
-# currently set according to Light quark defaults
-newdef ClusterFissioner:ClMaxDiquark 3.528693*GeV
-newdef ClusterFissioner:ClPowDiquark 1.849375
 # Clustering parameters for exotic quarks
 # (e.g. hadronizing Susy particles)
 newdef ClusterFissioner:ClMaxExotic  2.7*GeV

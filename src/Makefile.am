@@ -17,9 +17,11 @@ $(top_builddir)/API/libHerwigAPI.la
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = \
+dark_shower_frag.in \
 CMSSM40.1.1.slha \
 NMSSM.spc \
 ADD.model \
+HiddenValley.model \
 Leptoquark.model \
 LH.model \
 LHTP.model \
@@ -42,6 +44,7 @@ DIS.in \
 DIS-Matchbox.in \
 GammaGamma.in \
 ILC.in \
+ILC-HiddenValley.in \
 ILC-MSSM.in \
 ILC-MUED.in \
 ILC-RS.in \
@@ -53,6 +56,7 @@ LHC-CEX.in \
 LHC-GammaGamma.in \
 LHC-ResolvedGammaGamma.in \
 LHC.in \
+LHC-HiddenValley.in \
 LHC-Matchbox.in \
 LHC-LQ.in \
 LHC-MSSM.in \

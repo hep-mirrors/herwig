@@ -91,7 +91,7 @@ colourFlow(const tcPDVector & extpart) const {
       return GeneralHardME::Colour11to33bar;
     } 
     else if( outa == PDT::DarkColourFundamental && outb == PDT::DarkColourAntiFundamental) {
-      return GeneralHardME::Colour11to33bar;
+      return GeneralHardME::Colour11toDarkAntiDark;
     }
     else if( outa == PDT::Colour8 && outb == PDT::Colour8 ) {
       return GeneralHardME::Colour11to88;
@@ -173,6 +173,9 @@ colourFlow(const tcPDVector & extpart) const {
     }
     else if( outa == PDT::Colour6bar && outb == PDT::Colour6) {
       return GeneralHardME::Colour33barto6bar6;
+    }
+    else if( outa == PDT::DarkColourFundamental && outb == PDT::DarkColourAntiFundamental ) {
+      return GeneralHardME::Colour33bartoDarkAntiDark;
     }
     else
       assert(false);
@@ -699,6 +702,9 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       else if(outa==PDT::Colour6 || outa==PDT::Colour6bar) {
 	cfv[0] = make_pair(8, 1.);
 	cfv.push_back(make_pair(9,1.));
+      }
+      else if (outa == PDT::DarkColourFundamental || outa == PDT::DarkColourAntiFundamental) {
+        cfv[0] = make_pair(0, 1);
       }
       else
 	assert(false);

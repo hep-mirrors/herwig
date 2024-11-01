@@ -164,7 +164,12 @@ public:
   /**
    *  The couplings of the quirks
    */
-  vector<double> qCharge() const {return qCharge_;}
+  vector<double> qChargeLeft() const {return qChargeL_;}
+
+  /**
+   *  The couplings of the quirks
+   */
+  vector<double> qChargeRight() const {return qChargeR_;}
   //@}
 
 public:
@@ -300,7 +305,12 @@ private:
   /**
    *  The couplings of the quirks
    */
-  vector<double> qCharge_;
+  vector<double> qChargeL_;
+
+  /**
+   *  The couplings of the quirks
+   */
+  vector<double> qChargeR_;
   //@}
 };
 
