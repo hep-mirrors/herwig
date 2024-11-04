@@ -1,5 +1,5 @@
 from __future__ import print_function
-import copy
+import copy,functools
 from .helpers import SkipThisVertex,def_from_model
 from .converter import py2cpp
 import string,re
@@ -558,13 +558,13 @@ class LorentzIndex :
             if(val<0) :
                 self.type="D"
                 self.value = val
-            elif(val>0 and val/1000==0) :
+            elif(val>0 and val//1000==0) :
                 self.type="E"
                 self.value = val
-            elif(val>0 and val/1000==1) :
+            elif(val>0 and val//1000==1) :
                 self.type="T1"
                 self.value = val%1000
-            elif(val>0 and val/1000==2) :
+            elif(val>0 and val//1000==2) :
                 self.type="T2"
                 self.value = val%1000
             else :
@@ -808,7 +808,7 @@ def parse_structure(structure,spins) :
                     raise SkipThisVertex()
     # now do the sorting
     if(len(output)==1) : return output
-    output = sorted(output,cmp=LorentzCompare)
+    output = sorted(output,key=functools.cmp_to_key(LorentzCompare))
     # fix indices in the RS case
     if(4 in spins) :
         for i in range(0,len(output)) :
@@ -820,7 +820,7 @@ def parse_structure(structure,spins) :
     return output
 
 def constructDotProduct(ind1,ind2,defns) :
-    (ind1,ind2) = sorted((ind1,ind2),cmp=indSort)
+    (ind1,ind2) = sorted((ind1,ind2),key=functools.cmp_to_key(indSort))
     dimension=ind1.dimension+ind2.dimension
     # this product already dealt with ?
     if((ind1,ind2) in defns) :
@@ -844,7 +844,7 @@ def contract(parsed) :
                 newIndex.dimension=1
                 parsed[j].name="Metric"
                 parsed[j].lorentz.append(newIndex)
-                parsed[j].lorentz = sorted(parsed[j].lorentz,cmp=indSort)
+                parsed[j].lorentz = sorted(parsed[j].lorentz,key=functools.cmp_to_key(indSort))
                 continue
             ll=1
             found=False
@@ -1464,7 +1464,7 @@ def checkRSContract(parsed,loc,dtemp) :
         elif(parsed[i].name=="Epsilon") :
             continue
         else :
-            print("Unkonwn type contracted with RS spinor",parsed[i])
+            print("Unknown type contracted with RS spinor",parsed[i])
             raise SkipThisVertex()
     return contract
 
@@ -1818,7 +1818,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
     # now deal with the uncontracted cases
     contracted={}
     # sort out contracted and uncontracted indices
-    keys = unContracted.keys()
+    keys = list(unContracted.keys())
     for key in keys:
         # summed dummy index
         if key.type=="D" :
@@ -2090,17 +2090,17 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     core = "*".join(str(x) for x in eTemp[ichain])
                     temp={}
                     exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+
-                         ( "(%s)*(%s)*(%s)" %(sTemp[ichain],core,fTemp[ichain]))) in temp
+                         ( "(%s)*(%s)*(%s)" %(sTemp[ichain],core,fTemp[ichain])),temp)
                     rTemp[0].append(temp["result"])
                     temp={}
                     exec("import sympy\nfrom sympy import Symbol,Matrix,Transpose\n"+Symbols+"result="+
-                         ( "(%s)*(%s)*(Transpose(%s))*(%s)*(%s)" %(sTTemp[ichain],CC,core,CD,fTTemp[ichain]))) in temp
+                         ( "(%s)*(%s)*(Transpose(%s))*(%s)*(%s)" %(sTTemp[ichain],CC,core,CD,fTTemp[ichain])),temp)
                     rTemp[1].append(temp["result"])
                 # and add it to the output
                 addToOutput(res,nchain,sign,rTemp)
             #### END OF THE CONTRACTED LOOP #####
             # increment the indices being summed over
-            keys=contracted.keys()
+            keys=list(contracted.keys())
             ii = len(keys)-1
             while ii >=0 :
                 if(contracted[keys[ii]]<3) :
@@ -2147,7 +2147,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             sVal[istring]     = res[0]
             sVal[istring+"T"] = res[1]
             # increment the unsummed indices
-            keys=unContracted.keys()
+            keys=list(unContracted.keys())
             ii = len(keys)-1
             while ii >=0 :
                 if(unContracted[keys[ii]]<3) :
