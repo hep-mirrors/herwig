@@ -15,6 +15,8 @@ do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/
 # Xi_c -> Xi- pi+ decay asymmetry
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2000_I537236
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1851126
+# Xi_c -> Xi0 pi0 decay asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2024_I2796026
 # Xi_c Lambda/Sigma K* asymmetries
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2021_I1859517
 # Xi_c0 -> K+ K- Xi0
