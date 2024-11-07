@@ -452,6 +452,7 @@ analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
 analyses["BB"]["BELLE_2016_I1389855" ] = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2021_I1859137" ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
+analyses["BB"]["BELLE_2024_I2791218" ] = ["d02-x01-y01","d02-x01-y02","d02-x01-y03"]
 analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["BB"]["CLEO_1999_I474676"   ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
@@ -660,6 +661,10 @@ for process in processes:
             if "BELLE_2016_I1389855" == analysis :
                 etemp=[]
                 for b in aos["/REF/BELLE_2016_I1389855/d01-x01-y01"].bins() :
+                    eTemp.append(b.val())
+            elif "BELLE_2024_I2791218" == analysis :
+                etemp=[]
+                for b in aos["/REF/BELLE_2024_I2791218/d01-x01-y01"].bins() :
                     eTemp.append(b.val())
             elif hasattr(histo,'bins') : 
                 for bin in histo.bins() :

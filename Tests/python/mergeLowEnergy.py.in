@@ -20,6 +20,13 @@ name=args[0].split("-")
 cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],
                  1907.5: [17.5,5497], 1877 : [7 ,16803], 1830 : [30,8287],
                  1740. : [40  ,8728], 1640 : [40, 7299] }
+specialEnergies = { "BELLE_2016_I1389855" : [11.02200, 11.01750, 11.01640, 11.00680,
+                                             10.99190, 10.97750, 10.95750, 10.92750,
+                                             10.90770, 10.90110, 10.89850, 10.88890,
+                                             10.88360, 10.87850, 10.86950, 10.86860,
+                                             10.86670, 10.86330, 10.85890, 10.84970,
+                                             10.82050, 10.77110],
+                    "BELLE_2024_I2791218" : [10.8045,10.7463,10.7009,10.6533] }
 wSum=0.
 for key in cmd3_weights.keys() :
     wSum+= cmd3_weights[key][1]
@@ -77,80 +84,44 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                         print(hpath,aos[hpath])
                         quit()
             matched = False
-            if hasattr(aos[hpath],"points") :
-                for i in range(0,aos[hpath].numPoints()) :
-                    x = aos[hpath].points()[i].x()
-                    delta=1e-5
-                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                       "FENICE_1996_I426675" in hpath):
-                        x=np.sqrt(x)
-                        delta=1e-3
-                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
-                        duplicate = False
-                        for j in range(0,outhistos[hpath].numPoints()) :
-                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                                duplicate = True
-                                break
-                        if(not duplicate) :
-                            outhistos[hpath].addPoint(aos[hpath].points()[i])
-                        matched = True
-                        break
-                if(matched) : continue
-                for i in range(0,aos[hpath].numPoints()) :
-                    xmin = aos[hpath].points()[i].xMin()
-                    xmax = aos[hpath].points()[i].xMax()
-                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                       "FENICE_1996_I426675" in hpath) :
-                        xmin=np.sqrt(xmin)
-                        xmax=np.sqrt(xmax)
-                    if((energy    > xmin and energy    < xmax) or
-                       (energyMeV > xmin and energyMeV < xmax) ) :
-                        duplicate = False
-                        for j in range(0,outhistos[hpath].numPoints()) :
-                            if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
-                                duplicate = True
-                                break
-                        if(not duplicate) :
-                            outhistos[hpath].addPoint(aos[hpath].points()[i])
-                        break
-            else :
-                for i,bin in enumerate(aos[hpath].bins()) :
-                    if bin.edge(0) :
-                        x = bin.edge(0)
-                    else :
-                        x = bin.mid(0)
-                    if isinstance(x, str) :
-                        x = x.split("_")[0]
-                        if "-" in x and len(x)>1:
-                            elim =x.split("-")
-                            x=0.5*(float(elim[0])+float(elim[1]))
-                        elif hpath=="/DM1_1979_I132828/d01-x01-y01" :
-                            if x == '-'         : x = 985
-                        elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :
-                            if x=="1900 (2012)" : x = 1900
-                    try :
-                        x = float(x)
-                    except :
-                        print("Cannot convert %s to float in %s" % (x,hpath) )
-                        quit()
-                    delta=1e-5
-                    if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
-                       "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
-                       "FENICE_1996_I426675" in hpath):
-                        x=np.sqrt(x)
-                        delta=1e-3
-                    elif "SND_2024_I2809929" in hpath or "SND_2024_I2696331" in hpath:
-                        x=2.*x
-                    if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
-                        duplicate = False
-                        outhistos[hpath].bin(bin.index()).setVal(bin.val())
-                        for key in bin.sources() :
-                            outhistos[hpath].bin(bin.index()).setErr(bin.err(key),key)
-                        matched = True
-                        break
-                if(matched) : continue
+            for i,bin in enumerate(aos[hpath].bins()) :
+                if bin.edge(0) :
+                    x = bin.edge(0)
+                else :
+                    x = bin.mid(0)
+                if isinstance(x, str) :
+                    x = x.split("_")[0]
+                    if "-" in x and len(x)>1:
+                        elim =x.split("-")
+                        x=0.5*(float(elim[0])+float(elim[1]))
+                    elif hpath=="/DM1_1979_I132828/d01-x01-y01" :
+                        if x == '-'         : x = 985
+                    elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :
+                        if x=="1900 (2012)" : x = 1900
+                try :
+                    x = float(x)
+                except :
+                    print("Cannot convert %s to float in %s" % (x,hpath) )
+                    quit()
+                delta=1e-5
+                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
+                   "FENICE_1996_I426675" in hpath):
+                    x=np.sqrt(x)
+                    delta=1e-3
+                elif "SND_2024_I2809929" in hpath or "SND_2024_I2696331" in hpath:
+                    x=2.*x
+                for key,val in specialEnergies.items() :
+                    if key in hpath :
+                        x = val[int(x)-1]
+                if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
+                    duplicate = False
+                    outhistos[hpath].bin(bin.index()).setVal(bin.val())
+                    for key in bin.sources() :
+                        outhistos[hpath].bin(bin.index()).setErr(bin.err(key),key)
+                    matched = True
+                    break
+            if(matched) : continue
     for key,histos in inhistos.items() :
         if(len(histos)==1) :
             for (key2,val2) in histos.items():
