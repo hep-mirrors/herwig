@@ -17,6 +17,7 @@ do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/
 ############## semi-leptonic #################
 # D_s+ -> K0, K* e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1702549
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2802565
 # D_s+ -> eta, eta' semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712742
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2023_I2667117
