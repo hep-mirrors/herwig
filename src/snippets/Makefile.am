@@ -38,7 +38,10 @@ EvolutionScheme-Q2.in \
 FixedTarget.in \
 FixedTarget-PP.in \
 OniumShower.in \
-H7Hadrons.in
+H7Hadrons.in \
+MatrixElementClusterFissioner.in \
+PhaseSpaceClusterFissioner.in \
+TchannelClusterDecayer.in 
 
 dist_snippets_DATA = $(INPUTFILES)
 

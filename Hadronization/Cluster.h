@@ -81,10 +81,9 @@ public:
   Cluster(tcEventPDPtr);
   
   /**
-   * This creates a cluster from 2 (or 3) partons.
+   * This creates a cluster from 2 (or 3, 4) partons.
    */
-  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());    
-  
+  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr(), tPPtr part4 = tPPtr());
   /**
    * Also a constructor where a particle is given not a cluster.
    */

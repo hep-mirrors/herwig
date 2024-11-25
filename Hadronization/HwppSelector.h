@@ -135,7 +135,7 @@ private:
    * In fact, it should not even be implemented.
    */
   HwppSelector & operator=(const HwppSelector &) = delete;
-
+  
 private:
 
   /**

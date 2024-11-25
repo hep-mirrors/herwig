@@ -3,24 +3,24 @@ set /Herwig/Shower/AlphaQCDISR:AlphaIn           0.118
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.118
 cd /Herwig/Particles/
-set g:ConstituentMass                         0.95
-set b:NominalMass                             4.700501
-set b:ConstituentMass                         4.084889
+set g:ConstituentMass                         0.95*GeV
+set b:NominalMass                             4.700501*GeV
+set b:ConstituentMass                         4.084889*GeV
 cd /Herwig/Hadronization/
-set ClusterDecayer:ClSmrHeavy 5                0.085964
 set ClusterDecayer:ClSmrLight                 0.698877
-set ClusterDecayer:ClSmrHeavy 4                 0.246296
-set ClusterFissioner:ClPowHeavy 5              0.591646
+set ClusterDecayer:ClSmrHeavy 4               0.246296
+set ClusterDecayer:ClSmrHeavy 5               0.085964
 set ClusterFissioner:ClPowLight               0.99945
+set ClusterFissioner:ClPowHeavy 4             3.386187
+set ClusterFissioner:ClPowHeavy 5             0.591646
 set ClusterFissioner:ClPowDiquark               0.99945
-set ClusterFissioner:ClPowHeavy 4               3.386187
-set ClusterFissioner:ClMaxHeavy 5              3.771649
-set ClusterFissioner:ClMaxHeavy 4               4.780456
-set ClusterFissioner:ClMaxLight               3.055256
+set ClusterFissioner:ClMaxLight               3.055256*GeV
+set ClusterFissioner:ClMaxHeavy 4             4.780456*GeV
+set ClusterFissioner:ClMaxHeavy 5             3.771649*GeV
 set ClusterFissioner:ClMaxDiquark               3.055256
 set ClusterFissioner:PSplitLight              0.7779
-set ClusterFissioner:PSplitHeavy 4              0.628766
-set ClusterFissioner:PSplitHeavy 5             0.662911
+set ClusterFissioner:PSplitHeavy 4            0.628766
+set ClusterFissioner:PSplitHeavy 5            0.662911
 set SMHadronSpectrum:SingleHadronLimitBottom    0.000446
 set SMHadronSpectrum:SingleHadronLimitCharm     0.000508
 set SMHadronSpectrum:SngWt                      0.927141

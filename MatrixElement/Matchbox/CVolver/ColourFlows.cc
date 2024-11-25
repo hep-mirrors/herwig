@@ -20,6 +20,7 @@ set<ColourFlow> ColourFlow::allFlows(const size_t& n) {
 }
 
 size_t ColourFlow::scalarProduct(const ColourFlow& other) const {
+	// NOTE: this works only if other is the conjugate ColourFlow
   assert(other.permutation().size() == thePermutation.size());
   map<size_t,size_t> initialProduct;
   for ( size_t k = 0; k < thePermutation.size(); ++k ) {

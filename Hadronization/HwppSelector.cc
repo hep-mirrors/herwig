@@ -163,6 +163,13 @@ void HwppSelector::Init() {
      "Exponential strangeness enhancement",
      2);
 
+  static SwitchOption interfaceEnhanceSProbNoLightStrangeness
+    (interfaceEnhanceSProb,
+     "NoLightStrangeness",
+     "Forbid strangeness production for u,d cluster masses < DecayMassScale",
+     3);
+
+
    static Switch<HwppSelector,int> interfaceMassMeasure
      ("MassMeasure",
       "Option to use different mass measures",
@@ -182,20 +189,20 @@ void HwppSelector::Init() {
 
    static Parameter<HwppSelector,double> interfacescHadronWtFactor
      ("scHadronWtFactor",
-     "Wight factor for strenge-charm heavy hadrns",
+     "Weight factor for strange-charm heavy hadrons",
      &HwppSelector::_scHadronWtFactor, 1., 0., 10.,
      false, false, Interface::limited);
 
    static Parameter<HwppSelector,double> interfacesbHadronWtFactor
      ("sbHadronWtFactor",
-     "Wight factor for strenge-bottom heavy hadrns",
+     "Weight factor for strange-bottom heavy hadrons",
      &HwppSelector::_sbHadronWtFactor, 1., 0., 10.,
      false, false, Interface::limited);
 
   static Parameter<HwppSelector,Energy> interfaceDecayMassScale
     ("DecayMassScale",
      "Cluster decay mass scale",
-     &HwppSelector::_m0Decay, GeV, 1.0*GeV, 0.1*GeV, 50.*GeV,
+     &HwppSelector::_m0Decay, GeV, 1.0*GeV, 0.1*GeV, 500.*GeV,
      false, false, Interface::limited);
 
 }
@@ -220,13 +227,13 @@ std::tuple<bool,bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPD
 			return output;
 		case 1:
 			{
-    if(UseRandom::rnd() > 1./(1.+_pwtDIquark) && cluMass > massLightestBaryonPair(par1,par2)) {
-      std::get<0>(output)  = false;
-    }
-    else {
-      std::get<1>(output)  = false;
-      std::get<2>(output)  = false;
-    }
+				if(UseRandom::rnd() > 1./(1.+_pwtDIquark) && cluMass > massLightestBaryonPair(par1,par2)) {
+					std::get<0>(output)  = false;
+				}
+				else {
+					std::get<1>(output)  = false;
+					std::get<2>(output)  = false;
+				}
 				break;
 			}
 		case 2:
@@ -259,35 +266,65 @@ std::tuple<bool,bool,bool> HwppSelector::selectBaryon(const Energy cluMass, tcPD
 		default:
 			assert(false);
 	
-  }
+	}
   return output;
 }
 
 double HwppSelector::strangeWeight(const Energy cluMass, tcPDPtr par1, tcPDPtr par2) const {
-  // Decoupling the weight of heavy strenge hadrons
-  if(_enhanceSProb == 0 && abs(par1->id()) == 4) {
-    return pwt(3)*_scHadronWtFactor;
-  }
-  else if(_enhanceSProb == 0 && abs(par1->id()) == 5) {
-    return pwt(3)*_sbHadronWtFactor;
-  }
-  // Scaling strangeness enhancement
-  else if(_enhanceSProb == 1) {
-    double scale = double(sqr(_m0Decay/cluMass));
-    return (_maxScale < scale) ? 0. : pow(pwt(3),scale);
-  }
-  // Exponential strangeness enhancement
-  else if(_enhanceSProb == 2) {
-    Energy2 mass2;
-    Energy endpointmass = par1->mass() + par2->mass();
-    // Choose to use either the cluster mass
-    // or to use the lambda measure
-    mass2 = (_massMeasure == 0) ? sqr(cluMass) :
-      sqr(cluMass) - sqr(endpointmass);
-    double scale = double(sqr(_m0Decay)/mass2);
-    return (_maxScale < scale) ? 0. : exp(-scale);
-  }
-  return pwt(3);
+	switch (_enhanceSProb)
+	{
+		case 0:
+			{
+				// Decoupling the weight of heavy strenge hadrons
+				if(abs(par1->id()) == 4) {
+					return pwt(3)*_scHadronWtFactor;
+				}
+				else if(abs(par1->id()) == 5) {
+					return pwt(3)*_sbHadronWtFactor;
+				}
+				else {
+					return pwt(3);
+				}
+				break;
+			}
+		case 1:
+			{
+				// Scaling strangeness enhancement
+				double scale = double(sqr(_m0Decay/cluMass));
+				return (_maxScale < scale) ? 0. : pow(pwt(3),scale);
+				break;
+			}
+		case 2:
+			{
+				// Exponential strangeness enhancement
+				Energy2 mass2;
+				Energy endpointmass = par1->mass() + par2->mass();
+				// Choose to use either the cluster mass
+				// or to use the lambda measure
+				mass2 = (_massMeasure == 0) ? sqr(cluMass) :
+					sqr(cluMass) - sqr(endpointmass);
+				double scale = double(sqr(_m0Decay)/mass2);
+				return (_maxScale < scale) ? 0. : exp(-scale);
+				break;
+			}
+		case 3:
+			{
+				// Strongly ordered strangeness: only if one of the constituents
+				// are of higher mass than the strange quark allow for the strange
+				// quark production
+
+				// _m0Decay is here the forbidden strangeness hard threshold
+				if (cluMass > _m0Decay)
+					return pwt(3);
+				// Light && u,d clusters are forbidden from producing strangeness
+				return (abs(par1->id())>=3 || abs(par2->id())>=3) ? pwt(3):0.0;
+				break;
+			}
+		default:
+			assert(false);
+	}
+	assert(false);
+	return 0;
 }
 
 tcPDPair HwppSelector::lightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const {

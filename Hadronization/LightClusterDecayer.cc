@@ -117,6 +117,15 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
 					 Exception::warning) );
       continue;
     }
+    if ( DiquarkMatcher::Check((*it)->particle(0)->dataPtr()->id()) && DiquarkMatcher::Check((*it)->particle(1)->dataPtr()->id())) {
+			// We ignore the Diquark Clusters in the LightClusterDecayer as potential reshuffling partners
+			// throw Exception() << "LightClusterDecayer::decay\n"
+			// "*** Diquark Cluster in LightClusterDecayer ***\n"
+			// "Cluster = ( "<< (*it)->particle(0)->dataPtr()->id()<<", " << (*it)->particle(1)->dataPtr()->id()<<" )\nMC = " << (*it)->mass()/GeV << " GeV\nMLHP = "
+			// << _hadronSpectrum->massLightestHadronPair((*it)->particle(0)->dataPtr(),(*it)->particle(1)->dataPtr())/GeV <<" GeV"
+			// << Exception::runerror;
+			continue;
+    }
     
     // select the hadron for single hadron decay
     tcPDPtr hadron = _hadronSpectrum->chooseSingleHadron((*it)->particle(0)->dataPtr(),
@@ -153,6 +162,8 @@ continue;
     multimap<Length,tClusterPtr> candidates;
     for ( ClusterVector::iterator jt = clusters.begin();
 	  jt != clusters.end(); ++jt ) {
+	  if ( (*jt)->numComponents() != 2 )
+		  continue;
       if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
 	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).m());
 	candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
@@ -217,8 +228,11 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
   bool singleHadron = false;
+  bool isDiquarkCluster = DiquarkMatcher::Check(part3->dataPtr()->id()) && DiquarkMatcher::Check(part4->dataPtr()->id());
   Energy mLHP2 = _hadronSpectrum->massLightestHadronPair(part3->dataPtr(),part4->dataPtr());
-  Energy mLH2 = _hadronSpectrum->massLightestHadron(part3->dataPtr(),part4->dataPtr());
+  // avoid calling massLightestHadron for Diquark clusters and only allow kinematic reshuffling
+  // for diquark clusters (no singleHadron)
+  Energy mLH2 = isDiquarkCluster ? mSystem:_hadronSpectrum->massLightestHadron(part3->dataPtr(),part4->dataPtr());
 
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
@@ -247,7 +261,13 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
     throw Exception() << "Impossible Kinematics in LightClusterDecayer::reshuffling()" 
 		      << Exception::eventerror;
   }
-  
+  if (!(u.vect().mag2() > ZERO) ) {
+      generator()->logWarning( Exception("Impossible Kinematics in LightClusterDecayer::reshuffling()\n" 
+					"Cluster System in Rest frame has |p3| = 0 GeV", 
+					 Exception::warning) );
+		return false;
+	}
+
   Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
 
   ptrhad1->set5Momentum( phad1 );        // set momentum of first hadron.

@@ -78,6 +78,14 @@ public:
    */
   void reduceToTwoComponents(ClusterVector&);
 
+	/**
+	 * handling Diquark clusters:
+   * For the eventual clusters that have four components 
+   * (quark, quark, antiquark, antiquark) 
+   * it redefines them as "normal" clusters with two components:
+   * (antidiquark,diquark) by a random drawing.
+	 */
+  ClusterPtr handleDiquarkCluster(ClusterPtr clu) const;
   /**
    * Return the hadron spectrum
    */

@@ -1,0 +1,46 @@
+##################################################
+## Mass phase space cluster fissioner (CF)      ##
+##################################################
+
+## author: Stefan Kiebacher
+
+######## WARNING FOR CHANGING PARAMETERS: ########
+## If you want to change hadronization parameters 
+## you need to do this after reading this snippet 
+## and use the "MEClusterFissioner" object instead
+## of the default "ClusterFissioner"!
+
+## Set alphaS of default PS to PDG values
+cd /Herwig/Shower
+set AlphaQCDISR:AlphaIn 0.1185
+set AlphaQCDFSR:AlphaIn 0.1185
+
+## insert the new MatrixElementClusterFissioner
+cd /Herwig/Hadronization
+set ClusterHadHandler:ClusterFissioner MEClusterFissioner
+set MEClusterFissioner:HadronSpectrum SMHadronSpectrum
+## use new CF for QCD (so far only supported for QCD)
+do ClusterHadHandler:UseHandlersForInteraction QCD
+
+set MEClusterFissioner:FissionApproach New
+## Mass sampling choice FlatPhaseSpace
+set MEClusterFissioner:MassSampler FlatPhaseSpace
+set MEClusterFissioner:PhaseSpaceWeights Yes
+## Phase space sampling choice for Cluster cos(theta)
+set MEClusterFissioner:PhaseSpaceSamplerCluster Aligned
+## Phase space sampling choice for Constituents cos(theta_1/2)
+set MEClusterFissioner:PhaseSpaceSamplerConstituents Aligned
+## Choice of matrix element Default = |M|^2 = 1
+set MEClusterFissioner:MatrixElement Default
+## Disable semi-hadronic cluster fission
+set MEClusterFissioner:AllowHadronFinalStates None
+## Safety factor for overestimate
+set MEClusterFissioner:SafetyFactorOverEst 1.0
+## Maximum tries surpassed handling either RejectEvent or OldFission
+set MEClusterFissioner:FailModeMaxLoopMatrixElement RejectEvent
+## optional setting of static threshold
+# set MEClusterFissioner:KinematicThreshold Static
+## Debug information:
+# set MEClusterFissioner:WriteOut Yes
+## need to set all diquarks on their constituent mass shell
+set ClusterFinder:DiQuarkOnShell Yes

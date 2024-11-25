@@ -192,6 +192,10 @@ public:
     case ParticleID::s: return pwtSquark(); break;
     case ParticleID::c: return pwtCquark(); break;
     case ParticleID::b: return pwtBquark(); break;
+		default:
+				throw Exception()
+					<< "ERROR: Could not find Quark with id "
+					<< id << Exception::runerror;
     }
     return 0.;
   }
@@ -230,7 +234,7 @@ public:
    double pwtBquark()  const { 
     return _pwtBquark;
   } 
-
+  
   /**
    * The diquark weight.
    */

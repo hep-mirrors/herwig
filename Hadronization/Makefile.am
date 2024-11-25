@@ -5,6 +5,7 @@ Cluster.h Cluster.cc Cluster.fh \
 ClusterDecayer.cc ClusterDecayer.h ClusterDecayer.fh \
 ClusterFinder.cc ClusterFinder.h ClusterFinder.fh  \
 ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.fh \
+MatrixElementClusterFissioner.cc MatrixElementClusterFissioner.h \
 ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.fh \
