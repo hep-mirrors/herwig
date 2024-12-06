@@ -1,0 +1,327 @@
+##################################################
+# Example set of parameters for a hidden valley
+# model with Nc=3, Nf=4, LambdaDark=10 GeV and
+# mpi/LambdaDark=1.7, and Herwig parameters set
+# accordingly.
+#
+# Since there are a large number of parameters for
+# this model, it is recommended to produce this
+# input file programatically for the desired model
+#
+##################################################
+
+##################################################
+# Set the Dark Nc, Nf and charges under U(1)
+##################################################
+
+cd /Herwig/NewPhysics/HiddenValley
+set Model:GroupOrder 3
+set Model:NumberOfFermions 4
+# Simple assumption: all dark quarks have the same charges 
+# under U(1) (more complex models will generally have
+# different charges)
+set Model:QuirkChargesLeft 0 1
+insert Model:QuirkChargesLeft 1 1
+insert Model:QuirkChargesLeft 2 1
+insert Model:QuirkChargesLeft 3 1
+set Model:QuirkChargesRight 0 1
+insert Model:QuirkChargesRight 1 1
+insert Model:QuirkChargesRight 2 1
+insert Model:QuirkChargesRight 3 1
+
+##################################################
+# Setup the dark partons
+##################################################
+
+cd /Herwig/Particles
+# The dark gluon
+create ThePEG::ConstituentParticleData darkGluon
+setup darkGluon 4900000 darkGluon 0 0.  0 0 0 993 3 1 37.400000000000006
+set darkGluon:ColouredInteraction Dark
+# The dark quarks
+create ThePEG::ConstituentParticleData darkQuark0
+setup darkQuark0 4900001 darkQuark0 0.9553719008264462 0.  0 0 0 992 2 1 17.0
+create ThePEG::ConstituentParticleData darkQuark0bar
+setup darkQuark0bar -4900001 darkQuark0bar 0.9553719008264462 0.  0 0 0 -992 2 1 17.0
+makeanti darkQuark0bar darkQuark0
+create ThePEG::ConstituentParticleData darkQuark1
+setup darkQuark1 4900002 darkQuark1 0.9553719008264462 0.  0 0 0 992 2 1 17.0
+create ThePEG::ConstituentParticleData darkQuark1bar
+setup darkQuark1bar -4900002 darkQuark1bar 0.9553719008264462 0.  0 0 0 -992 2 1 17.0
+makeanti darkQuark1bar darkQuark1
+create ThePEG::ConstituentParticleData darkQuark2
+setup darkQuark2 4900003 darkQuark2 0.9553719008264462 0.  0 0 0 992 2 1 17.0
+create ThePEG::ConstituentParticleData darkQuark2bar
+setup darkQuark2bar -4900003 darkQuark2bar 0.9553719008264462 0.  0 0 0 -992 2 1 17.0
+makeanti darkQuark2bar darkQuark2
+create ThePEG::ConstituentParticleData darkQuark3
+setup darkQuark3 4900004 darkQuark3 0.9553719008264462 0.  0 0 0 992 2 1 17.0
+create ThePEG::ConstituentParticleData darkQuark3bar
+setup darkQuark3bar -4900004 darkQuark3bar 0.9553719008264462 0.  0 0 0 -992 2 1 17.0
+makeanti darkQuark3bar darkQuark3
+
+set darkQuark0:ColouredInteraction Dark
+set darkQuark0bar:ColouredInteraction Dark
+set darkQuark1:ColouredInteraction Dark
+set darkQuark1bar:ColouredInteraction Dark
+set darkQuark2:ColouredInteraction Dark
+set darkQuark2bar:ColouredInteraction Dark
+set darkQuark3:ColouredInteraction Dark
+set darkQuark3bar:ColouredInteraction Dark
+
+##################################################
+# The dark shower parameters
+##################################################
+
+# The dark shower splittings
+cd /Herwig/Shower
+do SplittingGenerator:AddFinalSplitting darkQuark0->darkQuark0,darkGluon; QtoQGDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkGluon->darkQuark0,darkQuark0bar; GtoQQbarDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkQuark1->darkQuark1,darkGluon; QtoQGDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkGluon->darkQuark1,darkQuark1bar; GtoQQbarDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkQuark2->darkQuark2,darkGluon; QtoQGDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkGluon->darkQuark2,darkQuark2bar; GtoQQbarDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkQuark3->darkQuark3,darkGluon; QtoQGDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkGluon->darkQuark3,darkQuark3bar; GtoQQbarDARKSudakov
+do SplittingGenerator:AddFinalSplitting darkGluon->darkGluon,darkGluon; GtoGGDARKSudakov
+
+
+set AlphaDARK:LambdaDark 10.0
+set AlphaDARK:Qmin 30.0
+create Herwig::PTCutOff DarkPTCutOff
+set DarkPTCutOff:pTmin 30.0*GeV
+set QtoQGDARKSudakov:Cutoff DarkPTCutOff
+set QtoQGDARKSudakov:Alpha AlphaDARK
+set GtoQQbarDARKSudakov:Cutoff DarkPTCutOff
+set GtoQQbarDARKSudakov:Alpha AlphaDARK
+set GtoGGDARKSudakov:Cutoff DarkPTCutOff
+set GtoGGDARKSudakov:Alpha AlphaDARK
+
+##################################################
+# Setup the dark hadrons
+##################################################
+
+# The dark pions
+create ThePEG::ParticleData DarkPi11
+setup DarkPi11 4900111 DarkPi11 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi21+
+setup DarkPi21+ 4900211 DarkPi21+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi21-
+setup DarkPi21- -4900211 DarkPi21- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi21+ DarkPi21-
+create ThePEG::ParticleData DarkPi22
+setup DarkPi22 4900221 DarkPi22 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi31+
+setup DarkPi31+ 4900311 DarkPi31+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi31-
+setup DarkPi31- -4900311 DarkPi31- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi31+ DarkPi31-
+create ThePEG::ParticleData DarkPi32+
+setup DarkPi32+ 4900321 DarkPi32+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi32-
+setup DarkPi32- -4900321 DarkPi32- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi32+ DarkPi32-
+create ThePEG::ParticleData DarkPi33
+setup DarkPi33 4900331 DarkPi33 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi41+
+setup DarkPi41+ 4900411 DarkPi41+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi41-
+setup DarkPi41- -4900411 DarkPi41- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi41+ DarkPi41-
+create ThePEG::ParticleData DarkPi42+
+setup DarkPi42+ 4900421 DarkPi42+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi42-
+setup DarkPi42- -4900421 DarkPi42- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi42+ DarkPi42-
+create ThePEG::ParticleData DarkPi43+
+setup DarkPi43+ 4900431 DarkPi43+ 17.0  0 0 4E-5 0 0 1 1
+create ThePEG::ParticleData DarkPi43-
+setup DarkPi43- -4900431 DarkPi43- 17.0  0 0 4E-5 0 0 1 1
+makeanti DarkPi43+ DarkPi43-
+create ThePEG::ParticleData DarkEta
+setup DarkEta 4900441 DarkEta 38.58756276314948  0 0 4E-5 0 0 1 1
+
+
+# The dark rhos
+create ThePEG::ParticleData DarkRho11
+setup DarkRho11 4900113 DarkRho11 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho21+
+setup DarkRho21+ 4900213 DarkRho21+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho21-
+setup DarkRho21- -4900213 DarkRho21- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho21+ DarkRho21-
+create ThePEG::ParticleData DarkRho22
+setup DarkRho22 4900223 DarkRho22 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho31+
+setup DarkRho31+ 4900313 DarkRho31+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho31-
+setup DarkRho31- -4900313 DarkRho31- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho31+ DarkRho31-
+create ThePEG::ParticleData DarkRho32+
+setup DarkRho32+ 4900323 DarkRho32+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho32-
+setup DarkRho32- -4900323 DarkRho32- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho32+ DarkRho32-
+create ThePEG::ParticleData DarkRho33
+setup DarkRho33 4900333 DarkRho33 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho41+
+setup DarkRho41+ 4900413 DarkRho41+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho41-
+setup DarkRho41- -4900413 DarkRho41- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho41+ DarkRho41-
+create ThePEG::ParticleData DarkRho42+
+setup DarkRho42+ 4900423 DarkRho42+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho42-
+setup DarkRho42- -4900423 DarkRho42- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho42+ DarkRho42-
+create ThePEG::ParticleData DarkRho43+
+setup DarkRho43+ 4900433 DarkRho43+ 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+create ThePEG::ParticleData DarkRho43-
+setup DarkRho43- -4900433 DarkRho43- 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+makeanti DarkRho43+ DarkRho43-
+create ThePEG::ParticleData DarkOmega
+setup DarkOmega 4900443 DarkOmega 31.77262973063451  2E-17 0 4E-5 0 0 3 1
+
+##################################################
+# Setup the dark hadron decays
+##################################################
+
+cd /Herwig/Decays
+
+# Use Darkonium decayer (flat phase space decay to SM qqbar or dark pion + SM qqbar)
+create Herwig::DarkQuarkoniumDecayer  DarkQDecayME0
+set DarkQDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
+set DarkQDecayME0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
+set DarkQDecayME0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
+set DarkQDecayME0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
+set DarkQDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
+set DarkQDecayME0:PartnerFinder      /Herwig/Shower/PartnerFinder
+set DarkQDecayME0:SplittingGenerator /Herwig/Shower/SplittingGenerator
+set DarkQDecayME0:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+set DarkQDecayME0:Shower Yes
+set DarkQDecayME0:Exclusive 1 
+set DarkQDecayME0:Intermediates 0 
+set DarkQDecayME0:Partonic_Tries 100 
+set DarkQDecayME0:MECode 0 
+
+cd /Herwig/Shower
+
+set DarkRho11:Stable 0
+decaymode DarkRho11->d,dbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho11->u,ubar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho11->s,sbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho11->c,cbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho11->b,bbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho21+:Stable 0
+set DarkRho21-:Stable 0
+decaymode DarkRho21+->d,dbar,DarkPi21+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21-->d,dbar,DarkPi21-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21+->u,ubar,DarkPi21+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21-->u,ubar,DarkPi21-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21+->s,sbar,DarkPi21+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21-->s,sbar,DarkPi21-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21+->c,cbar,DarkPi21+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21-->c,cbar,DarkPi21-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21+->b,bbar,DarkPi21+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho21-->b,bbar,DarkPi21-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho22:Stable 0
+decaymode DarkRho22->d,dbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho22->u,ubar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho22->s,sbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho22->c,cbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho22->b,bbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho31+:Stable 0
+set DarkRho31-:Stable 0
+decaymode DarkRho31+->d,dbar,DarkPi31+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31-->d,dbar,DarkPi31-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31+->u,ubar,DarkPi31+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31-->u,ubar,DarkPi31-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31+->s,sbar,DarkPi31+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31-->s,sbar,DarkPi31-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31+->c,cbar,DarkPi31+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31-->c,cbar,DarkPi31-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31+->b,bbar,DarkPi31+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho31-->b,bbar,DarkPi31-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho32+:Stable 0
+set DarkRho32-:Stable 0
+decaymode DarkRho32+->d,dbar,DarkPi32+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32-->d,dbar,DarkPi32-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32+->u,ubar,DarkPi32+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32-->u,ubar,DarkPi32-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32+->s,sbar,DarkPi32+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32-->s,sbar,DarkPi32-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32+->c,cbar,DarkPi32+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32-->c,cbar,DarkPi32-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32+->b,bbar,DarkPi32+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho32-->b,bbar,DarkPi32-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho33:Stable 0
+decaymode DarkRho33->d,dbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho33->u,ubar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho33->s,sbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho33->c,cbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho33->b,bbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho41+:Stable 0
+set DarkRho41-:Stable 0
+decaymode DarkRho41+->d,dbar,DarkPi41+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41-->d,dbar,DarkPi41-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41+->u,ubar,DarkPi41+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41-->u,ubar,DarkPi41-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41+->s,sbar,DarkPi41+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41-->s,sbar,DarkPi41-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41+->c,cbar,DarkPi41+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41-->c,cbar,DarkPi41-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41+->b,bbar,DarkPi41+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho41-->b,bbar,DarkPi41-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho42+:Stable 0
+set DarkRho42-:Stable 0
+decaymode DarkRho42+->d,dbar,DarkPi42+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42-->d,dbar,DarkPi42-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42+->u,ubar,DarkPi42+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42-->u,ubar,DarkPi42-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42+->s,sbar,DarkPi42+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42-->s,sbar,DarkPi42-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42+->c,cbar,DarkPi42+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42-->c,cbar,DarkPi42-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42+->b,bbar,DarkPi42+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho42-->b,bbar,DarkPi42-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkRho43+:Stable 0
+set DarkRho43-:Stable 0
+decaymode DarkRho43+->d,dbar,DarkPi43+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43-->d,dbar,DarkPi43-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43+->u,ubar,DarkPi43+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43-->u,ubar,DarkPi43-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43+->s,sbar,DarkPi43+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43-->s,sbar,DarkPi43-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43+->c,cbar,DarkPi43+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43-->c,cbar,DarkPi43-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43+->b,bbar,DarkPi43+; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkRho43-->b,bbar,DarkPi43-; 0.2 1 /Herwig/Decays/DarkQDecayME0
+set DarkOmega:Stable 0
+decaymode DarkOmega->d,dbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkOmega->u,ubar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkOmega->s,sbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkOmega->c,cbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+decaymode DarkOmega->b,bbar; 0.2 1 /Herwig/Decays/DarkQDecayME0
+
+
+##################################################
+# Set model-specific hadronisation parameters
+##################################################
+
+cd /Herwig/Hadronization
+set DarkHadSpec:NumLightQuarks 4
+insert DarkHadSpec:Pwt 4900001 1.0
+insert DarkPartonSplitter:SplitPwt 4900001 1.0
+insert DarkClusterFissioner:FissionPwt 4900001 1.0
+insert DarkHadSpec:Pwt 4900002 1.0
+insert DarkPartonSplitter:SplitPwt 4900002 1.0
+insert DarkClusterFissioner:FissionPwt 4900002 1.0
+insert DarkHadSpec:Pwt 4900003 1.0
+insert DarkPartonSplitter:SplitPwt 4900003 1.0
+insert DarkClusterFissioner:FissionPwt 4900003 1.0
+insert DarkHadSpec:Pwt 4900004 1.0
+insert DarkPartonSplitter:SplitPwt 4900004 1.0
+insert DarkClusterFissioner:FissionPwt 4900004 1.0
+
+set DarkClusterFissioner:ClMaxLight 170.0
+

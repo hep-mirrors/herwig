@@ -4,7 +4,6 @@ HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 30:0:0
 HwShower_la_SOURCES =  \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
-Couplings/ShowerAlphaQCDNP.h Couplings/ShowerAlphaQCDNP.cc\
 Couplings/HiddenValleyAlpha.cc Couplings/HiddenValleyAlpha.h \
 QTildeShowerHandler.h QTildeShowerHandler.fh QTildeShowerHandler.cc \
 SplittingFunctions/HalfHalfOneSplitFn.h SplittingFunctions/HalfHalfOneSplitFn.cc\

@@ -72,9 +72,11 @@ double MEff2ff::me2() const {
       spin_[ix].push_back(SpinorWaveFunction   (rescaledMomenta()[ix],
 						mePartonData()[ix],
 						ih, ix<2 ? incoming : outgoing));
-      sbar_[ix].push_back(SpinorBarWaveFunction(rescaledMomenta()[ix],
-						mePartonData()[ix],
-						ih, ix<2 ? incoming : outgoing));
+      sbar_[ix].resize(spin_[ix].size());
+      for(unsigned int iy=0;iy<spin_[ix].size();++iy) {
+        sbar_[ix][iy] = spin_[ix][iy].bar();
+        sbar_[ix][iy].conjugate();
+      }
     }
   }
   double full_me(0.);
@@ -455,8 +457,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     sbar_[ix].clear();
     SpinorWaveFunction   (spin_[ix],hardpro[ix],
 			  ix<2 ? incoming : outgoing,ix>1);
-    SpinorBarWaveFunction(sbar_[ix],hardpro[ix],
-			  ix<2 ? incoming : outgoing,ix>1);
+    sbar_[ix].resize(spin_[ix].size());
+    for(unsigned int iy=0;iy<spin_[ix].size();++iy) {
+      sbar_[ix][iy] = spin_[ix][iy].bar();
+      sbar_[ix][iy].conjugate();
+    }
   }
   double dummy(0.);
   //pick which process we are doing

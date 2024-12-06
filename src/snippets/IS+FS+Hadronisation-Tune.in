@@ -23,8 +23,10 @@ set HadronSelector:SngWt                   0.4392
 set HadronSelector:DecWt                   0.4967
 # dynamic kinematic threshold scheme
 set /Herwig/Hadronization/ClusterFissioner:KinematicThreshold Dynamic
-set ClusterFissioner:ClMaxLight            2.9157
+set ClusterFissioner:ClMaxLight            2.9157*GeV
 set ClusterFissioner:ClPowLight            2.5967
+set ClusterFissioner:ClMaxDiquark            2.9157*GeV
+set ClusterFissioner:ClPowDiquark            2.5967
 set ClusterFissioner:PSplitLight           0.9756
 set ClusterFissioner:ProbabilityPowerFactor 4.8642
 set ClusterFissioner:ProbabilityShift      -0.1587

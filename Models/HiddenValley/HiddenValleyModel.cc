@@ -19,7 +19,7 @@ using namespace Herwig;
 HiddenValleyModel::HiddenValleyModel() : groupType_(SU), Nc_(3), Nf_(1),
 					 qL_(-0.2), uR_(-0.2), dR_(0.6),
 					 lL_(0.6), lR_(-0.2), gPrime_(1./7.),
-					 qCharge_(1,-0.2)
+					 qChargeL_(1,-0.2), qChargeR_(1,-2.2)
 {}
 
 HiddenValleyModel::~HiddenValleyModel() {}
@@ -34,12 +34,12 @@ IBPtr HiddenValleyModel::fullclone() const {
 
 void HiddenValleyModel::persistentOutput(PersistentOStream & os) const {
   os << oenum(groupType_) << Nc_ << Nf_ << FFZPVertex_
-     << qL_ << uR_ << dR_ << lL_ << lR_ << qCharge_ << gPrime_;
+     << qL_ << uR_ << dR_ << lL_ << lR_ << qChargeL_ << qChargeR_ << gPrime_;
 }
 
 void HiddenValleyModel::persistentInput(PersistentIStream & is, int) {
   is >> ienum(groupType_) >> Nc_ >> Nf_ >> FFZPVertex_
-     >> qL_ >> uR_ >> dR_ >> lL_ >> lR_ >> qCharge_ >> gPrime_;
+     >> qL_ >> uR_ >> dR_ >> lL_ >> lR_ >> qChargeL_ >> qChargeR_ >> gPrime_;
 }
 
 ClassDescription<HiddenValleyModel> HiddenValleyModel::initHiddenValleyModel;
@@ -77,10 +77,16 @@ void HiddenValleyModel::Init() {
      "The vertex coupling the Zprime to the fermions",
      &HiddenValleyModel::FFZPVertex_, false, false, true, false, false);
 
-  static ParVector<HiddenValleyModel,double> interfaceQuirkCharges
-    ("QuirkCharges",
-     "The charges under the new U(1) of the new quirks",
-     &HiddenValleyModel::qCharge_, -1, -0.2, -10., 10.0,
+  static ParVector<HiddenValleyModel,double> interfaceQuirkChargesLeft
+    ("QuirkChargesLeft",
+     "The charges under the new U(1) of the new left-handed quirks",
+     &HiddenValleyModel::qChargeL_, -1, -0.2, -10., 10.0,
+     false, false, Interface::limited);
+
+  static ParVector<HiddenValleyModel,double> interfaceQuirkChargesRight
+    ("QuirkChargesRight",
+     "The charges under the new U(1) of the new right-handed quirks",
+     &HiddenValleyModel::qChargeR_, -1, -2.2, -10., 10.0,
      false, false, Interface::limited);
 
   static Parameter<HiddenValleyModel,double> interfaceZPrimeQL
@@ -125,8 +131,10 @@ void HiddenValleyModel::doinit() {
   addVertex(FFZPVertex_);
   BSMModel::doinit();
   FFZPVertex_->init();
-  if(qCharge_.size()!=Nf_)
-    throw InitException() << "Number of new fermions and  number of new charges "
-			  << "different in HiddenValleyModel::doinit()"
+  if(qChargeL_.size()!=Nf_ || qChargeR_.size()!=Nf_)
+    throw InitException() << "Number of new fermions (" << Nf_
+              << ") and number of new charges (" << qChargeL_.size()
+			  << "/" << qChargeR_.size()
+              << ") different in HiddenValleyModel::doinit()"
 			  << Exception::runerror;
 }

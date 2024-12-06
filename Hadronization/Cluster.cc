@@ -50,9 +50,7 @@ void Cluster::persistentInput(PersistentIStream & is, int) {
      >> _isBeamRemnant >> _isPerturbative >> _numComp >> _id;
 }
 
-
-
-Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
+Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3, tPPtr p4)
   : Particle(CurrentGenerator::current().
 	     getParticleData(long(ParticleID::Cluster))),
     _isAvailable(true), _hasReshuffled(false)
@@ -64,17 +62,30 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   _component.push_back(new_ptr(Particle(*p1)));
   _component.push_back(new_ptr(Particle(*p2)));
   if(p3) _component.push_back(new_ptr(Particle(*p3)));
+  if(p4) _component.push_back(new_ptr(Particle(*p4)));
   _original.push_back(p1);
   _original.push_back(p2);
   if(p3) _original.push_back(p3);
+  if(p4) _original.push_back(p4);
 
   _isPerturbative.push_back(initPerturbative(p1));
   _isPerturbative.push_back(initPerturbative(p2));
   if(p3) _isPerturbative.push_back(initPerturbative(p3));
   else _isPerturbative.push_back(false);
-  for(int i = 0; i<3; i++) _isBeamRemnant.push_back(false);
-
+  if(p4) _isPerturbative.push_back(initPerturbative(p4));
+  else _isPerturbative.push_back(false);
+  for(int i = 0; i<2; i++) _isBeamRemnant.push_back(false);
   if(p3) {
+		_isBeamRemnant.push_back(false);
+		if(p4)
+			_isBeamRemnant.push_back(false);
+	}
+
+  if (p4){
+    _numComp = 4;
+    _id = 1000*(abs(p1->id())) + 100*abs(p2->id()) + 10 * abs(p3->id()) + abs(p4->id());
+  }
+  else if(p3) {
     _numComp = 3;
     _id = 100*abs(p1->id()) + 10*abs(p2->id()) + abs(p3->id());
   } else {
@@ -133,20 +144,20 @@ Cluster::Cluster(const Particle &x)
 
 Energy Cluster::sumConstituentMasses() const
 {
-  if(_numComp == 3) {
-    return _component[0]->mass() +
-           _component[1]->mass() +
-           _component[2]->mass();
-  } else if(_numComp == 2)
-    return _component[0]->mass() + _component[1]->mass();
-  else return ZERO;
+	if ( _numComp > 4 || _numComp < 2 ) return ZERO;
+  Energy mass = ZERO;
+  for (unsigned int i = 0; i < _numComp; i++){
+    mass += _component[i]->mass();
+  }
+  return mass;
 }
 
 
 void Cluster::calculateP() {
   Lorentz5Momentum m;
-  for(unsigned int i = 0; i<_numComp; i++)
+  for(unsigned int i = 0; i<_numComp; i++) {
     m += _component[i]->momentum();
+  }
   m.rescaleMass();
   set5Momentum(m);
 }
@@ -240,7 +251,7 @@ tPPtr Cluster::particle(unsigned int i) const {
 }
 
 tPPtr Cluster::particleB(unsigned int i) const {
-        return (i < _numComp) ? _original[i] : tPPtr();
+	return (i < _numComp) ? _original[i] : tPPtr();
 }
 
 tPPtr Cluster::colParticle(bool anti) const {

@@ -53,6 +53,7 @@ public:
     Interfaced(),
     _gluonDistance(ZERO),
     _splitGluon(0),
+    _kinematics(0),
     _enhanceSProb(0),
     _m0(10.*GeV),
     _massMeasure(0) {}
@@ -193,6 +194,10 @@ private:
    */
   int _splitGluon;
 
+  /**
+   * Flag for choosing the Kinematics of the splitting
+   */
+  int _kinematics;
   /**
    *   Vector that stores the index in the event record of the anti-triplet
    *   of the colour-singlets, or of a colourless particle

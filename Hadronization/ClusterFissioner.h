@@ -259,7 +259,7 @@ protected:
    * are assumed for producing  u, d, or s pairs.
    * Extra argument is used when performing strangeness enhancement
    */
-  void drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg, Energy2 mass2) const;
+  void drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg, const ClusterPtr & clu) const;
 
 
   /**
@@ -329,10 +329,11 @@ protected:
   virtual void drawNewFlavour(PPtr& newPtr1, PPtr& newPtr2, const ClusterPtr & cluster) const {
     if (_enhanceSProb == 0){
       if (_diquarkClusterFission>=0) drawNewFlavourDiquarks(newPtr1,newPtr2,cluster);
+			// if Diquark fission is turned off completely
 			else drawNewFlavourQuarks(newPtr1,newPtr2);
     }
     else {
-      drawNewFlavourEnhanced(newPtr1,newPtr2,clustermass(cluster));
+      drawNewFlavourEnhanced(newPtr1,newPtr2,cluster);
     }
   }
 
@@ -439,27 +440,32 @@ protected:
 
 protected:
 
-  /**
-  * Smooth probability for dynamic threshold cuts:
-  * @scale the current scale, e.g. the mass of the cluster,
-  * @threshold the physical threshold,
-   */
-  bool ProbabilityFunction(double scale, double threshold);
-	bool ProbabilityFunctionPower(double Mass, double threshold);
+	/**
+	 * Smooth probability for dynamic threshold cuts:
+	 * @scale the current scale, e.g. the mass of the cluster,
+	 * @threshold the physical threshold,
+	 */
+  bool ProbabilityFunction(double scale, double threshold) const;
+	/**
+	 * Sudakov-like cluster fission where Delta(M,ClMax)=exp(-lam*log((M/ClMax)^2)^2)
+	 * @return true if the cluster will probablistically fission according to given Sudakov
+	 *         else false
+	 */
+	bool WillSudakovFission(double Mass, double threshold, double ClMax, double ClPow) const;
 
-  /**
-   * Check if a cluster is heavy enough to split again
-   */
-  bool isHeavy(tcClusterPtr );
+	/**
+	 * Check if a cluster is heavy enough to split again
+	 */
+	bool isHeavy(tcClusterPtr );
 
-  /**
-   * Check if a cluster is heavy enough to be at least kinematically able to split
-   */
-  bool canSplitMinimally(tcClusterPtr, Energy);
+	/**
+	 * Check if a cluster is heavy enough to be at least kinematically able to split
+	 */
+	bool canSplitMinimally(tcClusterPtr, Energy);
 
-  /**
-   *  Check if can't make a hadron from the partons
-   */
+	/**
+	 *  Check if can't make a hadron from the partons
+	 */
   inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
     return ! spectrum()->canBeHadron(p1->dataPtr(), p2->dataPtr());
   }
