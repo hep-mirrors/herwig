@@ -111,6 +111,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2016_I1441203
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I679349
 # D0 -> eta pi+pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2008_I779705
+# D -> eta pipi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2777242
 # D0 -> pi0 eta eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662665
 ########## Four body decays ####################

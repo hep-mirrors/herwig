@@ -367,6 +367,7 @@ analyses["DD"]["BESIII_2023_I2645388"     ] = ["d01-x01-y01","d02-x01-y01"]
 # DsDs
 analyses["DD"]["BABAR_2010_I864027"       ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2011_I878228"       ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2024_I2771116"     ] = ["d01-x01-y01","d02-x01-y01"]
 # DsDs*
 analyses["DD"]["BABAR_2010_I864027"       ].append("d01-x01-y02")
 analyses["DD"]["BELLE_2011_I878228"       ].append("d01-x01-y02")
@@ -376,10 +377,16 @@ analyses["DD"]["BELLE_2011_I878228"       ].append("d01-x01-y03")
 analyses["DD"]["BESIII_2023_I2660849"     ] = ["d01-x01-y01"]
 # D_s1(2536) Ds
 analyses["DD"]["BELLE_2019_I1762826"      ] = ["d01-x01-y01"]
+# D_s1(2460) Ds
+analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01"]
+# D_s1(2460) D*s
+analyses["DD"]["BESIII_2020_I1795949"     ].append("d02-x01-y01")
 # D_s2* D_s
 analyses["DD"]["BELLE_2020_I1789775"      ] = ["d01-x01-y01"]
 # Lambda_c+ Lambda_c-
 analyses["DD"]["BELLE_2008_I791660"       ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2017_I1628093"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2023_I2677290"     ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04","d01-x01-y05"]
 # pi pi J/psi
 analyses["DD"]["BABAR_2012_I1107905"      ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2007_I756012"       ] = ["d01-x01-y01"]
@@ -397,6 +404,21 @@ analyses["DD"]["BESIII_2021_I1933191"     ] = ["d01-x01-y03"]
 analyses["DD"]["BESIII_2017_I1494065"     ] = ["d01-x01-y01","d02-x01-y01"]
 # K K J/psi
 analyses["DD"]["BELLE_2014_I1282602"      ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2022_I2068180"     ] = ["d01-x01-y01"]
+# 3pi eta_c
+analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
+# eta J/psi
+analyses["DD"]["BESIII_2023_I2706428"     ] = ["d01-x01-y01"]
+# eta psi(2S)
+analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
+# gamma eta_c
+analyses["DD"]["BESIII_2017_I1600581"     ] = ["d01-x01-y01"]
+# gamma chi_c
+analyses["DD"]["BELLE_2018_I1700174"      ] = ["d01-x01-y01"]
+# omega chi_c
+analyses["DD"]["BESIII_2015_I1406939"     ] = ["d02-x01-y06","d03-x01-y06"]
+# phi chi_c
+analyses["DD"]["BESIII_2022_I2169640"     ] = ["d01-x01-y01","d01-x01-y02"]
 # needs sorting
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2016_I1457597"     ] = ["d01-x01-y07"]
@@ -409,8 +431,6 @@ analyses["DD"]["CLEOC_2008_I777917"       ] = ["d01-x01-y01","d01-x01-y02","d01-
                                                "d04-x01-y01","d04-x01-y02",
                                                "d05-x01-y01","d05-x01-y02"]
 analyses["DD"]["BESIII_2014_I1323621"     ] = ["d01-x01-y01"]
-analyses["DD"]["BESIII_2015_I1406939"     ] = ["d02-x01-y06","d03-x01-y06"]
-analyses["DD"]["BESIII_2017_I1628093"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1723934"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1756876"     ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["DD"]["BESIII_2015_I1329785"     ] = ["d01-x01-y08","d02-x01-y08","d03-x01-y08"]
@@ -420,23 +440,15 @@ analyses["DD"]["BESIII_2020_I1762922"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1633425"     ] = ["d01-x01-y01"]
 analyses["DD"]["BABAR_2009_I815035"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d02-x01-y01"]
 analyses["DD"]["BES_1999_I508349"         ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
-analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2021_I1867196"     ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["DD"]["BESIII_2020_I1784442"     ] = ["d01-x01-y01","d02-x01-y01"]
-analyses["DD"]["BESIII_2023_I2706428"     ] = ["d01-x01-y01"]
-analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2021_I1880103"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2022_I2129305"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2022_I2050468"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2023_I2158340"     ] = ["d01-x01-y01"]
-analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
-analyses["DD"]["BESIII_2017_I1600581"     ] = ["d01-x01-y01"]
-analyses["DD"]["BESIII_2022_I2068180"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2017_I1644905"     ] = ["d01-x01-y01","d01-x01-y02"]
-analyses["DD"]["BESIII_2022_I2169640"     ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["DD"]["BESIII_2024_I2751879"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2019_I1724671"     ] = ["d01-x01-y01","d01-x01-y02"]
-analyses["DD"]["BELLE_2018_I1700174"      ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2014_I1258603"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2012_I1126960"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1725786"     ] = ["d04-x01-y01","d06-x01-y01","d07-x01-y01","d08-x01-y01"]
@@ -446,7 +458,6 @@ analyses["DD"]["BESIII_2022_I2614215"     ] = ["d01-x01-y01"]
 analyses["DD"]["MARKIII_1987_I244856"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESII_2008_I802372"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 analyses["DD"]["CLEOC_2007_I761696"       ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04"]
-analyses["DD"]["BESIII_2023_I2677290"     ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04","d01-x01-y05"]
 # BB
 analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
@@ -466,27 +477,40 @@ analyses["BB"]["BELLE_2015_I1411223" ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["BB"]["CLEOIII_2006_I694869"] = ["d01-x01-y01"]
 analyses["BB"]["BELLE_2023_I2660525:MODE=SIGMA"] = ["d02-x01-y01","d02-x01-y02","d02-x01-y03","d02-x01-y04"]
 # hyperons
-analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+# Lambda Lambdabar0
+analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2019_I1726357"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
-analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d01-x01-y02",
-                                          "d02-x01-y01","d02-x01-y02"]
-analyses["LL"]["BESIII_2024_I2748736"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2024_I2739177"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
-analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2024_I2824143"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2021_I1940960"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2021_I1900124"] = ["d01-x01-y01"]
-analyses["LL"]["BESIII_2023_I2686032"] = ["d01-x01-y01","d01-x01-y02"]
-analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
-analyses["LL"]["BELLE_2022_I2173361" ] = ["d01-x01-y01","d02-x01-y01"]
-analyses["LL"]["BESIII_2023_I2695411"] = ["d01-x01-y01","d01-x01-y02"]
-analyses["LL"]["BESIII_2022_I2611486"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2023_I2637702"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03",
                                           "d02-x01-y01","d02-x01-y02","d02-x01-y03"]
 analyses["LL"]["BESIII_2023_I2642062"] = ["d01-x01-y01"]
+analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
+# Lambda0 SigmaBar0 +cc
+analyses["LL"]["BABAR_2007_I760730"  ].append("d03-x01-y01")
+analyses["LL"]["BESIII_2023_I2686032"] = ["d01-x01-y01","d01-x01-y02"]
+# Sigma+ Sigmabar-
+analyses["LL"]["BELLE_2022_I2173361" ] = ["d02-x01-y01"]
+analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d02-x01-y01"]
+analyses["LL"]["BESIII_2024_I2739177"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2024_I2748736"] = ["d01-x01-y01"]
+# Sigma0 Sigmabar0
+analyses["LL"]["BELLE_2022_I2173361" ].append("d01-x01-y01")
+analyses["LL"]["BABAR_2007_I760730"  ].append("d02-x01-y01")
+analyses["LL"]["BESIII_2021_I1940960"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2024_I2863767"] = ["d01-x01-y01"]
+# Sigma- Sigmabar+
+analyses["LL"]["BESIII_2020_I1814783"].append("d01-x01-y02")
+analyses["LL"]["BESIII_2020_I1814783"].append("d02-x01-y02")
+# Xi- Xibar+
+analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
+analyses["LL"]["BESIII_2020_I1823448"] = ["d01-x01-y04"]
+analyses["LL"]["BESIII_2023_I2695411"] = ["d01-x01-y01","d01-x01-y02"]
+# Xi0 Xibar0
+analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2024_I2824143"] = ["d01-x01-y01"]
+# Omega- Omegabar+
+analyses["LL"]["BESIII_2022_I2611486"] = ["d01-x01-y01"]
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :
