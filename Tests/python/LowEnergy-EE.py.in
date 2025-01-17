@@ -411,6 +411,9 @@ analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2023_I2706428"     ] = ["d01-x01-y01"]
 # eta psi(2S)
 analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
+# eta h_c
+analyses["DD"]["BESIII_2017_I1596897"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2024_I2775801"     ] = ["d01-x01-y01"]
 # gamma eta_c
 analyses["DD"]["BESIII_2017_I1600581"     ] = ["d01-x01-y01"]
 # gamma chi_c
@@ -434,7 +437,6 @@ analyses["DD"]["BESIII_2014_I1323621"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1723934"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1756876"     ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["DD"]["BESIII_2015_I1329785"     ] = ["d01-x01-y08","d02-x01-y08","d03-x01-y08"]
-analyses["DD"]["BESIII_2017_I1596897"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1653121"     ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["DD"]["BESIII_2020_I1762922"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1633425"     ] = ["d01-x01-y01"]

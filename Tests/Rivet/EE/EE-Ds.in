@@ -66,6 +66,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2088218
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1845444
 # D_s+ -> pi+ pi+ pi- eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2021_I1870322
+# 2pi+ pi- pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2801948
 ############## five body ##############
 # BESIII D_s+ -> K+ K_ pi+ pi+ pi-
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2051683
+# 2pi+ 2pi0 pi-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2025_I2866208

@@ -31,6 +31,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1705754
 # D -> pi pi e+ nu_e
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1694530
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2825816
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2013_I1081165
 # D0 -> pi- semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693

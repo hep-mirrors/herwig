@@ -34,6 +34,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2006_I650381
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESII_2004_I650570
 # J/psi -> e+e- pi+pi-eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I1997940
+# J/psi -> e+e- pi0 (need total rate for normalisation)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2025_I2866232
 # J/psi -> phi eta eta'
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1712729
 # J/psi -> Lambda Lambdabar eta
