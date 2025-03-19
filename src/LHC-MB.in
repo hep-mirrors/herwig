@@ -52,6 +52,7 @@ read snippets/Diffraction.in
 #set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
 #set /Herwig/Analysis/HepMCFile:Format GenEvent
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
+## Note that if you do a parallel run leave the line below commented
 #set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
 ##################################################
