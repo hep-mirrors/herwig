@@ -25,6 +25,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2819140
 # D+ -> eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOC_2011_I875526
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1662660
+# D+ -> eta'
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2839350
 # D0/+ -> pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1655158
 # D0 -> Kbar0 pi- e+ nu_e
