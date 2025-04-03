@@ -10,6 +10,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 #  Validated
 ##################################################
 # LENA thrust and mult
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LENA_1981_I164397
+insert /Herwig/Analysis/Rivet:Analyses 0 LENA_1981_I164397
 # MD1 Lambda mult
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MD1_1994_I362599
+insert /Herwig/Analysis/Rivet:Analyses 0 MD1_1994_I362599

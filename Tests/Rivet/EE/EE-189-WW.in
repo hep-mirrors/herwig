@@ -4,4 +4,4 @@
 ##################################################
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 189.
 # DELPHI particle spectra in WW
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2001_I526164
+insert /Herwig/Analysis/Rivet:Analyses 0 DELPHI_2001_I526164

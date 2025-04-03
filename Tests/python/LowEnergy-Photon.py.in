@@ -19,6 +19,8 @@ op.add_option("--list"            , dest="list"            , default=False, acti
 op.add_option("--plots"           , dest="plot"            , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
+hepmc=os.getenv('OUTPUT_HEPMC',  False)
+if hepmc != False : hepmc=True
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
 analyses = { 'KK'           : {}, 'PiPi'         : {}, 'PPbar'     : {}, "3Pi"      : {},
@@ -329,6 +331,8 @@ for energy in sorted(energies) :
         maxflavour=3
     elif(energy<thresholds[3]) :
         maxflavour=4
+    if hepmc :
+        anal +="\nread snippets/HepMC.in\n"
     # input file for perturbative QCD
     if(opts.perturbative and energy> thresholds[0]) :
         process=""

@@ -19,6 +19,8 @@ op.add_option("--flavour"         , dest="flavour"         , default="All"  )
 op.add_option("--plots"           , dest="plot"           , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
+hepmc=os.getenv('OUTPUT_HEPMC',  False)
+if hepmc != False : hepmc=True
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
 analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      : {},
@@ -328,6 +330,7 @@ analyses["6m"]["BABAR_2021_I1938254"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y0
 analyses["6m"]["CMD3_2022_I2108984"] = ["d01-x01-y01","d02-x01-y01","d02-x01-y02"]
 analyses["6m"]["BABAR_2022_I2120528"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01","d04-x01-y01","d05-x01-y01",
                                          "d06-x01-y01","d07-x01-y01","d08-x01-y01","d09-x01-y01","d10-x01-y01"]
+analyses["6m"]["BESIII_2025_I2872226"] = ["d01-x01-y01"]
 analyses["6m"]["BESIII_2019_I1623214"] = ["d01-x01-y01"]
 analyses["6m"]["BESIII_2017_I1607253"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["6m"]["BESIII_2022_I2165175"] = ["d01-x01-y01"]
@@ -702,6 +705,9 @@ for process in processes:
                         if "-" in energy and len(energy)>1:
                             elim =energy.split("-")
                             energy=0.5*(float(elim[0])+float(elim[1]))
+                        elif "to" in energy and len(energy)>1:
+                            elim =energy.split("to")
+                            energy=0.5*(float(elim[0])+float(elim[1]))
                         elif analysis == "DM1_1979_I132828" and plot=="d01-x01-y01" :
                             if energy == '-' :
                                 energy=985
@@ -774,6 +780,8 @@ for energy in sorted(energies) :
         maxflavour=3
     elif(energy<thresholds[3]) :
         maxflavour=4
+    if hepmc :
+        anal +="\nread snippets/HepMC.in\n"
     # input file for perturbative QCD
     if(opts.perturbative and energy> thresholds[0]) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,

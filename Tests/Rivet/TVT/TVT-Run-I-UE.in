@@ -2,9 +2,9 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1988_I263320
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1990_I283352
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_I564673
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2002_I567774
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_I647490
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E735_1998_I480349
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1988_I263320
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1990_I283352
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2001_I564673
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2002_I567774
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2004_I647490
+insert /Herwig/Analysis/Rivet:Analyses 0 E735_1998_I480349

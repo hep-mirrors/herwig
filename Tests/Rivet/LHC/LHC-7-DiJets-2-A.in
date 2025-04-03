@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I871366
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2010_I871366
 # CMS High mass jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1268975
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1268975
 # CMS Jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1208923
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1208923

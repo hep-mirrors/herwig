@@ -2,7 +2,7 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1646686
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2020_I1801434
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2077575
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1753720
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2018_I1646686
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2020_I1801434
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2022_I2077575
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2019_I1753720

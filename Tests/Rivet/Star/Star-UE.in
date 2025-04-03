@@ -2,9 +2,9 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_I709170
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_I722757
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_I723509
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2008_I793126
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2009_UE_HELEN
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2014_I1253360
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2006_I709170
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2006_I722757
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2006_I723509
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2008_I793126
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2009_UE_HELEN
+insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2014_I1253360

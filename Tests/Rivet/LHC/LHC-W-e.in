@@ -3,27 +3,27 @@
 # select the analyses
 ##################################################
 # general analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WPOL
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WPOL
 # ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_I882534
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2010_I882534
 # ATLAS W pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I925932
 # ATLAS W kT scales
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1217867
 # W DPI
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1216670
 # W +b 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1219109
 # ATLAS W
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289:MODE=W
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I928289:MODE=W
 # ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490:LMODE=EL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490:LMODE=EL
 # ATLAS W+charm
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1282447
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1282447
 # ATLAS W inclusive cross section
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620:LMODE=WEL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1502620:LMODE=WEL
 # W/Z+ jets ratios
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627:LMODE=EL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1312627
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1312627:LMODE=EL

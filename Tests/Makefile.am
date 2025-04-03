@@ -268,7 +268,7 @@ Rivet-LowEnergy-EE-%:
 
 Rivet-LowEnergy-Photon-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); fi; OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative --perturbative --resonance`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots`; rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) $$yodaArgs $$plots;
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; plots2=`echo $$plots | sed s"A-eA-mA"g | sed s"A-fA-mA"g`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots`; rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) $$yodaArgs $$plots2;
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

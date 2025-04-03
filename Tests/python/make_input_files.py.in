@@ -16,6 +16,8 @@ if __name__ == "__main__":
 
 
 simulation=""
+hepmc=os.getenv('OUTPUT_HEPMC',  False)
+if hepmc != False : hepmc=True
 
 numberOfAddedProcesses=0
 def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
@@ -1630,6 +1632,8 @@ else :
     pFile = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 with open(os.path.join("Rivet",pFile), 'r') as f:
     parameters['parameterFile'] = f.read()
+if hepmc :
+    parameters['parameterFile'] +="\nread snippets/HepMC.in\n"
     
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)

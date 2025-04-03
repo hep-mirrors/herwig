@@ -26,8 +26,7 @@ set EventHandler:BeamA /Herwig/Particles/gamma
 set EventHandler:BeamB /Herwig/Particles/gamma
 
 cd /Herwig/Generators
-create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
+read snippets/Rivet.in
 ${ANALYSES}
 ###################################################
 # Save run for later usage with 'Herwig run'

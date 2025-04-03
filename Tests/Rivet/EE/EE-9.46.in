@@ -8,6 +8,6 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # ARGUS pi0 and eta
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1990_I278933
 # Crystal Ball pi0 and eta
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CRYSTAL_BALL_1991_I297905
+insert /Herwig/Analysis/Rivet:Analyses 0 CRYSTAL_BALL_1991_I297905

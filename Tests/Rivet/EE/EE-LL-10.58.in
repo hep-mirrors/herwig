@@ -7,5 +7,5 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/LeptonPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/LeptonPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 # BABAR asymetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1388182
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2015_I1388182
 

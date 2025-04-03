@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # b-jet fragmentation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2021_I1913061
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2021_I1913061

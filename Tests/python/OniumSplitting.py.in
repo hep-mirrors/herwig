@@ -414,7 +414,7 @@ set /Herwig/Analysis/Basics:CheckQuark No
 set /Herwig/Particles/d:ConstituentMass 1e-10
 set /Herwig/Particles/u:ConstituentMass 1e-10
 set /Herwig/Particles/g:ConstituentMass 1e-9
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Simple_Onium""",
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_Simple_Onium""",
                 "process" : """
 %s
 set /Herwig/Particles/b:ConstituentMass %s

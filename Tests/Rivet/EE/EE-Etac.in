@@ -13,18 +13,18 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 decaymode Upsilon(4S)->eta_c,eta_c; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->eta_c,eta_c;
 # BES multiplicty in eta_c decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2019_I1724880
 # eta_c -> K+K-eta and eta_c -> K+K-pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1287632
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2014_I1287632
 # eta_c -> K0_SK+- pi-+ and eta_c -> K+K-pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1403544
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2015_I1403544
 # eta_c -> K0_SK+- pi-+ 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1187787
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2012_I1187787
 #  eta_c -> K+K-eta', pi+pi-eta and pi+pi-eta'
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2021_I1867843
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2021_I1867843
 # eta_c -> f_r f_2(')
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I754089
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2008_I754089
 # eta_c BRs
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_ETAC
+#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_ETAC
 # eta_c MC
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DALITZ_ETAC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_DALITZ_ETAC

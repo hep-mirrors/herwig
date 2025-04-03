@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # ATLAS 13 TeV ZZ ->ll
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1625109
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2017_I1625109
 # ATLAS 13 TeV 4 lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2021_I1849535
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2021_I1849535

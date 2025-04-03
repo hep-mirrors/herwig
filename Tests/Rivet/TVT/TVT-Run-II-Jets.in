@@ -3,19 +3,19 @@
 # select the analyses
 ##################################################
 # CDF jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2012_NOTE10874
 # MPI 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_I849042:MODE=QCD
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2010_I849042:MODE=QCD
 # CDF jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2005_I682179
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2005_I682179
 # CDF inclusive jet kt
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2007_I743342
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2007_I743342
 # CDF inclusive jet cone
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_I699933
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_I790693
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2006_I699933
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2008_I790693
 # dijet decorrelations
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2004_I659398
+insert /Herwig/Analysis/Rivet:Analyses 0  D0_2004_I659398
 # inclusive jet cross section
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_I779574
+insert /Herwig/Analysis/Rivet:Analyses 0  D0_2008_I779574
 # D0 three-jets analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2011_I895662
+insert /Herwig/Analysis/Rivet:Analyses 0  D0_2011_I895662

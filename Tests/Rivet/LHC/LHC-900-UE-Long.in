@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # ATLAS K0s and Lambda
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I944826
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I944826

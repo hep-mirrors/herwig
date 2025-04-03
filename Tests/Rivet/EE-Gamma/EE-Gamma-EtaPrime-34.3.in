@@ -12,4 +12,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 # select the analyses 
 ##################################################
 # JADE eta'
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1982_I177090
+insert /Herwig/Analysis/Rivet:Analyses 0 JADE_1982_I177090

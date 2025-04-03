@@ -29,9 +29,8 @@ set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 ##################################################
 #  Create the Herwig analysis
 ##################################################
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-set /Herwig/Analysis/RivetAnalysis:Debug No
+read snippets/Rivet.in
+set /Herwig/Analysis/Rivet:Debug No
 
 ##################################################
 #  Cuts

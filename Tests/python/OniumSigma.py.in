@@ -134,7 +134,7 @@ if opts.infiles :
     # now loop over the examples
     for (key,val) in testParameters.items() :
         # substs for the input file
-        parameters={"parameterFile" : "insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium",
+        parameters={"parameterFile" : "insert /Herwig/Analysis/Rivet:Analyses 0 MC_Hadron_Onium",
                     "bscheme"       : "",
                     "shower"        : "do /Herwig/OniumParameters:SetWaveFunction %s %s %s" %(val[1],val[2],val[3]), 
                     "process"       : """

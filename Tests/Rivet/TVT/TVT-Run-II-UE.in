@@ -3,10 +3,10 @@
 # select the analyses
 ##################################################
 # run II UE analysis
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_I849042:MODE=QCD
+#insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2008_LEADINGJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2010_I849042:MODE=QCD
 # run II charged multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_NOTE_9936
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_I817466
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2015_I1388868
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2009_NOTE_9936
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2009_I817466
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2012_NOTE10874
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2015_I1388868

@@ -29,9 +29,8 @@ read Matchbox/CT14.in
 ##################################################
 #  Create the Herwig analysis
 ##################################################
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-set /Herwig/Analysis/RivetAnalysis:Debug No
+read snippets/Rivet.in
+set /Herwig/Analysis/Rivet:Debug No
 set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 ##################################################
 ## Save the generator

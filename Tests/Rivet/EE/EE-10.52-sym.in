@@ -8,21 +8,21 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # CLEO charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_I645209
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2000_I526554
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2004_I645209
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2000_I526554
 # CLEO baryon assymetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2001_I552541
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2001_I552541
 # BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1606201
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2017_I1606201
 # CLEO D* polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1998_I467595
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1998_I467595
 # CLEO D* polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1991_I314060
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1991_I314060
 # CLEO D_1/D_2 decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I281039
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1990_I281039
 # ARGUS Xi_c+ spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I296522
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1990_I296522
 # BELLE Sigma_c(2800) spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2004_I668024
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2004_I668024
 # BELLE charm hadron producion
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2005_I686014
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2005_I686014

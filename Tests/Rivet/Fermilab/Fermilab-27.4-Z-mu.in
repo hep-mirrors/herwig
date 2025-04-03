@@ -2,4 +2,4 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E288_1981_I153009
+insert /Herwig/Analysis/Rivet:Analyses 0 E288_1981_I153009

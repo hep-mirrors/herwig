@@ -15,6 +15,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 # select the analyses 
 ##################################################
 # BABAR chi_c2
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I844288
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2010_I844288
 # BELLE chi_c2
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_I700451
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2006_I700451

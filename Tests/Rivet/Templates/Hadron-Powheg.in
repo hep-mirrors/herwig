@@ -32,8 +32,7 @@ set ShowerHandler:HardEmission POWHEG
 #  Create the Herwig analysis
 ##################################################
 cd /Herwig/Generators
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+read snippets/Rivet.in
 
 cd /Herwig/MatrixElements
 ${process}

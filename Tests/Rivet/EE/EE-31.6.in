@@ -9,4 +9,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 ##################################################
 #  Validated
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1979_I142874
+insert /Herwig/Analysis/Rivet:Analyses 0 JADE_1979_I142874

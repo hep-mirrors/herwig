@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # ATLAS prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1457605
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1457605
 # ATLAS prompt photon + heavy flavour
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1632756
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2017_I1632756

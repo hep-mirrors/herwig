@@ -10,4 +10,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.0
 #  Validated
 ##################################################
 # D_s -> pi+pi+pi- X
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2022_I2618227
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2022_I2618227

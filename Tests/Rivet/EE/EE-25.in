@@ -7,6 +7,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 21*GeV
 ##################################################
 # select the analyses 
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
+insert /Herwig/Analysis/Rivet:Analyses 0 TASSO_1982_I177174
 # tasso event shapes at various energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1984_I195333
+insert /Herwig/Analysis/Rivet:Analyses 0 TASSO_1984_I195333

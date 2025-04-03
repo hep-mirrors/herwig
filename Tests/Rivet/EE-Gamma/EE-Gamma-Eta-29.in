@@ -12,4 +12,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 # select the analyses 
 ##################################################
 # TPC eta
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1986_I217503
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1986_I217503

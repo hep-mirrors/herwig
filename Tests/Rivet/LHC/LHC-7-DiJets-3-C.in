@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082936
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1082936

@@ -3,5 +3,5 @@
 # select the analyses
 ##################################################
 # General analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306615
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1306615
 

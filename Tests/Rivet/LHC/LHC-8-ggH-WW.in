@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # ATLAS gg -> H -> WW
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1444991
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1444991
 # CMS H -> WW
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1467451
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1467451
 
 do /Herwig/Particles/h0:SelectDecayModes h0->W+,W-;

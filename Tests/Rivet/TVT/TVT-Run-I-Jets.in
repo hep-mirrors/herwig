@@ -3,26 +3,26 @@
 # select the analyses
 ##################################################
 # run I CDF di jet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_I538041
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2001_I538041
 # run I CDF inclusive jet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_I552797
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2001_I552797
 # run I CDF UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_I647490
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2004_I647490
 # run I CDF UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_I564673
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_2001_I564673
 # run I D0 dijet decorrelation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_1996_I416886
+insert /Herwig/Analysis/Rivet:Analyses 0 D0_1996_I416886
 # run I D0 jet shape
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_1995_I398175
+insert /Herwig/Analysis/Rivet:Analyses 0 D0_1995_I398175
 # run I CDF large total ET
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1998_I448075
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1998_I448075
 # run I coherence
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1994_I374155
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1994_I374155
 # run I D0 3 and 4 jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1996_I399364
+insert /Herwig/Analysis/Rivet:Analyses 0  D0_1996_I399364
 # run I CDF multijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_I393345
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1996_I393345
 # run I CDF multijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_I418504
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1996_I418504
 # run I CDF 6 jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1997_I442265
+insert /Herwig/Analysis/Rivet:Analyses 0 CDF_1997_I442265

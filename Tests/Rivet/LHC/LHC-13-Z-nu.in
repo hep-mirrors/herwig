@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # CMS Z
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2020_I1837084
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2020_I1837084

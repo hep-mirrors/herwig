@@ -9,4 +9,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.39
 ##################################################
 #  Validated
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2024_I2753516
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2753516

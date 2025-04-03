@@ -37,8 +37,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 ##################################################
 #  Create the Herwig analysis
 ##################################################
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+read snippets/Rivet.in
 ##################################################
 ## Do not apply profile scales for LEP as hard
 ## scale coincides with kinematic limit
