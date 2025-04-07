@@ -151,6 +151,7 @@ Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 
 Rivet-%.yoda : Rivet-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
+	if [ -e $(subst .run,.hepmc,$<) ]; then gzip $(subst .run,.hepmc,$<); fi
 
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
