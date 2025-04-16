@@ -14,4 +14,4 @@ do /Herwig/OniumParameters:SetWaveFunction ccbar 1S 0.363269
 # select the analyses 
 ##################################################
 # BABAR eta_c 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2010_I845914
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2010_I845914

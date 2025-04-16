@@ -8,7 +8,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I356616
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_I342061
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1993_I356616
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1993_I342061
 # CLEO kaon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1982_I180612
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1982_I180612

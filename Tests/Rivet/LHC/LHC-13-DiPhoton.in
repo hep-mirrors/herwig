@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # ATLAS diphoton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2021_I1887997
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2021_I1887997

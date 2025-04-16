@@ -8,4 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 # select the analyses 
 ##################################################
 # tasso charged mult
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 AMY_1990_I295160
+insert /Herwig/Analysis/Rivet:Analyses 0 AMY_1990_I295160

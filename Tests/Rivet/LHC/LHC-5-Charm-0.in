@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # charm production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2016_I1490663
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2016_I1490663

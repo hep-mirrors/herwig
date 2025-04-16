@@ -43,16 +43,13 @@ set MGGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts
 
 
 cd /Herwig/Analysis
-create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+read snippets/Rivet.in
 
 # General analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZINC
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WINC
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WJETS
-
-
-insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 RivetAnalysis
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
 
 cd /Herwig/Generators/
 set MGGenerator:NumberOfEvents 1000000

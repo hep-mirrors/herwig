@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # ATLAS emu
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1734263
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2021_I1852328
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2022_I2103950
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2019_I1734263
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2021_I1852328
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2022_I2103950
 # CMS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2020_I1814328
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2020_I1814328

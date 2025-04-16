@@ -8,10 +8,10 @@ set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
 set /Herwig/Cuts/Cuts:MHatMin 0.
 # H1 D/D*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1996_I421105
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_1996_I421105
 # H1 D production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2002_I561885
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_2002_I561885
 # ZEUS azimuthal
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_2000_I524911
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2000_I524911
 # H1 forward pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1999_I504022
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_1999_I504022

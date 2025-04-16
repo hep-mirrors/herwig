@@ -792,6 +792,7 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     pdf = firstPDF().pdf();
   if(beam == incomingBeams().second)
     pdf = secondPDF().pdf();
+  if(!pdf) return false;
   Energy freeze = pdfFreezingScale();
   // don't do anything if not needed
   if(_limitEmissions == 2  || hardOnly() ||

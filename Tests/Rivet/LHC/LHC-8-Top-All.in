@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # CMS top 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1370682
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2015_I1370682
 # ATLAS top + photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1604029
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2017_I1604029

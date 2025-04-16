@@ -8,4 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 # select the analyses 
 ##################################################
 # tau polarization in e+e- > tau+tau-
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MAC_1987_I245571
+insert /Herwig/Analysis/Rivet:Analyses 0 MAC_1987_I245571

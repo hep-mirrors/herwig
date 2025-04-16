@@ -22,9 +22,8 @@ ${bscheme}
 #  Create the Herwig analysis
 ##################################################
 cd /Herwig/Generators
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-set /Herwig/Analysis/RivetAnalysis:Debug No
+read snippets/Rivet.in
+set /Herwig/Analysis/Rivet:Debug No
 cd /Herwig/MatrixElements
 ${process}
 

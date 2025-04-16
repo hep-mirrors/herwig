@@ -8,5 +8,5 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # D*+ spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1982_I178490
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1985_I204851
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1982_I178490
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1985_I204851

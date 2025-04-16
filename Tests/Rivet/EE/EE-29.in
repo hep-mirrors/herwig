@@ -9,55 +9,55 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 ##################################################
 #  Validated
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18502
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I250824
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1987_I235694
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1985_I205868
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MAC_1985_I202924
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1992_I339573
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I205869
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1986_I217416
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1990_I280958
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1988_I262143
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I201482
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I200105
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I23360
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1991_I316132
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1986_I18502
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1988_I250824
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1987_I235694
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1985_I205868
+insert /Herwig/Analysis/Rivet:Analyses 0 MAC_1985_I202924
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1992_I339573
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1984_I205869
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1986_I217416
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1990_I280958
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1988_I262143
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1985_I201482
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1984_I200105
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1988_I23360
+insert /Herwig/Analysis/Rivet:Analyses 0 TPC_1991_I316132
 # D spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1984_I202899
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1984_I202899
 # D* spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELCO_1985_I205132
+insert /Herwig/Analysis/Rivet:Analyses 0 DELCO_1985_I205132
 # HRS D* polarization
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I250823
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1987_I250823
 # MARK II omega spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1987_I247900
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1987_I247900
 # MARK II eta spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I261194
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1988_I261194
 # MARK II xi- spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1987_I234976
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1987_I234976
 # MARK II  D*+ spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I177606
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1982_I177606
 # MARK II K0 and K+/- spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I207785
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1985_I207785
 # MARK II Lambda
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I209198
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1985_I209198
 # HRS hadron spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I215848
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1987_I215848
 # MARK II event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I246184
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1988_I246184
 # HRS Lambda spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I17781
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1986_I17781
 # HRS Sigma*+- Xi- spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1987_I246162
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1987_I246162
 # HRS phi and D_s spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I213242
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1985_I213242
 # HRS f_2, f_0 and K_2 spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18688
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1986_I18688
 # HRS rho, K*0, K*+ spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1989_I276948
+insert /Herwig/Analysis/Rivet:Analyses 0 HRS_1989_I276948
 # MARK II EEC
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1988_I250899
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1988_I250899
 # MARK II charged spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1982_I178416
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1982_I178416
 # MARK II charged spectrum 3 jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MARKII_1985_I216850
+insert /Herwig/Analysis/Rivet:Analyses 0 MARKII_1985_I216850

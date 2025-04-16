@@ -57,7 +57,7 @@ for idir in glob.glob("Rivet/*") :
         file=open(ifile)
         line=file.readline()
         while line:
-            if("RivetAnalysis:Analyses" in line and line[0]!="#") :
+            if("Rivet:Analyses" in line and line[0]!="#") :
                 line=line.strip().split()
                 anal = line[-1].strip().split(":")[0]
                 if(anal not in hw_analyses) :

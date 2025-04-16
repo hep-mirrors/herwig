@@ -384,9 +384,20 @@ void ShowerHandler::cascade() {
   // so that any variations are output regardless of
   // whether showering occurs for the given event
   initializeWeights();
+  // get the incoming hadrons
+  tPPair incomingHadrons =
+    eventHandler()->currentCollision()->incoming();
   // get the PDF's from ThePEG (if locally overridden use the local versions)
-  tcPDFPtr first  = PDFA_ ? tcPDFPtr(PDFA_) : firstPDF().pdf();
-  tcPDFPtr second = PDFB_ ? tcPDFPtr(PDFB_) : secondPDF().pdf();
+  tcPDFPtr first;
+  if(PDFA_ && PDFA_->canHandle(incomingHadrons.first->dataPtr()))
+    first = tcPDFPtr(PDFA_);
+  else if( firstPDF().pdf() && firstPDF().pdf()->canHandle(incomingHadrons.first->dataPtr()))
+    first = firstPDF().pdf();
+  tcPDFPtr second;
+  if(PDFB_ &&  PDFB_->canHandle(incomingHadrons.second->dataPtr()))
+    second = tcPDFPtr(PDFB_);
+  else if(secondPDF().pdf() &&  secondPDF().pdf()->canHandle(incomingHadrons.second->dataPtr()))
+    second = secondPDF().pdf();
   resetPDFs(make_pair(first,second));
   // set the PDFs for the remnant
   if( ! rempdfs_.first)
@@ -400,9 +411,6 @@ void ShowerHandler::cascade() {
   PBIPair incomingBins    =
     make_pair(lastExtractor()->partonBinInstance(incomingPartons.first),
 	      lastExtractor()->partonBinInstance(incomingPartons.second));
-  // and the incoming hadrons
-  tPPair incomingHadrons =
-    eventHandler()->currentCollision()->incoming();
   remnantDecayer()->setHadronContent(incomingHadrons);
   // check if incoming hadron == incoming parton
   // and get the incoming hadron if exists or parton otherwise

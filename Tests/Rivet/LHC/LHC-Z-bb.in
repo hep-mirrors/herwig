@@ -2,4 +2,4 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306294
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1306294

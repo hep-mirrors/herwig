@@ -7,4 +7,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 195
 # select the analyses 
 ##################################################
 # OPAL charge particles
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2007_I734955
+insert /Herwig/Analysis/Rivet:Analyses 0 OPAL_2007_I734955

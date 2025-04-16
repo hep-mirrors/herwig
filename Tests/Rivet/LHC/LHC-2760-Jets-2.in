@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # underlying event
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1385107
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2015_I1385107
 # CMS Muller Navellet jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1963239
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1963239

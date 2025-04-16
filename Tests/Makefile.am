@@ -151,6 +151,7 @@ Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 
 Rivet-%.yoda : Rivet-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
+	if [ -e $(subst .run,.hepmc,$<) ]; then gzip $(subst .run,.hepmc,$<); fi
 
 Rivet/Onium-%.in :
 	python/onium_input_files.py $(notdir $(subst .in,,$@))
@@ -292,7 +293,7 @@ Rivet-LowEnergy-EE-%:
 
 Rivet-LowEnergy-Photon-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); fi; OUTPUT=`python/LowEnergy-Photon.py $$args --non-perturbative --perturbative --resonance`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots`; plots2=`echo $$plots | sed s"A-eA-mA"g | sed s"A-fA-mA"g`; rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) $$yodaArgs $$plots2;
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-Photon-,,$@))); plots=`python/LowEnergy-Photon.py $$args --plots`; plots2=`echo $$plots | sed s"A-eA-mA"g | sed s"A-fA-mA"g`; yodaArgs=`python/mergeLowEnergy.py $(subst Rivet-LowEnergy-Photon-,GammaGamma-,$@) $$plots`; rivet-mkhtml -o Rivet-LowEnergy-Photon-$(subst Rivet-LowEnergy-Photon-,,$@) $$yodaArgs $$plots2;
 
 Rivet-R:
 	OUTPUT=`python/R.py --perturbative --non-perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};

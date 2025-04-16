@@ -12,4 +12,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 # select the analyses 
 ##################################################
 # KLOE eta
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE_2013_I1199266
+insert /Herwig/Analysis/Rivet:Analyses 0 KLOE_2013_I1199266

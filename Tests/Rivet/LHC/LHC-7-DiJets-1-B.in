@@ -3,6 +3,6 @@
 # select the analyses
 ##################################################
 # CMS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I889175
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_I889175
 # CMS dijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1090423
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1090423

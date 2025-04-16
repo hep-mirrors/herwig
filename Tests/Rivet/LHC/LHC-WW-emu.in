@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # general analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WWJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WWJETS

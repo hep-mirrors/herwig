@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # D0 Run I W/Z pT 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2001_I559624
+insert /Herwig/Analysis/Rivet:Analyses 0  D0_2001_I559624

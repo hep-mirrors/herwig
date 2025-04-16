@@ -7,11 +7,11 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 196
 # select the analyses
 ##################################################
 # OPAL b/c/light multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_I601225
+insert /Herwig/Analysis/Rivet:Analyses 0 OPAL_2002_I601225
 # DELPHI b/c/light multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I524693
+insert /Herwig/Analysis/Rivet:Analyses 0 DELPHI_2000_I524693
 # delphi event shapes for a wide energy range
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
+insert /Herwig/Analysis/Rivet:Analyses 0 DELPHI_2003_I620250
 # ALEPH event shapes and multiplicities at different energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_I636645
+insert /Herwig/Analysis/Rivet:Analyses 0 ALEPH_2004_I636645
 

@@ -7,15 +7,15 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 161
 # select the analyses
 ##################################################
 # ALEPH jet and event shapes at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_I636645
+insert /Herwig/Analysis/Rivet:Analyses 0 ALEPH_2004_I636645
 # OPAL/JADE jet rates at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_I513337
+insert /Herwig/Analysis/Rivet:Analyses 0 JADE_OPAL_2000_I513337
 # OPAL b/c/light multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_I601225
+insert /Herwig/Analysis/Rivet:Analyses 0 OPAL_2002_I601225
 # OPAL event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I440721
+insert /Herwig/Analysis/Rivet:Analyses 0 OPAL_1997_I440721
 # DELPHI event shapes  at different energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_I499183
+insert /Herwig/Analysis/Rivet:Analyses 0 DELPHI_1999_I499183
 # DELPHI particle spectra in WW
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2001_I526164
+insert /Herwig/Analysis/Rivet:Analyses 0 DELPHI_2001_I526164
 

@@ -8,11 +8,11 @@ set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
 set /Herwig/Cuts/Cuts:MHatMin 0.
 # H1 energy flow analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1994_I372350
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1995_S3167097
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_1994_I372350
+#insert /Herwig/Analysis/Rivet:Analyses 0 H1_1995_S3167097
 # H1 fragmentation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1995_I394793
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_1995_I394793
 # ZEUS charged particle
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1995_I392386
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_1995_I392386
 # ZEUS strange particle
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ZEUS_1995_I395196
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_1995_I395196

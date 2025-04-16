@@ -33,8 +33,7 @@ cd /Herwig/Generators
 ## prepare for Rivet analysis or HepMC output
 ## when running with parton shower
 ##################################################
-create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
+read snippets/Rivet.in
 ${ANALYSES}
 
 cd /Herwig/EventHandlers

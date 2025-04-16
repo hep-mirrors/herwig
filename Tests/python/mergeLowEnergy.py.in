@@ -92,6 +92,9 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                     if "-" in x and len(x)>1:
                         elim =x.split("-")
                         x=0.5*(float(elim[0])+float(elim[1]))
+                    elif "to" in x and len(x)>1:
+                        elim =x.split("to")
+                        x=0.5*(float(elim[0])+float(elim[1]))
                     elif hpath=="/DM1_1979_I132828/d01-x01-y01" :
                         if x == '-'         : x = 985
                     elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :

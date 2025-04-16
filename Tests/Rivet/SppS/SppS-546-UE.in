@@ -2,5 +2,5 @@
 ##################################################
 # select the analyses
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1988_I263399
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1987_I244829
+insert /Herwig/Analysis/Rivet:Analyses 0 UA5_1988_I263399
+insert /Herwig/Analysis/Rivet:Analyses 0 UA5_1987_I244829

@@ -6,12 +6,13 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.50
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
-
+set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4
 # BELLE charged particle spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2020_I1777678
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2019_I1718551
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2020_I1777678
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2025_I2849895
 # BABAR azimuthal
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2014_I1254862
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1377201
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2014_I1254862
+insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2015_I1377201
 # BELLE azimuthal
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1752523
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2019_I1752523

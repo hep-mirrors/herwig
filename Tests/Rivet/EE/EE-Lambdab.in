@@ -16,12 +16,12 @@ decaymode Upsilon(4S)->Lambda_b0,Lambda_b1bar0;  .25 1 /Herwig/Decays/DecayME0
 decaymode Upsilon(4S)->Lambda_b1*0,Lambda_bbar0; .25 1 /Herwig/Decays/DecayME0
 decaymode Upsilon(4S)->Lambda_b0,Lambda_b1*bar0; .25 1 /Herwig/Decays/DecayME0
 # excited lambda_b decays
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1114753
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2012_I1114753
 # lambda_b -> lambda_c mu- nu_mubar
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2017_I1621811
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2017_I1621811
 # lambda_b -> Lambda0 gamma
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2022_I1971920
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2022_I1971920
 # lambda_b -> Lambda(1520)0 mu+ mu-
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2023_I2633007
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2023_I2633007
 # lambda_b -> Lambda_c decay correlations
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2024_I2824757
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2024_I2824757

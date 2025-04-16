@@ -3,8 +3,8 @@
 # select the analyses
 ##################################################
 # ATLAS inclusive lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I926145
 # J/Psi production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I896268
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I896268
 # charm production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2013_I1218996

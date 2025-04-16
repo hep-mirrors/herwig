@@ -8,9 +8,9 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # ARGUS charged particle multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1992_I319102
 # ARGUS charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319829
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1991_I315059
+insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1992_I319829
 # CLEO Identified particle spectra
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1985_I205668
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_1985_I205668

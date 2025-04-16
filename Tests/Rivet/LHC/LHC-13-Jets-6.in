@@ -1,22 +1,22 @@
 # -*- ThePEG-repository -*-
 # CMS Jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1459051
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_CONF_2016_092
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1682495
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1459051
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_CONF_2016_092
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2018_I1682495
 # ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2018_I1634970
 # ATLAS charged fragmentation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1740909
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2019_I1740909
 # CMS correlations
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1643640
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1719955
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2018_I1643640
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2019_I1719955
 # ATLAS soft-drop
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2019_I1772062
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2019_I1772062
 # CMS double parton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1932460
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1932460
 # double differential jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1972986
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1972986
 # CMS jet substructure
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2021_I1920187:MODE=DIJET
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1920187:MODE=DIJET
 # CMS multijets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2022_I2170533
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2022_I2170533
