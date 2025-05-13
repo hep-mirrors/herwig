@@ -1680,15 +1680,17 @@ Axis MatrixElementClusterFissioner::sampleDirectionAlignedSmeared(const Lorentz5
 		std::cout << "\nDRI = 0"<< dir.mag2() << std::endl;
 	}
 	Axis dirSmeared = dir;
-	double phi;
 	if (fabs(cosTheta-1.0)>1e-10) {
 		// rotate to sampled angles
 		dirSmeared.rotate(acos(cosTheta),dir.orthogonal());
-		phi  = UseRandom::rnd(-M_PI,M_PI);
+		double phi  = UseRandom::rnd(-M_PI,M_PI);
 		dirSmeared.rotate(phi,dir);
+    if (!(dirSmeared.mag2()>ZERO)){
+      std::cout << "\nDIR SMR = 0" <<cosTheta<< "\t" <<acos(cosTheta)<< "\t"<<  phi<< "\t"<< dirSmeared.mag2() << std::endl;
+    }
 	}
 	if (!(dirSmeared.mag2()>ZERO)){
-		std::cout << "\nDRI SMR = 0" <<cosTheta<< "\t" <<acos(cosTheta)<< "\t"<<  phi<< "\t"<< dirSmeared.mag2() << std::endl;
+		std::cout << "\nDIR SMR = 0" <<cosTheta<< "\t" <<acos(cosTheta)<< "\t"<< dirSmeared.mag2() << std::endl;
 		std::cout << dir.orthogonal() << std::endl;
 	}
 	return dirSmeared;
