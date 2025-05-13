@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # CMS B_s0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1697571
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2019_I1697571

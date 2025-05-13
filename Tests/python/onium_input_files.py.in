@@ -21,6 +21,8 @@ if len(args) != 1:
     sys.exit(1)
     
 name = args[0]
+hepmc=os.getenv('OUTPUT_HEPMC',  False)
+if hepmc != False : hepmc=True
 print (name)
 # work out name and type of the collider
 (collider,have_hadronic_collider) = identifyCollider(name)
@@ -184,6 +186,8 @@ if colour == "NonPrompt" :
         pFile = os.path.join(collider,"{c}-{pn}-Bottom.in".format(c=collider, pn=parameterName))
         with open(os.path.join("Rivet",pFile), 'r') as f:
             parameters['parameterFile'] += f.read()
+if hepmc :
+    parameters['parameterFile'] +="\nread snippets/HepMC.in\n"
 # now the onium shower stuff
 else:
     parameters["shower"] += "read snippets/OniumShower.in\n"

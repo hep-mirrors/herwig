@@ -3,4 +3,4 @@
 # select the analyses
 ##################################################
 # LHCb D_s asymetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2018_I1674916
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2018_I1674916

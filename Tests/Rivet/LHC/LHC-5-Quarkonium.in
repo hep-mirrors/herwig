@@ -3,18 +3,18 @@
 # select the analyses
 ##################################################
 # ALICE forward Jpsi and psi(2S) production 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1511865
+insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2017_I1511865
 # ALICE central J/psi
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2019_I1735351
+insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2019_I1735351
 # ATLAS Jpsi, psi(2) Upsilon(1,2,3S)
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1622737
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2018_I1622737
 # CMS Jpsi
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1512296
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1512296
 # CMS Jpsi in jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2022_I1870319
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2022_I1870319
 # CMS psi(2S)
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2019_I1672011
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2019_I1672011
 # LHCb Jpsi
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2021_I1915030
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2021_I1915030
 # general MC analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Hadron_Onium
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_Hadron_Onium

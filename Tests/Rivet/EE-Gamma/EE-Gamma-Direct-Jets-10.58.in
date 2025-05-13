@@ -9,4 +9,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10.
 set  /Herwig/Cuts/JetKtCut:MinKT 0.0
 set  /Herwig/Cuts/Cuts:MHatMin 2.*GeV
 # CLEO Lambda Lambdabar0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEOII_1997_I439745
+insert /Herwig/Analysis/Rivet:Analyses 0 CLEOII_1997_I439745
