@@ -18,8 +18,10 @@ set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 #  Erase the PDF for the leptons
 set /Herwig/Shower/ShowerHandler:PDFA NULL
 set /Herwig/Shower/ShowerHandler:PDFB NULL
+set /Herwig/Shower/ShowerHandler:DoISR No
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:DoISR No
 
 # Matchbox settings
 cd /Herwig/MatrixElements/Matchbox
