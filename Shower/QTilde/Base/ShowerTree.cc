@@ -153,11 +153,8 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     }
     for(const auto & val : _joinedLines) {
       map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
-      if(it==colourLines().end()) {
-        colourLines()[val.left] = val.right;
-      }
+      if(it==colourLines().end()) colourLines()[val.left] = val.right;
     }
-    _joinedLines.clear();
   }
   // initial-state radiation
   if(ISR) {
@@ -293,6 +290,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
   }
   // fix any joined lines
   colourLines().clear();
+  _joinedLines.clear();
 }
 
 void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
@@ -549,6 +547,7 @@ void ShowerTree::clear() {
   }
   // reisolate the colours
   colourLines().clear();
+  _joinedLines.clear();
   vector<PPtr> original,copy;
   for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines() ) {
      copy.push_back(in.first->copy());
