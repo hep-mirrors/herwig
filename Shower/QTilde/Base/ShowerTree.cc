@@ -140,6 +140,25 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     if(!cjt->first->perturbative()) continue;
     mapColour(cjt->first->original(),cjt->first->copy());
   }
+  if(!_joinedLines.empty()) {
+    for(const auto & val : colourLines()) {
+      boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  left  = _joinedLines.left .find(val.first);
+      boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator right = _joinedLines.right.find(val.first);
+      if (left !=_joinedLines.left.end() ) {
+        colourLines()[left->second] = val.second;
+      }
+      else if (right !=_joinedLines.right.end() ) {
+        colourLines()[right->second] = val.second;
+      }
+    }
+    for(const auto & val : _joinedLines) {
+      map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
+      if(it==colourLines().end()) {
+        colourLines()[val.left] = val.right;
+      }
+    }
+    _joinedLines.clear();
+  }
   // initial-state radiation
   if(ISR) {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
@@ -272,6 +291,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     // insert shower products
     addFinalStateShower(init,pstep);
   }
+  // fix any joined lines
   colourLines().clear();
 }
 
@@ -353,6 +373,7 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
   colourLines().clear();
+  _joinedLines.clear();
   // copy the particles and isolate the colour
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<newProcess->incoming().size();++ix) {
@@ -511,6 +532,7 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     addFinalStateShower(init,pstep);
   }
   colourLines().clear();
+  _joinedLines.clear();
 }
   
 void ShowerTree::clear() {

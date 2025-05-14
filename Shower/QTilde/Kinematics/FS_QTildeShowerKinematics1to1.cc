@@ -8,21 +8,24 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
+
 
 using namespace Herwig;
 void FS_QTildeShowerKinematics1to1::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
 	       unsigned int ,
-	       ShowerPartnerType partnerType) const {
+	       ShowerPartnerType) const {
   assert(children.size()==1);
   // update the parameters
   children[0]->showerParameters() = parent->showerParameters();
   // set up the colour connections
-  parent->antiColourLine()->join(parent->colourLine());
+  tQTildeShowerHandlerPtr sh = dynamic_ptr_cast<tQTildeShowerHandlerPtr>(ShowerHandler::currentHandler());
+  sh->currentTree()->addJoinedLines(parent->antiColourLine(),parent->colourLine());
   // make the product a child of the parent
   parent->addChild(children[0]);
   // set the momenta of the child
@@ -57,7 +60,7 @@ updateChildren(const tShowerParticlePtr parent,
 
 void FS_QTildeShowerKinematics1to1::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
-						 unsigned int pTscheme,
+						 unsigned int ,
 						 ShowerPartnerType) const {
   children[0]->virtualMass(children[0]->dataPtr()->mass());
   parent->virtualMass(children[0]->virtualMass());

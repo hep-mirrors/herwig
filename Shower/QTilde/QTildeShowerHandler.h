@@ -147,7 +147,11 @@ public:
    *  Access to the PartnerFinder object
    */
   tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
-
+  
+  /**
+   * Get the tree
+   */
+  tShowerTreePtr currentTree() { return _currenttree; }
   //@}
 
 protected:
@@ -376,20 +380,9 @@ protected:
   //@}
 
   /**
-   * Set/Get the current tree being evolver for inheriting classes
-   */
-  //@{
-  /**
-   * Get the tree
-   */
-  tShowerTreePtr currentTree() { return _currenttree; }
-
-  /**
    * Set the tree
    */
   void currentTree(tShowerTreePtr tree) { _currenttree=tree; }
-
-  //@}
 
   /**
    *  Access the maximum number of attempts to generate the shower

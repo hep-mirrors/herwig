@@ -18,6 +18,7 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "ThePEG/EventRecord/Step.h"
+#include "boost/bimap/bimap.hpp"
 #include <cassert>
 #include "ShowerTree.fh"
 
@@ -280,6 +281,11 @@ public:
    */
   void setUpMECorrection(RealEmissionProcessPtr real);
 
+  /**
+   *  Add joined colour lines
+   */
+  void addJoinedLines(tColinePtr a, tColinePtr b) { _joinedLines.insert({a,b});}
+
 protected:
 
   /**
@@ -380,6 +386,11 @@ private:
    *  evolves them to as the value
    */
   map<ShowerProgenitorPtr,tShowerParticlePtr> _outgoingLines;
+
+  /**
+   *   Map of joined colour lines
+   */
+  boost::bimaps::bimap<tColinePtr,tColinePtr> _joinedLines;
 
   /**
    *  The outgoing ShowerParticles at the end of the final-state shower
