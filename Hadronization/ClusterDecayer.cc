@@ -221,17 +221,19 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
     if ((*it)->isAvailable() && !(*it)->isStatusFinal()
 	&& (*it)->isReadyToDecay()) {
       pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
+      
       if(!prod.first)
 	throw Exception() << "Can't perform decay of cluster ("
 			  << (*it)->particle(0)->dataPtr()->PDGName() << " "
 			  << (*it)->particle(1)->dataPtr()->PDGName() << ")\nThreshold = " 
 			  << spectrum()->massLightestHadronPair((*it)->particle(0)->dataPtr(),
                                                                 (*it)->particle(1)->dataPtr())/GeV
-			  << "\nLightest hadron pair = ( "
-			  << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
-					  						  (*it)->particle(1)->dataPtr()).first->PDGName() << ",\t"
-			  << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
-					  						  (*it)->particle(1)->dataPtr()).second->PDGName() << " )\nCluster =\n"
+          // taken out as if two diquark cluster causes a crash
+          // << "\nLightest hadron pair = ( "
+          // << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
+          //       	  						  (*it)->particle(1)->dataPtr()).first->PDGName() << ",\t"
+          // << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
+          //       	  						  (*it)->particle(1)->dataPtr()).second->PDGName() << " )\nCluster =\n"
 
 			  << **it
 			  << "\nMass = " << (*it)->mass()/GeV
