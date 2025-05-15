@@ -21,7 +21,7 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -248,6 +248,7 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance,
 						     ShowerInteraction type) const {
+  tQTildeShowerHandlerPtr sh = dynamic_ptr_cast<tQTildeShowerHandlerPtr>(ShowerHandler::currentHandler());
   RhoDMatrix rho;
   bool rhoCalc(false);
   Energy newQ = ZERO;
@@ -265,6 +266,12 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       cit != _fbranchings.upper_bound(index); ++cit) {
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType(),_darkInteraction)) continue;
+    // just core QCD for partonic decays
+    if ( !sh ) {
+      if ( abs(cit->second.particles[1]->id()) > ParticleID::g) continue;
+      if ( abs(cit->second.particles[2]->id()) > ParticleID::g) continue;
+    }
+    // spin density
     if(!rhoCalc && particle.dataPtr()->iSpin()!=PDT::Spin0) {
       rho = particle.extractRhoMatrix(true);
       rhoCalc = true;
