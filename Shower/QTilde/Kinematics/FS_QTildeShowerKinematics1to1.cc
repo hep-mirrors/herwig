@@ -25,7 +25,10 @@ updateChildren(const tShowerParticlePtr parent,
   children[0]->showerParameters() = parent->showerParameters();
   // set up the colour connections
   tQTildeShowerHandlerPtr sh = dynamic_ptr_cast<tQTildeShowerHandlerPtr>(ShowerHandler::currentHandler());
-  sh->currentTree()->addJoinedLines(parent->antiColourLine(),parent->colourLine());
+  if(sh)
+    sh->currentTree()->addJoinedLines(parent->antiColourLine(),parent->colourLine());
+  else
+    parent->antiColourLine()->join(parent->colourLine());
   // make the product a child of the parent
   parent->addChild(children[0]);
   // set the momenta of the child
