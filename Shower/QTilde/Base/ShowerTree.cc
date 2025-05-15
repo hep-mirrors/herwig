@@ -155,6 +155,18 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
       map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
       if(it==colourLines().end()) colourLines()[val.left] = val.right;
     }
+    bool dup=false;
+    do {
+      dup=false;
+      for(auto & val : colourLines()) {
+        map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
+        if(it!=colourLines().end()) {
+          val.second = it->second;
+          dup=true;
+        }
+      }
+    }
+    while(dup);
   }
   // initial-state radiation
   if(ISR) {
