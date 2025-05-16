@@ -334,6 +334,11 @@ protected:
   void fixColour(tShowerParticlePtr part);
 
   /**
+   *    Fix colour lines for 1-> onium stuff
+   */
+  vector<ColinePair> linesToJoin();
+
+  /**
    * Find an initial-satate line
    */
   ShowerProgenitorPtr findInitialStateLine(long id, Lorentz5Momentum momentum);
