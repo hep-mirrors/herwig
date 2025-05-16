@@ -140,7 +140,27 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     if(!cjt->first->perturbative()) continue;
     mapColour(cjt->first->original(),cjt->first->copy());
   }
+  vector<ColinePair> toJoin;
   if(!_joinedLines.empty()) {
+    for(const auto & val : _joinedLines) {
+      map<ColinePtr,ColinePtr>::const_iterator it1 = colourLines().find(val.left);
+      map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
+      if(it1!=colourLines().end()&&it2!=colourLines().end())
+        toJoin.push_back(make_pair(it1->second,it2->second));
+      else if (it1!=colourLines().end()) {
+        ColinePtr right=val.right;
+        while (right) {
+          boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
+          if(it== _joinedLines.left.end()) break;
+          right = it->second;
+          it2 = colourLines().find(right);
+          if(it2!=colourLines().end()) {
+            toJoin.push_back(make_pair(it1->second,it2->second));
+            break;
+          }
+        };
+      }
+    }
     for(const auto & val : colourLines()) {
       boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  left  = _joinedLines.left .find(val.first);
       boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator right = _joinedLines.right.find(val.first);
@@ -159,7 +179,6 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
         map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
         if(it2==colourLines().end())
           colourLines()[val.right] = it->second;
-        
       }
     }
     bool dup=false;
@@ -308,6 +327,9 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     addFinalStateShower(init,pstep);
   }
   // fix any joined lines
+  if(!toJoin.empty()) {
+    for(auto val : toJoin) val.first->join(val.second);
+  }
   colourLines().clear();
   _joinedLines.clear();
 }
