@@ -336,7 +336,7 @@ protected:
   /**
    *    Fix colour lines for 1-> onium stuff
    */
-  vector<ColinePair> linesToJoin();
+  void joinLines();
 
   /**
    * Find an initial-satate line

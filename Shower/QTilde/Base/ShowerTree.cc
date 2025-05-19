@@ -140,7 +140,8 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     if(!cjt->first->perturbative()) continue;
     mapColour(cjt->first->original(),cjt->first->copy());
   }
-  vector<ColinePair> toJoin = linesToJoin();
+  // join colour lines if required
+  joinLines();
   // initial-state radiation
   if(ISR) {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
@@ -273,10 +274,6 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     // insert shower products
     addFinalStateShower(init,pstep);
   }
-  // fix any joined lines
-  if(!toJoin.empty()) {
-    for(auto val : toJoin) val.first->join(val.second);
-  }
   colourLines().clear();
   _joinedLines.clear();
 }
@@ -390,62 +387,75 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   }
 }
 
-vector<ColinePair> ShowerTree::linesToJoin() {
+void ShowerTree::joinLines() {
+  if (_joinedLines.empty()) return;
   vector<ColinePair> toJoin;
-  if(!_joinedLines.empty()) {
-    for(const auto & val : _joinedLines) {
-      map<ColinePtr,ColinePtr>::const_iterator it1 = colourLines().find(val.left);
-      map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
-      if(it1!=colourLines().end()&&it2!=colourLines().end())
-        toJoin.push_back(make_pair(it1->second,it2->second));
-      else if (it1!=colourLines().end()) {
-        ColinePtr right=val.right;
-        while (right) {
-          boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
-          if(it== _joinedLines.left.end()) break;
-          right = it->second;
-          it2 = colourLines().find(right);
-          if(it2!=colourLines().end()) {
-            toJoin.push_back(make_pair(it1->second,it2->second));
-            break;
-          }
-        };
-      }
-    }
-    for(const auto & val : colourLines()) {
-      boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  left  = _joinedLines.left .find(val.first);
-      boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator right = _joinedLines.right.find(val.first);
-      if (left !=_joinedLines.left.end() ) {
-        colourLines()[left->second] = val.second;
-      }
-      else if (right !=_joinedLines.right.end() ) {
-        colourLines()[right->second] = val.second;
-      }
-    }
-    for(const auto & val : _joinedLines) {
-      map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
-      if(it==colourLines().end())
-        colourLines()[val.left] = val.right;
-      else {
-        map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
-        if(it2==colourLines().end())
-          colourLines()[val.right] = it->second;
-      }
-    }
-    bool dup=false;
-    do {
-      dup=false;
-      for(auto & val : colourLines()) {
-        map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
-        if(it!=colourLines().end()) {
-          val.second = it->second;
-          dup=true;
+  for(const auto & val : _joinedLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it1 = colourLines().find(val.left);
+    map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
+    if(it1!=colourLines().end()&&it2!=colourLines().end())
+      toJoin.push_back(make_pair(it1->second,it2->second));
+    else if (it1!=colourLines().end()) {
+      ColinePtr right=val.right;
+      while (right) {
+        boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
+        if(it== _joinedLines.left.end()) break;
+        right = it->second;
+        it2 = colourLines().find(right);
+        if(it2!=colourLines().end()) {
+          toJoin.push_back(make_pair(it1->second,it2->second));
+          break;
         }
+      };
+    }
+  }
+  for(const auto & val : colourLines()) {
+    boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  left  = _joinedLines.left .find(val.first);
+    boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator right = _joinedLines.right.find(val.first);
+    if (left !=_joinedLines.left.end() ) {
+      colourLines()[left->second] = val.second;
+    }
+    else if (right !=_joinedLines.right.end() ) {
+      colourLines()[right->second] = val.second;
+    }
+  }
+  for(const auto & val : _joinedLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
+    if(it==colourLines().end())
+      colourLines()[val.left] = val.right;
+    else {
+      map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
+      if(it2==colourLines().end())
+        colourLines()[val.right] = it->second;
+    }
+  }
+  bool dup=false;
+  do {
+    dup=false;
+    for(auto & val : colourLines()) {
+      map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
+      if(it!=colourLines().end()) {
+        val.second = it->second;
+        dup=true;
       }
     }
-    while(dup);
   }
-  return toJoin;
+  while(dup);
+  // fix any joined lines
+  if(!toJoin.empty()) {
+    for(auto val : toJoin) {
+      // NB need to try both orderings
+      if(!val.first->join(val.second)) {
+        val.second->join(val.first);
+        for(auto & val2 : colourLines())
+          if(val2.second==val.first) val2.second=val.second;
+      }
+      else {
+        for(auto & val2 : colourLines())
+          if(val2.second==val.second) val2.second=val.first;
+      }
+    }
+  }
 }
 
 void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
@@ -460,7 +470,8 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   mapColour(final,copy);
-  vector<ColinePair> toJoin = linesToJoin();
+  // join lines if required
+  joinLines();
   // now this is the ONE instance of the particle which should have a life length
   // \todo change if space-time picture added
   // set the lifelength, need this so that still in right direction after
@@ -575,10 +586,6 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     init->setVertex(copy->decayVertex());
     // insert shower products
     addFinalStateShower(init,pstep);
-  }
-  // fix any joined lines
-  if(!toJoin.empty()) {
-    for(auto val : toJoin) val.first->join(val.second);
   }
   colourLines().clear();
   _joinedLines.clear();
