@@ -443,16 +443,21 @@ void ShowerTree::joinLines() {
   while(dup);
   // fix any joined lines
   if(!toJoin.empty()) {
+    map<tColinePtr,tColinePtr> done;
     for(auto val : toJoin) {
+      map<tColinePtr,tColinePtr>::const_iterator it = done.find(val.first);
+      tColinePtr first = val.first;
+      if(it!=done.end()) first = it->second;
       // NB need to try both orderings
-      if(!val.first->join(val.second)) {
+      if(!first->join(val.second)) {
         val.second->join(val.first);
         for(auto & val2 : colourLines())
           if(val2.second==val.first) val2.second=val.second;
       }
       else {
+        done[val.second] = val.first;
         for(auto & val2 : colourLines())
-          if(val2.second==val.second) val2.second=val.first;
+          if(val2.second==val.second) val2.second=first;
       }
     }
   }
