@@ -409,38 +409,54 @@ void ShowerTree::joinLines() {
       };
     }
   }
-  for(const auto & val : colourLines()) {
-    boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  left  = _joinedLines.left .find(val.first);
-    boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator right = _joinedLines.right.find(val.first);
-    if (left !=_joinedLines.left.end() ) {
-      colourLines()[left->second] = val.second;
-    }
-    else if (right !=_joinedLines.right.end() ) {
-      colourLines()[right->second] = val.second;
-    }
-  }
+  map<ColinePtr,ColinePtr> newLines;
+  vector<tColinePtr> done;
   for(const auto & val : _joinedLines) {
+    if(find(done.begin(),done.end(),val.left)!=done.end()) continue;
+    boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator  rit  = _joinedLines.right.find(val.left);
     map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
-    if(it==colourLines().end())
-      colourLines()[val.left] = val.right;
+    if(rit!=_joinedLines.right.end() && it==colourLines().end()) continue;
+    vector<tColinePtr> left;
+    if(it==colourLines().end()) left.push_back(val.left);
+    tColinePtr right = val.right;
+    boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  lit  = _joinedLines.left .find(right);
+    map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(right);
+    if(it2!=colourLines().end()) {
+      right=it2->second;
+    }
     else {
-      map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
-      if(it2==colourLines().end())
-        colourLines()[val.right] = it->second;
+      while(lit!=_joinedLines.left .end()) {
+        left.push_back(right);
+        right=lit->second;
+        it2 = colourLines().find(right);
+        if(it2!=colourLines().end()) {
+          right=it2->second;
+          break;
+        }
+        lit  = _joinedLines.left .find(right);
+      };
+    }
+    if(it!=colourLines().end() && it2==colourLines().end()) {
+      left.push_back(right);
+      right=it->second;
+    }
+    for(auto & temp : left) {
+      done.push_back(temp);
+      newLines[temp]=right;
     }
   }
-  bool dup=false;
-  do {
-    dup=false;
-    for(auto & val : colourLines()) {
-      map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
-      if(it!=colourLines().end()) {
-        val.second = it->second;
-        dup=true;
-      }
-    }
+  for(auto & val : newLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
+    if(it!=colourLines().end()) val.second=it->second;
   }
-  while(dup);
+  for(const auto & val : newLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.first);
+    if(it!=colourLines().end()) {
+      if(val.second!=it->second) colourLines()[val.second]=it->second;
+    }
+    else
+      colourLines()[val.first]=val.second;
+  }
   // fix any joined lines
   if(!toJoin.empty()) {
     map<tColinePtr,tColinePtr> done;
