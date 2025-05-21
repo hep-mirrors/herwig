@@ -141,7 +141,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     mapColour(cjt->first->original(),cjt->first->copy());
   }
   // join colour lines if required
-  joinLines();
+  joinLines(true);
   // initial-state radiation
   if(ISR) {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
@@ -387,7 +387,7 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   }
 }
 
-void ShowerTree::joinLines() {
+void ShowerTree::joinLines(bool joinHard) {
   if (_joinedLines.empty()) return;
   vector<ColinePair> toJoin;
   for(const auto & val : _joinedLines) {
@@ -398,7 +398,7 @@ void ShowerTree::joinLines() {
     else if (it1!=colourLines().end()) {
       ColinePtr right=val.right;
       while (right) {
-        boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
+        boost::bimaps::bimap<ColinePtr,ColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
         if(it== _joinedLines.left.end()) break;
         right = it->second;
         it2 = colourLines().find(right);
@@ -410,16 +410,16 @@ void ShowerTree::joinLines() {
     }
   }
   map<ColinePtr,ColinePtr> newLines;
-  vector<tColinePtr> done;
+  vector<ColinePtr> done;
   for(const auto & val : _joinedLines) {
     if(find(done.begin(),done.end(),val.left)!=done.end()) continue;
-    boost::bimaps::bimap<tColinePtr,tColinePtr>::right_const_iterator  rit  = _joinedLines.right.find(val.left);
+    boost::bimaps::bimap<ColinePtr,ColinePtr>::right_const_iterator  rit  = _joinedLines.right.find(val.left);
     map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
     if(rit!=_joinedLines.right.end() && it==colourLines().end()) continue;
-    vector<tColinePtr> left;
+    vector<ColinePtr> left;
     if(it==colourLines().end()) left.push_back(val.left);
-    tColinePtr right = val.right;
-    boost::bimaps::bimap<tColinePtr,tColinePtr>::left_const_iterator  lit  = _joinedLines.left .find(right);
+    ColinePtr right = val.right;
+    boost::bimaps::bimap<ColinePtr,ColinePtr>::left_const_iterator  lit  = _joinedLines.left .find(right);
     map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(right);
     if(it2!=colourLines().end()) {
       right=it2->second;
@@ -458,11 +458,11 @@ void ShowerTree::joinLines() {
       colourLines()[val.first]=val.second;
   }
   // fix any joined lines
-  if(!toJoin.empty()) {
-    map<tColinePtr,tColinePtr> done;
+  if(!toJoin.empty() && joinHard) {
+    map<ColinePtr,ColinePtr> done;
     for(auto val : toJoin) {
-      map<tColinePtr,tColinePtr>::const_iterator it = done.find(val.first);
-      tColinePtr first = val.first;
+      map<ColinePtr,ColinePtr>::const_iterator it = done.find(val.first);
+      ColinePtr first = val.first;
       if(it!=done.end()) first = it->second;
       // NB need to try both orderings
       if(!first->join(val.second)) {
@@ -491,6 +491,8 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   mapColour(final,copy);
+  // join colour lines if required
+  joinLines(true);
   // now this is the ONE instance of the particle which should have a life length
   // \todo change if space-time picture added
   // set the lifelength, need this so that still in right direction after
@@ -515,7 +517,7 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     mapColour(final,copy);
   }
   // join lines if required
-  joinLines();
+  joinLines(false);
   // get the decaying particles
   // make the copy
   tColinePair cline=make_pair(copy->colourLine(),copy->antiColourLine());

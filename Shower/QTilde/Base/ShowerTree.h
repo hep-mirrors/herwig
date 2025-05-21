@@ -284,7 +284,7 @@ public:
   /**
    *  Add joined colour lines
    */
-  void addJoinedLines(tColinePtr a, tColinePtr b) { _joinedLines.insert({a,b});}
+  void addJoinedLines(ColinePtr a, ColinePtr b) { _joinedLines.insert({a,b});}
 
 protected:
 
@@ -336,7 +336,7 @@ protected:
   /**
    *    Fix colour lines for 1-> onium stuff
    */
-  void joinLines();
+  void joinLines(bool joinHard);
 
   /**
    * Find an initial-satate line
@@ -395,7 +395,7 @@ private:
   /**
    *   Map of joined colour lines
    */
-  boost::bimaps::bimap<tColinePtr,tColinePtr> _joinedLines;
+  boost::bimaps::bimap<ColinePtr,ColinePtr> _joinedLines;
 
   /**
    *  The outgoing ShowerParticles at the end of the final-state shower
