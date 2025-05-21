@@ -491,8 +491,6 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   mapColour(final,copy);
-  // join lines if required
-  joinLines();
   // now this is the ONE instance of the particle which should have a life length
   // \todo change if space-time picture added
   // set the lifelength, need this so that still in right direction after
@@ -516,6 +514,8 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     colourLines().clear();
     mapColour(final,copy);
   }
+  // join lines if required
+  joinLines();
   // get the decaying particles
   // make the copy
   tColinePair cline=make_pair(copy->colourLine(),copy->antiColourLine());
