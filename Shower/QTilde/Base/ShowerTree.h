@@ -284,7 +284,16 @@ public:
   /**
    *  Add joined colour lines
    */
-  void addJoinedLines(ColinePtr a, ColinePtr b) { _joinedLines.insert({a,b});}
+  void addJoinedLines(ColinePtr a, ColinePtr b) {
+    if(_joinedLines. left.find(a)==_joinedLines. left.end() &&
+       _joinedLines.right.find(b)==_joinedLines.right.end())
+      _joinedLines.left.insert({a,b});
+    else if (_joinedLines.left .find(b)==_joinedLines.left.end() &&
+             _joinedLines.right.find(a)==_joinedLines.right.end())
+      _joinedLines.left.insert({b,a});
+    else
+      assert(false);
+  }
 
 protected:
 
