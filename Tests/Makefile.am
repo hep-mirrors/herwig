@@ -148,6 +148,7 @@ Rivet-%.run : Rivet/%.in
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)       -c .cache/$(subst .run,,$<) $<
+	if [ -e $(subst .run,.hepmc,$<) ]; then gzip $(subst .run,.hepmc,$<); fi
 
 Rivet-%.yoda : Rivet-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
@@ -250,6 +251,7 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{12,12.8,13,14,14.8,17,21.5,22,2
 Onium-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
+	if [ -e $(subst .yoda,.hepmc,$@) ]; then gzip $(subst .yoda,.hepmc,$@); fi
 
 Onium-Splitting: Analysis/RivetHerwig.so
 	OUTPUT=`python/OniumSplitting.py --generate-input-files`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -262,6 +264,7 @@ Onium-Sigma: Analysis/RivetHerwig.so
 Rivet-LowEnergy-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
+	if [ -e $(subst .yoda,.hepmc,$@) ]; then gzip $(subst .yoda,.hepmc,$@); fi
 
 Rivet-LowEnergy-EE-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
