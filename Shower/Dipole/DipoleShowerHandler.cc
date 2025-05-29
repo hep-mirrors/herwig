@@ -85,9 +85,6 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
   prepareCascade(sub);
   resetWeights();
   
-  if ( !doFSR() && ! doISR() )
-    return sub->incoming();
-
   eventRecord().setSubleadingNc(doSubleadingNc,
 				subleadingNcEmissionsLimit);
   eventRecord().clear();
