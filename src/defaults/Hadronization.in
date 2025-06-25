@@ -48,6 +48,8 @@ newdef ClusterDecayer:HadronSpectrum SMHadronSpectrum
 newdef LightClusterDecayer:HadronSpectrum SMHadronSpectrum
 
 # ColourReconnector Default Parameters
+newdef ColourReconnector:HadronSpectrum SMHadronSpectrum
+newdef ColourReconnector:ClusterFinder ClusterFinder
 newdef ColourReconnector:ColourReconnection Yes
 newdef ColourReconnector:Algorithm Baryonic
 
@@ -73,9 +75,7 @@ newdef ColourReconnector:MesonToBaryonFactor 1.333
 # General Parameters and switches
 newdef ColourReconnector:MaxDistance 1.0e50
 newdef ColourReconnector:OctetTreatment All
-newdef ColourReconnector:CR2BeamClusters No
 newdef ColourReconnector:Junction Yes
-newdef ColourReconnector:PrePlainCR No
 newdef ColourReconnector:LocalCR No
 newdef ColourReconnector:CausalCR No
 # Debugging 

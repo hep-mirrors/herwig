@@ -10,8 +10,25 @@
 #define HERWIG_ColourReconnector_H
 
 #include <ThePEG/Interface/Interfaced.h>
+#include <ThePEG/Utilities/DescribeClass.h>
+#include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Interface/Reference.h>
+#include <ThePEG/Interface/Parameter.h>
+
 #include "CluHadConfig.h"
+#include "Cluster.h"
 #include "ColourReconnector.fh"
+#include "HadronSpectrum.h"
+#include "ClusterFinder.h"
+
+#include "Herwig/Utilities/Kinematics.h"
+#include "Herwig/Utilities/Maths.h"
+#include "Herwig/Utilities/expm-1.h"
+#include "Herwig/MatrixElement/Matchbox/CVolver/ColourFlows.h"
+
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
 
 namespace Herwig {
 
@@ -48,6 +65,94 @@ public:
   using CluVecIt = ClusterVector::iterator;
 
 private:
+	/*
+	class ColourFlowState2 {
+
+	};
+	class ColourFlowBasis2 {
+		// represents the colour flow state for 2 colour flows:
+		// Note: i,j are either (1,2)
+		// |ij> === |(1,2)->(i,j)>
+		// where 1,2 are coloured partons and i,j are their 
+		// anticoloured partons
+		public:
+			ColourFlowBasis2();
+			ColourFlowBasis2(const ColourFlowBasis2 & cf2){
+				setIndex(cf2.getIndex(0),cf2.getIndex(1));
+			};
+			bool operator=(const ColourFlowBasis2& cf2){
+				return setIndex(cf2.getIndex(0),cf2.getIndex(1));
+			}
+			bool setIndex(int ind[2]) {
+				return setIndex(ind[0],ind[1]);
+			};
+			bool setIndex(int i, int j) {
+				if (i==j || i<0 || j<0 || i>1 || j>1){
+					std::cout << "Error cannot create ColourFlowBasis2 = |"<<i+1<<j+1<<">\n";
+					return true;
+				}
+				_index[0]=i+1;
+				_index[1]=j+1;
+				return false;
+			};
+			int getIndex(int i) const {
+				if (i<0 || i>1 ){
+					std::cout << "Error i = "<<i << std::endl;
+					assert(false);
+				}
+				return _index[i];
+			};
+		private:
+			int _index[2] = {1,2};
+	};
+	class ColourFlowBasis3 {
+		// represents the colour flow state for 2 colour flows:
+		// Note: i,j,k are either (1,2,3)
+		// |ijk> === |(1,2,3)->(i,j,k)>
+		// where 1,2,3 are coloured partons and i,j,k are their 
+		// anticoloured partons
+		public:
+			ColourFlowBasis3();
+			ColourFlowBasis3(const ColourFlowBasis3 & cf3){
+				setIndex(cf3.getIndex(0),cf3.getIndex(1),cf3.getIndex(2));
+			};
+			bool operator=(const ColourFlowBasis3& cf3){
+				return setIndex(cf3.getIndex(0),cf3.getIndex(1),cf3.getIndex(2));
+			}
+			bool setIndex(int ind[3]) {
+				return setIndex(ind[0],ind[1],ind[2]);
+			};
+			bool setIndex(int i, int j, int k) {
+				if (i==j || i==k || j==k || i<0 || j<0 || k<0 || i>2 || j>2 || k>2){
+					std::cout << "Error cannot create ColourFlowBasis3 = |"<<i+1<<j+1<<k+1<<">\n";
+					return true;
+				}
+				_index[0]=i+1;
+				_index[1]=j+1;
+				_index[2]=k+1;
+				return false;
+			};
+			int getIndex(int i) const {
+				if (i<0 || i>2 ){
+					std::cout << "Error i = "<<i << std::endl;
+					assert(false);
+				}
+				return _index[i];
+			};
+		private:
+			int _index[3] = {1,2,3};
+	};*/
+	/*
+	 * Reference to HadronSpectrum for getting 
+	 * threshold settings
+	 * */
+  HadronSpectrumPtr _hadronSpectrum;
+
+	/*
+	 * Reference to ClusterFinder for getting 
+	 * Diquark treatment
+	 * */
+  ClusterFinderPtr _clusterFinder;
 
   /** PRIVATE MEMBER FUNCTIONS */
 
@@ -57,9 +162,21 @@ private:
    * @return    Sum of cluster squared masses M^2_{q[i],aq[i]}.
    */
   Energy2 _clusterMassSum(const PVector & q, const PVector & aq) const;
-  
-  
-  
+
+	Selector <int> getProbabilities2CF(const ClusterPtr & c1, const ClusterPtr & c2, bool diquarkCR) const;
+	Selector <int> _selector(const ClusterVector & clusters, bool diquarkCR) const;
+	Selector <int> _selectorCF3(const ClusterVector & clusters, bool diquarkCR) const;
+	std::unordered_map<int,double> _reconnectionAmplitudesSGE(const ClusterVector & clusters) const;
+	int _stateToPermutation(const int i) const;
+
+  /**
+   * @brief     Calculates the Mesonic reconnection Probability from soft gluon evolution
+   * @arguments c1, c2 cluster pointer refs, whose kinematics determine the probability
+   * @return    probability in [0:1]
+   */
+  std::tuple<double,double,double> _dynamicRecoProbabilitiesCF2(const ClusterPtr & c1, const ClusterPtr & c2, bool diquarkCR) const;
+	std::unordered_map<int,double> _reconnectionAmplitudesCF2 (const ClusterPtr & c1, const ClusterPtr & c2, const int nonTrivialInitialState = 0) const;
+
   /**
    * @brief     calculates the "euclidean" distance of two quarks in the 
    * 			rapdidity-phi plane
@@ -90,8 +207,6 @@ private:
    * 					need to be combined with a change (or re-tune)
    * 					of _mesonToBaryonFactor otherwise no well 
    * 					description is to be expected
-   * 			TODO:	maybe add a different p-norm option to get
-   * 					more phenomenology
    */
   double _displacementBaryonic(tcPPtr p1, tcPPtr p2, tcPPtr p3) const;
 
@@ -123,8 +238,7 @@ private:
    * Baryonic Colour Reconnection model
    */
   void _doRecoBaryonic(ClusterVector & cv) const;
-  
-  
+  void _doRecoBaryonicDiquarkCluster(ClusterVector & cv) const;
   /**
    * @brief     BaryonicMesonic colour reconnection model
    * @arguments cv cluster vector
@@ -139,7 +253,20 @@ private:
 
   void _makeBaryonicClusters(ClusterPtr &c1, ClusterPtr &c2, ClusterPtr &c3,
 			     ClusterPtr &newcluster1, ClusterPtr &newcluster2) const;
-  
+
+  /**
+   *  Method to allow one to make four (light) quark clusters
+   */
+  bool _makeDiquarkCluster(ClusterPtr &c1, ClusterPtr &c2, ClusterPtr &newcluster) const;
+	pair <ClusterPtr,ClusterPtr> _splitDiquarkCluster(ClusterPtr &diquarkCluster, bool colourReconnect) const;
+
+	bool _canMakeDiquarkCluster(tcPPtr pCol1, tcPPtr pCol2,tcPPtr pAntiCol1, tcPPtr pAntiCol2) const;
+  bool _canMakeDiquarkCluster(const ClusterPtr &c1, const ClusterPtr &c2) const;
+	bool _canMakeDiquarkCluster(tcPPtr pCol1, tcPPtr pCol2,tcPPtr pAntiCol1, tcPPtr pAntiCol2, double &PhaseSpace) const;
+  bool _canMakeDiquarkCluster(const ClusterPtr &c1, const ClusterPtr &c2, double &PhaseSpace) const;
+
+	bool _canMakeBaryonicCluster(vector<tcPPtr> pCol) const;
+  bool _canMakeBaryonicCluster(const ClusterPtr &c1, const ClusterPtr &c2, const ClusterPtr &c3) const;
 
   /**
    * @brief     Finds the cluster in cv which, if reconnected with the given
@@ -153,16 +280,23 @@ private:
    */
 
 
-  CluVecIt _findRecoPartner(CluVecIt cl, ClusterVector & cv) const;
+  CluVecIt _findRecoPartnerPlain(const CluVecIt & cl, ClusterVector & cv, const ClusterVector & deleted) const;
+  CluVecIt _findRecoPartnerPlainDynamic(const CluVecIt & cl, ClusterVector & cv, const ClusterVector & deleted, bool diquarkCR) const;
 
-  CluVecIt _findPartnerRapidity(CluVecIt cl, ClusterVector & cv) const;
+  CluVecIt _findPartnerRapidity(const CluVecIt & cl, ClusterVector & cv) const;
 
-  CluVecIt _findPartnerBaryonic(CluVecIt cl, ClusterVector & cv, 
+  CluVecIt _findPartnerBaryonic(const CluVecIt & cl, ClusterVector & cv, 
                                                bool & tetraCand, 
                                                const ClusterVector& a, 
                                                CluVecIt  &baryonic1,
                                                CluVecIt  &baryonic2 ) const;
-  
+  void _findPartnerBaryonicDiquarkCluster( const CluVecIt & cl, ClusterVector & cv,
+		  unsigned & typeOfReconnection,
+		  const ClusterVector& deleted,
+		  CluVecIt &candidate1,
+		  CluVecIt &candidate2 ) const;
+
+
   /**
    * @brief     Finds best CR option for the BaryonicMesonic CR model
    * @arguments cls vector of selected clusters, baryonic is the number of baryonic
@@ -185,6 +319,7 @@ private:
    * Used for Plain and Baryonic Colour Reconnection models
    */
   pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr &c1, ClusterPtr &c2) const;
+	std::tuple  <ClusterPtr, ClusterPtr> _reconnect3MtoMD(ClusterVector & cluvec, const int topology) const;
   
   /**
    * @brief     Reconnects (2B->2B) the constituents of the given clusters to 
@@ -256,7 +391,6 @@ private:
    * @arguments	expects at most 3 CluVecIt in clu vector
    * @return	returns true if clusters are more distant than _maxDistance 
    * 			in space
-   * TODO: problematic maybe add option to turn off
    */
   bool _clustersFarApart( const std::vector<CluVecIt> & clu ) const;
 	
@@ -316,6 +450,23 @@ private:
   pair <int,int>
     _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
+  /**
+   * @return	true, if we would reconnect two mesonic clusters to a single gluon
+	 * */
+	bool _isColour8Forbidden(int state, const ClusterVector & clusters) const;
+
+  /**
+   * @return	true, if we would reconnect two mesonic clusters to at least
+	 * one gluon
+   */
+  bool _becomesColour8Cluster(const ClusterPtr & c1, const ClusterPtr & c2) const;
+
+  /**
+   * @return	true, if the two partons are splitting products of the same
+   * 		gluon
+   */
+  bool _isColour8(tcPPtr p, tcPPtr q) const;
+  
 
   /** DATA MEMBERS */
 
@@ -330,6 +481,11 @@ private:
   int _clreco = 0;
 
   /**
+   * Number of iterations of the Colour reconnecion algorithm
+   */
+	unsigned int _crIterations = 1;
+  
+	/**
    * Do we want debug informations? 
    */
   int _debug = 0;
@@ -381,13 +537,19 @@ private:
    * Probability that a found reconnection possibility is actually accepted.
    * used in Plain & Baryonic CR
    */
-  double _preco = 0.5;
+  double _precoMesonic = 0.5;
 
   /**
    * Probability that a found reconnection possibility is actually accepted.
    * used in Baryonic CR
    */
   double _precoBaryonic = 0.5;
+
+  /**
+   * Probability that a found reconnection possibility is actually accepted.
+   * used in Baryonic CR
+   */
+  double _precoDiquark = 0.5;
 
   /**
    * Probability that a found reconnection possibility is actually accepted.
@@ -441,31 +603,12 @@ private:
 
   /**
    *  Maximium distance for reconnections
-   *  TODO: remove if issues with anticausality are discussed and resolved
    */
   Length _maxDistance = femtometer;
-
-  /**
-   * @return	true, if the two partons are splitting products of the same
-   * 		gluon
-   */
-  bool _isColour8(tcPPtr p, tcPPtr q) const;
-  
   /**
    *  Option for handling octets
    */
-  unsigned int _octetOption = 0;
-
-  /**
-   *  Option for colour reconnecting 2 Beam Clusters if no others are present
-   */
-  int _cr2BeamClusters = 0;
-
-  /**
-   *  Option for performing Plain colour reconnection before the Statistical,
-   *  Baryonic or BaryonicMesonic algorithm is performed
-   */
-  int _prePlainCR = 0;
+  int _octetOption = 0;
 
   /**
    *  Option for colour reconnecting Clusters only if their vertex 3-distance
@@ -478,6 +621,42 @@ private:
    *  is bigger than 0
    */
   int _causalCR = 0;
+
+  /**
+   *  Option for doing the Dynamic CR probability depending on soft 
+	 *  gluon evolution
+	 */
+  int _dynamicCR = 0;
+
+  /**
+   *  Option for doing the diquark colour Reconnection
+	 */
+  int _diquarkCR = 0;
+
+  /**
+   *  Choose Dynamic CR probability scale depending on soft 
+	 *  gluon evolution
+	 */
+  double _dynamicCRscale = 1.0;
+
+  /**
+   *  Choose Dynamic CR probability scale depending on soft 
+	 *  gluon evolution
+	 */
+  double _dynamicCRalphaS = 0.8;
+
+  /**
+	 * switch for including PhaseSpace in 
+	 * Diquark transition probability
+	 * */
+  int _phaseSpaceDiquarkFission = 1;
+
+  /**
+	 * Cut on diquark formation such that clusters are accepted 
+	 * only if (p1*p2/(m1*m2)-1)<cut for diquark and antidiquark.
+	 * Note that setting this to 0 applies no cut!
+	 * */
+  double _cutDiquarkClusterFormation = 0.0;
 
 public:
 

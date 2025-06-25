@@ -90,21 +90,31 @@ void ClusterFinder::Init() {
      "LowestMass",
      "Combine the lowest mass pair",
      1);
+  static SwitchOption interfaceDiQuarkSelectionLowestMassRescaled
+    (interfaceDiQuarkSelection,
+     "LowestMassRescaled",
+     "Combine the quark pair with the lowest value of (p1+p2)^2/(m1+m2)^2",
+     2);
 
-  static Switch<ClusterFinder,bool> interfaceDiQuarkOnShell
+  static Switch<ClusterFinder,int> interfaceDiQuarkOnShell
     ("DiQuarkOnShell",
      "Force the diquark produced in baryon-number violating clusters to be on-shell",
-     &ClusterFinder::diQuarkOnShell_, false, false, false);
+     &ClusterFinder::diQuarkOnShell_, -1, false, false);
   static SwitchOption interfaceDiQuarkOnShellYes
     (interfaceDiQuarkOnShell,
      "Yes",
      "Force to be on-shell",
-     true);
+     1);
+  static SwitchOption interfaceDiQuarkOnShellMixed
+    (interfaceDiQuarkOnShell,
+     "Mixed",
+     "Set Mass to constituent mass, but leave momentum as is.",
+     -1);
   static SwitchOption interfaceDiQuarkOnShellNo
     (interfaceDiQuarkOnShell,
      "No",
      "Leave off-shell",
-     false);
+     0);
 
 }
 
@@ -319,6 +329,192 @@ namespace {
 }
 
 
+ClusterPtr ClusterFinder::handleBaryonicCluster(ClusterPtr clu) const {
+  // A modification of reduceToTwoComponents that is dedicated
+  // to make a quark-diquark or antiquark-antidiquark out of a 
+  // baryonic or antibaryonic cluster
+  tParticleVector vec;
+  tPPtr other;
+  for(unsigned int i = 0; i<clu->numComponents(); i++) {
+    tPPtr part = clu->particle(i);
+    if(!DiquarkMatcher::Check(*(part->dataPtr())))
+      vec.push_back(part);
+    else
+      other = part;
+  }
+
+  if(vec.size()<2) {
+    throw Exception() << "Could not make a diquark for a baryonic cluster decay from "
+      << clu->particle(0)->PDGName() << " "
+      << clu->particle(1)->PDGName() << " "
+      << clu->particle(2)->PDGName() << " "
+      << " in ClusterFinder::reduceToTwoComponents()."
+      << Exception::eventerror;
+  }
+
+  // order the vector so heaviest at the end
+  std::sort(vec.begin(),vec.end(),PartOrdering);
+
+  // Special treatment of heavy quarks
+  // avoid doubly heavy diquarks
+  if(heavyDiquarks_>=1   && vec.size()>2 &&
+      abs(vec[1]->id())>3 && abs(vec[0]->id())<=3) {
+    // TODO: Note this change is in principle not identical to
+    //			 Default, but IMO is reasonable
+    // if(UseRandom::rndbool()) swap(vec[1],vec[2]);
+    other = vec[2];
+    vec.pop_back();
+  }
+  // avoid singly heavy diquarks
+  if(heavyDiquarks_==2   && vec.size()>2 &&
+      abs(vec[2]->id())>3 && abs(vec[1]->id())<=3) {
+    other = vec[2];
+    vec.pop_back();
+  }
+
+  // if there's a choice pick the pair to make a diquark from
+  if(vec.size()>2) {
+    // TODO refactor this
+    unsigned int ichoice(0);
+    // random choice
+    if(diQuarkSelection_==0) {
+      ichoice = UseRandom::rnd3(1.0, 1.0, 1.0);
+    }
+    // pick the lightest quark pair
+    else if(diQuarkSelection_==1) {
+      Energy m12 = (vec[0]->momentum()+vec[1]->momentum()).m();
+      Energy m13 = (vec[0]->momentum()+vec[2]->momentum()).m();
+      Energy m23 = (vec[1]->momentum()+vec[2]->momentum()).m();
+      if     (m13<=m12&&m13<=m23)  ichoice = 2;
+      else if(m23<=m12&&m23<=m13)  ichoice = 1;
+    }
+    // pick the lightest quark pair rescaled to the mass
+    else if(diQuarkSelection_==2) {
+      double m12 = (vec[0]->momentum()+vec[1]->momentum()).m()/(vec[0]->momentum().m()+vec[1]->momentum().m());
+      double m13 = (vec[0]->momentum()+vec[2]->momentum()).m()/(vec[0]->momentum().m()+vec[2]->momentum().m());
+      double m23 = (vec[1]->momentum()+vec[2]->momentum()).m()/(vec[1]->momentum().m()+vec[2]->momentum().m());
+      if     (m13<=m12&&m13<=m23)  ichoice = 2;
+      else if(m23<=m12&&m23<=m13)  ichoice = 1;
+    }
+    else
+      assert(false);
+    // make the swaps so select pair first
+    switch (ichoice) {
+      case 0:
+        break;
+      case 1:
+        swap(vec[2],vec[0]);
+        break;
+      case 2:
+        swap(vec[2],vec[1]);
+        break;
+    }
+  }
+  // set up
+  tcPDPtr temp1  = vec[0]->dataPtr();
+  tcPDPtr temp2  = vec[1]->dataPtr();
+  if(!other) other = vec[2];
+
+  tcPDPtr dataDiquark  = _hadronSpectrum->makeDiquark(temp1,temp2);
+
+  if(!dataDiquark) 
+    throw Exception() << "Could not make a diquark from "
+      << temp1->PDGName() << " and "
+      << temp2->PDGName()
+      << " in ClusterFinder::reduceToTwoComponents()"
+      << Exception::eventerror;
+
+
+  // Create the new cluster (with two components) and assign to it the same
+  // momentum and position of the original (with three components) one.
+  // Furthermore, assign to the diquark component a momentum given by the
+  // sum of the two original components from which has been formed; for the
+  // position, we are assuming, very simply, that the diquark position is
+  // the average positions of the two original components.
+  // Notice that the mass (5-th component of the 5-momentum) of the diquark
+  // is set by hand to the constituent mass of the diquark (which is equal
+  // to the sum of the constituent masses of the two quarks which form the
+  // diquark) because the sum of 5-component vectors do add only the "normal"
+  // 4-components, not the 5-th one. After that, the 5-momentum of the diquark
+  // is in an inconsistent state, because the mass (5-th component) is not
+  // equal to the invariant mass obtained from the 4-momemtum. This is not
+  // unique to this kind of component (all perturbative components are in
+  // a similar situation), but it is not harmful.
+
+  // construct the diquark
+  PPtr diquark = dataDiquark->produceParticle();
+  vec[0]->addChild(diquark);
+  vec[1]->addChild(diquark);
+  // use the same method as for cluster to determine the diquark position
+  diquark->setVertex(Cluster::calculateX(vec[0],vec[1]));
+  // Set momenta of diquarks
+  Lorentz5Momentum pDiq = vec[0]->momentum() + vec[1]->momentum();
+  pDiq.setMass(dataDiquark->constituentMass());
+  diquark->set5Momentum(Lorentz5Momentum(pDiq, dataDiquark->constituentMass()));
+  switch (diQuarkOnShell_)
+  {
+    case 0:
+      {
+        // No: Set the momentum of the diquarks to the original and mass to the Off-shell mass
+        diquark->set5Momentum(Lorentz5Momentum(pDiq, pDiq.m()));
+        break;
+      }
+    case -1:
+      {
+        // Mixed (default): Set the momentum of the diquarks to the original, but mass to constituentMass
+        //                  as above
+        break;
+      }
+    case 1:
+      {
+        // Yes: Rescale the momentum and mass of the diquarks to their diquark constituentMass
+        Lorentz5Momentum psum = pDiq+other->momentum();
+        psum.rescaleMass();
+        Boost boost = psum.boostVector();
+        Lorentz5Momentum pother   =   other->momentum();
+        Lorentz5Momentum pdiquark = pDiq;
+        pother.boost(-boost);
+        pdiquark.boost(-boost);
+        Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
+            other->dataPtr()->constituentMass(),
+            diquark->dataPtr()->constituentMass());
+        if(pcm>ZERO) {
+          double fact = pcm/pother.vect().mag();
+          pother   *= fact;
+          pdiquark *= fact;
+          pother  .setMass(other->dataPtr()->constituentMass());
+          pdiquark.setMass(dataDiquark     ->constituentMass());
+          pother  .rescaleEnergy();
+          pdiquark.rescaleEnergy();
+          pother  .boost(boost);
+          pdiquark.boost(boost);
+          other->set5Momentum(pother);
+          diquark->set5Momentum(pdiquark);
+        } else {
+          throw Exception()
+            << "Not enough mass for baryonic cluster M = " << psum.mass()/GeV
+            << " m1 = " <<  other->dataPtr()->constituentMass()/GeV
+            << " m2 = " <<  dataDiquark     ->constituentMass()/GeV
+            << " to be on shell! Pcom = " << pcm/GeV
+            << Exception::runerror;
+        }
+        break;
+      }
+    default:
+      assert(false);
+  }
+
+  // make the new cluster
+  ClusterPtr nclus = new_ptr(Cluster(other,diquark));
+  //vec[0]->addChild(nclus);
+  //diquark->addChild(nclus);
+
+  // Set the parent/children relationship between the original cluster
+  // (the one with three components) with the new one (the one with two components)
+  // and add the latter to the vector of new redefined clusters.
+  clu->addChild(nclus);
+  return nclus;
+}
 ClusterPtr ClusterFinder::handleDiquarkCluster(ClusterPtr clu) const {
   // A modification of reduceToTwoComponents that is dedicated
   // to make two diquark pairs out of the diquark cluster
@@ -396,42 +592,75 @@ ClusterPtr ClusterFinder::handleDiquarkCluster(ClusterPtr clu) const {
   vec[2]->addChild(diquarkBar);
   vec[3]->addChild(diquarkBar);
 
-  // Set the momentum of the diquarks
-  diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
-           dataDiquark->constituentMass()));
-  diquarkBar->set5Momentum(Lorentz5Momentum(vec[2]->momentum() + vec[3]->momentum(),
-           dataDiquarkBar->constituentMass()));
-
   // use the same method as for cluster to determine the diquark position
   diquark->setVertex(Cluster::calculateX(vec[0],vec[1]));
   diquarkBar->setVertex(Cluster::calculateX(vec[2],vec[3]));
 
-  // Put on-shell if needed
-  if (diQuarkOnShell_) {
-    Lorentz5Momentum psum = diquark->momentum()+diquarkBar->momentum();
-    psum.rescaleMass();
-    Boost boost = psum.boostVector();
-    Lorentz5Momentum pdiquarkBar = diquarkBar->momentum();
-    Lorentz5Momentum pdiquark    = diquark->momentum();
-    pdiquarkBar.boost(-boost);
-    pdiquark.boost(-boost);
-    Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
-           diquarkBar->dataPtr()->constituentMass(),
-           diquark->dataPtr()->constituentMass());
-    if(pcm>ZERO) {
-       double fact = pcm/pdiquarkBar.vect().mag();
-       pdiquarkBar   *= fact;
-       pdiquark *= fact;
-       pdiquarkBar.setMass(dataDiquarkBar->constituentMass());
-       pdiquark   .setMass(dataDiquark   ->constituentMass());
-       pdiquarkBar.rescaleEnergy();
-       pdiquark   .rescaleEnergy();
-       pdiquarkBar.boost(boost);
-       pdiquark   .boost(boost);
-       diquarkBar->set5Momentum(pdiquarkBar);
-       diquark   ->set5Momentum(pdiquark);
-    }
-  }
+	// Set momenta of diquarks
+	Lorentz5Momentum pDiq = vec[0]->momentum() + vec[1]->momentum();
+	Lorentz5Momentum pAntiDiq = vec[2]->momentum() + vec[3]->momentum();
+
+	pDiq.setMass(dataDiquark->constituentMass());
+	pAntiDiq.setMass(dataDiquarkBar->constituentMass());
+
+  // Set the momentum of the diquarks
+  diquark->set5Momentum(Lorentz5Momentum(pDiq, dataDiquark->constituentMass()));
+  diquarkBar->set5Momentum(Lorentz5Momentum(pAntiDiq, dataDiquarkBar->constituentMass()));
+
+	switch (diQuarkOnShell_)
+	{
+		case 0:
+			{
+				// No: Set the momentum of the diquarks to the original and mass to the Off-shell mass
+				diquark->set5Momentum(Lorentz5Momentum(pDiq, pDiq.m()));
+				diquarkBar->set5Momentum(Lorentz5Momentum(pAntiDiq, pAntiDiq.m()));
+				break;
+			}
+		case -1:
+			{
+				// Mixed (default): Set the momentum of the diquarks to the original, but mass to constituentMass
+				//                  as above
+				break;
+			}
+		case 1:
+			{
+				// Yes: Rescale the momentum and mass of the diquarks to their diquark constituentMass
+				Lorentz5Momentum psum = pDiq + pAntiDiq;
+				psum.rescaleMass();
+				Boost boost = psum.boostVector();
+				Lorentz5Momentum pdiquarkBar = pAntiDiq;
+				Lorentz5Momentum pdiquark    = pDiq;
+				pdiquarkBar.boost(-boost);
+				pdiquark.boost(-boost);
+				Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
+						diquarkBar->dataPtr()->constituentMass(),
+						diquark->dataPtr()->constituentMass());
+				if(pcm>ZERO) {
+					double fact = pcm/pdiquarkBar.vect().mag();
+					pdiquarkBar   *= fact;
+					pdiquark *= fact;
+					pdiquarkBar.setMass(dataDiquarkBar->constituentMass());
+					pdiquark   .setMass(dataDiquark   ->constituentMass());
+					pdiquarkBar.rescaleEnergy();
+					pdiquark   .rescaleEnergy();
+					pdiquarkBar.boost(boost);
+					pdiquark   .boost(boost);
+					diquarkBar->set5Momentum(pdiquarkBar);
+					diquark   ->set5Momentum(pdiquark);
+				} else {
+					throw Exception()
+						<< "Not enough mass for cluster Diquark cluster M = " << psum.mass()/GeV
+						<< " m1 = " <<  diquarkBar->dataPtr()->constituentMass()/GeV
+						<< " m2 = " <<  diquark->dataPtr()->constituentMass()/GeV
+						<< " to be on shell! Pcom = " << pcm/GeV
+						<< Exception::runerror;
+				}
+				break;
+			}
+		default:
+			assert(false);
+	}
+
   // make the new cluster
   ClusterPtr nclus = new_ptr(Cluster(diquark, diquarkBar));
   // Set the parent/child relationship
@@ -466,156 +695,40 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
 	}
 
     if ( (*cluIter)->numComponents() == 4 && (*cluIter)->isAvailable() ){
-      ClusterPtr nclus = handleDiquarkCluster(*cluIter);
-	  assert(nclus->numComponents()==2);
-      redefinedClusters.push_back(nclus);
-	  continue;
+		// Handle diquark clusters
+      ClusterPtr DiquarkClusterReduced = handleDiquarkCluster(*cluIter);
+			if (DiquarkClusterReduced) {
+				assert(DiquarkClusterReduced->numComponents()==2);
+				redefinedClusters.push_back(DiquarkClusterReduced);
+			} else {
+				throw Exception()
+					<< "Could not reduce Diquark Cluster M = " << DiquarkClusterReduced->momentum().m()/GeV
+					<< "\n m1 = " <<  DiquarkClusterReduced->particle(0)->dataPtr()->constituentMass()/GeV
+					<< "\n m2 = " <<  DiquarkClusterReduced->particle(1)->dataPtr()->constituentMass()/GeV
+					<< "\n m3 = " <<  DiquarkClusterReduced->particle(2)->dataPtr()->constituentMass()/GeV
+					<< "\n m4 = " <<  DiquarkClusterReduced->particle(3)->dataPtr()->constituentMass()/GeV
+					<< Exception::runerror;
+			}
+			continue;
     }
 
     if ( (*cluIter)->numComponents() != 3 ||
 	 ! (*cluIter)->isAvailable() ) continue;
 
-    tPPtr other;
-    for(unsigned int i = 0; i<(*cluIter)->numComponents(); i++) {
-      tPPtr part = (*cluIter)->particle(i);
-      if(!DiquarkMatcher::Check(*(part->dataPtr())))
-	vec.push_back(part);
-      else
-	other = part;
-    }
-
-    if(vec.size()<2) {
-      throw Exception() << "Could not make a diquark for a baryonic cluster decay from "
-			<< (*cluIter)->particle(0)->PDGName() << " "
-			<< (*cluIter)->particle(1)->PDGName() << " "
-			<< (*cluIter)->particle(2)->PDGName() << " "
-			<< " in ClusterFinder::reduceToTwoComponents()."
-			<< Exception::eventerror;
-    }
-
-    // order the vector so heaviest at the end
-    std::sort(vec.begin(),vec.end(),PartOrdering);
-
-    // Special treatment of heavy quarks
-    // avoid doubly heavy diquarks
-    if(heavyDiquarks_>=1   && vec.size()>2 &&
-       abs(vec[1]->id())>3 && abs(vec[0]->id())<=3) {
-      if(UseRandom::rndbool()) swap(vec[1],vec[2]);
-      other = vec[2];
-      vec.pop_back();
-    }
-    // avoid singly heavy diquarks
-    if(heavyDiquarks_==2   && vec.size()>2 &&
-       abs(vec[2]->id())>3 && abs(vec[1]->id())<=3) {
-      other = vec[2];
-      vec.pop_back();
-    }
-
-    // if there's a choice pick the pair to make a diquark from
-    if(vec.size()>2) {
-      unsigned int ichoice(0);
-      // random choice
-      if(diQuarkSelection_==0) {
-	ichoice = UseRandom::rnd3(1.0, 1.0, 1.0);
-      }
-      // pick the lightest quark pair
-      else if(diQuarkSelection_==1) {
-	Energy m12 = (vec[0]->momentum()+vec[1]->momentum()).m();
-	Energy m13 = (vec[0]->momentum()+vec[2]->momentum()).m();
-	Energy m23 = (vec[1]->momentum()+vec[2]->momentum()).m();
-	if     (m13<=m12&&m13<=m23)  ichoice = 2;
-	else if(m23<=m12&&m23<=m13)  ichoice = 1;
-      }
-      else
-	assert(false);
-      // make the swaps so select pair first
-      switch (ichoice) {
-      case 0:
-	break;
-      case 1:
-	swap(vec[2],vec[0]);
-	break;
-      case 2:
-	swap(vec[2],vec[1]);
-	break;
-      }
-    }
-    // set up
-    tcPDPtr temp1  = vec[0]->dataPtr();
-    tcPDPtr temp2  = vec[1]->dataPtr();
-    if(!other) other = vec[2];
-
-    tcPDPtr dataDiquark  = _hadronSpectrum->makeDiquark(temp1,temp2);
-    
-    if(!dataDiquark) 
-      throw Exception() << "Could not make a diquark from "
-			<< temp1->PDGName() << " and "
-			<< temp2->PDGName()
-			<< " in ClusterFinder::reduceToTwoComponents()"
-			<< Exception::eventerror;
-
-
-    // Create the new cluster (with two components) and assign to it the same
-    // momentum and position of the original (with three components) one.
-    // Furthermore, assign to the diquark component a momentum given by the
-    // sum of the two original components from which has been formed; for the
-    // position, we are assuming, very simply, that the diquark position is
-    // the average positions of the two original components.
-    // Notice that the mass (5-th component of the 5-momentum) of the diquark
-    // is set by hand to the constituent mass of the diquark (which is equal
-    // to the sum of the constituent masses of the two quarks which form the
-    // diquark) because the sum of 5-component vectors do add only the "normal"
-    // 4-components, not the 5-th one. After that, the 5-momentum of the diquark
-    // is in an inconsistent state, because the mass (5-th component) is not
-    // equal to the invariant mass obtained from the 4-momemtum. This is not
-    // unique to this kind of component (all perturbative components are in
-    // a similar situation), but it is not harmful.
-
-    // construct the diquark
-    PPtr diquark = dataDiquark->produceParticle();
-    vec[0]->addChild(diquark);
-    vec[1]->addChild(diquark);
-    diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
-					   dataDiquark->constituentMass()));
-    // use the same method as for cluster to determine the diquark position
-    diquark->setVertex(Cluster::calculateX(vec[0],vec[1]));
-    // put on-shell if required
-    if(diQuarkOnShell_) {
-		Lorentz5Momentum psum = diquark->momentum()+other->momentum();
-		psum.rescaleMass();
-		Boost boost = psum.boostVector();
-		Lorentz5Momentum pother   =   other->momentum();
-		Lorentz5Momentum pdiquark = diquark->momentum();
-		pother.boost(-boost);
-		pdiquark.boost(-boost);
-		Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
-				other->dataPtr()->constituentMass(),
-				diquark->dataPtr()->constituentMass());
-		if(pcm>ZERO) {
-			double fact = pcm/pother.vect().mag();
-			pother   *= fact;
-			pdiquark *= fact;
-			pother  .setMass(other->dataPtr()->constituentMass());
-			pdiquark.setMass(dataDiquark     ->constituentMass());
-			pother  .rescaleEnergy();
-			pdiquark.rescaleEnergy();
-			pother  .boost(boost);
-			pdiquark.boost(boost);
-			other->set5Momentum(pother);
-			diquark->set5Momentum(pdiquark);
+		// Should now only have baryonic clusters
+		// Handle baryonic clusters
+		ClusterPtr BaryonicClusterReduced = handleBaryonicCluster(*cluIter);
+		if (BaryonicClusterReduced) {
+			assert(BaryonicClusterReduced->numComponents()==2);
+			redefinedClusters.push_back(BaryonicClusterReduced);
+		} else {
+			throw Exception()
+				<< "Could not reduce baryonic cluster M = " << BaryonicClusterReduced->momentum().m()/GeV
+				<< "\n m1 = " <<  BaryonicClusterReduced->particle(0)->dataPtr()->constituentMass()/GeV
+				<< "\n m2 = " <<  BaryonicClusterReduced->particle(1)->dataPtr()->constituentMass()/GeV
+				<< "\n m3 = " <<  BaryonicClusterReduced->particle(2)->dataPtr()->constituentMass()/GeV
+				<< Exception::runerror;
 		}
-    }
-    // make the new cluster
-    ClusterPtr nclus = new_ptr(Cluster(other,diquark));
-    //vec[0]->addChild(nclus);
-    //diquark->addChild(nclus);
-
-    // Set the parent/children relationship between the original cluster
-    // (the one with three components) with the new one (the one with two components)
-    // and add the latter to the vector of new redefined clusters.
-    (*cluIter)->addChild(nclus);
-
-    redefinedClusters.push_back(nclus);
   }
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the
