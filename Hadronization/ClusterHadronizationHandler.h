@@ -34,10 +34,10 @@ using namespace ThePEG;
 
  *  \author Alberto Ribon
  *
- *  This class is the main driver of the cluster hadronization: it is 
+ *  This class is the main driver of the cluster hadronization: it is
  *  responsible for the proper handling of all other specific collaborating
- *  classes PartonSplitter, ClusterFinder, ColourReconnector, ClusterFissioner, 
- *  LightClusterDecayer, ClusterDecayer; 
+ *  classes PartonSplitter, ClusterFinder, ColourReconnector, ClusterFissioner,
+ *  LightClusterDecayer, ClusterDecayer;
  *  and for the storing of the produced particles in the Event record.
  *
  *  @see PartonSplitter
@@ -46,10 +46,10 @@ using namespace ThePEG;
  *  @see ClusterFissioner
  *  @see LightClusterDecayer
  *  @see ClusterDecayer
- *  @see Cluster 
+ *  @see Cluster
  * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
  * defined for ClusterHadronizationHandler.
- */ 
+ */
 class ClusterHadronizationHandler:
     public HadronizationHandler, public Reshuffler {
 
@@ -59,14 +59,14 @@ public:
    * The main method which manages the all cluster hadronization.
    *
    * This routine directs "traffic". It determines which function is called
-   * and on which particles/clusters. This function also handles the 
+   * and on which particles/clusters. This function also handles the
    * situation of vetos on the hadronization.
    */
   virtual void handle(EventHandler & ch, const tPVector & tagged,
 		      const Hint & hint);
 
   /**
-   * It returns minimum virtuality^2 of partons to use in calculating 
+   * It returns minimum virtuality^2 of partons to use in calculating
    * distances. It is used both in the Showering and Hadronization.
    */
   Energy2 minVirtuality2() const
@@ -81,11 +81,11 @@ public:
 
   /**
    * It returns true/false according if the soft underlying model
-   * is switched on/off. 
+   * is switched on/off.
    */
   bool isSoftUnderlyingEventON() const
   { return _underlyingEventHandler; }
-  
+
   /**
    *  pointer to "this", the current HadronizationHandler.
    */
@@ -200,11 +200,11 @@ private:
    * This is a pointer to a Herwig::LightClusterDecayer object.
    */
   map<int,LightClusterDecayerPtr> _lightClusterDecayers;
-  
+
   /**
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
-  map<int,ClusterDecayerPtr>      _clusterDecayers; 
+  map<int,ClusterDecayerPtr>      _clusterDecayers;
 
   /**
    * A pointer to a gluon mass generator for the reshuffling
@@ -252,7 +252,7 @@ private:
   int reshuffle_ = 0;
 
   /**
-   * The minimum virtuality^2 of partons to use in calculating 
+   * The minimum virtuality^2 of partons to use in calculating
    * distances.
    */
   Energy2 _minVirtuality2 = 0.1_GeV2;
@@ -264,7 +264,7 @@ private:
   Length _maxDisplacement = 1.0e-10_mm;
 
   /**
-   * The pointer to the Underlying Event handler. 
+   * The pointer to the Underlying Event handler.
    */
   StepHdlPtr _underlyingEventHandler;
 
@@ -272,6 +272,16 @@ private:
    *  How to handle baryon-number clusters
    */
   bool _reduceToTwoComponents = true;
+
+  /**
+  *  Switch for QCD Hadronization
+  */
+  bool _doQCDHad = true;
+
+  /**
+  *  Switch for Dark Hadronization
+  */
+  bool _doDarkHad = true;
 
   /**
    * Tag the constituents of the clusters as their parents
@@ -288,8 +298,8 @@ private:
   /**
    * Use the currently set list of handlers to hadronize the given interaction
    */
-  string _setHandlersForInteraction(string); 
-  
+  string _setHandlersForInteraction(string);
+
   /**
    *  pointer to "this", the current HadronizationHandler.
    */
