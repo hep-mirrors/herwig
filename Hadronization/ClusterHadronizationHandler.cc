@@ -56,7 +56,8 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
      << reshuffle_ << _gluonMassGenerator
      << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
-     << _underlyingEventHandler << _reduceToTwoComponents;
+     << _underlyingEventHandler << _reduceToTwoComponents
+     << _doQCDHad << _doDarkHad;
 }
 
 
@@ -68,7 +69,8 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
      >> reshuffle_ >> _gluonMassGenerator
      >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
-     >> _underlyingEventHandler >> _reduceToTwoComponents;
+     >> _underlyingEventHandler >> _reduceToTwoComponents
+     >> _doQCDHad >> _doDarkHad;
 }
 
 
@@ -149,8 +151,8 @@ void ClusterHadronizationHandler::Init() {
 		       false, false, true, false);
 
   // functions to move the handlers so they are set
-  
-  
+
+
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
@@ -188,6 +190,40 @@ void ClusterHadronizationHandler::Init() {
     ("UseHandlersForInteraction",
      "Use the current set of handlers for the given interaction.",
      &ClusterHadronizationHandler::_setHandlersForInteraction, false);
+
+  static Switch<ClusterHadronizationHandler,bool> interfaceDoQCDHadronization
+    ("DoQCDHadronization",
+     "Whether to perform hadronisation in the QCD sector",
+     &ClusterHadronizationHandler::_doQCDHad, true, false, false);
+
+  static SwitchOption interfaceQCDOn
+    (interfaceDoQCDHadronization,
+     "Yes",
+     "Perform QCD hadronization",
+     true);
+
+  static SwitchOption interfaceQCDOff
+    (interfaceDoQCDHadronization,
+     "No",
+     "Don't perform QCD hadronization",
+     false);
+
+  static Switch<ClusterHadronizationHandler,bool> interfaceDoDarkHadronization
+    ("DoDarkHadronization",
+     "Whether to perform hadronisation in the dark sector",
+     &ClusterHadronizationHandler::_doDarkHad, true, false, false);
+
+  static SwitchOption interfaceDarkOn
+    (interfaceDoDarkHadronization,
+     "Yes",
+     "Perform dark hadronization",
+     true);
+
+  static SwitchOption interfaceDarkOff
+    (interfaceDoDarkHadronization,
+     "No",
+     "Don't perform dark hadronization",
+     false);
 
 }
 
@@ -251,8 +287,8 @@ void ClusterHadronizationHandler::doinit() {
     _colourReconnectors[PDT::ColouredQCD] = _colourReconnector;
     _clusterFissioners[PDT::ColouredQCD] = _clusterFissioner;
     _lightClusterDecayers[PDT::ColouredQCD] = _lightClusterDecayer;
-    _clusterDecayers[PDT::ColouredQCD] = _clusterDecayer; 
-    _gluonMassGenerators[PDT::ColouredQCD] = _gluonMassGenerator; 
+    _clusterDecayers[PDT::ColouredQCD] = _clusterDecayer;
+    _gluonMassGenerators[PDT::ColouredQCD] = _gluonMassGenerator;
   }
 }
 
@@ -270,8 +306,8 @@ string ClusterHadronizationHandler::_setHandlersForInteraction(string interactio
   _colourReconnectors[interactionId] = _colourReconnector;
   _clusterFissioners[interactionId] = _clusterFissioner;
   _lightClusterDecayers[interactionId] = _lightClusterDecayer;
-  _clusterDecayers[interactionId] = _clusterDecayer; 
-  _gluonMassGenerators[interactionId] = _gluonMassGenerator; 
+  _clusterDecayers[interactionId] = _clusterDecayer;
+  _gluonMassGenerators[interactionId] = _gluonMassGenerator;
   return "";
 }
 
@@ -294,13 +330,18 @@ handle(EventHandler & ch, const tPVector & tagged,
   currentHandler_ = this;
 
   PVector theList(tagged.begin(),tagged.end());
-  
+
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
 
-  // TODO: Should this be hard-coded here, or defined in inputs?
-  map<int,int> interactions = {{PDT::ColouredQCD, ParticleID::g}, {PDT::ColouredDark, ParticleID::darkg}};
-  
+  map<int,int> interactions = {};
+  if (_doQCDHad) {
+    interactions[PDT::ColouredQCD] = ParticleID::g;
+  }
+  if (_doDarkHad) {
+    interactions[PDT::ColouredDark] = ParticleID::darkg;
+  }
+
   // PVector currentlist(tagged.begin(),tagged.end());
   map<int,PVector> currentlists;
   for ( const auto & p : theList ) {
@@ -320,7 +361,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 
     // reshuffle to the constituents
     if ( reshuffle_ ) {
-    
+
       vector<PVector> reshufflelists;
 
       if ( reshuffle_ == 1 ) { // global reshuffling
@@ -366,7 +407,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 	    advance(it,UseRandom::irnd(gluonMasses.size()));
 	    masses.push_back(*it);
 	    gluonMasses.erase(it);
-	  } 
+	  }
 	  else {
 	    masses.push_back(p->dataPtr()->constituentMass());
 	  }
@@ -429,12 +470,12 @@ handle(EventHandler & ch, const tPVector & tagged,
 
       // tag new clusters as children of the partons to hadronize
       _setChildren(CRclusters);
-    
-   
+
+
       // forms diquarks
       // we should already have used  _clusterFinder[i.first]
       _clusterFinders[i.first]->reduceToTwoComponents(CRclusters);
-    
+
       // recombine vectors of (possibly) reconnected and BV clusters
       clusters[i.first].clear();
       clusters[i.first].insert( clusters[i.first].end(), CRclusters.begin(), CRclusters.end() );
@@ -469,7 +510,7 @@ handle(EventHandler & ch, const tPVector & tagged,
     // decay the remaining clusters
     assert(_clusterDecayers[i.first]);
     _clusterDecayers[i.first]->decay(clusters[i.first],finalHadrons);
-    
+
   }
 
   // *****************************************
@@ -503,7 +544,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 
   // For very small center of mass energies it might happen that baryonic clusters cannot decay into hadrons
   if (finalStateCluster){
-     throw Exception( "CluHad::Handle(): Cluster in the final state", 
+     throw Exception( "CluHad::Handle(): Cluster in the final state",
                      Exception::eventerror);
   }
   // *****************************************
@@ -542,25 +583,25 @@ void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) c
 void ClusterHadronizationHandler::splitIntoColourSinglets(PVector copylist,
 							  vector<PVector>& reshufflelists,
 							  int){
- 
+
   PVector currentlist;
   bool gluonloop;
   PPtr firstparticle, temp;
   reshufflelists.clear();
- 
+
   while (copylist.size()>0){
     gluonloop=false;
     currentlist.clear();
- 
-    firstparticle=copylist.back();  
-    copylist.pop_back();     
- 
+
+    firstparticle=copylist.back();
+    copylist.pop_back();
+
     if (!firstparticle->coloured()){
       continue; //non-coloured particles are not included
     }
-     
+
     currentlist.push_back(firstparticle);
- 
+
     //go up the anitColourLine and check if we are in a gluon loop
     temp=firstparticle;
     while( temp->hasAntiColour()){
@@ -574,7 +615,7 @@ void ClusterHadronizationHandler::splitIntoColourSinglets(PVector copylist,
 	copylist.erase(remove(copylist.begin(),copylist.end(), temp), copylist.end());
       }
     }
- 
+
     //if not a gluon loop, go up the ColourLine
     if(!gluonloop){
       temp=firstparticle;
@@ -584,8 +625,8 @@ void ClusterHadronizationHandler::splitIntoColourSinglets(PVector copylist,
 	copylist.erase(remove(copylist.begin(),copylist.end(), temp), copylist.end());
       }
     }
- 
-    reshufflelists.push_back(currentlist); 
+
+    reshufflelists.push_back(currentlist);
   }
- 
+
 }

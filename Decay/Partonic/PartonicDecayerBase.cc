@@ -28,7 +28,7 @@ using namespace Herwig;
 
 PartonicDecayerBase::PartonicDecayerBase() : _exclusive(true), 
 					     _partontries(100), _inter(false),
-					     _shower(false)
+					     _shower(false), _hadronization(true)
 {}
 
 void PartonicDecayerBase::doinit() {
@@ -71,7 +71,7 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
   bool hadronized(false);
   ParticleVector outpart;
   ParticleVector outhad;
-  // copy of particle to act as parent so hadronization konws about it
+  // copy of particle to act as parent so hadronization knows about it
   PPtr ptemp(new_ptr(Particle(p)));
   do {
     hadronized=false;
@@ -87,23 +87,30 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
       currentlist = shower(p, partons);
       if(currentlist.empty()) continue;
     }
-    // split the gluons
-    _partonSplitter->split(currentlist);
-    // form the clusters
-    ClusterVector clusters = _clusterFinder->formClusters(currentlist);
-    _clusterFinder->reduceToTwoComponents(clusters);
-    tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
-    bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
-    // abandon child here so always done
-    for(unsigned int ix=0;ix<partons.size();++ix) ptemp->abandonChild(partons[ix]);
-    // try again if can't reshuffle
-    if(!lightOK) continue;
-    // decay the remaining clusters
-    _clusterDecayer->decay(clusters,finalHadrons);
-    hadronized = !duplicateMode(p,finalHadrons);
-    if(hadronized) {
-      outhad  = ParticleVector(finalHadrons.begin(),finalHadrons.end());
+    if(_hadronization) {
+      // split the gluons
+      _partonSplitter->split(currentlist);
+      // form the clusters
+      ClusterVector clusters = _clusterFinder->formClusters(currentlist);
+      _clusterFinder->reduceToTwoComponents(clusters);
+      tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
+      bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
+      // abandon child here so always done
+      for(unsigned int ix=0;ix<partons.size();++ix) ptemp->abandonChild(partons[ix]);
+      // try again if can't reshuffle
+      if(!lightOK) continue;
+      // decay the remaining clusters
+      _clusterDecayer->decay(clusters,finalHadrons);
+      hadronized = !duplicateMode(p,finalHadrons);
+      if(hadronized) {
+        outhad  = ParticleVector(finalHadrons.begin(),finalHadrons.end());
+        outpart = partons;
+      }
+    }
+    else {
+      outhad  = ParticleVector(currentlist.begin(),currentlist.end());
       outpart = partons;
+      hadronized = true;
     }
   }
   while(!hadronized&&ptry<_partontries);
@@ -119,8 +126,10 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 	parents[iy]->abandonChild(outhad[ix]);
       }
     }
-    for(unsigned int ix=0;ix<outpart.size();++ix) {
-      if(!outpart[ix]->coloured()) outhad.push_back(outpart[ix]);
+    if(_hadronization) {
+      for(unsigned int ix=0;ix<outpart.size();++ix) {
+        if(!outpart[ix]->coloured()) outhad.push_back(outpart[ix]);
+      }
     }
     return outhad;
   }
@@ -128,14 +137,16 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 
 void PartonicDecayerBase::persistentOutput(PersistentOStream & os) const {
   os << _partonSplitter << _clusterFinder << _clusterFissioner
-    << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
-     << _inter << _shower << _splittingGenerator << _partnerFinder << _reconstructor;
+     << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
+     << _inter << _shower << _hadronization
+     << _splittingGenerator << _partnerFinder << _reconstructor;
 }
 
 void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
   is >> _partonSplitter >> _clusterFinder >> _clusterFissioner
-    >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
-     >> _inter >> _shower >> _splittingGenerator >> _partnerFinder >> _reconstructor;
+     >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
+     >> _inter >> _shower >> _hadronization
+     >> _splittingGenerator >> _partnerFinder >> _reconstructor;
 }
 
 // The following static variable is needed for the type
@@ -231,6 +242,21 @@ void PartonicDecayerBase::Init() {
      "No",
      "Don't perform the shower",
      false);
+ 
+  static Switch<PartonicDecayerBase,bool> interfaceHadronization
+    ("Hadronization",
+     "Whether to hadronize the decay products (for testing)",
+     &PartonicDecayerBase::_hadronization, true, false, false);
+  static SwitchOption interfaceHadronizationYes
+    (interfaceHadronization,
+     "Yes",
+     "Perform the hadronization",
+     true);
+  static SwitchOption interfaceHadronizationNo
+    (interfaceHadronization,
+     "No",
+     "Don't perform the hadronization",
+     false);
 
   static Reference<PartonicDecayerBase,PartnerFinder> interfacePartnerFinder
     ("PartnerFinder",
@@ -298,6 +324,7 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   output << "newdef  " << name() << ":Exclusive " <<  _exclusive<< " \n";
   output << "newdef  " << name() << ":Intermediates " << _inter << " \n";
   output << "newdef  " << name() << ":Shower " << _shower << " \n";
+  output << "newdef  " << name() << ":Hadronization " << _hadronization << " \n";
   if(_splittingGenerator)
     output << "newdef  " << name() << ":SplittingGenerator " << _splittingGenerator->fullName() << " \n";
   if(_partnerFinder)

@@ -394,6 +394,7 @@ set {name}:AngularOrdered Yes
 set {name}:StrictAO Yes
 set {name}:PDFmax 1.9
 do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {name}
+set {name}:EnhancementFactor 1.0
 """.format(s=spin_name(p.spin), name=splitname,
            c=col_name(p.color), pname=p.name, sudname=sudname))
             except SkipMe:
@@ -415,6 +416,7 @@ set {name}:Alpha /Herwig/Shower/AlphaQED
 set {name}:Cutoff /Herwig/Shower/PTCutOff
 set {name}:PDFmax 1.9
 do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {name}
+set {name}:EnhancementFactor 1.0
 """.format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname))
             except SkipMe:
                 pass
@@ -589,6 +591,7 @@ set {name}:CouplingValue.Re {j}
                                 )
                             splittings.append(
 """do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {p0}->{p1},{p2}; {name}
+set {name}:EnhancementFactor 1.0
 """.format(name=splitname,p0=p0name,p1=p1name,p2=p2name,sudname=sudname)
                             )
             except SkipMe:

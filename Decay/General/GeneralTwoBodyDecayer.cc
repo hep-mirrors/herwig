@@ -86,12 +86,18 @@ colourConnections(const Particle & parent,
   if(incColour == PDT::Colour0) {
     // colour triplet-colourantitriplet
     if((outaColour == PDT::Colour3 && outbColour == PDT::Colour3bar) ||
-       (outaColour == PDT::Colour3bar && outbColour == PDT::Colour3)) {
+       (outaColour == PDT::Colour3bar && outbColour == PDT::Colour3) ||
+       (outaColour==PDT::DarkColourFundamental
+        && outbColour==PDT::DarkColourAntiFundamental) ||
+	   (outaColour==PDT::DarkColourAntiFundamental
+        && outbColour==PDT::DarkColourFundamental)) {
       bool ac(out[0]->id() < 0);
       out[0]->colourNeighbour(out[1],!ac);
     }
     //colour octet
-    else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour8) {
+    else if((outaColour == PDT::Colour8 && outbColour == PDT::Colour8) ||
+            (outaColour==PDT::DarkColourAdjoint
+             && outbColour==PDT::DarkColourAdjoint)) {
       out[0]->colourNeighbour(out[1]);
       out[0]->antiColourNeighbour(out[1]);
     }
@@ -126,7 +132,7 @@ colourConnections(const Particle & parent,
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
       out[0]->antiColourNeighbour(out[1]);
     }
-    else if(outaColour == PDT::Colour3bar && outaColour == PDT::Colour3bar) {
+    else if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour3bar) {
       tColinePtr col[2] = {ColourLine::create(out[0],true),
 			   ColourLine::create(out[1],true)};
       parent.colourLine()->setSinkNeighbours(col[0],col[1]);
@@ -234,6 +240,88 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
                         << "colour anti-sextet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
+  }
+  //incoming dark colour fundamental
+  else if(incColour == PDT::DarkColourFundamental) {
+    // colour fundamental + singlet
+    if(outaColour == PDT::DarkColourFundamental && outbColour == PDT::Colour0) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour0 && outbColour == PDT::DarkColourFundamental) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    // adjoint + fundamental
+    else if(outaColour == PDT::DarkColourAdjoint && outbColour == PDT::DarkColourFundamental) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->antiColourNeighbour(out[0]);
+    }
+    //opposite order
+    else if(outaColour == PDT::DarkColourFundamental && outbColour == PDT::DarkColourAdjoint) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->antiColourNeighbour(out[1]);
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+			<< "dark colour fundamental in "
+			<< "GeneralTwoBodyDecayer::colourConnections() "
+			<< outaColour << " " << outbColour
+			<< Exception::runerror; 
+  }
+  // incoming dark colour fundamental
+  else if(incColour == PDT::DarkColourAntiFundamental) {
+    // colour antifundamental + singlet
+    if(outaColour == PDT::DarkColourAntiFundamental && outbColour == PDT::Colour0) {
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour0 && outbColour == PDT::DarkColourAntiFundamental) {
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    // adjoint + antifundamental
+    else if(outaColour == PDT::DarkColourAntiFundamental && outbColour == PDT::DarkColourAdjoint) {
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->colourNeighbour(out[1]);
+    }
+    //opposite order
+    else if(outaColour == PDT::DarkColourAdjoint && outbColour == PDT::DarkColourAntiFundamental) {
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->colourNeighbour(out[0]);
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+			<< "dark colour antifundamental "
+			<< "in GeneralTwoBodyDecayer::colourConnections() "
+			<< outaColour << " " << outbColour
+			<< Exception::runerror; 
+  }
+  //incoming dark colour adjoint
+  else if(incColour == PDT::DarkColourAdjoint) {
+    // fundamental-antifundamental
+    if(outaColour == PDT::DarkColourFundamental&&outbColour == PDT::DarkColourAntiFundamental) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    // opposite order
+    else if(outbColour == PDT::DarkColourFundamental&&outaColour == PDT::DarkColourAntiFundamental) {
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    // neutral + adjoint
+    else if(outaColour == PDT::Colour0&&outbColour == PDT::DarkColourAdjoint) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else if(outbColour == PDT::Colour0&&outaColour == PDT::DarkColourAdjoint) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+                        << "dark colour adjoint "
                         << "in GeneralTwoBodyDecayer::colourConnections() "
                         << outaColour << " " << outbColour
                         << Exception::runerror;

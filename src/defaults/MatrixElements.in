@@ -411,6 +411,9 @@ create Herwig::MEGammaGamma2X MEgg2ff HwMEGammaGamma.so
 create Herwig::GammaGamma2ffAmplitude gg2ffAmp
 newdef MEgg2ff:Amplitude gg2ffAmp
 
+# gamma gamma -> jet jet ZPrime
+create Herwig::MEGammaGamma2QQZprime MEgg2QQZp HwMEGammaGamma.so
+
 # W+ W-
 create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so
 
