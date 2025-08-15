@@ -133,6 +133,9 @@ set GtoQQbarDARKSudakov:Cutoff PTCutOff
 # Turn the dark shower on
 set ShowerHandler:DarkInteraction Yes
 
+# Decay Z' in shower so that dark quarks can shower and hadronise
+insert ShowerHandler:DecayInShower 0 32
+
 ###################################################
 #
 #  Choose Hidden valley over SM
@@ -160,6 +163,8 @@ set DarkLightClusterDecayer:HadronSpectrum DarkHadSpec
 
 # Turn off baryon production (not yet implemented)
 set DarkColourReconnector:ColourReconnection No
+set DarkColourReconnector:ClusterFinder DarkClusterFinder
+set DarkColourReconnector:HadronSpectrum DarkHadSpec
 set DarkHadSpec:PwtDIquark  0
 
 set DarkPartonSplitter:Split Light
