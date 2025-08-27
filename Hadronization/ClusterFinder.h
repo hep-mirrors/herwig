@@ -52,7 +52,7 @@ public :
   /**
    * Default constructor.
    */
-  ClusterFinder() : heavyDiquarks_(2), diQuarkSelection_(1), diQuarkOnShell_(false)
+  ClusterFinder() : heavyDiquarks_(2), diQuarkSelection_(1), diQuarkOnShell_(-1)
   {}
   //@}
 
@@ -86,12 +86,29 @@ public:
    * (antidiquark,diquark) by a random drawing.
 	 */
   ClusterPtr handleDiquarkCluster(ClusterPtr clu) const;
+
+	/**
+	 * handling Baryonic clusters:
+   * For the eventual clusters that have three components 
+   * (quark, quark, quark) or (antiquark, antiquark, antiquark) 
+   * it redefines them as "normal" clusters with two components:
+   * (quark, diquark) or (antiquark, antidiquark) by a prescription.
+	 */
+	ClusterPtr handleBaryonicCluster(ClusterPtr clu) const;
+
   /**
    * Return the hadron spectrum
    */
   Ptr<HadronSpectrum>::tptr spectrum() const {
     return _hadronSpectrum;
   }
+
+  /**
+   *  access for diquark treatment
+   */
+  int diquarkOnShell() {
+		return diQuarkOnShell_;
+	}
 
 public:
 
@@ -155,7 +172,7 @@ private:
   /**
    *  Force diquarks to be on-shell
    */
-  bool diQuarkOnShell_;
+  int diQuarkOnShell_;
 
   /**
    * The hadron spectrum to consider

@@ -195,7 +195,7 @@ private:
   // @name Parton Shower related variables
   //@{
   /**
-   *  Wheher or not to perform the parton shower
+   *  Whether or not to perform the parton shower
    */
   bool _shower;
   
@@ -215,6 +215,10 @@ private:
   KinematicsReconstructorPtr _reconstructor;
   //@}
 
+  /**
+   *  Whether or not to perform the hadronization
+   */
+  bool _hadronization;
 };
 
 }

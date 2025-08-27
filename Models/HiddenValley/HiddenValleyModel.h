@@ -198,6 +198,14 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   * Return the FFZP vertex
+   */
+  AbstractFFVVertexPtr FFZPVertex() const { return FFZPVertex_; }
+
+
 protected:
 
   /** @name Clone Methods. */
