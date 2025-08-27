@@ -14,7 +14,6 @@ if __name__ == "__main__":
     from optparse import OptionParser, OptionGroup
     parser = OptionParser(usage="%prog name [...]")
 
-
 simulation=""
 hepmc=os.getenv('OUTPUT_HEPMC',  False)
 if hepmc != False : hepmc=True
@@ -501,10 +500,11 @@ elif(collider=="TVT") :
             process+=addLeptonPairCut("60","120")
 # Star
 elif(collider=="Star" ) :
+    ecms=200.0
     process = StringBuilder("set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n")
     process+= "set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     process+= "set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/p+\n"
-    process+= collider_lumi(200.0)
+    process+= collider_lumi(ecms)
     process+= "set /Herwig/Cuts/Cuts:X2Min 0.01\n"
     if(simulation=="") :
         if "UE" in parameterName :
@@ -513,15 +513,15 @@ elif(collider=="Star" ) :
             else:
                 process+="read snippets/MB.in\n"    
             process+="read snippets/Diffraction.in\n"
-            
-            
         else :
             process+=insert_ME("MEQCD2to2")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if "Jets-1" in parameterName :   process+=jet_kt_cut(2.)
-            elif "Jets-2" in parameterName : process+=jet_kt_cut(5.)
-            elif "Jets-3" in parameterName : process+=jet_kt_cut(20.)
-            elif "Jets-4" in parameterName : process+=jet_kt_cut(25.)
+            cuts=[2.,5.,20.,25.,ecms]
+            for i in range(1,len(cuts)) :
+                tstring = "Jets-%s"%i
+                if tstring in parameterName :
+                    process+=jet_kt_cut(cuts[i-1],cuts[i])
+                    parameterName=parameterName.replace(tstring,"Jets")
     else :
         logging.error("Star not supported for %s " % simulation)
         sys.exit(1)
@@ -1634,7 +1634,7 @@ with open(os.path.join("Rivet",pFile), 'r') as f:
     parameters['parameterFile'] = f.read()
 if hepmc :
     parameters['parameterFile'] +="\nread snippets/HepMC.in\n"
-    
+
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
 if have_hadronic_collider :

@@ -1,5 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-insert /Herwig/Analysis/Rivet:Analyses 0 STAR_2009_UE_HELEN
