@@ -89,6 +89,7 @@ Tests/python/LowEnergy-EE.py
 Tests/python/LowEnergy-Photon.py
 Tests/python/R.py
 Tests/python/make_input_files.py
+Tests/python/onium_input_files.py
 Tests/python/merge-DIS
 Tests/python/merge-EE
 Tests/python/merge-EE-Gamma
@@ -101,12 +102,13 @@ Tests/python/merge-Star
 Tests/python/merge-TVT-EW
 Tests/python/merge-TVT-Jets
 Tests/python/merge-TVT-Photon
+Tests/python/merge-Onium
 Tests/python/merge-SppS
 Tests/python/mergeLowEnergy.py
+Tests/python/OniumSplitting.py
 Tests/python/OniumSigma.py
 Tests/python/plot-EE
 Tests/python/rivet_check
-Tests/python/OniumSplitting.py
 PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$

@@ -176,7 +176,6 @@ bool Sudakov1to2FormFactor::PSVeto(const Energy2 t) {
 
   Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2],
 					  masssquared_[1],masssquared_[2]);
-
   // if pt2<0 veto
   if (pt2<cutoff_->pT2min()) return true;
   // otherwise calculate pt and return
@@ -364,7 +363,6 @@ generateNextSpaceBranching(const Energy startingQ,
             // Emission
             varied = newfactor / factor;
           }
-          
 
           map<string,double>::iterator wi = ch->currentWeights().find(var->first);
           if ( wi != ch->currentWeights().end() )
@@ -1129,7 +1127,6 @@ Energy Sudakov1to2FormFactor::calculateScale(double zin, Energy pt, IdList ids,
 		      << "iopt = " << iopt << Exception::runerror;
   }
 }
-
 
 void Sudakov1to2FormFactor::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,

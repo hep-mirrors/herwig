@@ -674,7 +674,7 @@ for process in processes:
                     energies[energy]=[[],["BESIII_2020_I1775344"]]
                 elif(minMass[process]<=energy) :
                     energies[energy]=[[matrix],["BESIII_2020_I1775344"]]
-            
+
     for analysis in analyses[process] :
         try : 
             aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda.gz"))

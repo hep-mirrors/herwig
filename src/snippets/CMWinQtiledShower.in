@@ -28,6 +28,9 @@ set CMWQtoQGSudakovIS:Alpha AlphaQCDFSR
 set CMWQtoGGSudakovIS:Alpha AlphaQCDFSR
 
 
+cp CMWGtoGGSudakov CMWGtoGGSudakovIS
+cp CMWQtoQGSudakov CMWQtoQGSudakovIS
+
 set CMWQtoQGSudakovIS:Alpha AlphaQCDFSR
 set CMWQtoGGSudakovIS:Alpha AlphaQCDFSR
 

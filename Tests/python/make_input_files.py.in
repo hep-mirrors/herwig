@@ -385,6 +385,7 @@ elif(collider=="TVT") :
                     if tstring in parameterName :
                         process+=jet_kt_cut(cuts[i-1],cuts[i])
                         parameterName=parameterName.replace(tstring,"-Jets")
+                    
         elif "Run-I-WZ" in parameterName :
             process+=insert_ME("MEqq2W2ff","Electron")
             process+=insert_ME("MEqq2gZ2ff","Electron")

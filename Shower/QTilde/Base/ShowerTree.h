@@ -18,6 +18,7 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "ThePEG/EventRecord/Step.h"
+#include "boost/bimap/bimap.hpp"
 #include <cassert>
 #include "ShowerTree.fh"
 
@@ -147,7 +148,10 @@ public:
    * @param children The outgoing particles in the branching
    */
   void addFinalStateBranching(ShowerParticlePtr parent,
-			      const ShowerParticleVector & children);
+			      const ShowerParticleVector & children) {
+    _forward.erase(parent);
+    for(tShowerParticlePtr child : children) _forward.insert(child);
+  }
 
   /**
    *  Add an initial-state branching. This method removes the oldParent of the
@@ -272,6 +276,25 @@ public:
    */
   RealEmissionProcessPtr perturbativeProcess();
 
+  /**
+   *  Set up for applying a matrix element correction
+   */
+  void setUpMECorrection(RealEmissionProcessPtr real);
+
+  /**
+   *  Add joined colour lines
+   */
+  void addJoinedLines(ColinePtr a, ColinePtr b) {
+    if(_joinedLines. left.find(a)==_joinedLines. left.end() &&
+       _joinedLines.right.find(b)==_joinedLines.right.end())
+      _joinedLines.left.insert({a,b});
+    else if (_joinedLines.left .find(b)==_joinedLines.left.end() &&
+             _joinedLines.right.find(a)==_joinedLines.right.end())
+      _joinedLines.left.insert({b,a});
+    else
+      assert(false);
+  }
+
 protected:
 
   /**
@@ -319,7 +342,46 @@ protected:
    */
   void fixColour(tShowerParticlePtr part);
 
+  /**
+   *    Fix colour lines for 1-> onium stuff
+   */
+  void joinLines(bool joinHard);
+
+  /**
+   * Find an initial-satate line
+   */
+  ShowerProgenitorPtr findInitialStateLine(long id, Lorentz5Momentum momentum);
+
+  /**
+   * Find a final-state line 
+   */
+  ShowerProgenitorPtr findFinalStateLine(long id, Lorentz5Momentum momentum);
+
+  /**
+   *  Fix the colours of a spectator
+   */
+  void fixSpectatorColours(PPtr newSpect,ShowerProgenitorPtr oldSpect,
+			   ColinePair & cline,ColinePair & aline);
+
+  /**
+   *  Fix initial-state emitter for ME correction
+   */
+  void fixInitialStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+			      ColinePair cline,ColinePair aline,double x,bool reset=false);
+
+  /**
+   *  Fix final-state emitter for ME correction
+   */
+  void fixFinalStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+   			    ColinePair cline,ColinePair aline,bool reset=false);
+
+  /**
+   *  Reset ME correction after vetooed shower
+   */
+  void resetMECorrection(bool reset=false);
+
 private:
+  
   /**
    * Incoming partons for the hard process
    */
@@ -338,6 +400,11 @@ private:
    *  evolves them to as the value
    */
   map<ShowerProgenitorPtr,tShowerParticlePtr> _outgoingLines;
+
+  /**
+   *   Map of joined colour lines
+   */
+  boost::bimaps::bimap<ColinePtr,ColinePtr> _joinedLines;
 
   /**
    *  The outgoing ShowerParticles at the end of the final-state shower
@@ -369,7 +436,12 @@ private:
    *  The transforms which still need to be applied
    */
   LorentzRotation _transforms;
-
+  
+  /**
+   *  Hard Matrix element correction
+   */
+  RealEmissionProcessPtr real_;
+  
 private:
 
   /**

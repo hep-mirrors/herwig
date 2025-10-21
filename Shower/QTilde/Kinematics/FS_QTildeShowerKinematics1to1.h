@@ -1,0 +1,100 @@
+// -*- C++ -*-
+#ifndef Herwig_FS_QTildeShowerKinematics1to1_H
+#define Herwig_FS_QTildeShowerKinematics1to1_H
+//
+// This is the declaration of the FS_QTildeShowerKinematics1to1 class.
+//
+
+#include "ShowerKinematics.h"
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+/**
+ * Here is the documentation of the FS_QTildeShowerKinematics1to1 class.
+ */
+class FS_QTildeShowerKinematics1to1: public ShowerKinematics {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  FS_QTildeShowerKinematics1to1() = default;
+
+  /**
+   * The constructor.
+   */
+  FS_QTildeShowerKinematics1to1(Energy scale, tSudakovPtr sud) 
+    : ShowerKinematics(scale,1.,0.,ZERO,sud) {}
+  //@}
+
+public:
+
+  /**
+   *
+   */
+  virtual void updateChildren( const tShowerParticlePtr parent, 
+			       const ShowerParticleVector & children,
+			       unsigned int pTscheme,
+			       ShowerPartnerType partnerType) const;
+  
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the KinematicsReconstructor.
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
+   */
+  virtual void updateParent(const tShowerParticlePtr parent,
+			    const ShowerParticleVector & children,
+			    unsigned int pTscheme,
+			    ShowerPartnerType partnerType) const;
+
+  virtual void resetChildren( const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
+
+  /**
+   * Update the kinematical data of a particle when a reconstruction
+   * fixpoint was found. This will highly depend on the kind of
+   * kinematics chosen and will be defined in the inherited concrete
+   * classes. This method will be used by the KinematicsReconstructor.
+   * @param last The particle to update
+   * @param mass The mass to be used, if less than zero on-shell
+   */
+  virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
+
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the 
+   * KinematicsReconstructor.
+   */
+  virtual void reconstructParent( const tShowerParticlePtr parent, 
+				  const ParticleVector & children ) const;
+
+public:
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+private:
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  FS_QTildeShowerKinematics1to1 & operator=(const FS_QTildeShowerKinematics1to1 &) = delete;
+
+};
+
+}
+
+#endif /* Herwig_FS_QTildeShowerKinematics1to1_H */

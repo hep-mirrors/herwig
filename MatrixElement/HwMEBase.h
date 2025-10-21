@@ -217,7 +217,7 @@ protected:
    * @param iopt The rescaling option
    */
   void rescalingOption(unsigned int iopt) {
-    rescaleOption_=iopt;
+    rescaleOption_= iopt;
   }
 
   /**
@@ -231,6 +231,13 @@ protected:
    */
   const vector<Lorentz5Momentum> & rescaledMomenta() const {
     return rescaledMomenta_;
+  }
+
+  /**
+   *  Set the momenta
+   */
+  void rescaledMomenta(const vector<Lorentz5Momentum> & in) {
+    rescaledMomenta_ = in;
   }
   //@}
 

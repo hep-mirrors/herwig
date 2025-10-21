@@ -582,8 +582,6 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy2> masssquared_;
-  
-private:
 
   /**
    *  The choice of scale
@@ -604,7 +602,6 @@ private:
    *  Enhancement factor
    */
   double enhancementFactor_;
-
 };
 
 }

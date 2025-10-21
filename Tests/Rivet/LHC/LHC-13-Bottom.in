@@ -1,0 +1,15 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# CMS B+
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1485195
+# LHCb B+
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2017_I1630633
+# LHCB Lambda_b and B_s
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1720859
+# LHCb Bs fraction
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1760257
+# LHCB Xi_b fraction
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1716259
+

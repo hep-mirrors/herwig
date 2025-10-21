@@ -147,7 +147,11 @@ public:
    *  Access to the PartnerFinder object
    */
   tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
-
+  
+  /**
+   * Get the tree
+   */
+  tShowerTreePtr currentTree() { return _currenttree; }
   //@}
 
 protected:
@@ -166,11 +170,6 @@ protected:
    *  Generate the hardest emission
    */
   virtual void hardestEmission(bool hard);
-
-  /**
-   *  Set up for applying a matrix element correction
-   */
-  void setupMECorrection(RealEmissionProcessPtr real);
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -381,20 +380,9 @@ protected:
   //@}
 
   /**
-   * Set/Get the current tree being evolver for inheriting classes
-   */
-  //@{
-  /**
-   * Get the tree
-   */
-  tShowerTreePtr currentTree() { return _currenttree; }
-
-  /**
    * Set the tree
    */
   void currentTree(tShowerTreePtr tree) { _currenttree=tree; }
-
-  //@}
 
   /**
    *  Access the maximum number of attempts to generate the shower
@@ -814,6 +802,12 @@ private :
    */
   Energy muPt;
 
+  /**
+   *  Option for 1->1 splittings
+   */
+  unsigned int _oneToOneMode;
+
+  
 private:
   /**
    *  Pointer to the various objects

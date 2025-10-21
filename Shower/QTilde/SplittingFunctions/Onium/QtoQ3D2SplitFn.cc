@@ -158,4 +158,3 @@ DecayMEPtr QtoQ3D2SplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,1,4)=(-8*r23*r*(8*sqr(r)*pow(1 + z,3) + z*(5 - 6*z + 3*sqr(z) - 2*pow(z,3)) - r*(5 + 17*z + 5*sqr(z) - 5*pow(z,3) + 2*pow(z,4))))/(sqr(phase)*sqr(1.-z)*rz*(1 + z));
   return kernal;
 }
-

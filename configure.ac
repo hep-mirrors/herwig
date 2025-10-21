@@ -1,6 +1,6 @@
-dnl Process this file with autoconf to produce a configure script.
+	dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.69])
 AC_INIT([Herwig],[devel],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
@@ -160,12 +160,12 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Makefile
 		MatrixElement/General/Makefile
 		MatrixElement/Lepton/Makefile
+		MatrixElement/Onium/Makefile
 		MatrixElement/Hadron/Makefile
 		MatrixElement/DIS/Makefile
 		MatrixElement/Powheg/Makefile
 		MatrixElement/Gamma/Makefile
 		MatrixElement/Reweighters/Makefile
-		MatrixElement/Onium/Makefile
 		MatrixElement/Matchbox/Makefile
 		MatrixElement/Matchbox/Base/Makefile
 		MatrixElement/Matchbox/Utility/Makefile
@@ -204,6 +204,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Dipole/Utility/Makefile
 		Shower/Dipole/AlphaS/Makefile
 		Shower/Dipole/SpinCorrelations/Makefile
+		Shower/Dipole/Merging/Makefile
 		Utilities/Makefile
 		Utilities/XML/Makefile
 		Utilities/Statistics/Makefile
@@ -237,7 +238,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/Powheg-DefaultShower.in
 		src/Matchbox/Powheg-DipoleShower.in
 		src/Merging/Makefile
-		Shower/Dipole/Merging/Makefile
 		src/defaults/MatchboxMergingDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
@@ -250,6 +250,7 @@ AC_CONFIG_FILES([Tests/python/LowEnergy-Photon.py],[chmod +x Tests/python/LowEne
 AC_CONFIG_FILES([Tests/python/OniumSigma.py      ],[chmod +x Tests/python/OniumSigma.py      ])
 AC_CONFIG_FILES([Tests/python/OniumSplitting.py  ],[chmod +x Tests/python/OniumSplitting.py  ])
 AC_CONFIG_FILES([Tests/python/make_input_files.py],[chmod +x Tests/python/make_input_files.py])
+AC_CONFIG_FILES([Tests/python/onium_input_files.py],[chmod +x Tests/python/onium_input_files.py])
 AC_CONFIG_FILES([Tests/python/merge-DIS		 ],[chmod +x Tests/python/merge-DIS	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE		 ],[chmod +x Tests/python/merge-EE	     ])	 
 AC_CONFIG_FILES([Tests/python/merge-EE-Gamma	 ],[chmod +x Tests/python/merge-EE-Gamma     ])	 
@@ -260,9 +261,10 @@ AC_CONFIG_FILES([Tests/python/merge-LHC-Jets	 ],[chmod +x Tests/python/merge-LHC
 AC_CONFIG_FILES([Tests/python/merge-LHC-Photon	 ],[chmod +x Tests/python/merge-LHC-Photon   ])
 AC_CONFIG_FILES([Tests/python/mergeLowEnergy.py	 ],[chmod +x Tests/python/mergeLowEnergy.py  ])
 AC_CONFIG_FILES([Tests/python/merge-TVT-EW	 ],[chmod +x Tests/python/merge-TVT-EW	     ])
-AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])	 
-AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])	 
-AC_CONFIG_FILES([Tests/python/plot-EE		 ],[chmod +x Tests/python/plot-EE	     ])	 
+AC_CONFIG_FILES([Tests/python/merge-TVT-Jets	 ],[chmod +x Tests/python/merge-TVT-Jets     ])
+AC_CONFIG_FILES([Tests/python/merge-TVT-Photon	 ],[chmod +x Tests/python/merge-TVT-Photon   ])
+AC_CONFIG_FILES([Tests/python/merge-Onium        ],[chmod +x Tests/python/merge-Onium        ])
+AC_CONFIG_FILES([Tests/python/plot-EE		 ],[chmod +x Tests/python/plot-EE	     ])
 AC_CONFIG_FILES([Tests/python/R.py		 ],[chmod +x Tests/python/R.py		     ])
 AC_CONFIG_FILES([Sampling/herwig-mergegrids      ],[chmod +x Sampling/herwig-mergegrids      ])
 AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])

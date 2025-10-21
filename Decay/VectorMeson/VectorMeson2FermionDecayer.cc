@@ -59,11 +59,6 @@ void VectorMeson2FermionDecayer::doinit() {
   }
 }
 
-VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() {
-  // don't include intermediates
-  generateIntermediates(false);
-}
-
 int VectorMeson2FermionDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					   const tPDVector & children) const {
   if(children.size()!=2) return -1;

@@ -57,7 +57,6 @@ EtaPiPiFermionsDecayer::EtaPiPiFermionsDecayer()
   cConst_=1.0;
   // use local values of the parameters
   localParameters_=true;
-  // the modes
   mPi_=ZERO;
   // intermediates
   generateIntermediates(false);

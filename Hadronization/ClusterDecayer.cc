@@ -216,23 +216,24 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
   // intermediate clusters that have undergone to fission) or not
   // too light (that is final clusters that have been already decayed
   // into single hadron) then decay them into two hadrons.
-
   for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
     if ((*it)->isAvailable() && !(*it)->isStatusFinal()
 	&& (*it)->isReadyToDecay()) {
       pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
+      
       if(!prod.first)
 	throw Exception() << "Can't perform decay of cluster ("
 			  << (*it)->particle(0)->dataPtr()->PDGName() << " "
 			  << (*it)->particle(1)->dataPtr()->PDGName() << ")\nThreshold = " 
 			  << spectrum()->massLightestHadronPair((*it)->particle(0)->dataPtr(),
                                                                 (*it)->particle(1)->dataPtr())/GeV
-			  << "\nLightest hadron pair = ( "
-			  << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
-					  						  (*it)->particle(1)->dataPtr()).first->PDGName() << ",\t"
-			  << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
-					  						  (*it)->particle(1)->dataPtr()).second->PDGName() << " )\nCluster =\n"
+          // taken out as if two diquark cluster causes a crash
+          // << "\nLightest hadron pair = ( "
+          // << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
+          //       	  						  (*it)->particle(1)->dataPtr()).first->PDGName() << ",\t"
+          // << spectrum()->lightestHadronPair((*it)->particle(0)->dataPtr(),
+          //       	  						  (*it)->particle(1)->dataPtr()).second->PDGName() << " )\nCluster =\n"
 
 			  << **it
 			  << "\nMass = " << (*it)->mass()/GeV
@@ -515,11 +516,11 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadronsNew(tClusterPtr ptr) {
   tcPDPtr ptr2data = ptr2->dataPtr();
 
   Lorentz5Momentum pClu = ptr->momentum();
-
   pair<tcPDPtr,tcPDPtr> dataPair
     = _hadronSpectrum->chooseHadronPair(ptr->mass(),
 					 ptr1data,
 					 ptr2data);
+  
   if(dataPair.first  == tcPDPtr() ||
      dataPair.second == tcPDPtr()) return pair<PPtr,PPtr>();
 

@@ -122,7 +122,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
+  vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 		     const RhoDMatrix &);
 
@@ -134,7 +134,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  vector<pair<int,Complex> > 
   generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 		      const RhoDMatrix &);
   
@@ -145,8 +145,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+			   const IdList & ids, const double phi, bool timeLike);
 
 public:
 

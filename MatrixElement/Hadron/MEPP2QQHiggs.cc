@@ -18,6 +18,7 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/TwoToThreePhaseSpace.h"
 
 using namespace Herwig;
 
@@ -195,109 +196,12 @@ bool MEPP2QQHiggs::generateKinematics(const double * r) {
     jacobian(jacobian()*(rhomax-rhomin));
   }
   if(rs<mh+2.*mq) return false;
-  // limits for virtual quark mass
-  Energy2 mmin(sqr(mq+mh)),mmax(sqr(rs-mq));
-  double rhomin,rhomax;
-  if(alpha_==0.) {
-    rhomin = mmin/sqr(mq);
-    rhomax = mmax/sqr(mq);
-  }
-  else if(alpha_==1.) {
-    rhomax = log((mmax-sqr(mq))/sqr(mq));
-    rhomin = log((mmin-sqr(mq))/sqr(mq));
-  }
-  else {
-    rhomin = pow((mmax-sqr(mq))/sqr(mq),1.-alpha_);
-    rhomax = pow((mmin-sqr(mq))/sqr(mq),1.-alpha_);
-    jacobian(jacobian()/(alpha_-1.));
-  }
-  // branch for mass smoothing
-  Energy2 m132,m232;
-  Energy p1,p2;
-  // first branch
-  if(r[1]<=0.5) {
-    double rtemp = 2.*r[1];
-    double rho = rhomin+rtemp*(rhomax-rhomin);
-    if(alpha_==0) 
-      m132 = sqr(mq)*rho;
-    else if(alpha_==1)
-      m132 = sqr(mq)*(exp(rho)+1.);
-    else
-      m132 = sqr(mq)*(pow(rho,1./(1.-alpha_))+1.);
-    Energy m13 = sqrt(m132);
-    try {
-      p1 = SimplePhaseSpace::getMagnitude(sHat(), m13, mq);
-      p2 = SimplePhaseSpace::getMagnitude(m132,mq,mh);
-    } catch ( ImpossibleKinematics & e ) {
-      return false;
-    }
-    Energy ptmin = lastCuts().minKT(mePartonData()[3]);
-    double ctmin = -1.0, ctmax = 1.0;
-    if ( ptmin > ZERO ) {
-      double ctm = 1.0 - sqr(ptmin/p1);
-      if ( ctm <= 0.0 ) return false;
-      ctmin = max(ctmin, -sqrt(ctm));
-      ctmax = min(ctmax, sqrt(ctm));
-    }
-    double cos1 = getCosTheta(ctmin,ctmax,r[0]);
-    double sin1(sqrt(1.-sqr(cos1)));
-    double phi1 = Constants::twopi*UseRandom::rnd();
-    Lorentz5Momentum p13(sin1*p1*cos(phi1),sin1*p1*sin(phi1),cos1*p1,
-			 sqrt(sqr(p1)+m132),m13);
-    meMomenta()[3].setVect(Momentum3(-sin1*p1*cos(phi1),-sin1*p1*sin(phi1),-cos1*p1));
-    meMomenta()[3].setMass(mq);
-    meMomenta()[3].rescaleEnergy();
-    bool test=Kinematics::twoBodyDecay(p13,mq,mh,-1.+2*r[2],r[3]*Constants::twopi,
-				       meMomenta()[2],meMomenta()[4]);
-    if(!test) return false;
-    m232 = (meMomenta()[3]+meMomenta()[4]).m2();
-    double D = 2./(pow(sqr(mq)/(m132-sqr(mq)),alpha_)+
-		   pow(sqr(mq)/(m232-sqr(mq)),alpha_));
-    jacobian(0.5*jacobian()*rs/m13*sqr(mq)*D*(rhomax-rhomin)/sHat());
-  }
-  // second branch
-  else {
-    double rtemp = 2.*(r[1]-0.5);
-    double rho = rhomin+rtemp*(rhomax-rhomin);
-    if(alpha_==0) 
-      m232 = sqr(mq)*rho;
-    else if(alpha_==1)
-      m232 = sqr(mq)*(exp(rho)+1.);
-    else
-      m232 = sqr(mq)*(pow(rho,1./(1.-alpha_))+1.);
-    Energy m23 = sqrt(m232);
-    try {
-      p1 = SimplePhaseSpace::getMagnitude(sHat(), m23, mq);
-      p2 = SimplePhaseSpace::getMagnitude(m232,mq,mh);
-    } catch ( ImpossibleKinematics & e ) {
-      return false;
-    }
-    Energy ptmin = lastCuts().minKT(mePartonData()[2]);
-    double ctmin = -1.0, ctmax = 1.0;
-    if ( ptmin > ZERO ) {
-      double ctm = 1.0 - sqr(ptmin/p1);
-      if ( ctm <= 0.0 ) return false;
-      ctmin = max(ctmin, -sqrt(ctm));
-      ctmax = min(ctmax, sqrt(ctm));
-    }
-    double cos1 = getCosTheta(ctmin,ctmax,r[0]);
-    double sin1(sqrt(1.-sqr(cos1)));
-    double phi1 = Constants::twopi*UseRandom::rnd();
-    Lorentz5Momentum p23(-sin1*p1*cos(phi1),-sin1*p1*sin(phi1),-cos1*p1,
-			 sqrt(sqr(p1)+m232),m23);
-    meMomenta()[2].setVect(Momentum3(sin1*p1*cos(phi1),sin1*p1*sin(phi1),cos1*p1));
-    meMomenta()[2].setMass(mq);
-    meMomenta()[2].rescaleEnergy();
-    bool test=Kinematics::twoBodyDecay(p23,mq,mh,-1.+2*r[2],r[3]*Constants::twopi,
-				       meMomenta()[3],meMomenta()[4]);
-    if(!test) return false;
-    m132 = (meMomenta()[2]+meMomenta()[4]).m2();
-    double D = 2./(pow(sqr(mq)/(m132-sqr(mq)),alpha_)+
-		   pow(sqr(mq)/(m232-sqr(mq)),alpha_));
-    jacobian(0.5*jacobian()*rs/m23*sqr(mq)*D*(rhomax-rhomin)/sHat());
-  }
-  // calculate jacobian
-  jacobian(0.125*jacobian()*p1*p2/sHat());
+  vector<Energy> masses = {mq,mq,mh};
+  // generate the momenta
+  double jac = TwoToThreePhaseSpace::twoToThreeFS(rs,{mq,mq,mh},r,meMomenta()[2],
+  						  meMomenta()[3],meMomenta()[4],alpha_);
+  if(jac<0.) return false;
+  jacobian(jacobian()*jac);
   // check cuts
   vector<LorentzMomentum> out;
   tcPDVector tout;
@@ -322,7 +226,7 @@ CrossSection MEPP2QQHiggs::dSigHatDR() const {
   }
   double jac1 = shapeOpt_==0 ? 
     1. : double(bwfact*(sqr(sqr(moff)-sqr(mh_))+sqr(mh_*wh_))/(mh_*wh_));
-  return sqr(hbarc)*me2()*jacobian()*jac1/sHat()/pow(Constants::twopi,3);
+  return sqr(hbarc)*me2()*jacobian()*jac1/sHat();
 }
 
 void MEPP2QQHiggs::getDiagrams() const {

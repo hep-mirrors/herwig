@@ -97,8 +97,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z,  const IdList & ids, 
-			    unsigned int PDFfactor=0) const;
+  double integOverP(const double z,  const IdList & ids, 
+		    unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -108,8 +108,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r,  const IdList & ids, 
-			       unsigned int PDFfactor=0) const;
+  double invIntegOverP(const double r,  const IdList & ids, 
+		       unsigned int PDFfactor=0) const;
   //@}
 
   /**
@@ -122,9 +122,9 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> >
+  vector<pair<int,Complex> >
   generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-	      const RhoDMatrix &);
+		     const RhoDMatrix &);
 
   /**
    * Method to calculate the azimuthal angle
@@ -150,8 +150,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-                                   const IdList & ids, const double phi, bool timeLike);
+  DecayMEPtr matrixElement(const double z, const Energy2 t, 
+			   const IdList & ids, const double phi, bool timeLike);
 
 protected:
   

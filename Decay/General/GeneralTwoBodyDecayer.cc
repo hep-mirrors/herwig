@@ -61,8 +61,8 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
   cc = false;
   long out1 = outgoing_[0]->id();
   long out2 = outgoing_[1]->id();
-  if( parentID == incoming_->id() && 
-      ((id1 == out1 && id2 == out2) || 
+  if( parentID == incoming_->id() &&
+      ((id1 == out1 && id2 == out2) ||
        (id1 == out2 && id2 == out1)) ) {
     return 0;
   }
@@ -70,7 +70,7 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
     cc = true;
     if( outgoing_[0]->CC()) out1 = outgoing_[0]->CC()->id();
     if( outgoing_[1]->CC()) out2 = outgoing_[1]->CC()->id();
-    if((id1 == out1 && id2 == out2) || 
+    if((id1 == out1 && id2 == out2) ||
        (id1 == out2 && id2 == out1)) return 0;
   }
   return -1;
@@ -110,7 +110,7 @@ colourConnections(const Particle & parent,
 			<< "colour singlet in "
 			<< "GeneralTwoBodyDecayer::colourConnections "
 			<< outaColour << " " << outbColour
-			<< Exception::runerror; 
+			<< Exception::runerror;
   }
   //incoming colour triplet
   else if(incColour == PDT::Colour3) {
@@ -142,7 +142,7 @@ colourConnections(const Particle & parent,
 			<< "colour triplet in "
 			<< "GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
-			<< Exception::runerror; 
+			<< Exception::runerror;
   }
   // incoming colour anti triplet
   else if(incColour == PDT::Colour3bar) {
@@ -174,7 +174,7 @@ colourConnections(const Particle & parent,
 			<< "colour antitriplet "
 			<< "in GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
-			<< Exception::runerror; 
+			<< Exception::runerror;
   }
   //incoming colour octet
   else if(incColour == PDT::Colour8) {
@@ -207,7 +207,7 @@ colourConnections(const Particle & parent,
   else if(incColour == PDT::Colour6) {
     if(outaColour == PDT::Colour3 && outbColour == PDT::Colour3) {
       tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
-      Ptr<MultiColour>::pointer parentColour = 
+      Ptr<MultiColour>::pointer parentColour =
       	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
       	(tempParent->colourInfo());
 
@@ -227,7 +227,7 @@ colourConnections(const Particle & parent,
   else if(incColour == PDT::Colour6bar) {
     if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour3bar) {
      tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
-      Ptr<MultiColour>::pointer parentColour = 
+      Ptr<MultiColour>::pointer parentColour =
       	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
       	(tempParent->colourInfo());
 
@@ -330,7 +330,7 @@ colourConnections(const Particle & parent,
     throw Exception() << "Unknown incoming colour in "
 		      << "GeneralTwoBodyDecayer::colourConnections() "
 		      << incColour
-		      << Exception::runerror; 
+		      << Exception::runerror;
 }
 
 bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
@@ -379,12 +379,12 @@ void GeneralTwoBodyDecayer::Init() {
 double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
 				   double oldbrat) const {
   ParticleVector children = p.children();
-  if( children.size() != 2 || !p.data().widthGenerator() ) 
+  if( children.size() != 2 || !p.data().widthGenerator() )
     return oldbrat;
-  
+
   // partial width for this mode
   Energy scale = p.mass();
-  Energy pwidth = 
+  Energy pwidth =
     partialWidth( make_pair(p.dataPtr(), scale),
 		  make_pair(children[0]->dataPtr(), children[0]->mass()),
 		  make_pair(children[1]->dataPtr(), children[1]->mass()) );
@@ -429,7 +429,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour neutral particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   // triplet
@@ -445,7 +445,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
       output *= 4./3.;
     }
     // colour anti triplet anti triplet
-    else if(out1->iColour()==PDT::Colour3bar && 
+    else if(out1->iColour()==PDT::Colour3bar &&
 	    out2->iColour()==PDT::Colour3bar) {
       output *= 2.;
     }
@@ -454,7 +454,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour triplet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   // anti triplet
@@ -470,7 +470,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
       output *= 4./3.;
     }
     // colour triplet triplet
-    else if(out1->iColour()==PDT::Colour3 && 
+    else if(out1->iColour()==PDT::Colour3 &&
 	    out2->iColour()==PDT::Colour3) {
       output *= 2.;
     }
@@ -479,7 +479,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour anti triplet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   else if(in->iColour()==PDT::Colour8) {
@@ -498,7 +498,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour octet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   else if(in->iColour()==PDT::Colour6) {
@@ -511,7 +511,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour sextet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   else if(in->iColour()==PDT::Colour6bar) {
@@ -524,7 +524,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< " for decay colour anti-sextet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
-			<< out1->PDGName() << " " << out2->PDGName() 
+			<< out1->PDGName() << " " << out2->PDGName()
 			<< Exception::runerror;
   }
   else
@@ -532,12 +532,12 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 		      << in->iColour() << " for the decaying particle in "
 		      << "GeneralTwoBodyDecayer::colourFactor() for "
 		      << in->PDGName() << " -> "
-		      << out1->PDGName() << " " << out2->PDGName() 
+		      << out1->PDGName() << " " << out2->PDGName()
 		      << Exception::runerror;
   return output;
 }
 
-Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa, 
+Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
 					    PMPair outb) const {
   // select the number of the mode
   tPDVector children;
@@ -574,9 +574,9 @@ void GeneralTwoBodyDecayer::decayInfo(PDPtr incoming, PDPair outgoing) {
   outgoing_.push_back(outgoing.second);
 }
 
-double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart, 
+double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 						  const ParticleVector & decay2,
-						  const ParticleVector & decay3, 
+						  const ParticleVector & decay3,
 						  MEOption meopt,
 						  ShowerInteraction inter) {
   // calculate R/B
@@ -584,14 +584,14 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 			const_ptr_cast<tPDPtr>(decay2[1]->dataPtr())};
   const vector<Lorentz5Momentum> mom = {decay2[0]->momentum(),
 					decay2[1]->momentum()};
-  
-  double B = me2        (0, inpart, outgoing,mom, meopt);    
+
+  double B = me2        (0, inpart, outgoing,mom, meopt);
   double R = threeBodyME(0, inpart, decay3, inter, meopt);
   return R/B;
-  
+
 }
 
-const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
+const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart,
 								const ParticleVector & decay,
 								unsigned int & nflow) {
   // calculate the colour factors for the three-body decay
@@ -614,14 +614,14 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       (  sex.size()==2 && decay[  sex[0]]->id()==decay[  sex[1]]->id()) ||
       ( asex.size()==2 && decay[ asex[0]]->id()==decay[ asex[1]]->id()))
     symFactor /= 2.;
-  else if (oct.size()==3 && 
+  else if (oct.size()==3 &&
 	   decay[oct[0]]->id()==decay[oct[1]]->id() &&
 	   decay[oct[0]]->id()==decay[oct[2]]->id())
     symFactor /= 6.;
-  
+
   colour_ = vector<DVector>(1,DVector(1,symFactor*1.));
-  
-  // decaying colour singlet   
+
+  // decaying colour singlet
   if(inpart.dataPtr()->iColour() == PDT::Colour0) {
     if(trip.size()==1 && atrip.size()==1 && oct.size()==1) {
       nflow = 1;
@@ -644,8 +644,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for decay colour scalar particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -682,8 +682,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for decay colour triplet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -720,8 +720,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for decay colour anti-triplet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -747,8 +747,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for a decaying colour octet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -770,8 +770,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for a decaying colour sextet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -793,8 +793,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 			<< " for a decaying colour anti-sextet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
-			<< decay[0]->dataPtr()->PDGName() << " " 
-			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[0]->dataPtr()->PDGName() << " "
+			<< decay[1]->dataPtr()->PDGName() << " "
 			<< decay[2]->dataPtr()->PDGName()
 			<< Exception::runerror;
   }
@@ -802,14 +802,14 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     throw Exception() << "Unknown colour for the decaying particle in "
   		      << "GeneralTwoBodyDecayer::getColourFactors() for "
   		      << inpart.   dataPtr()->PDGName() << " -> "
-		      << decay[0]->dataPtr()->PDGName() << " " 
-		      << decay[1]->dataPtr()->PDGName() << " "  
-		      << decay[2]->dataPtr()->PDGName() 
+		      << decay[0]->dataPtr()->PDGName() << " "
+		      << decay[1]->dataPtr()->PDGName() << " "
+		      << decay[2]->dataPtr()->PDGName()
   		      << Exception::runerror;
   return colour_;
 }
 
-const GeneralTwoBodyDecayer::CFlow & 
+const GeneralTwoBodyDecayer::CFlow &
 GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
 				   const ParticleVector & decay) {
   // static initialization of commonly used colour structures
@@ -828,13 +828,13 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
     tripflow[2][0] = make_pair(0, 1.);
     tripflow[2][1] = make_pair(1,-1.);
     tripflow[1][0] = make_pair(1, 1.);
-    
+
     atripflow[1].resize(2, make_pair(0,1.));
     atripflow[1][0] = make_pair(0, 1.);
     atripflow[1][1] = make_pair(1,-1.);
     atripflow[2][0] = make_pair(1, 1.);
-    
-    octflow[0].resize(2, make_pair(0,1.));   
+
+    octflow[0].resize(2, make_pair(0,1.));
     octflow[0][0] = make_pair(0,-1.);
     octflow[0][1] = make_pair(1, 1.);
     octflow[2][0] = make_pair(1, 1.);
@@ -849,7 +849,7 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
     epsflow[2][0] = make_pair(1,1.);
     initialized = true;
   }
-  
+
 
   // main function body
   int sing=0,trip=0,atrip=0,oct=0,sex=0,asex=0;
@@ -909,7 +909,7 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
     retval = &epsflow;
   }
   else {
-    retval = &fpflow;  
+    retval = &fpflow;
   }
 
   return *retval;

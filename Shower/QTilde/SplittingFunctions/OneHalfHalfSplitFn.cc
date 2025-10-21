@@ -44,7 +44,7 @@ double OneHalfHalfSplitFn::integOverP(const double z, const IdList &,
   case 4:
     return 2.*sqrt(z);
   case 5:
-    return (2./3.)*z*sqrt(z);
+    return 2./3.*z*sqrt(z);
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -83,6 +83,7 @@ OneHalfHalfSplitFn::generatePhiForward(const double z, const Energy2 t, const Id
   double fact = z*(1.-z)-mq2/t;
   double max = 1.+2.*fact*(-1.+2.*modRho);
   vector<pair<int, Complex> > output;
+  output.reserve(3);
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*(1.-2.*fact)/max));
   output.push_back(make_pair(-2,2.*fact*rho(0,2)/max));
   output.push_back(make_pair( 2,2.*fact*rho(2,0)/max));

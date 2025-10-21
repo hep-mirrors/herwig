@@ -107,20 +107,17 @@ ShowerTree::ShowerTree(PerturbativeProcessPtr process)
 }
 
 void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
-					       ShowerParticlePtr parent,
+					       ShowerParticlePtr ,
 					       const ShowerParticleVector & children) {
-  assert(children.size()==2);
-  bool matches[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    matches[ix] = children[ix]->id()==progenitor->id();
-  }
   ShowerParticlePtr newpart;
-  if(matches[0]&&matches[1]) {
-    if(parent->showerKinematics()->z()>0.5) newpart=children[0];
-    else                                    newpart=children[1];
+  double amax(0.);
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    if(children[ix]->id()==progenitor->id() &&
+       children[ix]->showerParameters().alpha>amax) {
+      amax = children[ix]->showerParameters().alpha;
+      newpart=children[ix];
+    }
   }
-  else if(matches[0]) newpart=children[0];
-  else if(matches[1]) newpart=children[1];
   _outgoingLines[progenitor]=newpart;
 }
 
@@ -143,6 +140,8 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     if(!cjt->first->perturbative()) continue;
     mapColour(cjt->first->original(),cjt->first->copy());
   }
+  // join colour lines if required
+  joinLines(true);
   // initial-state radiation
   if(ISR) {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
@@ -276,6 +275,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     addFinalStateShower(init,pstep);
   }
   colourLines().clear();
+  _joinedLines.clear();
 }
 
 void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
@@ -356,6 +356,7 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
   colourLines().clear();
+  _joinedLines.clear();
   // copy the particles and isolate the colour
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<newProcess->incoming().size();++ix) {
@@ -386,6 +387,98 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   }
 }
 
+void ShowerTree::joinLines(bool joinHard) {
+  if (_joinedLines.empty()) return;
+  vector<ColinePair> toJoin;
+  for(const auto & val : _joinedLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it1 = colourLines().find(val.left);
+    map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(val.right);
+    if(it1!=colourLines().end()&&it2!=colourLines().end())
+      toJoin.push_back(make_pair(it1->second,it2->second));
+    else if (it1!=colourLines().end()) {
+      ColinePtr right=val.right;
+      while (right) {
+        boost::bimaps::bimap<ColinePtr,ColinePtr>::left_const_iterator it  = _joinedLines.left .find(right);
+        if(it== _joinedLines.left.end()) break;
+        right = it->second;
+        it2 = colourLines().find(right);
+        if(it2!=colourLines().end()) {
+          toJoin.push_back(make_pair(it1->second,it2->second));
+          break;
+        }
+      };
+    }
+  }
+  map<ColinePtr,ColinePtr> newLines;
+  vector<ColinePtr> done;
+  for(const auto & val : _joinedLines) {
+    if(find(done.begin(),done.end(),val.left)!=done.end()) continue;
+    boost::bimaps::bimap<ColinePtr,ColinePtr>::right_const_iterator  rit  = _joinedLines.right.find(val.left);
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.left);
+    if(rit!=_joinedLines.right.end() && it==colourLines().end()) continue;
+    vector<ColinePtr> left;
+    if(it==colourLines().end()) left.push_back(val.left);
+    ColinePtr right = val.right;
+    boost::bimaps::bimap<ColinePtr,ColinePtr>::left_const_iterator  lit  = _joinedLines.left .find(right);
+    map<ColinePtr,ColinePtr>::const_iterator it2 = colourLines().find(right);
+    if(it2!=colourLines().end()) {
+      right=it2->second;
+    }
+    else {
+      while(lit!=_joinedLines.left .end()) {
+        left.push_back(right);
+        right=lit->second;
+        it2 = colourLines().find(right);
+        if(it2!=colourLines().end()) {
+          right=it2->second;
+          break;
+        }
+        lit  = _joinedLines.left .find(right);
+      };
+    }
+    if(it!=colourLines().end() && it2==colourLines().end()) {
+      left.push_back(right);
+      right=it->second;
+    }
+    for(auto & temp : left) {
+      done.push_back(temp);
+      newLines[temp]=right;
+    }
+  }
+  for(auto & val : newLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.second);
+    if(it!=colourLines().end()) val.second=it->second;
+  }
+  for(const auto & val : newLines) {
+    map<ColinePtr,ColinePtr>::const_iterator it = colourLines().find(val.first);
+    if(it!=colourLines().end()) {
+      if(val.second!=it->second) colourLines()[val.second]=it->second;
+    }
+    else
+      colourLines()[val.first]=val.second;
+  }
+  // fix any joined lines
+  if(!toJoin.empty() && joinHard) {
+    map<ColinePtr,ColinePtr> done;
+    for(auto val : toJoin) {
+      map<ColinePtr,ColinePtr>::const_iterator it = done.find(val.first);
+      ColinePtr first = val.first;
+      if(it!=done.end()) first = it->second;
+      // NB need to try both orderings
+      if(!first->join(val.second)) {
+        val.second->join(val.first);
+        for(auto & val2 : colourLines())
+          if(val2.second==val.first) val2.second=val.second;
+      }
+      else {
+        done[val.second] = val.first;
+        for(auto & val2 : colourLines())
+          if(val2.second==val.second) val2.second=first;
+      }
+    }
+  }
+}
+
 void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   assert(_incomingLines.size()==1);
   colourLines().clear();
@@ -398,6 +491,8 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   mapColour(final,copy);
+  // join colour lines if required
+  joinLines(true);
   // now this is the ONE instance of the particle which should have a life length
   // \todo change if space-time picture added
   // set the lifelength, need this so that still in right direction after
@@ -421,6 +516,8 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     colourLines().clear();
     mapColour(final,copy);
   }
+  // join lines if required
+  joinLines(false);
   // get the decaying particles
   // make the copy
   tColinePair cline=make_pair(copy->colourLine(),copy->antiColourLine());
@@ -514,29 +611,45 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
     addFinalStateShower(init,pstep);
   }
   colourLines().clear();
+  _joinedLines.clear();
 }
   
 void ShowerTree::clear() {
   // reset the has showered flag
   _hasShowered=false;
-  // clear the colour map
-  colourLines().clear();
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
-  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cjt;
   // abandon the children of the outgoing particles
-  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit) {
-    ShowerParticlePtr orig=cit->first->progenitor();
-    orig->set5Momentum(cit->first->copy()->momentum());
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
+    ShowerParticlePtr orig=out.first->progenitor();
+    orig->set5Momentum(out.first->copy()->momentum());
     ParticleVector children=orig->children();
     for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
-    _outgoingLines[cit->first]=orig;
-    cit->first->hasEmitted(false);
-    cit->first->reconstructed(ShowerProgenitor::notReconstructed);
+    out.first->hasEmitted(false);
+    out.first->reconstructed(ShowerProgenitor::notReconstructed);
   }
-  // forward products
-  _forward.clear();
-  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
-    _forward.insert(cit->first->progenitor());
+  // reisolate the colours
+  colourLines().clear();
+  _joinedLines.clear();
+  vector<PPtr> original,copy;
+  for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines() ) {
+     copy.push_back(in.first->copy());
+     original.push_back(in.first->original());
+  }
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
+    copy.push_back(out.first->copy());
+    original.push_back(out.first->original());
+  }
+  colourIsolate(original,copy);
+  // now sort out the particle's children
+  // abandon the children of the outgoing particles
+  for(const pair<ShowerProgenitorPtr,tShowerParticlePtr> out : outgoingLines() ) {
+    ShowerParticlePtr temp=
+      new_ptr(ShowerParticle(*out.first->copy(),
+			     out.first->progenitor()->perturbative(),
+			     out.first->progenitor()->isFinalState()));
+    fixColour(temp);
+    _outgoingLines[out.first]=temp;
+    out.first->progenitor(temp);
+  }
   // if a decay
   if(!_wasHard) {
     ShowerParticlePtr orig=_incomingLines.begin()->first->progenitor();
@@ -547,24 +660,29 @@ void ShowerTree::clear() {
   }
   // if a hard process
   else {
-    for(cjt=_incomingLines.begin();cjt!=_incomingLines.end();++cjt) {
-      tPPtr parent = cjt->first->original()->parents().empty() ? 
-	tPPtr() : cjt->first->original()->parents()[0];
+    for(const pair<ShowerProgenitorPtr,ShowerParticlePtr> in   : incomingLines()) {
+      tPPtr parent = in.first->original()->parents().empty() ? 
+	tPPtr() : in.first->original()->parents()[0];
       ShowerParticlePtr temp=
-	new_ptr(ShowerParticle(*cjt->first->copy(),
-			       cjt->first->progenitor()->perturbative(),
-			       cjt->first->progenitor()->isFinalState()));
+	new_ptr(ShowerParticle(*in.first->copy(),
+			       in.first->progenitor()->perturbative(),
+			       in.first->progenitor()->isFinalState()));
       fixColour(temp);
-      temp->x(cjt->first->progenitor()->x());
-      cjt->first->hasEmitted(false);
-      if(!(cjt->first->progenitor()==cjt->second)&&cjt->second&&parent)
-	parent->abandonChild(cjt->second);
-      cjt->first->progenitor(temp);
-      _incomingLines[cjt->first]=temp;
-      cjt->first->reconstructed(ShowerProgenitor::notReconstructed);
+      temp->x(in.first->progenitor()->x());
+      in.first->hasEmitted(false);
+      if(!(in.first->progenitor()==in.second)&&in.second&&parent)
+	parent->abandonChild(in.second);
+      in.first->progenitor(temp);
+      _incomingLines[in.first]=temp;
+      in.first->reconstructed(ShowerProgenitor::notReconstructed);
     }
   }
+  // clear Lorentz transforms
   clearTransforms();
+  // reset ME correction if needed
+  if(real_) resetMECorrection(true);
+  // forward products
+  resetShowerProducts();
 }
 
 void ShowerTree::resetShowerProducts() {
@@ -609,15 +727,6 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
       _treelinks.insert(make_pair(newtree,
 				  make_pair(tShowerProgenitorPtr(),*cit)));
     }
-  }
-}
-
-void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
-					const ShowerParticleVector & children) {
-  assert(children.size()==2);
-  _forward.erase(parent);
-  for(unsigned int ix=0; ix<children.size(); ++ix) {
-    _forward.insert(children[ix]);
   }
 }
 
@@ -908,6 +1017,438 @@ void ShowerTree::setVetoes(const map<ShowerInteraction,Energy> & pTs,
 	it!=_outgoingLines.end();++it) {
       for(map<ShowerInteraction,Energy>::const_iterator jt=pTs.begin();jt!=pTs.end();++jt)
 	it->first->maximumpT(jt->second,jt->first);
+    }
+  }
+}
+
+ShowerProgenitorPtr ShowerTree::findInitialStateLine(long id, Lorentz5Momentum momentum) { 
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::iterator partner;
+  Energy2 dmin(1e30*GeV2);
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::iterator 
+   	cit = incomingLines().begin(); cit!=incomingLines().end(); ++cit) {
+    if(cit->second->id()!=id) continue;
+    Energy2 test = 
+      sqr(cit->second->momentum().x()-momentum.x())+
+      sqr(cit->second->momentum().y()-momentum.y())+
+      sqr(cit->second->momentum().z()-momentum.z())+
+      sqr(cit->second->momentum().t()-momentum.t());
+    if(test<dmin) {
+      dmin    = test;
+      partner = cit;
+    }
+  }
+  return partner->first;
+}
+
+ShowerProgenitorPtr ShowerTree::findFinalStateLine(long id, Lorentz5Momentum momentum) { 
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::iterator partner;
+  Energy2 dmin(1e30*GeV2);
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::iterator 
+	cit = outgoingLines().begin(); cit!= outgoingLines().end(); ++cit) {
+    if(cit->second->id()!=id) continue;
+    Energy2 test = 
+      sqr(cit->second->momentum().x()-momentum.x())+
+      sqr(cit->second->momentum().y()-momentum.y())+
+      sqr(cit->second->momentum().z()-momentum.z())+
+      sqr(cit->second->momentum().t()-momentum.t());
+    if(test<dmin) {
+      dmin    = test;
+      partner = cit;
+    }
+  }
+  return partner->first;
+}
+
+void ShowerTree::fixSpectatorColours(PPtr newSpect,ShowerProgenitorPtr oldSpect,
+				     ColinePair & cline,ColinePair & aline) {
+  cline.first  = oldSpect->progenitor()->colourLine();
+  cline.second = newSpect->colourLine();
+  aline.first  = oldSpect->progenitor()->antiColourLine();
+  aline.second = newSpect->antiColourLine();
+  if(cline.first) {
+    cline.second->removeColoured(newSpect);
+    cline.first ->addColoured(newSpect);
+  }
+  if(aline.first) {
+    aline.second->removeAntiColoured(newSpect);
+    aline.first ->addAntiColoured(newSpect);
+  }
+}
+
+void ShowerTree::fixInitialStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+					ColinePair cline,ColinePair aline,double x,bool reset) {
+  // make copies of the particles
+  newEmit = new_ptr(Particle(*newEmit));
+  emitted = new_ptr(Particle(*emitted));
+  // sort out the colours
+  if(emitted->dataPtr()->iColour()==PDT::Colour8) {
+    // emitter
+    if(cline.first && cline.first == emitter->progenitor()->antiColourLine() &&
+       cline.second !=newEmit->antiColourLine()) {
+      // sort out not radiating line
+      ColinePtr col = emitter->progenitor()->colourLine();
+      if(col) {
+	col->removeColoured(emitter->copy());
+	col->removeColoured(emitter->progenitor());
+	newEmit->colourLine()->removeColoured(newEmit);
+	col->addColoured(newEmit);
+      }
+    }
+    else if(aline.first && aline.first == emitter->progenitor()->colourLine() &&
+	    aline.second !=newEmit->colourLine()) {
+      // sort out not radiating line
+      ColinePtr anti = emitter->progenitor()->antiColourLine();
+      if(anti) {
+	anti->removeAntiColoured(emitter->copy());
+	anti->removeAntiColoured(emitter->progenitor());
+	newEmit->colourLine()->removeAntiColoured(newEmit);
+	anti->addAntiColoured(newEmit);
+      }
+    }
+    else
+      assert(reset);
+    // emitted
+    if(cline.first && cline.second==emitted->colourLine()) {
+      cline.second->removeColoured(emitted);
+      cline.first->addColoured(emitted);
+      ColinePtr oldLine = emitted->antiColourLine();
+      oldLine->removeAntiColoured(emitted);
+      oldLine->removeAntiColoured(newEmit);
+      ColinePtr newLine = new_ptr(ColourLine());
+      newLine->addAntiColoured(emitted);
+      newLine->addAntiColoured(newEmit);
+    }
+    else if(aline.first && aline.second==emitted->antiColourLine()) {
+      aline.second->removeAntiColoured(emitted);
+      aline.first->addAntiColoured(emitted);
+      ColinePtr oldLine = emitted->colourLine();
+      oldLine->removeColoured(emitted);
+      oldLine->removeColoured(newEmit);
+      ColinePtr newLine = new_ptr(ColourLine());
+      newLine->addColoured(emitted);
+      newLine->addColoured(newEmit);
+    }
+    else
+      assert(false);
+  }
+  else {
+    if(emitter->progenitor()->antiColourLine() ) {
+      ColinePtr col = emitter->progenitor()->antiColourLine();
+      col->removeAntiColoured(emitter->copy());
+      col->removeAntiColoured(emitter->progenitor());
+      if(newEmit->antiColourLine()) {
+	newEmit->antiColourLine()->removeAntiColoured(newEmit);
+	col->addAntiColoured(newEmit);
+      }
+      else if (emitted->colourLine()) {
+	emitted->colourLine()->removeColoured(emitted);
+	col->addColoured(emitted);
+      }
+      else
+	assert(reset);
+    }
+    if(emitter->progenitor()->colourLine() ) {
+      ColinePtr col = emitter->progenitor()->colourLine();
+      col->removeColoured(emitter->copy());
+      col->removeColoured(emitter->progenitor());
+      if(newEmit->colourLine()) {
+	newEmit->colourLine()->removeColoured(newEmit);
+	col->addColoured(newEmit);
+      }
+      else if (emitted->antiColourLine()) {
+	emitted->antiColourLine()->removeAntiColoured(emitted);
+	col->addAntiColoured(emitted);
+      }
+      else
+	assert(reset);
+    }
+  }
+  // update the emitter
+  emitter->copy(newEmit);
+  ShowerParticlePtr sp = new_ptr(ShowerParticle(*newEmit,1,false));
+  sp->x(x);
+  emitter->progenitor(sp);
+  incomingLines()[emitter]=sp;
+  emitter->perturbative(false);
+  // add emitted
+  sp=new_ptr(ShowerParticle(*emitted,1,true));
+  if(!reset) {
+    ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(emitter->original(),emitted,sp));
+    gluon->perturbative(false);
+    outgoingLines().insert(make_pair(gluon,sp));
+  }
+  else {
+    ShowerProgenitorPtr gluon =  findFinalStateLine(emitted->id(),emitted->momentum());
+    gluon->progenitor(sp);
+    gluon->copy(emitted);
+    outgoingLines()[gluon]=sp;
+  }
+}
+
+void ShowerTree::fixFinalStateEmitter(PPtr newEmit,PPtr emitted, ShowerProgenitorPtr emitter,
+				      ColinePair cline,ColinePair aline,bool reset) {
+  // make copies of the particles
+  newEmit = new_ptr(Particle(*newEmit));
+  emitted = new_ptr(Particle(*emitted));
+  // special case if decayed
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
+  for(tit  = treelinks().begin(); tit != treelinks().end();++tit) {
+    if(tit->second.first && tit->second.second==emitter->progenitor())
+      break;
+  }
+  // sort out the colour lines
+  if(cline.first && cline.first == emitter->progenitor()->antiColourLine() &&
+     cline.second !=newEmit->antiColourLine()) {
+    // sort out not radiating line
+    ColinePtr col = emitter->progenitor()->colourLine();
+    if(col) {
+      col->removeColoured(emitter->copy());
+      col->removeColoured(emitter->progenitor());
+      newEmit->colourLine()->removeColoured(newEmit);
+      col->addColoured(newEmit);
+    }
+  }
+  else if(aline.first && aline.first == emitter->progenitor()->colourLine() &&
+	  aline.second !=newEmit->colourLine()) {
+    // sort out not radiating line
+    ColinePtr anti = emitter->progenitor()->antiColourLine();
+    if(anti) {
+      anti->removeAntiColoured(emitter->copy());
+      anti->removeAntiColoured(emitter->progenitor());
+      emitted->colourLine()->removeAntiColoured(newEmit);
+      anti->addAntiColoured(newEmit);
+    }
+  }
+  else
+    assert(reset);
+  // sort out the colour
+  if(cline.first && cline.second==emitted->antiColourLine()) {
+    cline.second->removeAntiColoured(emitted);
+    cline.first ->addAntiColoured(emitted);
+    ColinePtr oldLine = emitted->colourLine();
+    oldLine->removeColoured(emitted);
+    oldLine->removeAntiColoured(newEmit);
+    ColinePtr newLine = new_ptr(ColourLine());
+    newLine->addColoured(emitted);
+    newLine->addAntiColoured(newEmit);
+  }
+  else if(aline.first && aline.second==emitted->colourLine()) {
+    aline.second->removeColoured(emitted);
+    aline.first ->addColoured(emitted);
+    ColinePtr oldLine = emitted->antiColourLine();
+    oldLine->removeAntiColoured(emitted);
+    oldLine->removeColoured(newEmit);
+    ColinePtr newLine = new_ptr(ColourLine());
+    newLine->addAntiColoured(emitted);
+    newLine->addColoured(newEmit);
+  }
+  else
+    assert(false);
+  // update the emitter
+  emitter->copy(newEmit);
+  ShowerParticlePtr sp = new_ptr(ShowerParticle(*newEmit,1,true));
+  emitter->progenitor(sp);
+  outgoingLines()[emitter]=sp;
+  emitter->perturbative(false);
+  // update for decaying particles
+  if(tit!=treelinks().end())
+    updateLink(tit->first,make_pair(emitter,sp));
+  // add the emitted particle
+  sp=new_ptr(ShowerParticle(*emitted,1,true));
+  if(!reset) {
+    ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(emitter->original(),
+						       emitted,sp));
+    gluon->perturbative(false);
+    outgoingLines().insert(make_pair(gluon,sp));
+  }
+  else {
+    ShowerProgenitorPtr gluon =  findFinalStateLine(emitted->id(),emitted->momentum());
+    gluon->progenitor(sp);
+    gluon->copy(emitted);
+    outgoingLines()[gluon]=sp;
+  }
+}
+
+void ShowerTree::setUpMECorrection(RealEmissionProcessPtr real) {
+  assert(real);
+  // store the real emission process
+  real_ = real;
+  resetMECorrection();
+  // clean up the shower tree
+  resetShowerProducts();
+}
+
+void ShowerTree::resetMECorrection(bool reset) {
+  assert(real_);
+  // II emission
+  if(real_->emitter()   < real_->incoming().size() &&
+     real_->spectator() < real_->incoming().size()) {
+    // recoiling system
+    if(!reset) {
+      for( const auto & progen : outgoingLines() ) {
+	progen.first->progenitor()->transform(real_->transformation());
+	progen.first->copy()->transform(real_->transformation());
+      }
+    }
+    // the the radiating system
+    ShowerProgenitorPtr emitter,spectator;
+    unsigned int iemit  = real_->emitter();
+    unsigned int ispect = real_->spectator();
+    int ig = int(real_->emitted())-int(real_->incoming().size());
+    Lorentz5Momentum ptemp = reset ? real_->incoming()[iemit]->momentum() : real_->bornIncoming()[iemit]->momentum();
+    long pid = reset ? real_->incoming()[iemit]->id() : real_->bornIncoming()[iemit]->id();
+    emitter = findInitialStateLine(pid,ptemp);
+    ptemp = reset ? real_->incoming()[ispect]->momentum() : real_->bornIncoming()[ispect]->momentum();
+    pid = reset ? real_->incoming()[ispect]->id() : real_->bornIncoming()[ispect]->id();
+    spectator = findInitialStateLine(pid,ptemp);
+    // new spetator
+    PPtr newSpect = new_ptr(Particle(*real_->incoming()[ispect]));
+    // sort out the colours
+    ColinePair cline,aline;
+    fixSpectatorColours(newSpect,spectator,cline,aline);
+    // update the spectator
+    spectator->copy(newSpect);
+    ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,1,false)));
+    sp->x(ispect ==0 ? real_->x().first :real_->x().second);
+    spectator->progenitor(sp);
+    incomingLines()[spectator]=sp;
+    spectator->perturbative(true);
+    // now for the emitter
+    fixInitialStateEmitter(real_->incoming()[iemit],real_->outgoing()[ig],
+    			   emitter,cline,aline,iemit ==0 ? real_->x().first :real_->x().second,reset);
+  }
+  // FF emission
+  else if(real_->emitter()   >= real_->incoming().size() &&
+    	  real_->spectator() >= real_->incoming().size()) {
+    assert(real_->outgoing()[real_->emitted()-real_->incoming().size()]->id()==ParticleID::g);
+    // find the emitter and spectator in the shower tree
+    int iemit = int(real_->emitter())-int(real_->incoming().size());
+    Lorentz5Momentum ptemp = reset ? real_->outgoing()[iemit]->momentum() : real_->bornOutgoing()[iemit]->momentum();
+    ShowerProgenitorPtr emitter = findFinalStateLine(real_->bornOutgoing()[iemit]->id(),ptemp);
+    int ispect = int(real_->spectator())-int(real_->incoming().size());
+    ptemp = reset ? real_->outgoing()[ispect]->momentum() : real_->bornOutgoing()[ispect]->momentum();
+    ShowerProgenitorPtr spectator = findFinalStateLine(real_->bornOutgoing()[ispect]->id(),ptemp);
+    map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
+    // first the spectator
+    // special case if decayed
+    for(tit  = treelinks().begin(); tit != treelinks().end();++tit) {
+      if(tit->second.first && tit->second.second==spectator->progenitor())
+      	break;
+    }
+    // sort out the colours
+    ColinePair cline,aline;
+    PPtr newSpect = new_ptr(Particle(*real_->outgoing()[ispect]));
+    fixSpectatorColours(newSpect,spectator,cline,aline);
+    // update the spectator
+    spectator->copy(newSpect);
+    ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,1,true)));
+    spectator->progenitor(sp);
+    outgoingLines()[spectator]=sp;
+    spectator->perturbative(true);
+    // update for decaying particles
+    if(tit!=treelinks().end())
+      updateLink(tit->first,make_pair(spectator,sp));
+    // now the emitting particle
+    int ig = int(real_->emitted())-int(real_->incoming().size());
+    fixFinalStateEmitter(real_->outgoing()[iemit],
+    			 real_->outgoing()[ig],
+    			 emitter,cline,aline,reset);
+  }
+  // IF emission
+  else {
+    // scattering process
+    if(real_->incoming().size()==2) {
+      ShowerProgenitorPtr emitter,spectator;
+      unsigned int iemit  = real_->emitter();
+      unsigned int ispect = real_->spectator();
+      int ig = int(real_->emitted())-int(real_->incoming().size());
+      ColinePair cline,aline;
+      // incoming spectator
+      if(ispect<2) {
+	Lorentz5Momentum ptemp = reset ? real_->incoming()[ispect]->momentum() : real_->bornIncoming()[ispect]->momentum();
+	long pid = reset ? real_->incoming()[ispect]->id() : real_->bornIncoming()[ispect]->id();
+  	spectator = findInitialStateLine(pid,ptemp);
+	PPtr newSpect = new_ptr(Particle(*real_->incoming()[ispect]));
+	fixSpectatorColours(newSpect,spectator,cline,aline);
+	// update the spectator
+	spectator->copy(newSpect);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,1,false)));
+	sp->x(ispect ==0 ? real_->x().first :real_->x().second);
+	spectator->progenitor(sp);
+	incomingLines()[spectator]=sp;
+	spectator->perturbative(true);
+      }
+      // outgoing spectator
+      else {
+	Lorentz5Momentum ptemp = reset ? real_->outgoing()[ispect-real_->incoming().size()]->momentum() :
+	  real_->bornOutgoing()[ispect-real_->incoming().size()]->momentum();
+  	spectator = findFinalStateLine(real_->bornOutgoing()[ispect-real_->incoming().size()]->id(),ptemp);
+	// special case if decayed
+	map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
+	for(tit  = treelinks().begin(); tit != treelinks().end();++tit) {
+	  if(tit->second.first && tit->second.second==spectator->progenitor())
+	    break;
+	}
+	PPtr newSpect = new_ptr(Particle(*real_->outgoing()[ispect-real_->incoming().size()]));
+	fixSpectatorColours(newSpect,spectator,cline,aline);
+	// update the spectator
+	spectator->copy(newSpect);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,1,true)));
+	spectator->progenitor(sp);
+	outgoingLines()[spectator]=sp;
+	spectator->perturbative(true);
+	// update for decaying particles
+	if(tit!=treelinks().end())
+	  updateLink(tit->first,make_pair(spectator,sp));
+      }
+      // incoming emitter
+      if(iemit<2) {
+	Lorentz5Momentum ptemp = reset ? real_->incoming()[iemit]->momentum() : real_->bornIncoming()[iemit]->momentum();
+	long pid = reset ? real_->incoming()[iemit]->id() : real_->bornIncoming()[iemit]->id();
+  	emitter = findInitialStateLine(pid,ptemp);
+  	fixInitialStateEmitter(real_->incoming()[iemit],real_->outgoing()[ig],
+  			       emitter,aline,cline,iemit ==0 ? real_->x().first :real_->x().second,reset);
+      }
+      // outgoing emitter
+      else {
+  	emitter = findFinalStateLine(real_->bornOutgoing()[iemit-real_->incoming().size()]->id(),
+  				     real_->bornOutgoing()[iemit-real_->incoming().size()]->momentum());
+  	fixFinalStateEmitter(real_->outgoing()[iemit-real_->incoming().size()],
+  			     real_->outgoing()[ig],emitter,aline,cline,reset);
+      }
+    }
+    // decay process
+    else {
+      assert(real_->spectator()==0);
+      unsigned int iemit  = real_->emitter()-real_->incoming().size();
+      int ig = int(real_->emitted())-int(real_->incoming().size());
+      ColinePair cline,aline;
+      // incoming spectator
+      ShowerProgenitorPtr spectator = findInitialStateLine(real_->bornIncoming()[0]->id(),
+  							   real_->bornIncoming()[0]->momentum());
+      PPtr newSpect = new_ptr(Particle(*real_->incoming()[0]));
+      fixSpectatorColours(newSpect,spectator,cline,aline);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newSpect,2,false)));
+      spectator->copy(newSpect);
+      spectator->progenitor(sp);
+      _incomingLines[spectator]=sp;
+      // find the emitter
+      Lorentz5Momentum ptemp = reset ? real_->outgoing()[iemit]->momentum() : real_->bornOutgoing()[iemit]->momentum();
+      ShowerProgenitorPtr emitter = 
+      	findFinalStateLine(real_->bornOutgoing()[iemit]->id(),ptemp);
+      // recoiling system
+      if(!reset) {
+	for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	       cjt= outgoingLines().begin();
+	     cjt != outgoingLines().end();++cjt ) {
+	  if(cjt->first==emitter) continue;
+	  cjt->first->progenitor()->transform(real_->transformation());
+	  cjt->first->copy()->transform(real_->transformation());
+	}
+      }
+      // sort out the emitter
+      fixFinalStateEmitter(real_->outgoing()[iemit],
+      			   real_->outgoing()[ig],emitter,aline,cline,reset);
     }
   }
 }

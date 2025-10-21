@@ -10,11 +10,9 @@ op.add_option("-f"         , dest="plots_fixed"  , default=[], action="append")
 
 opts, args = op.parse_args()
 
-
 if(len(args)!=1) :
     print ('Must be one and only 1 name')
     quit()
-
 name=args[0].split("-")
 
 cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],

@@ -18,6 +18,7 @@
 #include "SplittingGenerator.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
 

@@ -15,7 +15,6 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -29,6 +28,7 @@ void HalfOneHalfSplitFn::Init() {
      "function for q -> g q");
 
 }
+
 double HalfOneHalfSplitFn::integOverP(const double z, const IdList &,
 				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {

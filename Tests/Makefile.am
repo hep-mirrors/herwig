@@ -129,7 +129,7 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 
 
 
-tests-Rivet : Rivet-EE Rivet-DIS Rivet-Fixed \
+tests-Rivet : Rivet-EE Rivet-DIS Rivet-Fixed Rivet-Onium \
 	      Rivet-TVT-EW Rivet-TVT-Photon Rivet-TVT-Jets \
 	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
@@ -153,6 +153,9 @@ Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
 Rivet-%.yoda : Rivet-%.run
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN) $<
 	if [ -e $(subst .run,.hepmc,$<) ]; then gzip $(subst .run,.hepmc,$<); fi
+
+Rivet/Onium-%.in :
+	python/onium_input_files.py $(notdir $(subst .in,,$@))
 
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
@@ -205,6 +208,13 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.in ) \
                   $(shell echo Rivet/EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.in ) \
 	          $(shell echo Rivet/EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.in )
+	          $(shell echo Rivet/Onium-TVT-Run-I-NonPrompt-{Charm,Bottom}-{1..5}.in) \
+	          $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-NonPrompt-{Charm,Bottom}-{1..5}.in) \
+                  $(shell echo Rivet/Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.in) \
+                  $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.in) \
+	          $(shell echo Rivet/Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Octet-{Jpsi,psi2S,chi_c{0..2}}-Jets-{1..5}.in) \
+	          $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Octet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-Jets-{1..5}.in) \
+                  $(shell echo Rivet/Onium-LHC-{2760,5,7,8,13}-Singlet-{B_c,B_cStar,B_c2S,B_c2SStar}-{Charm,Bottom}-{1..5}.in)
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
@@ -223,11 +233,13 @@ Rivet-GammaGamma/done: $(shell echo Rivet-GammaGamma-mumu-{3.5,4.5,5.5,6.5,7.5,9
 Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
-Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
-	             $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+Rivet-EE-Gamma/done: Analysis/RivetHerwig.so \
+                     $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
+                     $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
 	             $(shell echo Rivet-EE-Gamma-{pi0,Eta,EtaPrime,EtaC,ChiC2,ChiC0_2P,ChiC2_2P}-10.58.yoda ) \
                      $(shell echo Rivet-EE-Gamma-{Eta-{1,29},EtaPrime-{34.3,91.2}}.yoda ) \
-	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{196,198,206}.yoda )
+                     $(shell echo Rivet-EE-Gamma-Onium-91.2.yoda ) \
+	             $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-EE-Gamma
 	python/merge-EE-Gamma EE-Gamma
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
@@ -248,6 +260,11 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{12,12.8,13,14,14.8,17,21.5,22,2
 	python/plot-EE Rivet-EE
 	touch $@
 
+Rivet-LowEnergy-%.yoda:
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
+	if [ -e $(subst .yoda,.hepmc,$@) ]; then gzip $(subst .yoda,.hepmc,$@); fi
+
 Onium-%.yoda:
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
@@ -261,10 +278,17 @@ Onium-Sigma: Analysis/RivetHerwig.so
 	OUTPUT=`python/OniumSigma.py --generate-input-files | grep -v CT14 | grep -v LHAPDF | grep -v Eur.Phys`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/OniumSigma.py --fast --analyse
 
-Rivet-LowEnergy-%.yoda:
-	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWRUN)  $(subst .yoda,.run,$@)
-	if [ -e $(subst .yoda,.hepmc,$@) ]; then gzip $(subst .yoda,.hepmc,$@); fi
+Rivet-Onium: Analysis/RivetHerwig.so \
+	     $(shell echo Rivet-Onium-{TVT-Run-I,LHC-{2760,5,7,8,13}}-NonPrompt-{Charm,Bottom}-{1..5}.yoda) \
+             $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Singlet-{eta_c,Jpsi,psi2S,chi_c{0..2}}-{Charm,Jets}-{1..5}.yoda) \
+             $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-{Bottom,Jets}-{1..5}.yoda) \
+	     $(shell echo Rivet-Onium-{LHC-{2760,5,7,8,13},TVT-Run-I}-Octet-{Jpsi,psi2S,chi_c{0..2}}-Jets-{1..5}.yoda) \
+	     $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Octet-{Upsilon,Upsilon2S,Upsilon3S,chi_b{0..2}{,2P,3P}}-Jets-{1..5}.yoda) \
+             $(shell echo Rivet-Onium-LHC-{2760,5,7,8,13}-Singlet-{B_c,B_cStar,B_c2S,B_c2SStar}-{Charm,Bottom}-{1..5}.yoda)
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium --initialize
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium --process
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; python/merge-Onium
+	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; rivet-mkhtml Onium.yoda  -o Rivet-Onium
 
 Rivet-LowEnergy-EE-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-EE-,,$@))); fi; OUTPUT=`python/LowEnergy-EE.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -377,9 +401,6 @@ Rivet-LHC-EW/done: \
                                      Rivet-LHC-Z-mu-SOPHTY.yoda:Hw Rivet-Powheg-LHC-Z-mu-SOPHTY.yoda:Hw-Powheg
 	touch $@
 
-
-
-
 Rivet-LHC-Photon : Rivet-LHC-Photon/done
 	touch $@
 
@@ -392,9 +413,6 @@ Rivet-LHC-Photon/done: \
 	python/merge-LHC-Photon Powheg-LHC
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw Powheg-LHC-Photon.yoda:Hw-Powheg
 	touch $@
-
-
-
 
 Rivet-LHC-Higgs : Rivet-LHC-Higgs/done
 	touch $@
@@ -411,10 +429,6 @@ Rivet-LHC-Higgs/done:  \
                         Rivet-Powheg-LHC-VBF.yoda:VBF-Powheg Rivet-LHC-VBF.yoda:VBF Rivet-LHC-WH.yoda:WH Rivet-LHC-ZH.yoda:ZH \
                         Rivet-Powheg-LHC-WH.yoda:WH-Powheg Rivet-Powheg-LHC-ZH.yoda:ZH-Powheg
 	touch $@
-
-
-
-
 
 clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt

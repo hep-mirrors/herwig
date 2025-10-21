@@ -197,7 +197,6 @@ void SudakovFormFactor::Init() {
      "Include an additional factor of sqrt(z)",
      5);
 
-
 }
 
 bool SudakovFormFactor::checkColours(const IdList & ids) const {
@@ -276,7 +275,7 @@ bool SudakovFormFactor::checkColours(const IdList & ids) const {
     assert(false);
   }
   return false;
-} 
+}
 
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
