@@ -15,6 +15,7 @@
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 #include "Herwig/Models/StandardModel/SMFFHVertex.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
@@ -27,11 +28,11 @@ IBPtr OneOneOneEWSplitFn::fullclone() const {
 }
 
 void OneOneOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe;
+  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe << longitudinalEWScheme_;
 }
 
 void OneOneOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe;
+  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe >> longitudinalEWScheme_;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -56,6 +57,20 @@ void OneOneOneEWSplitFn::Init() {
      &OneOneOneEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
      false, false, Interface::limited);
 
+  static Switch<OneOneOneEWSplitFn,unsigned int> interfaceLongitudinalEWScheme
+    ("LongitudinalEWScheme",
+     "EW splitting scheme: 0 = Dawson, 1 = GI",
+     &OneOneOneEWSplitFn::longitudinalEWScheme_, 0, false, false);
+  static SwitchOption interfaceDawsonEWScheme
+    (interfaceLongitudinalEWScheme,
+     "Dawson",
+     "Using Dawson picture in V->V'V'' EW splittings",
+     0);
+  static SwitchOption interfaceGIEWScheme
+    (interfaceLongitudinalEWScheme,
+     "GaugeInvariant",
+     "Using gauge invariant picture in V->V'V'' EW splittings",
+     1);
 }
 
 
