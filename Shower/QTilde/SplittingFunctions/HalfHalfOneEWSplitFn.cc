@@ -28,14 +28,14 @@ IBPtr HalfHalfOneEWSplitFn::fullclone() const {
 
 void HalfHalfOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
   os << gZ_ << gWL_ << _couplingValueLeftIm << _couplingValueLeftRe << _couplingValueRightIm
-     << _couplingValueRightRe << longitudinalEWScheme_
+     << _couplingValueRightRe << longitudinalEWScheme_ << _cG
      << _yLeftIm << _yLeftRe << _yRightIm << _yRightRe;
 }
 
 void HalfHalfOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
   is >> gZ_ >> gWL_ >> _couplingValueLeftIm >> _couplingValueLeftRe >> _couplingValueRightIm
-     >> _couplingValueRightRe >> longitudinalEWScheme_
-     >> _yLeftIm >> _yLeftRe >> _yRightIm >> _yRightRe;;
+     >> _couplingValueRightRe >> longitudinalEWScheme_ >> _cG
+     >> _yLeftIm >> _yLeftRe >> _yRightIm >> _yRightRe;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -204,7 +204,10 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
   Complex gL(0.,0.), gR(0.,0.), yL(0.,0.), yR(0.,0.);
   getCouplings(gL,gR,ids);
   getGBYukawas(yL,yR,ids);
-
+  if (longitudinalEWScheme_ == 1) {
+    yL *= _cG;
+    yR *= _cG;
+  }
   double gL2 = norm(gL), gR2 = norm(gR);
   double yL2 = norm(yL), yR2 = norm(yR);
 
@@ -281,6 +284,8 @@ double HalfHalfOneEWSplitFn::integOverP(const double z,
   }
   else {
     getGBYukawas(yL,yR,ids);
+    yL *= _cG;
+    yR *= _cG;
     double yL2 = norm(yL), yR2 = norm(yR);
     coef = 2.*max(gL2,gR2) + max(yL2,yR2);
   }
@@ -312,6 +317,8 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   }
   else {
     getGBYukawas(yL,yR,ids);
+    yL *= _cG;
+    yR *= _cG;
     double yL2 = norm(yL), yR2 = norm(yR);
     coef = 2.*max(gL2,gR2) + max(yL2,yR2);
   }
@@ -377,19 +384,17 @@ DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(0,0,2) = sqrt(2.*z)*gL*pt/(1.-z)*cphase/den;
   (*kernal)(0,0,0) = -sqrt(2.)*gL*pt/sqrt(z)/(1.-z)*phase/den;
 
-  if(longitudinalEWScheme_ == 0) {
-    (*kernal)(0,0,1) = -2.*gL*sqrt(z)*m2/(1.-z)/den;
-    (*kernal)(0,1,1) = 0.;
-    (*kernal)(1,0,1) = 0.;
-    (*kernal)(1,1,1) = -2.*gR*sqrt(z)*m2/(1.-z)/den;
-  }
-  else {
-    (*kernal)(0,0,1) += sqrt(2.)*(m0*yR*z + m1*yL)/sqrt(z)/den;
-    (*kernal)(0,1,1) += sqrt(2.)*cphase*yL*pt/den;
-    (*kernal)(1,0,1) += -sqrt(2.)*phase*yR*pt/den;
-    (*kernal)(1,1,1) += sqrt(2.)*(m0*yL*z + m1*yR)/sqrt(z)/den;
-  }
+  (*kernal)(0,0,1) = -2.*gL*sqrt(z)*m2/(1.-z)/den;
+  (*kernal)(0,1,1) = 0.;
+  (*kernal)(1,0,1) = 0.;
+  (*kernal)(1,1,1) = -2.*gR*sqrt(z)*m2/(1.-z)/den;
 
+  if(longitudinalEWScheme_ == 1) {
+    (*kernal)(0,0,1)+= _cG*sqrt(2.)*(m0*yR*z + m1*yL)/sqrt(z)/den;
+    (*kernal)(0,1,1)+= -_cG*sqrt(2.)*cphase*yL*pt/sqrt(z)/den;
+    (*kernal)(1,0,1)+= -_cG*sqrt(2.)*phase*yR*pt/sqrt(z)/den;
+    (*kernal)(1,1,1)+= _cG*sqrt(2.)*(m0*yL*z + m1*yR)/sqrt(z)/den;
+  }
 
   // return the answer
   return kernal;

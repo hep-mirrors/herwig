@@ -47,7 +47,7 @@ public:
       return ( 2.*max(norm(gL),norm(gR)) )/(1.-z);
     }
     else {
-      return ( 2.*max(norm(gL),norm(gR)) + max(norm(yL),norm(yR)) )/(1.-z);
+      return ( 2.*max(norm(gL),norm(gR)) + sqr(_cG) * max(norm(yL),norm(yR)) )/(1.-z);
     }
   }
 
