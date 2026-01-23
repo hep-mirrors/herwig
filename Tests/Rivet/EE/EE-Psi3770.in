@@ -59,6 +59,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 E691_1992_I342947
 insert /Herwig/Analysis/Rivet:Analyses 0 MARKIII_1987_I247266
 # Dalitz plot analysis of D0 -> KS0 pi0 pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 CLEOC_2011_I913909
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2025_I3074754
 # Dalitz plot analysis of D+ -> K0S pi+ pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2014_I1277070
 # Dalitz plot analysis of D0 -> K0S pi+ pi-
