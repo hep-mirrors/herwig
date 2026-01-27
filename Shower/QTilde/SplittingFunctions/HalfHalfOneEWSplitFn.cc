@@ -221,8 +221,7 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
       m0 = ids[0]->mass();
       m1 = ids[1]->mass();
       m2 = ids[2]->mass();
-      Energy qt = sqrt(t);
-      double m0t = m0/qt, m1t = m1/qt, m2t = m2/qt;
+      double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
 
       val += (gL2*abs(rho(0,0)) + gR2*abs(rho(1,1)))*
                ((1.+sqr(z))*sqr(m0t) - (1.+z)*sqr(m1t) - (1.-z)*sqr(m2t))
@@ -233,39 +232,81 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
 
     val /= 2.0 * max(gL2,gR2);
   }
+  // else {
+  //   double overP = (2.*max(gL2,gR2) + max(yL2,yR2) )/(1.-z);
+  //   val = ((1.+sqr(z))/(1.-z) * (gL2*abs(rho(0,0)) + gR2*abs(rho(1,1)))
+  //       + sqr(1.-z)/(1.-z) * (yL2*abs(rho(0,0)) + yR2*abs(rho(1,1))));
+  //
+  //   if (mass) {
+  //     m0 = ids[0]->mass();
+  //     m1 = ids[1]->mass();
+  //     m2 = ids[2]->mass();
+  //     double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
+  //
+  //     val += (-((-1 + z)*(-(yL*((pow(m0t,2) + pow(m1t,2) - pow(m2t,2))*yL
+  //         + 2*m0t*m1t*yR)) - pow(m0t,2)*(gR2 - pow(yL,2)
+  //         + pow(yR,2))*z)*abs(rho(0,0))) + 2*sqrt(gL2)*(-(sqrt(gR2)*m0t*m1t*(-1 + z))
+  //         + sqrt(2)*m2t*(m1t*yL + m0t*yR*z))*abs(rho(0,0)) - 2*sqrt(gL2)*sqrt(gR2)*m0t*m1t*(-1 + z)*abs(rho(1,1))
+  //         + (2*sqrt(2)*sqrt(gR2)*m2t*(m1t*yR + m0t*yL*z) + (-1 + z)*(yR*(2*m0t*m1t*yL
+  //         + (pow(m0t,2) + pow(m1t,2) - pow(m2t,2))*yR)
+  //         + pow(m0t,2)*(yL - yR)*(yL + yR)*z) + gR2*(-(pow(m2t,2)*(-1 + z))
+  //         + pow(m1t,2)*(1 + z) - pow(m0t,2)*(1 + pow(z,2))))*abs(rho(1,1))
+  //         + gL2*((-(pow(m2t,2)*(-1 + z)) + pow(m1t,2)*(1 + z)
+  //         - pow(m0t,2)*(1 + pow(z,2)))*abs(rho(0,0)) + pow(m0t,2)*(-1 + z)*z*abs(rho(1,1))))
+  //         /(pow(-1 + z,3)*pow(z,2));
+  //   }
+  //   val /= overP;
+  // }
   else {
-    double overP = ( 2.*max(gL2,gR2) + max(yL2,yR2) )/(1.-z);
-    if (overP == 0.) assert(false);
+  double oneMz = 1.0 - z;
+  double overP = (2.*max(gL2,gR2) + max(yL2,yR2))/oneMz;
 
-    double exactPMassless =
-      -(((yL2/2. + yR2/2.)*pow(-1. + z,2) + (gL2*(1. + pow(z,2)))/2.
-          + (gR2*(1. + pow(z,2)))/2.)/(-1. + z));
+  double r00 = abs(rho(0,0));
+  double r11 = abs(rho(1,1));
 
-    val = exactPMassless/overP;
+  //cerr << "rho00=" << abs(rho(0,0)) << " rho11=" << abs(rho(1,1)) << "\n";
 
-    if (mass) {
-      m0 = ids[0]->mass();
-      m1 = ids[1]->mass();
-      m2 = ids[2]->mass();
+  // massless GI (cG already absorbed in yL,yR)
+  val = ((1.+sqr(z))/oneMz) * (gL2*r00 + gR2*r11)
+      + oneMz              * (yL2*r00 + yR2*r11);
 
-      double Re_gLgR  = real(gL*conj(gR)), Re_gLyL  = real(gL*conj(yL));
-      double Re_gLyR  = real(gL*conj(yR)), Re_gRyL  = real(gR*conj(yL));
-      double Re_gRyR  = real(gR*conj(yR)), Re_yLyR  = real(yL*conj(yR));
-      Energy2 A = sqr(m0) + sqr(m1) - sqr(m2);
+  if (mass) {
+    m0 = ids[0]->mass();
+    m1 = ids[1]->mass();
+    m2 = ids[2]->mass();
+    double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
 
-      double exactPMassive =
-        ( ((-1. + z) * (-( A*yL2 + 2.*m0*m1*Re_yLyR ) - sqr(m0)*(gR2 - yL2 + yR2)*z))/2.
-          + 2.*( (-1. + z)*m0*m1*Re_gLgR - (m2/sqrt(2.))*( m1*Re_gLyL + m0*z*Re_gLyR ) )
-          + gL2*( -0.5*(sqr(m0)*(-1. + z)*z) + (sqr(m2)*(-1. + z) - sqr(m1)*(1. + z)
-                 + sqr(m0)*(1. + pow(z,2)))/2. )
-          + ( -2.*sqrt(2.)*m2*( m1*Re_gRyR + m0*z*Re_gRyL )
-              - (-1. + z)*( 2.*m0*m1*Re_yLyR + A*yR2 + sqr(m0)*(yL2 - yR2)*z )
-              + gR2*( sqr(m2)*(-1. + z) - sqr(m1)*(1. + z) + sqr(m0)*(1. + pow(z,2)) ) )/2. )
-        / ( t*pow(-1. + z,2)*z );
+    double Re_gLgR = real(gL*conj(gR));
+    double Re_gLyL = real(gL*conj(yL));
+    double Re_gLyR = real(gL*conj(yR));
+    double Re_gRyL = real(gR*conj(yL));
+    double Re_gRyR = real(gR*conj(yR));
+    double Re_yLyR = real(yL*conj(yR));
 
-      val += exactPMassive/overP;
-    }
+    double At = sqr(m0t) + sqr(m1t) - sqr(m2t);
+
+    // "minus" (rho00) and "plus" (rho11) pieces
+    double Nm =
+        oneMz * ( - (At*yL2 + 2.*m0t*m1t*Re_yLyR)
+                  - sqr(m0t)*(gR2 - yL2 + yR2)*z )
+      + gL2 * ( sqr(m2t)*oneMz - sqr(m1t)*(1.+z) + sqr(m0t)*(1.+sqr(z)) )
+      - 2.*sqrt(2.)*m2t * ( m1t*Re_gLyL + m0t*z*Re_gLyR );
+
+    double Np =
+        gR2 * ( sqr(m2t)*oneMz - sqr(m1t)*(1.+z) + sqr(m0t)*(1.+sqr(z)) )
+      - oneMz * ( 2.*m0t*m1t*Re_yLyR + At*yR2 + sqr(m0t)*(yL2 - yR2)*z )
+      - 2.*sqrt(2.)*m2t * ( m1t*Re_gRyR + m0t*z*Re_gRyL )
+      - gL2 * sqr(m0t) * oneMz * z;
+
+    double Nint =
+      2.*oneMz * m0t*m1t * Re_gLgR * (r00 + r11);
+
+    // this matches your qt^2 = t*z*(1-z) rewriting
+    val += (r00*Nm + r11*Np + Nint) / (pow(oneMz,3)*sqr(z));
   }
+
+  val /= overP;
+}
 
   return val;
 }
