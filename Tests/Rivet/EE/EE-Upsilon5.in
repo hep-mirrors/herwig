@@ -34,4 +34,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2015_I1283743
 # D0/D_s spectra
 insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2023_I2660525:MODE=DECAY
 # branching ratios
-#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_BS
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_BS

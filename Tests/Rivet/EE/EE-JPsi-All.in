@@ -8,7 +8,7 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.096916
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_JPSI
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_JPSI
 # J/psi -> pi+ pi- pi0, K+K-pi0 and KS0 K+-pi-+
 insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2017_I1512302
 # J/psi -> pi+ pi- pi0

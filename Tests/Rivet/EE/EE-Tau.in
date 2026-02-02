@@ -11,6 +11,8 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2ll
 set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau
 set /Herwig/Particles/pi0:Stable Stable
+# BRs
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_TAU
 # leptons
 insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1995_I374784
 # pi- pi0

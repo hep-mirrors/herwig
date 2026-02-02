@@ -25,6 +25,6 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2021_I1867843
 # eta_c -> f_r f_2(')
 insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2008_I754089
 # eta_c BRs
-#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_ETAC
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_ETAC
 # eta_c MC
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_DALITZ_ETAC

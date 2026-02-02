@@ -142,7 +142,7 @@ Rivet-%-UE-Cent.yoda : Rivet-%-UE-Cent.run Rivet-%-Cent.run
 	mv $(subst .yoda,,$@)/$@ .
 	rm -rf $(subst .yoda,,$@)
 
-Rivet-%.run : Rivet/%.in
+Rivet-%.run : Rivet/%.in Analysis/RivetHerwig.so
 	export RIVET_ANALYSIS_PATH=`pwd`/Analysis; $(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
 Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
@@ -164,7 +164,7 @@ Rivet/%.in :
 Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{12,12.8,13,14,14.8,17,21.5,22,22.5,25,26.8,27.6,27.7,29,30,30.2,30.3,30.5,30.7,30.8,31.2,31.3,31.6,34,34.5,34.8,35,36.2,41,41.5,42.1,42.6,43.5,43.6,44,45,48.0,50,52,53.3,55,55.3,56,57,58,59.5,60,60.8,61.4,65.4,66,75.7,76,82,85,91,91-nopi,93.0,130,130.1,133,136,136.1,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207}.in) \
 		  $(shell echo Rivet/EE-{183,189}-WW.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
-                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.0,2.2,2.23,2.396,2.4,2.6,2.644,2.8,2.9,3.0,3.05,3.2,3.4,3.5,3.63,3.67,4.03,4.17,4.18,4.3,4.41,4.5,4.6,4.8,5.0,5.2,5.8,6.2,6.5,6.6,7.0,7.4,7.7,8.8,9.27,9.4,9.46,9.51,10,10.4,10.45,10.47,10.52,10.52-sym,10.54,10.55,10.58,10.58-sym,10.6}.in) \
+                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.0,2.2,2.23,2.396,2.4,2.6,2.644,2.8,2.9,3.0,3.05,3.2,3.4,3.5,3.63,3.67,4.03,4.17,4.18,4.3,4.41,4.5,4.6,4.8,5.0,5.2,5.8,6.2,6.5,6.6,7.0,7.4,7.7,8.8,9.27,9.4,9.46,9.51,9.98,10.4,10.45,10.47,10.52,10.52-sym,10.54,10.55,10.58,10.58-sym,10.6}.in) \
                   $(shell echo Rivet/EE-{Bc,Ds,Eta,Etac,JPsi,JPsi-All,Lambdab,Lambdac,LL-10.58,LL-197,LL-29,LL-58,LL-91,Omega-Baryon,Omegac0,Omega-Meson,Phi,Psi2S,Psi2S-All,Psi3770,Tau,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon4-asym,Upsilon5,Xi0,Xic0,Xicp,Xim}.in) \
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{225,251,300,318,318-CMS}-e+-{VeryLow,Low,Med,High}Q2.in) \
 	          $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-318-{e+,e-}-CC-{VeryLow,Low,Med,High}Q2.in) \
@@ -218,8 +218,14 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 
 #$(shell echo Rivet/LHC{,-Dipole}-{7,13}{,-UE}-Cent.in )
 
-Analysis/RivetHerwig.so: Analysis/*.cc
-	rivet-build Analysis/RivetHerwig.so Analysis/*.cc 
+Analysis/PDG_TAU.cc:
+	cd Analysis; rivet-mkanalysis --pdgid=15 PDG_TAU --unstable-KS0; cd ..
+
+Analysis/PDG_%.cc:
+	declare -A pdgid; pdgid["B0"]=511 ;pdgid=(["B0"]=511  ["BPLUS"]=521 ["BS"]=531 ["D0"]=421  ["DPLUS"]=411 ["DS"]=431 ["CHIC0"]=10441 ["CHIC1"]=20443 ["CHIC2"]=445 ["ETAC"]=441 ["JPSI"]=443 ["PSI2S"]=100443 ["LAMBDA_C"]=4122 ); name1=$(subst .cc,,$(subst Analysis/,,$@)); name=$(subst .cc,,$(subst Analysis/PDG_,,$@)); pid=$${pdgid[$$name]}; cd Analysis; rivet-mkanalysis --pdgid=$$pid $$name1; cd ..
+#
+Analysis/RivetHerwig.so: Analysis/MC_*.cc $(shell echo Analysis/PDG_{{B,D}{0,PLUS,S},CHIC{0,1,2},JPSI,ETAC,PSI2S,TAU,LAMBDA_C}.cc)
+	rivet-build Analysis/RivetHerwig.so Analysis/MC_*.cc Analysis/PDG_*.cc
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
@@ -251,10 +257,10 @@ Rivet-EE : Rivet-EE/done
 Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{12,12.8,13,14,14.8,17,21.5,22,22.5,25,26.8,27.6,27.7,29,30,30.2,30.3,30.5,30.7,30.8,31.2,31.3,31.6,34,34.5,34.8,35,36.2,41,41.5,42.1,42.6,43.5,43.6,44,45,48.0,50,52,53.3,55,55.3,56,57,58,59.5,60,60.8,61.4,65.4,66,75.7,76,82,85,91,91-nopi,93.0,130,130.1,133,136,136.1,161,161.3,172,172.3,177,182.8,183,188.6,189,192,194.4,196,197,200,200.2,202,205,206,206.2,207}.yoda) \
 		$(shell echo Rivet-EE-{183,189}-WW.yoda) \
 	  	$(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-	  	$(shell echo Rivet-EE-{2.0,2.2,2.23,2.396,2.4,2.6,2.644,2.8,2.9,3.0,3.05,3.2,3.4,3.5,3.63,3.67,4.03,4.17,4.18,4.3,4.41,4.5,4.6,4.8,5.0,5.2,5.8,6.2,6.5,6.6,7.0,7.4,7.7,8.8,9.27,9.4,9.46,9.51,10,10.4,10.45,10.47,10.52,10.52-sym,10.54,10.55,10.58,10.58-sym,10.6}.yoda) \
+	  	$(shell echo Rivet-EE-{2.0,2.2,2.23,2.396,2.4,2.6,2.644,2.8,2.9,3.0,3.05,3.2,3.4,3.5,3.63,3.67,4.03,4.17,4.18,4.3,4.41,4.5,4.6,4.8,5.0,5.2,5.8,6.2,6.5,6.6,7.0,7.4,7.7,8.8,9.27,9.4,9.46,9.51,9.98,10.4,10.45,10.47,10.52,10.52-sym,10.54,10.55,10.58,10.58-sym,10.6}.yoda) \
 	  	$(shell echo Rivet-EE-{Bc,Ds,Eta,Etac,JPsi,JPsi-All,Lambdab,Lambdac,LL-10.58,LL-197,LL-29,LL-58,LL-91,Omega-Baryon,Omegac0,Omega-Meson,Phi,Psi2S,Psi2S-All,Psi3770,Tau,Upsilon,Upsilon2,Upsilon3,Upsilon4,Upsilon4-asym,Upsilon5,Xi0,Xic0,Xicp,Xim}.yoda)
 	rm -rf Rivet-EE
-	python/merge-EE --with-gg --with-decay --with-WW EE
+	python/merge-EE --with-gg --with-decay --with-WW --with-LL EE
 	python/merge-EE Powheg-EE
 	rivet-mkhtml -o Rivet-EE EE.yoda:Hw Powheg-EE.yoda:Hw-Powheg
 	python/plot-EE Rivet-EE
@@ -434,7 +440,8 @@ clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt
 	rm -rf Rivet-*
 	rm -rf Onium-Splitting
-	rm -rf Analysis/*.so
+	rm -rf Analysis/*.so Analysis/PDG_*
+	rm -rf rivet-plots
 
 distclean-local:
 	rm -rf .cache

@@ -43,8 +43,8 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             sqrts=10.58
         else :
             sqrts=float(key)
-        if   ("ARGUS_1989_I276860" in desthisto.path() and sqrts==10. ) : sqrts=9.98
-        elif ( "LENA_1981_I164397" in desthisto.path() and sqrts==10. ) : sqrts=9.9903
+        if   ("ARGUS_1989_I276860" in desthisto.path() and sqrts==9.98 ) : sqrts=9.98
+        elif ( "LENA_1981_I164397" in desthisto.path() and sqrts==9.98 ) : sqrts=9.9903
         elif ( "LENA_1981_I164397" in desthisto.path() and sqrts==9.51) : sqrts=9.5149
         temp[sqrts]=val
     if type(desthisto) is yoda.core.Scatter2D :
@@ -189,7 +189,7 @@ if __name__ == "__main__":
 yodafiles=["2.2","2.23","2.4","2.6","2.8","3.0","3.05","3.2","3.4","3.63","3.67",
            "4.03","4.17","4.18","4.3","4.41","4.5","4.6","4.8","5.0","5.2","5.8",
            "6.2","6.5","6.6","7.0","7.4","7.7","8.8","9.27","9.4","9.46","9.51",
-           "10","10.4","10.45","10.47","10.52","10.52-sym","10.54","10.55","10.58","10.58-sym","10.6",
+           "9.98","10.4","10.45","10.47","10.52","10.52-sym","10.54","10.55","10.58","10.58-sym","10.6",
            "12","12.8","13","14","14.8","17","21.5","22","22.5","25","26.8","27.6","27.7","29",
            "30","30.2","30.3","30.5","30.7","30.8","31.2","31.3","31.6","34","34.5","34.8","35","36.2",
            "41","41.5","42.1","42.6","43.5","43.6","44","45","48.0",
@@ -469,6 +469,15 @@ for f in yodafiles:
                 if ( "d01" in aopath or "d02" in aopath or
                      "d03" in aopath or "d09-x01-y01" in aopath):
                     outhistos[aopath] = ao
+        elif "MC_DECAY_OMEGAPHIA1_3PION" in aopath :
+           if sqrts=="omega" :
+               if ( "dalitz_1" in aopath or "m0_1" in aopath or "mminus_1" in aopath or
+                    "mplus_1" in aopath or "xhist_1" in aopath  or "yhist_1" in aopath ):
+                   outhistos[aopath] = ao
+           elif sqrts=="phi" :
+               if ( "dalitz_2" in aopath or "m0_2" in aopath or "mminus_2" in aopath or
+                    "mplus_2" in aopath or "xhist_2" in aopath  or "yhist_2" in aopath ):
+                   outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao
 
@@ -1376,6 +1385,15 @@ useOne("/ARGUS_1990_I278933/d05-x01-y01","9.46")
 useOne("/ARGUS_1990_I278933/d05-x01-y02","9.46")
 useOne("/ARGUS_1990_I278933/d06-x01-y01","U1")
 useOne("/ARGUS_1990_I278933/d06-x01-y02","U2")
+ 
+useOne("/ARGUS_1990_I295621/d01-x01-y01","10.")
+useOne("/ARGUS_1990_I295621/d02-x01-y01","10.")
+useOne("/ARGUS_1990_I295621/d03-x01-y01","10.")
+useOne("/ARGUS_1990_I295621/d04-x01-y01","U1")
+useOne("/ARGUS_1990_I295621/d05-x01-y01","U1")
+useOne("/ARGUS_1990_I295621/d06-x01-y01","U1")
+useOne("/ARGUS_1990_I295621/d09-x01-y01","10.")
+useOne("/ARGUS_1990_I295621/d09-x01-y02","U1")
 
 useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y01","9.46")
 useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y02","9.46")
@@ -1388,7 +1406,7 @@ useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y01","9.46")
 useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y02","9.46")
 useOne("/CRYSTAL_BALL_1991_I297905/d06-x01-y01","U1")
 
-useOne("/ARGUS_1989_I262551/d01-x01-y01","10.00")
+useOne("/ARGUS_1989_I262551/d01-x01-y01","10.")
 useOne("/ARGUS_1989_I262551/d02-x01-y01","U1")
 useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
 useOne("/ARGUS_1989_I262551/d03-x01-y01","U1")

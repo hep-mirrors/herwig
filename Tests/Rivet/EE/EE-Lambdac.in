@@ -12,6 +12,8 @@ set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
 decaymode Upsilon(4S)->Lambda_c+,Lambdabar_c-; 1. 1 /Herwig/Decays/DecayME0
 do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->Lambda_c+,Lambdabar_c-;
+# Lambda_c inclusive brs
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_LAMBDA_C
 # Lambda_c decays (Lambda Pi+) 
 insert /Herwig/Analysis/Rivet:Analyses 0 FOCUS_2006_I693639
 insert /Herwig/Analysis/Rivet:Analyses 0 ARGUS_1992_I319105
@@ -36,6 +38,8 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2023_I2689064
 insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2008_I781294
 # Lambda_c -> Lambda eta pi+
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2019_I1711896
+# Lambda_c -> p KS0 pi0 and K-pi+
+insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2025_I2897384
 # Lambda_c -> p KS0 eta
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2021_I1837968
 # Lambda_c -> p KS0 eta and p 2KS0

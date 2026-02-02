@@ -285,6 +285,7 @@ analyses["2K2Pi"]["CMD3_2016_I1395968"  ] = ["d01-x01-y06"]
 analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
 analyses["2K2Pi"]["DM1_1982_I169382"    ] = ["d01-x01-y01"]
 analyses["2K2Pi"]["BESIII_2021_I1929314"] = ["d01-x01-y01"]
+analyses["2K2Pi"]["BESIII_2021_I1997451"] = ["d01-x01-y01"]
 # 4K
 analyses["4K"]["BESIII_2019_I1743841"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BESIII_2021_I1929314"] = ["d01-x01-y02"]
@@ -516,6 +517,7 @@ analyses["LL"]["BESIII_2021_I1866233"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2024_I2824143"] = ["d01-x01-y01"]
 # Omega- Omegabar+
 analyses["LL"]["BESIII_2022_I2611486"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2025_I2957171"] = ["d01-x01-y01","d01-x01-y02"]
 # list the analysis if required and quit()
 allProcesses=False
 if "All" in opts.processes :
@@ -680,7 +682,7 @@ for process in processes:
             aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda.gz"))
         except :
             try : 
-                aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda.gz"))
+                aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
             except:
                 continue
         if(len(aos)==0) : continue

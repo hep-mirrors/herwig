@@ -326,5 +326,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2012_I946659
 # B- -> Lambda_c+ pbar  pi-
 insert /Herwig/Analysis/Rivet:Analyses 0 BELLE_2006_I658082
 # branching ratios
-#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_B0
-#insert /Herwig/Analysis/Rivet:Analyses 0 PDG_BPLUS
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_B0
+insert /Herwig/Analysis/Rivet:Analyses 0 PDG_BPLUS

@@ -109,6 +109,7 @@ Tests/python/OniumSplitting.py
 Tests/python/OniumSigma.py
 Tests/python/plot-EE
 Tests/python/rivet_check
+^Tests/Analysis/PDG_.*\.(cc|plot|yoda.gz|info)$
 PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
