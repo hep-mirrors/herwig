@@ -42,10 +42,12 @@ for en in [7,8,13] :
     if len(mergeargs)==1 : continue
     mergeargs.append("-o")
     mergeargs.append("Rivet-%s-%s-PromptPhoton.yoda"% (args[0], en))
+    mergeargs.append("-a")
+    mergeargs.append(":ENERGY=%s000" %en)
     files.append("-%s-PromptPhoton.yoda"%  en)
     p = subprocess.Popen(mergeargs)
 # need a sleep here otherwise merged files not ready
-time.sleep(5)
+time.sleep(20)
 
 ## Get histos
 outhistos={}
@@ -77,7 +79,6 @@ for f in files:
                 outhistos[aopath] = ao
 # Choose output file
 name = args[0]+"-Photon.yoda"
-print(name,outhistos)
 # output histos
 yoda.writeYODA(outhistos,name)
 sys.exit(0)

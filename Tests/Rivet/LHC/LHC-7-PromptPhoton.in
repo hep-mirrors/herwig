@@ -14,3 +14,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1258128
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_PHOTONJETS
 # CMS photon + jets
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1266056
+# ALICE isolated photon
+insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2019_I1738300

@@ -1,4 +1,3 @@
 # -*- ThePEG-repository -*-
-insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2015_CENT_PP
-insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2016_I1471838
+insert /Herwig/Analysis/Rivet:Analyses 0 ALICE_2016_I1471838:cent=GEN
 insert /Herwig/Analysis/Rivet:PreLoad 0 Rivet-LHC-7-Cent.yoda

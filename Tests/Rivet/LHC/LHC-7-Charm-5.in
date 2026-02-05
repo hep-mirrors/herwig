@@ -1,7 +1,0 @@
-# -*- ThePEG-repository -*-
-##################################################
-# select the analyses
-##################################################
-# J/Psi production
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I896268
-
