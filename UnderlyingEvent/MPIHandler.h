@@ -214,6 +214,11 @@ public:
   CrossSection diffractiveXSec() const {
       return diffratio_*inelXSec_;
   }
+  
+  /**
+   *  Generate the impact-parameters
+   */
+  Length impactParameter(unsigned int nHard);
 
 
   /** @name Simple access functions. */
@@ -583,6 +588,16 @@ private:
    */
   double diffratio_=0.2;
 
+  /**
+   * Maximum for generating the impact parameter
+   */
+  InvLength impactMax_ = 10./femtometer;
+
+  /**
+   *   Normalisations for impact parameter generation
+   */
+  map<MPair,CrossSection> norms_;
+  
 protected:
 
   /** @cond EXCEPTIONCLASSES */
@@ -883,7 +898,6 @@ namespace Herwig {
      * The inv radius^2 of the soft interactions.
      */
     Energy2 softMu2_;
-
   };
 }
 

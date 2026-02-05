@@ -497,7 +497,7 @@ void ShowerHandler::cascade() {
   // only one, but who knows...)
   for(unsigned int i=1; i <= getMPIHandler()->additionalHardProcs(); i++){
     //counter for regeneration
-	unsigned int multSecond = 0;
+    unsigned int multSecond = 0;
     // generate the additional scatters
     while( multSecond < getMPIHandler()->multiplicity(i) ) {
       // generate the hard scatter
@@ -600,8 +600,8 @@ void ShowerHandler::cascade() {
       i--;
       continue;
     }
-    //connect with the remnants but don't set Remnant colour,
-    //because that causes problems due to the multiple colour lines.
+    // connect with the remnants but don't set Remnant colour,
+    // because that causes problems due to the multiple colour lines.
     if ( !remnants.first ->extract(incomingPartons.first , false) ||
 	 !remnants.second->extract(incomingPartons.second, false) )
       throw Exception() << "Remnant extraction failed in "
@@ -615,6 +615,13 @@ void ShowerHandler::cascade() {
   // finalize the remnants
   remnantDecayer()->finalize(getMPIHandler()->colourDisrupt(),
 		    getMPIHandler()->softMultiplicity());
+  // set the impact parameter
+  Length b = getMPIHandler()->impactParameter(max);
+  double phi = UseRandom::rnd()*Constants::twopi;
+  LorentzPoint p1( 0.5*b*cos(phi), 0.5*b*sin(phi),ZERO,0.5*b);
+  LorentzPoint p2(-0.5*b*cos(phi),-0.5*b*sin(phi),ZERO,0.5*b);
+  eventHandler()->currentEvent()->incoming().first ->setVertex(p1);
+  eventHandler()->currentEvent()->incoming().second->setVertex(p2);
   // boost back to lab if needed
   if(btotal) boostCollision(true);
   // unset the current ShowerHandler

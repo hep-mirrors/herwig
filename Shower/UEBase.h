@@ -131,6 +131,11 @@ public:
    */
   virtual CrossSection nonDiffractiveXSec() const =0;
 
+  /**
+   *  Generate the impact-parameters
+   */
+  virtual Length impactParameter(unsigned int nHard) = 0;
+
 private:
 
   /**

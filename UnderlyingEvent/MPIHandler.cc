@@ -396,18 +396,18 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	}
 
 	Eikonalization integrand(this, iH*100+iS, *it, softXSec_, softMu2_);
-      
-	if(Algorithm() > 0){
-	  P = integrator.value(integrand, ZERO, bmax) / *it;
-	}else{
-	  P = integrator.value(integrand, ZERO, bmax) / inelXSec_;
-	}
+        CrossSection xsect = integrator.value(integrand, ZERO, bmax);
+        P = xsect / (Algorithm()>0 ? *it : inelXSec_ );
 	//store the probability
 	if(Algorithm()>-1){
-	  theMultiplicities.insert(P, make_pair(iH-1, iS));
+          MPair nScatt = make_pair(iH-1, iS);
+	  theMultiplicities.insert(P, nScatt);
+          norms_[nScatt] = xsect;
 	  avgNhard_ += P*(iH-1);
 	}else{
-	  theMultiplicities.insert(P, make_pair(iH, iS));
+          MPair nScatt = make_pair(iH, iS);
+	  theMultiplicities.insert(P, nScatt);
+          norms_[nScatt] = xsect;
 	  avgNhard_ += P*(iH);
 	}
 	avgNsoft_ += P*iS;
@@ -440,7 +440,6 @@ Length Eikonalization::operator() (Length b) const {
     //encode multiplicities as: N_hard*100 + N_soft   
     Nhard = theoption/100;
     Nsoft = theoption%100;
-
     if(theHandler->Algorithm() > 0){
       //P_n*sigma_hard: n-1 extra scatters + 1 hard scatterer != hardXSec_
       return fac * Nhard * theHandler->poisson(b, hardXSec_, Nhard) *
@@ -846,3 +845,25 @@ void MPIHandler::Init() {
 
 }
 
+Length MPIHandler::impactParameter(unsigned int nHard) {
+  Eikonalization integrand(this, (nHard+1)*100+softMult_,
+                           processHandlers()[0]->integratedXSec(),
+                           softXSec_, softMu2_);
+  Length bmax = 10.0*sqrt(millibarn);
+  unsigned int nCount=0;
+  Length b = ZERO;
+  CrossSection norm = norms_[make_pair(nHard,softMult_)];
+  while(nCount<10000) {
+    b = UseRandom::rnd()*bmax;
+    InvLength dd = integrand(b)/norm;
+    if(dd > impactMax_) impactMax_ = dd*1.1;
+    if(dd > impactMax_*UseRandom::rnd()) break;
+    nCount+=1;
+  }
+  if(nCount==10000) {
+    generator()->logWarning(Exception()
+                            << "MPIHandler: Too many attempts to generate the impact parameter"
+                            << Exception::warning);
+  }
+  return b;
+}
