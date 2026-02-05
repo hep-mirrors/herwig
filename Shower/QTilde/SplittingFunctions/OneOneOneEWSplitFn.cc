@@ -28,11 +28,13 @@ IBPtr OneOneOneEWSplitFn::fullclone() const {
 }
 
 void OneOneOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe << longitudinalEWScheme_;
+  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe
+     << longitudinalEWScheme_ << _cG;
 }
 
 void OneOneOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe >> longitudinalEWScheme_;
+  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe
+    >> longitudinalEWScheme_ >> _cG;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -71,6 +73,12 @@ void OneOneOneEWSplitFn::Init() {
      "GaugeInvariant",
      "Using gauge invariant picture in V->V'V'' EW splittings",
      1);
+
+   static Parameter<OneOneOneEWSplitFn,double> interfaceCG
+     ("GI.cG",
+     "Relative weight cG multiplying the Goldstone piece in GI (V + cG * G)",
+     &OneOneOneEWSplitFn::_cG, 1.0, -1.0e3, +1.0e3,
+     false, false, Interface::limited);
 }
 
 
@@ -131,7 +139,7 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z);
     if(longitudinalEWScheme_ == 1) {
-      val += 2*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z);
+      val += 2*sqr(_cG)*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z);
     }
   }
   return norm(gvvv)*val;
@@ -156,7 +164,7 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z))/(2./(z*(1.-z)));
     if(longitudinalEWScheme_ == 1) {
-      val += (2*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z))/(2./(z*(1.-z)));
+      val += sqr(_cG)*(2*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z))/(2./(z*(1.-z)));
     }
   }
   return val;
@@ -291,12 +299,12 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
     (*kernal)(2,0,1) = 0.;
   }
   else { //GI picture
-    (*kernal)(1,0,2) = gvvv*r2*m0t*z;
-    (*kernal)(1,2,0) = gvvv*r2*m0t*z;
-    (*kernal)(0,2,1) = gvvv*r2*m2t;
-    (*kernal)(0,1,2) = gvvv*r2*m1t;
-    (*kernal)(2,1,0) = gvvv*r2*m1t;
-    (*kernal)(2,0,1) = gvvv*r2*m2t;
+    (*kernal)(1,0,2) = gvvv*r2*m0t*(_cG+z-1.);
+    (*kernal)(1,2,0) = gvvv*r2*m0t*(_cG+z-1.);
+    (*kernal)(0,2,1) = gvvv*_cG*r2*m2t;
+    (*kernal)(0,1,2) = gvvv*_cG*r2*m1t;
+    (*kernal)(2,1,0) = gvvv*_cG*r2*m1t;
+    (*kernal)(2,0,1) = gvvv*_cG*r2*m2t;
   }
 
   // return the answer

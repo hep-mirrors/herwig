@@ -226,6 +226,11 @@ private:
   unsigned int longitudinalEWScheme_ = 0;
 
   /**
+   * Relative weight cG multiplying the Goldstone piece in GI (V + cG * G)
+   */
+  double _cG = 1.0;
+
+  /**
    * Pointer to the SM object.
    */
   tcHwSMPtr _theSM;
