@@ -382,7 +382,7 @@ Rivet-LHC-EW : Rivet-LHC-EW/done
 	touch $@
 
 Rivet-LHC-EW/done: \
-		$(shell echo Rivet{,-Powheg}-LHC-{{,8-}W-{e,mu},13-W-mu,{2760-,,8-,13-}Z-{e,mu}-Mass{1..5},13-Z-nu,Z-mu-SOPHTY,WZ,WW-{emu,ll},13-WW-ll,ZZ-{ll,lv},{8,13}-WZ,13-ZZ-ll,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
+		$(shell echo Rivet{,-Powheg}-LHC-{{7,8}-W-{e,mu},13-W-mu,{2760,7,8,13}-Z-{e,mu}-Mass{1..5},13-Z-nu,7-Z-mu-SOPHTY,7-WW-{emu,ll},13-WW-ll,7-ZZ-{ll,lv},{7,8,13}-WZ,13-ZZ-ll,8-ZZ-lv,8-WW-ll,7-Z-mu-Short}.yoda) \
 		$(shell echo Rivet-LHC-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 		$(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) \
 		$(shell echo Rivet-LHC-8-ZGamma-{e,mu,nu}.yoda)
@@ -390,7 +390,7 @@ Rivet-LHC-EW/done: \
 	python/merge-LHC-EW LHC
 	python/merge-LHC-EW Powheg-LHC
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw Powheg-LHC-EW.yoda:Hw-Powheg \
-                                     Rivet-LHC-Z-mu-SOPHTY.yoda:Hw Rivet-Powheg-LHC-Z-mu-SOPHTY.yoda:Hw-Powheg
+                                     Rivet-LHC-7-Z-mu-SOPHTY.yoda:Hw Rivet-Powheg-LHC-7-Z-mu-SOPHTY.yoda:Hw-Powheg
 	touch $@
 
 Rivet-LHC-Photon : Rivet-LHC-Photon/done

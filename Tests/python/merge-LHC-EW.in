@@ -59,13 +59,13 @@ if __name__ == "__main__":
         sys.exit(1)
 
 # merge the mass hists
-yodafiles=["-13-Z-nu","-W-e","-W-mu","-Z-mu-Short","-8-W-e","-8-W-mu",
-           "-WW-emu","-WW-ll","-13-WW-ll","-WZ","-ZZ-ll","-ZZ-lv","-13-ZZ-ll",
+yodafiles=["-13-Z-nu","-7-W-e","-7-W-mu","-7-Z-mu-Short","-8-W-e","-8-W-mu",
+           "-7-WW-emu","-7-WW-ll","-13-WW-ll","-7-WZ","-7-ZZ-ll","-7-ZZ-lv","-13-ZZ-ll",
            "-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
            "-7-W-Jet-1-e","-7-W-Jet-2-e","-7-W-Jet-3-e","-7-Z-Jet-1-e","-7-Z-Jet-2-e","-7-Z-Jet-3-e",
            "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu",
            "-8-ZGamma-e","-8-ZGamma-mu","-8-ZGamma-nu"]
-for energy in ["2760-","","8-","13-"] :
+for energy in ["2760-","7-","8-","13-"] :
     for ll in ["e","mu"] :
         mergeargs=["rivet-merge","--assume-reentrant"]
         for mass in range(1,6) : 
@@ -224,6 +224,11 @@ for f in yodafiles:
             if fname.find("W")>0 and "d08" in aopath :
                 outhistos[aopath] = ao
             elif fname.find("Z")>0 and "d09" in aopath :
+                outhistos[aopath] = ao
+        elif (aopath.find("LHCB_2015_I1373300")>=0) :
+            if fname.find("W")>0 and "d01" not in aopath and "d02" not in aopath and "d03" not in aopath :
+                outhistos[aopath] = ao
+            elif fname.find("Z")>0 and ("d01" in aopath or "d02" in aopath or  "d03" in aopath) :
                 outhistos[aopath] = ao
         elif (aopath.find("CMS_2014_I1322726")>=0) :
             if fname.find("-e")>0 and ("d02" in aopath or "d04" in aopath) :
