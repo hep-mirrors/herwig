@@ -29,3 +29,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_1999_I508906
 insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_1999_I500267
 # H1  fragmentation and multiplicity distributions in the Breit frame
 insert /Herwig/Analysis/Rivet:Analyses 0 H1_1997_I445116
+# H1 jets 
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_2002_I588263
+# ZEUS dijets 
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2004_I649041

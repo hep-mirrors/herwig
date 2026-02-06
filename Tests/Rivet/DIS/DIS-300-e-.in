@@ -15,3 +15,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 H1_2002_I561885
 insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2000_I524911
 # H1 forward pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 H1_1999_I504022
+# H1 jets 
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_2002_I588263
+# ZEUS dijets 
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2004_I649041

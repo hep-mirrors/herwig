@@ -48,6 +48,8 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2016_I1411645
 insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2010_I879997
 # D+ -> omega l nu
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2015_I1386254
+# D0 -> a0- e+ nu
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2847417 
 ######### Two body decays ###################
 # D0 -> omega phi
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2022_I1900094
@@ -98,6 +100,8 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2008_I791716
 insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2013_I1206605
 # Dalitz plot analysis of D+ -> K+ K0S pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2021_I1859124
+# Dalitz plot analysis of D+ -> K0S K0S pi+
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2824162
 # Dalitz plot analysis of D0 -> K+ K- pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 BABAR_2007_I749390
 # Dalitz plot analysis of D0 -> K0S K+- pi-+

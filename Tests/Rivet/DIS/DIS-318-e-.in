@@ -11,3 +11,10 @@ set /Herwig/Cuts/Cuts:MHatMin 0.
 insert /Herwig/Analysis/Rivet:Analyses 0 HERA_2015_I1377206
 # ZEUS D production
 insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2008_I810112
+# H1 jets 
+insert /Herwig/Analysis/Rivet:Analyses 0 H1_2016_I1496981
+# ZEUS jets 
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2023_I2694205
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2005_I676091
+# ZEUS lepton/jet correlations
+insert /Herwig/Analysis/Rivet:Analyses 0 ZEUS_2024_I2794054

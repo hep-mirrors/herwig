@@ -62,6 +62,10 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2013_I1203840
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2013_I1261765
 # psi(2S) -> Lambda Lambdabar eta
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2022_I2166759
+# psi(2S) -> K- Lambdabar0 Xi+ (+cc)
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2691955
+# psi(2S) -> Sigma- Sigmabar+ omega/phi
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2023_I2713388
 ########### Decay to gamma chi_c correlations ###########
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2017_I1507887
 insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2009_I832707
@@ -96,6 +100,8 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CLEO_2008_I787608
 insert /Herwig/Analysis/Rivet:Analyses 0 BESII_2005_I690784
 # chi_c -> p nbar pi-(pi0)
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2012_I1128258
+# chi_c -> p pbar eta pi0
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2860910
 # chi_c -> 4 pi0
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2010_I878544
 # chi_c1 -> gamma V
@@ -104,6 +110,8 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2011_I894356
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2017_I1505590
 # chi_c -> Lambda Lambdabar eta
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2022_I2166668
+# chi_c -> Lambda Lambdabar phi
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2792993
 # chi-c -> phi KKpi
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2015_I1352828
 # chi-c -> phi phi
