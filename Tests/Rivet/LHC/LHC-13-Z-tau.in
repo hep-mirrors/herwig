@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# ATLAS Z
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2025_I2905252

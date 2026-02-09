@@ -857,11 +857,13 @@ elif(collider=="LHC") :
             process+=insert_ME("MEqq2W2ff","Electron")
         elif "W-mu" in parameterName :
             process+=insert_ME("MEqq2W2ff","Muon")
-        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName or "Z-tau" in parameterName :
             if "Z-e" in parameterName:
                 process+=insert_ME("MEqq2gZ2ff","Electron")
-            else :
+            elif "Z-mu" in parameterName :
                 process+=insert_ME("MEqq2gZ2ff","Muon")
+            else :
+                process+=insert_ME("MEqq2gZ2ff","Tau")
             mcuts=[10,35,75,110,400,ecms]
             for i in range(1,6) :
                 tstring = "-Mass%s"%i
@@ -920,6 +922,9 @@ elif(collider=="LHC") :
                 addedBRReweighter=True
             elif "-mu" in parameterName :
                 process+=selectDecayMode("Z0",["Z0->mu-,mu+;"])
+                addedBRReweighter=True
+            elif "-tau" in parameterName :
+                process+=selectDecayMode("Z0",["Z0->tau-,tau+;"])
                 addedBRReweighter=True
             elif "-nu" in parameterName :
                 process+=selectDecayMode("Z0",["Z0->nu_e,nu_ebar;","Z0->nu_mu,nu_mubar;","Z0->nu_tau,nu_taubar;"])
@@ -1088,11 +1093,13 @@ elif(collider=="LHC") :
             process+=insert_ME("PowhegMEqq2W2ff","Electron")
         elif "W-mu" in parameterName :
             process+=insert_ME("PowhegMEqq2W2ff","Muon")
-        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName or "Z-tau" in parameterName :
             if "Z-e" in parameterName:
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
-            else :
+            elif "Z-mu" in parameterName :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
+            else :
+                process+=insert_ME("PowhegMEqq2gZ2ff","Tau")
             mcuts=[10,35,75,110,400,ecms]
             for i in range(1,6) :
                 tstring = "-Mass%s"%i
@@ -1490,7 +1497,7 @@ elif(collider=="LHC") :
                 process+=particlegroup(thefactory,'mupm','mu+','mu-')
                 process+=addProcess(thefactory,"p p mupm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
-        elif "Z-e" in parameterName or "Z-mu" in parameterName :
+        elif "Z-e" in parameterName or "Z-mu" in parameterName or "Z-tau" in parameterName :
             if "Z-e" in parameterName :
                 if(simulation=="Matchbox"):
                     process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
@@ -1501,6 +1508,11 @@ elif(collider=="LHC") :
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
                 elif(simulation=="Merging"):
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            else :
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p tau+ tau-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p tau+ tau-","0","2","LeptonPairMassScale",2,2)
             mcuts=[10,35,75,110,400,ecms]
             for i in range(1,6) :
                 tstring = "-Mass%s"%i
