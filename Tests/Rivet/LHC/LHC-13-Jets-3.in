@@ -17,3 +17,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1972986
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1920187:MODE=DIJET
 # CMS multijets
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2022_I2170533
+# CMS shapes
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2024_I2760466

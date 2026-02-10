@@ -268,7 +268,8 @@ for f in yodafiles:
            "I1740909" in aopath or "I1913061" in aopath or
            "I1932460" in aopath or "I2625697" in aopath or
            "I1972986" in aopath or "I1920187" in aopath or 
-           "I2170533" in aopath or 
+           "I2170533" in aopath or "I2760466" in aopath or
+           "I2780732" in aopath or 
            "ATLAS_2016_CONF_2016_092" in aopath or
            "CMS_2012_PAS_QCD_11_010" in aopath) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -466,7 +467,7 @@ for hpath,hsets in inhistos_pt.items():
         "1393758" in hpath or"ATLAS_2016_CONF_2016_092" in hpath or
         "1111014" in hpath or "1385107" in hpath or "I1486238" in hpath or
         "1459051" in hpath or "1634970" in hpath or "I1740909" in hpath or
-        "1913061" in hpath or "I1972986" in hpath or "I1932460" in hpath ) :
+        "1913061" in hpath or "I1972986" in hpath or "I1932460" in hpath or "2780732" in hpath) :
         title=""
         path=""
         histo = list(list(hsets.values())[0].values())[0]
@@ -856,18 +857,17 @@ useOneMass("/ATLAS_2010_I871366/d24-x01-y01", "7000", "250" )
 useOneMass("/ATLAS_2010_I871366/d25-x01-y01", "7000", "250" )
 useOneMass("/ATLAS_2010_I871366/d26-x01-y01", "7000", "500" )
 
-
-logging.debug("Processing ATLAS_2011_I930220")
-mergeByPt("/ATLAS_2011_I930220/d01-x01-y01",  "7000" )
-mergeByPt("/ATLAS_2011_I930220/d02-x01-y01",  "7000" )
-mergeByPt("/ATLAS_2011_I930220/d03-x01-y01",  "7000" )
-mergeByPt("/ATLAS_2011_I930220/d04-x01-y01",  "7000" )
-mergeByPt("/ATLAS_2011_I930220/d05-x01-y01",  "7000" )
-mergeByPt("/ATLAS_2011_I930220/d06-x01-y01",  "7000" )
-mergeByMass("/ATLAS_2011_I930220/d07-x01-y01", "7000")
-useOneMass("/ATLAS_2011_I930220/d08-x01-y01", "7000", "110" )
-useOneMass("/ATLAS_2011_I930220/d09-x01-y01", "7000", "110" )
-useOneMass("/ATLAS_2011_I930220/d10-x01-y01", "7000", "370" )
+# logging.debug("Processing ATLAS_2011_I930220")
+# mergeByPt("/ATLAS_2011_I930220/d01-x01-y01",  "7000" )
+# mergeByPt("/ATLAS_2011_I930220/d02-x01-y01",  "7000" )
+# mergeByPt("/ATLAS_2011_I930220/d03-x01-y01",  "7000" )
+# mergeByPt("/ATLAS_2011_I930220/d04-x01-y01",  "7000" )
+# mergeByPt("/ATLAS_2011_I930220/d05-x01-y01",  "7000" )
+# mergeByPt("/ATLAS_2011_I930220/d06-x01-y01",  "7000" )
+# mergeByMass("/ATLAS_2011_I930220/d07-x01-y01", "7000")
+# useOneMass("/ATLAS_2011_I930220/d08-x01-y01", "7000", "110" )
+# useOneMass("/ATLAS_2011_I930220/d09-x01-y01", "7000", "110" )
+# useOneMass("/ATLAS_2011_I930220/d10-x01-y01", "7000", "370" )
 
 logging.debug("Processing ATLAS_2012_I1082936")
 mergeByPt("/ATLAS_2012_I1082936/d01-x01-y01", "7000")
@@ -1749,6 +1749,15 @@ for ioff in range(0,2) :
     useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff +  9), "13000","900")
     useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 10), "13000","900")
     useOnePt("/ATLAS_2023_I2625697/d%02d-x01-y01" %(11*ioff + 11), "13000","900")
+
+# CMS correlators
+for joff in [1,9,26] : 
+    for i,ptt in enumerate(["80","210","260","400","600","600","900","900"]) :
+        useOnePt("/CMS_2024_I2760466/d%02d-x01-y01" %(joff+i), "13000", ptt)
+
+        
+mergeByPt("/CMS_2024_I2780732/d02-x01-y01", "13000")
+    
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)
