@@ -118,6 +118,7 @@ analyses['EtaGamma']["BABAR_2006_I716277"] = ["d01-x01-y01"]
 # 3 pion
 analyses["3Pi"]["BABAR_2004_I656680"     ] = ["d01-x01-y01"]
 analyses["3Pi"]["BABAR_2021_I1937349"    ] = ["d01-x01-y01"]
+analyses["3Pi"]["BELLE_2024_I277502"     ] = ["d01-x01-y03","d02-x02-y03"]
 analyses["3Pi"]["BESIII_2019_I1773081"   ] = ["d01-x01-y01"]
 analyses["3Pi"]["BESIII_2024_I2751832"   ] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 analyses["3Pi"]["SND_2002_I582183"       ] = ["d01-x01-y01"]
@@ -415,6 +416,7 @@ analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2023_I2706428"     ] = ["d01-x01-y01"]
 # eta psi(2S)
 analyses["DD"]["BESIII_2021_I1849633"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2024_I2771682"     ] = ["d01-x01-y01"]
 # eta h_c
 analyses["DD"]["BESIII_2017_I1596897"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2024_I2775801"     ] = ["d01-x01-y01"]

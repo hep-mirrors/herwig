@@ -45,10 +45,15 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
         for hpath,histo in aos.items():
             if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
             if(len(opts.plots_fixed)>0 and hpath in opts.plots_fixed) :
-                if hpath in inhistos :
-                    inhistos[hpath][energy] = histo
+                if "SND_2020_I1809286/d04" in hpath :
+                    if( (( "y01" in hpath or "y03" in hpath ) and energy==1.45) or
+                        (( "y02" in hpath or "y04" in hpath ) and energy==1.675)) : 
+                        inhistos[hpath] = { energy : histo}
                 else :
-                    inhistos[hpath] = { energy : histo}
+                    if hpath in inhistos :
+                        inhistos[hpath][energy] = histo
+                    else :
+                        inhistos[hpath] = { energy : histo}
             if(len(opts.plots_energy)>0 and hpath not in opts.plots_energy) : continue
             if(type(histo)==yoda.core.Histo1D or
                (type(histo)==yoda.core.Scatter2D and hpath=="/BESIII_2019_I1726357/d03-x01-y01") ) :
