@@ -18,14 +18,15 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "ATLAS_2015_CONF_2015_041",  # superseeded
          "ALICE_2012_I1127497",       # lead-lead
          "ALICE_2012_I930312",        # lead-lead
-         "ALICE_2015_PBPBCentrality", # lead-lead
+         "ALICE_2015_CENT_PBPB",      # lead-lead
          "ATLAS_PBPB_CENTRALITY",     # lead-lead
-         "ALICE_2015_PPBCentrality",  # lead-p
-         "ATLAS_pPb_Calib",           # lead-p
-         "BRAHMS_2004_AUAUCentrality",# heavy ion
+         "ALICE_2015_CENT_PPB",       # lead-p
+         "ATLAS_CENT_PPB_CALIB",      # lead-p
+         "BRAHMS_2004_CENT_AUAU BRAHMS",# heavy ion
          "STAR_2008_S7993412",        # heavy ion
          "STAR_BES_CALIB",            # heavy ion
          "DELPHI_2002_069_CONF_603",  # superseeded
+         "CMS_2015_I1370682_PARTON",  # parton level, using hadronic version
         ]
 searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 
