@@ -22,7 +22,7 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "ATLAS_PBPB_CENTRALITY",     # lead-lead
          "ALICE_2015_CENT_PPB",       # lead-p
          "ATLAS_CENT_PPB_CALIB",      # lead-p
-         "BRAHMS_2004_CENT_AUAU BRAHMS",# heavy ion
+         "BRAHMS_2004_CENT_AUAU",     # heavy ion
          "STAR_2008_S7993412",        # heavy ion
          "STAR_BES_CALIB",            # heavy ion
          "DELPHI_2002_069_CONF_603",  # superseeded

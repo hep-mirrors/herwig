@@ -236,6 +236,8 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif fname.find("-mu")>0 and ("d01" in aopath or "d03" in aopath) :
                 outhistos[aopath] = ao
+        elif (aopath.find("ATLAS_2024_I2771257")>0) :
+            if("-mu" in fname) : outhistos[aopath] = ao
         # elif (aopath.find("ATLAS_2015_I1351916")>=0) :
         #     if(aopath.find("-y02")>=0) :
         #         pathBase = "/%s/" % aopath.split("/")[1]

@@ -369,6 +369,9 @@ analyses["DD"]["BELLE_2008_I759073"       ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2018_I1685535"     ] = ["d01-x01-y01","d02-x01-y01"]
 # D* D* pi
 analyses["DD"]["BESIII_2023_I2645388"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2013_I1256939"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2013_I1247675"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2015_I1382146"     ] = ["d01-x01-y01"]
 # DsDs
 analyses["DD"]["BABAR_2010_I864027"       ] = ["d01-x01-y01"]
 analyses["DD"]["BELLE_2011_I878228"       ] = ["d01-x01-y01"]
@@ -382,12 +385,14 @@ analyses["DD"]["BELLE_2011_I878228"       ].append("d01-x01-y03")
 analyses["DD"]["BESIII_2023_I2660849"     ] = ["d01-x01-y01"]
 # D_s1(2536) Ds
 analyses["DD"]["BELLE_2019_I1762826"      ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2024_I2806455"     ] = ["d01-x01-y01"]
 # D_s1(2460) Ds
 analyses["DD"]["BESIII_2020_I1795949"     ] = ["d01-x01-y01"]
 # D_s1(2460) D*s
 analyses["DD"]["BESIII_2020_I1795949"     ].append("d02-x01-y01")
 # D_s2* D_s
 analyses["DD"]["BELLE_2020_I1789775"      ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2024_I2806455"     ].append("d02-x01-y01")
 # Lambda_c+ Lambda_c-
 analyses["DD"]["BELLE_2008_I791660"       ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2017_I1628093"     ] = ["d01-x01-y01"]
@@ -399,6 +404,8 @@ analyses["DD"]["BELLE_2013_I1225975"      ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2016_I1495838"     ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2020_I1793431"     ] = ["d01-x01-y01","d01-x01-y02","d03-x01-y01"]
 analyses["DD"]["BESIII_2022_I2163048"     ] = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2013_I1225275"     ] = ["d01-x01-y01"]
+analyses["DD"]["CLEO_2006_I710864"        ] = ["d01-x01-y01","d01-x01-y02"]
 # pi pi psi(2S)
 analyses["DD"]["BABAR_2007_I729388"       ] = ["d01-x01-y01"]
 analyses["DD"]["BABAR_2014_I1204444"      ] = ["d01-x01-y01"]
@@ -408,10 +415,12 @@ analyses["DD"]["BESIII_2021_I1933191"     ] = ["d01-x01-y03"]
 analyses["DD"]["BESIII_2015_I1356733"     ] = ["d01-x01-y01","d01-x01-y02"]
 # pi pi h_c
 analyses["DD"]["BESIII_2017_I1494065"     ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["DD"]["BESIII_2014_I1318650"     ] = ["d01-x01-y01","d01-x01-y02"]
 # K K J/psi
 analyses["DD"]["BELLE_2014_I1282602"      ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2022_I2068180"     ] = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2022_I2182758"     ] = ["d01-x01-y01"]
+analyses["DD"]["CLEO_2006_I710864"        ].append("d01-x01-y03")
 # 3pi eta_c
 analyses["DD"]["BESIII_2021_I1826422"     ] = ["d01-x01-y01"]
 # eta J/psi
@@ -505,6 +514,7 @@ analyses["LL"]["BELLE_2022_I2173361" ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2020_I1814783"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["LL"]["BESIII_2024_I2739177"] = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2024_I2748736"] = ["d01-x01-y01"]
+analyses["LL"]["BESIII_2023_I2683607"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03"]
 # Sigma0 Sigmabar0
 analyses["LL"]["BELLE_2022_I2173361" ].append("d01-x01-y01")
 analyses["LL"]["BABAR_2007_I760730"  ].append("d02-x01-y01")
@@ -580,7 +590,17 @@ if(opts.plot) :
                 for ix in range(1,3) :
                     for iy in range(1,3):
                         output+= " -f/%s/%s" % (analysis,"d02-x0%s-y0%s"% (ix,iy))
-
+            elif analysis == "BESIII_2013_I1225275" or analysis=="BESIII_2013_I1256939":
+                for i in range(1,4) :
+                    output+= " -f/%s/%s" % (analysis,"d02-x01-y0%s"%i)
+                output+= " -f/%s/%s" % (analysis,"d03-x01-y01")
+            elif analysis == "BESIII_2013_I1247675":
+                output+= " -f/%s/%s" % (analysis,"d02-x01-y01")
+            elif analysis == "BESIII_2015_I1382146":
+                for i in range(1,4) :
+                    output+= " -f/%s/%s" % (analysis,"d02-x01-y0%s" %i)
+            elif analysis == "CLEO_2006_I710864":
+                output+= " -f/%s/%s" % (analysis,"d02-x01-y01")
             for plot in analyses[process][analysis]:
                 if ":" in analysis :
                     analysis2=analysis.split(":")[0]
@@ -720,6 +740,8 @@ for process in processes:
                                 energy=985
                         elif analysis=="CMD3_2016_I1385598" and plot=="d01-x01-y06" :
                             if energy=="1900 (2012)" : energy=1900
+                        elif analysis=="BESIII_2023_I2683607" and energy[-1]=="B":
+                            energy=energy[0:-2]
                     try : 
                         energy=float(energy)
                     except :

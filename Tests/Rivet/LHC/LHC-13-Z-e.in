@@ -13,3 +13,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2020_I1788444
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2018_I1711625
 # ATLAS high pt jets
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2022_I2077570
+# ATLAS c/b jets
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2024_I2771257:LMODE=EL
