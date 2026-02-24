@@ -344,6 +344,13 @@ rm /Herwig/Widths/hWidth
         subs = ParticleConverter(p,parameters,modelparameters).subs()
         if not (p.pdg_code == 25 and hw_higgs) :
             plist.append( particleT.substitute(subs) )
+            plist.append(
+"""
+do /Herwig/MatrixElements/Matchbox/Factory:StartParticleGroup {PName}
+insert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/{ModelName}/Particles/{PName}
+do /Herwig/MatrixElements/Matchbox/Factory:EndParticleGroup
+""".format(PName=subs['name'], ModelName=modelname)
+)
 
         pdg, name = subs['pdg_code'],  subs['name']
         names.append(name)

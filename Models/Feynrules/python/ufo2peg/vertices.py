@@ -55,6 +55,7 @@ VERTEX = getTemplate('Vertex.cc')
 vertexline = """\
 create Herwig::FRModel{classname} /Herwig/{modelname}/{classname}
 insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/{classname}
+insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/{classname}
 """
 
 def get_lorentztag(spin):
