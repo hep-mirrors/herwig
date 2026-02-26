@@ -225,7 +225,7 @@ private:
 
   /**
    * EW splitting scheme:
-   * Dawson picture          : 0
+   * Subtraction picture          : 0
    * Gauge Invariant picture : 1
    *
    */

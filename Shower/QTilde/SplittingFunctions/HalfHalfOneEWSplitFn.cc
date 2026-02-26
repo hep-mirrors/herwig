@@ -73,12 +73,12 @@ void HalfHalfOneEWSplitFn::Init() {
 
   static Switch<HalfHalfOneEWSplitFn,unsigned int> interfaceLongitudinalEWScheme
     ("LongitudinalEWScheme",
-    "EW splitting scheme: 0 = Dawson, 1 = GI",
+    "EW splitting scheme: 0 = Subtraction, 1 = GI",
     &HalfHalfOneEWSplitFn::longitudinalEWScheme_, 0, false, false);
-  static SwitchOption interfaceDawsonEWScheme
+  static SwitchOption interfaceSubtractionEWScheme
     (interfaceLongitudinalEWScheme,
-    "Dawson",
-    "Using Dawson picture in q->q'V EW splittings",
+    "Subtraction",
+    "Using Subtraction picture in q->q'V EW splittings",
     0);
   static SwitchOption interfaceGIEWScheme
     (interfaceLongitudinalEWScheme,
@@ -232,31 +232,6 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
 
     val /= 2.0 * max(gL2,gR2);
   }
-  // else {
-  //   double overP = (2.*max(gL2,gR2) + max(yL2,yR2) )/(1.-z);
-  //   val = ((1.+sqr(z))/(1.-z) * (gL2*abs(rho(0,0)) + gR2*abs(rho(1,1)))
-  //       + sqr(1.-z)/(1.-z) * (yL2*abs(rho(0,0)) + yR2*abs(rho(1,1))));
-  //
-  //   if (mass) {
-  //     m0 = ids[0]->mass();
-  //     m1 = ids[1]->mass();
-  //     m2 = ids[2]->mass();
-  //     double m0t = m0/sqrt(t), m1t = m1/sqrt(t), m2t = m2/sqrt(t);
-  //
-  //     val += (-((-1 + z)*(-(yL*((pow(m0t,2) + pow(m1t,2) - pow(m2t,2))*yL
-  //         + 2*m0t*m1t*yR)) - pow(m0t,2)*(gR2 - pow(yL,2)
-  //         + pow(yR,2))*z)*abs(rho(0,0))) + 2*sqrt(gL2)*(-(sqrt(gR2)*m0t*m1t*(-1 + z))
-  //         + sqrt(2)*m2t*(m1t*yL + m0t*yR*z))*abs(rho(0,0)) - 2*sqrt(gL2)*sqrt(gR2)*m0t*m1t*(-1 + z)*abs(rho(1,1))
-  //         + (2*sqrt(2)*sqrt(gR2)*m2t*(m1t*yR + m0t*yL*z) + (-1 + z)*(yR*(2*m0t*m1t*yL
-  //         + (pow(m0t,2) + pow(m1t,2) - pow(m2t,2))*yR)
-  //         + pow(m0t,2)*(yL - yR)*(yL + yR)*z) + gR2*(-(pow(m2t,2)*(-1 + z))
-  //         + pow(m1t,2)*(1 + z) - pow(m0t,2)*(1 + pow(z,2))))*abs(rho(1,1))
-  //         + gL2*((-(pow(m2t,2)*(-1 + z)) + pow(m1t,2)*(1 + z)
-  //         - pow(m0t,2)*(1 + pow(z,2)))*abs(rho(0,0)) + pow(m0t,2)*(-1 + z)*z*abs(rho(1,1))))
-  //         /(pow(-1 + z,3)*pow(z,2));
-  //   }
-  //   val /= overP;
-  // }
   else {
   double oneMz = 1.0 - z;
   double overP = (2.*max(gL2,gR2) + max(yL2,yR2))/oneMz;

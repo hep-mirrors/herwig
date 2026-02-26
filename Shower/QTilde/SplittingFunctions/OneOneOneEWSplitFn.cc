@@ -61,12 +61,12 @@ void OneOneOneEWSplitFn::Init() {
 
   static Switch<OneOneOneEWSplitFn,unsigned int> interfaceLongitudinalEWScheme
     ("LongitudinalEWScheme",
-     "EW splitting scheme: 0 = Dawson, 1 = GI",
+     "EW splitting scheme: 0 = Subtraction, 1 = GI",
      &OneOneOneEWSplitFn::longitudinalEWScheme_, 0, false, false);
-  static SwitchOption interfaceDawsonEWScheme
+  static SwitchOption interfaceSubtractionEWScheme
     (interfaceLongitudinalEWScheme,
-     "Dawson",
-     "Using Dawson picture in V->V'V'' EW splittings",
+     "Subtraction",
+     "Using Subtraction picture in V->V'V'' EW splittings",
      0);
   static SwitchOption interfaceGIEWScheme
     (interfaceLongitudinalEWScheme,
@@ -290,7 +290,7 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(2,1,2) = -gvvv*r2*m1t*((1.-z)/z);
   (*kernal)(2,2,1) = gvvv*r2*m2t*(z/(1.-z));
 
-  if(longitudinalEWScheme_ == 0) { //Dawson's picture
+  if(longitudinalEWScheme_ == 0) { //Subtraction's picture
     (*kernal)(1,0,2) = -gvvv*r2*m0t*(1.-z);
     (*kernal)(1,2,0) = -gvvv*r2*m0t*(1.-z);
     (*kernal)(0,2,1) = 0.;
