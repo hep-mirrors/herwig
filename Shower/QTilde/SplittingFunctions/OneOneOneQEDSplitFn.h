@@ -51,7 +51,11 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const;
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    double gvvv(0.);
+    getCouplings(gvvv,ids);
+    return sqr(gvvv)*(2./(z*(1.-z)));
+  }
 
   /**
    * The concrete implementation of the
@@ -200,6 +204,14 @@ private:
    *  W^{\pm} -> W^{\pm} G couplings
    */
   double gWWG_;
+
+  /**
+   * EW splitting scheme:
+   * Subtraction picture          : 0
+   * Gauge Invariant picture : 1
+   *
+   */
+  unsigned int longitudinalEWScheme_ = 0;
 
   /**
    * Pointer to the SM object.
