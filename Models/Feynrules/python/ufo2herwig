@@ -44,6 +44,11 @@ parser.add_argument(
     help="Don't include the automatically generated generic loop vertices for h->gg and h->gamma gamma"
 )
 parser.add_argument(
+    '--no-matchbox',
+    action="store_true",
+    help="Don't insert generated vertices into Matchbox DiagramGenerator",
+)
+parser.add_argument(
     '--include-generic',
     action="store_true",
     help="Include support for generic spin structures"
@@ -537,7 +542,7 @@ parmtextsubs['couplingOrders']  = couplingOrders
 # particles
 
 plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name,\
-                                args.use_Herwig_Higgs,args.enable_bsm_shower,args.allow_fcnc)
+                                args.use_Herwig_Higgs,args.enable_bsm_shower,args.allow_fcnc, args.no_matchbox)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
