@@ -29,3 +29,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1760257
 insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2021_I1888216
 # LHCB Xi_b fraction
 insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1716259
+# CMS muons from B decays
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_I884811
+# CMS B jets
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1089835

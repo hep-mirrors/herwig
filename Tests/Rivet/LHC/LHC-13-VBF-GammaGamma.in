@@ -1,0 +1,9 @@
+# -*- ThePEG-repository -*-
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2022_I2023464
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2022_I2142341
+
+do /Herwig/Particles/h0:SelectDecayModes h0->gamma,gamma;
