@@ -3,7 +3,7 @@
 from __future__ import print_function
 import logging
 import sys
-import math
+import numpy as np
 
 if sys.version_info[:3] < (2,4,0):
     print ("rivet scripts require Python version >= 2.4.0... exiting")
@@ -16,14 +16,14 @@ import os, yoda, copy
 # remove any scatters with nans, causes yoda to crash
 def removeNan():
     global outhistos
-    remove = [] 
+    remove = []
     for key in outhistos.keys() :
         ao = outhistos[key]
         if type(ao)==yoda.core.Scatter2D :
             skip=False
             for p in ao.points() :
-                if ( math.isnan(p.y()) or
-                     math.isnan(p.yErrs().minus) or math.isnan(p.yErrs().plus)) :
+                if ( np.isnan(p.y()) or
+                     np.isnan(p.yErrs().minus) or np.isnan(p.yErrs().plus)) :
                     skip=True
                     break
             if(skip) : remove.append(key)
@@ -74,18 +74,18 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                 nearest=-1
                 delta  =1e30
                 for i,xx in enumerate(h.xEdges()) :
-                    try : 
+                    try :
                         x = float(xx)
                     except :
-                        try : 
+                        try :
                             temp = xx.split("-")
                             x = 0.5*(float(temp[0])+float(temp[1]))
                         except :
                             raise TypeError("Not double bin in %s" %  desthisto.path())
-                    if abs(x-sqrts)<delta : 
+                    if abs(x-sqrts)<delta :
                         delta=abs(x-sqrts)
                         nearest = i
-                if math.isnan(h.bins()[nearest].val()) : continue
+                if np.isnan(h.bins()[nearest].val()) : continue
                 desthisto.bins()[nearest].setVal(h.bins()[nearest].val())
                 for key in  h.bins()[nearest].sources() :
                     desthisto.bins()[nearest].setErr(h.bins()[nearest].err(key),key)
@@ -103,7 +103,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
 
 def merge(hpath):
     global inhistos
-    global outhistos
+    global outhistos601225
     if hpath not in outhistos : return
     fillAbove(outhistos[hpath], inhistos[hpath])
 
@@ -121,13 +121,21 @@ def useOne(hpath, sqrts):
 def average(hpath, sqrts1,sqrts2):
     global inhistos
     global outhistos
-    outhistos[hpath] = inhistos[hpath][float(sqrts1)]+inhistos[hpath][float(sqrts2)]
+    try :
+        k1 = float(sqrts1)
+    except :
+        k1 = sqrts1
+    try :
+        k2 = float(sqrts2)
+    except :
+        k2 = sqrts2
+    outhistos[hpath] = inhistos[hpath][k1]+inhistos[hpath][k2]
     outhistos[hpath].setPath(hpath)
     if hasattr(outhistos[hpath] , 'scaleW'):
         outhistos[hpath].scaleW(0.5)
     else:
         outhistos[hpath].scale(0.5)
-        
+
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
@@ -186,7 +194,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 #######################################
-yodafiles=["2.2","2.23","2.4","2.6","2.8","3.0","3.05","3.2","3.4","3.63","3.67",
+yodafiles=["2.0","2.2","2.23","2.396","2.4","2.6","2.644","2.8","2.9","3.0","3.05","3.2","3.4","3.5","3.63","3.67",
            "4.03","4.17","4.18","4.3","4.41","4.5","4.6","4.8","5.0","5.2","5.8",
            "6.2","6.5","6.6","7.0","7.4","7.7","8.8","9.27","9.4","9.46","9.51",
            "9.98","10.4","10.45","10.47","10.52","10.52-sym","10.54","10.55","10.58","10.58-sym","10.6",
@@ -217,6 +225,15 @@ if(opts.LL) :
 ## Get histos
 inhistos = {}
 outhistos={}
+toMerge=[12010 , 109792, 118873, 132045, 132410, 142874,
+         143691, 153511, 153656, 154270, 156315, 164397, 165122, 168232,
+         177174, 178416, 181470, 190818, 191161, 191415, 195333,
+         202784, 204307, 205119, 205668, 213948, 227324, 248660, 251097,
+         262415, 262551, 266892, 266893, 267755, 276860, 277658, 278932, 278933, 279165, 279575, 282847, 284251, 294755,
+         295160, 297905, 315059, 319829, 342061, 356616, 362599, 499183, 513476,
+         524693, 526164, 601225, 620250, 622224, 636645, 652683, 669402, 679961, 686014, 701217, 725377, 728043, 728872, 1079921,
+         1088606, 1286317, 1422780, 1499706, 1506414, 1510563, 1621266, 1649168, 1791570, 2148048, 2166759, 2513076, 2660525, 2753516,
+         3612880, 4300807, 6132243]
 for f in yodafiles:
     file = "Rivet-%s-%s.yoda" % (args[0], f)
     if("Tau" in file) :
@@ -254,7 +271,7 @@ for f in yodafiles:
         sqrt=float(f.split("-")[1])
     else :
         sqrts=float(f.split("-")[0])
-    
+
     if not os.access(file, os.R_OK):
         logging.error("%s cannot be read" % file)
         continue
@@ -269,43 +286,22 @@ for f in yodafiles:
             aopath=aopath.replace(":MODE=DECAY","")
             ao.setPath(ao.path().replace(":MODE=DECAY",""))
         if("RAW" in aopath or "/_" in aopath) :continue
-        # plots which neede merging/selecting
-        if("4300807" in aopath or "6132243" in aopath or
-           "636645"  in aopath or "3612880" in aopath or
-           "524693"  in aopath or "601225"  in aopath or
-           "2148048" in aopath or "295160"  in aopath or
-           "190818"  in aopath or "154270"  in aopath or
-           "277658"  in aopath or "143691"  in aopath or
-           "262551"  in aopath or "262415"  in aopath or
-           "165122"  in aopath or "118873"  in aopath or
-           "177174"  in aopath or "284251"  in aopath or
-           "191161"  in aopath or "1422780" in aopath or
-           "725377"  in aopath or "679961"  in aopath or
-           "356616"  in aopath or "342061"  in aopath or
-           "278933"  in aopath or "276860"  in aopath or
-           "251097"  in aopath or 
-           "132410"  in aopath or "1649168" in aopath or
-           "JADE_1979_I142874" in aopath or "728872" in aopath or
-           "I195333" in aopath or "I297905" in aopath or
-           "I526164" in aopath or "I178416" in aopath or
-           "2660525" in aopath or "I499183" in aopath or
-           "LENA_1981_I164397"   in aopath or "ARGUS_1991_I315059" in aopath or
-           "TASSO_1989_I266893"  in aopath or "CLEO_1985_I205668" in aopath  or
-           "BABAR_2014_I1286317" in aopath or "ARGUS_1988_I266892" in aopath or
-           "ARGUS_1992_I319829" in aopath or "MD1_1994_I362599" in aopath or
-           ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
-           ("MULTIPLICITIES" in aopath and "Upsilon_4S" not in aopath)) :
+        ins=-1
+        if "_I" in aopath :
+            ins = int(aopath.split("/")[1].split("_I")[1].split(":")[0])
+        # plots which need merging/selecting
+        if(ins in toMerge  or
+           ("MULTIPLICITIES" in aopath and "UPSILON4S" not in aopath)) :
             if "526164" in aopath :
                 if ("d01" in aopath or "d02" in aopath or "d16" in aopath) :
                     if "WW" in f : continue
                 else :
                     if "WW" not in f : continue
-            
             if aopath not in inhistos:
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
             sqrttemp=sqrts
-            if(aopath.find("342061")>0 and aopath.find("d01")>0 and 
+            if(aopath.find("342061")>0 and aopath.find("d01")>0 and
                sqrts==10.45) :
                 sqrts=9.9
             if sqrts not in tmpE:
@@ -324,7 +320,7 @@ for f in yodafiles:
             if(file.find("gg")>=0) :
                 outhistos[aopath] = ao
         elif("MARKI_1975_I100733" in aopath) :
-            if "d03" in aopath : 
+            if "d03" in aopath :
                 outhistos[aopath] = ao
         elif("A2_2017_I1486671" in aopath or
              "NA60_2016_I1452485" in aopath ) :
@@ -338,11 +334,6 @@ for f in yodafiles:
             if(("d02" in aopath or "d04" in aopath) and sqrts==10.47) :
                 outhistos[aopath] = ao
             elif(("d03"in aopath or "d05" in aopath) and sqrts=="U4") :
-                outhistos[aopath] = ao
-        elif("ARGUS_1989_I278932" in aopath) :
-            if(("d01" in aopath or "d03" in aopath) and sqrts=="U1") :
-                outhistos[aopath] = ao
-            elif( "d02"in aopath  and sqrts==10) :
                 outhistos[aopath] = ao
         elif("MC_OmegaPhia1_3Pion_Decay" in aopath) :
             if("_1" in aopath and "Omega" in file) :
@@ -378,7 +369,7 @@ for f in yodafiles:
             if not opts.decay : continue
             if (aopath=="/BABAR_2007_I722622/d03-x01-y01" or
                 aopath=="/BABAR_2007_I722622/d03-x01-y02" or
-                aopath=="/BABAR_2007_I722622/d04-x01-y01") : 
+                aopath=="/BABAR_2007_I722622/d04-x01-y01") :
                 htemp = aos[aopath]
                 if hasattr(aos["/_XSEC"],"points") :
                     fact = aos["/_XSEC"].points()[0].x()
@@ -417,13 +408,6 @@ for f in yodafiles:
             else :
                 if "d01" in aopath or "dalitz_1" in aopath :
                     outhistos[aopath] = ao
-        elif "BESIII_2012_I1088606" in aopath :
-            if "Psi2S" in file :
-                if "psi2S" in aopath or "y02" in aopath:
-                    outhistos[aopath] = ao
-            else :
-                if "Jpsi" in aopath or "y01" in aopath:
-                    outhistos[aopath] = ao
         elif "CLEO_2007_I728872" in aopath :
             if sqrts=="U4" and "d01" in aopath :
                 outhistos[aopath] = ao
@@ -440,7 +424,7 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif sqrts=="U5" and "d02" in aopath:
                 outhistos[aopath] = ao
-        elif ("MARKI_1975_I100733" in aopath and 
+        elif ("MARKI_1975_I100733" in aopath and
               ("d01" in aopath or "sigma" in aopapth)):
             continue
         elif "PLUTO_1981_I165122" in aopath and "d01" in aopath:
@@ -482,24 +466,18 @@ for f in yodafiles:
             outhistos[aopath] = ao
 
 # Make empty output histos if needed
+empty=[118873, 132410, 142874, 143691, 154270,
+       164397, 165122, 190818, 191161, 205668,
+       266892, 276860, 277658, 284251, 295160,
+       342061, 499183, 513476, 524693, 601225,
+       636645, 1286317, 1422780, 4300807, 6132243]
 for hpath,hsets in inhistos.items():
-    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or 
-        hpath.find("636645")>0 or hpath.find("295160" )>0 or
-        hpath.find("524693")>0 or hpath.find("601225")>0 or
-        hpath.find("190818" )>0 or hpath.find("154270" )>0 or
-        hpath.find("277658" )>0 or hpath.find("342061")>0 or
-        hpath.find("276860" )>0 or hpath.find("165122" )>0 or
-        hpath.find("118873" )>0 or hpath.find("143691" )>0 or
-        hpath.find("284251" )>0 or hpath.find("191161" )>0 or
-        hpath.find("1422780")>0 or hpath.find("132410" )>0 or
-        "499183" in hpath or
+    ins=-1
+    if "_I" in hpath :
+        ins = int(hpath.split("/")[1].split("_I")[1].split(":")[0])
+    if( ins in empty or
         ("526164" in hpath and ("d01" in hpath or "d02" in hpath or "d03" in hpath) ) or
-        ("195333" in hpath and "d04" in hpath) or
-        "OPAL_2000_I513476"   in hpath or
-        "JADE_1979_I142874"   in hpath or
-        "CLEO_1985_I205668"   in hpath or
-        "BABAR_2014_I1286317" in hpath or
-        "LENA_1981_I164397"   in hpath):
+        ("195333" in hpath and "d04" in hpath)):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01" or
 	   hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
@@ -528,744 +506,34 @@ for hpath,hsets in inhistos.items():
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
-
-# tasso
-eTemp=["14","22","35","44"]
-for ih in range(2,9) :
-    for iy in range(0,4) :
-        useOne("/TASSO_1990_I294755/d0%s-x01-y0%s" % (ih,iy+1),eTemp[iy])
-# jade
-useOne("/JADE_1998_I447560/d02-x01-y01","44")
-useOne("/JADE_1998_I447560/d03-x01-y01","44")
-useOne("/JADE_1998_I447560/d04-x01-y01","44")
-useOne("/JADE_1998_I447560/d05-x01-y01","44")
-useOne("/JADE_1998_I447560/d06-x01-y01","35")
-useOne("/JADE_1998_I447560/d07-x01-y01","35")
-useOne("/JADE_1998_I447560/d08-x01-y01","35")
-useOne("/JADE_1998_I447560/d09-x01-y01","35")
-useOne("/JADE_1998_I447560/d10-x01-y01","44")
-useOne("/JADE_1998_I447560/d11-x01-y01","35")
-useOne("/JADE_1998_I447560/d12-x01-y01","22")
-# opal/jade
-useOne("/JADE_OPAL_2000_I513337/d07-x01-y01","35")
-useOne("/JADE_OPAL_2000_I513337/d07-x01-y02","35")
-useOne("/JADE_OPAL_2000_I513337/d07-x01-y03","35")
-useOne("/JADE_OPAL_2000_I513337/d07-x01-y04","35")
-useOne("/JADE_OPAL_2000_I513337/d07-x01-y05","35")
-useOne("/JADE_OPAL_2000_I513337/d08-x01-y01","44")
-useOne("/JADE_OPAL_2000_I513337/d08-x01-y02","44")
-useOne("/JADE_OPAL_2000_I513337/d08-x01-y03","44")
-useOne("/JADE_OPAL_2000_I513337/d08-x01-y04","44")
-useOne("/JADE_OPAL_2000_I513337/d08-x01-y05","44")
-useOne("/JADE_OPAL_2000_I513337/d09-x01-y01","91")
-useOne("/JADE_OPAL_2000_I513337/d09-x01-y02","91")
-useOne("/JADE_OPAL_2000_I513337/d09-x01-y03","91")
-useOne("/JADE_OPAL_2000_I513337/d09-x01-y04","91")
-useOne("/JADE_OPAL_2000_I513337/d09-x01-y05","91")
-useOne("/JADE_OPAL_2000_I513337/d10-x01-y01","133")
-useOne("/JADE_OPAL_2000_I513337/d10-x01-y02","133")
-useOne("/JADE_OPAL_2000_I513337/d10-x01-y03","133")
-useOne("/JADE_OPAL_2000_I513337/d10-x01-y04","133")
-useOne("/JADE_OPAL_2000_I513337/d10-x01-y05","133")
-useOne("/JADE_OPAL_2000_I513337/d11-x01-y01","161")
-useOne("/JADE_OPAL_2000_I513337/d11-x01-y02","161")
-useOne("/JADE_OPAL_2000_I513337/d11-x01-y03","161")
-useOne("/JADE_OPAL_2000_I513337/d11-x01-y04","161")
-useOne("/JADE_OPAL_2000_I513337/d11-x01-y05","161")
-useOne("/JADE_OPAL_2000_I513337/d12-x01-y01","172")
-useOne("/JADE_OPAL_2000_I513337/d12-x01-y02","172")
-useOne("/JADE_OPAL_2000_I513337/d12-x01-y03","172")
-useOne("/JADE_OPAL_2000_I513337/d12-x01-y04","172")
-useOne("/JADE_OPAL_2000_I513337/d12-x01-y05","172")
-useOne("/JADE_OPAL_2000_I513337/d13-x01-y01","183")
-useOne("/JADE_OPAL_2000_I513337/d13-x01-y02","183")
-useOne("/JADE_OPAL_2000_I513337/d13-x01-y03","183")
-useOne("/JADE_OPAL_2000_I513337/d13-x01-y04","183")
-useOne("/JADE_OPAL_2000_I513337/d13-x01-y05","183")
-useOne("/JADE_OPAL_2000_I513337/d14-x01-y01","189")
-useOne("/JADE_OPAL_2000_I513337/d14-x01-y02","189")
-useOne("/JADE_OPAL_2000_I513337/d14-x01-y03","189")
-useOne("/JADE_OPAL_2000_I513337/d14-x01-y04","189")
-useOne("/JADE_OPAL_2000_I513337/d14-x01-y05","189")
-useOne("/JADE_OPAL_2000_I513337/d16-x01-y01","35") 
-useOne("/JADE_OPAL_2000_I513337/d16-x01-y02","35") 
-useOne("/JADE_OPAL_2000_I513337/d16-x01-y03","35") 
-useOne("/JADE_OPAL_2000_I513337/d16-x01-y04","35") 
-useOne("/JADE_OPAL_2000_I513337/d16-x01-y05","35") 
-useOne("/JADE_OPAL_2000_I513337/d17-x01-y01","44") 
-useOne("/JADE_OPAL_2000_I513337/d17-x01-y02","44") 
-useOne("/JADE_OPAL_2000_I513337/d17-x01-y03","44") 
-useOne("/JADE_OPAL_2000_I513337/d17-x01-y04","44") 
-useOne("/JADE_OPAL_2000_I513337/d17-x01-y05","44") 
-useOne("/JADE_OPAL_2000_I513337/d18-x01-y01","91") 
-useOne("/JADE_OPAL_2000_I513337/d18-x01-y02","91") 
-useOne("/JADE_OPAL_2000_I513337/d18-x01-y03","91") 
-useOne("/JADE_OPAL_2000_I513337/d18-x01-y04","91") 
-useOne("/JADE_OPAL_2000_I513337/d18-x01-y05","91") 
-useOne("/JADE_OPAL_2000_I513337/d19-x01-y01","133")
-useOne("/JADE_OPAL_2000_I513337/d19-x01-y02","133")
-useOne("/JADE_OPAL_2000_I513337/d19-x01-y03","133")
-useOne("/JADE_OPAL_2000_I513337/d19-x01-y04","133")
-useOne("/JADE_OPAL_2000_I513337/d19-x01-y05","133")
-useOne("/JADE_OPAL_2000_I513337/d20-x01-y01","161")
-useOne("/JADE_OPAL_2000_I513337/d20-x01-y02","161")
-useOne("/JADE_OPAL_2000_I513337/d20-x01-y03","161")
-useOne("/JADE_OPAL_2000_I513337/d20-x01-y04","161")
-useOne("/JADE_OPAL_2000_I513337/d20-x01-y05","161")
-useOne("/JADE_OPAL_2000_I513337/d21-x01-y01","172")
-useOne("/JADE_OPAL_2000_I513337/d21-x01-y02","172")
-useOne("/JADE_OPAL_2000_I513337/d21-x01-y03","172")
-useOne("/JADE_OPAL_2000_I513337/d21-x01-y04","172")
-useOne("/JADE_OPAL_2000_I513337/d21-x01-y05","172")
-useOne("/JADE_OPAL_2000_I513337/d22-x01-y01","183")
-useOne("/JADE_OPAL_2000_I513337/d22-x01-y02","183")
-useOne("/JADE_OPAL_2000_I513337/d22-x01-y03","183")
-useOne("/JADE_OPAL_2000_I513337/d22-x01-y04","183")
-useOne("/JADE_OPAL_2000_I513337/d22-x01-y05","183")
-useOne("/JADE_OPAL_2000_I513337/d23-x01-y01","189")
-useOne("/JADE_OPAL_2000_I513337/d23-x01-y02","189")
-useOne("/JADE_OPAL_2000_I513337/d23-x01-y03","189")
-useOne("/JADE_OPAL_2000_I513337/d23-x01-y04","189")
-useOne("/JADE_OPAL_2000_I513337/d23-x01-y05","189")
-useOne("/JADE_OPAL_2000_I513337/d24-x01-y01","35")
-useOne("/JADE_OPAL_2000_I513337/d24-x01-y02","35")
-useOne("/JADE_OPAL_2000_I513337/d24-x01-y03","35")
-useOne("/JADE_OPAL_2000_I513337/d24-x01-y04","35")
-useOne("/JADE_OPAL_2000_I513337/d25-x01-y01","44")
-useOne("/JADE_OPAL_2000_I513337/d25-x01-y02","44")
-useOne("/JADE_OPAL_2000_I513337/d25-x01-y03","44")
-useOne("/JADE_OPAL_2000_I513337/d25-x01-y04","44")
-useOne("/JADE_OPAL_2000_I513337/d26-x01-y01","91") 
-useOne("/JADE_OPAL_2000_I513337/d26-x01-y02","91") 
-useOne("/JADE_OPAL_2000_I513337/d26-x01-y03","91") 
-useOne("/JADE_OPAL_2000_I513337/d26-x01-y04","91") 
-useOne("/JADE_OPAL_2000_I513337/d27-x01-y01","133")
-useOne("/JADE_OPAL_2000_I513337/d27-x01-y02","133")
-useOne("/JADE_OPAL_2000_I513337/d27-x01-y03","133")
-useOne("/JADE_OPAL_2000_I513337/d27-x01-y04","133")
-useOne("/JADE_OPAL_2000_I513337/d28-x01-y01","161")
-useOne("/JADE_OPAL_2000_I513337/d28-x01-y02","161")
-useOne("/JADE_OPAL_2000_I513337/d28-x01-y03","161")
-useOne("/JADE_OPAL_2000_I513337/d28-x01-y04","161")
-useOne("/JADE_OPAL_2000_I513337/d29-x01-y01","172")
-useOne("/JADE_OPAL_2000_I513337/d29-x01-y02","172")
-useOne("/JADE_OPAL_2000_I513337/d29-x01-y03","172")
-useOne("/JADE_OPAL_2000_I513337/d29-x01-y04","172")
-useOne("/JADE_OPAL_2000_I513337/d30-x01-y01","183")
-useOne("/JADE_OPAL_2000_I513337/d30-x01-y02","183")
-useOne("/JADE_OPAL_2000_I513337/d30-x01-y03","183")
-useOne("/JADE_OPAL_2000_I513337/d30-x01-y04","183")
-useOne("/JADE_OPAL_2000_I513337/d31-x01-y01","189")
-useOne("/JADE_OPAL_2000_I513337/d31-x01-y02","189")
-useOne("/JADE_OPAL_2000_I513337/d31-x01-y03","189")
-useOne("/JADE_OPAL_2000_I513337/d31-x01-y04","189")
-
-useOne("/OPAL_2004_I669402/d01-x01-y01","91")
-useOne("/OPAL_2004_I669402/d01-x01-y02","133")
-useOne("/OPAL_2004_I669402/d01-x01-y03","177")
-useOne("/OPAL_2004_I669402/d01-x01-y04","197")
-useOne("/OPAL_2004_I669402/d02-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d02-x01-y02","133")
-useOne("/OPAL_2004_I669402/d02-x01-y03","177")
-useOne("/OPAL_2004_I669402/d02-x01-y04","197")
-useOne("/OPAL_2004_I669402/d03-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d03-x01-y02","133")
-useOne("/OPAL_2004_I669402/d03-x01-y03","177")
-useOne("/OPAL_2004_I669402/d03-x01-y04","197")
-useOne("/OPAL_2004_I669402/d04-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d04-x01-y02","133")
-useOne("/OPAL_2004_I669402/d04-x01-y03","177")
-useOne("/OPAL_2004_I669402/d04-x01-y04","197")
-useOne("/OPAL_2004_I669402/d05-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d05-x01-y02","133")
-useOne("/OPAL_2004_I669402/d05-x01-y03","177")
-useOne("/OPAL_2004_I669402/d05-x01-y04","197")
-useOne("/OPAL_2004_I669402/d06-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d06-x01-y02","133")
-useOne("/OPAL_2004_I669402/d06-x01-y03","177")
-useOne("/OPAL_2004_I669402/d06-x01-y04","197")
-useOne("/OPAL_2004_I669402/d07-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d07-x01-y02","133")
-useOne("/OPAL_2004_I669402/d07-x01-y03","177")
-useOne("/OPAL_2004_I669402/d07-x01-y04","197")
-useOne("/OPAL_2004_I669402/d08-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d08-x01-y02","133")
-useOne("/OPAL_2004_I669402/d08-x01-y03","177")
-useOne("/OPAL_2004_I669402/d08-x01-y04","197")
-useOne("/OPAL_2004_I669402/d09-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d09-x01-y02","133")
-useOne("/OPAL_2004_I669402/d09-x01-y03","177")
-useOne("/OPAL_2004_I669402/d09-x01-y04","197")
-useOne("/OPAL_2004_I669402/d10-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d10-x01-y02","133")
-useOne("/OPAL_2004_I669402/d10-x01-y03","177")
-useOne("/OPAL_2004_I669402/d10-x01-y04","197")
-useOne("/OPAL_2004_I669402/d11-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d11-x01-y02","133")
-useOne("/OPAL_2004_I669402/d11-x01-y03","177")
-useOne("/OPAL_2004_I669402/d11-x01-y04","197")
-useOne("/OPAL_2004_I669402/d12-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d12-x01-y02","133")
-useOne("/OPAL_2004_I669402/d12-x01-y03","177")
-useOne("/OPAL_2004_I669402/d12-x01-y04","197")
-useOne("/OPAL_2004_I669402/d13-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d13-x01-y02","133")
-useOne("/OPAL_2004_I669402/d13-x01-y03","177")
-useOne("/OPAL_2004_I669402/d13-x01-y04","197")
-useOne("/OPAL_2004_I669402/d14-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d14-x01-y02","133")
-useOne("/OPAL_2004_I669402/d14-x01-y03","177")
-useOne("/OPAL_2004_I669402/d14-x01-y04","197")
-useOne("/OPAL_2004_I669402/d15-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d15-x01-y02","133")
-useOne("/OPAL_2004_I669402/d15-x01-y03","177")
-useOne("/OPAL_2004_I669402/d15-x01-y04","197")
-useOne("/OPAL_2004_I669402/d16-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d16-x01-y02","133")
-useOne("/OPAL_2004_I669402/d16-x01-y03","177")
-useOne("/OPAL_2004_I669402/d16-x01-y04","197")
-useOne("/OPAL_2004_I669402/d17-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d17-x01-y02","133")
-useOne("/OPAL_2004_I669402/d17-x01-y03","177")
-useOne("/OPAL_2004_I669402/d17-x01-y04","197")
-useOne("/OPAL_2004_I669402/d18-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d18-x01-y02","133")
-useOne("/OPAL_2004_I669402/d18-x01-y03","177")
-useOne("/OPAL_2004_I669402/d18-x01-y04","197")
-useOne("/OPAL_2004_I669402/d19-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d19-x01-y02","133")
-useOne("/OPAL_2004_I669402/d19-x01-y03","177")
-useOne("/OPAL_2004_I669402/d19-x01-y04","197")
-useOne("/OPAL_2004_I669402/d20-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d20-x01-y02","133")
-useOne("/OPAL_2004_I669402/d20-x01-y03","177")
-useOne("/OPAL_2004_I669402/d20-x01-y04","197")
-useOne("/OPAL_2004_I669402/d21-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d21-x01-y02","133")
-useOne("/OPAL_2004_I669402/d21-x01-y03","177")
-useOne("/OPAL_2004_I669402/d21-x01-y04","197")
-useOne("/OPAL_2004_I669402/d22-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d22-x01-y02","133")
-useOne("/OPAL_2004_I669402/d22-x01-y03","177")
-useOne("/OPAL_2004_I669402/d22-x01-y04","197")
-useOne("/OPAL_2004_I669402/d23-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d23-x01-y02","133")
-useOne("/OPAL_2004_I669402/d23-x01-y03","177")
-useOne("/OPAL_2004_I669402/d23-x01-y04","197")
-useOne("/OPAL_2004_I669402/d24-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d24-x01-y02","133")
-useOne("/OPAL_2004_I669402/d24-x01-y03","177")
-useOne("/OPAL_2004_I669402/d24-x01-y04","197")
-useOne("/OPAL_2004_I669402/d25-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d25-x01-y02","133")
-useOne("/OPAL_2004_I669402/d25-x01-y03","177")
-useOne("/OPAL_2004_I669402/d25-x01-y04","197")
-useOne("/OPAL_2004_I669402/d26-x01-y01","91") 
-useOne("/OPAL_2004_I669402/d26-x01-y02","133")
-useOne("/OPAL_2004_I669402/d26-x01-y03","177")
-useOne("/OPAL_2004_I669402/d26-x01-y04","197")
-
-merge(  "/OPAL_2002_I601225/d01-x01-y01")
-merge(  "/OPAL_2002_I601225/d01-x01-y02")
-merge(  "/OPAL_2002_I601225/d01-x01-y03")
-merge(  "/OPAL_2002_I601225/d01-x01-y04")
-
-for i in range(1,13) :
-    for j in range(1,4) : 
-        merge("/DELPHI_1999_I499183/d%02d-x01-y0%s" %(i,j))
-for j in range(13,44,2):
-    for i,en in enumerate(["133","161","172"]) :
-        useOne("/DELPHI_1999_I499183/d%02d-x01-y0%s" % (j,(i+1)), en)
-for j in range(14,45,2):
-    useOne("/DELPHI_1999_I499183/d%02d-x01-y01" % j, "183")
-
-merge("/DELPHI_2000_I524693/d01-x01-y01")
-merge("/DELPHI_2000_I524693/d01-x01-y02")
-merge("/DELPHI_2000_I524693/d01-x01-y03")
-merge("/DELPHI_2000_I524693/d01-x01-y04")
-
+# Merging/selection of results for energy dependent analyses
+# ALEPH_2004_I636645
 merge("/ALEPH_2004_I636645/d01-x01-y01")
-merge("/ALEPH_2004_I636645/d53-x01-y01")
-merge("/ALEPH_2004_I636645/d53-x01-y02")
-merge("/ALEPH_2004_I636645/d53-x01-y03")
-merge("/ALEPH_2004_I636645/d53-x01-y04")
-merge("/ALEPH_2004_I636645/d53-x01-y05")
-useOne("/ALEPH_2004_I636645/d02-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d03-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d04-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d05-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d06-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d07-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d08-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d09-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d11-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d12-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d13-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d14-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d15-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d16-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d17-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d18-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d19-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d20-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d21-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d22-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d23-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d24-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d25-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d26-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d27-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d28-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d29-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d30-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d31-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d32-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d33-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d34-x01-y01","206")
+for j in range(1,6) :
+    merge("/ALEPH_2004_I636645/d53-x01-y%02d" %j)
+for j in [2,11,19,27,36,44] :
+    for i, en in enumerate(["133","161","172","183",
+                            "189","196","200","206"]) :
+        useOne("/ALEPH_2004_I636645/d%02d-x01-y01" % (i+j),en)
+for j in [ 54, 62, 70, 78, 86, 94,102,110,118,125,133,
+          141,149,157,165,187,195,203,211,219,227] :
+    for i, en in enumerate([ "91","133","161","172",
+                             "183","189","200","206"]) :
+        if j==125 and i==0 : continue
+        if i+j<100:
+            useOne("/ALEPH_2004_I636645/d%02d-x01-y01" % (i+j),en)
+        else :
+            useOne("/ALEPH_2004_I636645/d%03d-x01-y01" % (i+j),en)
 useOne("/ALEPH_2004_I636645/d35-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d36-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d37-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d38-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d39-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d40-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d41-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d42-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d43-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d44-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d45-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d46-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d47-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d48-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d49-x01-y01","196")
-useOne("/ALEPH_2004_I636645/d50-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d51-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d54-x01-y01","91")
-useOne("/ALEPH_2004_I636645/d55-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d56-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d57-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d58-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d59-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d60-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d61-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d62-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d63-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d64-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d65-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d66-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d67-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d68-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d69-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d70-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d71-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d72-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d73-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d74-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d75-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d76-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d77-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d78-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d79-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d80-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d81-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d82-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d83-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d84-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d85-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d86-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d87-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d88-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d89-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d90-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d91-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d92-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d93-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d94-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d95-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d96-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d97-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d98-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d99-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d100-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d101-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d102-x01-y01","91")
-useOne("/ALEPH_2004_I636645/d103-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d104-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d105-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d106-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d107-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d108-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d109-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d110-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d111-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d112-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d113-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d114-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d115-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d116-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d117-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d118-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d119-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d120-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d121-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d122-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d123-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d124-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d125-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d126-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d127-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d128-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d129-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d130-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d131-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d132-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d133-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d134-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d135-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d136-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d137-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d138-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d139-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d140-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d141-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d142-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d143-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d144-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d145-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d146-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d147-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d148-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d149-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d150-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d151-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d152-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d153-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d154-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d155-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d156-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d157-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d158-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d159-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d160-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d161-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d162-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d163-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d164-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d165-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d166-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d167-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d168-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d169-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d170-x01-y01","189")
-
-useOne("/ALEPH_2004_I636645/d172-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d173-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d174-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d175-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d176-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d177-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d178-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d179-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d180-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d181-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d182-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d183-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d184-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d185-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d186-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d187-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d188-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d189-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d190-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d191-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d192-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d193-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d194-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d195-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d196-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d197-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d198-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d199-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d200-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d201-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d202-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d203-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d204-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d205-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d206-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d207-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d208-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d209-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d210-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d211-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d212-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d213-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d214-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d215-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d216-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d217-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d218-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d219-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d220-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d221-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d222-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d223-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d224-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d225-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d226-x01-y01","206")
-useOne("/ALEPH_2004_I636645/d227-x01-y01","91") 
-useOne("/ALEPH_2004_I636645/d228-x01-y01","133")
-useOne("/ALEPH_2004_I636645/d229-x01-y01","161")
-useOne("/ALEPH_2004_I636645/d230-x01-y01","172")
-useOne("/ALEPH_2004_I636645/d231-x01-y01","183")
-useOne("/ALEPH_2004_I636645/d232-x01-y01","189")
-useOne("/ALEPH_2004_I636645/d233-x01-y01","200")
-useOne("/ALEPH_2004_I636645/d234-x01-y01","206")
-
-# hadron multiplicities
-useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d22-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d23-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d25-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d40-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d49-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d53-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES/d54-x01-y01","10")
-
-useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d22-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d33-x01-y01","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d34-x01-y01","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y02","35")
-
-useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d10-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d11-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d12-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d14-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d16-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d23-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d24-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d25-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d26-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d27-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d28-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d29-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d30-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d32-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d34-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d35-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d36-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d37-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d40-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d41-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d42-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d43-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d49-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d52-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d54-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y04","177")
-
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d17-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d25-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y01","10" )
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d40-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d45-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d49-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d53-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d54-x01-y01","10")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d33-x01-y01","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d34-x01-y01","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y02","35")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d10-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d11-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d12-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d14-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d16-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d17-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d24-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d25-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d26-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d27-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d28-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d29-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d30-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d32-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d34-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d35-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d36-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d37-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d40-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d41-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d42-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d43-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d45-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d49-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d52-x01-y01","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d54-x01-y02","91")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y04","177")
-useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y04","177")
-# AMY analysis
-useOne("/AMY_1990_I295160/d01-x01-y01","50")
-useOne("/AMY_1990_I295160/d01-x01-y02","52")
-useOne("/AMY_1990_I295160/d01-x01-y03","55")
-useOne("/AMY_1990_I295160/d01-x01-y04","56")
-useOne("/AMY_1990_I295160/d01-x01-y05","57")
-useOne("/AMY_1990_I295160/d01-x01-y06","60")
-useOne("/AMY_1990_I295160/d01-x01-y07","60.8")
-useOne("/AMY_1990_I295160/d01-x01-y08","61.4")
+for j in [173,180] :
+    for i, en in enumerate([ "91","133","161","172",
+                             "183","189","206"]) :
+        useOne("/ALEPH_2004_I636645/d%03d-x01-y01" % (i+j),en)
+# AMY_1990_I295160
+for i,en in enumerate(["50","52","55","56","57","60","60.8","61.4"]) :
+    useOne("/AMY_1990_I295160/d01-x01-y%02d" % (i+1),en)
 useOne("/AMY_1990_I295160/d01-x01-y09","57")
 useOne("/AMY_1990_I295160/d02-x02-y01","57")
-
-
 if "/AMY_1990_I295160/d02-x01-y01" in inhistos:
     if hasattr(outhistos["/AMY_1990_I295160/d02-x01-y01"],'points') :
         merge("/AMY_1990_I295160/d02-x01-y01")
@@ -1279,57 +547,107 @@ if "/AMY_1990_I295160/d02-x01-y01" in inhistos:
             bin.setVal(src.val())
             for key in  src.sources() :
                 bin.setErr(src.err(key),key)
-merge("/JADE_1983_I190818/d01-x01-y01")
-merge("/PLUTO_1980_I154270/d01-x01-y01")
-
-merge("/TASSO_1989_I277658/d02-x01-y01")
-useOne("/TASSO_1989_I277658/d05-x01-y01","14")
-useOne("/TASSO_1989_I277658/d05-x01-y02","22")
-useOne("/TASSO_1989_I277658/d05-x01-y03","34.8")
-useOne("/TASSO_1989_I277658/d05-x01-y04","43.6")
-
-# BABAR
-useOne("/BABAR_2007_I725377/d01-x01-y01","10.54")
-useOne("/BABAR_2007_I725377/d02-x01-y01","10.54")
-useOne("/BABAR_2007_I725377/d03-x01-y01","U4")
-useOne("/BABAR_2007_I725377/d04-x01-y01","U4")
-# BABAR
-useOne("/BABAR_2005_I679961/d01-x01-y01","10.58")
-useOne("/BABAR_2005_I679961/d02-x01-y01","10.58")
-useOne("/BABAR_2005_I679961/d02-x01-y02","10.54")
-useOne("/BABAR_2005_I679961/d03-x01-y01","10.54")
-useOne("/BABAR_2005_I679961/d04-x01-y01","10.58")
-useOne("/BABAR_2005_I679961/d05-x01-y01","10.58")
-useOne("/BABAR_2005_I679961/d05-x01-y02","10.54")
-# ARGUS
-useOne("/ARGUS_1993_I356616/d01-x01-y01","10.45")
-useOne("/ARGUS_1993_I356616/d01-x01-y02","10.45")
-useOne("/ARGUS_1993_I356616/d01-x01-y03","10.45")
-useOne("/ARGUS_1993_I356616/d01-x01-y04","10.45")
-useOne("/ARGUS_1993_I356616/d01-x01-y05","10.45")
-useOne("/ARGUS_1993_I356616/d02-x01-y01", "U1")
-useOne("/ARGUS_1993_I356616/d02-x01-y02", "U1")
-useOne("/ARGUS_1993_I356616/d02-x01-y03", "U1")
-useOne("/ARGUS_1993_I356616/d02-x01-y04", "U1")
-useOne("/ARGUS_1993_I356616/d02-x01-y05", "U1")
-useOne("/ARGUS_1993_I356616/d03-x01-y01","U4")
-useOne("/ARGUS_1993_I356616/d03-x01-y02","U4")
-useOne("/ARGUS_1993_I356616/d03-x01-y03","U4")
-useOne("/ARGUS_1993_I356616/d03-x01-y04","U4")
-useOne("/ARGUS_1993_I356616/d03-x01-y05","U4")
-useOne("/ARGUS_1993_I356616/d04-x01-y01","10.45")
-useOne("/ARGUS_1993_I356616/d05-x01-y01", "U1")
-useOne("/ARGUS_1993_I356616/d06-x01-y01","U4")
-useOne("/ARGUS_1993_I356616/d07-x01-y01","10.45")
-useOne("/ARGUS_1993_I356616/d08-x01-y01", "U1")
-useOne("/ARGUS_1993_I356616/d09-x01-y01","U4")
-useOne("/ARGUS_1993_I356616/d10-x01-y01","10.45")
-useOne("/ARGUS_1993_I356616/d11-x01-y01", "U1")
-useOne("/ARGUS_1993_I356616/d12-x01-y01","U4")
-useOne("/ARGUS_1993_I356616/d13-x01-y01","10.45")
-useOne("/ARGUS_1993_I356616/d14-x01-y01", "U1")
-useOne("/ARGUS_1993_I356616/d15-x01-y01","U4")
-
+# ARGUS_1986_I227324
+for ih in range(1,3) :
+    for j,en in enumerate(["U1","9.98"]):
+        useOne("/ARGUS_1986_I227324/d%02d-x01-y%02d"%(ih,j+1),en)
+# ARGUS_1988_I251097
+for i in range(1,8) :
+    useOne("/ARGUS_1988_I251097/d01-x01-y%02d" %i,"U1")
+    useOne("/ARGUS_1988_I251097/d02-x01-y%02d" %i,"9.98")
+for j,en in enumerate(["U1","U2","9.98"]) :
+    for i in [3,7] :
+        useOne("/ARGUS_1988_I251097/d%02d-x01-y01"%(i+j),en)
+useOne("/ARGUS_1988_I251097/d06-x01-y01","9.98")
+# ARGUS_1988_I266892 baryon correlations
+useOne("/ARGUS_1988_I266892/d01-x01-y01","9.98")
+useOne("/ARGUS_1988_I266892/d01-x01-y02","U1" )
+useOne("/ARGUS_1988_I266892/d02-x01-y01","9.98")
+for ih in range(3,9) :
+    path = "/ARGUS_1988_I266892/d%02d-x01-y01"%ih
+    if path not in inhistos: continue
+    edges = inhistos[path][9.98].xEdges()
+    nHist = yoda.BinnedEstimate1D(edges,path)
+    ens = ["U1",9.98]
+    for i,val in enumerate(edges) :
+        if i<2 :
+            bb = inhistos[path][ens[i]].bin(i+1)
+            nHist.bins()[i].setVal(bb.val())
+            for key in bb.sources() :
+                nHist.bins()[i].setErr(bb.err(key),key)
+        else :
+            bbs = (inhistos[path][ens[0]].bin(1),inhistos[path][ens[1]].bin(2))
+            nHist.bins()[i].setVal(0.5*(bbs[0].val()+bbs[1].val()))
+            for key in bbs[0].sources() :
+                err = (-0.5*np.sqrt(bbs[0].err(key)[0]**2+bbs[1].err(key)[0]**2),
+                       +0.5*np.sqrt(bbs[0].err(key)[1]**2+bbs[1].err(key)[1]**2))
+                nHist.bins()[i].setErr(err,key)
+    outhistos[path]=nHist
+# ARGUS_1989_I262415
+for i,en in enumerate(["U1","9.98"]) :
+    useOne("/ARGUS_1989_I262415/d%02d-x01-y01" %(3+i),en)
+    for j in range(1,3) :
+        useOne("/ARGUS_1989_I262415/d01-x%02d-y%02d" %(j,i+1),en)
+# ARGUS_1989_I262551
+useOne("/ARGUS_1989_I262551/d01-x01-y01","9.98")
+for j,en in enumerate(["U1","U2"]) :
+    useOne("/ARGUS_1989_I262551/d02-x01-y%02d" % (j+1),en)
+    useOne("/ARGUS_1989_I262551/d%02d-x01-y01" %(j+3),en)
+# ARGUS_1989_I276860
+for i in range(1,3) :
+    for j in [1,4] :
+        merge("/ARGUS_1989_I276860/d%02d-x01-y%02d"%(j,i))
+    merge("/ARGUS_1989_I276860/d%02d-x01-y01" %(i+1))
+for i in range(5,13) :
+    useOne("/ARGUS_1989_I276860/d%02d-x01-y01" %i,"U1")
+    useOne("/ARGUS_1989_I276860/d%02d-x01-y02" %i,"9.98")
+# ARGUS_1989_I278932
+useOne("/ARGUS_1989_I278932/d01-x01-y02","U1")
+useOne("/ARGUS_1989_I278932/d02-x01-y02","9.98")
+useOne("/ARGUS_1989_I278932/d03-x01-y01","U1")
+# ARGUS_1990_I278933
+for i in range(1,7) :
+    for j,en in enumerate(["9.46","U1","U2"]) :
+        useOne("/ARGUS_1990_I278933/d%02d-x01-y%02d" %(i,j+1),en)
+for i in range(3,7,2) :
+    for j in range(1,3) :
+        useOne("/ARGUS_1990_I278933/d%02d-x01-y%02d" %(i,j),"9.46")
+for i in range(4,8,2) :
+    useOne("/ARGUS_1990_I278933/d%02d-x01-y01" %i,"U1")
+    useOne("/ARGUS_1990_I278933/d%02d-x01-y02" %i,"U2")
+# ARGUS_1990_I295621
+for i, en in enumerate(["10.","U1"]) :
+    for j in range(1,4) :
+        useOne("/ARGUS_1990_I295621/d%02d-x01-y01" % (j+3*i),en)
+    useOne("/ARGUS_1990_I295621/d09-x01-y%02d" %(i+1),en)
+if "/ARGUS_1990_I295621/d01-x01-y01" in outhistos and "/ARGUS_1990_I295621/d04-x01-y01" in outhistos :
+    edges = ["$\\Upsilon_{1.2}/\\textrm{continuum}$"]
+    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d04-x01-y01")
+    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d04-x01-y01"].bin(1))
+    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d01-x01-y01")
+    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d01-x01-y01"].bin(1))
+    tmp = nTemp/dTemp
+    tmp.setPath("/ARGUS_1990_I295621/d07-x01-y01")
+    outhistos["/ARGUS_1990_I295621/d07-x01-y01"] = tmp
+if "/ARGUS_1990_I295621/d02-x01-y01" in outhistos and "/ARGUS_1990_I295621/d05-x01-y01" in outhistos :
+    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d05-x01-y01")
+    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d05-x01-y01"].bin(1))
+    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d02-x01-y01")
+    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d02-x01-y01"].bin(1))
+    tmp = nTemp/dTemp
+    tmp.setPath("/ARGUS_1990_I295621/d08-x01-y01")
+    outhistos["/ARGUS_1990_I295621/d08-x01-y01"] = tmp
+# ARGUS_1991_I315059
+for i in range(1,4) :
+    useOne("/ARGUS_1991_I315059/d01-x01-y%02d"%i,"10.47")
+for i,en in enumerate(["10.47","U4"]) :
+    for j in range(2,5) :
+        useOne("/ARGUS_1991_I315059/d%02d-x01-y01" % (3*i+j),en)
+# ARGUS_1992_I319829 D_s spectrum
+useOne("/ARGUS_1992_I319829/d01-x01-y01","10.47")
+useOne("/ARGUS_1992_I319829/d02-x01-y01","10.47")
+useOne("/ARGUS_1992_I319829/d03-x01-y01","U4")
+# ARGUS_1993_I342061
 if("/ARGUS_1993_I342061/d04-x01-y01" in outhistos) :
     useOne("/ARGUS_1993_I342061/d02-x01-y01","10.45")
     useOne("/ARGUS_1993_I342061/d03-x01-y01","U1")
@@ -1353,152 +671,59 @@ if("/ARGUS_1993_I342061/d04-x01-y01" in outhistos) :
                 bin.setVal(src.val())
                 for key in  src.sources() :
                     bin.setErr(src.err(key),key)
-
-if "/ARGUS_1990_I295621/d01-x01-y01" in outhistos and "/ARGUS_1990_I295621/d04-x01-y01" in outhistos :
-    edges = ["$\\Upsilon_{1.2}/\\textrm{continuum}$"]
-    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d04-x01-y01")
-    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d04-x01-y01"].bin(1))
-    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d01-x01-y01")
-    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d01-x01-y01"].bin(1))
-    tmp = nTemp/dTemp
-    tmp.setPath("/ARGUS_1990_I295621/d07-x01-y01")
-    outhistos["/ARGUS_1990_I295621/d07-x01-y01"] = tmp
-if "/ARGUS_1990_I295621/d02-x01-y01" in outhistos and "/ARGUS_1990_I295621/d05-x01-y01" in outhistos :
-    nTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d05-x01-y01")
-    nTemp.set(1,outhistos["/ARGUS_1990_I295621/d05-x01-y01"].bin(1))
-    dTemp = yoda.BinnedEstimate1D(edges,"/ARGUS_1990_I295621/d02-x01-y01")
-    dTemp.set(1,outhistos["/ARGUS_1990_I295621/d02-x01-y01"].bin(1))
-    tmp = nTemp/dTemp
-    tmp.setPath("/ARGUS_1990_I295621/d08-x01-y01")
-    outhistos["/ARGUS_1990_I295621/d08-x01-y01"] = tmp
-useOne("/ARGUS_1990_I278933/d01-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d01-x01-y02","U1")
-useOne("/ARGUS_1990_I278933/d01-x01-y03","U2")
-useOne("/ARGUS_1990_I278933/d02-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d02-x01-y02","U1")
-useOne("/ARGUS_1990_I278933/d02-x01-y03","U2")
-useOne("/ARGUS_1990_I278933/d03-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d03-x01-y02","9.46")
-useOne("/ARGUS_1990_I278933/d04-x01-y01","U1")
-useOne("/ARGUS_1990_I278933/d04-x01-y02","U2")
-useOne("/ARGUS_1990_I278933/d05-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d05-x01-y02","9.46")
-useOne("/ARGUS_1990_I278933/d06-x01-y01","U1")
-useOne("/ARGUS_1990_I278933/d06-x01-y02","U2")
- 
-useOne("/ARGUS_1990_I295621/d01-x01-y01","10.")
-useOne("/ARGUS_1990_I295621/d02-x01-y01","10.")
-useOne("/ARGUS_1990_I295621/d03-x01-y01","10.")
-useOne("/ARGUS_1990_I295621/d04-x01-y01","U1")
-useOne("/ARGUS_1990_I295621/d05-x01-y01","U1")
-useOne("/ARGUS_1990_I295621/d06-x01-y01","U1")
-useOne("/ARGUS_1990_I295621/d09-x01-y01","10.")
-useOne("/ARGUS_1990_I295621/d09-x01-y02","U1")
-
-useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y01","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d01-x01-y02","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d02-x01-y01","U1")
-useOne("/CRYSTAL_BALL_1991_I297905/d02-x01-y02","U1")
-useOne("/CRYSTAL_BALL_1991_I297905/d03-x01-y01","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d03-x01-y02","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d04-x01-y01","U1")
-useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y01","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d05-x01-y02","9.46")
-useOne("/CRYSTAL_BALL_1991_I297905/d06-x01-y01","U1")
-
-useOne("/ARGUS_1989_I262551/d01-x01-y01","10.")
-useOne("/ARGUS_1989_I262551/d02-x01-y01","U1")
-useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
-useOne("/ARGUS_1989_I262551/d03-x01-y01","U1")
-useOne("/ARGUS_1989_I262551/d04-x01-y01","U2")
-
-merge("/ARGUS_1989_I276860/d01-x01-y01")
-merge("/ARGUS_1989_I276860/d01-x01-y02")
-merge("/ARGUS_1989_I276860/d02-x01-y01")
-merge("/ARGUS_1989_I276860/d03-x01-y01")
-merge("/ARGUS_1989_I276860/d04-x01-y01")
-merge("/ARGUS_1989_I276860/d04-x01-y02")
-for i in range(5,13) :
-    useOne("/ARGUS_1989_I276860/d%02d-x01-y01" %i,"U1")
-    useOne("/ARGUS_1989_I276860/d%02d-x01-y02" %i,"10.00")
-
-for i in range(1,8) :
-    useOne("/ARGUS_1988_I251097/d01-x01-y%02d" %i,"U1")
-    useOne("/ARGUS_1988_I251097/d02-x01-y%02d" %i,"10.00")
-useOne("/ARGUS_1988_I251097/d03-x01-y01","U1")
-useOne("/ARGUS_1988_I251097/d04-x01-y01","U2")
-useOne("/ARGUS_1988_I251097/d05-x01-y01","10.00")
-useOne("/ARGUS_1988_I251097/d06-x01-y01","10.00")
-useOne("/ARGUS_1988_I251097/d07-x01-y01","U1")
-useOne("/ARGUS_1988_I251097/d08-x01-y01","U2")
-useOne("/ARGUS_1988_I251097/d09-x01-y01","10.00")
-
-useOne("/ARGUS_1989_I262415/d03-x01-y01","U1")
-useOne("/ARGUS_1989_I262415/d04-x01-y01","10.00")
-useOne("/ARGUS_1989_I262415/d01-x01-y01","U1")
-useOne("/ARGUS_1989_I262415/d01-x01-y02","10.00")
-useOne("/ARGUS_1989_I262415/d01-x02-y01","U1")
-useOne("/ARGUS_1989_I262415/d01-x02-y02","10.00")
-
-merge("/PLUTO_1981_I165122/d02-x01-y01")
-useOne("/PLUTO_1981_I165122/d06-x01-y01","U1")
-useOne("/PLUTO_1981_I165122/d04-x01-y01","30.2")
-useOne("/PLUTO_1981_I165122/d05-x01-y01","9.4")
-useOne("/PLUTO_1977_I118873/d02-x01-y01","3.63")
-useOne("/PLUTO_1977_I118873/d03-x01-y01","4.03")
-useOne("/PLUTO_1977_I118873/d04-x01-y01","4.5")
-
-useOne("/TASSO_1982_I177174/d01-x01-y01","14.")
-useOne("/TASSO_1982_I177174/d01-x01-y02","22.")
-useOne("/TASSO_1982_I177174/d01-x01-y03","34.")
-for i in range(2,4) :
-    useOne("/TASSO_1982_I177174/d0%s-x01-y01" %i ,"12.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y02" %i ,"14.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y03" %i ,"22.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y04" %i ,"25.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y05" %i ,"30.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y06" %i ,"34.")
-    useOne("/TASSO_1982_I177174/d0%s-x01-y07" %i ,"35.")
-
-merge("/TASSO_1980_I143691/d01-x01-y01")
-useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
-useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
-for ih in [3,6] :
-    if(("/TASSO_1980_I143691/d0%s-x01-y01"%ih) in inhistos and
-       17. in inhistos["/TASSO_1980_I143691/d0%s-x01-y01"%ih] and
-       22. in inhistos["/TASSO_1980_I143691/d0%s-x01-y01"%ih]) :
-        average("/TASSO_1980_I143691/d0%s-x01-y01"%ih,"17.","22.")
-useOne("/TASSO_1980_I143691/d04-x01-y01","30.3")
-useOne("/TASSO_1980_I143691/d07-x01-y01","30.3")
-      
-useOne("/TASSO_1990_I284251/d01-x01-y01","42.6")
-useOne("/TASSO_1990_I284251/d01-x01-y02","35.")
-useOne("/TASSO_1990_I284251/d01-x01-y03","34.5")
-useOne("/TASSO_1990_I284251/d02-x01-y01","14.8")
-useOne("/TASSO_1990_I284251/d03-x01-y01","21.5")
-merge("/TASSO_1990_I284251/d04-x01-y01")
-useOne("/TASSO_1990_I284251/d05-x01-y01","42.6")
-useOne("/TASSO_1990_I284251/d05-x01-y02","42.6")
-useOne("/TASSO_1990_I284251/d05-x01-y03","35")
-useOne("/TASSO_1990_I284251/d05-x01-y04","35")
-useOne("/TASSO_1990_I284251/d06-x01-y01","14.8")
-useOne("/TASSO_1990_I284251/d06-x01-y02","14.8")
-useOne("/TASSO_1990_I284251/d07-x01-y01","21.5")
-useOne("/TASSO_1990_I284251/d07-x01-y02","21.5")
-useOne("/TASSO_1990_I284251/d08-x01-y01","42.6")
-useOne("/TASSO_1990_I284251/d08-x01-y02","35.")
-useOne("/TASSO_1990_I284251/d08-x01-y03","34.5")
-merge("/TASSO_1990_I284251/d09-x01-y01")
-useOne("/TASSO_1990_I284251/d10-x01-y01","35")
-useOne("/TASSO_1990_I284251/d10-x01-y02","35")
-merge("/DASP_1979_I132410/d01-x01-y01")
-# BES xi analysis
-useOne("/BESIII_2016_I1422780/d02-x01-y01","psi")
-useOne("/BESIII_2016_I1422780/d02-x01-y02","psi")
-useOne("/BESIII_2016_I1422780/d02-x01-y03","psi")
-useOne("/BESIII_2016_I1422780/d02-x01-y04","psi2s")
-useOne("/BESIII_2016_I1422780/d02-x01-y05","psi2s")
-useOne("/BESIII_2016_I1422780/d02-x01-y06","psi2s")
+# ARGUS_1993_I356616
+for i,en in enumerate(["10.45","U1","U4"]) :
+    for j in range(1,6) :
+        useOne("/ARGUS_1993_I356616/d%02d-x01-y%02d" %(i+1,j), en)
+    for j in range(4,16,3) :
+        useOne("/ARGUS_1993_I356616/d%02d-x01-y01" %(i+j),en)
+# BABAR_2005_I679961
+useOne("/BABAR_2005_I679961/d01-x01-y01","10.58")
+for j,en in enumerate(["10.58","10.54"]) :
+    for i in [2,5] :
+        useOne("/BABAR_2005_I679961/d%02d-x01-y%02d" %(i,j+1),en)
+    useOne("/BABAR_2005_I679961/d%02d-x01-y01" %(4-j),en)
+# BABAR_2007_I725377
+for j,en in enumerate(["10.54","U4"]) :
+    for i in range(1,3):
+        useOne("/BABAR_2007_I725377/d%02d-x01-y01" %(i+2*j),en)
+# BABAR_2014_I1286317
+for j,en in enumerate(["U3","U2","U1"]) :
+    useOne("/BABAR_2014_I1286317/d%02d-x01-y01" % (j+1), en)
+    useOne("/BABAR_2014_I1286317/d06-x01-y%02d" % (j+1), en)
+for j in range(4,7) :
+    useOne("/BABAR_2014_I1286317/d%02d-x01-y01"%j, "10.6")
+# BELLE_2005_I686014
+for i,en in enumerate(["U4","10.52"]) :
+    for j in range(1,8) :
+        useOne("/BELLE_2005_I686014/d%02d-x01-y%02d"% (i+1,j), en)
+        useOne("/BELLE_2005_I686014/d%02d-x01-y%02d"% (4-i,j), en)
+# BELLE_2017_I1499706
+for i,en in enumerate(["U1","U2"]) :
+    for j in range(1,3) :
+        useOne("/BELLE_2017_I1499706/d01-x%02d-y%02d"% (j,i+1), en)
+# BELLE_2023_I2660525
+for j,en in enumerate(["U4","U5"]) :
+    for i in range(1,3) :
+        useOne("/BELLE_2023_I2660525/d01-x01-y%02d" % (i+2*j),en)
+        useOne("/BELLE_2023_I2660525/d03-x01-y%02d" % (5-i-2*j),en)
+useOne("/BELLE_2023_I2660525/d01-x01-y05","U5")
+# BESII_2004_I622224
+for i, en in enumerate(["2.2","2.6","3.0","3.2","4.6","4.8"]) :
+    useOne("/BESII_2004_I622224/d%02d-x01-y01" %(i+1),en)
+# BESIII_2012_I1079921
+for i,en in enumerate(["psi","psi2s"]) :
+    for j in range(1,5-3*i) :
+        useOne("/BESIII_2012_I1079921/d%02d-x01-y%02d" %(i+1,j),en)
+# BESIII_2012_I1088606
+for i,en in enumerate(["psi","psi2s"]) :
+    useOne("/BESIII_2012_I1088606/d01-x01-y%02d" % (i+1),en)
+useOne("/BESIII_2012_I1088606/dalitz_Jpsi" ,"psi"  )
+useOne("/BESIII_2012_I1088606/dalitz_psi2S","psi2s")
+# BESIII_2016_I1422780
+for i,en in enumerate(["psi","psi2s"]):
+    for j in range(1,4) :
+        useOne("/BESIII_2016_I1422780/d02-x01-y%02d" %(j+3*i),en)
 if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
      "psi" in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]) :
     if hasattr(inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi"],'points') :
@@ -1515,35 +740,308 @@ if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
     else :
         for i in range(4,7) :
             outhistos["/BESIII_2016_I1422780/d01-x01-y03"].set(i,inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi2s"].bin(i))
-# pluto analysis
+# BESIII_2017_I1510563
+for j in range(0,2) :
+    for i,en in enumerate(["psi","psi2s"]) :
+        useOne("/BESIII_2017_I1510563/d01-x01-y%02d" % (1+i+2*j),en)
+        useOne("/BESIII_2017_I1510563/d02-x%02d-y01" % (1+j+2*i),en)
+# BESIII_2017_I1621266
+for j in range(0,2) :
+    for i,en in enumerate(["psi","psi2s"]) :
+        useOne("/BESIII_2017_I1621266/d01-x01-y%02d" % (1+j+2*i),en)
+useOne("/BESIII_2017_I1621266/dalitz_Jpsi" ,"psi"  )
+useOne("/BESIII_2017_I1621266/dalitz_psi2S","psi2s")
+# BESIII_2017_I1506414
+for j in range(1,3) :
+    for i,en in enumerate(["psi","psi2s"]) :
+        useOne("/BESIII_2017_I1506414/d01-x01-y%02d" %(i*2+j),en)
+        useOne("/BESIII_2017_I1506414/d02-x%02d-y01" %(i*2+j),en)
+# BESIII_2020_I1791570
+for j in [1,3,4] :
+    for i,en in enumerate(["psi","psi2s"]) :
+        useOne("/BESIII_2020_I1791570/d%02d-x01-y%02d" % (j,i+1),en)
+for i in range(1,4) :
+    average("/BESIII_2020_I1791570/d02-x01-y%02d" % i, "psi","psi2s" )
+# BESIII_2022_I2166759
+for j  in range(1,4) :
+    for i,en in enumerate(["psi","psi2s"]) :
+        useOne("/BESIII_2022_I2166759/d01-x01-y%02d" % (j+3*i),en)
+# BESIII_2022_I2513076
+for i, en in enumerate(["2.23","2.4","2.8","3.05","3.4","3.67"]) :
+    for j in range(1,3) :
+        useOne("/BESIII_2022_I2513076/d%02d-x01-y%02d" %(j,i+1),en)
+# BESIII_2024_I2753516
+for i, en in enumerate(["2.0","2.2","2.396","2.644","2.9","3.05","3.5","3.67"]) :
+    useOne("/BESIII_2024_I2753516/d01-x01-y%02d" %(i+1),en)
+# CELLO_1982_I12010
+for i in range(1,4,2) :
+    for j,en in enumerate(["22","34"]) :
+        useOne("/CELLO_1982_I12010/d%02d-x01-y%02d" %(i,j+1),en)
+# CELLO_1983_I191415
+for i in range(1,7,3) :
+    for j,en in enumerate(["14","22","34"]) :
+        useOne("/CELLO_1983_I191415/d%02d-x01-y01" %(i+j),en)
+# CLEO_1985_I205668
+for i in range(1,12) :
+    for j,en in enumerate(["10.47","U1"]) :
+        useOne("/CLEO_1985_I205668/d%02d-x01-y%02d" % (i,j+1) ,en)
+for i in range(12,24) :
+    merge("/CLEO_1985_I205668/d%02d-x01-y01" %i)
+# CLEO_2005_I1649168
+useOne("/CLEO_2005_I1649168/d01-x01-y07","U4")
+useOne("/CLEO_2005_I1649168/d01-x01-y08","U5")
+# CLEOIII_2006_I701217
+for j,en in enumerate(["U1","U2","U3"]) :
+    useOne("/CLEOIII_2006_I701217/d%02d-x01-y01" % (j+1) ,en)
+# CLEOC_2006_I728043
+for i in range(1,6) :
+    for j,en in enumerate(["psi1d","psi1d","4.17"]) :
+        useOne("/CLEOC_2006_I728043/d%02d-x01-y%02d" % (i,j+1) ,en)
+# CLEO_2007_I728872
+useOne("/CLEO_2007_I728872/d01-x01-y05","U4")
+useOne("/CLEO_2007_I728872/d02-x01-y05","U5")
+# CRYSTAL_BALL_1991_I297905
+for i,en in enumerate(["9.46","U1"]) :
+    for j in range(1,3) :
+        useOne("/CRYSTAL_BALL_1991_I297905/d%02d-x01-y%02d" %(i+1,j),en)
+for i in [3,5]:
+    for j in range(1,3) :
+        useOne("/CRYSTAL_BALL_1991_I297905/d%02d-x01-y%02d" %(i,j),"9.46")
+for i in [4,6] :
+    useOne("/CRYSTAL_BALL_1991_I297905/d%02d-x01-y01"%i,"U1")
+# CUSB_1984_I204307
+useOne("/CUSB_1984_I204307/d01-x01-y01","U1")
+useOne("/CUSB_1984_I204307/d02-x01-y01","U2")
+# DASP_1979_I132045
+for i,en in enumerate(["3.63","4.03","4.17","4.3","4.41","4.8","5.0","5.2"]) :
+    for j in [1,18] :
+        useOne("/DASP_1979_I132045/d%02d-x01-y%02d" %(j,i+1),en)
+    for j in [2,10,19,27] :
+        useOne("/DASP_1979_I132045/d%02d-x01-y01" %(i+j),en)
+# DASP_1979_I132410
+merge("/DASP_1979_I132410/d01-x01-y01")
+# DELPHI_1999_I499183
+for i in range(1,13) :
+    for j in range(1,4) :
+        merge("/DELPHI_1999_I499183/d%02d-x01-y%02d" %(i,j))
+for j in range(13,44,2):
+    for i,en in enumerate(["133","161","172"]) :
+        useOne("/DELPHI_1999_I499183/d%02d-x01-y%02d" % (j,(i+1)), en)
+for j in range(14,45,2):
+    useOne("/DELPHI_1999_I499183/d%02d-x01-y01" % j, "183")
+# DELPHI_2000_I524693
+for j in range(1,5) :
+    merge("/DELPHI_2000_I524693/d01-x01-y%02d" %j)
+# DELPHI_2001_I526164
+for ix,en in enumerate(["189","183"]) :
+    for iy in range(1,3) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y%02d"%(5+2*ix,iy), en)
+    useOne("/DELPHI_2001_I526164/d%02d-x01-y01"%(6+2*ix), en)
+    for iloc in range(2,5,2) :
+        useOne("/DELPHI_2001_I526164/d16-x01-y%02d"%(iloc-ix), en)
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y%02d"%(9 +ix,iy), en)
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y%02d"%(11+ix,iy), en)
+for ix in range(13,16) :
+    for iy in range(1,5) :
+        useOne("/DELPHI_2001_I526164/d%02d-x01-y%02d"%(ix,iy), "189")
+merge("/DELPHI_2001_I526164/d01-x01-y01")
+merge("/DELPHI_2001_I526164/d03-x01-y01")
+merge("/DELPHI_2001_I526164/d03-x01-y03")
+for ix in range(1,6) :
+    merge("/DELPHI_2001_I526164/d02-x01-y%02d"%ix)
+for ix in range(1,7) :
+    useOne("/DELPHI_2001_I526164/d04-x01-y%02d"%ix,"189")
+# DELPHI_2003_I620250
+for i in range(1,18) :
+    for j,en in enumerate(["45","66","76"]) :
+        useOne("/DELPHI_2003_I620250/d%02d-x01-y%02d" % (i,(j+1)), en)
+for i in range(30,72,2) :
+    for j,en in enumerate(["183","189","192","196"]) :
+        useOne("/DELPHI_2003_I620250/d%02d-x01-y%02d" % (i,(j+1)), en)
+for i in range(31,73,2) :
+    for j,en in enumerate(["200","202","205","207"]) :
+        useOne("/DELPHI_2003_I620250/d%02d-x01-y%02d" % (i,(j+1)), en)
+# JADE_1979_I142874
+merge("/JADE_1979_I142874/d02-x01-y01")
+# JADE_1983_I190818
+merge("/JADE_1983_I190818/d01-x01-y01")
+# JADE_1984_I202784
+for j,en in enumerate(["14","22","34"]) :
+    for i in range(1,3) :
+        useOne("/JADE_1984_I202784/d%02d-x01-y%02d" % (i,(j+1)), en)
+# JADE_1985_I213948
+for j,en in enumerate(["34.5","22.5","14"]) :
+    for i in range(0,2) :
+        useOne("/JADE_1985_I213948/d%02d-x01-y01" % (3*i+j+1), en)
+useOne("/JADE_1985_I213948/d07-x01-y01", "34.5")
+# JADE_1990_I282847
+for j,en in enumerate(["35","44"]) :
+    for i in range(0,2) :
+        useOne("/JADE_1990_I282847/d%02d-x01-y01" % (2*i+j+1), en)
+useOne("/JADE_1990_I282847/d05-x01-y01", "35")
+# JADE_1998_I447560
+for j,en in enumerate(["44","35"]) :
+    for i in range(2,6) :
+        useOne("/JADE_1998_I447560/d%02d-x01-y01" %(i+4*j),en)
+    useOne("/JADE_1998_I447560/d%02d-x01-y01" %(j+10),en)
+useOne("/JADE_1998_I447560/d12-x01-y01","22")
+# JADE_OPAL_2000_I513337
+for i,en in enumerate(["35","44","91","133","161","172","183","189"]) :
+    for k in [7,16,24] :
+        for j in range(1,6) :
+            if k>=24 and j==5 : continue
+            useOne("/JADE_OPAL_2000_I513337/d%02d-x01-y%02d" % (k+i,j),en)
+# L3_2004_I652683
+for i,en in enumerate(["130.1","136.1","161.3","172.3","182.8","188.6","194.4","200.2","206.2"]):
+    for j in range(1,5) :
+        for k in range(1,18,9) :
+            useOne("/L3_2004_I652683/d%02d-x01-y%02d" % (i+k,j),en)
+for i,en in enumerate(["200.2","206.2"]):
+    for j in range(1,5) :
+        useOne("/L3_2004_I652683/d%02d-x01-y%02d" % (i+19,j),en)
+for i,en in enumerate(["41","55.3","65.4","75.7","82","85"]) :
+    for k in [21,26,31,36]:
+        useOne("/L3_2004_I652683/d%02d-x01-y%02d" % (i//3+k,1+i%3),en)
+for i,en in enumerate(["130.1","136.1","161.3","172.3","182.8","188.6","194.4","200.2","206.2"]) :
+    for k in [23,28,33,38,41,44,60,66]:
+        useOne("/L3_2004_I652683/d%02d-x01-y%02d" % (i//3+k,1+i%3),en)
+for i in range(47,60) :
+    for j in range(1,3) :
+        useOne("/L3_2004_I652683/d%02d-x01-y%02d" % (i,j),"91")
+useOne("/L3_2004_I652683/d59-x01-y03","91")
+for j in range(1,4) :
+    useOne("/L3_2004_I652683/d65-x01-y%02d"%j,"91")
+# LENA_1981_I164397
+merge("/LENA_1981_I164397/d03-x01-y01")
+for i,en in enumerate(["9.51","9.98","U1","U2"]) :
+    useOne("/LENA_1981_I164397/d04-x01-y%02d" %(i+1),en)
+# MARKI_1976_I109792
+for i,en in enumerate(["7.4","7.0","6.6","6.2","5.8","4.8","3.0"]) :
+    useOne("/MARKI_1976_I109792/d%02d-x01-y01" % (i+2),en)
+# MARKII_1982_I178416
+for i,en in enumerate(["5.2","6.5","29.0"]) :
+    useOne("/MARKII_1982_I178416/d01-x01-y%02d" %(i+1),en)
+# MD_1994_I362599
+useOne("/MD1_1994_I362599/d01-x01-y01","U1")
+useOne("/MD1_1994_I362599/d02-x01-y01","U1")
+useOne("/MD1_1994_I362599/d03-x01-y01","8.8")
+useOne("/MD1_1994_I362599/d03-x01-y02","9.51")
+useOne("/MD1_1994_I362599/d04-x01-y01","U1")
+# OPAL_2000_I513476
+for i in range(1,20) :
+    if i==14: continue
+    for j,en in enumerate(["172","183","189"]):
+        useOne("/OPAL_2000_I513476/d%02d-x01-y%02d" %(i,j+1),en)
+merge("/OPAL_2000_I513476/d14-x01-y01")
+for i in range(1,5) :
+    merge("/OPAL_2000_I513476/d20-x01-y%02d"%i)
+# OPAL_2002_I601225
+for i in range(1,5) :
+    merge(  "/OPAL_2002_I601225/d01-x01-y%02d"%i)
+# OPAL_2004_I669402
+for i in range(1,27) :
+    for j,en in enumerate(["91" ,"133","177","197"]) :
+        useOne("/OPAL_2004_I669402/d%02d-x01-y%02d" %(i,j+1),en)
+# /PDG_HADRON_MULTIPLICITIES
+for i in [1,2,3,4,5,6,7,8,9,13,15,17,18,19,20,21,22,23,25,31,38,39,40,44,45,46,47,48,49,50,51,53,54] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y01"%i,"9.98")
+for i in [33,34] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y01"%i,"35")
+for i in [1,2,3,4,5,6,7,8,9,13,15,18,19,20,21,22,31,38,39,44,46,47,48,50,51] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y02"%i,"35")
+for i in [10,11,12,14,16,24,26,27,28,29,30,32,35,36,37,41,42,43,52] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y01"%i,"91")
+for i in [17,23,25,34,40,45,49,54] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y02"%i,"91")
+for i in [1,2,3,4,5,6,7,8,9,13,15,18,19,20,21,31,38,39,44,46,47,48,50,51] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y03"%i,"91")
+for i in [1,3,4,38,39] :
+    useOne("/PDG_HADRON_MULTIPLICITIES/d%02d-x01-y04"%i,"177")
+# PDG_HADRON_MULTIPLICITIES_RATIOS
+for i in [2,3,4,5,6,7,8,9,13,15,17,18,19,20,21,22,23,25,31,38,39,40,44,45,46,47,48,49,50,51,53,54] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y01" %i,"9.98")
+for i in range(33,35) :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y01"%i,"35")
+for i in [2,3,4,5,6,7,8,9,13,15,18,19,20,21,22,31,38,39,44,46,47,48,50,51] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y02"%i,"35")
+for i in [10,11,12,14,16,24,26,27,28,29,30,32,35,36,37,41,42,43,52] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y01"%i,"91")
+for i in [17,23,25,34,40,45,49,54] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y02"%i,"91")
+for i in [2,3,4,5,6,7,8,9,13,15,18,19,20,21,31,38,39,44,46,47,48,50,51] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y03"%i,"91")
+for i in [3,4,38,39] :
+    useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d%02d-x01-y04" %i,"177")
+# PLUTO_1977_I118873
+for i,en in enumerate(["3.63","4.03","4.5"]) :
+    useOne("/PLUTO_1977_I118873/d%02d-x01-y01" %(i+2),en)
+# PLUTO_1980_I154270
+merge("/PLUTO_1980_I154270/d01-x01-y01")
+# PLUTO_1981_I156315
+for i,en in enumerate(["7.7","9.4","12","13","17","22","27.6","30.7"]) :
+    useOne("/PLUTO_1981_I156315/d01-x01-y%02d" % (i+1),en)
+useOne("/PLUTO_1981_I156315/d04-x01-y01","9.4")
+useOne("/PLUTO_1981_I156315/d05-x01-y01","30.7")
+# PLUTO_1981_I165122
+merge("/PLUTO_1981_I165122/d02-x01-y01")
+for i,en in enumerate(["30.0","9.4","U1"]) :
+    useOne("/PLUTO_1981_I165122/d%02d-x01-y01" %(i+4),en)
+# PLUTO_1983_I191161
 for id in range(1,3) :
     for iy in range(1,5) :
-        merge("/PLUTO_1983_I191161/d0%s-x01-y0%s" % (id,iy))
-
-merge("/OPAL_2000_I513476/d14-x01-y01")
-merge("/OPAL_2000_I513476/d20-x01-y01")
-merge("/OPAL_2000_I513476/d20-x01-y02")
-merge("/OPAL_2000_I513476/d20-x01-y03")
-merge("/OPAL_2000_I513476/d20-x01-y04")
-
-merge("/JADE_1979_I142874/d02-x01-y01")
-merge("/LENA_1981_I164397/d03-x01-y01")
-
-useOne("/LENA_1981_I164397/d04-x01-y01","9.51")
-useOne("/LENA_1981_I164397/d04-x01-y02","10.")
-useOne("/LENA_1981_I164397/d04-x01-y03","U1")
-useOne("/LENA_1981_I164397/d04-x01-y04","U2")
-
-useOne("/ARGUS_1991_I315059/d01-x01-y01","10.47")
-useOne("/ARGUS_1991_I315059/d01-x01-y02","10.47")
-useOne("/ARGUS_1991_I315059/d01-x01-y03","10.47")
-useOne("/ARGUS_1991_I315059/d02-x01-y01","10.47")
-useOne("/ARGUS_1991_I315059/d03-x01-y01","10.47")
-useOne("/ARGUS_1991_I315059/d04-x01-y01","10.47")
-useOne("/ARGUS_1991_I315059/d05-x01-y01","U4")
-useOne("/ARGUS_1991_I315059/d06-x01-y01","U4")
-useOne("/ARGUS_1991_I315059/d07-x01-y01","U4")
-
+        merge("/PLUTO_1983_I191161/d%02d-x01-y%02d" % (id,iy))
+# TASSO_1980_I143691
+merge("/TASSO_1980_I143691/d01-x01-y01")
+useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
+useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
+for ih in [3,6] :
+    if(("/TASSO_1980_I143691/d%02d-x01-y01"%ih) in inhistos and
+       17. in inhistos["/TASSO_1980_I143691/d%02d-x01-y01"%ih] and
+       22. in inhistos["/TASSO_1980_I143691/d%02d-x01-y01"%ih]) :
+        average("/TASSO_1980_I143691/d%02d-x01-y01"%ih,"17.","22.")
+useOne("/TASSO_1980_I143691/d04-x01-y01","30.3")
+useOne("/TASSO_1980_I143691/d07-x01-y01","30.3")
+# TASSO_1980_I153511
+for i,en in enumerate(["12.","30."]) :
+    for j in range(0,3) :
+        useOne("/TASSO_1980_I153511/d%02d-x01-y01" % (i+2*j+1),en)
+# TASSO_1980_I153656
+for i,en in enumerate(["12.","30."]) :
+    for j in range(0,3) :
+        for k in range(0,12,6) :
+            useOne("/TASSO_1980_I153656/d%02d-x01-y01" % (2+i*3+j+k),en)
+# TASSO_1982_I168232
+for i,en in enumerate(["14.","34."]) :
+    for j in range(1,4) :
+        useOne("/TASSO_1982_I168232/d%02d-x%02d-y%02d" % (i+2,j,j),en)
+# TASSO_1982_I177174
+for j,en in enumerate(["14.","22.","34."]) :
+    useOne("/TASSO_1982_I177174/d01-x01-y%02d" % (j+1),en)
+for i in range(2,4) :
+    for j,en in enumerate(["12.","14.","22.","25.","30.","34.","35."]) :
+        useOne("/TASSO_1982_I177174/d%02d-x01-y%02d" % (i,j+1) ,en)
+# TASSO_1983_I181470
+for i in [19,20,21,22,23,24]:
+        useOne("/TASSO_1983_I181470/d%02d-x01-y01" % i ,"14")
+for i in [10,11,12,25,26,27]:
+        useOne("/TASSO_1983_I181470/d%02d-x01-y01" % i ,"22")
+for i in [13,14,15,16,17,18]:
+        useOne("/TASSO_1983_I181470/d%02d-x01-y01" % i ,"34")
+# TASSO_1984_I195333
+for ih in [3,5,6,7,8,9,10,11,12,13,14] :
+    for iy,en in enumerate(["14","22","34"]) :
+        useOne("/TASSO_1984_I195333/d%02d-x01-y%02d" %(ih,iy+1) , en)
+for iy in range(1,12) :
+    merge("/TASSO_1984_I195333/d04-x01-y%02d"%iy)
+# TASSO_1985_I205119
+for j,en in enumerate(["14.","22.","34."]) :
+    for i in range(0,4) :
+        useOne("/TASSO_1985_I205119/d%02d-x01-y01" % (j+1+3*i),en)
+# TASSO_1987_I248660
+for j,en in enumerate(["14.","22.","34.8","43.5"]) :
+        useOne("/TASSO_1987_I248660/d%02d-x01-y01" % (j+1),en)
+# TASSO_1989_I266893
 for i in [3,4,5,6,7,8,18,19,20,21,22,23] :
     useOne("/TASSO_1989_I266893/d%02d-x01-y01" %i ,"34.8")
 for i in range(9,15) :
@@ -1551,92 +1049,42 @@ for i in range(9,15) :
 for i in range(1,4) :
     useOne("/TASSO_1989_I266893/d15-x01-y%02d" %i ,"34.8")
     useOne("/TASSO_1989_I266893/d16-x01-y%02d" %i ,"42.1")
-
-for i in range(1,12) :
-    useOne("/CLEO_1985_I205668/d%02d-x01-y01" %i ,10.47)
-    useOne("/CLEO_1985_I205668/d%02d-x01-y02" %i , "U1")
-for i in range(12,24) :
-    merge("/CLEO_1985_I205668/d%02d-x01-y01" %i)
-
-useOne("/BABAR_2014_I1286317/d01-x01-y01", "U3")
-useOne("/BABAR_2014_I1286317/d02-x01-y01", "U2")
-useOne("/BABAR_2014_I1286317/d03-x01-y01", "U1")
-useOne("/BABAR_2014_I1286317/d06-x01-y01", "U3")
-useOne("/BABAR_2014_I1286317/d06-x02-y01", "U2")
-useOne("/BABAR_2014_I1286317/d06-x03-y01", "U1")
-
-useOne("/BABAR_2014_I1286317/d04-x01-y01", "10.6")
-useOne("/BABAR_2014_I1286317/d05-x01-y01", "10.6")
-useOne("/BABAR_2014_I1286317/d06-x04-y01", "10.6")
-
-for ix in range(0,2) :
-    if ix==0 : en="189"
-    else     : en="183"
-    for iy in range(1,3) :
-        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(5+2*ix,iy), en)
-    useOne("/DELPHI_2001_I526164/d%02d-x01-y01"%(6+2*ix), en)
-    for iloc in range(2,5,2) :
-        useOne("/DELPHI_2001_I526164/d16-x01-y%02d"%(iloc-ix), en)
-    for iy in range(1,5) :
-        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(9 +ix,iy), en)
-        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(11+ix,iy), en)
-for ix in range(13,16) :
-    for iy in range(1,5) :
-        useOne("/DELPHI_2001_I526164/d%02d-x01-y0%s"%(ix,iy), "189")        
-merge("/DELPHI_2001_I526164/d01-x01-y01")          
-merge("/DELPHI_2001_I526164/d03-x01-y01")
-merge("/DELPHI_2001_I526164/d03-x01-y03")
-for ix in range(1,6) :
-    merge("/DELPHI_2001_I526164/d02-x01-y0%s"%ix)
-for ix in range(1,7) :
-    useOne("/DELPHI_2001_I526164/d04-x01-y0%s"%ix,"189")
-        
-useOne("/MARKII_1982_I178416/d01-x01-y01","5.2")
-useOne("/MARKII_1982_I178416/d01-x01-y02","6.5")
-useOne("/MARKII_1982_I178416/d01-x01-y03","29.0")
-
-useOne("/CLEO_2005_I1649168/d01-x01-y07","U4")
-useOne("/CLEO_2005_I1649168/d01-x01-y08","U5")
-
-useOne("/CLEO_2007_I728872/d01-x01-y05","U4")
-useOne("/CLEO_2007_I728872/d02-x01-y05","U5")
-
-for ih in [3,5,6,7,8,9,10,11,12,13,14] :
-    eTemp=["14","22","34"]
-    for iy in range(0,3) :
-        useOne("/TASSO_1984_I195333/d%02d-x01-y%02d" %(ih,iy+1) , eTemp[iy])
-for iy in range(1,12) :
-    merge("/TASSO_1984_I195333/d04-x01-y%02d"%iy)
-        
-# ARGUS_1988_I266892 baryon correlations
-useOne("/ARGUS_1988_I266892/d01-x01-y01","10.")
-useOne("/ARGUS_1988_I266892/d01-x01-y02","U1" )
-useOne("/ARGUS_1988_I266892/d02-x01-y01","10.")
-for ih in range(3,9) :
-    useOne("/ARGUS_1988_I266892/d0%s-x01-y01"%ih,"U1" )
-    useOne("/ARGUS_1988_I266892/d0%s-x01-y02"%ih,"10.")
-for ih in range(6,9,2) :
-    useOne("/ARGUS_1988_I266892/d0%s-x01-y03"%ih,"U1" )
-# ARGUS_1992_I319829 D_s spectrum
-useOne("/ARGUS_1992_I319829/d01-x01-y01","10.47")
-useOne("/ARGUS_1992_I319829/d02-x01-y01","10.47")
-useOne("/ARGUS_1992_I319829/d03-x01-y01","U4")
-# MD_1994_I362599
-useOne("/MD1_1994_I362599/d01-x01-y01","U1")
-useOne("/MD1_1994_I362599/d02-x01-y01","U1")
-useOne("/MD1_1994_I362599/d03-x01-y01","8.8")
-useOne("/MD1_1994_I362599/d03-x01-y02","9.51")
-useOne("/MD1_1994_I362599/d04-x01-y01","U1")
-# BELLE_2023_I2660525
-useOne("/BELLE_2023_I2660525/d01-x01-y01","U4")
-useOne("/BELLE_2023_I2660525/d01-x01-y02","U4")
-useOne("/BELLE_2023_I2660525/d01-x01-y03","U5")
-useOne("/BELLE_2023_I2660525/d01-x01-y04","U5")
-useOne("/BELLE_2023_I2660525/d01-x01-y05","U5")
-useOne("/BELLE_2023_I2660525/d03-x01-y01","U5")
-useOne("/BELLE_2023_I2660525/d03-x01-y02","U5")
-useOne("/BELLE_2023_I2660525/d03-x01-y03","U4")
-useOne("/BELLE_2023_I2660525/d03-x01-y04","U4")
+# TASSO_1989_I267755
+for i in range(1,4) :
+    for k in range(0,12,6) :
+        for j,en in enumerate(["34","44"]) :
+            useOne("/TASSO_1989_I267755/d%02d-x01-y01" %(i+3*j+k),en)
+useOne("/TASSO_1989_I267755/d13-x01-y01","44")
+# TASSO_1989_I277658
+merge("/TASSO_1989_I277658/d02-x01-y01")
+for j,en in enumerate(["14","22","34.8","43.6"]) :
+    useOne("/TASSO_1989_I277658/d05-x01-y%02d" %(j+1),en)
+# TASSO_1989_I279165
+for i in range(1,4) :
+    for j,en in enumerate(["14","22","34.8","43.5"]) :
+        useOne("/TASSO_1989_I279165/d%02d-x01-y%02d" %(i,j+1),en)
+# TASSO_1990_I284251
+for i in [4,9] :
+    merge("/TASSO_1990_I284251/d%02d-x01-y01" %i)
+for j,en in enumerate(["14.8","21.5"]) :
+    useOne("/TASSO_1990_I284251/d%02d-x01-y01" %(j+2),en)
+for i in [1,8] :
+    for j,en in enumerate(["42.6","35.","34.5"]) :
+        useOne("/TASSO_1990_I284251/d%02d-x01-y%02d" % (i,j+1),en)
+for j,en in enumerate(["42.6","14.8","21.5"]) :
+    for i in range(1,3) :
+        useOne("/TASSO_1990_I284251/d%02d-x01-y%02d" %(5+j,i),en)
+for i in range(0,2) :
+    for j in range(0,2) :
+        useOne("/TASSO_1990_I284251/d%02d-x01-y%02d" % (5+5*i,4-j-2*i),"35")
+# TASSO_1990_I294755
+for ih in range(2,9) :
+    for iy,en in enumerate(["14","22","35","44"]) :
+        useOne("/TASSO_1990_I294755/d%02d-x01-y%02d" % (ih,iy+1),en)
+# TOPAZ_1989_I279575
+for i in range(1,4) :
+    for j,en in enumerate(["53.3","59.5"]) :
+        useOne("/TOPAZ_1989_I279575/d%02d-x01-y%02d" % (j+1,i),en)
 # Choose output file
 name = args[0]+".yoda"
 removeNan()
