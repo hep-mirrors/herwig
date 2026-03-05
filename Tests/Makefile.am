@@ -410,16 +410,17 @@ Rivet-LHC-Higgs : Rivet-LHC-Higgs/done
 	touch $@
 
 Rivet-LHC-Higgs/done:  \
-		$(shell echo Rivet{,-Powheg}-LHC-{ggH,VBF,WH,ZH}.yoda) \
-        $(shell echo Rivet{,-Powheg}-LHC-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) \
-        Rivet-LHC-ggHJet.yoda
-	rivet-merge Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o Powheg-LHC-Higgs.yoda
-	rivet-merge Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
+		$(shell echo Rivet{,-Powheg}-LHC-7-{ggH,VBF,WH,ZH}.yoda) \
+	        $(shell echo Rivet{,-Powheg}-LHC-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) \
+		$(shell echo Rivet{,-Powheg}-LHC-13-{ggH,VBF,WH,ZH}-GammaGamma.yoda) \
+		Rivet-LHC-7-ggHJet.yoda
+	rivet-merge Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda Rivet-Powheg-LHC-13-{ggH,VBF,WH,ZH}-GammaGamma.yoda -o Powheg-LHC-Higgs.yoda
+	rivet-merge Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda Rivet-LHC-13-{ggH,VBF,WH,ZH}-GammaGamma.yoda -o LHC-Higgs.yoda
 	rm -rf Rivet-LHC-Higgs
 	rivet-mkhtml -o Rivet-LHC-Higgs Powheg-LHC-Higgs.yoda:Hw-Powheg LHC-Higgs.yoda:Hw\
-	                Rivet-Powheg-LHC-ggH.yoda:gg-Powheg Rivet-LHC-ggH.yoda:gg Rivet-LHC-ggHJet.yoda:HJet \
-                        Rivet-Powheg-LHC-VBF.yoda:VBF-Powheg Rivet-LHC-VBF.yoda:VBF Rivet-LHC-WH.yoda:WH Rivet-LHC-ZH.yoda:ZH \
-                        Rivet-Powheg-LHC-WH.yoda:WH-Powheg Rivet-Powheg-LHC-ZH.yoda:ZH-Powheg
+	                Rivet-Powheg-LHC-7-ggH.yoda:gg-Powheg Rivet-LHC-7-ggH.yoda:gg Rivet-LHC-7-ggHJet.yoda:HJet \
+                        Rivet-Powheg-LHC-7-VBF.yoda:VBF-Powheg Rivet-LHC-7-VBF.yoda:VBF Rivet-LHC-7-WH.yoda:WH Rivet-LHC-7-ZH.yoda:ZH \
+                        Rivet-Powheg-LHC-7-WH.yoda:WH-Powheg Rivet-Powheg-LHC-7-ZH.yoda:ZH-Powheg
 	touch $@
 
 clean-local:

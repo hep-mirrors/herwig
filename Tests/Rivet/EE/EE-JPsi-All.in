@@ -35,7 +35,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 BESII_2004_I650570
 # J/psi -> pbar Sigma+ KS0
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2023_I2721091
 # J/psi -> Lambdabar0 Sigma- pi+
-insert /Herwig/Analysis/Rivet:Analyses 0 BBESIII_2023_I2670262
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2023_I2670262
 # J/psi -> e+e- pi+pi-eta'
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2022_I1997940
 # J/psi -> e+e- pi0 (need total rate for normalisation)

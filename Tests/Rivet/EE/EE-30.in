@@ -15,3 +15,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 TASSO_1980_I153341
 insert /Herwig/Analysis/Rivet:Analyses 0 TASSO_1980_I153511
 insert /Herwig/Analysis/Rivet:Analyses 0 TASSO_1980_I153656
 insert /Herwig/Analysis/Rivet:Analyses 0 JADE_1979_I142874
+insert /Herwig/Analysis/Rivet:Analyses 0 PLUTO_1981_I165122
