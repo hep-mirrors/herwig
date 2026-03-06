@@ -9,4 +9,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 2.6
 ##################################################
 #  Validated
 ##################################################
+# BES eta spectra
 insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2024_I2753516
+# BES pi+/- K+- spectra
+insert /Herwig/Analysis/Rivet:Analyses 0 BESIII_2026_I2893764
