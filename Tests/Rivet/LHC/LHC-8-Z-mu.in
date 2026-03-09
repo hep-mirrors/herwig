@@ -19,3 +19,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1471281
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1497519
 # CMS Z+ charm
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1634835
+# CMS Z+ jets
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1847230:MODE=ZJet

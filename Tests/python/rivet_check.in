@@ -25,6 +25,7 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "BRAHMS_2004_CENT_AUAU",     # heavy ion
          "STAR_2008_I810030",         # heavy ion
          "STAR_BES_CALIB",            # heavy ion
+         "LHCB_2022_I2694685",        # heavy ion
          "PDG_TAUS",                  # superseeded
          "DELPHI_2002_069_CONF_603",  # superseeded
          "CMS_2015_I1370682_PARTON",  # parton level, using hadronic version
