@@ -18,7 +18,7 @@ def finddirs(pattern, path):
     return result
 
 # fill the proc.dat file from BornAmplitudes.dat and VirtAmplitudes.dat.
-def fillprocs(model,oras,orew,MGVersion):
+def fillprocs(model,oras,orew,MGVersion,npmax,npexact,np2max,np2exact):
     """Fill proc.dat from BornAmplitudes.dat and VirtAmplitudes.dat"""
     oras=int(oras)
     orew=int(orew)
@@ -59,6 +59,17 @@ def fillprocs(model,oras,orew,MGVersion):
     else:
         HIG = 0
 
+    np_term = ""
+    np2_term = ""
+    if npmax is not None:
+        np_term = "NP=%d" % npmax
+    elif npexact is not None:
+        np_term = "NP==%d" % npexact
+    if np2max is not None:
+        np2_term = "NP^2=%d" % np2max
+    elif np2exact is not None:
+        np2_term = "NP^2==%d" % np2exact
+
     with open(borns, "r") as f:
         for i, line in enumerate(f):
             #this assumes extra QCD emmissions
@@ -66,7 +77,7 @@ def fillprocs(model,oras,orew,MGVersion):
             line = line.rstrip()
             procnr += 1
             bornlist.append(str(procnr))
-            cmd = "generate   " if i==0 else "add process"
+            cmd = "generate" if i==0 else "add process"
             hig = ""
             qcd = oras+addalphas
             qed = orew
@@ -74,7 +85,16 @@ def fillprocs(model,oras,orew,MGVersion):
                 hig = "HIG=%s" % HIG
                 qcd -= 2*HIG
                 qed -= HIG
-            bornlines.append("{cmd} {line} {hig} QCD<={qcd} QED<={qed} @{procnr}".format(**locals()))
+            terms = [cmd, line]
+            if hig:
+                terms.append(hig)
+            terms.extend(["QCD<={qcd}".format(**locals()), "QED<={qed}".format(**locals())])
+            if np_term:
+                terms.append(np_term)
+            if np2_term:
+                terms.append(np2_term)
+            terms.append("@{procnr}".format(**locals()))
+            bornlines.append(" ".join(terms))
 
     result.extend(bornlines)
 
@@ -84,10 +104,17 @@ def fillprocs(model,oras,orew,MGVersion):
             line = line.rstrip()
             procnr += 1
             virtlist.append(str(procnr))
-            cmd = "generate   " if i==0 else "add process"
+            cmd = "generate" if i==0 else "add process"
             qcd = oras+addalphas
             qed = orew
-            virtlines.append("{cmd} {line} QCD<={qcd} QED<={qed} [ virt=QCD ] @{procnr}".format(**locals()))
+            terms = [cmd, line, "QCD<={qcd}".format(**locals()), "QED<={qed}".format(**locals())]
+            if np_term:
+                terms.append(np_term)
+            if np2_term:
+                terms.append(np2_term)
+            terms.append("[ virt=QCD ]")
+            terms.append("@{procnr}".format(**locals()))
+            virtlines.append(" ".join(terms))
 
     if virtlines and bornlines:
         result.append("output matchbox MG5 --postpone_model")
@@ -140,11 +167,40 @@ parser.add_option("-I", "--includedir",dest="includedir",help="Do not use this s
 parser.add_option("-l", "--absolute-links",action="store_true", dest="absolute_links", default=False,\
                   help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("--cacheprefix", dest="cacheprefix",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("--npmax", dest="npmax", help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("--npexact", dest="npexact", help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("--np2max", dest="np2max", help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("--np2exact", dest="np2exact", help="Do not use this script. Only for Herwig internal use.")
 
 (options, args) = parser.parse_args()
 
 if not options.cacheprefix:
     sys.stderr.write("Need a value for --cacheprefix\n")
+    exit(1)
+
+def parse_optional_order(value, name):
+    if value is None:
+        return None
+    try:
+        parsed = int(value)
+    except ValueError:
+        sys.stderr.write("%s must be an integer.\n" % name)
+        exit(1)
+    if parsed < 0:
+        sys.stderr.write("%s must be >= 0.\n" % name)
+        exit(1)
+    return parsed
+
+npmax = parse_optional_order(options.npmax, "--npmax")
+npexact = parse_optional_order(options.npexact, "--npexact")
+np2max = parse_optional_order(options.np2max, "--np2max")
+np2exact = parse_optional_order(options.np2exact, "--np2exact")
+
+if npmax is not None and npexact is not None:
+    sys.stderr.write("Cannot set both --npmax and --npexact.\n")
+    exit(1)
+if np2max is not None and np2exact is not None:
+    sys.stderr.write("Cannot set both --np2max and --np2exact.\n")
     exit(1)
 
 
@@ -229,7 +285,8 @@ for term in MGV :
         term = term.split("_")
         MGVersion = term[2][1]
 
-Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew,int(MGVersion))
+Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew,
+                            int(MGVersion),npmax,npexact,np2max,np2exact)
 
 if sys.version_info[0] == 2 and MGVersion == "3" :
     os.system("python3 "+options.madgraph+"/mg5_aMC proc.dat")

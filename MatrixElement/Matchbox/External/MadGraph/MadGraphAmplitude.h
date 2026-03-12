@@ -295,6 +295,26 @@ protected:
   
   bool keepinputtopmass;
 
+  /**
+   * Maximum order constraint for NP couplings. -1 means unset.
+   */
+  int theNPMax;
+
+  /**
+   * Exact order constraint for NP couplings. -1 means unset.
+   */
+  int theNPExact;
+
+  /**
+   * Maximum order constraint for NP^2 couplings. -1 means unset.
+   */
+  int theNP2Max;
+
+  /**
+   * Exact order constraint for NP^2 couplings. -1 means unset.
+   */
+  int theNP2Exact;
+
 
   /**
    * Initialize the given process
@@ -364,6 +384,11 @@ protected:
       
   void setMadgraphPrefix(string p);
   string getMadgraphPrefix() const ;
+
+  /**
+   * Build command-line options for NP/NP^2 coupling constraints.
+   */
+  string npConstraintOptions() const;
 
 private:
 
