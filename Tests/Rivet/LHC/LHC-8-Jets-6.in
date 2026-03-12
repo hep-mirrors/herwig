@@ -13,5 +13,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1487277
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1421646
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2017_I1604271
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1598460
-
-
+# CMS jet ratios
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1847230:MODE=QCD8TeV

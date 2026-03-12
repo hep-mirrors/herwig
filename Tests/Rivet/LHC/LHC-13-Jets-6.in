@@ -23,3 +23,5 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2022_I2170533
 # CMS shapes
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2024_I2760466
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2024_I2780732
+# CMS jet ratios
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2021_I1847230:MODE=QCD13TeV

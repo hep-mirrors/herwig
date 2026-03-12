@@ -6,3 +6,5 @@
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1419652
 # ATLAS UE
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1467230
+# ATLAS K/Lambda
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2024_I2784422

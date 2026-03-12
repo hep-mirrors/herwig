@@ -29,6 +29,14 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "PDG_TAUS",                  # superseeded
          "DELPHI_2002_069_CONF_603",  # superseeded
          "CMS_2015_I1370682_PARTON",  # parton level, using hadronic version
+         "H1_1998_I477556",           # photoproduction
+         "H1_2002_I581409",           # photoproduction
+         "H1_2015_I1343110",          # photoproduction
+         "ZEUS_2003_I613625",         # photoproduction
+         "ZEUS_2007_I753991",         # photoproduction
+         "ZEUS_2007_I756660",         # photoproduction
+         "ZEUS_2008_I763404",         # photoproduction
+         "ZEUS_2021_I1869927",        # photoproduction
         ]
 searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 

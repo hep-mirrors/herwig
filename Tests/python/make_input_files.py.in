@@ -587,6 +587,8 @@ elif(collider=="LHC") :
     elif parameterName.startswith("5-")   : ecms = 5020.0
     else                                  : ecms = 7000.0
     process = StringBuilder(collider_lumi(ecms))
+    if "Long" in parameterName :
+        process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
     if(simulation=="") :
         if "VBF" in parameterName :
             process+=insert_ME("MEPP2HiggsVBF")
@@ -702,8 +704,6 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"                
                 process+="read snippets/MB.in\n"
             process+="read snippets/Diffraction.in\n"
-            if "Long" in parameterName :
-                process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
         elif "8-DiJets" in parameterName or "7-DiJets" in parameterName or "13-DiJets" in parameterName :
             process+=insert_ME("MEQCD2to2")
             process+="set MEQCD2to2:MaximumFlavour 5\n"

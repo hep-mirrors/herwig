@@ -33,3 +33,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2019_I1716259
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_I884811
 # CMS B jets
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1089835
+# CMS B correlations
+insert /Herwig/Analysis/Rivet:Analyses 0  CMS_2011_I889807
+# CMS b jet + 2 jet
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1486238

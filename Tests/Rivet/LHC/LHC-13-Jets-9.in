@@ -5,8 +5,6 @@ insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_CONF_2016_092
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2018_I1682495
 # ATLAS jets
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2018_I1634970
-# ATLAS Lund plane
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2020_I1790256
 # ATLAS charged fragmentation
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2019_I1740909
 # CMS correlations
