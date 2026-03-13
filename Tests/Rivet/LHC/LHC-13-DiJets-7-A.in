@@ -4,7 +4,5 @@
 ##################################################
 # ATLAS jets
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2018_I1634970
-# CMS Jets
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2017_I1519995
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2018_I1663452
+
 

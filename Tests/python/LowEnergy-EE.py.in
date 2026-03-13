@@ -440,6 +440,11 @@ analyses["DD"]["BESIII_2015_I1406939"     ] = ["d02-x01-y06","d03-x01-y06"]
 analyses["DD"]["BESIII_2024_I2779452"     ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # phi chi_c
 analyses["DD"]["BESIII_2022_I2169640"     ] = ["d01-x01-y01","d01-x01-y02"]
+# inclusive J/psi
+analyses["DD"]["BESIII_2024_I2854046"     ] = ["d01-x01-y01","d01-x01-y02"]
+# inclusive psi2s
+analyses["DD"]["BESIII_2024_I2854046"     ].append("d01-x01-y03")
+analyses["DD"]["BESIII_2024_I2854046"     ].append("d01-x01-y04")
 # needs sorting
 analyses["DD"]["BELLE_2007_I723333"       ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["DD"]["BESIII_2016_I1457597"     ] = ["d01-x01-y07"]
@@ -740,8 +745,9 @@ for process in processes:
                                 energy=985
                         elif analysis=="CMD3_2016_I1385598" and plot=="d01-x01-y06" :
                             if energy=="1900 (2012)" : energy=1900
-                        elif analysis=="BESIII_2023_I2683607" and energy[-1]=="B":
-                            energy=energy[0:-2]
+                        elif ((analysis=="BESIII_2023_I2683607" and energy[-1]=="B") or
+                              (analysis=="BESIII_2024_I2854046" and (energy[-1]=="a" or energy[-1]=="b"))):
+                            energy=energy[0:-1]
                     try : 
                         energy=float(energy)
                     except :

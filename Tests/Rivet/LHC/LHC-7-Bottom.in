@@ -37,3 +37,7 @@ insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1089835
 insert /Herwig/Analysis/Rivet:Analyses 0  CMS_2011_I889807
 # CMS b jet + 2 jet
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2016_I1486238
+#  b-quark cross section
+insert /Herwig/Analysis/Rivet:Analyses 0 ANALYSIS LHCB_2016_I1504058
+# b bbar cross section
+insert /Herwig/Analysis/Rivet:Analyses 0 LHCB_2010_I867355
