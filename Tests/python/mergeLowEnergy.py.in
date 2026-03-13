@@ -105,7 +105,9 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                     elif hpath=="/CMD3_2016_I1385598/d01-x01-y06" :
                         if x=="1900 (2012)" : x = 1900
                     elif hpath=="/BESIII_2023_I2683607/d01-x01-y02":
-                        if x[-1]=="B": x=x[0:-2]
+                        if x[-1]=="B": x=x[0:-1]
+                    elif "BESIII_2024_I2854046" in hpath :
+                        if x[-1]=="a" or x[-1]=="b" :  x=x[0:-1]
                 try :
                     x = float(x)
                 except :
