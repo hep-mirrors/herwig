@@ -1,5 +1,6 @@
 #! @PYTHON@
 
+import importlib, subprocess
 import os,sys,glob,errno,shutil,time,fnmatch,tempfile
 from optparse import OptionParser
 
@@ -150,6 +151,43 @@ def build_matchbox_tmp(pwd,buildpath,absolute_links):
             else:
                 os.symlink(os.path.relpath(i,MG_TMP), f)
 
+def generate_param_card_from_model(model):
+    """Generate param_card.dat for absolute-path UFO models."""
+    model = os.path.abspath(model)
+    script = os.path.join(model, "write_param_card.py")
+
+    if not os.path.isfile(script):
+        sys.stderr.write("*** Failed to generate param_card.dat from model %s ***\n"
+                         % model)
+        sys.stderr.write("Missing write_param_card.py in model directory.\n")
+        return 1
+
+    model_parent = os.path.dirname(model)
+    model_pkg = os.path.basename(model)
+    import_error = None
+
+    if model_parent not in sys.path:
+        sys.path.insert(0, model_parent)
+
+    try:
+        module = importlib.import_module(model_pkg + ".write_param_card")
+        module.ParamCardWriter("./param_card.dat", generic=True)
+        sys.stdout.write("write ./param_card.dat\n")
+        return 0
+    except Exception as ex:
+        import_error = ex
+
+    returncode = subprocess.call([sys.executable, script])
+    if returncode == 0:
+        return 0
+
+    sys.stderr.write("*** Failed to generate param_card.dat from model %s ***\n"
+                     % model)
+    sys.stderr.write("Package import failed: %s\n" % import_error)
+    sys.stderr.write("Legacy script execution failed with exit code %d\n"
+                     % returncode)
+    return 1
+
 
 
 
@@ -244,9 +282,8 @@ if options.model=="loop_sm" or options.model=="heft":
   file.close()
 elif  options.model.startswith("/"):
 
-  os.system("python %s/write_param_card.py " % options.model)
-
-
+  if generate_param_card_from_model(options.model) != 0:
+    exit(1)
 
 else:
   print("---------------------------------------------------------------")
