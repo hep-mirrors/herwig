@@ -19,6 +19,8 @@ skip = [ "ATLAS_2010_I849050",        # alias
          "ALICE_2012_I1127497",       # lead-lead
          "ALICE_2012_I930312",        # lead-lead
          "ALICE_2015_CENT_PBPB",      # lead-lead
+         "ALICE_2018_I1669819",       # lead-lead
+         "ALICE_2021_I1946131",       # lead-lead
          "ATLAS_PBPB_CENTRALITY",     # lead-lead
          "ALICE_2015_CENT_PPB",       # lead-p
          "ATLAS_CENT_PPB_CALIB",      # lead-p
