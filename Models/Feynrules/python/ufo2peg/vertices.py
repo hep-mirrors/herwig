@@ -895,6 +895,9 @@ Herwig may not give correct results, though.
         if( not self.no_generic_loop_vertices and not self.hw_higgs ) :
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
+            if not self.no_matchbox:
+                vlist.append('insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname))
+                vlist.append('insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname))
         # add Hw higgs vertices if required
         if(self.hw_higgs) :
             for vertex in ["FFH","HGG","HHH","HPP","HZP","WWHH","WWH"]:

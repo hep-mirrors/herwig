@@ -242,11 +242,12 @@ bool MadGraphAmplitude::initializeExternal() {
   //EW-consistency check:
   Energy MW=getParticleData(ParticleID::Wplus)->hardProcessMass();
   Energy MZ=getParticleData(ParticleID::Z0)->hardProcessMass();
-  if( MW!= sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))){  
+  Energy MWcomputed = sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()));
+  if( abs(MW - MWcomputed) > 1e-10*GeV ){
     generator()->log()<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
-    generator()->log() << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
+    generator()->log() << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"
                       <<MW/GeV<< " GeV==MW!= sqrt(MZ^2/2+sqrt(MZ^4/4.0-pi*alphaEMMZ*MZ^2/ sqrt(2)/G_f))=="<<
-                      sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))/GeV
+                      MWcomputed/GeV
                       <<" GeV\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\n";
   }
   
