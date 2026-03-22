@@ -52,8 +52,7 @@ extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,dou
 extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : keepinputtopmass(false),
-    theNPMax(-1), theNPExact(-1), theNP2Max(-1), theNP2Exact(-1) { }
+  : keepinputtopmass(false){ }
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -62,6 +61,7 @@ MadGraphAmplitude::~MadGraphAmplitude() {
 string MadGraphAmplitude::theProcessPath="";
 string MadGraphAmplitude::madgraphPrefix_=MADGRAPH_PREFIX;
 string MadGraphAmplitude::theMGmodel="loop_sm";
+string MadGraphAmplitude::theCouplingOrders="";
 string MadGraphAmplitude::bindir_=HERWIG_BINDIR;
 string MadGraphAmplitude::includedir_=HERWIG_INCLUDEDIR;
 string MadGraphAmplitude::pkgdatadir_=HERWIG_PKGDATADIR;
@@ -175,41 +175,6 @@ string MadGraphAmplitude::mgProcLibPath(){
   return res;
 }
 
-string MadGraphAmplitude::npConstraintOptions() const {
-  if ( theNPMax >= 0 && theNPExact >= 0 )
-    throw Exception() << "MadGraphAmplitude: invalid NP coupling order settings: "
-                      << "NPMax and NPExact are both set. Set only one of them.\n"
-                      << Exception::runerror;
-
-  if ( theNP2Max >= 0 && theNP2Exact >= 0 )
-    throw Exception() << "MadGraphAmplitude: invalid NP^2 coupling order settings: "
-                      << "NP2Max and NP2Exact are both set. Set only one of them.\n"
-                      << Exception::runerror;
-
-  string res;
-  if ( theNPMax >= 0 ) {
-    std::stringstream npmax;
-    npmax << theNPMax;
-    res += " --npmax " + npmax.str();
-  }
-  if ( theNPExact >= 0 ) {
-    std::stringstream npexact;
-    npexact << theNPExact;
-    res += " --npexact " + npexact.str();
-  }
-  if ( theNP2Max >= 0 ) {
-    std::stringstream np2max;
-    np2max << theNP2Max;
-    res += " --np2max " + np2max.str();
-  }
-  if ( theNP2Exact >= 0 ) {
-    std::stringstream np2exact;
-    np2exact << theNP2Exact;
-    res += " --np2exact " + np2exact.str();
-  }
-  return res;
-}
-
 
 
 
@@ -293,7 +258,6 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessWidth() /GeV <<flush;
   params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->hardProcessMass() /GeV <<flush;
 
-  string npOptions = npConstraintOptions();
   
   string cmd = "python " + bindir_ + "/mg2herwig ";
   cmd +=" --buildpath "+mgProcLibPath();
@@ -308,7 +272,9 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --orderas "+as.str() ;
   aem <<factory()->orderInAlphaEW();
   cmd +=" --orderew "+aem.str();
-  cmd += npOptions;
+  if (!theCouplingOrders.empty()) {
+    cmd +=" --couplingorders '"+theCouplingOrders+"'";
+  }
   
   // TODO move to boost::system
   writeAmplitudesDat();
@@ -344,15 +310,15 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;  
   cmd +=" --cacheprefix "+RunDirectories::prefix();
-  cmd += npOptions;
-  as.str("");
   as.clear();
-  aem.str("");
   aem.clear();
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
   aem <<factory()->orderInAlphaEW();
   cmd +=" --orderew "+aem.str();
+  if (!theCouplingOrders.empty()) {
+    cmd +=" --couplingorders '"+theCouplingOrders+"'";
+  }
   
   std::system(cmd.c_str());
 
@@ -822,17 +788,18 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem << theNPMax << theNPExact << theNP2Max << theNP2Exact
+  os << theOrderInGs << theOrderInGem
      << colourindex<<crossing;
   
     //Static variables need to be written only once.
   os << theProcessPath << theMGmodel << bindir_
-     << pkgdatadir_ << madgraphPrefix_;
+     << pkgdatadir_ << madgraphPrefix_ << theCouplingOrders;
   theProcessPath.clear();
   theMGmodel.clear();
   bindir_.clear();
   pkgdatadir_.clear();
   madgraphPrefix_.clear();
+  theCouplingOrders.clear();
   
   os << BornAmplitudes.size();
   os << VirtAmplitudes.size();
@@ -844,7 +811,7 @@ void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem >> theNPMax >> theNPExact >> theNP2Max >> theNP2Exact
+  is >> theOrderInGs >> theOrderInGem
   >> colourindex>>crossing;
   
   string input=""; is>>input; if (!input.empty())theProcessPath=input;
@@ -852,6 +819,7 @@ void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
   input=""; is>>input; if (!input.empty())bindir_=input;
   input=""; is>>input; if (!input.empty())pkgdatadir_=input;
   input=""; is>>input; if (!input.empty())madgraphPrefix_=input;
+  input=""; is>>input; if (!input.empty())theCouplingOrders=input;
   
   int bs,vs;
   is >> bs;
@@ -910,6 +878,13 @@ string MadGraphAmplitude::getMadgraphPrefix() const {
   return madgraphPrefix_;
 }
 
+void MadGraphAmplitude::setCouplingOrders(string p) {
+  theCouplingOrders = p;
+}
+string MadGraphAmplitude::getCouplingOrders() const {
+  return theCouplingOrders;
+}
+
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments
 // are correct (the class and its base class), and that the constructor
@@ -944,30 +919,6 @@ void MadGraphAmplitude::Init() {
      &MadGraphAmplitude::setModel,
      &MadGraphAmplitude::getModel);
 
-  static Parameter<MadGraphAmplitude,int> interfaceNPMax
-    ("NPMax",
-     "Maximum NP order. Set to -1 to omit NP from MadGraph process lines.",
-     &MadGraphAmplitude::theNPMax, -1, -1, 0,
-     false, false, Interface::lowerlim);
-
-  static Parameter<MadGraphAmplitude,int> interfaceNPExact
-    ("NPExact",
-     "Exact NP order. Set to -1 to omit NP== from MadGraph process lines.",
-     &MadGraphAmplitude::theNPExact, -1, -1, 0,
-     false, false, Interface::lowerlim);
-
-  static Parameter<MadGraphAmplitude,int> interfaceNP2Max
-    ("NP2Max",
-     "Maximum NP^2 order. Set to -1 to omit NP^2 from MadGraph process lines.",
-     &MadGraphAmplitude::theNP2Max, -1, -1, 0,
-     false, false, Interface::lowerlim);
-
-  static Parameter<MadGraphAmplitude,int> interfaceNP2Exact
-    ("NP2Exact",
-     "Exact NP^2 order. Set to -1 to omit NP^2== from MadGraph process lines.",
-     &MadGraphAmplitude::theNP2Exact, -1, -1, 0,
-     false, false, Interface::lowerlim);
-  
   static Switch<MadGraphAmplitude,bool> interfacekeepinputtopmass
          ("KeepInputTopMass",
           "Switch On/Off formopt",
@@ -1009,5 +960,12 @@ void MadGraphAmplitude::Init() {
      &MadGraphAmplitude::getDataDir);
     
 
+
+  static Parameter<MadGraphAmplitude,string> interfaceCouplingOrders
+    ("CouplingOrders",
+     "Additional coupling orders for MadGraph process generation (comma or space separated), e.g. 'NP^2<=2, NP==1'.",
+     0, "",false, false,
+     &MadGraphAmplitude::setCouplingOrders,
+     &MadGraphAmplitude::getCouplingOrders);
 
 }
