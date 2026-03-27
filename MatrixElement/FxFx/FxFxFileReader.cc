@@ -25,6 +25,41 @@
 
 using namespace ThePEG;
 
+namespace {
+
+string xmlTagAttribute(const string & line, const string & tag,
+                       const string & attribute) {
+  const string startTag = "<" + tag;
+  const string attrName = attribute + "=";
+  string::size_type begin = line.find(startTag);
+  if ( begin == string::npos ) return "";
+  string::size_type close = line.find('>', begin + startTag.size());
+  if ( close == string::npos ) return "";
+  string::size_type attr = line.find(attrName, begin + startTag.size());
+  if ( attr == string::npos || attr >= close ) return "";
+  string::size_type value = attr + attrName.size();
+  if ( value >= close ) return "";
+  char quote = line[value];
+  if ( quote != '\'' && quote != '"' ) return "";
+  string::size_type end = line.find(quote, value + 1);
+  if ( end == string::npos || end > close ) return "";
+  return line.substr(value + 1, end - value - 1);
+}
+
+string xmlTagText(const string & line, const string & tag) {
+  const string startTag = "<" + tag;
+  const string endTag = "</" + tag + ">";
+  string::size_type begin = line.find(startTag);
+  if ( begin == string::npos ) return "";
+  string::size_type open = line.find('>', begin + startTag.size());
+  if ( open == string::npos ) return "";
+  string::size_type end = line.rfind(endTag);
+  if ( end == string::npos || end < open ) return "";
+  return StringUtils::stripws(line.substr(open + 1, end - open - 1));
+}
+
+}
+
 FxFxFileReader::
 FxFxFileReader(const FxFxFileReader & x)
   : FxFxReader(x), neve(x.neve), ieve(0),
@@ -528,44 +563,25 @@ void FxFxFileReader::open() {
 	//cout << "hs=" << hs << endl;
 	//cout << "weightinfo= " << weightinfo << endl;
 	//fix for potential new lines:
-	if(!cfile.find("<weight") and !cfile.find("</weightgroup")) {
-	  weightinfo = weightinfo + hs;
-	  //cout << "weightinfo fixed= " << weightinfo << endl;
-	  continue;
-	}
-	istringstream isc(hs);
-	int ws = 0;
-	/* get the name that will be used to identify the scale 
-	 */
-	do {
-	  string sub; isc >> sub;
-	  if(ws==1) { string str_arrow =  ">"; erase_substr(sub, str_arrow); scalename = sub; }
-	  ++ws;
-	} while (isc);
-	/* now get the relevant information
-	 * e.g. scales or PDF sets used
-	 */
-	string startDEL = ">"; //starting delimiter
-	string stopDEL = "</weight>"; //end delimiter
-	unsigned firstLim = hs.find(startDEL); //find start of delimiter
-//	unsigned lastLim = hs.find(stopDEL); //find end of delimitr
-	string scinfo = hs.substr(firstLim); //define the information for the scale
-	erase_substr(scinfo,stopDEL);
-	erase_substr(scinfo,startDEL);
-        scinfo = StringUtils::stripws(scinfo);
-	//cout << "scinfo = " << scinfo << endl;
-	/* fill in the map 
-	 * indicating the information to be appended to each scale
-	 * i.e. scinfo for each scalname
-	 */
-	scalemap[scalename] = scinfo.c_str();
-	string str_id = "id=";
-	string str_prime = "'";
-	erase_substr(scalename, str_id);
-	erase_substr(scalename, str_prime);
-	optionalWeightsNames.push_back(scalename);
-      }
-    }
+		if(!cfile.find("<weight") and !cfile.find("</weightgroup")) {
+		  weightinfo = weightinfo + hs;
+		  //cout << "weightinfo fixed= " << weightinfo << endl;
+		  continue;
+		}
+		/* now get the relevant information
+		 * e.g. scales or PDF sets used
+		 */
+		scalename = xmlTagAttribute(hs, "weight", "id");
+		string scinfo = xmlTagText(hs, "weight");
+		if ( scalename.empty() ) continue;
+		/* fill in the map 
+		 * indicating the information to be appended to each scale
+		 * i.e. scinfo for each scalname
+		 */
+		scalemap[scalename] = scinfo;
+		optionalWeightsNames.push_back(scalename);
+	      }
+	    }
    
     if ( cfile.find("<header") ) {
       // following lines to headerBlock until we hit the end of it.
@@ -717,25 +733,19 @@ bool FxFxFileReader::doReadEvent() {
     if(cfile.find("</rwgt")) { readingWeights=false; } //optional weights end
     if(cfile.find("</clustering")) { readingMG5ClusInfo=false; } // mg5 mclustering scale info end
     
-    /* reading of optional weights
-     */
-    if(readingWeights) { 
-      if(!cfile.find("<wgt")) { continue; }
-      istringstream iss(cfile.getline());
-      int wi = 0;
-      double weightValue(0);
-      string weightName = "";
-      // we need to put the actual weight value into a double
-      do {
-	string sub; iss >> sub;
-	if(wi==1) { string str_arrow = ">" ; erase_substr(sub, str_arrow); weightName = sub; }
-	if(wi==2) weightValue = atof(sub.c_str());
-	++wi;
-      } while (iss);
-      // store the optional weights found in the temporary map
-      //cout << "weightName, weightValue= " << weightName << ", " << weightValue << endl;
-      optionalWeightsTemp[weightName] = weightValue; 
-    }
+	    /* reading of optional weights
+	     */
+	    if(readingWeights) { 
+	      if(!cfile.find("<wgt")) { continue; }
+	      string wgtLine = cfile.getline();
+	      string weightName = xmlTagAttribute(wgtLine, "wgt", "id");
+	      string weightText = xmlTagText(wgtLine, "wgt");
+	      if ( weightName.empty() || weightText.empty() ) continue;
+	      double weightValue = atof(weightText.c_str());
+	      // store the optional weights found in the temporary map
+	      //cout << "weightName, weightValue= " << weightName << ", " << weightValue << endl;
+	      optionalWeightsTemp[weightName] = weightValue; 
+	    }
     
     /* reading of aMCFast weights
      */

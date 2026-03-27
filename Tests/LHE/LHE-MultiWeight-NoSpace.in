@@ -1,0 +1,44 @@
+##################################################
+# Regression test for <weight>/<wgt> parsing when
+# the tag body touches the closing tag.
+##################################################
+
+cd /Herwig/Generators
+set EventGenerator:NumberOfEvents 1
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 0
+set EventGenerator:PrintEvent 0
+set EventGenerator:MaxErrors 10
+
+cd /Herwig/EventHandlers
+library LesHouches.so
+
+create ThePEG::LesHouchesEventHandler LesHouchesHandler
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
+set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LesHouchesHandler:WeightOption UnitWeight
+set LesHouchesHandler:WeightNormalization Normalized
+
+set /Herwig/Generators/EventGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
+
+create ThePEG::Cuts /Herwig/Cuts/NoCuts
+
+create ThePEG::LesHouchesFileReader LesHouchesReader
+set LesHouchesReader:FileName lhe-weights-no-space.lhe
+set LesHouchesReader:AllowedToReOpen No
+set LesHouchesReader:InitPDFs 0
+set LesHouchesReader:Cuts /Herwig/Cuts/NoCuts
+set LesHouchesReader:MomentumTreatment RescaleEnergy
+set LesHouchesReader:PDFA /Herwig/Partons/ShowerLOPDF
+set LesHouchesReader:PDFB /Herwig/Partons/ShowerLOPDF
+insert LesHouchesHandler:LesHouchesReaders 0 LesHouchesReader
+
+cd /Herwig/Analysis
+library MultiWeight.so
+create Herwig::MultiWeight /Herwig/Analysis/MultiWeight
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/MultiWeight
+
+cd /Herwig/Generators
+saverun LHEWeightsNoSpace EventGenerator

@@ -13,6 +13,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 
 #include "MultiWeight.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -26,6 +27,19 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace Herwig;
+
+namespace {
+
+void printOptionalWeight(const string & name, double value) {
+  std::ios::fmtflags oldflags = cout.flags();
+  std::streamsize oldprecision = cout.precision();
+  cout << "\tit = " << name << "->"
+       << std::scientific << std::setprecision(12) << value << endl;
+  cout.flags(oldflags);
+  cout.precision(oldprecision);
+}
+
+}
 
 MultiWeight::MultiWeight() {}
 
@@ -107,7 +121,7 @@ void MultiWeight::analyze(tEventPtr event, long, int, int) {
      */
     if(it->second != -111 && it->second != -222 && it->second != -333 && it->second != -999) {
       cout << "optional weight:" << endl;
-      cout << "\tit = " << it->first << "->" << it->second << endl;
+      printOptionalWeight(it->first, it->second);
     }
     
     /* 
@@ -134,4 +148,3 @@ void MultiWeight::Init() {
 void MultiWeight::dofinish() {
   AnalysisHandler::dofinish();
 }
-
