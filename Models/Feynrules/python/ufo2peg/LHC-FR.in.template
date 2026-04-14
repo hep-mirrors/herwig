@@ -43,11 +43,11 @@ do Factory:Process p p -> e+ nu_e
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
-# read Matchbox/OnShellTopProduction.in
+#read Matchbox/OnShellTopProduction.in
 ## enable for on-shell W, Z or h production
-# read Matchbox/OnShellWProduction.in
-# read Matchbox/OnShellZProduction.in
-# read Matchbox/OnShellHProduction.in
+#read Matchbox/OnShellWProduction.in
+#read Matchbox/OnShellZProduction.in
+#read Matchbox/OnShellHProduction.in
 # Special settings for the VBF approximation
 # read Matchbox/VBFDiagramsOnly.in
 
@@ -133,7 +133,7 @@ set /Herwig/Samplers/Sampler:Verbose Yes
 ## use for strict LO/NLO comparisons
 # read Matchbox/MCatLO-DefaultShower.in
 ## use for improved LO showering
-read Matchbox/LO-DefaultShower.in
+#read Matchbox/LO-DefaultShower.in
 
 # read Matchbox/MCatNLO-DipoleShower.in
 # read Matchbox/Powheg-DipoleShower.in
@@ -143,7 +143,7 @@ read Matchbox/LO-DefaultShower.in
 # read Matchbox/LO-DipoleShower.in
 
 # read Matchbox/NLO-NoShower.in
-# read Matchbox/LO-NoShower.in
+read Matchbox/LO-NoShower.in
 
 ##################################################
 ## Scale uncertainties
@@ -214,97 +214,3 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 cd /Herwig/Generators
 saverun LHC-Matchbox EventGenerator
 
-
-##########################################################################
-#read snippets/PPCollider.in
-#
-#read ${ModelName}.model
-#
-#cd /Herwig/NewPhysics
-#
-#####################################
-##
-## Modify the required process here
-##
-#####################################
-#
-#insert HPConstructor:Incoming 0 /Herwig/Particles/d
-#insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
-#insert HPConstructor:Incoming 0 /Herwig/Particles/u
-#insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
-#insert HPConstructor:Incoming 0 /Herwig/Particles/s
-#insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
-#insert HPConstructor:Incoming 0 /Herwig/Particles/c
-#insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
-#insert HPConstructor:Incoming 0 /Herwig/Particles/b
-#insert HPConstructor:Incoming 0 /Herwig/Particles/bbar
-#insert HPConstructor:Incoming 0 /Herwig/Particles/g
-#
-#${Particles}
-#
-#set HPConstructor:Processes SingleParticleInclusive
-#
-##############################################################
-### Additionally, you can use new particles as intermediates
-### with the ResConstructor:
-##############################################################
-## insert ResConstructor:Incoming 0 /Herwig/Particles/d
-## insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
-## insert ResConstructor:Incoming 0 /Herwig/Particles/u
-## insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
-## insert ResConstructor:Incoming 0 /Herwig/Particles/s
-## insert ResConstructor:Incoming 0 /Herwig/Particles/sbar
-## insert ResConstructor:Incoming 0 /Herwig/Particles/c
-## insert ResConstructor:Incoming 0 /Herwig/Particles/cbar
-## insert ResConstructor:Incoming 0 /Herwig/Particles/b
-## insert ResConstructor:Incoming 0 /Herwig/Particles/bbar
-## insert ResConstructor:Incoming 0 /Herwig/Particles/g
-##
-## insert ResConstructor:Intermediates 0 [PARTICLE_NAME]
-##
-## insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
-## insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
-## insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
-## insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
-#
-############################################################
-## Specialized 2->3 higgs constructors are also available,
-## where incoming lines don't need to be set.
-############################################################
-### Higgs + t tbar
-## set /Herwig/NewPhysics/QQHiggsConstructor:QuarkType Top
-## insert /Herwig/NewPhysics/QQHiggsConstructor:HiggsBoson  0 [HIGGS_NAME]
-##
-### Higgs VBF
-## insert /Herwig/NewPhysics/HiggsVBFConstructor:HiggsBoson  0 [HIGGS_NAME]
-##
-### Higgs + W/Z, with full 2->3 ME
-## set /Herwig/NewPhysics/HVConstructor:CollisionType Hadron
-## insert /Herwig/NewPhysics/HVConstructor:VectorBoson 0 /Herwig/Particles/Z0
-## insert /Herwig/NewPhysics/HVConstructor:HiggsBoson  0 [HIGGS_NAME]
-#
-#
-#
-#####################################
-#####################################
-#####################################
-#
-## Intrinsic pT tune extrapolated to LHC energy
-#set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
-#
-## disable default cuts if required
-## cd /Herwig/EventHandlers
-## create ThePEG::Cuts   /Herwig/Cuts/NoCuts
-## set EventHandler:Cuts /Herwig/Cuts/NoCuts
-#
-## Other parameters for run
-#cd /Herwig/Generators
-#set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
-#set EventGenerator:NumberOfEvents 10000000
-#set EventGenerator:RandomNumberGenerator:Seed 31122001
-#set EventGenerator:DebugLevel 0
-#set EventGenerator:EventHandler:StatLevel Full
-#set EventGenerator:PrintEvent 100
-#set EventGenerator:MaxErrors 10000
-#
-#saverun LHC-${ModelName} EventGenerator

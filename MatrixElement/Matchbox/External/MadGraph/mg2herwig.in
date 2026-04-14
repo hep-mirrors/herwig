@@ -302,14 +302,25 @@ def make_case_stmts(func):
 
 def write_interfaceMG():
     """Create the InterfaceMadGraph.f FORTRAN file"""
+    has_split_orders = bool(couplingorders)
+
     subs = {
         "MG_CalculateBORNtxt" : make_case_stmts("BORN(momenta,hel)"),
         "MG_CalculateVIRTtxt" : make_case_stmts("SLOOPMATRIX(momenta,virt)"),
-        "MG_Jamptxt"          : make_case_stmts("GET_JAMP(color,Jamp)"),
-        "MG_LNJamptxt"        : make_case_stmts("GET_LNJAMP(color,Jamp)"),
         "MG_NColtxt"          : make_case_stmts("GET_NCOL(color)"),
         "MG_ColourMattxt"     : make_case_stmts("GET_NCOLOR(i,j,color)"),
     }
+
+    if has_split_orders:
+        subs["MG_Jamptxt"]               = make_case_stmts("GET_JAMP(color,soindex,Jamp)")
+        subs["MG_LNJamptxt"]             = make_case_stmts("GET_LNJAMP(color,soindex,Jamp)")
+        subs["MG_GetMaxSOIndextxt"]      = make_case_stmts("GET_MAXSOINDEX(nampso)")
+        subs["MG_GetChosenSOConfigtxt"]  = make_case_stmts("_get_chosen_so_config(m,n,logical_out)")
+    else:
+        subs["MG_Jamptxt"]               = make_case_stmts("GET_JAMP(color,Jamp)")
+        subs["MG_LNJamptxt"]             = make_case_stmts("GET_LNJAMP(color,Jamp)")
+        subs["MG_GetMaxSOIndextxt"]      = "         nampso = 1"
+        subs["MG_GetChosenSOConfigtxt"]  = "         logical_out = .TRUE."
 
     baseN = 5 if subs["MG_CalculateVIRTtxt"] else 3
     subs["MG_vxxxxxtxt"] = """\

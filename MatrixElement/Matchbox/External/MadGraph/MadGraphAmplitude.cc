@@ -44,15 +44,17 @@ using namespace Herwig;
 extern "C" void mginitproc_(char *i,int);
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
 extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
-extern "C" void MG_Jamp                        (int* proc,int*, double*);
-extern "C" void MG_LNJamp                        (int* proc,int*, double*);
+extern "C" void MG_Jamp                        (int* proc,int*, int*, double*);
+extern "C" void MG_LNJamp                        (int* proc,int*, int*, double*);
+extern "C" void MG_GetMaxSOIndex                 (int* proc,int*);
+extern "C" void MG_GetChosenSOConfig             (int* proc,int*,int*,int*);
 extern "C" void MG_Virt                        (int* proc,double*);
 extern "C" void MG_NCol                        (int* proc,int*);
 extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
 extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : keepinputtopmass(false){ }
+  : keepinputtopmass(false), nAmpSplitOrders_(1){ }
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -424,8 +426,30 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
   
   lastMatchboxXComb()->clearheljamp();
   lastMatchboxXComb()->clearhelLNjamp();
+  perOrderHeljamp_.clear();
+  perOrderHelLNjamp_.clear();
+
   initProcess(mePartonData());
+
+  // Query split-order configuration for current process
+  int xx = lastMatchboxXComb()->externalId();
+  MG_GetMaxSOIndex(&xx, &nAmpSplitOrders_);
+
+  if (nAmpSplitOrders_ > 1) {
+    chosenSOConfigs_.assign(nAmpSplitOrders_, vector<bool>(nAmpSplitOrders_, false));
+    for (int m = 1; m <= nAmpSplitOrders_; m++) {
+      for (int n = 1; n <= nAmpSplitOrders_; n++) {
+        int result = 0;
+        MG_GetChosenSOConfig(&xx, &m, &n, &result);
+        chosenSOConfigs_[m-1][n-1] = (result != 0);
+      }
+    }
+  }
+
   MatchboxAmplitude::prepareAmplitudes(me);
+
+  if (nAmpSplitOrders_ > 1)
+    assembleSplitOrderAmplitudes();
 
 }
 
@@ -553,23 +577,88 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 
   Complex res;
   Complex resLN;
-  for( int it = 0; it < ncol; it++ ){
-    double dd[2];
-    MG_Jamp(&xx,&it,&dd[0]);
-    Complex d(dd[0],dd[1]);
-    if(it==ii)res=d*units;
-    lastMatchboxXComb()->pushheljamp(hel,d*units);
-    double ddLN[2];
-    MG_LNJamp(&xx,&it,&ddLN[0]);
-    Complex dLN(ddLN[0],ddLN[1]);
-    if(it==ii)resLN=dLN*units;
-    lastMatchboxXComb()->pushhelLNjamp(hel,dLN*units);
+
+  if (nAmpSplitOrders_ > 1) {
+    // Split-order mode: retrieve per-order JAMPs
+    auto& poHel = perOrderHeljamp_[hel];
+    auto& poHelLN = perOrderHelLNjamp_[hel];
+    poHel.resize(nAmpSplitOrders_);
+    poHelLN.resize(nAmpSplitOrders_);
+
+    for (int so = 1; so <= nAmpSplitOrders_; so++) {
+      poHel[so-1].resize(ncol);
+      poHelLN[so-1].resize(ncol);
+      for (int it = 0; it < ncol; it++) {
+        double dd[2], ddLN[2];
+        MG_Jamp(&xx, &it, &so, &dd[0]);
+        MG_LNJamp(&xx, &it, &so, &ddLN[0]);
+        poHel[so-1][it] = Complex(dd[0], dd[1]) * units;
+        poHelLN[so-1][it] = Complex(ddLN[0], ddLN[1]) * units;
+      }
+    }
+
+    // Push SUMMED amplitudes to heljamp (for lastAmplitudes / colourGeometries)
+    for (int it = 0; it < ncol; it++) {
+      Complex sum(0,0), sumLN(0,0);
+      for (int so = 0; so < nAmpSplitOrders_; so++) {
+        sum   += poHel[so][it];
+        sumLN += poHelLN[so][it];
+      }
+      if (it == ii) { res = sum; resLN = sumLN; }
+      lastMatchboxXComb()->pushheljamp(hel, sum);
+      lastMatchboxXComb()->pushhelLNjamp(hel, sumLN);
+    }
+  } else {
+    // Single-order mode: pass soindex=1
+    int so = 1;
+    for (int it = 0; it < ncol; it++) {
+      double dd[2];
+      MG_Jamp(&xx, &it, &so, &dd[0]);
+      Complex d(dd[0], dd[1]);
+      if (it == ii) res = d * units;
+      lastMatchboxXComb()->pushheljamp(hel, d * units);
+      double ddLN[2];
+      MG_LNJamp(&xx, &it, &so, &ddLN[0]);
+      Complex dLN(ddLN[0], ddLN[1]);
+      if (it == ii) resLN = dLN * units;
+      lastMatchboxXComb()->pushhelLNjamp(hel, dLN * units);
+    }
   }
 
-  
   largeN = resLN;
   return res;
 
+}
+
+void MadGraphAmplitude::assembleSplitOrderAmplitudes() const {
+  size_t dim = max(colourBasisDim(), (size_t)1);
+  splitOrderAmplitudes_.resize(nAmpSplitOrders_);
+  splitOrderLargeNAmplitudes_.resize(nAmpSplitOrders_);
+
+  for (int so = 0; so < nAmpSplitOrders_; so++) {
+    splitOrderAmplitudes_[so].clear();
+    splitOrderLargeNAmplitudes_[so].clear();
+
+    for (AmplitudeConstIterator amp = lastAmplitudes().begin();
+         amp != lastAmplitudes().end(); ++amp) {
+      const vector<int>& hel = amp->first;
+      CVector cv(dim), cvLN(dim);
+      for (size_t k = 0; k < dim; k++) {
+        int mgIdx = (k < colourindex.size()) ? colourindex[k] : -1;
+        if (mgIdx >= 0 && perOrderHeljamp_.count(hel) &&
+            so < (int)perOrderHeljamp_.at(hel).size() &&
+            mgIdx < (int)perOrderHeljamp_.at(hel)[so].size()) {
+          cv(k)   = perOrderHeljamp_.at(hel)[so][mgIdx];
+          cvLN(k) = perOrderHelLNjamp_.at(hel)[so][mgIdx];
+        } else {
+          cv(k)   = Complex(0,0);
+          cvLN(k) = Complex(0,0);
+        }
+      }
+      splitOrderAmplitudes_[so][hel] = cv;
+      splitOrderLargeNAmplitudes_[so][hel] = cvLN;
+    }
+  }
 }
 
 vector<unsigned int> MadGraphAmplitude::physicalHelicities(const vector<int>& hel) const {
@@ -646,6 +735,133 @@ vector<size_t> MadGraphAmplitude::gluonsFirst(vector<size_t> vec) {
   
 }
 
+double MadGraphAmplitude::me2() const {
+  if (nAmpSplitOrders_ <= 1) return MatchboxAmplitude::me2();
+  if (!calculateTreeME2()) return lastTreeME2();
+
+  double result = 0.;
+  for (int m = 0; m < nAmpSplitOrders_; m++) {
+    for (int n = m; n < nAmpSplitOrders_; n++) {
+      if (!chosenSOConfigs_[m][n]) continue;
+      if (m == n) {
+        result += colourBasis()->me2(mePartonData(), splitOrderAmplitudes_[m]);
+      } else {
+        result += colourBasis()->interference(mePartonData(),
+                    splitOrderAmplitudes_[m], splitOrderAmplitudes_[n]);
+      }
+    }
+  }
+  lastTreeME2(result);
+  return result;
+}
+
+double MadGraphAmplitude::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
+  if (nAmpSplitOrders_ <= 1) return MatchboxAmplitude::largeNME2(largeNBasis);
+  if (!calculateLargeNME2()) return lastLargeNME2();
+
+  double result = 0.;
+  if (!trivialColourLegs()) {
+    for (int m = 0; m < nAmpSplitOrders_; m++) {
+      for (int n = m; n < nAmpSplitOrders_; n++) {
+        if (!chosenSOConfigs_[m][n]) continue;
+        if (m == n)
+          result += largeNBasis->me2(mePartonData(), splitOrderLargeNAmplitudes_[m]);
+        else
+          result += largeNBasis->interference(mePartonData(),
+                      splitOrderLargeNAmplitudes_[m], splitOrderLargeNAmplitudes_[n]);
+      }
+    }
+  } else {
+    result = me2();
+  }
+  lastLargeNME2(result);
+  return result;
+}
+
+double MadGraphAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
+  if (nAmpSplitOrders_ <= 1) return MatchboxAmplitude::colourCorrelatedME2(ij);
+
+  double cfac = colourCharge(mePartonData()[ij.first]);
+  if (!calculateColourCorrelator(ij)) return lastColourCorrelator(ij) / cfac;
+
+  double res = 0.;
+  if (!trivialColourLegs()) {
+    for (int m = 0; m < nAmpSplitOrders_; m++) {
+      for (int n = m; n < nAmpSplitOrders_; n++) {
+        if (!chosenSOConfigs_[m][n]) continue;
+        if (m == n) {
+          res += colourBasis()->colourCorrelatedME2(ij, mePartonData(),
+                                                     splitOrderAmplitudes_[m]);
+        } else {
+          // No AmplitudeMap-level colourCorrelatedInterference in ColourBasis.
+          // Manual helicity loop with per-CVector version:
+          map<vector<int>,CVector>::const_iterator a = splitOrderAmplitudes_[m].begin();
+          map<vector<int>,CVector>::const_iterator b = splitOrderAmplitudes_[n].begin();
+          for (; a != splitOrderAmplitudes_[m].end(); ++a, ++b) {
+            assert(a->first == b->first);
+            res += 2. * real(colourBasis()->colourCorrelatedInterference(
+                               ij, mePartonData(), a->second, b->second));
+          }
+        }
+      }
+    }
+  } else {
+    int n = mePartonData().size();
+    for (int i = 0; i < n; ++i) {
+      if (!mePartonData()[i]->coloured()) continue;
+      if (i == ij.first || i == ij.second)
+        res -= colourCharge(mePartonData()[i]) * me2();
+      else
+        res += colourCharge(mePartonData()[i]) * me2();
+    }
+    res *= 0.5;
+  }
+  lastColourCorrelator(ij, res);
+  return res / cfac;
+}
+
+double MadGraphAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
+                                                     Ptr<ColourBasis>::tptr largeNBasis) const {
+  if (nAmpSplitOrders_ <= 1)
+    return MatchboxAmplitude::largeNColourCorrelatedME2(ij, largeNBasis);
+
+  double cfac = largeNColourCharge(mePartonData()[ij.first]);
+  if (!calculateLargeNColourCorrelator(ij)) return lastLargeNColourCorrelator(ij) / cfac;
+
+  double res = 0.;
+  if (!trivialColourLegs()) {
+    for (int m = 0; m < nAmpSplitOrders_; m++) {
+      for (int n = m; n < nAmpSplitOrders_; n++) {
+        if (!chosenSOConfigs_[m][n]) continue;
+        if (m == n) {
+          res += largeNBasis->colourCorrelatedME2(ij, mePartonData(),
+                                                   splitOrderLargeNAmplitudes_[m]);
+        } else {
+          map<vector<int>,CVector>::const_iterator a = splitOrderLargeNAmplitudes_[m].begin();
+          map<vector<int>,CVector>::const_iterator b = splitOrderLargeNAmplitudes_[n].begin();
+          for (; a != splitOrderLargeNAmplitudes_[m].end(); ++a, ++b) {
+            assert(a->first == b->first);
+            res += 2. * real(largeNBasis->colourCorrelatedInterference(
+                               ij, mePartonData(), a->second, b->second));
+          }
+        }
+      }
+    }
+  } else {
+    int n = mePartonData().size();
+    for (int i = 0; i < n; ++i) {
+      if (!mePartonData()[i]->coloured()) continue;
+      if (i == ij.first || i == ij.second)
+        res -= largeNColourCharge(mePartonData()[i]) * largeNME2(largeNBasis);
+      else
+        res += largeNColourCharge(mePartonData()[i]) * largeNME2(largeNBasis);
+    }
+    res *= 0.5;
+  }
+  lastLargeNColourCorrelator(ij, res);
+  return res / cfac;
+}
+
 double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
                                                   const SpinCorrelationTensor& c) const {
 
@@ -683,21 +899,46 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Complex csCorr = 0.0;
 
   if ( calculateColourSpinCorrelator(ij) ) {
-    set<const CVector*> done;
-    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
-          a != lastAmplitudes().end(); ++a ) {
-      if ( done.find(&(a->second)) != done.end() )
-        continue;
-      AmplitudeConstIterator b = lastAmplitudes().begin();
-      while ( !equalsModulo(iCrossed,a->first,b->first) )
-        if ( ++b == lastAmplitudes().end() )
-          break;
-      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
-        continue;
-      done.insert(&(a->second)); done.insert(&(b->second));
-      if ( a->first[iCrossed] == 1 )
-        swap(a,b);
-      csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+    if (nAmpSplitOrders_ <= 1) {
+      // Single-order: existing code
+      set<const CVector*> done;
+      for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+            a != lastAmplitudes().end(); ++a ) {
+        if ( done.find(&(a->second)) != done.end() )
+          continue;
+        AmplitudeConstIterator b = lastAmplitudes().begin();
+        while ( !equalsModulo(iCrossed,a->first,b->first) )
+          if ( ++b == lastAmplitudes().end() )
+            break;
+        if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+          continue;
+        done.insert(&(a->second)); done.insert(&(b->second));
+        if ( a->first[iCrossed] == 1 )
+          swap(a,b);
+        csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+      }
+    } else {
+      // Split-order: full (m,n) double loop
+      // 2*Re(csCorr * pFactor^2) doubles for polarisation, not for m<->n
+      for (int m = 0; m < nAmpSplitOrders_; m++) {
+        for (int n = 0; n < nAmpSplitOrders_; n++) {
+          if (!chosenSOConfigs_[m][n]) continue;
+          set<const CVector*> done;
+          for (map<vector<int>,CVector>::const_iterator a = splitOrderAmplitudes_[m].begin();
+               a != splitOrderAmplitudes_[m].end(); ++a) {
+            if (done.find(&(a->second)) != done.end()) continue;
+            map<vector<int>,CVector>::const_iterator b = splitOrderAmplitudes_[n].begin();
+            while (!equalsModulo(iCrossed, a->first, b->first))
+              if (++b == splitOrderAmplitudes_[n].end()) break;
+            if (b == splitOrderAmplitudes_[n].end() ||
+                done.find(&(b->second)) != done.end()) continue;
+            done.insert(&(a->second)); done.insert(&(b->second));
+            if (a->first[iCrossed] == 1) swap(a, b);
+            csCorr -= colourBasis()->colourCorrelatedInterference(
+                        ij, mePartonData(), a->second, b->second);
+          }
+        }
+      }
     }
     lastColourSpinCorrelator(ij,csCorr);
   } else {
