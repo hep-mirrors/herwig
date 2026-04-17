@@ -2660,6 +2660,39 @@ def combineComponents(result,offType,RS) :
     for i in range(0,len(result)) :
         result[i]=result[i].replace("1j","ii")
 
+import re
+
+def _present_locals_from_waves(wave_lines):
+    present_s, present_sbar = set(), set()
+    for w in wave_lines:
+        m = re.search(r'LorentzSpinor<[^>]*>\s+(s\d+)\s*=', w)
+        if m:
+            present_s.add(m.group(1))
+        m = re.search(r'LorentzSpinorBar<[^>]*>\s+(sbar\d+)\s*=', w)
+        if m:
+            present_sbar.add(m.group(1))
+    return present_s, present_sbar
+
+
+def _fix_FFFF_transpose_body(body, wave_lines, ifunction):
+    present_s, present_sbar = _present_locals_from_waves(wave_lines)
+
+    # T1 corrections
+    if ifunction == 1:
+        if 's1' not in present_s and 's3' in present_s:
+            body = re.sub(r'\bs1\b', 's3', body)
+        if 'sbar3' not in present_sbar and 'sbar1' in present_sbar:
+            body = re.sub(r'\bsbar3\b', 'sbar1', body)
+
+    # T2 corrections
+    if ifunction == 2:
+        if 's3' not in present_s and 's1' in present_s:
+            body = re.sub(r'\bs3\b', 's1', body)
+        if 'sbar1' not in present_sbar and 'sbar4' in present_sbar:
+            body = re.sub(r'\bsbar1\b', 'sbar4', body)
+
+    return body
+
 def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order) :
     RS = "R" in vertex.lorentz[0].name
     FM = "F" in vertex.lorentz[0].name
@@ -2843,8 +2876,15 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                         if(i>0) : irs=i
                     elif(htemp[i].find("Spinor")>0) :
                         if(htemp[i].find("Bar")>0) :
+                            if(i==0) :
+                                htemp[i]=htemp [i].replace("Bar","")
+                                continue
                             htemp[i]=htemp[i].replace("Bar","").replace("sbarW","sW")
+                            if(i>0) : isp=i
                         else :
+                            if(i==0) :
+                                htemp[i]=htemp[i].replace("Spinor","SpinorBar")
+                                continue
                             htemp[i]=htemp[i].replace("Spinor","SpinorBar").replace("sW","sbarW")
                         if(i>0) : isp=i
                 if(irs>0 and isp >0) :
@@ -2953,10 +2993,15 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 newHeader += hnew +";\n"
             else :
                 newHeader += hnew
+
+            body_for_this = result[ifunction]
+            if (FM and not RS and vertex.lorentz[0].spins.count(2) == 4):
+                body_for_this = _fix_FFFF_transpose_body(body_for_this, waveNew, ifunction)
+
             fnew = evaluateTemplate.format(decl=hnew,momenta=momentastring,defns=defString,
                                            waves="\n    ".join(waveNew),symbols='\n    '.join(symboldefs),
                                            couplings="\n    ".join(localCouplings),
-                                           result=result[ifunction],swap=sorder)
+                                           result=body_for_this,swap=sorder)
             function +="\n" + fnew
 
 
@@ -2988,6 +3033,8 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         else :
             header=header + ";\n" + newHeader
     return (header,function)
+
+##------------------------------------------------------------------------------
 
 
 evaluateMultiple = """\

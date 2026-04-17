@@ -13,7 +13,7 @@ def compare(a,b) :
     return num/den<1e-10
 
 def evaluate(x,model,parmsubs):
-    return eval(x, 
+    return eval(x,
                 {'cmath':cmath,
                  'complexconjugate':model.function_library.complexconjugate,
                  'complex':complex},
@@ -65,7 +65,7 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
                ['P(1,2)','P(1003,1)','Metric(2,2003)'], # 1st swap
                ['P(2,1)','P(2003,2)','Metric(1,1003)'], # 2nd term
                ['P(2,1)','P(1003,2)','Metric(1,2003)'], # 2nd swap
-               ['P(1003,2)','P(2003,1)','Metric(1,2)'], # 3rd term 
+               ['P(1003,2)','P(2003,1)','Metric(1,2)'], # 3rd term
                ['P(1003,1)','P(2003,2)','Metric(1,2)'], # 3rd swap
                ['Metric(1,2003)','Metric(2,1003)'], # from mass term
                ['Metric(1,1003)','Metric(2,2003)'], # from mass term
@@ -97,7 +97,7 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
                  ['P(1004,3)','Metric(1,3)','Metric(2,2004)'],['P(1004,1)','Metric(1,3)','Metric(2,2004)'],
                  ['P(2004,1)','Metric(1,2)','Metric(3,1004)'],['P(2004,2)','Metric(1,2)','Metric(3,1004)'],
                  ['P(1004,1)','Metric(1,2)','Metric(3,2004)'],['P(1004,2)','Metric(1,2)','Metric(3,2004)'],
-                 ['P(3,1)','Metric(1,2004)','Metric(2,1004)'],['P(3,2)','Metric(1,2004)','Metric(2,1004)'], 
+                 ['P(3,1)','Metric(1,2004)','Metric(2,1004)'],['P(3,2)','Metric(1,2004)','Metric(2,1004)'],
                  ['P(3,1)','Metric(1,1004)','Metric(2,2004)'],['P(3,2)','Metric(1,1004)','Metric(2,2004)'],
                  ['P(3,1)','Metric(1,2)','Metric(1004,2004)'],['P(3,2)','Metric(1,2)','Metric(1004,2004)'],
                  ['P(2,3)','Metric(1,2004)','Metric(3,1004)'],['P(2,1)','Metric(1,2004)','Metric(3,1004)'],
@@ -312,12 +312,12 @@ def changeSign(sign1,sign2) :
         return "+"
     else :
         return "-"
-    
+
 def epsilonOrder(eps) :
     terms,sign = extractAntiSymmetricIndices(eps,"Epsilon(")
     return (sign,"Epsilon(%s,%s,%s,%s)" % (terms[0],terms[1],terms[2],terms[3]))
 
-    
+
 def VVSEpsilon(couplings,struct) :
     if(struct.find("Epsilon")<0) :
         return
@@ -350,7 +350,7 @@ def VVSEpsilon(couplings,struct) :
             if(fact=="") :
                 fact=piece
             else :
-                fact = "( %s ) * ( %s )" % (fact , piece) 
+                fact = "( %s ) * ( %s )" % (fact , piece)
     # now sort out the momenta
     for piece in split :
         terms=piece.split(",")
@@ -462,7 +462,7 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
                     value[ix]=0.
             lorentztag = 'GeneralVVS'
             header="kinematics(true);"
-            # g_mu,nv piece of coupling 
+            # g_mu,nv piece of coupling
             if(value[5]!=0.) :
                 append +='a00( %s + Complex(( %s )* GeV2/invariant(1,2)));\n' % ( value[0],value[5])
             else :
@@ -500,7 +500,7 @@ def getIndices(term) :
         return (True,mom,index)
     else :
         return (False,0,0)
-    
+
 
 def lorentzScalar(vertex,L) :
     dotProduct = """(invariant( i[{i1}], i[{i2}] )/GeV2)"""
@@ -677,7 +677,11 @@ def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                     if label in structures[istruct] :
                         reminder = structures[istruct].replace(label,'1.',1)
                         structures[istruct] = "Done"
-                        val = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                        try:
+                            val = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                        except:
+                            print(f"Skipping vertex {vertex}; structure not compatible with vectorCouplings()")
+                            raise SkipThisVertex()
                         if(new_couplings[iterm]) :
                             new_couplings[iterm] += val
                         else :
@@ -788,7 +792,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                             tval  = evaluate(value,model,parmsubs)
                         tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
                         tval3 =  evaluate(all_couplings[icolor][1],model,parmsubs)
-                    elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) : 
+                    elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) :
                         if(all_couplings[icolor][1] or not all_couplings[icolor][0] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
@@ -797,7 +801,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                             tval  = evaluate(value,model,parmsubs)
                         tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
                         tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
-                    elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) : 
+                    elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) :
                         if(all_couplings[icolor][0] or not all_couplings[icolor][1] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
@@ -876,7 +880,7 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order
     normcontent  = "1."
     append=""
     if lorentztag == 'FFV':
-        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}'
                   % vertex.particles[order[0]-1].pdg_code)
     return normcontent,leftcontent,rightcontent,append
 
