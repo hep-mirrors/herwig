@@ -442,7 +442,7 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
             if(value[ix] and not tval[ix]) :
                 tval[ix] = evaluate(value[ix],model,parmsubs)
             elif(value[ix]) :
-                tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
+                tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs)
                 if(abs(tval[ix]-tval2)>1e-6) :
                     raise SkipThisVertex()
 
