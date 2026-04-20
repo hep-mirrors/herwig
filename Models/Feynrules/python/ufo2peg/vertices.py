@@ -617,8 +617,10 @@ Herwig may not give correct results, though.
             orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
         # loop the order of the couplings
+        base_lorentztag = lorentztag
         iorder = 0
         for corder in couplingOrders :
+            current_lorentztag = base_lorentztag
             iorder +=1
             cname=classname
             if(iorder!=1) :
@@ -642,50 +644,51 @@ Herwig may not give correct results, though.
                     # calculate the value of the coupling
                     value = couplingValue(coupling)
                     # handling of the different types of couplings
-                    if lorentztag in ['FFS','FFV']:
+                    if current_lorentztag in ['FFS','FFV'] :
                         all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx],order)
-                    elif 'T' in lorentztag :
-                        append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                           all_couplings[color_idx],order)
-                    elif 'R' in lorentztag :
+                    elif 'T' in current_lorentztag :
+                        append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,current_lorentztag,pos,
+                                                                            all_couplings[color_idx],order)
+                    elif 'R' in current_lorentztag :
                         all_couplings[color_idx] = RSCouplings(value,prefactors,L,all_couplings[color_idx],order)
-                    elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
-                        all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
-                                                                         all_couplings[color_idx],order)
-                    elif lorentztag == "SSS" or lorentztag == "SSSS" :
-                        prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,
-                                                                                    all_couplings[color_idx],prepend,header)
-                    elif "VVV" in lorentztag :
-                        all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                          all_couplings[color_idx],append,corder["QCD"],order)
+                    elif current_lorentztag == 'VVS' or current_lorentztag == "VVSS" or current_lorentztag == "VSS" :
+                        all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,current_lorentztag,
+                                                                          all_couplings[color_idx],order)
+                    elif current_lorentztag == "SSS" or current_lorentztag == "SSSS" :
+                        prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,current_lorentztag,
+                                                                                     all_couplings[color_idx],prepend,header)
+                    elif "VVV" in current_lorentztag :
+                        all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,current_lorentztag,pos,
+                                                                           all_couplings[color_idx],append,corder["QCD"],order)
                     else:
                         raise SkipThisVertex()
             # final processing of the couplings
             symbols = set()
-            if(lorentztag in ['FFS','FFV']) :
-                (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
-                                                                                        self.model,self.parmsubs,
-                                                                                        all_couplings,order)
-            elif('T' in lorentztag) :
-                (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                                self.parmsubs,all_couplings,order)
-            elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+            if(current_lorentztag in ['FFS','FFV']) :
+                (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(current_lorentztag,vertex,
+                                                                                         self.model,self.parmsubs,
+                                                                                         all_couplings,order)
+            elif('T' in current_lorentztag) :
+                (leftcontent,rightcontent,normcontent) = processTensorCouplings(current_lorentztag,vertex,self.model,
+                                                                                 self.parmsubs,all_couplings,order)
+            elif(current_lorentztag=="SSS" or current_lorentztag=="SSSS") :
                 normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
-            elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-                normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
-                                                                                        self.model,self.parmsubs,
-                                                                                        all_couplings,header,order)
+            elif(current_lorentztag=="VVS" or current_lorentztag =="VVSS" or current_lorentztag=="VSS") :
+                normcontent,append,current_lorentztag,header,sym = processScalarVectorCouplings(current_lorentztag,vertex,
+                                                                                         self.model,self.parmsubs,
+                                                                                         all_couplings,header,order)
                 symbols |=sym
-            elif("VVV" in lorentztag) :
+            elif("VVV" in current_lorentztag) :
                 normcontent,append,header =\
-                                            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
+                                            processVectorCouplings(current_lorentztag,vertex,self.model,
+                                                                    self.parmsubs,all_couplings,append,header)
             else :
                 SkipThisVertex()
             # set the coupling ptrs in the setCoupling call
-            couplingptrs = self.setCouplingPtrs(lorentztag.replace("General",""),
+            couplingptrs = self.setCouplingPtrs(current_lorentztag.replace("General",""),
                                                                    corder["QCD"],append != '',prepend != '')
             ### do we need left/right?
-            if 'FF' in lorentztag and lorentztag != "FFT":
+            if 'FF' in current_lorentztag and current_lorentztag != "FFT":
                 #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
                 #rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
                 leftcalc, sym = py2cpp(leftcontent)
@@ -703,11 +706,11 @@ Herwig may not give correct results, though.
             normcalc, sym = py2cpp(normcontent)
             symbols |= sym
             # UFO is GeV by default
-            if lorentztag in ['VVS','SSS']:
+            if current_lorentztag in ['VVS','SSS']:
                 normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
-            elif lorentztag in ['GeneralVVS']:
+            elif current_lorentztag in ['GeneralVVS']:
                 normcalc = 'Complex(-(%s) * UnitRemoval::E / GeV )' % normcalc
-            elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
+            elif current_lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
                 normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
             norm = 'norm(' + normcalc + ');'
             # finally special handling for eps tensors
@@ -719,7 +722,7 @@ Herwig may not give correct results, though.
             for coupName,coupVal in corder.items() :
                 couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
             ### assemble dictionary and fill template
-            subs = { 'lorentztag' : lorentztag,                   # ok
+            subs = { 'lorentztag' : current_lorentztag,                   # ok
                      'classname'  : cname,            # ok
                      'symbolrefs' : '\n    '.join(symboldefs),
                      'left'       : left,                 # doesn't always exist in base
@@ -730,7 +733,7 @@ Herwig may not give correct results, though.
                      'couplingOrders' : couplingOrder,
                      'colourStructure' : cs,
                      'couplingptrs' : ''.join(couplingptrs),
-                     'spindirectory' : spindirectory(lorentztag),
+                     'spindirectory' : spindirectory(current_lorentztag),
                      'ModelName' : self.modelname,
                      'prepend' : prepend,
                      'append' : append,
