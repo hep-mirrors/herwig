@@ -157,12 +157,18 @@ newdef MEqq2W2ff:Process 2
 newdef MEqq2W2ff:Coupling /Herwig/Shower/AlphaQCDISR
 
 # W+jet
+create Herwig::MESimpleWJet MESimpleWJet
+
+# Simple W+jet
 create Herwig::MEPP2WJet MEWJet
 newdef MEWJet:WDecay Leptons
 
 # Z+jet
 create Herwig::MEPP2ZJet MEZJet
 newdef MEZJet:ZDecay ChargedLeptons
+
+# Simple Z+jet
+create Herwig::MESimpleZJet MESimpleZJet
 
 # PP->WW/WZ/ZZ
 create Herwig::MEPP2VV MEPP2VV
@@ -179,6 +185,9 @@ create Herwig::MEPP2GammaGamma MEGammaGamma
 
 # hadron-hadron to gamma+jet
 create Herwig::MEPP2GammaJet   MEGammaJet
+
+# Simple Gamma+jet
+create Herwig::MESimpleGammaJet MESimpleGammaJet
 
 # QCD 2-to-2
 create Herwig::MEQCD2to2       MEQCD2to2

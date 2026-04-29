@@ -12,7 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The HalfHalfOneEWSplitFn class implements the splitting function for 
+ * The HalfHalfOneEWSplitFn class implements the splitting function for
  * \f$\frac12\to q\frac12 1\f$ where the spin-1 particle is a massive electroweak gauge boson.
  *
  * @see \ref HalfHalfOneEWSplitFnInterfaces "The interfaces"
@@ -40,9 +40,15 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    */
   virtual double overestimateP(const double z, const IdList & ids) const {
-    Complex gL(0.,0.),gR(0.,0.);
+    Complex gL(0.,0.), gR(0.,0.), yL(0.,0.), yR(0.,0.);
     getCouplings(gL,gR,ids);
-    return 2.*max(norm(gL),norm(gR))/(1.-z); //FIXME//
+    getGBYukawas(yL,yR,ids);
+    if(longitudinalEWScheme_==0) {
+      return ( 2.*max(norm(gL),norm(gR)) )/(1.-z);
+    }
+    else {
+      return ( 2.*max(norm(gL),norm(gR)) + sqr(_cG) * max(norm(yL),norm(yR)) )/(1.-z);
+    }
   }
 
   /**
@@ -59,7 +65,7 @@ public:
 			const bool mass, const RhoDMatrix & rho) const;
 
   /**
-   * The concrete implementation of the indefinite integral of the 
+   * The concrete implementation of the indefinite integral of the
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
@@ -67,7 +73,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
+  virtual double integOverP(const double z, const IdList & ids,
 			    unsigned int PDFfactor=0) const;
 
   /**
@@ -77,8 +83,8 @@ public:
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
-   */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+   */
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const;
   //@}
 
@@ -105,13 +111,13 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
-  virtual vector<pair<int,Complex> > 
+  virtual vector<pair<int,Complex> >
   generatePhiBackward(const double, const Energy2, const IdList &, const RhoDMatrix &) {
     // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
     // and rest = splitting function for Tr(rho)=1 as required by defn
     return vector<pair<int, Complex> >(1,make_pair(0,1.));
   }
-  
+
   /**
    * Calculate the matrix element for the splitting
    * @param z The energy fraction
@@ -119,7 +125,7 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t,
 				   const IdList & ids, const double phi, bool timeLike);
 
 protected:
@@ -128,6 +134,11 @@ protected:
    *   Get the couplings
    */
   void getCouplings(Complex & gL, Complex & gR, const IdList & ids) const;
+
+  /**
+   *   Get the Goldstone Yukawas couplings
+   */
+  void getGBYukawas(Complex & yL, Complex & yR, const IdList & ids) const;
 
 public:
 
@@ -204,13 +215,34 @@ private:
    */
   double gWL_;
 
-  /** 
-   *   numerical value of the splitting coupling to be imported for BSM splittings
+  /**
+   * numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValueLeftRe = 0.; 
-  double _couplingValueLeftIm = 0.; 
-  double _couplingValueRightRe = 0.; 
+  double _couplingValueLeftRe  = 0.;
+  double _couplingValueLeftIm  = 0.;
+  double _couplingValueRightRe = 0.;
   double _couplingValueRightIm = 0.;
+
+  /**
+   * EW splitting scheme:
+   * Subtraction picture          : 0
+   * Gauge Invariant picture : 1
+   *
+   */
+  unsigned int longitudinalEWScheme_ = 0;
+
+  /**
+   * Relative weight cG multiplying the Goldstone piece in GI (V + cG * G)
+   */
+  double _cG = 1.0;
+
+  /**
+   *   numerical value of the Goldstone Yukawas from the interface (default: use SM)
+   */
+  double _yLeftRe  = 0.;
+  double _yLeftIm  = 0.;
+  double _yRightRe = 0.;
+  double _yRightIm = 0.;
 
 };
 

@@ -51,7 +51,12 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const;
+  virtual double overestimateP(const double z, const IdList & ids) const {
+    Complex gvvv(0.,0.);
+    getCouplings(gvvv,ids);
+    double val = norm(gvvv)*(2./(z*(1.-z)));
+    return val;
+  }
 
   /**
    * The concrete implementation of the
@@ -206,11 +211,24 @@ private:
    */
   double gWWZ_;
 
-  /** 
+  /**
    *   numerical value of the splitting coupling to be imported for BSM splittings
    */
-  double _couplingValueIm = 0.; 
-  double _couplingValueRe = 0.; 
+  double _couplingValueIm = 0.;
+  double _couplingValueRe = 0.;
+
+  /**
+   * EW splitting scheme:
+   * Subtraction picture          : 0
+   * Gauge Invariant picture : 1
+   *
+   */
+  unsigned int longitudinalEWScheme_ = 0;
+
+  /**
+   * Relative weight cG multiplying the Goldstone piece in GI (V + cG * G)
+   */
+  double _cG = 1.0;
 
   /**
    * Pointer to the SM object.
