@@ -279,6 +279,7 @@ double MESimpleGammaJet::qgME(std::vector<SpinorWaveFunction> & fin,
 
   unsigned int ihel1, ihel2, ohel1, ohel2;
   double me[3] = {0., 0., 0.};
+  Complex diag[2];
 
   SpinorWaveFunction     inters;
   SpinorBarWaveFunction  interb;
@@ -287,28 +288,47 @@ double MESimpleGammaJet::qgME(std::vector<SpinorWaveFunction> & fin,
     for (ihel2 = 0; ihel2 < 2; ++ihel2) {
       for (ohel1 = 0; ohel1 < 2; ++ohel1) {
 
-        inters = _theQQGVertex->evaluate(scale(), 5, mePartonData()[2]->CC(),
+        // q g -> q* -> q gamma
+        //
+        // The intermediate object is on the incoming-quark line.
+        // Use the incoming quark ParticleData, not the outgoing CC.
+        inters = _theQQGVertex->evaluate(scale(), 5, mePartonData()[0],
                                          fin[ihel1], gin[ihel2]);
-        interb = _theQQGVertex->evaluate(scale(), 5, mePartonData()[1],
+
+        // q g -> q gamma with the gluon attached to the outgoing-quark side.
+        //
+        // fout is a SpinorBarWaveFunction for the outgoing quark, so the FFG
+        // vertex needs the charge-conjugate ParticleData here.
+        //
+        // Crucially: do NOT use mePartonData()[1], since that is the gluon.
+        interb = _theQQGVertex->evaluate(scale(), 5, mePartonData()[2]->CC(),
                                          fout[ohel1], gin[ihel2]);
 
-        for (ohel2 = 0; ohel2 < 2; ++ohel2) { // photon: 0,2
-          Complex d0 = _theFFGammaVertex->evaluate(scale(), inters,        interb,       Aout[ohel2]);
-          Complex d1 = _theFFGammaVertex->evaluate(scale(), fin[ihel1],    fout[ohel1],  Aout[ohel2]);
+        for (ohel2 = 0; ohel2 < 2; ++ohel2) { // photon helicities 0,2
 
-          me[1] += norm(d0);
-          me[2] += norm(d1);
+          diag[0] = _theFFGammaVertex->evaluate(scale(),
+                                                inters, fout[ohel1], Aout[ohel2]);
 
-          Complex dt = d0 + d1;
-          me[0] += norm(dt);
+          diag[1] = _theFFGammaVertex->evaluate(scale(),
+                                                fin[ihel1], interb, Aout[ohel2]);
 
-          if (calc) _me(ihel1, 2*ihel2, ohel1, 2*ohel2) = dt;
+          me[1] += norm(diag[0]);
+          me[2] += norm(diag[1]);
+
+          diag[0] += diag[1];
+          me[0] += norm(diag[0]);
+
+          if (calc) _me(ihel1, 2*ihel2, ohel1, 2*ohel2) = diag[0];
         }
       }
     }
   }
 
+  // Initial-state spin and colour average:
+  // q g has colour average 1/(3*8), spin average 1/(2*2).
   double colspin = 1./24./4.;
+
+  // C_F N_c colour factor
   colspin *= 4.;
 
   DVector save;
@@ -316,6 +336,7 @@ double MESimpleGammaJet::qgME(std::vector<SpinorWaveFunction> & fin,
     me[ix] *= colspin;
     if (ix > 0) save.push_back(me[ix]);
   }
+
   meInfo(save);
   return me[0];
 }
