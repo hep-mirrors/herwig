@@ -3034,9 +3034,6 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             header=header + ";\n" + newHeader
     return (header,function)
 
-##------------------------------------------------------------------------------
-
-
 evaluateMultiple = """\
 {decl} {{
 {code}
