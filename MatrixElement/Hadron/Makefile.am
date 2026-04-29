@@ -17,7 +17,10 @@ MEPP2VV.cc   MEPP2VV.h  \
 MEPP2VGamma.cc   MEPP2VGamma.h  \
 MEPP2HiggsVBF.cc   MEPP2HiggsVBF.h  \
 MEPP2SingleTop.cc   MEPP2SingleTop.h  \
-MEDiffraction.h MEDiffraction.cc
+MEDiffraction.h MEDiffraction.cc \
+MESimpleWJet.h MESimpleWJet.cc \
+MESimpleZJet.h MESimpleZJet.cc \
+MESimpleGammaJet.h MESimpleGammaJet.cc
 
 HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:0:0
 
