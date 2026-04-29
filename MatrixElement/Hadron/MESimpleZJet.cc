@@ -382,6 +382,63 @@ double MESimpleZJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   return me[0];
 }
 
+double MESimpleZJet::qgME(vector<SpinorWaveFunction> & fin,
+			  vector<VectorWaveFunction> & gin,
+			  vector<SpinorBarWaveFunction> & fout,
+			  vector<VectorWaveFunction> & Zout,
+			  bool calc) const {
+  // if calculating spin correlations construct the me
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1,
+					     PDT::Spin1Half, PDT::Spin1));
+  unsigned int ihel1, ihel2, ohel1, ohel2;
+  double me[3] = {0., 0., 0.};
+  Complex diag[2];
+  SpinorWaveFunction inters;
+  SpinorBarWaveFunction interb;
+
+  for(ihel1 = 0; ihel1 < 2; ++ihel1) {
+    for(ihel2 = 0; ihel2 < 2; ++ihel2) {
+      for(ohel1 = 0; ohel1 < 2; ++ohel1) {
+	// Diagram with gluon attached to the incoming quark line
+	inters = _theQQGVertex->evaluate(scale(), 5, mePartonData()[0],
+					 fin[ihel1], gin[ihel2]);
+	// Diagram with gluon attached to the outgoing quark line.
+	//
+	// Important:
+	// mePartonData()[2] is the outgoing quark.
+	// Since fout is a SpinorBarWaveFunction, the FFG vertex needs the
+	// charge-conjugate ParticleData pointer here.
+	interb = _theQQGVertex->evaluate(scale(), 5, mePartonData()[2]->CC(),
+					 fout[ohel1], gin[ihel2]);
+
+	for(ohel2 = 0; ohel2 < 3; ++ohel2) {
+	  diag[0] = _theFFZVertex->evaluate(scale(),
+					    inters, fout[ohel1], Zout[ohel2]);
+	  diag[1] = _theFFZVertex->evaluate(scale(),
+					    fin[ihel1], interb, Zout[ohel2]);
+	  me[1] += norm(diag[0]);
+	  me[2] += norm(diag[1]);
+	  diag[0] += diag[1];
+	  me[0] += norm(diag[0]);
+	  if(calc) _me(ihel1, 2*ihel2, ohel1, ohel2) = diag[0];
+	}
+      }
+    }
+  }
+  // Initial-state spin and colour average for q g:
+  // colour average 1/(3*8), spin average 1/(2*2)
+  double colspin = 1./24./4.;
+  // C_F N_c colour factor
+  colspin *= 4.;
+  DVector save;
+  for(unsigned int ix = 0; ix < 3; ++ix) {
+    me[ix] *= colspin;
+    if(ix > 0) save.push_back(me[ix]);
+  }
+  meInfo(save);
+  return me[0];
+}
+
 void MESimpleZJet::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
   ParticleVector hard(4);
