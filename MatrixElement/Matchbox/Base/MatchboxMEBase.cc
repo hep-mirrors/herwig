@@ -394,6 +394,21 @@ void MatchboxMEBase::setScale(Energy2 ren, Energy2 fac) const {
   } else {
     lastXCombPtr()->lastAlphaS(SM().alphaS());
   }
+  // DIAG alphaS — temporary one-shot logging to diagnose Matchbox+MG xsec discrepancy
+  {
+    static bool diagAlphaSLogged = false;
+    if (!diagAlphaSLogged) {
+      diagAlphaSLogged = true;
+      generator()->log()
+        << "DIAG alphaS:"
+        << " SM().alphaS()="      << SM().alphaS()
+        << " SM().alphaS(rscale=" << sqrt(rscale)/GeV << "GeV)=" << SM().alphaS(rscale)
+        << " lastAlphaS()="       << lastXCombPtr()->lastAlphaS()
+        << " orderInAlphaS="      << orderInAlphaS()
+        << " fixedCouplings="     << fixedCouplings()
+        << "\n";
+    }
+  }
   if ( !fixedQEDCouplings() ) {
     lastXCombPtr()->lastAlphaEM(SM().alphaEMME(ewrscale));
   } else {

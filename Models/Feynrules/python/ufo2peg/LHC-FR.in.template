@@ -145,6 +145,12 @@ set /Herwig/Samplers/Sampler:Verbose Yes
 # read Matchbox/NLO-NoShower.in
 read Matchbox/LO-NoShower.in
 
+
+## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).
+## Read AFTER any Matchbox shower/matching snippet above so it overrides
+## the global {LO,NLO}AlphaS that LO.in / Matchbox.in bound.
+read LHC-${ModelName}-Couplings.in
+
 ##################################################
 ## Scale uncertainties
 ##################################################

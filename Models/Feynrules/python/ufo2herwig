@@ -307,6 +307,7 @@ parmvalues=copy.copy(parmsubs)
 # more arrays used for substitution in templates
 paramsforstream = []
 parmmodelconstr = []
+ufo_aS_value = None
 
 # loop over parameters and fill in template stuff according to internal/external and complex/real
 # WARNING: Complex external parameter input not tested!
@@ -400,6 +401,15 @@ for p in FR.all_parameters:
         else :
             parmconstr.append('%s_()' % p.name)
             parmsubs[p.name] = value
+        # Sync UFO inputs into ThePEG StandardModelBase interfaces so SM().alphaS()/alphaEMMZ()/fermiConstant() reflect UFO values.
+        # Applies whether the parameter is external or internal (computed from other params).
+        if p.name == 'aS':
+            parmmodelconstr.append('set %s:QCD/AlphaS %s' % (modelname, value))
+            ufo_aS_value = value
+        elif p.name == 'aEW':
+            parmmodelconstr.append('set %s:EW/AlphaEMMZ %s' % (modelname, value))
+        elif p.name == 'Gf':
+            parmmodelconstr.append('set %s:EW/FermiConstant %s' % (modelname, value))
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
@@ -595,6 +605,13 @@ if vertexConverter.should_print():
                                        'Particles' : particlelist,
                                        'ModelAbsPath' : os.path.abspath(args.ufodir) })
     )
+
+    if ufo_aS_value is not None:
+        MODEL_COUPLINGS_IN = getTemplate('LHC-FR-Couplings.in')
+        writeFile( 'LHC-%s-Couplings.in' % modelname,
+                   MODEL_COUPLINGS_IN.substitute({
+                       'ModelName' : modelname,
+                       'aSValue'   : ufo_aS_value }))
 
     modeltemplate = Template( MODELINFILE.substitute(modelfilesubs) )
 
