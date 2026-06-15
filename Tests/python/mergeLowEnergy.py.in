@@ -82,9 +82,9 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                     outhistos[hpath] = yoda.core.Scatter2D(path,title)
                 else :
                     try : 
-                        outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges(),path,title)
+                        outhistos[hpath] = yoda.core.BinnedEstimate1D(aos[hpath].xEdges().tolist(),path,title)
                     except :
-                        print(hpath,aos[hpath])
+                        print("Failed to create histogram",hpath,aos[hpath])
                         quit()
             matched = False
             for i,bin in enumerate(aos[hpath].bins()) :
@@ -138,7 +138,7 @@ for runType in ["NonPerturbative","Perturbative","Resonance"]:
                 outhistos[key] = val2
         else :
             for (key2,val2) in histos.items():
-                outhistos[key] = yoda.BinnedEstimate1D(val2.xEdges(),key)
+                outhistos[key] = yoda.BinnedEstimate1D(val2.xEdges().tolist(),key)
                 break
             fact = 1./len(histos)
             for i in range(0,outhistos[key].numBins()) :

@@ -15,6 +15,7 @@
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 #include "Herwig/Models/StandardModel/SMFFHVertex.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
@@ -27,11 +28,13 @@ IBPtr OneOneOneEWSplitFn::fullclone() const {
 }
 
 void OneOneOneEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe;
+  os << gWWG_ << gWWZ_ << _theSM << _couplingValueIm << _couplingValueRe
+     << longitudinalEWScheme_ << _cG;
 }
 
 void OneOneOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe;
+  is >> gWWG_ >> gWWZ_ >> _theSM >> _couplingValueIm >> _couplingValueRe
+    >> longitudinalEWScheme_ >> _cG;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
@@ -56,6 +59,26 @@ void OneOneOneEWSplitFn::Init() {
      &OneOneOneEWSplitFn::_couplingValueRe, 0.0, -1.0E6, +1.0E6,
      false, false, Interface::limited);
 
+  static Switch<OneOneOneEWSplitFn,unsigned int> interfaceLongitudinalEWScheme
+    ("LongitudinalEWScheme",
+     "EW splitting scheme: 0 = Subtraction, 1 = GI",
+     &OneOneOneEWSplitFn::longitudinalEWScheme_, 0, false, false);
+  static SwitchOption interfaceSubtractionEWScheme
+    (interfaceLongitudinalEWScheme,
+     "Subtraction",
+     "Using Subtraction picture in V->V'V'' EW splittings",
+     0);
+  static SwitchOption interfaceGIEWScheme
+    (interfaceLongitudinalEWScheme,
+     "GaugeInvariant",
+     "Using gauge invariant picture in V->V'V'' EW splittings",
+     1);
+
+   static Parameter<OneOneOneEWSplitFn,double> interfaceCG
+     ("GI.cG",
+     "Relative weight cG multiplying the Goldstone piece in GI (V + cG * G)",
+     &OneOneOneEWSplitFn::_cG, 1.0, -1.0e3, +1.0e3,
+     false, false, Interface::limited);
 }
 
 
@@ -115,17 +138,11 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
     val += 4.*m0t2*sqr(1.-z)*abs_rho_11 + (2*(m0t2*sqr(1.-(1.-z)*z)
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z);
+    if(longitudinalEWScheme_ == 1) {
+      val += 2*sqr(_cG)*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z);
+    }
   }
   return norm(gvvv)*val;
-}
-
-
-double OneOneOneEWSplitFn::overestimateP(const double z,
-					   const IdList & ids) const {
-  Complex gvvv(0.,0.);
-  getCouplings(gvvv,ids);
-  double val = norm(gvvv)*(2./(z*(1.-z)));
-  return val;
 }
 
 
@@ -146,6 +163,9 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
     val += (4.*m0t2*sqr(1.-z)*abs_rho_11 + (2*(m0t2*sqr(1.-(1.-z)*z)
         -m2t2*(1.-sqr(1.-z)*z) -m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))
         /((1.-z)*z))/(2./(z*(1.-z)));
+    if(longitudinalEWScheme_ == 1) {
+      val += sqr(_cG)*(2*(m1t2 + m2t2)*(abs_rho_22 + abs_rho_00) - 4*m0t2*abs_rho_11*(1 - 2*z))/(2./(z*(1.-z)));
+    }
   }
   return val;
 }
@@ -250,34 +270,42 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   double r2   = sqrt(2.);
   // assign kernel
   (*kernal)(0,0,0) = gvvv*phase*(1./sqrt(z1_z))*sqrtmass;
-  (*kernal)(0,0,1) = gvvv*r2*m2t*(z/(1.-z)); //2>4
   (*kernal)(0,0,2) = -gvvv*cphase*sqrt(z/(1.-z))*sqrtmass;
-  (*kernal)(0,1,0) = -gvvv*r2*m1t*(1.-z)/z; //2>4
   (*kernal)(0,1,1) = 0.;
-  (*kernal)(0,1,2) = 0.;
   (*kernal)(0,2,0) = -gvvv*(1.-z)*cphase*sqrt((1.-z)/z)*sqrtmass;
-  (*kernal)(0,2,1) = 0.;
   (*kernal)(0,2,2) = 0.;
-
   (*kernal)(1,0,0) = 0.;
-  (*kernal)(1,0,1) = 0.; //2>4
-  (*kernal)(1,0,2) = -gvvv*r2*m0t*(1.-z); //2>4
-  (*kernal)(1,1,0) = 0.; //221>441
-  (*kernal)(1,1,1) = 0.; //222>444
-  (*kernal)(1,1,2) = 0.; //223>443
-  (*kernal)(1,2,0) = -gvvv*r2*m0t*(1.-z); //2>4
-  (*kernal)(1,2,1) = 0.; //2>4
-  (*kernal)(1,2,2) = 0.; //2>4
-
   (*kernal)(2,0,0) = 0.;
-  (*kernal)(2,0,1) = 0.;
   (*kernal)(2,0,2) = gvvv*(1.-z)*phase*sqrt((1.-z)/z)*sqrtmass;
-  (*kernal)(2,1,0) = 0.;
-  (*kernal)(2,1,1) = 0.; //2>4
-  (*kernal)(2,1,2) = -gvvv*r2*m1t*((1.-z)/z);//2>4
   (*kernal)(2,2,0) = gvvv*phase*sqrt(z/(1.-z))*sqrtmass;
-  (*kernal)(2,2,1) = gvvv*r2*m2t*(z/(1.-z)); //2>4
   (*kernal)(2,2,2) = -gvvv*cphase*(1./sqrt(z1_z))*sqrtmass;
+  (*kernal)(0,0,1) = gvvv*r2*m2t*(z/(1.-z));
+  (*kernal)(0,1,0) = -gvvv*r2*m1t*(1.-z)/z;
+  (*kernal)(1,0,1) = 0.;
+  (*kernal)(1,1,0) = 0.;
+  (*kernal)(1,1,1) = 0.;
+  (*kernal)(1,1,2) = 0.;
+  (*kernal)(1,2,1) = 0.;
+  (*kernal)(1,2,2) = 0.;
+  (*kernal)(2,1,2) = -gvvv*r2*m1t*((1.-z)/z);
+  (*kernal)(2,2,1) = gvvv*r2*m2t*(z/(1.-z));
+
+  if(longitudinalEWScheme_ == 0) { //Subtraction's picture
+    (*kernal)(1,0,2) = -gvvv*r2*m0t*(1.-z);
+    (*kernal)(1,2,0) = -gvvv*r2*m0t*(1.-z);
+    (*kernal)(0,2,1) = 0.;
+    (*kernal)(0,1,2) = 0.;
+    (*kernal)(2,1,0) = 0.;
+    (*kernal)(2,0,1) = 0.;
+  }
+  else { //GI picture
+    (*kernal)(1,0,2) = gvvv*r2*m0t*(_cG+z-1.);
+    (*kernal)(1,2,0) = gvvv*r2*m0t*(_cG+z-1.);
+    (*kernal)(0,2,1) = gvvv*_cG*r2*m2t;
+    (*kernal)(0,1,2) = gvvv*_cG*r2*m1t;
+    (*kernal)(2,1,0) = gvvv*_cG*r2*m1t;
+    (*kernal)(2,0,1) = gvvv*_cG*r2*m2t;
+  }
 
   // return the answer
   return kernal;

@@ -229,7 +229,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   while(err > tol && iter < maxiter);
   //Now have desired momenta
   for(int i = 0;i < N;++i)
-    mom[i] = Lorentz5Momentum(xi*q[i].x(),xi*q[i].y(),xi*q[i].z(),en[i]);
+    mom[i] = Lorentz5Momentum(xi*q[i],en[i],mom[i].mass());
   
   //Calculate weight of distribution
   double s1(1.);
