@@ -105,16 +105,24 @@ class PyToCpp(ast.NodeVisitor):
         self.result.append(node.attr)
 
     def visit_Num(self,node):
+        self.visit_number(node.n)
+
+    def visit_Constant(self,node):
+        if not isinstance(node.value, (int, float, complex)):
+            raise PyToCppException('Unsupported constant %r' % node.value)
+        self.visit_number(node.value)
+
+    def visit_number(self,value):
         # some zeros are encoded as 0j
-        if node.n == 0: text = '0.0'
-        elif (node.n==complex("1j") ) :
+        if value == 0: text = '0.0'
+        elif value == complex("1j"):
             text = "ii"
-        elif (node.n==complex("-1j") ) :
+        elif value == complex("-1j"):
             text = "-ii"
-        elif (node.n==complex("2j") ) :
+        elif value == complex("2j"):
             text = "2.*ii"
         else:
-            text = str(float(node.n))
+            text = str(float(value))
         self.result.append(text)
 
     def visit_Name(self,node):

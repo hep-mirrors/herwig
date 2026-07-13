@@ -125,10 +125,10 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
                         reminder = structures[istruct].replace(label,'1.',1)
                         loc=iterm
                         if(reminder.find("ProjM")>=0) :
-                            reminder=re.sub("\*ProjM\(.*,.\)","",reminder)
+                            reminder=re.sub(r"\*ProjM\(.*,.\)","",reminder)
                             loc+=len(terms)
                         elif(reminder.find("ProjP")>=0) :
-                            reminder=re.sub("\*ProjP\(.*,.\)","",reminder)
+                            reminder=re.sub(r"\*ProjP\(.*,.\)","",reminder)
                             loc+=2*len(terms)
                         structures[istruct] = "Done"
                         val = eval(reminder, {'cmath':cmath} )*signs[iterm]

@@ -105,7 +105,8 @@ def prepForConversion(ufodir) :
     model_dir = path
     text = open(os.path.join(model_dir, 'object_library.py')).read()
     text = text.replace('.iteritems()', '.items()')
-    text = re.sub('raise (\w+)\s*,\s*["\']([^"]+)["\']','raise \g<1>("\g<2>")', text)
+    #text = re.sub('raise (\w+)\s*,\s*["\']([^"]+)["\']','raise \g<1>("\g<2>")', text)
+    text = re.sub(r'raise (\w+)\s*,\s*["\']([^"]+)["\']', r'raise \g<1>("\g<2>")', text)
     text = open(os.path.join(model_dir, 'object_library.py'),'w').write(text)
     text = open(os.path.join(model_dir, '__init__.py')).read()
     mod = False
@@ -159,6 +160,14 @@ if(args.convert) :
     convertToPython3(args.ufodir)
 
 def load_parameters(FR):
+    function_module = sys.modules[FR.function_library.Function.__module__]
+
+    def function_call(self, *opt):
+        return eval(self.expr, vars(function_module),
+                    dict(zip(self.arguments, opt)))
+
+    FR.function_library.Function.__call__ = function_call
+    
     if os.path.isfile("FR_Parameters.py") :
         os.remove("FR_Parameters.py")
     file = open("FR_Parameters.py", "a")
@@ -175,9 +184,7 @@ class Function(object):
         self.arguments = arguments
         self.expr = expression
     def __call__(self, *opt):
-        for i, arg in enumerate(self.arguments):
-            exec('%s = %s' % (arg, opt[i] ))
-        return eval(self.expr)
+        return eval(self.expr, globals(), dict(zip(self.arguments, opt)))
 complexconjugate = Function(name = 'complexconjugate',
                             arguments = ('z',),
                             expression = 'z.conjugate()')
