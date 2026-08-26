@@ -571,6 +571,7 @@ modelfilesubs = { 'plist' : plist,
 # write the files from templates according to the above subs
 if vertexConverter.should_print():
     MODEL_HWIN = getTemplate('LHC-FR.in')
+    MODEL_MATCHBOX_HWIN = getTemplate('LHC-Matchbox-FR.in')
     if(not args.split_model) :
         MODEL_CC = [getTemplate('Model.cc')]
     else :
@@ -602,8 +603,12 @@ if vertexConverter.should_print():
     MODELINFILE = getTemplate('FR.model')
     writeFile( 'LHC-%s.in' % modelname,
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
-                                       'Particles' : particlelist,
-                                       'ModelAbsPath' : os.path.abspath(args.ufodir) })
+                                       'Particles' : particlelist })
+    )
+    writeFile( 'LHC-Matchbox-%s.in' % modelname,
+               MODEL_MATCHBOX_HWIN.substitute({
+                   'ModelName' : modelname,
+                   'ModelAbsPath' : os.path.abspath(args.ufodir) })
     )
 
     if ufo_aS_value is not None:

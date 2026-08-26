@@ -1,222 +1,94 @@
 # -*- ThePEG-repository -*-
 
-##################################################
-## Herwig/Matchbox example input file
-##################################################
-
-##################################################
-## Collider type
-##################################################
-
-read FRModel.model
-read snippets/Matchbox.in
 read snippets/PPCollider.in
 
-##################################################
-## Beam energy sqrt(s)
-##################################################
+read ${ModelName}.model
 
-cd /Herwig/EventHandlers
-set EventHandler:LuminosityFunction:Energy 13000*GeV
+cd /Herwig/NewPhysics
 
-##################################################
-## Process selection
-##################################################
+####################################
+#
+# Modify the required process here
+#
+####################################
 
-## Note that event generation may fail if no matching matrix element has
-## been found.  Coupling orders are with respect to the Born process,
-## i.e. NLO QCD does not require an additional power of alphas.
+insert HPConstructor:Incoming 0 /Herwig/Particles/d
+insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/s
+insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/c
+insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/b
+insert HPConstructor:Incoming 0 /Herwig/Particles/bbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
 
-## Model assumptions
-read Matchbox/StandardModelLike.in
-read Matchbox/NonDiagonalCKM.in
+${Particles}
 
-## Set the order of the couplings
-cd /Herwig/MatrixElements/Matchbox
-set Factory:OrderInAlphaS 0
-set Factory:OrderInAlphaEW 2
+set HPConstructor:Processes SingleParticleInclusive
 
-## Select the process
-## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> e+ nu_e
+#############################################################
+## Additionally, you can use new particles as intermediates
+## with the ResConstructor:
+#############################################################
+# insert ResConstructor:Incoming 0 /Herwig/Particles/d
+# insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/u
+# insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/s
+# insert ResConstructor:Incoming 0 /Herwig/Particles/sbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/c
+# insert ResConstructor:Incoming 0 /Herwig/Particles/cbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/b
+# insert ResConstructor:Incoming 0 /Herwig/Particles/bbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/g
+#
+# insert ResConstructor:Intermediates 0 [PARTICLE_NAME]
+#
+# insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
+# insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
+# insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
+# insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
 
-
-## Special settings required for on-shell production of unstable particles
-## enable for on-shell top production
-#read Matchbox/OnShellTopProduction.in
-## enable for on-shell W, Z or h production
-#read Matchbox/OnShellWProduction.in
-#read Matchbox/OnShellZProduction.in
-#read Matchbox/OnShellHProduction.in
-# Special settings for the VBF approximation
-# read Matchbox/VBFDiagramsOnly.in
-
-
-
-#cd /Herwig/MatrixElements/Matchbox/Utility
-
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma
-
-#do DiagramGenerator:SpaceLikeRange 0 0
-#do DiagramGenerator:TimeLikeRange 0 0
-
-#do DiagramGenerator:ClearRestrictLines
-
-
-
-#cd /Herwig/Particles
-
-# set H:HardProcessWidth 0*GeV
-
-##################################################
-## Matrix element library selection
-##################################################
-
-## Select a generic tree/loop combination or a
-## specialized NLO package
-
-# read Matchbox/MadGraph-GoSam.in
-read Matchbox/MadGraph-MadGraph.in
-# read Matchbox/MadGraph-NJet.in
-# read Matchbox/MadGraph-OpenLoops.in
-# read Matchbox/HJets.in
-# read Matchbox/VBFNLO.in
-
-## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam
-
-# read Matchbox/HiggsEffective.in
-
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
-set MadGraph:Model ${ModelAbsPath}
-
-##################################################
-## Cut selection
-## See the documentation for more options
-##################################################
-# cd /Herwig/Cuts/
-# set ChargedLeptonPairMassCut:MinMass 60*GeV
-# set ChargedLeptonPairMassCut:MaxMass 120*GeV
-
-## cuts on additional jets
-
-# read Matchbox/DefaultPPJets.in
-
-# insert JetCuts:JetRegions 0 FirstJet
-# insert JetCuts:JetRegions 1 SecondJet
-# insert JetCuts:JetRegions 2 ThirdJet
-# insert JetCuts:JetRegions 3 FourthJet
-
-##################################################
-## Scale choice
-## See the documentation for more options
-##################################################
-
-cd /Herwig/MatrixElements/Matchbox
-#set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale
-set Scales/FixedScale:FixedScale 91.188*GeV
-set Factory:ScaleChoice Scales/FixedScale
-set /Herwig/Samplers/Sampler:Verbose Yes
-
-
-##################################################
-## Matching and shower selection
-## Please also see flavour scheme settings
-## towards the end of the input file.
-##################################################
-
-# read Matchbox/MCatNLO-DefaultShower.in
-# read Matchbox/Powheg-DefaultShower.in
-## use for strict LO/NLO comparisons
-# read Matchbox/MCatLO-DefaultShower.in
-## use for improved LO showering
-#read Matchbox/LO-DefaultShower.in
-
-# read Matchbox/MCatNLO-DipoleShower.in
-# read Matchbox/Powheg-DipoleShower.in
-## use for strict LO/NLO comparisons
-# read Matchbox/MCatLO-DipoleShower.in
-## use for improved LO showering
-# read Matchbox/LO-DipoleShower.in
-
-# read Matchbox/NLO-NoShower.in
-read Matchbox/LO-NoShower.in
-
-
-## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).
-## Read AFTER any Matchbox shower/matching snippet above so it overrides
-## the global {LO,NLO}AlphaS that LO.in / Matchbox.in bound.
-read LHC-${ModelName}-Couplings.in
-
-##################################################
-## Scale uncertainties
-##################################################
-
-# read Matchbox/MuDown.in
-# read Matchbox/MuUp.in
-
-##################################################
-## Shower scale uncertainties
-##################################################
-
-# read Matchbox/MuQDown.in
-# read Matchbox/MuQUp.in
-
-##################################################
-## PDF choice
-##################################################
-
-read Matchbox/FiveFlavourScheme.in
-## required for dipole shower and fixed order in five flavour scheme
-# read Matchbox/FiveFlavourNoBMassScheme.in
-#read Matchbox/CT14.in
-# read Matchbox/MMHT2014.in
-
-cd /Herwig/Partons
-
-set HardLOPDF:PDFName CT14lo
-set HardNLOPDF:PDFName CT14nlo
-
-set ShowerLOPDF:PDFName CT14lo
-set ShowerNLOPDF:PDFName CT14nlo
-
-set MPIPDF:PDFName CT14lo
-set RemnantPDF:PDFName CT14lo
+###########################################################
+# Specialized 2->3 higgs constructors are also available,
+# where incoming lines don't need to be set.
+###########################################################
+## Higgs + t tbar
+# set /Herwig/NewPhysics/QQHiggsConstructor:QuarkType Top
+# insert /Herwig/NewPhysics/QQHiggsConstructor:HiggsBoson  0 [HIGGS_NAME]
+#
+## Higgs VBF
+# insert /Herwig/NewPhysics/HiggsVBFConstructor:HiggsBoson  0 [HIGGS_NAME]
+#
+## Higgs + W/Z, with full 2->3 ME
+# set /Herwig/NewPhysics/HVConstructor:CollisionType Hadron
+# insert /Herwig/NewPhysics/HVConstructor:VectorBoson 0 /Herwig/Particles/Z0
+# insert /Herwig/NewPhysics/HVConstructor:HiggsBoson  0 [HIGGS_NAME]
 
 
 
+####################################
+####################################
+####################################
 
-##################################################
-## Analyses
-##################################################
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
+# disable default cuts if required
+# cd /Herwig/EventHandlers
+# create ThePEG::Cuts   /Herwig/Cuts/NoCuts
+# set EventHandler:Cuts /Herwig/Cuts/NoCuts
 
-
-# read snippets/HepMC.in
-# set /Herwig/Analysis/HepMC:PrintEvent 1000000
-# set /Herwig/Analysis/HepMC:Format GenEvent
-# set /Herwig/Analysis/HepMC:Units GeV_mm
-
-
-cd /Herwig/Analysis
-# insert Rivet:Analyses 0 XXX_2015_ABC123
-# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
-
-
-# set /Herwig/Analysis/HepMC:PrintEvent 1000000
-# set /Herwig/Analysis/HepMC:Format GenEvent
-# set /Herwig/Analysis/HepMC:Units GeV_mm
-
-##################################################
-## Save the generator
-##################################################
-
-do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
-
+# Other parameters for run
 cd /Herwig/Generators
-saverun LHC-Matchbox EventGenerator
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 0
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:PrintEvent 100
+set EventGenerator:MaxErrors 10000
 
+saverun LHC-${ModelName} EventGenerator
