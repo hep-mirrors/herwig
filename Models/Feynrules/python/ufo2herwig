@@ -558,6 +558,9 @@ particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
     for p in names
 ]
+
+BSM_Particles_list = ', '.join(names)
+
 # make the first one active to have something runnable in the example .in file
 particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
@@ -608,7 +611,9 @@ if vertexConverter.should_print():
     writeFile( 'LHC-Matchbox-%s.in' % modelname,
                MODEL_MATCHBOX_HWIN.substitute({
                    'ModelName' : modelname,
-                   'ModelAbsPath' : os.path.abspath(args.ufodir) })
+                   'ModelAbsPath' : os.path.abspath(args.ufodir),
+                   'BSM_Particles_list' : BSM_Particles_list
+                   })
     )
 
     if ufo_aS_value is not None:

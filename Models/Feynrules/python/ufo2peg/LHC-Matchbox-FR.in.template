@@ -23,10 +23,6 @@ set EventHandler:LuminosityFunction:Energy 13000*GeV
 ## Process selection
 ##################################################
 
-## Note that event generation may fail if no matching matrix element has
-## been found.  Coupling orders are with respect to the Born process,
-## i.e. NLO QCD does not require an additional power of alphas.
-
 ## Model assumptions
 read Matchbox/StandardModelLike.in
 read Matchbox/NonDiagonalCKM.in
@@ -37,9 +33,8 @@ set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
 
 ## Select the process
-## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> e+ nu_e
-
+## You may use identifiers such as ${BSM_Particles_list}.
+do Factory:Process p p -> [/Herwig/FRModel/Particles/PARTICLE1_NAME] [/Herwig/FRModel/Particles/PARTICLE2_NAME]
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
@@ -50,8 +45,6 @@ do Factory:Process p p -> e+ nu_e
 #read Matchbox/OnShellHProduction.in
 # Special settings for the VBF approximation
 # read Matchbox/VBFDiagramsOnly.in
-
-
 
 #cd /Herwig/MatrixElements/Matchbox/Utility
 
@@ -65,8 +58,6 @@ do Factory:Process p p -> e+ nu_e
 
 #do DiagramGenerator:ClearRestrictLines
 
-
-
 #cd /Herwig/Particles
 
 # set H:HardProcessWidth 0*GeV
@@ -75,18 +66,7 @@ do Factory:Process p p -> e+ nu_e
 ## Matrix element library selection
 ##################################################
 
-## Select a generic tree/loop combination or a
-## specialized NLO package
-
-# read Matchbox/MadGraph-GoSam.in
 read Matchbox/MadGraph-MadGraph.in
-# read Matchbox/MadGraph-NJet.in
-# read Matchbox/MadGraph-OpenLoops.in
-# read Matchbox/HJets.in
-# read Matchbox/VBFNLO.in
-
-## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam
 
 # read Matchbox/HiggsEffective.in
 
@@ -116,11 +96,9 @@ set MadGraph:Model ${ModelAbsPath}
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox
-#set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale
 set Scales/FixedScale:FixedScale 91.188*GeV
 set Factory:ScaleChoice Scales/FixedScale
-set /Herwig/Samplers/Sampler:Verbose Yes
-
+set /Herwig/Samplers/Sampler:Verbose No
 
 ##################################################
 ## Matching and shower selection
@@ -133,7 +111,7 @@ set /Herwig/Samplers/Sampler:Verbose Yes
 ## use for strict LO/NLO comparisons
 # read Matchbox/MCatLO-DefaultShower.in
 ## use for improved LO showering
-#read Matchbox/LO-DefaultShower.in
+read Matchbox/LO-DefaultShower.in
 
 # read Matchbox/MCatNLO-DipoleShower.in
 # read Matchbox/Powheg-DipoleShower.in
@@ -143,8 +121,7 @@ set /Herwig/Samplers/Sampler:Verbose Yes
 # read Matchbox/LO-DipoleShower.in
 
 # read Matchbox/NLO-NoShower.in
-read Matchbox/LO-NoShower.in
-
+# read Matchbox/LO-NoShower.in
 
 ## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).
 ## Read AFTER any Matchbox shower/matching snippet above so it overrides
@@ -186,14 +163,9 @@ set ShowerNLOPDF:PDFName CT14nlo
 set MPIPDF:PDFName CT14lo
 set RemnantPDF:PDFName CT14lo
 
-
-
-
 ##################################################
 ## Analyses
 ##################################################
-
-
 
 # read snippets/HepMC.in
 # set /Herwig/Analysis/HepMC:PrintEvent 1000000
@@ -204,9 +176,8 @@ set RemnantPDF:PDFName CT14lo
 cd /Herwig/Analysis
 # insert Rivet:Analyses 0 XXX_2015_ABC123
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 # set /Herwig/Analysis/HepMC:PrintEvent 1000000
 # set /Herwig/Analysis/HepMC:Format GenEvent
 # set /Herwig/Analysis/HepMC:Units GeV_mm
