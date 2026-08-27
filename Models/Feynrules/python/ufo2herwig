@@ -563,12 +563,13 @@ particlelist = [
 particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
 
-BSM_Particles_list = ', '.join(names)
-BSM_HardProcessWidth = [
-    "# set /Herwig/{n}/Particles/{p}:HardProcessWidth 0*GeV".format(n=modelname,p=p)
-    for p in names
-]
-BSM_HardProcessWidth = '\n'.join(BSM_HardProcessWidth)
+if not args.no_matchbox:
+    BSM_Particles_list = ', '.join(names)
+    BSM_HardProcessWidth = [
+        "# set /Herwig/{n}/Particles/{p}:HardProcessWidth 0*GeV".format(n=modelname,p=p)
+        for p in names
+    ]
+    BSM_HardProcessWidth = '\n'.join(BSM_HardProcessWidth)
 
 modelfilesubs = { 'plist' : plist,
                   'vlist' : vertexConverter.get_vertices(libname),
@@ -579,7 +580,8 @@ modelfilesubs = { 'plist' : plist,
 # write the files from templates according to the above subs
 if vertexConverter.should_print():
     MODEL_HWIN = getTemplate('LHC-FR.in')
-    MODEL_MATCHBOX_HWIN = getTemplate('LHC-Matchbox-FR.in')
+    if not args.no_matchbox:
+        MODEL_MATCHBOX_HWIN = getTemplate('LHC-Matchbox-FR.in')
     if(not args.split_model) :
         MODEL_CC = [getTemplate('Model.cc')]
     else :
@@ -613,21 +615,34 @@ if vertexConverter.should_print():
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
                                        'Particles' : particlelist })
     )
-    writeFile( 'LHC-Matchbox-%s.in' % modelname,
-               MODEL_MATCHBOX_HWIN.substitute({
-                   'ModelName' : modelname,
-                   'ModelAbsPath' : os.path.abspath(args.ufodir),
-                   'BSM_Particles_list' : BSM_Particles_list,
-                   'BSM_HardProcessWidth' : BSM_HardProcessWidth
-                   })
-    )
 
-    if ufo_aS_value is not None:
-        MODEL_COUPLINGS_IN = getTemplate('LHC-FR-Couplings.in')
-        writeFile( 'LHC-%s-Couplings.in' % modelname,
-                   MODEL_COUPLINGS_IN.substitute({
+    if not args.no_matchbox:
+        read_Couplings = ''
+        if ufo_aS_value is not None:
+            MODEL_COUPLINGS_IN = getTemplate('LHC-FR-Couplings.in')
+            writeFile( 'LHC-%s-Couplings.in' % modelname,
+                       MODEL_COUPLINGS_IN.substitute({
+                           'ModelName' : modelname,
+                           'aSValue'   : ufo_aS_value }))
+            read_Couplings = [
+                '## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).',
+                '## Read AFTER any Matchbox shower/matching snippet above so it overrides',
+                '## the global {LO,NLO}AlphaS that LO.in / Matchbox.in bound.',
+                'read LHC-'+modelname+'-Couplings.in'
+            ]
+            read_Couplings = '\n'.join(read_Couplings)
+
+        writeFile( 'LHC-Matchbox-%s.in' % modelname,
+                   MODEL_MATCHBOX_HWIN.substitute({
                        'ModelName' : modelname,
-                       'aSValue'   : ufo_aS_value }))
+                       'ModelAbsPath' : os.path.abspath(args.ufodir),
+                       'BSM_Particles_list' : BSM_Particles_list,
+                       'BSM_HardProcessWidth' : BSM_HardProcessWidth,
+                       'read_Couplings' : read_Couplings
+                       })
+        )
+
+
 
     modeltemplate = Template( MODELINFILE.substitute(modelfilesubs) )
 

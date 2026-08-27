@@ -8,7 +8,6 @@
 ## Collider type
 ##################################################
 
-read FRModel.model
 read snippets/Matchbox.in
 read snippets/PPCollider.in
 
@@ -26,6 +25,7 @@ set EventHandler:LuminosityFunction:Energy 13000*GeV
 ## Model assumptions
 read Matchbox/StandardModelLike.in
 read Matchbox/NonDiagonalCKM.in
+read ${ModelName}.model
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
@@ -63,8 +63,6 @@ ${BSM_HardProcessWidth}
 
 read Matchbox/MadGraph-MadGraph.in
 
-# read Matchbox/HiggsEffective.in
-
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 set MadGraph:Model ${ModelAbsPath}
 
@@ -92,8 +90,9 @@ set MadGraph:Model ${ModelAbsPath}
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox
-set Scales/FixedScale:FixedScale 91.188*GeV
-set Factory:ScaleChoice Scales/FixedScale
+set Factory:ScaleChoice Scales/SHatScale
+# set Scales/FixedScale:FixedScale 91.188*GeV
+# set Factory:ScaleChoice Scales/FixedScale
 set /Herwig/Samplers/Sampler:Verbose No
 
 ##################################################
@@ -102,27 +101,11 @@ set /Herwig/Samplers/Sampler:Verbose No
 ## towards the end of the input file.
 ##################################################
 
-# read Matchbox/MCatNLO-DefaultShower.in
-# read Matchbox/Powheg-DefaultShower.in
-## use for strict LO/NLO comparisons
-# read Matchbox/MCatLO-DefaultShower.in
-## use for improved LO showering
 read Matchbox/LO-DefaultShower.in
-
-# read Matchbox/MCatNLO-DipoleShower.in
-# read Matchbox/Powheg-DipoleShower.in
-## use for strict LO/NLO comparisons
-# read Matchbox/MCatLO-DipoleShower.in
-## use for improved LO showering
 # read Matchbox/LO-DipoleShower.in
-
-# read Matchbox/NLO-NoShower.in
 # read Matchbox/LO-NoShower.in
 
-## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).
-## Read AFTER any Matchbox shower/matching snippet above so it overrides
-## the global {LO,NLO}AlphaS that LO.in / Matchbox.in bound.
-read LHC-${ModelName}-Couplings.in
+${read_Couplings}
 
 ##################################################
 ## Scale uncertainties
