@@ -146,7 +146,7 @@ def generate_param_card_from_model(model):
 
     try:
         module = importlib.import_module(model_pkg + ".write_param_card")
-        module.ParamCardWriter("./param_card.dat", generic=True)
+        module.ParamCardWriter("./param_card.dat")
         return 0
     except Exception as ex:
         import_error = ex
