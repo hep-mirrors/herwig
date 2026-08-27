@@ -1,7 +1,7 @@
 # -*- ThePEG-repository -*-
 
 ##################################################
-## Herwig/Matchbox example input file
+## Herwig/Matchbox example input for ufo2herwig
 ##################################################
 
 ##################################################
@@ -34,33 +34,28 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as ${BSM_Particles_list}.
-do Factory:Process p p -> [/Herwig/FRModel/Particles/PARTICLE1_NAME] [/Herwig/FRModel/Particles/PARTICLE2_NAME]
+do Factory:Process p p -> [PARTICLE1_NAME] [PARTICLE2_NAME]
+
+${BSM_HardProcessWidth}
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
-#read Matchbox/OnShellTopProduction.in
+# read Matchbox/OnShellTopProduction.in
 ## enable for on-shell W, Z or h production
-#read Matchbox/OnShellWProduction.in
-#read Matchbox/OnShellZProduction.in
-#read Matchbox/OnShellHProduction.in
+# read Matchbox/OnShellWProduction.in
+# read Matchbox/OnShellZProduction.in
+# read Matchbox/OnShellHProduction.in
 # Special settings for the VBF approximation
 # read Matchbox/VBFDiagramsOnly.in
 
-#cd /Herwig/MatrixElements/Matchbox/Utility
-
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0
-#insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma
-
-#do DiagramGenerator:SpaceLikeRange 0 0
-#do DiagramGenerator:TimeLikeRange 0 0
-
-#do DiagramGenerator:ClearRestrictLines
-
-#cd /Herwig/Particles
-
-# set H:HardProcessWidth 0*GeV
+# cd /Herwig/MatrixElements/Matchbox/Utility
+# insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+
+# insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-
+# insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0
+# insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma
+# do DiagramGenerator:SpaceLikeRange 0 0
+# do DiagramGenerator:TimeLikeRange 0 0
+# do DiagramGenerator:ClearRestrictLines
 
 ##################################################
 ## Matrix element library selection
@@ -77,6 +72,7 @@ set MadGraph:Model ${ModelAbsPath}
 ## Cut selection
 ## See the documentation for more options
 ##################################################
+
 # cd /Herwig/Cuts/
 # set ChargedLeptonPairMassCut:MinMass 60*GeV
 # set ChargedLeptonPairMassCut:MaxMass 120*GeV
@@ -149,19 +145,8 @@ read LHC-${ModelName}-Couplings.in
 read Matchbox/FiveFlavourScheme.in
 ## required for dipole shower and fixed order in five flavour scheme
 # read Matchbox/FiveFlavourNoBMassScheme.in
-#read Matchbox/CT14.in
+read Matchbox/CT14.in
 # read Matchbox/MMHT2014.in
-
-cd /Herwig/Partons
-
-set HardLOPDF:PDFName CT14lo
-set HardNLOPDF:PDFName CT14nlo
-
-set ShowerLOPDF:PDFName CT14lo
-set ShowerNLOPDF:PDFName CT14nlo
-
-set MPIPDF:PDFName CT14lo
-set RemnantPDF:PDFName CT14lo
 
 ##################################################
 ## Analyses
@@ -171,7 +156,6 @@ set RemnantPDF:PDFName CT14lo
 # set /Herwig/Analysis/HepMC:PrintEvent 1000000
 # set /Herwig/Analysis/HepMC:Format GenEvent
 # set /Herwig/Analysis/HepMC:Units GeV_mm
-
 
 cd /Herwig/Analysis
 # insert Rivet:Analyses 0 XXX_2015_ABC123

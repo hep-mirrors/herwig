@@ -559,11 +559,16 @@ particlelist = [
     for p in names
 ]
 
-BSM_Particles_list = ', '.join(names)
-
 # make the first one active to have something runnable in the example .in file
 particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
+
+BSM_Particles_list = ', '.join(names)
+BSM_HardProcessWidth = [
+    "# set /Herwig/{n}/Particles/{p}:HardProcessWidth 0*GeV".format(n=modelname,p=p)
+    for p in names
+]
+BSM_HardProcessWidth = '\n'.join(BSM_HardProcessWidth)
 
 modelfilesubs = { 'plist' : plist,
                   'vlist' : vertexConverter.get_vertices(libname),
@@ -612,7 +617,8 @@ if vertexConverter.should_print():
                MODEL_MATCHBOX_HWIN.substitute({
                    'ModelName' : modelname,
                    'ModelAbsPath' : os.path.abspath(args.ufodir),
-                   'BSM_Particles_list' : BSM_Particles_list
+                   'BSM_Particles_list' : BSM_Particles_list,
+                   'BSM_HardProcessWidth' : BSM_HardProcessWidth
                    })
     )
 
