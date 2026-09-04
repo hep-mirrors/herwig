@@ -171,7 +171,7 @@ bool Sudakov1to2FormFactor::PSVeto(const Energy2 t) {
   // check vs overestimated limits
   if (z() < zlimits_.first || z() > zlimits_.second) return true;
 
-  Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
+  Energy2 m02 = (!masslessBoson(ids_[0])) ?
   	masssquared_[0] : Energy2();
 
   Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2],
@@ -481,7 +481,7 @@ bool Sudakov1to2FormFactor::computeTimeLikeLimits(Energy2 & t) {
   }
   const Energy2 pT2min = cutoff_->pT2min();
   // special case for gluon radiating
-  if(ids_[0]->id()==ParticleID::g||ids_[0]->id()==ParticleID::gamma) {
+  if(masslessBoson(ids_[0])) {
     // no emission possible
     if(t<16.*(masssquared_[1]+pT2min)) {
       t=-1.*GeV2;
@@ -492,11 +492,11 @@ bool Sudakov1to2FormFactor::computeTimeLikeLimits(Energy2 & t) {
     zlimits_.second = 1.-zlimits_.first;
   }
   // special case for radiated particle is gluon
-  else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
+  else if(masslessBoson(ids_[2])) {
     zlimits_.first  =    sqrt((masssquared_[1]+pT2min)/t);
     zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min)/t);
   }
-  else if(ids_[1]->id()==ParticleID::g||ids_[1]->id()==ParticleID::gamma) {
+  else if(masslessBoson(ids_[1])) {
     zlimits_.second  =    sqrt((masssquared_[2]+pT2min)/t);
     zlimits_.first   = 1.-sqrt((masssquared_[1]+pT2min)/t);
   }
@@ -559,7 +559,8 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
       otherChild = mother->children()[1];
     }
     tShowerParticlePtr other = dynamic_ptr_cast<tShowerParticlePtr>(otherChild);
-    if((inter==ShowerInteraction::QCD && otherChild->dataPtr()->coloured()) ||
+    if((inter==ShowerInteraction::QCD && otherChild->dataPtr()->coloured() && otherChild->dataPtr()->colouredInteraction() == PDT::ColouredQCD) ||
+       (inter==ShowerInteraction::DARK && otherChild->dataPtr()->coloured() && otherChild->dataPtr()->colouredInteraction() == PDT::ColouredDark) ||
        (inter==ShowerInteraction::QED && otherChild->dataPtr()->charged())) {
       partner = other;
       break;
@@ -652,8 +653,7 @@ double Sudakov1to2FormFactor::generatePhiForward(ShowerParticle & particle,
   Energy pT = kinematics->pT();
   // if soft correlations
   Energy2 pipj,pik;
-  bool canBeSoft[2] = {ids[1]->id()==ParticleID::g || ids[1]->id()==ParticleID::gamma,
-		       ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma };
+  bool canBeSoft[2] = {masslessBoson(ids_[1]), masslessBoson(ids_[2])};
   array<Energy2,3> pjk;
   array<Energy,3> Ek;
   Energy Ei,Ej;
@@ -852,7 +852,7 @@ double Sudakov1to2FormFactor::generatePhiBackward(ShowerParticle & particle,
   Energy pT = kinematics->pT();
   // if soft correlations
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
-    (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
+    (masslessBoson(ids_[2]));
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
   array<Energy2,3> pjk;
   Energy Ei,Ej,Ek;
@@ -990,7 +990,7 @@ double Sudakov1to2FormFactor::generatePhiDecay(ShowerParticle & particle,
   // only soft correlations in this case
   // no correlations, return flat phi
   if( !(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
-	(ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma )))
+	(masslessBoson(ids_[2]))))
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double  z = kinematics->z();
@@ -1849,7 +1849,7 @@ void Sudakov1to2FormFactor::evaluateFinalStateScales(ShowerPartnerType partnerTy
       else
 	emitter->scales().QED         = min(         scale,parent->scales().QED     );
       emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
-      if(partnerType==ShowerPartnerType::QCDColourLine) {
+      if(partnerType==ShowerPartnerType::DARKColourLine) {
 	emitter->scales().QCD_c       = zEmitter*scale;
 	emitter->scales().QCD_c_noAO  =          scale;
 	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );

@@ -35,13 +35,13 @@ IBPtr HiddenValleyAlpha::fullclone() const {
 void HiddenValleyAlpha::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _thresopt
      << ounit(_lambdain,GeV) << _tolerance << _maxtry << _alphamin
-     << ounit(_thresholds,GeV) << ounit(_lambda,GeV) << _ca << _cf << _tr;
+     << ounit(_thresholds,GeV) << ounit(_lambda,GeV) << _ca << _cf << _tr << _nf_light;
 }
 
 void HiddenValleyAlpha::persistentInput(PersistentIStream & is, int) {
   is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _thresopt
      >> iunit(_lambdain,GeV) >> _tolerance >> _maxtry >> _alphamin
-     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV) >> _ca >> _cf >> _tr;
+     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV) >> _ca >> _cf >> _tr >> _nf_light;
 }
 
 ClassDescription<HiddenValleyAlpha> HiddenValleyAlpha::initHiddenValleyAlpha;
@@ -110,6 +110,33 @@ void HiddenValleyAlpha::Init() {
      &HiddenValleyAlpha::_lambdain, GeV, 0.208364*GeV, 100.0*MeV, 100.0*GeV,
      false, false, Interface::limited);
 
+  static Parameter<HiddenValleyAlpha,double> interfaceAlphaIn
+    ("AlphaIn",
+     "The input value of the dark coupling at the chosen InputScale (default: MZ)",
+     &HiddenValleyAlpha::_alphain, 0.118, 0.1, 0.2,
+     false, false, Interface::limited);
+  
+  static Parameter<HiddenValleyAlpha,Energy> interfaceInputScale
+    ("InputScale",
+     "An optional input scale. MZ will be used if not set.",
+     &HiddenValleyAlpha::_optInputScale, GeV, 91.1876_GeV, ZERO, 0*GeV,
+     false, false, Interface::lowerlim);
+
+static Switch<HiddenValleyAlpha,bool> interfaceInputOption
+    ("InputOption",
+     "Option for inputing the initial value of the coupling",
+     &HiddenValleyAlpha::_inopt, false, false, false);
+  static SwitchOption interfaceInputOptionAlphaMZ
+    (interfaceInputOption,
+     "AlphaIn",
+     "Use the value of alpha at the InputScale to calculate the coupling",
+     true);
+  static SwitchOption interfaceInputOptionLambdaQCD
+    (interfaceInputOption,
+     "LambdaDark",
+     "Use the input value of Lambda to calculate the coupling",
+     false);
+  
   static Parameter<HiddenValleyAlpha,double> interfaceTolerance
     ("Tolerance",
      "The tolerance for discontinuities in alphaS at thresholds.",
@@ -136,6 +163,11 @@ void HiddenValleyAlpha::Init() {
      "Constituent",
      "Use the constitent masses.",
      false);
+  
+  static Command<HiddenValleyAlpha> interfacecheck
+    ("check",
+     "check",
+     &HiddenValleyAlpha::check, false);
 }
 
 double HiddenValleyAlpha::value(const Energy2 scale) const {
@@ -269,7 +301,11 @@ void HiddenValleyAlpha::doinit() {
   _thresholds.push_back(_qmin);
   _nf_light = 0;
   for(unsigned int ix=1;ix<=model->NF();++ix) {
-    Energy qmass = getParticleData(ParticleID::darkg+long(ix))->mass();
+    Energy qmass;
+    if(_thresopt)
+      qmass = getParticleData(ParticleID::darkg+long(ix))->mass();
+    else
+      qmass = getParticleData(ParticleID::darkg+long(ix))->constituentMass();
     if (qmass > _qmin) _thresholds.push_back(qmass);
     else _nf_light++;
   }
@@ -278,25 +314,62 @@ void HiddenValleyAlpha::doinit() {
 
   unsigned int nf = _nf_light;
 
-  // Set lambda below heavy quark thresholds to input value
-  _lambda[0]=_lambdain;
+  
+  if(_inopt) {
+    Energy refscale = _optInputScale == ZERO ? getParticleData(ParticleID::Z0)->mass() : _optInputScale;
+    if (refscale < _qmin) throw InitException() << "InputScale for Alpha_Dark must be higher than Qmin"
+				   << Exception::runerror;
+    unsigned int ix;
+    for(ix=0;ix<_thresholds.size();++ix) {
+        if(refscale<_thresholds[ix]) break;
+    }
+    ix-=1;
+    nf += ix;
+    _lambda[ix]=computeLambda(refscale,
+			     _alphain,nf);
+  }
+  // otherwise it was an input parameter, take this as the value below heavy quark thresholds
+  else{_lambda[0]=_lambdain;}
   // convert lambda to the Monte Carlo scheme if needed
   using Constants::pi;
   if(_lambdaopt) _lambda[0] *=exp((0.5*_ca*(67./3.-sqr(pi))-_tr*nf*10./3.)/(11*_ca-2*nf))/sqrt(2.);
 
   // Compute the threshold matching
-  for(int ix=0;ix<int(_thresholds.size())-1;++ix) {
+  // above the reference scale
+  for(int ix=nf-_nf_light;ix<int(_thresholds.size())-1;++ix) {
     _lambda[ix+1] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
-							   _lambda[ix],ix),ix+1);
+							   _lambda[ix],ix+_nf_light),ix+_nf_light+1);
+  }
+  // below the reference scale
+  for(int ix=nf-1-_nf_light;ix>=0;--ix) {
+    _lambda[ix] = computeLambda(_thresholds[ix+1],alphaS(_thresholds[ix+1],
+							 _lambda[ix+1],ix+_nf_light+1),ix+_nf_light);
   }
   // compute the maximum value of as
-  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8*sqr(MeV)); // approx as = 1
-  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8*sqr(MeV)));
+  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)); // approx as = 1
+  else _alphamin = max(_asMaxNP, value(sqr(_qmin)));
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda in "
 			   << _qmin/GeV << " < " << _lambda[0]/GeV
 			   << " HiddenValleyAlpha::doinit " << Exception::abortnow;
+  if (_do_check) {
+      
+    Repository::clog() << "checking alpha_dark in range [" << _check_Q_low << "," << _check_Q_high << "] GeV in "
+	            	   << _check_n_steps << " steps.\nResults are written to " << _check_fname << "\n";
+
+    double step_width = (_check_Q_high-_check_Q_low)/_check_n_steps;
+
+    ofstream out (_check_fname.c_str());
+
+    for (long k = 0; k <= _check_n_steps; ++k) {
+
+      Energy Q = _check_Q_low*GeV + k*step_width*GeV;
+
+      out << (Q/GeV) << " " << value(Q*Q) << "\n";
+
+    }
+  }
 }
 
 double HiddenValleyAlpha::derivativealphaS(Energy q, Energy lam, int nf) const {
@@ -308,7 +381,7 @@ double HiddenValleyAlpha::derivativealphaS(Energy q, Energy lam, int nf) const {
   if(_nloop==1)
     return -4.*pi/(b0*sqr(lx));
   else if(_nloop==2)
-    return -4.*pi/(b0*sqr(lx))*(1.-2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
+    return -4.*pi/(b0*sqr(lx))*(1.+2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
   else
     assert(false);
   return 0.;
@@ -330,4 +403,16 @@ double HiddenValleyAlpha::alphaS(Energy q, Energy lam, int nf) const {
   else
     assert(false);
   return 0.;
+}
+
+string HiddenValleyAlpha::check(string args) {
+
+  istringstream argin(args);
+
+  _do_check = true;
+
+  argin >> _check_Q_low >> _check_Q_high >> _check_n_steps;
+
+  argin >> _check_fname;
+  return "Check flags set";
 }

@@ -159,6 +159,14 @@ public:
 
 protected:
 
+  /**
+   *  Return the colour factor
+   */
+  virtual double colourFactor() const;
+
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**

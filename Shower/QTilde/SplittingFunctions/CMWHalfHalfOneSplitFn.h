@@ -135,7 +135,7 @@ public:
     case 0:
       return 1. - exp(- 0.5*r); 
     case 1:
-      return 1./(1.-exp(-0.5*r));
+      return 1./(1.+exp(-0.5*r));
     case 2:
       return 1.-2./r;
     case 3:

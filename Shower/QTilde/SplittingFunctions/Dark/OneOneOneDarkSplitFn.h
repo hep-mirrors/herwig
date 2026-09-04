@@ -159,6 +159,13 @@ public:
   static void Init();
 
 protected:
+  /**
+   *  Return the colour factor
+   */
+  virtual double colourFactor() const;
+
+
+protected:
 
   /** @name Clone Methods. */
   //@{

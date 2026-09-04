@@ -2778,7 +2778,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   }
   // e+e- type
   else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
-    general = type!=ShowerInteraction::QCD;
+    general = type!=ShowerInteraction::QCD && type!=ShowerInteraction::DARK;
   }
   // general type
   else {

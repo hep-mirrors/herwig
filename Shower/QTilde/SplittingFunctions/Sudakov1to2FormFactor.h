@@ -499,7 +499,7 @@ protected:
   /**
    *  Return the colour factor
    */
-  double colourFactor() const;
+  virtual double colourFactor() const;
 
   /**
    *  The limits of \f$z\f$ in the splitting
@@ -529,6 +529,9 @@ private:
   Sudakov1to2FormFactor & operator=(const Sudakov1to2FormFactor &) = delete;
 
 private:
+
+  bool masslessBoson (tcPDPtr id) {return (id->iSpin() == PDT::Spin1 && id->mass() == ZERO);}
+        
 
   /**
    *  Pointer to the coupling for this Sudakov form factor

@@ -354,7 +354,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 				newKin= cit->second.sudakov->
 					generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
 							_deTuning);
-		startingScale = particle.scales().DARK_ac;
+		startingScale = angularOrdered ?  particle.scales().DARK_ac : particle.scales().DARK_ac_noAO;
 				ShoKinPtr newKin2 = cit->second.sudakov->
 			generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
 							_deTuning);

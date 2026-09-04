@@ -42,8 +42,9 @@ public:
 			_qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0),
 			_nloop(2),_thresopt(false),
 			_lambdain(0.208364*GeV),
-			_tolerance(1e-10),
-			_maxtry(100),_alphamin(0.) {}
+			_inopt(false),_alphain(0.118),
+            _optInputScale(ZERO),_tolerance(1e-10),
+            _maxtry(100),_alphamin(0.) {}
   
 public:
 
@@ -86,6 +87,13 @@ public:
     else if (nf==4 || nf==5) return _lambda[nf-3];
     else                     return _lambda[3];
   }
+
+  /**
+   * Match thresholds and write alpha_s
+   * specified file; arguments are
+   * Q_low/GeV Q_high/GeV n_steps filename
+  */
+  string check(string args);
 
 public:
 
@@ -252,6 +260,16 @@ private:
   bool _inopt;
 
   /**
+   *  Input value of \f$alpha_DARK(RefScale)\f$
+   */
+  double _alphain;
+
+  /**
+   *  Reference scale for alphain
+   */
+  Energy _optInputScale;
+
+  /**
    *  Tolerance for discontinuities at the thresholds
    */
   double _tolerance;
@@ -290,6 +308,11 @@ private:
   double _tr;
   //@}
 
+  bool _do_check = false;
+  double _check_Q_low;
+  double _check_Q_high;
+  unsigned int _check_n_steps;
+  string _check_fname;
 };
 
 }

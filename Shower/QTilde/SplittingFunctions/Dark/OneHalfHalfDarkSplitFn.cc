@@ -185,3 +185,36 @@ DecayMEPtr OneHalfHalfDarkSplitFn::matrixElement(const double z, const Energy2 t
   (*kernal)(2,0,0) = 0.;
   return kernal;
 }
+
+double OneHalfHalfDarkSplitFn::colourFactor() const {
+  // get the model for parameters
+  tcHiddenValleyPtr model = dynamic_ptr_cast<tcHiddenValleyPtr>
+    (generator()->standardModel());
+  if(!model) throw InitException() << "Must be using the HiddenValleyModel"
+				   << " in HalfHalfOneDarkSplitFn::doinit()"
+				   << Exception::runerror;
+  if(colourStructure()==TripletTripletOctet) {
+    return model->CF();
+  }
+  else if(colourStructure()==OctetOctetOctet) {
+    return model->CA();
+  }
+  else if(colourStructure()==OctetTripletTriplet) {
+    return model->TR();
+  }
+  else if(colourStructure()==TripletOctetTriplet) {
+    return model->CF();
+  }
+  else if(colourStructure() == TripletTripletSinglet ||
+	  colourStructure() == OctetOctetSinglet    ||
+	  colourStructure() == Epsilon    ) {
+    return 1.;
+  }
+  else if(colourStructure()<0) {
+    return 1.;
+  }
+  else {
+    assert(false);
+    return 0.;
+  }
+}

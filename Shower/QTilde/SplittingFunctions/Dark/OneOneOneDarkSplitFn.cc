@@ -115,7 +115,7 @@ double OneOneOneDarkSplitFn::integOverP(const double z, const IdList & ,
 bool OneOneOneDarkSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix) {
-    if(ids[0]->iSpin()!=PDT::Spin1) return false;
+    if(ids[ix]->iSpin()!=PDT::Spin1) return false;
   }
   return OneOneOneDarkSplitFn::checkColours(ids);
 }
@@ -164,4 +164,37 @@ DecayMEPtr OneOneOneDarkSplitFn::matrixElement(const double z, const Energy2,
   (*kernal)(0,2,2) = 0.;
   (*kernal)(2,0,0) = 0.;
   return kernal;
+}
+
+double OneOneOneDarkSplitFn::colourFactor() const {
+  // get the model for parameters
+  tcHiddenValleyPtr model = dynamic_ptr_cast<tcHiddenValleyPtr>
+    (generator()->standardModel());
+  if(!model) throw InitException() << "Must be using the HiddenValleyModel"
+				   << " in OneOneOneDarkSplitFn::doinit()"
+				   << Exception::runerror;
+  if(colourStructure()==TripletTripletOctet) {
+    return model->CF();
+  }
+  else if(colourStructure()==OctetOctetOctet) {
+    return model->CA();
+  }
+  else if(colourStructure()==OctetTripletTriplet) {
+    return model->TR();
+  }
+  else if(colourStructure()==TripletOctetTriplet) {
+    return model->CF();
+  }
+  else if(colourStructure() == TripletTripletSinglet ||
+	  colourStructure() == OctetOctetSinglet    ||
+	  colourStructure() == Epsilon    ) {
+    return 1.;
+  }
+  else if(colourStructure()<0) {
+    return 1.;
+  }
+  else {
+    assert(false);
+    return 0.;
+  }
 }

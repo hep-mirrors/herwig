@@ -343,7 +343,7 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   case 0:
     return 1. - exp(-r/coef);
   case 1:
-    return 1./(1. - exp(-r/coef));
+    return 1./(1. + exp(-r/coef));
   case 2:
     return 1. - coef/r;
   case 3:
