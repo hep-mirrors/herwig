@@ -22,6 +22,7 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StdXCombGroup.h"
 #include "ThePEG/EventRecord/SubProcess.h"
+#include "ThePEG/Utilities/UtilityBase.h"
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -165,6 +166,23 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   size_t cStructure = 
     matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
 
+  // The amplitudes in lastLargeNAmplitudes() have been evaluated for
+  // meMomenta(), which live in the partonic centre-of-mass frame.  Whenever
+  // wantCMS() && !haveX1X2(), StandardXComb::newSubProcess has already boosted
+  // the sub-process back to the lab frame, so the helicity basis defined by the
+  // wave functions below would not be the basis the amplitudes refer to -- for
+  // massive final states the two differ by a Wigner rotation.  Build the basis
+  // in the frame the amplitudes were evaluated in and rotate it to the lab
+  // afterwards; SpinInfo::transform carries the basis states along with the
+  // momenta.
+  const bool boostToME = wantCMS() && !haveX1X2();
+  LorentzRotation toME;
+  if ( boostToME ) {
+    // Matchbox sets noMirror(), so sub->incoming() is in mePartonData() order
+    toME = Utilities::getBoostToCM(sub->incoming());
+    sub->transform(toME);
+  }
+
   // hard process for processing the spin info
   tPVector hard;
   hard.push_back(sub->incoming().first);
@@ -231,6 +249,9 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   for ( auto const & p : sub->outgoing() )
     if ( p->spinInfo() )
       p->spinInfo()->productionVertex(hardvertex);
+
+  if ( boostToME )
+    sub->transform(toME.inverse());
   
 
 }
