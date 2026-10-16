@@ -609,7 +609,6 @@ if vertexConverter.should_print():
         MODEL_CC = [getTemplate('Model1.cc'),getTemplate('Model2.cc'),getTemplate('Model3.cc'),
                     getTemplate('Model4.cc'),getTemplate('Model5.cc')]
     MODEL_H  = getTemplate('Model.h')
-    print ('LENGTH',len(MODEL_CC))
     MODELINFILE = getTemplate('FR.model')
     writeFile( 'LHC-%s.in' % modelname,
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
