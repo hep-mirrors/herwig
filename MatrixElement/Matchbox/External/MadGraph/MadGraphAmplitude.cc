@@ -933,9 +933,11 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
             if (b == splitOrderAmplitudes_[n].end() ||
                 done.find(&(b->second)) != done.end()) continue;
             done.insert(&(a->second)); done.insert(&(b->second));
-            if (a->first[iCrossed] == 1) swap(a, b);
+            const CVector* left = &a->second;
+            const CVector* right = &b->second;
+            if (a->first[iCrossed] == 1) swap(left, right);
             csCorr -= colourBasis()->colourCorrelatedInterference(
-                        ij, mePartonData(), a->second, b->second);
+                        ij, mePartonData(), *left, *right);
           }
         }
       }
