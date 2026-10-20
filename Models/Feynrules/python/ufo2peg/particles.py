@@ -300,7 +300,7 @@ def antiparticle(FR,particle) :
     return particle
 
 def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs,\
-                    enable_bsm_shower,allow_fcnc) :
+                    enable_bsm_shower,allow_fcnc, no_matchbox) :
     plist = []
     antis = {}
     names = []
@@ -344,6 +344,14 @@ rm /Herwig/Widths/hWidth
         subs = ParticleConverter(p,parameters,modelparameters).subs()
         if not (p.pdg_code == 25 and hw_higgs) :
             plist.append( particleT.substitute(subs) )
+            if not no_matchbox:
+                plist.append(
+"""
+do /Herwig/MatrixElements/Matchbox/Factory:StartParticleGroup {PName}
+insert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/{ModelName}/Particles/{PName}
+do /Herwig/MatrixElements/Matchbox/Factory:EndParticleGroup
+""".format(PName=subs['name'], ModelName=modelname)
+)
 
         pdg, name = subs['pdg_code'],  subs['name']
         names.append(name)

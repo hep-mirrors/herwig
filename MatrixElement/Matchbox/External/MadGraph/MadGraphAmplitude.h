@@ -151,6 +151,27 @@ public:
 					 const SpinCorrelationTensor& c) const;
 
   /**
+   * Return the matrix element squared.
+   */
+  virtual double me2() const;
+
+  /**
+   * Return the largeN matrix element squared.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
+   * Return the colour correlated matrix element.
+   */
+  virtual double colourCorrelatedME2(pair<int,int> ij) const;
+
+  /**
+   * Return the large-N colour correlated matrix element.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Order process in MadGraph conventions
    */						  
   vector<size_t> gluonsFirst(vector<size_t> i);
@@ -293,8 +314,12 @@ protected:
    */
   static string theMGmodel;
   
+  /**
+   * Additional coupling orders for MadGraph process generation.
+   */
+  static string theCouplingOrders;
+  
   bool keepinputtopmass;
-
 
   /**
    * Initialize the given process
@@ -311,6 +336,41 @@ protected:
    * Helper for color and crossing handling 
    */ 
   mutable vector<int>  colourindex, crossing;
+
+  /**
+   * Number of amplitude split orders for current process (1 = no split orders)
+   */
+  mutable int nAmpSplitOrders_;
+
+  /**
+   * Allowed (m,n) pairs for split orders (0-based indexing)
+   */
+  mutable vector<vector<bool>> chosenSOConfigs_;
+
+  /**
+   * Per-order tree-level amplitude maps
+   */
+  mutable vector<map<vector<int>,CVector>> splitOrderAmplitudes_;
+
+  /**
+   * Per-order large-N amplitude maps
+   */
+  mutable vector<map<vector<int>,CVector>> splitOrderLargeNAmplitudes_;
+
+  /**
+   * Per-order heljamp cache: helicity -> vector[soindex] of vector[color] of Complex
+   */
+  mutable map<vector<int>, vector<vector<complex<double>>>> perOrderHeljamp_;
+
+  /**
+   * Per-order large-N heljamp cache
+   */
+  mutable map<vector<int>, vector<vector<complex<double>>>> perOrderHelLNjamp_;
+
+  /**
+   * Assemble per-order AmplitudeMaps from cached heljamp data
+   */
+  void assembleSplitOrderAmplitudes() const;
   
         
   /**
@@ -364,6 +424,9 @@ protected:
       
   void setMadgraphPrefix(string p);
   string getMadgraphPrefix() const ;
+
+  void setCouplingOrders(string p);
+  string getCouplingOrders() const;
 
 private:
 

@@ -55,6 +55,11 @@ VERTEX = getTemplate('Vertex.cc')
 vertexline = """\
 create Herwig::FRModel{classname} /Herwig/{modelname}/{classname}
 insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/{classname}
+insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/{classname}
+"""
+vertexline_no_matchbox = """\
+create Herwig::FRModel{classname} /Herwig/{modelname}/{classname}
+insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/{classname}
 """
 
 def get_lorentztag(spin):
@@ -384,6 +389,7 @@ class VertexConverter:
         self.vertex_names = {}
         self.modelname=""
         self.no_generic_loop_vertices = False
+        self.no_matchbox = False
         self.parmsubs = parmsubs
         self.couplingDefns = defns
         self.genericTensors = False
@@ -395,6 +401,7 @@ class VertexConverter:
         self.verbose        = args.verbose
         self.modelname = args.name
         self.no_generic_loop_vertices = args.no_generic_loop_vertices
+        self.no_matchbox = args.no_matchbox
         self.include_generic = args.include_generic
         self.genericTensors = args.use_generic_for_tensors
         self.hw_higgs = args.use_Herwig_Higgs
@@ -885,14 +892,19 @@ Herwig may not give correct results, though.
 
     def get_vertices(self,libname):
         vlist = ['library %s\n' % libname]
+        if not self.no_matchbox:
+            vlist.append('clear /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices\n')
         for v in self.all_vertices:
             if v.herwig_skip_vertex: continue
             for name in self.vertex_names[v.name] :
-                vlist.append( vertexline.format(modelname=self.modelname, classname=name) )
-
+                line_template = vertexline_no_matchbox if self.no_matchbox else vertexline
+                vlist.append(line_template.format(modelname=self.modelname, classname=name)) 
         if( not self.no_generic_loop_vertices and not self.hw_higgs ) :
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
+            if not self.no_matchbox:
+                vlist.append('insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname))
+                vlist.append('insert /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator:Vertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname))
         # add Hw higgs vertices if required
         if(self.hw_higgs) :
             for vertex in ["FFH","HGG","HHH","HPP","HZP","WWHH","WWH"]:

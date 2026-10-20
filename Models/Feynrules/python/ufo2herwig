@@ -44,6 +44,11 @@ parser.add_argument(
     help="Don't include the automatically generated generic loop vertices for h->gg and h->gamma gamma"
 )
 parser.add_argument(
+    '--no-matchbox',
+    action="store_true",
+    help="Don't insert generated vertices into Matchbox DiagramGenerator",
+)
+parser.add_argument(
     '--include-generic',
     action="store_true",
     help="Include support for generic spin structures"
@@ -309,6 +314,7 @@ parmvalues=copy.copy(parmsubs)
 # more arrays used for substitution in templates
 paramsforstream = []
 parmmodelconstr = []
+ufo_aS_value = None
 
 # loop over parameters and fill in template stuff according to internal/external and complex/real
 # WARNING: Complex external parameter input not tested!
@@ -402,6 +408,15 @@ for p in FR.all_parameters:
         else :
             parmconstr.append('%s_()' % p.name)
             parmsubs[p.name] = value
+        # Sync UFO inputs into ThePEG StandardModelBase interfaces so SM().alphaS()/alphaEMMZ()/fermiConstant() reflect UFO values.
+        # Applies whether the parameter is external or internal (computed from other params).
+        if p.name == 'aS':
+            parmmodelconstr.append('set %s:QCD/AlphaS %s' % (modelname, value))
+            ufo_aS_value = value
+        elif p.name == 'aEW':
+            parmmodelconstr.append('set %s:EW/AlphaEMMZ %s' % (modelname, value))
+        elif p.name == 'Gf':
+            parmmodelconstr.append('set %s:EW/FermiConstant %s' % (modelname, value))
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
@@ -544,15 +559,24 @@ parmtextsubs['couplingOrders']  = couplingOrders
 # particles
 
 plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name,\
-                                args.use_Herwig_Higgs,args.enable_bsm_shower,args.allow_fcnc)
+                                args.use_Herwig_Higgs,args.enable_bsm_shower,args.allow_fcnc, args.no_matchbox)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
     for p in names
 ]
+
 # make the first one active to have something runnable in the example .in file
 particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
+
+if not args.no_matchbox:
+    BSM_Particles_list = ', '.join(names)
+    BSM_HardProcessWidth = [
+        "# set /Herwig/{n}/Particles/{p}:HardProcessWidth 0*GeV".format(n=modelname,p=p)
+        for p in names
+    ]
+    BSM_HardProcessWidth = '\n'.join(BSM_HardProcessWidth)
 
 modelfilesubs = { 'plist' : plist,
                   'vlist' : vertexConverter.get_vertices(libname),
@@ -563,6 +587,8 @@ modelfilesubs = { 'plist' : plist,
 # write the files from templates according to the above subs
 if vertexConverter.should_print():
     MODEL_HWIN = getTemplate('LHC-FR.in')
+    if not args.no_matchbox:
+        MODEL_MATCHBOX_HWIN = getTemplate('LHC-Matchbox-FR.in')
     if(not args.split_model) :
         MODEL_CC = [getTemplate('Model.cc')]
     else :
@@ -590,12 +616,39 @@ if vertexConverter.should_print():
         MODEL_CC = [getTemplate('Model1.cc'),getTemplate('Model2.cc'),getTemplate('Model3.cc'),
                     getTemplate('Model4.cc'),getTemplate('Model5.cc')]
     MODEL_H  = getTemplate('Model.h')
-    print ('LENGTH',len(MODEL_CC))
     MODELINFILE = getTemplate('FR.model')
     writeFile( 'LHC-%s.in' % modelname,
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
                                        'Particles' : particlelist })
     )
+
+    if not args.no_matchbox:
+        read_Couplings = ''
+        if ufo_aS_value is not None:
+            MODEL_COUPLINGS_IN = getTemplate('LHC-FR-Couplings.in')
+            writeFile( 'LHC-%s-Couplings.in' % modelname,
+                       MODEL_COUPLINGS_IN.substitute({
+                           'ModelName' : modelname,
+                           'aSValue'   : ufo_aS_value }))
+            read_Couplings = [
+                '## Per-model alpha_s clones (UFO-synced; input_scale fixed at 91.1876 GeV).',
+                '## Read AFTER any Matchbox shower/matching snippet above so it overrides',
+                '## the global {LO,NLO}AlphaS that LO.in / Matchbox.in bound.',
+                'read LHC-'+modelname+'-Couplings.in'
+            ]
+            read_Couplings = '\n'.join(read_Couplings)
+
+        writeFile( 'LHC-Matchbox-%s.in' % modelname,
+                   MODEL_MATCHBOX_HWIN.substitute({
+                       'ModelName' : modelname,
+                       'ModelAbsPath' : os.path.abspath(args.ufodir),
+                       'BSM_Particles_list' : BSM_Particles_list,
+                       'BSM_HardProcessWidth' : BSM_HardProcessWidth,
+                       'read_Couplings' : read_Couplings
+                       })
+        )
+
+
 
     modeltemplate = Template( MODELINFILE.substitute(modelfilesubs) )
 

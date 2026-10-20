@@ -37,11 +37,11 @@ C         print*, TRIM(file_card)
 
 !///////////////////////////////////////////////////////////////////////
 
-       subroutine MG_Jamp(proc ,color,amp)
+       subroutine MG_Jamp(proc, color, soindex, amp)
      $   bind(c, name="MG_Jamp")
 
          IMPLICIT NONE
-         INTEGER    proc,color
+         INTEGER    proc, color, soindex
          REAL*8 amp(0:1)
          COMPLEX*16 Jamp
 {MG_Jamptxt}
@@ -52,11 +52,11 @@ C         print*, TRIM(file_card)
        
 !///////////////////////////////////////////////////////////////////////
 
-       subroutine MG_LNJamp(proc ,color,amp)
+       subroutine MG_LNJamp(proc, color, soindex, amp)
      $   bind(c, name="MG_LNJamp")
 
          IMPLICIT NONE
-         INTEGER    proc,color
+         INTEGER    proc, color, soindex
          REAL*8 amp(0:1)
          COMPLEX*16 Jamp
 {MG_LNJamptxt}
@@ -84,6 +84,32 @@ C         print*, TRIM(file_card)
          IMPLICIT NONE
          INTEGER    proc,color,i,j
 {MG_ColourMattxt}
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_GetMaxSOIndex(proc, nampso)
+     $   bind(c, name="MG_GetMaxSOIndex")
+         IMPLICIT NONE
+         INTEGER    proc, nampso
+{MG_GetMaxSOIndextxt}
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_GetChosenSOConfig(proc, m, n, out)
+     $   bind(c, name="MG_GetChosenSOConfig")
+         IMPLICIT NONE
+         INTEGER    proc, m, n, out
+         LOGICAL    logical_out
+{MG_GetChosenSOConfigtxt}
+         if (logical_out) then
+           out = 1
+         else
+           out = 0
+         endif
 
        END
 

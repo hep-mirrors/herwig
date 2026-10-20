@@ -1,5 +1,6 @@
 #! @PYTHON@
 
+import importlib, subprocess
 import os,sys,glob,errno,shutil,time,fnmatch,tempfile
 from optparse import OptionParser
 
@@ -18,7 +19,7 @@ def finddirs(pattern, path):
     return result
 
 # fill the proc.dat file from BornAmplitudes.dat and VirtAmplitudes.dat.
-def fillprocs(model,oras,orew,MGVersion):
+def fillprocs(model,oras,orew,MGVersion,couplingorders=""):
     """Fill proc.dat from BornAmplitudes.dat and VirtAmplitudes.dat"""
     oras=int(oras)
     orew=int(orew)
@@ -59,6 +60,8 @@ def fillprocs(model,oras,orew,MGVersion):
     else:
         HIG = 0
 
+    extra = " ".join(couplingorders.replace(",", " ").split()) if couplingorders else ""
+
     with open(borns, "r") as f:
         for i, line in enumerate(f):
             #this assumes extra QCD emmissions
@@ -74,7 +77,7 @@ def fillprocs(model,oras,orew,MGVersion):
                 hig = "HIG=%s" % HIG
                 qcd -= 2*HIG
                 qed -= HIG
-            bornlines.append("{cmd} {line} {hig} QCD<={qcd} QED<={qed} @{procnr}".format(**locals()))
+            bornlines.append("{cmd} {line} {hig} QCD<={qcd} QED<={qed} {extra} @{procnr}".format(**locals()))
 
     result.extend(bornlines)
 
@@ -87,7 +90,7 @@ def fillprocs(model,oras,orew,MGVersion):
             cmd = "generate   " if i==0 else "add process"
             qcd = oras+addalphas
             qed = orew
-            virtlines.append("{cmd} {line} QCD<={qcd} QED<={qed} [ virt=QCD ] @{procnr}".format(**locals()))
+            virtlines.append("{cmd} {line} QCD<={qcd} QED<={qed} {extra} [ virt=QCD ] @{procnr}".format(**locals()))
 
     if virtlines and bornlines:
         result.append("output matchbox MG5 --postpone_model")
@@ -123,6 +126,42 @@ def build_matchbox_tmp(pwd,buildpath,absolute_links):
             else:
                 os.symlink(os.path.relpath(i,MG_TMP), f)
 
+def generate_param_card_from_model(model):
+    """Generate param_card.dat for absolute-path UFO models."""
+    model = os.path.abspath(model)
+    script = os.path.join(model, "write_param_card.py")
+
+    if not os.path.isfile(script):
+        sys.stderr.write("*** Failed to generate param_card.dat from model %s ***\n"
+                         % model)
+        sys.stderr.write("Missing write_param_card.py in model directory.\n")
+        return 1
+
+    model_parent = os.path.dirname(model)
+    model_pkg = os.path.basename(model)
+    import_error = None
+
+    if model_parent not in sys.path:
+        sys.path.insert(0, model_parent)
+
+    try:
+        module = importlib.import_module(model_pkg + ".write_param_card")
+        module.ParamCardWriter("./param_card.dat")
+        return 0
+    except Exception as ex:
+        import_error = ex
+
+    returncode = subprocess.call([sys.executable, script])
+    if returncode == 0:
+        return 0
+
+    sys.stderr.write("*** Failed to generate param_card.dat from model %s ***\n"
+                     % model)
+    sys.stderr.write("Package import failed: %s\n" % import_error)
+    sys.stderr.write("Legacy script execution failed with exit code %d\n"
+                     % returncode)
+    return 1
+
 
 
 
@@ -140,14 +179,14 @@ parser.add_option("-I", "--includedir",dest="includedir",help="Do not use this s
 parser.add_option("-l", "--absolute-links",action="store_true", dest="absolute_links", default=False,\
                   help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("--cacheprefix", dest="cacheprefix",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("--couplingorders", dest="couplingorders", default="",\
+                  help="Do not use this script. Only for Herwig internal use.")
 
 (options, args) = parser.parse_args()
 
 if not options.cacheprefix:
     sys.stderr.write("Need a value for --cacheprefix\n")
     exit(1)
-
-
 
 cachedir = os.path.abspath(options.cacheprefix)
 mkdir_p(cachedir)
@@ -188,9 +227,8 @@ if options.model=="loop_sm" or options.model=="heft":
   file.close()
 elif  options.model.startswith("/"):
 
-  os.system("python %s/write_param_card.py " % options.model)
-
-
+  if generate_param_card_from_model(options.model) != 0:
+    exit(1)
 
 else:
   print("---------------------------------------------------------------")
@@ -229,7 +267,8 @@ for term in MGV :
         term = term.split("_")
         MGVersion = term[2][1]
 
-Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew,int(MGVersion))
+couplingorders = options.couplingorders if options.couplingorders else ""
+Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew,int(MGVersion),couplingorders)
 
 if sys.version_info[0] == 2 and MGVersion == "3" :
     os.system("python3 "+options.madgraph+"/mg5_aMC proc.dat")
@@ -262,14 +301,25 @@ def make_case_stmts(func):
 
 def write_interfaceMG():
     """Create the InterfaceMadGraph.f FORTRAN file"""
+    has_split_orders = bool(couplingorders)
+
     subs = {
         "MG_CalculateBORNtxt" : make_case_stmts("BORN(momenta,hel)"),
         "MG_CalculateVIRTtxt" : make_case_stmts("SLOOPMATRIX(momenta,virt)"),
-        "MG_Jamptxt"          : make_case_stmts("GET_JAMP(color,Jamp)"),
-        "MG_LNJamptxt"        : make_case_stmts("GET_LNJAMP(color,Jamp)"),
         "MG_NColtxt"          : make_case_stmts("GET_NCOL(color)"),
         "MG_ColourMattxt"     : make_case_stmts("GET_NCOLOR(i,j,color)"),
     }
+
+    if has_split_orders:
+        subs["MG_Jamptxt"]               = make_case_stmts("GET_JAMP(color,soindex,Jamp)")
+        subs["MG_LNJamptxt"]             = make_case_stmts("GET_LNJAMP(color,soindex,Jamp)")
+        subs["MG_GetMaxSOIndextxt"]      = make_case_stmts("GET_MAXSOINDEX(nampso)")
+        subs["MG_GetChosenSOConfigtxt"]  = make_case_stmts("_get_chosen_so_config(m,n,logical_out)")
+    else:
+        subs["MG_Jamptxt"]               = make_case_stmts("GET_JAMP(color,Jamp)")
+        subs["MG_LNJamptxt"]             = make_case_stmts("GET_LNJAMP(color,Jamp)")
+        subs["MG_GetMaxSOIndextxt"]      = "         nampso = 1"
+        subs["MG_GetChosenSOConfigtxt"]  = "         logical_out = .TRUE."
 
     baseN = 5 if subs["MG_CalculateVIRTtxt"] else 3
     subs["MG_vxxxxxtxt"] = """\

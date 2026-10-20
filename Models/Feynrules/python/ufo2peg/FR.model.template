@@ -36,6 +36,7 @@ set ${ModelName}:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 set ${ModelName}:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set ${ModelName}:EW/CKM /Herwig/CKM
 set ${ModelName}:RunningMass /Herwig/RunningMass
+set ${ModelName}:EW/Scheme FeynRulesUFO
 
 ${setcouplings}
 

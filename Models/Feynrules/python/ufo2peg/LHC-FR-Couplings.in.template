@@ -1,0 +1,25 @@
+# -*- ThePEG-repository -*-
+#
+# Per-model alpha_s couplings synced from the UFO `aS` parameter.
+# Clones of the global LOAlphaS / NLOAlphaS, with input_alpha_s = UFO aS
+# and input_scale fixed at 91.1876 GeV (independent of ScaleChoice).
+#
+# Read AFTER any Matchbox/{LO,MCatNLO,Powheg}-*.in snippet, since those
+# rebind the model's QCD/RunningAlphaS to the global {LO,NLO}AlphaS --
+# this rebinds it back to the per-model clone.
+
+cd /Herwig/Couplings
+
+cp LOAlphaS  ${ModelName}LOAlphaS
+set ${ModelName}LOAlphaS:input_alpha_s ${aSValue}
+set ${ModelName}LOAlphaS:input_scale 91.1876*GeV
+
+cp NLOAlphaS ${ModelName}NLOAlphaS
+set ${ModelName}NLOAlphaS:input_alpha_s ${aSValue}
+set ${ModelName}NLOAlphaS:input_scale 91.1876*GeV
+
+# Default rebind for LO Matchbox runs (matches LO-DefaultShower.in / LO.in):
+set /Herwig/${ModelName}/${ModelName}:QCD/RunningAlphaS /Herwig/Couplings/${ModelName}LOAlphaS
+
+# For NLO/MC@NLO/Powheg runs, comment the line above and uncomment:
+# set /Herwig/${ModelName}/${ModelName}:QCD/RunningAlphaS /Herwig/Couplings/${ModelName}NLOAlphaS
