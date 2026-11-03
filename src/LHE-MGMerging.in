@@ -73,7 +73,8 @@ set /Herwig/Shower/FxFxHandler:PDFB /Herwig/Partons/LHAPDF
 # multiple scattering. As the generator was tuned with the default values
 # this is STRONGLY DISCOURAGED without retuning the MPI parameters
 # create the reader and set cuts
-set /Herwig/EventHandlers/FxFxLHReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
+# the file can be compressed (gzipped or bzipped)
+set /Herwig/EventHandlers/FxFxLHReader:FileName NAME_OF_FILE
 set /Herwig/EventHandlers/FxFxLHReader:WeightWarnings    false
 set /Herwig/EventHandlers/FxFxLHReader:AllowedToReOpen No
 set /Herwig/EventHandlers/FxFxLHReader:InitPDFs 0

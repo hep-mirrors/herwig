@@ -62,7 +62,8 @@ set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/LHAPDF
 # this is STRONGLY DISCOURAGED without retuning the MPI parameters
 # create the reader and set cuts
 create ThePEG::LesHouchesFileReader LesHouchesReader
-set LesHouchesReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
+# the file can be compressed (gzipped or bzipped)
+set LesHouchesReader:FileName NAME_OF_FILE
 set LesHouchesReader:AllowedToReOpen No
 set LesHouchesReader:InitPDFs 0
 set LesHouchesReader:Cuts /Herwig/Cuts/NoCuts
