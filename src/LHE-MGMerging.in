@@ -41,6 +41,8 @@ create Herwig::FxFxFileReader FxFxLHReader
 insert LesHouchesHandler:FxFxReaders[0] FxFxLHReader
 
 # Create the FxFxHandler for merging with the shower	 
+# The FxFxHandler replaces the default ShowerHandler, so shower settings must
+# be applied to /Herwig/Shower/FxFxHandler, not to /Herwig/Shower/ShowerHandler
 cd /Herwig/Shower
 library HwFxFxHandler.so
 create Herwig::FxFxHandler FxFxHandler
@@ -64,8 +66,8 @@ set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/LHAPDF
 # We would recommend the shower uses the default PDFs with which it was tuned.
 # However it can be argued that the same set as for the sample should be used for
 # matched samples, i.e. MC@NLO (and less so POWHEG)
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/LHAPDF
-set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/LHAPDF
+set /Herwig/Shower/FxFxHandler:PDFA /Herwig/Partons/LHAPDF
+set /Herwig/Shower/FxFxHandler:PDFB /Herwig/Partons/LHAPDF
 
 # You can in principle also change the PDFs for the remnant extraction and
 # multiple scattering. As the generator was tuned with the default values
@@ -92,8 +94,8 @@ set /Herwig/EventHandlers/FxFxLHReader:PDFB /Herwig/Partons/LHAPDF
 # normally, especially for POWHEG, you want
 # the scale supplied in the event files (SCALUP)
 # to be used as a pT veto scale in the parton shower
-set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
-set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
+set /Herwig/Shower/FxFxHandler:MaxPtIsMuF Yes
+set /Herwig/Shower/FxFxHandler:RestrictPhasespace Yes
 # Shower parameters
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
@@ -102,7 +104,7 @@ set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
 set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
 set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
-set /Herwig/Shower/ShowerHandler:SpinCorrelations No
+set /Herwig/Shower/FxFxHandler:SpinCorrelations No
 
 #############################################################
 # Set up the FxFxHandler			            #
@@ -110,6 +112,11 @@ set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 cd /Herwig/Shower
 set /Herwig/Shower/FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set /Herwig/Shower/FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
+# the FxFxHandler does not inherit the defaults of the ShowerHandler
+# (see defaults/Shower.in), so set the tuned remnant PDFs and intrinsic pT
+set /Herwig/Shower/FxFxHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+set /Herwig/Shower/FxFxHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
+set /Herwig/Shower/FxFxHandler:IntrinsicPtGaussian 2.2*GeV
 set /Herwig/Shower/FxFxHandler:ShowerAlpha  AlphaQCDISR
 # set the heavy quark decay product vetoing process on/off
 set FxFxHandler:HeavyQVeto Yes
